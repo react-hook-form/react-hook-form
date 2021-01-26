@@ -5,16 +5,17 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
+import getFieldValueAs from './getFieldValueAs';
 import { Field } from '../types';
 
 export default function getFieldValue(
   field?: Field,
-  excludeDisabled?: boolean,
+  shouldReturnAsValue?: boolean,
 ) {
   if (field && field._f) {
-    const { ref, valueAsNumber, valueAsDate, setValueAs } = field._f;
+    const { ref } = field._f;
 
-    if (ref.disabled && excludeDisabled) {
+    if (ref.disabled) {
       return;
     }
 
@@ -34,14 +35,6 @@ export default function getFieldValue(
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return valueAsNumber
-      ? ref.value === ''
-        ? NaN
-        : +ref.value
-      : valueAsDate
-      ? (ref as HTMLInputElement).valueAsDate
-      : setValueAs
-      ? setValueAs(ref.value)
-      : ref.value;
+    return getFieldValueAs(ref.value, field._f, shouldReturnAsValue);
   }
 }

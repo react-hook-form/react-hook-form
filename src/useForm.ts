@@ -290,7 +290,7 @@ export function useForm<
       ) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(get(fieldsRef.current, name) as Field),
+          getFieldValue(get(fieldsRef.current, name) as Field, true),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -345,7 +345,7 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getValues(),
+        getFieldsValues(fieldsRef, true),
         contextRef.current,
         {
           criteriaMode,
@@ -576,7 +576,7 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getValues(),
+            getFieldsValues(fieldsRef, true),
             contextRef.current,
             {
               criteriaMode,
@@ -651,7 +651,7 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getValues(),
+            ...getFieldsValues(fieldsRef, true),
             ...values,
           },
           contextRef.current,
@@ -940,7 +940,7 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldValues = getFieldsValues(fieldsRef);
+      let fieldValues = getFieldsValues(fieldsRef, true);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,

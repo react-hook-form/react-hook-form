@@ -10,6 +10,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { VALIDATION_MODE } from '../../constants';
+import isString from '../../utils/isString';
 
 describe('register', () => {
   it('should support register passed to ref', async () => {
@@ -42,53 +43,44 @@ describe('register', () => {
     });
   });
 
-  // test.each([['text'], ['radio'], ['checkbox']])(
-  //   'should register field for %s type',
-  //   async (type) => {
-  //     const mockListener = jest.spyOn(
-  //       findRemovedFieldAndRemoveListener,
-  //       'default',
-  //     );
-  //     jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
-  //
-  //     const Component = () => {
-  //       const {
-  //         register,
-  //         formState: { isDirty },
-  //       } = useForm<{
-  //         test: string;
-  //       }>();
-  //       return (
-  //         <div>
-  //           <input type={type} {...register('test')} />
-  //           <span role="alert">{`${isDirty}`}</span>
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const { renderCount } = perf<{ Component: unknown }>(React);
-  //
-  //     render(<Component />);
-  //
-  //     const ref = screen.getByRole(type === 'text' ? 'textbox' : type);
-  //
-  //     expect(ref.addEventListener).toHaveBeenCalledWith(
-  //       type === 'radio' || type === 'checkbox'
-  //         ? EVENTS.CHANGE
-  //         : EVENTS.INPUT,
-  //       expect.any(Function),
-  //     );
-  //
-  //     // check MutationObserver
-  //     ref.remove();
-  //
-  //     await waitFor(() => expect(mockListener).toHaveBeenCalled());
-  //     expect(screen.getByRole('alert').textContent).toBe('false');
-  //     await wait(() =>
-  //       expect(renderCount.current.Component).toBeRenderedTimes(2),
-  //     );
-  //   },
-  // );
+  test.each([['text'], ['radio'], ['checkbox']])(
+    'should register field for %s type and remain its value after unmount',
+    async (type) => {
+      const Component = () => {
+        const {
+          register,
+          watch,
+          formState: { isDirty },
+        } = useForm<{
+          test: string;
+        }>({
+          defaultValues: {
+            test: 'test',
+          },
+        });
+
+        const test = watch('test');
+
+        return (
+          <form>
+            <input type={type} {...register('test')} />
+            <span role="alert">{`${isDirty}`}</span>
+            {test}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const ref = screen.getByRole(type === 'text' ? 'textbox' : type);
+
+      ref.remove();
+
+      expect(screen.getByRole('alert').textContent).toBe('false');
+
+      screen.getByText('test');
+    },
+  );
 
   test.each([['text'], ['radio'], ['checkbox']])(
     'should not register the same %s input',
@@ -245,6 +237,121 @@ describe('register', () => {
       });
 
       expect(output).toEqual({ test: 12345, test1: true });
+    });
+
+    it('should validate input before the valueAs', async () => {
+      const Component = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{
+          test: number;
+          test1: number;
+        }>({
+          mode: 'onChange',
+        });
+
+        return (
+          <>
+            <input
+              {...register('test', {
+                validate: (data) => {
+                  return !isString(data);
+                },
+              })}
+            />
+            <span role="alert">{errors.test && 'Not number'}</span>
+
+            <input
+              {...register('test1', {
+                valueAsNumber: true,
+                min: 20,
+              })}
+            />
+            <span role="alert">{errors.test && 'Number length'}</span>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '123',
+          },
+        });
+      });
+
+      screen.getByText('Not number');
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[1], {
+          target: {
+            value: '12',
+          },
+        });
+      });
+
+      screen.getByText('Number length');
+    });
+
+    it('should send valueAs filed to schema validation', () => {
+      let output: any;
+
+      const Component = () => {
+        const { register, trigger } = useForm<{
+          test: number;
+          test1: any;
+          test2: boolean;
+        }>({
+          resolver: (data) => {
+            output = data;
+            return {
+              values: {
+                test: 1,
+                test1: 2,
+                test2: true,
+              },
+              errors: {},
+            };
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('test', { valueAsNumber: true })} />
+            <input {...register('test1', { valueAsDate: true })} />
+            <input
+              {...register('test2', { setValueAs: (data) => data === 'test' })}
+            />
+            <button type="button" onClick={() => trigger()}>
+              trigger
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: { value: 1 },
+      });
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: '1990' },
+      });
+      fireEvent.change(screen.getAllByRole('textbox')[2], {
+        target: { value: 'test' },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(output).toEqual({
+        test: 1,
+
+        test1: new Date('1990'),
+        test2: true,
+      });
     });
   });
 });
