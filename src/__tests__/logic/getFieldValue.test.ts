@@ -117,21 +117,21 @@ describe('getFieldValue', () => {
     expect(getFieldValue(undefined)).toBeFalsy();
   });
 
-  // it('should not return value when the input is disabled', () => {
-  //   expect(
-  //     getFieldValue(
-  //       {
-  //         _f: {
-  //           name: 'test',
-  //           ref: {
-  //             name: 'radio',
-  //             disabled: true,
-  //             type: 'radio',
-  //           },
-  //         },
-  //       },
-  //       true,
-  //     ),
-  //   ).toEqual(undefined);
-  // });
+  it('should not return value when the input is disabled', () => {
+    expect(
+      getFieldValue(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'radio',
+              disabled: true,
+              type: 'radio',
+            },
+          },
+        },
+        true,
+      ),
+    ).toEqual(undefined);
+  });
 });
