@@ -290,7 +290,7 @@ export function useForm<
       ) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(get(fieldsRef.current, name) as Field),
+          getFieldValue(get(fieldsRef.current, name) as Field, true),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -523,7 +523,7 @@ export function useForm<
       const field = get(fieldsRef.current, name) as Field;
 
       if (field) {
-        const inputValue = inputType ? getFieldValue(field, true) : value;
+        const inputValue = inputType ? getFieldValue(field) : value;
         const isBlurEvent = type === EVENTS.BLUR;
         const {
           isOnBlur: isReValidateOnBlur,
@@ -879,7 +879,6 @@ export function useForm<
       ) {
         get(fieldsRef.current, name)._f.value = getFieldValue(
           get(fieldsRef.current, name),
-          true,
         );
       }
 

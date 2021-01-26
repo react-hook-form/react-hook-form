@@ -10,7 +10,7 @@ import { Field } from '../types';
 
 export default function getFieldValue(
   field?: Field,
-  shouldReturnRawValue?: boolean,
+  shouldReturnAsValue?: boolean,
 ) {
   if (field && field._f) {
     const { ref } = field._f;
@@ -35,8 +35,8 @@ export default function getFieldValue(
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return shouldReturnRawValue
-      ? ref.value
-      : getFieldValueAs(ref.value, field._f);
+    return shouldReturnAsValue
+      ? getFieldValueAs(ref.value, field._f)
+      : ref.value;
   }
 }

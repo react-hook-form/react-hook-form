@@ -5,7 +5,7 @@ import { FieldRefs } from '../types';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
-  shouldReturnSubmitValue?: boolean,
+  shouldReturnAsValue?: boolean,
   output: Record<string, any> = {},
 ): any => {
   for (const name in fieldsRef.current) {
@@ -17,7 +17,7 @@ const getFieldsValues = (
         output,
         name,
         _f && !_f.ref.disabled
-          ? shouldReturnSubmitValue
+          ? shouldReturnAsValue
             ? getFieldValueAs(_f.value, _f)
             : _f.value
           : Array.isArray(field)
@@ -30,7 +30,7 @@ const getFieldsValues = (
           {
             current,
           },
-          shouldReturnSubmitValue,
+          shouldReturnAsValue,
           output[name],
         );
       }
