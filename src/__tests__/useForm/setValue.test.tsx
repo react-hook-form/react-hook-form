@@ -163,7 +163,7 @@ describe('setValue', () => {
     await act(async () => {
       await result.current.handleSubmit((data) => {
         expect(data).toEqual({
-          test: true,
+          test: ['1'],
         });
       })({
         preventDefault: () => {},
