@@ -940,7 +940,7 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldValues = getFieldsValues(fieldsRef);
+      let fieldValues = getFieldsValues(fieldsRef, true);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,

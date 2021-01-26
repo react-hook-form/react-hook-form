@@ -9,12 +9,12 @@ import { Field } from '../types';
 
 export default function getFieldValue(
   field?: Field,
-  excludeDisabled?: boolean,
+  shouldReturnSubmitValue?: boolean,
 ) {
   if (field && field._f) {
     const { ref, valueAsNumber, valueAsDate, setValueAs } = field._f;
 
-    if (ref.disabled && excludeDisabled) {
+    if (ref.disabled && shouldReturnSubmitValue) {
       return;
     }
 
@@ -34,14 +34,16 @@ export default function getFieldValue(
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return valueAsNumber
-      ? ref.value === ''
-        ? NaN
-        : +ref.value
-      : valueAsDate
-      ? (ref as HTMLInputElement).valueAsDate
-      : setValueAs
-      ? setValueAs(ref.value)
+    return shouldReturnSubmitValue
+      ? valueAsNumber
+        ? ref.value === ''
+          ? NaN
+          : +ref.value
+        : valueAsDate
+        ? (ref as HTMLInputElement).valueAsDate
+        : setValueAs
+        ? setValueAs(ref.value)
+        : ref.value
       : ref.value;
   }
 }
