@@ -7,14 +7,11 @@ import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
 import { Field } from '../types';
 
-export default function getFieldValue(
-  field?: Field,
-  shouldReturnSubmitValue?: boolean,
-) {
+export default function getFieldValue(field?: Field) {
   if (field && field._f) {
     const { ref, valueAsNumber, valueAsDate, setValueAs } = field._f;
 
-    if (ref.disabled && shouldReturnSubmitValue) {
+    if (ref.disabled) {
       return;
     }
 
@@ -34,16 +31,14 @@ export default function getFieldValue(
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return shouldReturnSubmitValue
-      ? valueAsNumber
-        ? ref.value === ''
-          ? NaN
-          : +ref.value
-        : valueAsDate
-        ? (ref as HTMLInputElement).valueAsDate
-        : setValueAs
-        ? setValueAs(ref.value)
-        : ref.value
+    return valueAsNumber
+      ? ref.value === ''
+        ? NaN
+        : +ref.value
+      : valueAsDate
+      ? (ref as HTMLInputElement).valueAsDate
+      : setValueAs
+      ? setValueAs(ref.value)
       : ref.value;
   }
 }
