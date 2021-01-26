@@ -230,7 +230,7 @@ describe('useFieldArrayNested', () => {
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"test":[{"firstName":"prepend"},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill"}]}',
+      '{"test":[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[]}]}',
     );
 
     cy.get('#remove').click();
@@ -242,7 +242,9 @@ describe('useFieldArrayNested', () => {
     );
 
     cy.get('#submit').click();
-    cy.get('#result').contains('{"test":[{"firstName":"prepend"}]}');
+    cy.get('#result').contains(
+      '{"test":[{"firstName":"prepend","keyValue":[]}]}',
+    );
 
     cy.get('#removeAll').click();
 
@@ -251,7 +253,7 @@ describe('useFieldArrayNested', () => {
     cy.get('#touched-nested-0').should('not.exist');
 
     cy.get('#submit').click();
-    cy.get('#result').contains('{}');
+    cy.get('#result').contains('{"test":[]}');
 
     cy.get('#count').contains('15');
   });

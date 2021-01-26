@@ -56,7 +56,7 @@ describe('useWatchUseFieldArrayNested', () => {
     cy.get('#nest-remove-all-0').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend"},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill"}]',
+      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[]}]',
     );
 
     cy.get('#remove').click();
