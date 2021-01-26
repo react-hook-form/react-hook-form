@@ -16,7 +16,7 @@ const getFieldsValues = (
       set(
         output,
         name,
-        shouldReturnSubmitValue && _f
+        shouldReturnSubmitValue
           ? getFieldValue(field, shouldReturnSubmitValue)
           : _f
           ? _f.value
