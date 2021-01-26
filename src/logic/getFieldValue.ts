@@ -5,8 +5,8 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { Field } from '../types';
 import getFieldValueAs from './getFieldValueAs';
+import { Field } from '../types';
 
 export default function getFieldValue(
   field?: Field,
