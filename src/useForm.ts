@@ -816,16 +816,18 @@ export function useForm<
       );
 
       if (isString(fieldNames)) {
-        if (fieldArrayNamesRef.current.has(fieldNames)) {
+        const parentNodeName = getNodeParentName(fieldNames) || fieldNames;
+
+        if (fieldArrayNamesRef.current.has(parentNodeName)) {
           const fieldArrayValue = get(
             fieldArrayValuesRef.current,
-            fieldNames,
+            parentNodeName,
             [],
           );
           fieldValues =
             !fieldArrayValue.length ||
             fieldArrayValue.length !==
-              compact(get(fieldValues, fieldNames, [])).length
+              compact(get(fieldValues, parentNodeName, [])).length
               ? fieldArrayValuesRef.current
               : fieldValues;
         }
