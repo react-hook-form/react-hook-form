@@ -593,8 +593,8 @@ export function useForm<
             currentError.type && currentError.message && (error = currentError);
 
             if (
-              parentNodeName &&
-              (currentError || get(formStateRef.current.errors, parentNodeName))
+              currentError ||
+              get(formStateRef.current.errors, parentNodeName)
             ) {
               name = parentNodeName;
             }

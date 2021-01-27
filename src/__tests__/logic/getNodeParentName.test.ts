@@ -8,6 +8,6 @@ describe('getFieldArrayParentName', () => {
   });
 
   it('should return empty string when name is not field array', () => {
-    expect(getFieldArrayParentName('test')).toBe('');
+    expect(getFieldArrayParentName('test')).toBe('test');
   });
 });
