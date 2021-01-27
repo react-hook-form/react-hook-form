@@ -1,1 +1,1 @@
-export default (name: string) => name.substring(0, name.search(/.\d/)) || name;
+export default (name: string) => name.substring(0, name.indexOf('.')) || name;
