@@ -116,7 +116,6 @@ export function useForm<
   }>({});
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
-  const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
@@ -161,6 +160,13 @@ export function useForm<
     (formStateRef.current.isValid =
       deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
       isEmptyObject(formStateRef.current.errors));
+
+  const getFieldNames = (name?: InternalFieldName | InternalFieldName[]) =>
+    name
+      ? Array.isArray(name)
+        ? name
+        : [name]
+      : Object.keys(fieldsNamesRef.current);
 
   const shouldRenderBaseOnError = React.useCallback(
     (
@@ -399,11 +405,7 @@ export function useForm<
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
     async (name) => {
-      const fields = isUndefined(name)
-        ? Object.keys(fieldsRef.current)
-        : Array.isArray(name)
-        ? name
-        : [name];
+      const fields = getFieldNames(name as InternalFieldName);
       let isValid;
 
       formStateSubjectRef.current.next({
@@ -631,7 +633,7 @@ export function useForm<
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
-    const values = isMountedRef.current
+    const values = isEmptyObject(fieldsRef.current)
       ? getFieldsValues(fieldsRef)
       : defaultValues;
 
@@ -673,9 +675,9 @@ export function useForm<
     [criteriaMode],
   );
 
-  const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
+  const clearErrors: UseFormClearErrors<TFieldValues> = (name?) => {
     name &&
-      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
+      getFieldNames(name as InternalFieldName).forEach((inputName) =>
         unset(formStateRef.current.errors, inputName),
       );
 
@@ -704,7 +706,7 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const { fields, name } = fieldArrayUpdatedValuesRef.current;
       const isArrayNames = Array.isArray(fieldNames);
-      let fieldValues = isMountedRef.current
+      let fieldValues = isEmptyObject(fieldsRef.current)
         ? getValues()
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
@@ -768,11 +770,7 @@ export function useForm<
   }
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options) => {
-    for (const inputName of name
-      ? Array.isArray(name)
-        ? name
-        : [name]
-      : Object.keys(fieldsNamesRef.current)) {
+    for (const inputName of getFieldNames(name as InternalFieldName)) {
       const field = get(fieldsRef.current, inputName) as Field;
       fieldsNamesRef.current.delete(inputName);
 
@@ -1073,7 +1071,6 @@ export function useForm<
   }, [defaultValuesRef.current]);
 
   React.useEffect(() => {
-    isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState: Partial<FormState<TFieldValues>> = {}) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
