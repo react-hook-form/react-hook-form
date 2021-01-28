@@ -239,6 +239,36 @@ describe('register', () => {
       expect(output).toEqual({ test: 12345, test1: true });
     });
 
+    it('should return NaN when value is valid', async () => {
+      let output = {};
+      const Component = () => {
+        const { register, handleSubmit } = useForm<{
+          test: number;
+        }>();
+
+        return (
+          <form onSubmit={handleSubmit((data) => (output = data))}>
+            <input {...register('test', { valueAsNumber: true })} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: '',
+        },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(output).toEqual({ test: NaN });
+    });
+
     it('should validate input before the valueAs', async () => {
       const Component = () => {
         const {
