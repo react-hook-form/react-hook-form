@@ -326,7 +326,7 @@ describe('register', () => {
       screen.getByText('Number length');
     });
 
-    it('should send valueAs filed to schema validation', () => {
+    it('should send valueAs fields to schema validation', () => {
       let output: any;
 
       const Component = () => {
