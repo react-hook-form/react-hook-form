@@ -13,9 +13,9 @@ import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import compact from './utils/compact';
-import isUndefined from './utils/isUndefined';
 import focusFieldBy from './logic/focusFieldBy';
 import getFieldsValues from './logic/getFieldsValues';
+import getFocusFieldName from './logic/getFocusFieldName';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -92,24 +92,6 @@ export const useFieldArray = <
       ),
       keyName,
     );
-  };
-
-  const getFocusDetail = (
-    index: number,
-    options?: FieldArrayMethodsOption,
-  ): string => {
-    if (options) {
-      if (!isUndefined(options.focusIndex)) {
-        return `${name}.${options.focusIndex}`;
-      }
-      if (options.focusName) {
-        return options.focusName;
-      }
-      if (!options.shouldFocus) {
-        return '';
-      }
-    }
-    return `${name}.${index}`;
   };
 
   const resetFields = <T>(index?: T) =>
@@ -257,7 +239,7 @@ export const useFieldArray = <
       });
     }
 
-    focusNameRef.current = getFocusDetail(
+    focusNameRef.current = getFocusFieldName(
       updatedFieldValues.length - 1,
       options,
     );
@@ -282,7 +264,7 @@ export const useFieldArray = <
       updatedFieldArrayValues,
     );
 
-    focusNameRef.current = getFocusDetail(0, options);
+    focusNameRef.current = getFocusFieldName(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -329,7 +311,7 @@ export const useFieldArray = <
       fieldValues && insertAt(fieldValues, index),
     );
 
-    focusNameRef.current = getFocusDetail(index, options);
+    focusNameRef.current = getFocusFieldName(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {

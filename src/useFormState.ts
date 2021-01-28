@@ -17,7 +17,6 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
   const methods = useFormContext();
   const { formStateRef, formStateSubjectRef, readFormStateRef } =
     control || methods.control;
-
   const [formState, updateFormState] = React.useState(formStateRef.current);
   const readFormState = React.useRef(cloneObject(readFormStateRef.current));
 
