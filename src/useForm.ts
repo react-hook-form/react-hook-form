@@ -1,6 +1,5 @@
 import * as React from 'react';
 import focusFieldBy from './logic/focusFieldBy';
-import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
@@ -45,7 +44,6 @@ import {
   RegisterOptions,
   ReadFormState,
   Ref,
-  SetValueConfig,
   FormState,
   FieldNamesMarkedBoolean,
   DeepPartial,
@@ -435,74 +433,6 @@ export function useForm<
     [executeSchemaOrResolverValidation, executeValidation],
   );
 
-  const setInternalValues = React.useCallback(
-    (
-      name: FieldName<TFieldValues>,
-      value: SetFieldValue<TFieldValues>,
-      { shouldDirty, shouldValidate }: SetValueConfig,
-    ) => {
-      const data = {};
-      set(data, name, value);
-
-      for (const fieldName of getPath(name, value)) {
-        if (get(fieldsRef.current, fieldName)) {
-          setFieldValue(fieldName, get(data, fieldName));
-          shouldDirty && updateAndGetDirtyState(fieldName);
-          shouldValidate && trigger(fieldName as FieldName<TFieldValues>);
-        }
-      }
-    },
-    [trigger, setFieldValue, updateAndGetDirtyState],
-  );
-
-  const setInternalValue = React.useCallback(
-    (
-      name: FieldName<TFieldValues>,
-      value: SetFieldValue<TFieldValues>,
-      options: SetValueConfig,
-    ) => {
-      const field = get(fieldsRef.current, name);
-
-      if (field && field._f) {
-        setFieldValue(name, value);
-        options.shouldDirty && updateAndGetDirtyState(name);
-        options.shouldValidate && trigger(name as FieldName<TFieldValues>);
-      } else {
-        setInternalValues(name, value, options);
-
-        if (fieldArrayNamesRef.current.has(name)) {
-          fieldArraySubjectRef.current.next({
-            fields: value,
-            name,
-            isReset: true,
-          });
-
-          if (
-            (readFormStateRef.current.isDirty ||
-              readFormStateRef.current.dirtyFields) &&
-            options.shouldDirty
-          ) {
-            set(
-              formStateRef.current.dirtyFields,
-              name,
-              setFieldArrayDirtyFields(
-                value,
-                get(defaultValuesRef.current, name, []),
-                get(formStateRef.current.dirtyFields, name, []),
-              ),
-            );
-
-            formStateSubjectRef.current.next({
-              dirtyFields: formStateRef.current.dirtyFields,
-              isDirty: getFormIsDirty(name, value),
-            });
-          }
-        }
-      }
-    },
-    [updateAndGetDirtyState, setFieldValue, setInternalValues],
-  );
-
   const isFieldWatched = <T extends FieldName<TFieldValues>>(name: T) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
@@ -529,8 +459,31 @@ export function useForm<
     return defaultValue;
   };
 
-  const setValue: UseFormSetValue<TFieldValues> = (name, value, options) => {
-    setInternalValue(name, value, options || {});
+  const setValue: UseFormSetValue<TFieldValues> = (
+    name,
+    value,
+    options = {},
+  ) => {
+    const field = get(fieldsRef.current, name);
+
+    if (field && field._f) {
+      setFieldValue(name, value);
+      options.shouldDirty && updateAndGetDirtyState(name);
+      options.shouldValidate && trigger(name as FieldName<TFieldValues>);
+    } else {
+      const data = {};
+      set(data, name, value);
+
+      for (const fieldName of getPath(name, value)) {
+        if (get(fieldsRef.current, fieldName)) {
+          setFieldValue(fieldName, get(data, fieldName));
+          options.shouldDirty && updateAndGetDirtyState(fieldName);
+          options.shouldValidate &&
+            trigger(fieldName as FieldName<TFieldValues>);
+        }
+      }
+    }
+
     isFieldWatched(name) && formStateSubjectRef.current.next({});
     watchSubjectRef.current.next({ name, value });
   };
@@ -1137,7 +1090,7 @@ export function useForm<
     register,
     handleSubmit,
     watch: React.useCallback(watch, []),
-    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
+    setValue: React.useCallback(setValue, [trigger]),
     getValues: React.useCallback(getValues, []),
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),
