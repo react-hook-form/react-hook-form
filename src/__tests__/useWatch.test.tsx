@@ -12,7 +12,7 @@ import { useWatch } from '../useWatch';
 import * as generateId from '../logic/generateId';
 import { FormProvider } from '../useFormContext';
 import { useFieldArray } from '../useFieldArray';
-import { Control, UseFormMethods } from '../types';
+import { Control, UseFieldArrayMethods, UseFormMethods } from '../types';
 import { perf, wait } from 'react-performance-testing';
 import 'jest-performance-testing';
 
@@ -315,6 +315,93 @@ describe('useWatch', () => {
 
       expect(screen.queryByText('test')).toBeNull();
     });
+  });
+
+  it('should watch correct input update with single field array input', () => {
+    const inputValues: string[] = [];
+
+    type FormValues = {
+      labels: {
+        displayName: string;
+        internalName: string;
+      }[];
+    };
+
+    function Item({
+      control,
+      register,
+      itemIndex,
+      remove,
+    }: {
+      control: Control<FormValues>;
+      register: UseFormMethods<FormValues>['register'];
+      remove: UseFieldArrayMethods['remove'];
+      itemIndex: number;
+    }) {
+      const actualValue = useWatch({
+        control,
+        name: `labels.${itemIndex}.displayName`,
+      });
+      inputValues.push(actualValue);
+
+      return (
+        <div>
+          <input
+            {...register(`labels.${itemIndex}.displayName`)}
+            defaultValue={actualValue}
+          />
+          <button type="button" onClick={() => remove(itemIndex)}>
+            Remove
+          </button>
+        </div>
+      );
+    }
+
+    const Component = () => {
+      const { control, register } = useForm<FormValues>({
+        defaultValues: {
+          labels: [
+            {
+              displayName: 'Type',
+              internalName: 'type',
+            },
+            {
+              displayName: 'Number',
+              internalName: 'number',
+            },
+            {
+              displayName: 'Totals',
+              internalName: 'totals',
+            },
+          ],
+        },
+      });
+
+      const { fields, remove } = useFieldArray({
+        control,
+        name: 'labels',
+      });
+
+      return (
+        <form>
+          {fields.map((item, itemIndex) => (
+            <Item
+              key={item.id}
+              control={control}
+              register={register}
+              itemIndex={itemIndex}
+              remove={remove}
+            />
+          ))}
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getAllByRole('button')[1]);
+
+    expect(inputValues).toEqual(['Type', 'Number', 'Totals', 'Type', 'Totals']);
   });
 
   describe('reset', () => {
