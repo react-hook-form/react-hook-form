@@ -212,10 +212,9 @@ export function useForm<
         });
       }
 
-      readFormStateRef.current.isValidating &&
-        formStateSubjectRef.current.next({
-          isValidating: false,
-        });
+      formStateSubjectRef.current.next({
+        isValidating: false,
+      });
     },
     [],
   );
@@ -509,6 +508,27 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
+  const updateValueAndGetDefault = (name: InternalFieldName) => {
+    let defaultValue;
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+    const field = get(fieldsRef.current, name) as Field;
+
+    if (
+      field &&
+      (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field._f.value))
+    ) {
+      defaultValue = isUndefined(field._f.value)
+        ? get(defaultValuesRef.current, name)
+        : field._f.value;
+
+      if (!isUndefined(defaultValue) && !isFieldArray) {
+        setFieldValue(name, defaultValue);
+      }
+    }
+
+    return defaultValue;
+  };
+
   const setValue: UseFormSetValue<TFieldValues> = (name, value, options) => {
     setInternalValue(name, value, options || {});
     isFieldWatched(name) && formStateSubjectRef.current.next({});
@@ -773,10 +793,9 @@ export function useForm<
         ? name
         : [name]
       : Object.keys(fieldsNamesRef.current)) {
-      const field = get(fieldsRef.current, inputName) as Field;
       fieldsNamesRef.current.delete(inputName);
 
-      if (field) {
+      if (get(fieldsRef.current, inputName) as Field) {
         unset(validFieldsRef.current, inputName);
         unset(fieldsWithValidationRef.current, inputName);
         unset(fieldsRef.current, inputName);
@@ -805,27 +824,6 @@ export function useForm<
     });
 
     updateIsValid();
-  };
-
-  const updateValueAndGetDefault = (name: InternalFieldName) => {
-    let defaultValue;
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-    const field = get(fieldsRef.current, name) as Field;
-
-    if (
-      field &&
-      (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field._f.value))
-    ) {
-      defaultValue = isUndefined(field._f.value)
-        ? get(defaultValuesRef.current, name)
-        : field._f.value;
-
-      if (!isUndefined(defaultValue) && !isFieldArray) {
-        setFieldValue(name, defaultValue);
-      }
-    }
-
-    return defaultValue;
   };
 
   const registerFieldRef = (
