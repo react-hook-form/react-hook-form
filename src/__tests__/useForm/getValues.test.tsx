@@ -163,4 +163,26 @@ describe('getValues', () => {
 
     expect(result.current.getValues()).toEqual({});
   });
+
+  it('should return defaultValues when inputs are not registered', () => {
+    let data: unknown;
+
+    const Component = () => {
+      const { getValues } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+
+      if (!data) {
+        data = getValues();
+      }
+
+      return null;
+    };
+
+    render(<Component />);
+
+    expect(data).toEqual({ test: 'test' });
+  });
 });
