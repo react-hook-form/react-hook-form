@@ -787,7 +787,7 @@ export function useForm<
     return watchInternal(fieldName as string | string[], defaultValue, true);
   }
 
-  const unregister: UseFormUnregister<TFieldValues> = (name, options) => {
+  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
       ? Array.isArray(name)
         ? name
@@ -796,20 +796,16 @@ export function useForm<
       fieldsNamesRef.current.delete(inputName);
 
       if (get(fieldsRef.current, inputName) as Field) {
-        unset(validFieldsRef.current, inputName);
-        unset(fieldsWithValidationRef.current, inputName);
-        unset(fieldsRef.current, inputName);
         unset(formStateRef.current.errors, inputName);
-        unset(
-          options && options.keepDirty ? {} : formStateRef.current.dirtyFields,
-          inputName,
-        );
-        unset(
-          options && options.keepTouched
-            ? {}
-            : formStateRef.current.touchedFields,
-          inputName,
-        );
+        if (!options.keepIsValid) {
+          unset(fieldsWithValidationRef.current, inputName);
+          unset(validFieldsRef.current, inputName);
+        }
+        !options.keepErrors && unset(fieldsRef.current, inputName);
+        !options.keepDirty &&
+          unset(formStateRef.current.dirtyFields, inputName);
+        !options.keepTouched &&
+          unset(formStateRef.current.touchedFields, inputName);
 
         watchSubjectRef.current.next({
           name: inputName,
@@ -819,11 +815,13 @@ export function useForm<
 
     formStateSubjectRef.current.next({
       ...formStateRef.current,
-      isDirty: getFormIsDirty(),
+      ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
       ...(resolver ? {} : { isValid: getIsValid() }),
     });
 
-    updateIsValid();
+    if (!options.keepIsValid) {
+      updateIsValid();
+    }
   };
 
   const registerFieldRef = (
