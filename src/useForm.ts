@@ -815,7 +815,7 @@ export function useForm<
 
     formStateSubjectRef.current.next({
       ...formStateRef.current,
-      isDirty: getFormIsDirty(),
+      ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
       ...(resolver ? {} : { isValid: getIsValid() }),
     });
 
