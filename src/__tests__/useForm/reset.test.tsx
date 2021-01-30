@@ -289,7 +289,7 @@ describe('reset', () => {
         { test: '' },
         {
           keepErrors: true,
-          keepIsDirty: true,
+          keepDirty: true,
           keepIsSubmitted: true,
           keepTouched: true,
           keepIsValid: true,
