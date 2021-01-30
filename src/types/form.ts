@@ -124,7 +124,6 @@ export type KeepStateOptions = Partial<{
   keepTouched: boolean;
   keepIsValid: boolean;
   keepSubmitCount: boolean;
-  keepDirty: boolean;
 }>;
 
 export type SetFieldValue<TFieldValues> =
@@ -170,7 +169,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   options?: Pick<
     KeepStateOptions,
-    'keepTouched' | 'keepDirty' | 'keepIsValid' | 'keepErrors'
+    'keepTouched' | 'keepIsDirty' | 'keepIsValid' | 'keepErrors'
   >,
 ) => void;
 

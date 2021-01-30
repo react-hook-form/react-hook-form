@@ -802,7 +802,7 @@ export function useForm<
           unset(validFieldsRef.current, inputName);
         }
         !options.keepErrors && unset(fieldsRef.current, inputName);
-        !options.keepDirty &&
+        !options.keepIsDirty &&
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
@@ -815,7 +815,7 @@ export function useForm<
 
     formStateSubjectRef.current.next({
       ...formStateRef.current,
-      ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
+      ...(!options.keepIsDirty ? {} : { isDirty: getFormIsDirty() }),
       ...(resolver ? {} : { isValid: getIsValid() }),
     });
 
@@ -999,7 +999,6 @@ export function useForm<
     keepTouched,
     keepIsValid,
     keepSubmitCount,
-    keepDirty,
   }: KeepStateOptions) => {
     if (!keepIsValid) {
       validFieldsRef.current = {};
@@ -1016,7 +1015,7 @@ export function useForm<
       isValid: keepIsValid
         ? formStateRef.current.isValid
         : !validationMode.isOnSubmit,
-      dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
+      dirtyFields: keepIsDirty ? formStateRef.current.dirtyFields : {},
       touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
       errors: keepErrors ? formStateRef.current.errors : {},
       isSubmitting: false,
