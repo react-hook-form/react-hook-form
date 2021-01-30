@@ -294,7 +294,6 @@ describe('reset', () => {
           keepTouched: true,
           keepIsValid: true,
           keepSubmitCount: true,
-          keepDirty: true,
         },
       ),
     );
