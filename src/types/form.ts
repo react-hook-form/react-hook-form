@@ -163,6 +163,9 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = (
 export type UseFormSetError<TFieldValues extends FieldValues> = (
   name: FieldName<TFieldValues>,
   error: ErrorOption,
+  options?: {
+    shouldFocus: boolean;
+  },
 ) => void;
 
 export type UseFormUnregister<TFieldValues extends FieldValues> = (
