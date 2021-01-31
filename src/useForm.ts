@@ -704,7 +704,7 @@ export function useForm<
     });
   };
 
-  const setError: UseFormSetError<TFieldValues> = (name, error) => {
+  const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
     const ref = ((get(fieldsRef.current, name) as Field) || { _f: {} })._f.ref;
 
     set(formStateRef.current.errors, name, {
@@ -717,7 +717,7 @@ export function useForm<
       isValid: false,
     });
 
-    error.shouldFocus && ref && ref.focus && ref.focus();
+    options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
   const watchInternal: WatchInternal = React.useCallback(
