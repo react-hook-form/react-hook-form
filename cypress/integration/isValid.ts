@@ -52,7 +52,7 @@ describe('isValid', () => {
     cy.get('input[name="firstName"]').type('test');
     cy.get('#isValid').contains('true');
     cy.get('#toggle').click();
-    cy.get('#isValid').contains('true');
+    cy.get('#isValid').contains('false');
     cy.get('#toggle').click();
     cy.get('input[name="firstName"]').type('t');
     cy.get('#isValid').contains('true');
