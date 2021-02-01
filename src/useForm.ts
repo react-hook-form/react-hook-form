@@ -796,16 +796,18 @@ export function useForm<
       fieldsNamesRef.current.delete(inputName);
 
       if (get(fieldsRef.current, inputName) as Field) {
-        unset(formStateRef.current.errors, inputName);
         if (!options.keepIsValid) {
           unset(fieldsWithValidationRef.current, inputName);
           unset(validFieldsRef.current, inputName);
         }
+        !options.keepValues && unset(formStateRef.current.errors, inputName);
         !options.keepErrors && unset(fieldsRef.current, inputName);
         !options.keepDirty &&
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
+        !options.keepDefaultValues &&
+          unset(defaultValuesRef.current, inputName);
 
         watchSubjectRef.current.next({
           name: inputName,
