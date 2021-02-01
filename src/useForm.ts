@@ -468,8 +468,6 @@ export function useForm<
         options.shouldDirty && updateAndGetDirtyState(name);
         options.shouldValidate && trigger(name as FieldName<TFieldValues>);
       } else {
-        setInternalValues(name, value, options);
-
         if (fieldArrayNamesRef.current.has(name)) {
           fieldArraySubjectRef.current.next({
             fields: value,
@@ -497,6 +495,8 @@ export function useForm<
               isDirty: getFormIsDirty(name, value),
             });
           }
+        } else {
+          setInternalValues(name, value, options);
         }
       }
     },
