@@ -1335,7 +1335,9 @@ describe('useFieldArray', () => {
         await fireEvent.click(screen.getByRole('button'));
       });
 
-      expect(submitData).toEqual({});
+      expect(submitData).toEqual({
+        test: [],
+      });
     });
   });
 });

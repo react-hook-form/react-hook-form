@@ -344,7 +344,7 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(fieldsRef, true),
+        getFieldsValues(fieldsRef, defaultValuesRef, true),
         contextRef.current,
         {
           criteriaMode,
@@ -596,7 +596,7 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(fieldsRef, true),
+            getFieldsValues(fieldsRef, defaultValuesRef, true),
             contextRef.current,
             {
               criteriaMode,
@@ -652,7 +652,7 @@ export function useForm<
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
     const values = isMountedRef.current
-      ? getFieldsValues(fieldsRef)
+      ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValues;
 
     if (isUndefined(fieldNames)) {
@@ -671,7 +671,7 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(fieldsRef, true),
+            ...getFieldsValues(fieldsRef, defaultValuesRef, true),
             ...values,
           },
           contextRef.current,
@@ -936,7 +936,7 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldValues = getFieldsValues(fieldsRef, true);
+      let fieldValues = getFieldsValues(fieldsRef, defaultValuesRef, true);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,

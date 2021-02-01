@@ -81,7 +81,7 @@ export const useFieldArray = <
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
   const getCurrentFieldsValues = () => {
-    const values = get(getFieldsValues(fieldsRef), name, []);
+    const values = get(getFieldsValues(fieldsRef, defaultValuesRef), name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayDefaultValuesRef.current, name, []).map(
@@ -391,7 +391,7 @@ export const useFieldArray = <
       next({ name: inputName, fields, isReset }) {
         if (isReset) {
           if (inputName) {
-            const value = getFieldsValues(fieldsRef);
+            const value = getFieldsValues(fieldsRef, defaultValuesRef);
             set(value, inputName, fields);
             set(fieldArrayDefaultValuesRef.current, name, fields);
             setFieldsAndNotify(get(value, name));

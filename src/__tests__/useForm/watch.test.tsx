@@ -52,7 +52,7 @@ describe('watch', () => {
       });
     });
 
-    expect(result.current.watch('test')).toBe(undefined);
+    expect(result.current.watch('test')).toBe('data');
 
     result.current.register('test');
 
