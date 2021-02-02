@@ -819,17 +819,10 @@ export function useForm<
         const parentNodeName = getNodeParentName(fieldNames) || fieldNames;
 
         if (fieldArrayNamesRef.current.has(parentNodeName)) {
-          const fieldArrayValue = get(
-            fieldArrayValuesRef.current,
-            parentNodeName,
-            [],
-          );
-          fieldValues =
-            !fieldArrayValue.length ||
-            fieldArrayValue.length !==
-              compact(get(fieldValues, parentNodeName, [])).length
-              ? fieldArrayValuesRef.current
-              : fieldValues;
+          fieldValues = {
+            ...fieldArrayValuesRef.current,
+            ...fieldValues,
+          };
         }
 
         return assignWatchFields<TFieldValues>(
