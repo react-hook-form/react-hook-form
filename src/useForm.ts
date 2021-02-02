@@ -477,7 +477,7 @@ export function useForm<
         options.shouldDirty && updateAndGetDirtyState(name);
         options.shouldValidate && trigger(name as FieldName<TFieldValues>);
       } else {
-        if (fieldArrayNamesRef.current.has(name)) {
+        if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
           fieldArraySubjectRef.current.next({
             fields: value,
             name,
