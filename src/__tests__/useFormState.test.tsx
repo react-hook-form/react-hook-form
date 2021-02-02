@@ -200,7 +200,7 @@ describe('useFormState', () => {
     });
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(4);
+    expect(testCount).toEqual(3);
     expect(test1Count).toEqual(2);
   });
 

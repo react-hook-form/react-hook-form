@@ -1,5 +1,5 @@
 describe('useFormState', () => {
-  it('should subscribed to the form state without re-render the root', () => {
+  it.only('should subscribed to the form state without re-render the root', () => {
     cy.visit('http://localhost:3000/useFormState');
     cy.get('button#submit').click();
 
@@ -104,7 +104,7 @@ describe('useFormState', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
+        isDirty: true,
         touched: [
           'nestItem',
           'firstName',

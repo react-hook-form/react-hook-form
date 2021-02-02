@@ -65,6 +65,52 @@ describe('watch', () => {
     });
   });
 
+  it('should watch input when mode is under onChange', async () => {
+    const { result } = renderHook(() => {
+      return useForm<{ test: string }>({
+        defaultValues: {
+          test: 'data',
+        },
+        mode: 'onChange',
+      });
+    });
+
+    expect(result.current.watch('test')).toBe(undefined);
+
+    result.current.register('test');
+
+    await act(async () => {
+      result.current.setValue('test', 'data1');
+    });
+
+    act(() => {
+      expect(result.current.watch('test')).toBe('data1');
+    });
+  });
+
+  it('should watch input when mode is under all', async () => {
+    const { result } = renderHook(() => {
+      return useForm<{ test: string }>({
+        defaultValues: {
+          test: 'data',
+        },
+        mode: 'all',
+      });
+    });
+
+    expect(result.current.watch('test')).toBe(undefined);
+
+    result.current.register('test');
+
+    await act(async () => {
+      result.current.setValue('test', 'data1');
+    });
+
+    act(() => {
+      expect(result.current.watch('test')).toBe('data1');
+    });
+  });
+
   it('should return default value if field is undefined', () => {
     renderHook(() => {
       const { watch } = useForm<{ test: string }>({

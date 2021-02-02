@@ -173,6 +173,7 @@ export function useForm<
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
       } = {},
       isValid?: boolean,
+      isWatched?: boolean,
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
@@ -203,13 +204,21 @@ export function useForm<
 
       if (
         (shouldReRender && !isNullOrUndefined(shouldRender)) ||
-        !isEmptyObject(state)
+        !isEmptyObject(state) ||
+        isWatched
       ) {
-        formStateSubjectRef.current.next({
+        const updatedFormState = {
           ...state,
-          isValid: resolverRef.current ? isValid : getIsValid(),
+          isValid: resolverRef.current ? !!isValid : getIsValid(),
           errors: formStateRef.current.errors,
-        });
+        };
+
+        formStateRef.current = {
+          ...formStateRef.current,
+          ...updatedFormState,
+        };
+
+        formStateSubjectRef.current.next(isWatched ? {} : updatedFormState);
       }
 
       formStateSubjectRef.current.next({
@@ -635,7 +644,14 @@ export function useForm<
             type,
             value: inputValue,
           });
-        shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
+        shouldRenderBaseOnError(
+          name,
+          error,
+          shouldRender,
+          state,
+          isValid,
+          isWatched,
+        );
       }
     },
     [],
