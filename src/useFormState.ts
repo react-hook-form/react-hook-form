@@ -6,7 +6,6 @@ import isProxyEnabled from './utils/isProxyEnabled';
 import {
   FieldValues,
   FormState,
-  ReadFormState,
   UseFormStateMethods,
   UseFormStateProps,
 } from './types';
@@ -19,15 +18,14 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
     control || methods.control;
 
   const [formState, updateFormState] = React.useState(formStateRef.current);
-  const readFormState = React.useRef(
-    Object.keys(readFormStateRef.current).reduce(
-      (prev, current) => ({
-        ...prev,
-        [current]: false,
-      }),
-      {},
-    ) as ReadFormState,
-  );
+  const readFormState = React.useRef({
+    isDirty: false,
+    dirtyFields: false,
+    touchedFields: false,
+    isValidating: false,
+    isValid: false,
+    errors: false,
+  });
 
   React.useEffect(() => {
     const formStateSubscription = formStateSubjectRef.current.subscribe({
