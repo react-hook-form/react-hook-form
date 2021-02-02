@@ -1,5 +1,5 @@
 describe('useFormState', () => {
-  it.only('should subscribed to the form state without re-render the root', () => {
+  it('should subscribed to the form state without re-render the root', () => {
     cy.visit('http://localhost:3000/useFormState');
     cy.get('button#submit').click();
 
