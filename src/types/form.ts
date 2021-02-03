@@ -134,7 +134,7 @@ export type SetFieldValue<TFieldValues> =
   | null
   | boolean;
 
-export type HandleRefCallback = {
+export type RefCallbackHandler = {
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
   ref: React.Ref<any>;
@@ -144,7 +144,7 @@ export type HandleRefCallback = {
 export type UseFormRegister<TFieldValues extends FieldValues> = (
   name: FieldPath<TFieldValues>,
   options?: RegisterOptions,
-) => HandleRefCallback;
+) => RefCallbackHandler;
 
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],

@@ -54,7 +54,7 @@ import {
   FieldError,
   SetFieldValue,
   FieldArrayDefaultValues,
-  HandleRefCallback,
+  RefCallbackHandler,
   FieldPath,
   WatchObserver,
   FieldPathValue,
@@ -934,7 +934,7 @@ export function useForm<
       updateValueAndGetDefault(name);
 
       return isWindowUndefined
-        ? ({} as HandleRefCallback)
+        ? ({} as RefCallbackHandler)
         : {
             name,
             onChange: handleChange,

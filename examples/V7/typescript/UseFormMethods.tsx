@@ -2,13 +2,13 @@ import React from 'react';
 import {
   useForm,
   UseFormReturn,
-  HandleRefCallback,
+  RefCallbackHandler,
   SubmitHandler,
 } from 'react-hook-form';
 
 import './styles.css';
 
-const Input = (props: Partial<HandleRefCallback> & { type?: string }) => (
+const Input = (props: Partial<RefCallbackHandler> & { type?: string }) => (
   <input {...props} />
 );
 
@@ -17,7 +17,7 @@ type Option = {
   value: string | number | string[];
 };
 
-type SelectProps = HandleRefCallback & { options: Option[] };
+type SelectProps = RefCallbackHandler & { options: Option[] };
 
 const Select = ({ options, ...props }: SelectProps) => (
   <select {...props}>
