@@ -7,7 +7,7 @@ import {
   render,
   screen,
 } from '@testing-library/react';
-import { NestedValue, UseFormMethods } from '../../types';
+import { NestedValue, UseFormReturn } from '../../types';
 
 describe('reset', () => {
   it('should reset the form and re-render the form', async () => {
@@ -60,7 +60,7 @@ describe('reset', () => {
 
   it('should reset the form if ref is HTMLElement and parent element is form', async () => {
     const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
-    let methods: UseFormMethods<{ test: string }>;
+    let methods: UseFormReturn<{ test: string }>;
     const Component = () => {
       methods = useForm<{ test: string }>();
       return (
@@ -107,7 +107,7 @@ describe('reset', () => {
 
   it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
     const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
-    let methods: UseFormMethods<{
+    let methods: UseFormReturn<{
       test: string;
     }>;
     const Component = () => {

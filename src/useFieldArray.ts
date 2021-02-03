@@ -21,9 +21,9 @@ import {
   UseFieldArrayProps,
   FieldPath,
   FieldArrayWithId,
-  UseFieldArrayMethods,
+  UseFieldArrayReturn,
   FieldArray,
-  FieldArrayMethodsOption,
+  FieldArrayMethodProps,
   FieldErrors,
   FieldNamesMarkedBoolean,
 } from './types';
@@ -36,7 +36,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayProps<TFieldValues, TName, TKeyName>): UseFieldArrayMethods<
+}: UseFieldArrayProps<TFieldValues, TName, TKeyName>): UseFieldArrayReturn<
   TFieldValues,
   TName,
   TKeyName
@@ -96,7 +96,7 @@ export const useFieldArray = <
 
   const getFocusDetail = (
     index: number,
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ): string => {
     if (options) {
       if (!isUndefined(options.focusIndex)) {
@@ -238,7 +238,7 @@ export const useFieldArray = <
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
     const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
@@ -267,7 +267,7 @@ export const useFieldArray = <
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
@@ -309,7 +309,7 @@ export const useFieldArray = <
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ) => {
     const fieldValues = getCurrentFieldsValues();
     const updatedFieldArrayValues = insertAt(
