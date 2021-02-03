@@ -32,7 +32,7 @@ export type UseControllerProps<
   control?: Control<TFieldValues>;
 };
 
-export type UseControllerMethods<
+export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues
 > = {
   field: ControllerRenderProps<TFieldValues>;

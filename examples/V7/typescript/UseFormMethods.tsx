@@ -1,14 +1,14 @@
 import React from 'react';
 import {
   useForm,
-  UseFormMethods,
-  RegisterCallback,
+  UseFormReturn,
+  RefCallbackHandler,
   SubmitHandler,
 } from 'react-hook-form';
 
 import './styles.css';
 
-const Input = (props: Partial<RegisterCallback> & { type?: string }) => (
+const Input = (props: Partial<RefCallbackHandler> & { type?: string }) => (
   <input {...props} />
 );
 
@@ -17,7 +17,7 @@ type Option = {
   value: string | number | string[];
 };
 
-type SelectProps = RegisterCallback & { options: Option[] };
+type SelectProps = RefCallbackHandler & { options: Option[] };
 
 const Select = ({ options, ...props }: SelectProps) => (
   <select {...props}>
@@ -29,7 +29,7 @@ const Select = ({ options, ...props }: SelectProps) => (
 
 type FormProps<TFormValues> = {
   onSubmit: SubmitHandler<TFormValues>;
-  children: (methods: UseFormMethods<TFormValues>) => React.ReactNode;
+  children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
 };
 
 const Form = <TFormValues extends Record<string, any> = Record<string, any>>({
@@ -53,7 +53,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>React Hook Form - UseFormMethods</h1>
+      <h1>React Hook Form - UseFormReturn</h1>
       <Form<FormValues> onSubmit={onSubmit}>
         {({ register }) => (
           <>

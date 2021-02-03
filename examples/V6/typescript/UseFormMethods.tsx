@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, UseFormMethods, SubmitHandler } from 'react-hook-form';
+import { useForm, UseFormReturn, SubmitHandler } from 'react-hook-form';
 
 type InputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -32,7 +32,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
 type FormProps<TFormValues> = {
   onSubmit: SubmitHandler<TFormValues>;
-  children: (methods: UseFormMethods<TFormValues>) => React.ReactNode;
+  children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
 };
 
 const Form = <TFormValues extends Record<string, any> = Record<string, any>>({

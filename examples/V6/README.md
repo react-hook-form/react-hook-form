@@ -54,10 +54,10 @@ You can view the source code for most examples within their folder, or visit Cod
 
 The following table contains a list of support Types in this library.
 
-| Type Name      | Link                                                          |
-| -------------- | ------------------------------------------------------------- |
-| NestedValue    | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc    |
-| SubmitHandler  | https://codesandbox.io/s/react-hook-form-submithandler-kfmqy  |
-| Resolver       | https://codesandbox.io/s/react-hook-form-resolver-juwui       |
-| UseFormMethods | https://codesandbox.io/s/react-hook-form-useformmethods-mycp2 |
-| Control        | https://codesandbox.io/s/react-hook-form-control-yq73k        |
+| Type Name     | Link                                                          |
+| ------------- | ------------------------------------------------------------- |
+| NestedValue   | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc    |
+| SubmitHandler | https://codesandbox.io/s/react-hook-form-submithandler-kfmqy  |
+| Resolver      | https://codesandbox.io/s/react-hook-form-resolver-juwui       |
+| UseFormReturn | https://codesandbox.io/s/react-hook-form-useformmethods-mycp2 |
+| Control       | https://codesandbox.io/s/react-hook-form-control-yq73k        |

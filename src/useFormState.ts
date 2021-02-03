@@ -6,13 +6,13 @@ import isProxyEnabled from './utils/isProxyEnabled';
 import {
   FieldValues,
   FormState,
-  UseFormStateMethods,
+  UseFormStateReturn,
   UseFormStateProps,
 } from './types';
 
 function useFormState<TFieldValues extends FieldValues = FieldValues>({
   control,
-}: UseFormStateProps<TFieldValues> = {}): UseFormStateMethods<TFieldValues> {
+}: UseFormStateProps<TFieldValues> = {}): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext();
   const { formStateRef, formStateSubjectRef, readFormStateRef } =
     control || methods.control;

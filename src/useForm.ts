@@ -34,7 +34,7 @@ import isHTMLElement from './utils/isHTMLElement';
 import getFields from './logic/getFields';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
-  UseFormMethods,
+  UseFormReturn,
   FieldValues,
   UnpackNestedValue,
   FieldName,
@@ -54,7 +54,7 @@ import {
   FieldError,
   SetFieldValue,
   FieldArrayDefaultValues,
-  RegisterCallback,
+  RefCallbackHandler,
   FieldPath,
   WatchObserver,
   FieldPathValue,
@@ -71,7 +71,7 @@ import {
   UseFormReset,
   WatchInternal,
   GetFormIsDirty,
-  HandleChange,
+  ChangeHandler,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -87,7 +87,7 @@ export function useForm<
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
   criteriaMode,
-}: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
+}: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
   const fieldsNamesRef = React.useRef<Set<InternalFieldName>>(new Set());
   const formStateSubjectRef = React.useRef(
@@ -544,7 +544,7 @@ export function useForm<
     watchSubjectRef.current.next({ name, value });
   };
 
-  const handleChange: HandleChange = React.useCallback(
+  const handleChange: ChangeHandler = React.useCallback(
     async ({ type, target, target: { value, type: inputType } }) => {
       let name = (target as Ref)!.name;
       let error;
@@ -934,7 +934,7 @@ export function useForm<
       updateValueAndGetDefault(name);
 
       return isWindowUndefined
-        ? ({} as RegisterCallback)
+        ? ({} as RefCallbackHandler)
         : {
             name,
             onChange: handleChange,

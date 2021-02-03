@@ -9,7 +9,7 @@ import { EVENTS } from './constants';
 import {
   FieldValues,
   UseControllerProps,
-  UseControllerMethods,
+  UseControllerReturn,
   InternalFieldName,
 } from './types';
 
@@ -18,7 +18,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   rules,
   defaultValue,
   control,
-}: UseControllerProps<TFieldValues>): UseControllerMethods<TFieldValues> {
+}: UseControllerProps<TFieldValues>): UseControllerReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
   const {
     defaultValuesRef,

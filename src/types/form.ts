@@ -71,7 +71,7 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
-export type HandleChange = (event: any) => Promise<void | boolean>;
+export type ChangeHandler = (event: any) => Promise<void | boolean>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -134,9 +134,9 @@ export type SetFieldValue<TFieldValues> =
   | null
   | boolean;
 
-export type RegisterCallback = {
-  onChange: HandleChange;
-  onBlur: HandleChange;
+export type RefCallbackHandler = {
+  onChange: ChangeHandler;
+  onBlur: ChangeHandler;
   ref: React.Ref<any>;
   name: InternalFieldName;
 };
@@ -144,7 +144,7 @@ export type RegisterCallback = {
 export type UseFormRegister<TFieldValues extends FieldValues> = (
   name: FieldPath<TFieldValues>,
   options?: RegisterOptions,
-) => RegisterCallback;
+) => RefCallbackHandler;
 
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
@@ -248,7 +248,7 @@ export type WatchObserver = <TFieldValues>(
   },
 ) => void;
 
-export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
+export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   watch: {
     (): UnpackNestedValue<TFieldValues>;
     <TName extends FieldPath<TFieldValues>>(
@@ -289,7 +289,7 @@ export type UseFormStateProps<TFieldValues> = Partial<{
   control?: Control<TFieldValues>;
 }>;
 
-export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
+export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
@@ -301,4 +301,4 @@ export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues
 > = {
   children: React.ReactNode;
-} & UseFormMethods<TFieldValues>;
+} & UseFormReturn<TFieldValues>;
