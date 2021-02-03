@@ -172,8 +172,8 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   options?: Omit<
     KeepStateOptions,
-    'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues'
-  > & { keepValue?: boolean },
+    'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues'
+  > & { keepValue?: boolean; keepDefaultValue?: boolean },
 ) => void;
 
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
