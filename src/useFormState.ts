@@ -3,7 +3,6 @@ import { useFormContext } from './useFormContext';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
-import cloneObject from './utils/cloneObject';
 import {
   FieldValues,
   FormState,
@@ -19,7 +18,14 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
     control || methods.control;
 
   const [formState, updateFormState] = React.useState(formStateRef.current);
-  const readFormState = React.useRef(cloneObject(readFormStateRef.current));
+  const readFormState = React.useRef({
+    isDirty: false,
+    dirtyFields: false,
+    touchedFields: false,
+    isValidating: false,
+    isValid: false,
+    errors: false,
+  });
 
   React.useEffect(() => {
     const formStateSubscription = formStateSubjectRef.current.subscribe({

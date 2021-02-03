@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.15.0] - 2021-02-02
+
+### Changed
+
+- radio input default selection will return `null` instead of empty string `''`
+- `valueAsNumber` with empty input will return `NaN` instead of `0`
+
 ## [6.14.0] - 2020-12-31
 
 ### Changed
