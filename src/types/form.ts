@@ -170,7 +170,10 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (
 
 export type UseFormUnregister<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-  options?: Omit<KeepStateOptions, 'keepIsSubmitted' | 'keepSubmitCount'>,
+  options?: Omit<
+    KeepStateOptions,
+    'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues'
+  > & { keepValue?: boolean },
 ) => void;
 
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <

@@ -816,7 +816,7 @@ export function useForm<
           unset(fieldsWithValidationRef.current, inputName);
           unset(validFieldsRef.current, inputName);
         }
-        !options.keepValues && unset(formStateRef.current.errors, inputName);
+        !options.keepValue && unset(formStateRef.current.errors, inputName);
         !options.keepErrors && unset(fieldsRef.current, inputName);
         !options.keepDirty &&
           unset(formStateRef.current.dirtyFields, inputName);
