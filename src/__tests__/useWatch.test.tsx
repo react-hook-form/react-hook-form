@@ -12,7 +12,7 @@ import { useWatch } from '../useWatch';
 import * as generateId from '../logic/generateId';
 import { FormProvider } from '../useFormContext';
 import { useFieldArray } from '../useFieldArray';
-import { Control, UseFieldArrayMethods, UseFormMethods } from '../types';
+import { Control, UseFieldArrayReturn, UseFormReturn } from '../types';
 import { perf, wait } from 'react-performance-testing';
 import 'jest-performance-testing';
 
@@ -153,7 +153,7 @@ describe('useWatch', () => {
       const Child = ({
         register,
         control,
-      }: Pick<UseFormMethods<FormInputs>, 'register' | 'control'>) => {
+      }: Pick<UseFormReturn<FormInputs>, 'register' | 'control'>) => {
         useWatch({ name: 'child', control });
         return <input {...register('child')} />;
       };
@@ -334,8 +334,8 @@ describe('useWatch', () => {
       remove,
     }: {
       control: Control<FormValues>;
-      register: UseFormMethods<FormValues>['register'];
-      remove: UseFieldArrayMethods['remove'];
+      register: UseFormReturn<FormValues>['register'];
+      remove: UseFieldArrayReturn['remove'];
       itemIndex: number;
     }) {
       const actualValue = useWatch({

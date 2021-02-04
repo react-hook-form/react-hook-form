@@ -12,7 +12,7 @@ import 'jest-performance-testing';
 import isFunction from '../utils/isFunction';
 import { useForm } from '../';
 import { VALIDATION_MODE } from '../constants';
-import { NestedValue, UseFormMethods, RegisterOptions } from '../types';
+import { NestedValue, UseFormReturn, RegisterOptions } from '../types';
 
 describe('useForm', () => {
   describe('when component unMount', () => {
@@ -211,7 +211,7 @@ describe('useForm', () => {
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
       rules?: RegisterOptions;
     }>;
-    let methods: UseFormMethods<{ test: string }>;
+    let methods: UseFormReturn<{ test: string }>;
 
     beforeEach(() => {
       Component = ({

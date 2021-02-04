@@ -5,7 +5,7 @@ import {
   useFieldArray,
   Controller,
   Control,
-  UseFormMethods,
+  UseFormReturn,
 } from 'react-hook-form';
 
 let renderCount = 0;
@@ -21,7 +21,7 @@ const ConditionField = <T extends any[]>({
   unregister,
 }: {
   control: Control<FormInputs>;
-  unregister: UseFormMethods<FormInputs>['unregister'];
+  unregister: UseFormReturn<FormInputs>['unregister'];
   index: number;
   fields: T;
 }) => {

@@ -12,7 +12,7 @@ import { useForm } from '../useForm';
 import * as generateId from '../logic/generateId';
 import { Controller } from '../controller';
 import { FormProvider } from '../useFormContext';
-import { Control, SubmitHandler, UseFormMethods, FieldValues } from '../types';
+import { Control, SubmitHandler, UseFormReturn, FieldValues } from '../types';
 import isFunction from '../utils/isFunction';
 
 export const mockGenerateId = () => {
@@ -837,7 +837,7 @@ describe('useFieldArray', () => {
         control,
       }: {
         arrayIndex: number;
-        register: UseFormMethods<FormValues>['register'];
+        register: UseFormReturn<FormValues>['register'];
         arrayField: Partial<FieldValues>;
         control: Control<FormValues>;
       }) => {

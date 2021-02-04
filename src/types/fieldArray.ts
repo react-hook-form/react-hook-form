@@ -30,13 +30,13 @@ export type FieldArray<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = InferArrayType<FieldPathValue<TFieldValues, TName>>;
 
-export type FieldArrayMethodsOption = {
+export type FieldArrayMethodProps = {
   shouldFocus?: boolean;
   focusIndex?: number;
   focusName?: string;
 };
 
-export type UseFieldArrayMethods<
+export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
@@ -47,13 +47,13 @@ export type UseFieldArrayMethods<
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ) => void;
   append: (
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
@@ -61,7 +61,7 @@ export type UseFieldArrayMethods<
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: FieldArrayMethodsOption,
+    options?: FieldArrayMethodProps,
   ) => void;
   fields: FieldArrayWithId<TFieldValues, TName, TKeyName>[];
 };
