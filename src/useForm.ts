@@ -229,7 +229,11 @@ export function useForm<
   );
 
   const setFieldValue = React.useCallback(
-    (name: InternalFieldName, rawValue: SetFieldValue<TFieldValues>) => {
+    (
+      name: InternalFieldName,
+      rawValue: SetFieldValue<TFieldValues>,
+      shouldRender?: boolean,
+    ) => {
       const { _f } = get(fieldsRef.current, name) as Field;
 
       if (_f) {
@@ -267,6 +271,14 @@ export function useForm<
             : (refs[0].checked = !!value);
         } else {
           ref.value = value;
+        }
+
+        if (shouldRender) {
+          const values = getValues();
+          set(values, name, rawValue);
+          controllerSubjectRef.current.next({
+            ...values,
+          } as DefaultValues<TFieldValues>);
         }
       }
     },
@@ -455,7 +467,7 @@ export function useForm<
 
       for (const fieldName of getPath(name, value)) {
         if (get(fieldsRef.current, fieldName)) {
-          setFieldValue(fieldName, get(data, fieldName));
+          setFieldValue(fieldName, get(data, fieldName), true);
           shouldDirty && updateAndGetDirtyState(fieldName);
           shouldValidate && trigger(fieldName as FieldName<TFieldValues>);
         }
@@ -473,7 +485,7 @@ export function useForm<
       const field = get(fieldsRef.current, name);
 
       if (field && field._f) {
-        setFieldValue(name, value);
+        setFieldValue(name, value, true);
         options.shouldDirty && updateAndGetDirtyState(name);
         options.shouldValidate && trigger(name as FieldName<TFieldValues>);
       } else {

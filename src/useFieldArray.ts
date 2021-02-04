@@ -122,7 +122,9 @@ export const useFieldArray = <
     );
 
   const setFieldsAndNotify = (
-    fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
+    fieldsValues: Partial<
+      FieldArrayWithId<TFieldValues, TName, TKeyName>
+    >[] = [],
   ) => {
     setFields(mapIds(fieldsValues, keyName));
     fieldArraySubjectRef.current.next({

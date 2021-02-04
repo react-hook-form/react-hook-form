@@ -1,6 +1,6 @@
+import * as React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useForm } from '../../useForm';
-import * as React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -8,6 +8,8 @@ import {
   screen,
 } from '@testing-library/react';
 import { NestedValue, UseFormReturn } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
+import { Controller } from '../../controller';
 
 describe('reset', () => {
   it('should reset the form and re-render the form', async () => {
@@ -315,5 +317,80 @@ describe('reset', () => {
     });
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.isSubmitted).toBeTruthy();
+  });
+
+  it('should reset field array fine with empty value', async () => {
+    let data: unknown;
+    const Component = () => {
+      const { control, register, reset, handleSubmit } = useForm<{
+        test: {
+          firstName: string;
+          lastName: string;
+        }[];
+      }>();
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((d) => {
+            data = d;
+          })}
+        >
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <input
+                {...register(`test.${index}.firstName` as const)}
+                defaultValue={field.firstName}
+              />
+              <Controller
+                control={control}
+                name={`test.${index}.lastName` as const}
+                render={({ field }) => <input {...field} />}
+                defaultValue={field.lastName}
+              />
+            </div>
+          ))}
+
+          <button>submit</button>
+
+          <button type={'button'} onClick={() => reset()}>
+            reset
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              reset({
+                test: [{ firstName: 'test', lastName: 'test' }],
+              })
+            }
+          >
+            reset with value
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    screen.getByRole('button', { name: 'reset' }).click();
+
+    await actComponent(async () => {
+      screen.getByRole('button', { name: 'submit' }).click();
+    });
+
+    await expect(data).toEqual({});
+
+    screen.getByRole('button', { name: 'reset with value' }).click();
+
+    await actComponent(async () => {
+      screen.getByRole('button', { name: 'submit' }).click();
+    });
+
+    await expect(data).toEqual({
+      test: [{ firstName: 'test', lastName: 'test' }],
+    });
   });
 });
