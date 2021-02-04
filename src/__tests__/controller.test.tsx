@@ -777,4 +777,31 @@ describe('Controller', () => {
 
     expect(count).toEqual(1);
   });
+
+  it('should update Controller value with setValue', () => {
+    const Component = () => {
+      const { control, setValue } = useForm<{
+        test: string;
+      }>();
+
+      React.useEffect(() => {
+        setValue('test', 'data');
+      }, [setValue]);
+
+      return (
+        <Controller
+          name={'test'}
+          control={control}
+          render={({ field }) => <input {...field} />}
+          defaultValue=""
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'data',
+    );
+  });
 });
