@@ -1,10 +1,11 @@
 import * as React from 'react';
 import set from '../utils/set';
 import getFieldValueAs from './getFieldValueAs';
-import { FieldRefs } from '../types';
+import { FieldRefs, FieldValues } from '../types';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
+  defaultValuesRef: React.MutableRefObject<FieldValues>,
   shouldReturnAsValue?: boolean,
   output: Record<string, any> = {},
 ): any => {
@@ -28,6 +29,7 @@ const getFieldsValues = (
           {
             current,
           },
+          defaultValuesRef,
           shouldReturnAsValue,
           output[name],
         );
@@ -35,7 +37,10 @@ const getFieldsValues = (
     }
   }
 
-  return output;
+  return {
+    ...defaultValuesRef.current,
+    ...output,
+  };
 };
 
 export default getFieldsValues;

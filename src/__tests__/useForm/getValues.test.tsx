@@ -27,7 +27,9 @@ describe('getValues', () => {
 
     rerender(<Component />);
 
-    expect(values).toEqual({});
+    expect(values).toEqual({
+      test: 'test',
+    });
   });
 
   it('should call getFieldsValues and return all values', () => {
@@ -128,7 +130,7 @@ describe('getValues', () => {
     });
   });
 
-  it('should not get value from default value by name when field is not registered', () => {
+  it('should get value from default value by name when field is not registered', () => {
     const { result } = renderHook(() =>
       useForm({
         defaultValues: {
@@ -137,10 +139,10 @@ describe('getValues', () => {
       }),
     );
 
-    expect(result.current.getValues('test')).toBeUndefined();
+    expect(result.current.getValues('test')).toEqual('default');
   });
 
-  it('should not get value from default value by array when field is not registered', () => {
+  it('should get value from default value by array when field is not registered', () => {
     const { result } = renderHook(() =>
       useForm({
         defaultValues: {
@@ -149,7 +151,7 @@ describe('getValues', () => {
       }),
     );
 
-    expect(result.current.getValues(['test'])).toEqual([undefined]);
+    expect(result.current.getValues(['test'])).toEqual(['default']);
   });
 
   it('should not get value from default value when field is not registered', () => {
@@ -161,7 +163,9 @@ describe('getValues', () => {
       }),
     );
 
-    expect(result.current.getValues()).toEqual({});
+    expect(result.current.getValues()).toEqual({
+      test: 'default',
+    });
   });
 
   it('should return defaultValues when inputs are not registered', () => {

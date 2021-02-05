@@ -68,7 +68,12 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit((data: any) => {
-        expect(data).toEqual({});
+        expect(data).toEqual({
+          test: 'data',
+          deep: {
+            values: '5',
+          },
+        });
       })({
         preventDefault: () => {},
         persist: () => {},

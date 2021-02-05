@@ -641,7 +641,7 @@ describe('useFieldArray', () => {
       },
     );
 
-    it.each(['isDirty', 'dirtyFields'])(
+    it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -711,7 +711,11 @@ describe('useFieldArray', () => {
         });
 
         expect(formState.dirtyFields).toEqual({
-          test: [],
+          test: [
+            {
+              name: undefined,
+            },
+          ],
         });
         expect(formState.isDirty).toBeFalsy();
       },
@@ -1335,7 +1339,9 @@ describe('useFieldArray', () => {
         await fireEvent.click(screen.getByRole('button'));
       });
 
-      expect(submitData).toEqual({});
+      expect(submitData).toEqual({
+        test: [],
+      });
     });
   });
 });

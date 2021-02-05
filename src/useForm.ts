@@ -365,7 +365,7 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(fieldsRef, true),
+        getFieldsValues(fieldsRef, defaultValuesRef, true),
         contextRef.current,
         {
           criteriaMode,
@@ -489,9 +489,7 @@ export function useForm<
         options.shouldDirty && updateAndGetDirtyState(name);
         options.shouldValidate && trigger(name as FieldName<TFieldValues>);
       } else {
-        setInternalValues(name, value, options);
-
-        if (fieldArrayNamesRef.current.has(name)) {
+        if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
           fieldArraySubjectRef.current.next({
             fields: value,
             name,
@@ -518,6 +516,8 @@ export function useForm<
               isDirty: getFormIsDirty(name, value),
             });
           }
+        } else {
+          setInternalValues(name, value, options);
         }
       }
     },
@@ -617,7 +617,7 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(fieldsRef, true),
+            getFieldsValues(fieldsRef, defaultValuesRef, true),
             contextRef.current,
             {
               criteriaMode,
@@ -680,7 +680,7 @@ export function useForm<
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
     const values = isMountedRef.current
-      ? getFieldsValues(fieldsRef)
+      ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValues;
 
     if (isUndefined(fieldNames)) {
@@ -699,7 +699,7 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(fieldsRef, true),
+            ...getFieldsValues(fieldsRef, defaultValuesRef, true),
             ...values,
           },
           contextRef.current,
@@ -824,16 +824,17 @@ export function useForm<
       fieldsNamesRef.current.delete(inputName);
 
       if (get(fieldsRef.current, inputName) as Field) {
-        unset(formStateRef.current.errors, inputName);
         if (!options.keepIsValid) {
           unset(fieldsWithValidationRef.current, inputName);
           unset(validFieldsRef.current, inputName);
         }
+        !options.keepValue && unset(formStateRef.current.errors, inputName);
         !options.keepErrors && unset(fieldsRef.current, inputName);
         !options.keepDirty &&
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
+        !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
 
         watchSubjectRef.current.next({
           name: inputName,
@@ -964,7 +965,7 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldValues = getFieldsValues(fieldsRef, true);
+      let fieldValues = getFieldsValues(fieldsRef, defaultValuesRef, true);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,
