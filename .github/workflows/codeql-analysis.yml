@@ -12,13 +12,11 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
