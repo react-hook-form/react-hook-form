@@ -4,6 +4,8 @@ import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import get from './utils/get';
 import isObject from './utils/isObject';
+import getFieldsValues from './logic/getFieldsValues';
+import getFieldValue from './logic/getFieldValue';
 import {
   DeepPartial,
   UseWatchProps,
@@ -27,7 +29,6 @@ export function useWatch<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >(props: {
   name: TName;
-  defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
 }): FieldPathValue<TFieldValues, TName>;
 export function useWatch<
@@ -35,32 +36,30 @@ export function useWatch<
   TName extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[]
 >(props: {
   name: TName;
-  defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
 }): FieldPathValues<TFieldValues, TName>;
 export function useWatch<TFieldValues>({
   control,
   name,
-  defaultValue,
 }: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
 
-  const { watchInternal, defaultValuesRef, watchSubjectRef } =
+  const { watchInternal, defaultValuesRef, watchSubjectRef, fieldsRef } =
     control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? Array.isArray(name)
-        ? name.reduce(
-            (previous, inputName) => ({
-              ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName as string),
-            }),
-            {},
-          )
-        : isString(name)
-        ? get(defaultValuesRef.current, name)
-        : defaultValuesRef.current
-      : defaultValue,
+    Array.isArray(name)
+      ? name.reduce(
+          (previous, inputName) => ({
+            ...previous,
+            [inputName]: getFieldValue(
+              get(fieldsRef.current, inputName as InternalFieldName),
+            ),
+          }),
+          {},
+        )
+      : isString(name)
+      ? getFieldValue(get(fieldsRef.current, name as InternalFieldName))
+      : getFieldsValues(fieldsRef, defaultValuesRef),
   );
 
   React.useEffect(() => {
@@ -70,8 +69,8 @@ export function useWatch<TFieldValues>({
           isString(inputName) && name === inputName && !isUndefined(value)
             ? value
             : name && isObject(value)
-            ? get(value, name as InternalFieldName, defaultValue)
-            : watchInternal(name as string, defaultValue),
+            ? get(value, name as InternalFieldName)
+            : watchInternal(name as string),
         );
       },
     });

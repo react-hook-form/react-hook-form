@@ -50,7 +50,6 @@ describe('useWatch', () => {
         return useWatch({
           control,
           name: 'test',
-          defaultValue: 'test',
         });
       });
 
@@ -660,7 +659,6 @@ describe('useWatch', () => {
             test: string;
           }>({
             name: 'test',
-            defaultValue: 'test',
             control,
           });
 
@@ -721,7 +719,6 @@ describe('useWatch', () => {
           const { register, reset, control } = useForm<{ test: string }>();
           const test = useWatch<{ test: string }>({
             name: 'test',
-            defaultValue: 'test',
             control,
           });
 

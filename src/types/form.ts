@@ -296,7 +296,6 @@ export type UseFormStateProps<TFieldValues> = Partial<{
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
 };
