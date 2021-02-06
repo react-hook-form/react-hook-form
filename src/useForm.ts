@@ -770,7 +770,7 @@ export function useForm<
       }
 
       if (isUndefined(fieldNames)) {
-        isWatchAllRef.current = true;
+        isGlobal && (isWatchAllRef.current = true);
         return fieldValues;
       }
 
