@@ -1,6 +1,94 @@
 # Changelog
 
-## [v7.0.0-alpha.0]
+## [7.0.0-beta.0] - 2021-02-06
+
+## Changes
+
+- **Breaking change:**: shallow merge defaultValues with result (#4074)
+
+```ts
+useForm({ defaultValues: { test: 'test' } });
+
+getValues(); // v6 will return {}
+getValues(); // v7 will return { test: 'test' }
+```
+
+## [v7.0.0-alpha.2] - 2021-02-04
+
+## Changes
+
+- **Breaking change:**: `setError` set `shouldFocus` option is to move into the third argument.
+
+```diff
+- setError('test', { type: 'type', message: 'issue', shouldFocus: true })
++ setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
+```
+
+- **Breaking change:**: type name changes:
+
+```diff
+- UseFormMethods
++ UseFormReturn
+- UseFormOptions
++ UseFormProps
+- UseFieldArrayMethods
++ UseFieldArrayReturn
+- UseFieldArrayOptions
++ UseFieldArrayProps
+- UseControllerMethods
++ UseControllerReturn
+- UseControllerOptions
++ UseControllerProps
+- ArrayField
++ FieldArray
+```
+
+## Fixes
+
+- fix `setValue` with `Controller` and `reset` with `useFieldArray` issues: 4111 & 4108 (#4113)
+
+## [v7.0.0-alpha.2] - 2021-02-02
+
+## Changes
+
+- **Breaking change:**: `setError` set `shouldFocus` option is to move into the third argument.
+
+```diff
+- setError('test', { type: 'type', message: 'issue', shouldFocus: true })
++ setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
+```
+
+## Fixes
+
+- fix #4078 issue with watch + mode: onChange
+
+## Improvements
+
+- remove internal deep clone (#4088)
+- remove transformToNestObject (#4089)
+
+## [v7.0.0-alpha.1] - 2021-02-01
+
+## Changes
+
+- field name reference will be removed with `unregister` (#4010)
+
+- **Breaking change:**: improve field array remove result and no longer remove field array value after unmount
+
+```diff
+const { remove } = useFieldArray({ name: 'test' })
+remove();
+getValues(); // V6: result form value {}
+getValues(); // V7: result form value { test: [] }
+```
+
+## Improvements
+
+- change internal field names into `Set` (#4015)
+- improve `onChange` perf with `resolver (#4017)
+- improve field array name look up perf (#4030)
+
+## [v7.0.0-alpha.0] - 2021-01-31
 
 ## Added
 
@@ -108,13 +196,6 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 ```diff
 - await trigger('test') // return true or false
 + trigger('test') // void
-```
-
-- **Breaking change:**: `setError` set `shouldFocus` option is to move into the third argument.
-
-```diff
-- setError('test', { type: 'type', message: 'issue', shouldFocus: true })
-+ setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
 ```
 
 - remove `isSubmitting` proxy (#4000)
