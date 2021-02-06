@@ -4,7 +4,7 @@
 
 ## Changes
 
-- **Breaking change:**: shallow merge defaultValues with result (#4074)
+- **Breaking change:** shallow merge defaultValues with result (#4074)
 
 ```ts
 useForm({ defaultValues: { test: 'test' } });
@@ -17,14 +17,14 @@ getValues(); // v7 will return { test: 'test' }
 
 ## Changes
 
-- **Breaking change:**: `setError` set `shouldFocus` option is to move into the third argument.
+- **Breaking change:** `setError` set `shouldFocus` option is to move into the third argument.
 
 ```diff
 - setError('test', { type: 'type', message: 'issue', shouldFocus: true })
 + setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
 ```
 
-- **Breaking change:**: type name changes:
+- **Breaking change:** type name changes:
 
 ```diff
 - UseFormMethods
@@ -51,7 +51,7 @@ getValues(); // v7 will return { test: 'test' }
 
 ## Changes
 
-- **Breaking change:**: `setError` set `shouldFocus` option is to move into the third argument.
+- **Breaking change:** `setError` set `shouldFocus` option is to move into the third argument.
 
 ```diff
 - setError('test', { type: 'type', message: 'issue', shouldFocus: true })
@@ -73,7 +73,7 @@ getValues(); // v7 will return { test: 'test' }
 
 - field name reference will be removed with `unregister` (#4010)
 
-- **Breaking change:**: improve field array remove result and no longer remove field array value after unmount
+- **Breaking change:** improve field array remove result and no longer remove field array value after unmount
 
 ```diff
 const { remove } = useFieldArray({ name: 'test' })
@@ -148,7 +148,7 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 
 ## Changes
 
-- **Breaking change:**: `register` change from register at `ref` to function which return prop.
+- **Breaking change:** `register` change from register at `ref` to function which return prop.
 
 ```diff
 - <input ref={register, { required: true }} name="test" />
@@ -156,42 +156,42 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 + <TextInput {...register('name', { required: true })} />
 ```
 
-- **Breaking change:**: `name` with array will only support dot syntax instead of brackets.
+- **Breaking change:** `name` with array will only support dot syntax instead of brackets.
 
 ```
 - test[2].test
 + test.2.test
 ```
 
-- **Breaking change:**: remove `as` prop at `Controller` and fix render prop consistency (#3732)
+- **Breaking change:** remove `as` prop at `Controller` and fix render prop consistency (#3732)
 
 ```diff
 - <Controller render={props => <input {...props} />} />
 + <Controller render={({ field }) => <input {...field} />} />
 ```
 
-- **Breaking change:**: remove `errors` alias (#3737)
+- **Breaking change:** remove `errors` alias (#3737)
 
 ```diff
 - const { errors } = useForm();
 + const { formState: { errors } } = useForm();
 ```
 
-- **Breaking change:**: improved `reset` second argument (#3905)
+- **Breaking change:** improved `reset` second argument (#3905)
 
 ```diff
 - reset({}, { isDirty: true })
 + reset({}, { keepIsDirty: true })
 ```
 
-- **Breaking change:**: change `touched` to `touchedFields` for consistency (#3923)
+- **Breaking change:** change `touched` to `touchedFields` for consistency (#3923)
 
 ```diff
 - const { formState: { touched } } = useForm();
 + const { formState: { touchedFields }} = useForm();
 ```
 
-- **Breaking change:**: `trigger` will no longer return validation result.
+- **Breaking change:** `trigger` will no longer return validation result.
 
 ```diff
 - await trigger('test') // return true or false
