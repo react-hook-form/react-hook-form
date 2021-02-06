@@ -48,14 +48,8 @@ export function useWatch<TFieldValues>({
     control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
     Array.isArray(name)
-      ? name.reduce(
-          (previous, inputName) => ({
-            ...previous,
-            [inputName]: getFieldValue(
-              get(fieldsRef.current, inputName as InternalFieldName),
-            ),
-          }),
-          {},
+      ? name.map((inputName) =>
+          getFieldValue(get(fieldsRef.current, inputName as InternalFieldName)),
         )
       : isString(name)
       ? getFieldValue(get(fieldsRef.current, name as InternalFieldName))
