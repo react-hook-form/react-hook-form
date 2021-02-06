@@ -829,7 +829,7 @@ export function useForm<
           unset(validFieldsRef.current, inputName);
         }
         !options.keepValue && unset(formStateRef.current.errors, inputName);
-        !options.keepErrors && unset(fieldsRef.current, inputName);
+        !options.keepError && unset(fieldsRef.current, inputName);
         !options.keepDirty &&
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
