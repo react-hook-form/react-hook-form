@@ -46,7 +46,11 @@ describe('useWatch', () => {
 
     it('should return default value in useWatch', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm<{ test: string }>();
+        const { control } = useForm<{ test: string }>({
+          defaultValues: {
+            test: 'test',
+          },
+        });
         return useWatch({
           control,
           name: 'test',
