@@ -28,7 +28,6 @@ const ConditionField = <T extends any[]>({
   const output = useWatch<FormInputs>({
     name: 'data',
     control,
-    defaultValue: fields,
   });
 
   React.useEffect(() => {
@@ -40,7 +39,7 @@ const ConditionField = <T extends any[]>({
     };
   }, [unregister, index]);
 
-  return output[index]?.name === 'bill' ? (
+  return output?.[index]?.name === 'bill' ? (
     <input
       {...control.register(`data.${index}.conditional`)}
       defaultValue={fields[index].conditional}

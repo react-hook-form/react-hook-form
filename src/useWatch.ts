@@ -2,8 +2,6 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
-import get from './utils/get';
-import isObject from './utils/isObject';
 import {
   DeepPartial,
   UseWatchProps,
@@ -45,34 +43,29 @@ export function useWatch<TFieldValues>({
 }: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
 
-  const { watchInternal, defaultValuesRef, watchSubjectRef } =
-    control || methods.control;
+  const { watchInternal, watchSubjectRef } = control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
-      ? Array.isArray(name)
-        ? name.reduce(
-            (previous, inputName) => ({
-              ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName as string),
-            }),
-            {},
-          )
-        : isString(name)
-        ? get(defaultValuesRef.current, name)
-        : defaultValuesRef.current
+      ? watchInternal(name as InternalFieldName)
       : defaultValue,
   );
 
   React.useEffect(() => {
     const watchSubscription = watchSubjectRef.current.subscribe({
       next: ({ name: inputName, value }) => {
-        updateValue(
-          isString(inputName) && name === inputName && !isUndefined(value)
-            ? value
-            : name && isObject(value)
-            ? get(value, name as InternalFieldName, defaultValue)
-            : watchInternal(name as string, defaultValue),
-        );
+        (!name ||
+          !inputName ||
+          (Array.isArray(name) ? name : [name]).some(
+            (fieldName) =>
+              inputName &&
+              fieldName &&
+              inputName.startsWith(fieldName as InternalFieldName),
+          )) &&
+          updateValue(
+            isString(inputName) && name === inputName && !isUndefined(value)
+              ? value
+              : watchInternal(name as string, defaultValue),
+          );
       },
     });
 

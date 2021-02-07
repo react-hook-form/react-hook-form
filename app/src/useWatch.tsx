@@ -21,7 +21,6 @@ const GrandChild = ({
   const output = useWatch({
     name: 'test',
     control,
-    defaultValue: 'yay! I am watching you :)',
   });
 
   counter1.current++;
@@ -44,7 +43,6 @@ const GrandChild1 = ({
   const output = useWatch<FormInputs>({
     name: ['test', 'test1'],
     control,
-    defaultValue: { test: '', test1: '' },
   });
 
   counter.current++;

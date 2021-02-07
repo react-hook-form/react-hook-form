@@ -220,6 +220,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     SubjectType<{
       name?: InternalFieldName;
       value?: unknown;
+      type?: EventType;
     }>
   >;
   controllerSubjectRef: React.MutableRefObject<
