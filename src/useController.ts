@@ -66,6 +66,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
             value,
             name: name as InternalFieldName,
           },
+          type: EVENTS.CHANGE,
         });
       },
       onBlur: () => {
