@@ -91,7 +91,7 @@ describe('useWatch', () => {
         });
       });
 
-      expect(result.current).toEqual({ test: 'test', test1: 'test1' });
+      expect(result.current).toEqual(['test', 'test1']);
     });
 
     it('should return default value when name is undefined', () => {
@@ -110,7 +110,7 @@ describe('useWatch', () => {
       expect(result.current).toEqual({ test: 'test', test1: 'test1' });
     });
 
-    it('should return empty object', () => {
+    it('should return empty array when watch array fields', () => {
       const { result } = renderHook(() => {
         const { control } = useForm<{ test: string }>();
         return useWatch({
@@ -119,7 +119,7 @@ describe('useWatch', () => {
         });
       });
 
-      expect(result.current).toEqual({});
+      expect(result.current).toEqual([undefined]);
     });
 
     it('should return undefined', () => {
@@ -541,15 +541,25 @@ describe('useWatch', () => {
     describe('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
       it('should return current value with radio type', async () => {
-        let watchedValue: any;
+        type FormValues = {
+          options: { option: string }[];
+        };
+
+        const watchedValue: object[] = [];
+
+        const Test = ({ control }: { control: Control<FormValues> }) => {
+          watchedValue.push(
+            useWatch({
+              control,
+            }),
+          );
+
+          return null;
+        };
+
         const Component = () => {
-          const { register, reset, control } = useForm<{
-            options: { option: string }[];
-          }>();
+          const { register, reset, control } = useForm<FormValues>();
           const { fields } = useFieldArray({ name: 'options', control });
-          watchedValue = useWatch({
-            control,
-          });
 
           React.useEffect(() => {
             reset({
@@ -578,6 +588,7 @@ describe('useWatch', () => {
                     value="no"
                     {...register(`options.${i}.option` as const)}
                   />
+                  <Test control={control} />
                 </div>
               ))}
             </form>
@@ -588,15 +599,12 @@ describe('useWatch', () => {
 
         fireEvent.change(screen.getAllByRole('radio')[1], {
           target: {
+            value: 'yes',
             checked: true,
           },
         });
 
-        actComponent(() => {
-          expect(watchedValue).toEqual({
-            options: [{ option: 'test' }, { option: 'test1' }],
-          });
-        });
+        expect(watchedValue).toMatchSnapshot();
       });
 
       it("should watch item correctly with useFieldArray's remove method", async () => {
@@ -720,7 +728,11 @@ describe('useWatch', () => {
 
       it('should return default value', async () => {
         const Component = () => {
-          const { register, reset, control } = useForm<{ test: string }>();
+          const { register, reset, control } = useForm<{ test: string }>({
+            defaultValues: {
+              test: 'test',
+            },
+          });
           const test = useWatch<{ test: string }>({
             name: 'test',
             control,
