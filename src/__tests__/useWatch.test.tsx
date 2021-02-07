@@ -377,6 +377,46 @@ describe('useWatch', () => {
 
       expect(screen.queryByText('test')).toBeNull();
     });
+
+    it('should return undefined when input get unregistered', () => {
+      type FormValues = {
+        test: string;
+      };
+
+      const Test = ({ control }: { control: Control<FormValues> }) => {
+        const value = useWatch({
+          control,
+          name: 'test',
+        });
+
+        return <div>{value === undefined ? 'yes' : 'no'}</div>;
+      };
+
+      const Component = () => {
+        const { register, control, unregister } = useForm<FormValues>({
+          defaultValues: {
+            test: 'test',
+          },
+        });
+
+        React.useEffect(() => {
+          register('test');
+        }, [register]);
+
+        return (
+          <>
+            <Test control={control} />
+            <button onClick={() => unregister('test')}>unregister</button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      screen.getByText('yes');
+    });
   });
 
   describe('fieldArray', () => {
