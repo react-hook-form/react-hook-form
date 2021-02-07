@@ -378,7 +378,10 @@ export const useFieldArray = <
       }
     }
 
-    watchSubjectRef.current.next({ name });
+    watchSubjectRef.current.next({
+      name,
+      value: get(getFieldsValues(fieldsRef, defaultValuesRef), name, []),
+    });
 
     focusNameRef.current &&
       focusFieldBy(fieldsRef.current, (key: string) =>
