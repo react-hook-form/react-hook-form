@@ -2,8 +2,6 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
-// import get from './utils/get';
-// import isObject from './utils/isObject';
 import {
   DeepPartial,
   UseWatchProps,
