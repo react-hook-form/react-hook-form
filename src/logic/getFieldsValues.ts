@@ -17,8 +17,10 @@ const getFieldsValues = (
       set(
         output,
         name,
-        _f && !_f.ref.disabled
-          ? getFieldValueAs(_f.value, _f, shouldReturnAsValue)
+        _f
+          ? _f.ref.disabled
+            ? undefined
+            : getFieldValueAs(_f.value, _f, shouldReturnAsValue)
           : Array.isArray(field)
           ? []
           : {},
