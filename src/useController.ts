@@ -5,6 +5,7 @@ import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import getFieldValue from './logic/getFieldValue';
 import { EVENTS } from './constants';
 import {
   FieldValues,
@@ -30,13 +31,12 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
 
   const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () =>
-    (get(fieldsRef.current, name) &&
-      isUndefined(get(fieldsRef.current, name)._f.value)) ||
+    isUndefined(getFieldValue(get(fieldsRef.current, name))) ||
     isNameInFieldArray(fieldArrayNamesRef.current, name)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
-      : get(fieldsRef.current, name)._f.value;
+      : getFieldValue(get(fieldsRef.current, name));
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const { errors, dirtyFields, touchedFields, isValidating } = useFormState({
