@@ -10,4 +10,4 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Cypress run
-        run: sleep 30 && yarn cypress & yarn start:app
+        run: yarn start:app & sleep 40 && yarn cypress:parallel
