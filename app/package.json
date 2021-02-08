@@ -1,5 +1,5 @@
 {
-  "name": "vite-project",
+  "name": "react-hook-form",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
