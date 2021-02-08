@@ -8,13 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Cypress run
-        run: |
-          npm i && npm run start:app & sleep 30 && npm run cypress
-
-#        uses: cypress-io/github-action@v2
-#        env:
-#          DEBUG: 'cypress:*'
-#        with:
-#          start: npm run start:app
-#          wait-on: 'http://localhost:3000/'
-#          wait-on-timeout: 120
+        uses: cypress-io/github-action@v2
+        with:
+          start: npm run start:app
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
