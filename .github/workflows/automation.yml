@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Cypress run
         run: |
-          npm run start:app & sleep 30 && npm run cypress
+          npm i && npm run start:app & sleep 30 && npm run cypress
 
 #        uses: cypress-io/github-action@v2
 #        env:
