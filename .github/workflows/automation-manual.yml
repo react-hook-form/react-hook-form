@@ -1,0 +1,13 @@
+name: E2E Test (manual)
+
+on: [pull_request]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Cypress run
+        run: sleep 20 && yarn cypress & yarn start:app
