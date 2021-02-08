@@ -137,8 +137,5 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^2.0.0-beta.12"
   }
 }

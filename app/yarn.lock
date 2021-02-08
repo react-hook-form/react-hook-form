@@ -1248,10 +1248,10 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@hookform/resolvers@^2.0.0-beta.12":
-  version "2.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-2.0.0-rc.1.tgz#3234315d27bbd058083b17bd615d57d4d59d81f3"
-  integrity sha512-p6YLQbnPwG6VrMZGusdyAuvIPB3VCJLc/XG/cuaDQNm1xyijDAyU1Og86phOGOmMD4QbItJKcmoaxbO9JKYQCQ==
+"@hookform/resolvers@2.0.0-beta.12":
+  version "2.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-2.0.0-beta.12.tgz#dbfdfd24e8747896727711da310cf952fb934c1e"
+  integrity sha512-Wczk97z3gBxmX4AKYibrj5qllQrI60AR9pdHMYMUlGs7TXMiQpgWSBGprHjO6GIN3gGO7FaaPfGGJbxN866OyQ==
 
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
@@ -8965,10 +8965,10 @@ react-error-overlay@^6.0.7:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
   integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
 
-react-hook-form@^7.0.0-beta.1:
-  version "7.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.0.0-beta.1.tgz#9160b551683733c6610645a19f92646e5782e85b"
-  integrity sha512-8R2X9KO9zEWcDdSTbEQFDti8i56m+5j/64JPR2LwoweU1Qib5Fd6qjLNfprBC7czl2tky+prK3TNgLzs4H6jZA==
+react-hook-form@^6.0.0:
+  version "6.15.1"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-6.15.1.tgz#57d887ec4dac5a6c0099902171aa39cc893f7bca"
+  integrity sha512-bL0LQuQ3OlM3JYfbacKtBPLOHhmgYz8Lj6ivMrvu2M6e1wnt4sbGRtPEPYCc/8z3WDbjrMwfAfLX92OsB65pFA==
 
 react-input-autosize@^3.0.0:
   version "3.0.0"
