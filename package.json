@@ -44,7 +44,7 @@
     "cypress:parallel": "cypress-parallel -s cypress -t 4 -d -a",
     "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
     "bundlesize": "npm run build:modern && bundlesize",
-    "start:app": "npm run build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start",
+    "start:app": "npm run build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev",
     "changeset": "changeset",
     "release": "changeset publish"
   },
@@ -137,5 +137,8 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^2.0.0-beta.12"
   }
 }
