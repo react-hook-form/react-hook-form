@@ -1,35 +1,31 @@
 {
-  "name": "react-hook-form-automation-server",
-  "version": "0.1.0",
+  "name": "react-hook-form",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
   "dependencies": {
-    "@hookform/resolvers": "^2.0.0-beta.8",
+    "@hookform/resolvers": "2.0.0-beta.12",
     "@material-ui/core": "^4.8.0",
     "joi": "^17.3.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-hook-form": "^6.9.6",
+    "react-hook-form": "^6.0.0",
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
-    "yup": "^0.29.3"
-  },
-  "scripts": {
-    "start": "react-scripts start"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "yup": "^0.32.8"
   },
   "devDependencies": {
-    "@types/react": "16.9.53",
-    "@types/react-dom": "16.9.8",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@vitejs/plugin-react-refresh": "^1.1.0",
+    "vite": "^2.0.0-beta.65",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-select": "^3.0.22",
     "@types/yup": "^0.29.8",
     "react-scripts": "^3.4.0",
     "typescript": "4.2.0-dev.20210101"
-  },
-  "browserslist": {
-    "development": [
-      "last 1 chrome version"
-    ]
   }
 }

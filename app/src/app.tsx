@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import AutoUnregister from './autoUnregister';
 import Basic from './basic';
@@ -108,9 +108,21 @@ const App: React.FC = () => {
       <Route path="/autoUnregister" exact component={AutoUnregister} />
       <Route path="/useWatch" exact component={UseWatch} />
       <Route path="/useFormState" exact component={UseFormState} />
-      <Route path="/useFieldArrayNested" exact component={UseFieldArrayNested} />
-      <Route path="/watchUseFieldArrayNested" exact component={WatchUseFieldArrayNested} />
-      <Route path="/useWatchUseFieldArrayNested" exact component={UseWatchUseFieldArrayNested} />
+      <Route
+        path="/useFieldArrayNested"
+        exact
+        component={UseFieldArrayNested}
+      />
+      <Route
+        path="/watchUseFieldArrayNested"
+        exact
+        component={WatchUseFieldArrayNested}
+      />
+      <Route
+        path="/useWatchUseFieldArrayNested"
+        exact
+        component={UseWatchUseFieldArrayNested}
+      />
       <Route path="/test" exact component={Test} />
     </Router>
   );
