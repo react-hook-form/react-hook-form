@@ -720,7 +720,7 @@ export function useForm<
   );
 
   const removeFieldEventListener = React.useCallback(
-    (field: Field, forceDelete?: boolean) =>
+    (field: Field, forceDelete?: boolean) => {
       findRemovedFieldAndRemoveListener(
         fieldsRef,
         handleChangeRef.current!,
@@ -728,7 +728,13 @@ export function useForm<
         shallowFieldsStateRef,
         shouldUnregister,
         forceDelete,
-      ),
+      );
+
+      if (shouldUnregister) {
+        unset(validFieldsRef.current, field.ref.name);
+        unset(fieldsWithValidationRef.current, field.ref.name);
+      }
+    },
     [shouldUnregister],
   );
 
@@ -753,8 +759,6 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister && !compact(field.options || []).length) {
-          unset(validFieldsRef.current, field.ref.name);
-          unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 
