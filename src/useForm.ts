@@ -1239,10 +1239,6 @@ export function useForm<
       observerRef.current && observerRef.current.disconnect();
       isUnMount.current = true;
 
-      if (process.env.NODE_ENV !== 'production') {
-        return;
-      }
-
       Object.values(fieldsRef.current).forEach((field) =>
         removeFieldEventListenerAndRef(field, true),
       );
