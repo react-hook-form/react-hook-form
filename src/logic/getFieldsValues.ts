@@ -14,17 +14,18 @@ const getFieldsValues = (
 
     if (field) {
       const { _f, ...current } = field;
-      set(
-        output,
-        name,
-        _f
-          ? _f.ref.disabled
-            ? undefined
-            : getFieldValueAs(_f.value, _f, shouldReturnAsValue)
-          : Array.isArray(field)
-          ? []
-          : {},
-      );
+
+      if (!_f || (_f && !_f.ref.disabled)) {
+        set(
+          output,
+          name,
+          _f
+            ? getFieldValueAs(_f.value, _f, shouldReturnAsValue)
+            : Array.isArray(field)
+            ? []
+            : {},
+        );
+      }
 
       if (current) {
         getFieldsValues(

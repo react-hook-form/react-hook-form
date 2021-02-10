@@ -289,6 +289,6 @@ describe('getFieldsValues', () => {
           },
         },
       ),
-    ).toEqual({ test1: undefined, test: 'data' });
+    ).toEqual({ test: 'data' });
   });
 });
