@@ -240,7 +240,7 @@ describe('useForm', () => {
           <div>
             <input
               type="text"
-              {...register(name as 'test', resolver ? {} : (rules as any))}
+              {...register(name as 'test', resolver ? {} : rules)}
             />
             <span role="alert">
               {errors?.test?.message && errors.test.message}

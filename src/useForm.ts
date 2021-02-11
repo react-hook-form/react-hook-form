@@ -953,7 +953,7 @@ export function useForm<
             onChange: handleChange,
             onBlur: handleChange,
             ref: (ref: HTMLInputElement | null) =>
-              ref && registerFieldRef(name, ref, options as any),
+              ref && registerFieldRef(name, ref, options),
           };
     },
     [defaultValuesRef.current],

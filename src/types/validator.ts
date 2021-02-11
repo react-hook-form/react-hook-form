@@ -17,11 +17,8 @@ export type ValidationValueMessage<
 
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
-export type Validate<
-  TFieldValues extends FieldValues,
-  TFieldName extends FieldPath<TFieldValues>
-> = (
-  data: FieldPathValue<TFieldValues, TFieldName>,
+export type Validate<TFieldValue> = (
+  value: TFieldValue,
 ) => ValidateResult | Promise<ValidateResult>;
 
 export type RegisterOptions<
@@ -35,8 +32,8 @@ export type RegisterOptions<
   minLength: ValidationRule<number | string>;
   pattern: ValidationRule<RegExp>;
   validate:
-    | Validate<TFieldValues, TFieldName>
-    | Record<string, Validate<TFieldValues, TFieldName>>;
+    | Validate<FieldPathValue<TFieldValues, TFieldName>>
+    | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>;
   valueAsNumber: boolean;
   valueAsDate: boolean;
   setValueAs: (value: any) => any;
