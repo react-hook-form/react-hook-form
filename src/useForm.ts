@@ -701,14 +701,15 @@ export function useForm<
 
   const validateResolver = React.useCallback(
     async (values = {}) => {
-      const { errors } = await resolverRef.current!(
-        {
-          ...getValues(),
-          ...values,
-        },
-        contextRef.current,
-        isValidateAllFieldCriteria,
-      );
+      const { errors } =
+        (await resolverRef.current!(
+          {
+            ...getValues(),
+            ...values,
+          },
+          contextRef.current,
+          isValidateAllFieldCriteria,
+        )) || {};
       const isValid = isEmptyObject(errors);
 
       formStateRef.current.isValid !== isValid &&

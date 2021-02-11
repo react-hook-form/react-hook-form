@@ -499,11 +499,7 @@ export const useFieldArray = <
     }
 
     return () => {
-      if (shouldUnregister) {
-        unset(formStateRef.current.errors, name);
-        unset(formStateRef.current.dirtyFields, name);
-        unset(formStateRef.current.touched, name);
-      }
+      shouldUnregister && remove();
       resetFields();
       delete resetFunctions[name];
       unset(fieldArrayValuesRef, name);
