@@ -116,7 +116,7 @@ export const useFieldArray = <
     (Array.isArray(index) ? index : [index]).forEach((currentIndex) =>
       set(
         fieldsRef.current,
-        `${name}${currentIndex ? `.${currentIndex}` : ''}`,
+        `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
         [],
       ),
     );
