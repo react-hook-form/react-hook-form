@@ -29,7 +29,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     controllerSubjectRef,
   } = control || methods.control;
 
-  const { onChange, onBlur, ref } = register(name, rules);
+  const { onChange, onBlur, ref } = register(name, rules as any);
   const getInitialValue = () =>
     isUndefined(getFieldValue(get(fieldsRef.current, name))) ||
     isNameInFieldArray(fieldArrayNamesRef.current, name)

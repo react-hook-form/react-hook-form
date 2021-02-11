@@ -141,9 +141,11 @@ export type RefCallbackHandler = {
   name: InternalFieldName;
 };
 
-export type UseFormRegister<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues>,
-  options?: RegisterOptions,
+export type UseFormRegister<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>(
+  name: TFieldName,
+  options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => RefCallbackHandler;
 
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
