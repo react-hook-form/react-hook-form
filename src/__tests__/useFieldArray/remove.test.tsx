@@ -963,5 +963,104 @@ describe('remove', () => {
 
       expect(resolver).not.toBeCalled();
     });
+
+    it('should remove the first index correctly', async () => {
+      let output: unknown;
+
+      type FormValues = {
+        test: {
+          firstName: string;
+          lastName: string;
+        }[];
+      };
+
+      const Component = () => {
+        const { control, handleSubmit, register } = useForm<FormValues>({
+          defaultValues: {
+            test: [
+              {
+                firstName: 'test',
+                lastName: 'test',
+              },
+              {
+                firstName: 'test1',
+                lastName: 'test1',
+              },
+            ],
+          },
+        });
+        const { fields, remove } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        const onSubmit = (data: FormValues) => (output = data);
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.firstName` as const)}
+                    defaultValue={field.firstName}
+                  />
+                  <Controller
+                    name={`test.${index}.lastName` as const}
+                    control={control}
+                    render={() => <div />}
+                  />
+                  <button
+                    type={'button'}
+                    onClick={() => {
+                      remove(index);
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              );
+            })}
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      });
+
+      expect(output).toEqual({
+        test: [
+          {
+            firstName: 'test',
+            lastName: 'test',
+          },
+          {
+            firstName: 'test1',
+            lastName: 'test1',
+          },
+        ],
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      });
+
+      expect(output).toEqual({
+        test: [
+          {
+            firstName: 'test1',
+            lastName: 'test1',
+          },
+        ],
+      });
+    });
   });
 });
