@@ -22,4 +22,30 @@ describe('useController', () => {
 
     render(<Component />);
   });
+
+  it('should work for checkbox component natively', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+      }>();
+
+      const { field } = useController({
+        name: 'test',
+        control,
+        defaultValue: '',
+      });
+
+      return (
+        <input
+          type="checkbox"
+          onChange={(e) => {
+            field.onChange(e.target.checked);
+          }}
+          value={field.value}
+        />
+      );
+    };
+
+    render(<Component />);
+  });
 });
