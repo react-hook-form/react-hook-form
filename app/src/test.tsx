@@ -41,21 +41,47 @@ const ChildComponent = ({
 };
 
 const Component = () => {
-  const { control, watch } = useForm<{
-    test: string;
-  }>();
-
-  console.log(watch());
-
-  const {
-    field: { value, ...rest },
-  } = useController({
-    name: 'test',
+  const { register, control } = useForm({
+    defaultValues: {
+      nest: {
+        test: [
+          { value: '1', nestedArray: [{ value: '2' }] },
+          { value: '3', nestedArray: [{ value: '4' }] },
+        ],
+      },
+    },
+  });
+  const { fields, remove, append } = useFieldArray({
+    name: 'nest.test',
     control,
-    defaultValue: '',
   });
 
-  return <input type="checkbox" {...rest} checked={value} />;
+  return (
+    <div>
+      {fields.map((item, i) => (
+        <div key={item.id}>
+          <input
+            {...register(`nest.test.${i}.value` as const)}
+            defaultValue={item.value}
+          />
+
+          <ChildComponent control={control} index={i} />
+
+          <button
+            type={'button'}
+            onClick={() => remove(i)}
+            data-testid={item.value}
+          >
+            remove
+          </button>
+        </div>
+      ))}
+
+      <button type={'button'} onClick={() => append({ value: 'test' })}>
+        append
+      </button>
+    </div>
+  );
 };
 
 export default Component;
