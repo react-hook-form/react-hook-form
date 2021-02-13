@@ -1,6 +1,4 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../../useForm';
-import isFunction from '../../utils/isFunction';
 import * as React from 'react';
 import {
   act as actComponent,
@@ -9,6 +7,8 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { useForm } from '../../useForm';
+import isFunction from '../../utils/isFunction';
 import { VALIDATION_MODE } from '../../constants';
 import isString from '../../utils/isString';
 
@@ -382,6 +382,157 @@ describe('register', () => {
         test1: new Date('1990'),
         test2: true,
       });
+    });
+
+    it('should send valueAs fields to in build validator', async () => {
+      const Component = () => {
+        const {
+          register,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          mode: 'onChange',
+        });
+
+        return (
+          <>
+            <input
+              {...register('test', {
+                validate: (value) => {
+                  return value === 1;
+                },
+                valueAsNumber: true,
+              })}
+            />
+            {errors.test && <p>test error</p>}
+            <input
+              {...register('test1', {
+                validate: (value) => {
+                  return value === 1;
+                },
+                setValueAs: (value) => parseInt(value),
+              })}
+            />
+            {errors.test && <p>test1 error</p>}
+            <button onClick={() => trigger()}>trigger</button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      screen.getByText('test error');
+      screen.getByText('test1 error');
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '1',
+          },
+        });
+
+        fireEvent.change(screen.getAllByRole('textbox')[1], {
+          target: {
+            value: '1',
+          },
+        });
+      });
+
+      expect(screen.queryByText('test error')).toBeNull();
+      expect(screen.queryByText('test1 error')).toBeNull();
+    });
+
+    it('should send valueAs fields to resolver', async () => {
+      const Component = () => {
+        const {
+          register,
+          trigger,
+          formState: { errors },
+        } = useForm<{
+          test: number;
+          test1: number;
+        }>({
+          mode: 'onChange',
+          resolver: async (data) => {
+            const valid = !(isNaN(data.test) && isNaN(data.test1));
+
+            return {
+              errors: valid
+                ? {}
+                : {
+                    test: {
+                      type: 'error',
+                      message: 'issue',
+                    },
+                    test1: {
+                      type: 'error',
+                      message: 'issue',
+                    },
+                  },
+              values: valid
+                ? {
+                    test: 1,
+                    test1: 2,
+                  }
+                : {},
+            };
+          },
+        });
+
+        return (
+          <>
+            <input
+              {...register('test', {
+                validate: (value) => {
+                  return value === 1;
+                },
+                valueAsNumber: true,
+              })}
+            />
+            {errors.test && <p>test error</p>}
+            <input
+              {...register('test1', {
+                validate: (value) => {
+                  return value === 1;
+                },
+                setValueAs: (value) => parseInt(value),
+              })}
+            />
+            {errors.test && <p>test1 error</p>}
+            <button onClick={() => trigger()}>trigger</button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      screen.getByText('test error');
+      screen.getByText('test1 error');
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '1',
+          },
+        });
+
+        fireEvent.change(screen.getAllByRole('textbox')[1], {
+          target: {
+            value: '1',
+          },
+        });
+      });
+
+      expect(screen.queryByText('test error')).toBeNull();
+      expect(screen.queryByText('test1 error')).toBeNull();
     });
   });
 });
