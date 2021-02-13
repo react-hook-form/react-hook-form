@@ -39,7 +39,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       : getFieldValue(get(fieldsRef.current, name));
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
-  const { errors, dirtyFields, touchedFields, isValidating } = useFormState({
+  const formState = useFormState({
     control: control || methods.control,
   });
 
@@ -81,12 +81,35 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       value,
       ref,
     },
-    meta: {
-      invalid: !!get(errors, name),
-      isDirty: !!get(dirtyFields, name),
-      isTouched: !!get(touchedFields, name),
-      error: get(errors, name),
-      isValidating,
-    },
+    meta: Object.defineProperties(
+      {},
+      {
+        invalid: {
+          get() {
+            return !!get(formState.errors, name);
+          },
+        },
+        isDirty: {
+          get() {
+            return !!get(formState.dirtyFields, name);
+          },
+        },
+        isTouched: {
+          get() {
+            return !!get(formState.touchedFields, name);
+          },
+        },
+        error: {
+          get() {
+            return get(formState.errors, name);
+          },
+        },
+        isValidating: {
+          get() {
+            return formState.isValidating;
+          },
+        },
+      },
+    ),
   };
 }
