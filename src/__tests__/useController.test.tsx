@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useForm } from '../useForm';
 import { useController } from '../useController';
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { Control } from '../types';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -21,6 +22,97 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('should only subscribe to formState at each useController level', async () => {
+    const renderCounter = [0, 0];
+    type FormValues = {
+      test: string;
+      test1: string;
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { field } = useController({
+        name: 'test',
+        control,
+      });
+
+      renderCounter[0]++;
+
+      return <input {...field} />;
+    };
+
+    const Test1 = ({ control }: { control: Control<FormValues> }) => {
+      const {
+        field,
+        meta: { isDirty, isTouched },
+      } = useController({
+        name: 'test1',
+        control,
+      });
+
+      renderCounter[1]++;
+
+      return (
+        <div>
+          <input {...field} />
+          {isDirty && <p>isDirty</p>}
+          {isTouched && <p>isTouched</p>}
+        </div>
+      );
+    };
+
+    const Component = () => {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: '',
+          test1: '',
+        },
+      });
+
+      return (
+        <div>
+          <Test control={control} />
+          <Test1 control={control} />
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    expect(renderCounter).toEqual([1, 1]);
+
+    await act(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: '1232',
+        },
+      });
+    });
+
+    screen.getByText('isDirty');
+
+    await act(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[1]);
+    });
+
+    screen.getByText('isTouched');
+
+    expect(renderCounter).toEqual([1, 3]);
+
+    await act(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: '1232',
+        },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+    });
+
+    expect(renderCounter).toEqual([2, 5]);
   });
 
   describe('checkbox', () => {
