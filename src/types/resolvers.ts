@@ -1,15 +1,14 @@
-import { EmptyObject } from './utils';
 import { CriteriaMode, UnpackNestedValue } from './form';
 import { Field, FieldName, FieldValues, InternalFieldName } from './fields';
 import { FieldErrors } from './errors';
 
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
   values: UnpackNestedValue<TFieldValues>;
-  errors: EmptyObject;
+  errors: {};
 };
 
 export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
-  values: EmptyObject;
+  values: {};
   errors: FieldErrors<TFieldValues>;
 };
 
