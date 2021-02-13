@@ -1,5 +1,14 @@
 # Changelog
 
+## [7.0.0-beta.4] - 2021-02-08
+
+- **Breaking change:** `valueAs` will be run before the build-in validation and `resolver`
+
+```diff
+- <input {...register('test', { valdiate: (data: string) => {}, valueAsNumber: true })} />
++ <input {...register('test', { valdiate: (data: number) => {}, valueAsNumber: true })} />
+```
+
 ## [7.0.0-beta.1] - 2021-02-08
 
 ## Changes
