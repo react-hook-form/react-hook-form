@@ -5,8 +5,8 @@
 - **Breaking change:** `valueAs` will be run before the build-in validation and `resolver`
 
 ```diff
-- <input {...register('test', { valdiate: (data: string) => {}, valueAsNumber: true })} />
-+ <input {...register('test', { valdiate: (data: number) => {}, valueAsNumber: true })} />
+- <input {...register('test', { validate: (data: string) => {}, valueAsNumber: true })} />
++ <input {...register('test', { validate: (data: number) => {}, valueAsNumber: true })} />
 ```
 
 ## [7.0.0-beta.1] - 2021-02-08
