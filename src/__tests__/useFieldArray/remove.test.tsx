@@ -545,9 +545,12 @@ describe('remove', () => {
           {fields.map((field, i) => (
             <div key={field.id}>
               <input
-                {...control.register(`test.${index}.nested.${i}.test`, {
-                  required: 'required',
-                })}
+                {...control.register(
+                  `test.${index}.nested.${i}.test` as const,
+                  {
+                    required: 'required',
+                  },
+                )}
               />
               {errors?.test &&
                 errors.test[index]?.nested &&

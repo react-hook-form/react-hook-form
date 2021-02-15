@@ -138,5 +138,9 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-hook-form"
   }
 }

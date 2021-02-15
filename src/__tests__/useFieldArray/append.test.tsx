@@ -92,7 +92,7 @@ describe('append', () => {
             return (
               <input
                 key={field.id}
-                {...register(`test.${index}.test`)}
+                {...register(`test.${index}.test` as const)}
                 defaultValue={field.test}
               />
             );
@@ -175,7 +175,7 @@ describe('append', () => {
               return (
                 <input
                   key={field.id}
-                  {...register(`test.${index}.test`)}
+                  {...register(`test.${index}.test` as const)}
                   defaultValue={field.test}
                 />
               );

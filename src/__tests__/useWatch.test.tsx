@@ -443,14 +443,14 @@ describe('useWatch', () => {
       }) {
         const actualValue = useWatch({
           control,
-          name: `labels.${itemIndex}.displayName`,
+          name: `labels.${itemIndex}.displayName` as const,
         });
         inputValues.push(actualValue);
 
         return (
           <div>
             <input
-              {...register(`labels.${itemIndex}.displayName`)}
+              {...register(`labels.${itemIndex}.displayName` as const)}
               defaultValue={actualValue}
             />
             <button type="button" onClick={() => remove(itemIndex)}>
@@ -797,6 +797,41 @@ describe('useWatch', () => {
 
         expect(await screen.findByText('test')).toBeDefined();
       });
+    });
+  });
+
+  describe('unregister', () => {
+    it('should return correct value after input get unregistered', async () => {
+      type FormValues = { test: string };
+
+      const Component = ({ control }: { control: Control<FormValues> }) => {
+        const test = useWatch<{ test: string }>({ name: 'test', control });
+        return <div>{test === undefined ? 'no' : test}</div>;
+      };
+
+      const Form = () => {
+        const { control, unregister, register } = useForm<FormValues>({
+          defaultValues: { test: 'test' },
+        });
+
+        return (
+          <>
+            <Component control={control} />
+            <input {...register('test')} />
+            <button onClick={() => unregister('test')}>unregister</button>
+          </>
+        );
+      };
+
+      render(<Form />);
+
+      screen.getByText('test');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      screen.getByText('no');
     });
   });
 

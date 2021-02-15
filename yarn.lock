@@ -10148,9 +10148,9 @@ typedarray@^0.0.6:
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
 typescript@^4.2.0-dev.20210101:
-  version "4.2.0-dev.20210101"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.0-dev.20210101.tgz#a4c26ac45a09eb98d1351f4d170415f4138ab7ab"
-  integrity sha512-5JQb1+xXO+kHCEk/aJNxbX7oTIqhiePPJL3IRh349QsYUT0F4jEAtu6O0daCQ8+7LUvzBTm8+Xs0QoXLbxgqsA==
+  version "4.2.0-insiders.20210210"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.0-insiders.20210210.tgz#f109217dec41af7ef0fece60a91e5c3cce572d25"
+  integrity sha512-PBBQ/WNJ/HG+cH2nu+sPFbUPqv8FMraVihOfwlBzoa+0iGHa1I8gueJTUyBIOPU24tClLwKoU8dfscpn0rnuWw==
 
 ua-parser-js@^0.7.18:
   version "0.7.21"
