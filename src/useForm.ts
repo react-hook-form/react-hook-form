@@ -147,7 +147,7 @@ export function useForm<
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
-    touchedFields: !isProxyEnabled || validationMode.isOnTouch,
+    touchedFields: !isProxyEnabled,
     isValidating: !isProxyEnabled,
     isValid: !isProxyEnabled,
     errors: !isProxyEnabled,
@@ -587,11 +587,7 @@ export function useForm<
 
         const state = updateAndGetDirtyState(name, false);
 
-        if (
-          isBlurEvent &&
-          readFormStateRef.current.touchedFields &&
-          !get(formStateRef.current.touchedFields, name)
-        ) {
+        if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
           set(formStateRef.current.touchedFields, name, true);
           state.touchedFields = formStateRef.current.touchedFields;
         }
