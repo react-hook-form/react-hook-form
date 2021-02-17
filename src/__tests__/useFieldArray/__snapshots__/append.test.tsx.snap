@@ -61,3 +61,110 @@ exports[`useFieldArray array of array fields should populate all array fields wi
   </div>
 </DocumentFragment>
 `;
+
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+        value="1"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.deepNest.0.value"
+          value="1"
+        />
+        <button
+          type="button"
+        >
+          append
+        </button>
+      </div>
+      <button
+        type="button"
+      >
+        setValue
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 2`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+        value="1"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.deepNest.0.value"
+          value="1"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.1.value"
+          value="2"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.2.value"
+          value="3"
+        />
+        <button
+          type="button"
+        >
+          append
+        </button>
+      </div>
+      <button
+        type="button"
+      >
+        setValue
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 3`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+        value="1"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.deepNest.0.value"
+          value="1"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.1.value"
+          value="2"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.2.value"
+          value="3"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.3.value"
+          value="test"
+        />
+        <button
+          type="button"
+        >
+          append
+        </button>
+      </div>
+      <button
+        type="button"
+      >
+        setValue
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

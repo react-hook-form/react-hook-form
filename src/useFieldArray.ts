@@ -8,6 +8,7 @@ import set from './utils/set';
 import removeArrayAt from './utils/remove';
 import unset from './utils/unset';
 import moveArrayAt from './utils/move';
+import isKey from './utils/isKey';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
@@ -396,10 +397,8 @@ export const useFieldArray = <
       next({ name: inputName, fields, isReset }) {
         if (isReset) {
           if (inputName) {
-            const value = getFieldsValues(fieldsRef, defaultValuesRef);
-            set(value, inputName, fields);
-            set(fieldArrayDefaultValuesRef.current, name, fields);
-            setFieldsAndNotify(get(value, name));
+            set(fieldArrayDefaultValuesRef.current, inputName, fields);
+            setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
           } else {
             fieldArrayDefaultValuesRef.current = fields;
             setFieldsAndNotify(get(fields, name));
@@ -410,7 +409,7 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      unset(fieldArrayDefaultValuesRef.current, name);
+      isKey(name) && unset(fieldArrayDefaultValuesRef.current, name);
       fieldArrayNamesRef.current.delete(name);
     };
   }, []);
