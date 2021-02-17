@@ -51,6 +51,8 @@ export function useWatch<TFieldValues>({
   );
 
   React.useEffect(() => {
+    watchInternal(name as InternalFieldName);
+
     const watchSubscription = watchSubjectRef.current.subscribe({
       next: ({ name: inputName, value }) => {
         (!name ||
