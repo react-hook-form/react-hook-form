@@ -30,9 +30,10 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
-  const getInitialValue = () =>
+  const getInitialValue = (initial?: boolean) =>
     isUndefined(getFieldValue(get(fieldsRef.current, name))) ||
-    isNameInFieldArray(fieldArrayNamesRef.current, name)
+    isNameInFieldArray(fieldArrayNamesRef.current, name) ||
+    initial
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
@@ -45,7 +46,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
 
   React.useEffect(() => {
     if (get(fieldsRef.current, name)) {
-      get(fieldsRef.current, name)._f.value = getInitialValue();
+      get(fieldsRef.current, name)._f.value = getInitialValue(true);
     }
 
     const controllerSubscription = controllerSubjectRef.current.subscribe({
