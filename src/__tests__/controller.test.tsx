@@ -804,4 +804,43 @@ describe('Controller', () => {
       'data',
     );
   });
+
+  it('should retain default value or defaultValues at Controller', () => {
+    let getValuesMethod = () => {};
+    const Component = () => {
+      const { control, getValues } = useForm<{
+        test: number;
+        test1: number;
+      }>({
+        defaultValues: {
+          test: 2,
+        },
+      });
+
+      getValuesMethod = getValues;
+
+      return (
+        <>
+          <Controller
+            render={({ field }) => <input {...field} />}
+            name={'test'}
+            control={control}
+          />
+          <Controller
+            render={({ field }) => <input {...field} />}
+            name={'test1'}
+            defaultValue={1}
+            control={control}
+          />
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    expect(getValuesMethod()).toEqual({
+      test: 2,
+      test1: 1,
+    });
+  });
 });
