@@ -1300,6 +1300,129 @@ describe('useFieldArray', () => {
 
       expect(asFragment()).toMatchSnapshot();
     });
+
+    it('should worked with deep nested field array without chaining', async () => {
+      type FormValues = {
+        nest: {
+          value: string;
+          nestedArray: { deepNest: { value: string }[] };
+        }[];
+      };
+
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control<FormValues>;
+        index: number;
+      }) => {
+        const { fields, append } = useFieldArray<FormValues>({
+          name: `nest.${index}.nestedArray.deepNest` as const,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                {...control.register(
+                  `nest.${index}.nestedArray.deepNest.${i}.value` as const,
+                )}
+                defaultValue={item.value}
+              />
+            ))}
+            <button type={'button'} onClick={() => append({ value: 'test' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control, setValue, reset } = useForm<FormValues>();
+        const { fields } = useFieldArray({
+          name: 'nest',
+          control,
+        });
+
+        React.useEffect(() => {
+          reset({
+            nest: [
+              {
+                value: '1',
+                nestedArray: {
+                  deepNest: [
+                    {
+                      value: '1',
+                    },
+                  ],
+                },
+              },
+            ],
+          });
+        }, [setValue]);
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  {...register(`nest.${i}.value` as const)}
+                  defaultValue={item.value}
+                />
+                <ChildComponent control={control} index={i} />
+                <button
+                  type={'button'}
+                  onClick={() => {
+                    setValue(
+                      'nest',
+                      [
+                        {
+                          value: 1,
+                          nestedArray: {
+                            deepNest: [
+                              {
+                                value: 1,
+                              },
+                              {
+                                value: 2,
+                              },
+                              {
+                                value: 3,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      { shouldDirty: true },
+                    );
+                  }}
+                >
+                  setValue
+                </button>
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      const { asFragment } = render(<Component />);
+
+      expect(asFragment()).toMatchSnapshot();
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   describe('submit form', () => {
