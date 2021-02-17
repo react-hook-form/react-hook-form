@@ -8,6 +8,7 @@ import set from './utils/set';
 import removeArrayAt from './utils/remove';
 import unset from './utils/unset';
 import moveArrayAt from './utils/move';
+import isKey from './utils/isKey';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
@@ -27,7 +28,6 @@ import {
   FieldErrors,
   FieldNamesMarkedBoolean,
 } from './types';
-import isKey from './utils/isKey';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
