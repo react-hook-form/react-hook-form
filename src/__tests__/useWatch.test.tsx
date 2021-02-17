@@ -578,6 +578,53 @@ describe('useWatch', () => {
       expect(await screen.findByText('default')).toBeDefined();
     });
 
+    it('should re-register watched input after reset', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      function LivePreview({ control }: { control: Control<FormValues> }) {
+        const value = useWatch({
+          name: `firstName`,
+          defaultValue: 'yes',
+          control,
+        });
+
+        return <p>{value}</p>;
+      }
+
+      const Component = () => {
+        const formMethods = useForm<FormValues>();
+        const { control, reset, register } = formMethods;
+
+        React.useEffect(() => {
+          reset({
+            firstName: 'firstName',
+          });
+        }, [reset]);
+
+        return (
+          <>
+            <input {...register('firstName')} />
+
+            <LivePreview control={control} />
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      screen.getByText('firstName');
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '123' },
+        });
+      });
+
+      screen.getByText('123');
+    });
+
     describe('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
       it('should return current value with radio type', async () => {
