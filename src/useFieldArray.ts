@@ -27,6 +27,7 @@ import {
   FieldErrors,
   FieldNamesMarkedBoolean,
 } from './types';
+import isKey from './utils/isKey';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
@@ -408,6 +409,7 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
+      isKey(name) && unset(fieldArrayDefaultValuesRef.current, name);
       fieldArrayNamesRef.current.delete(name);
     };
   }, []);
