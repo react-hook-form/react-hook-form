@@ -232,7 +232,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     SubjectType<{
       name?: string;
       fields: unknown;
-      isReset?: boolean;
     }>
   >;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;

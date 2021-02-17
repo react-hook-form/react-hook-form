@@ -394,15 +394,13 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next({ name: inputName, fields, isReset }) {
-        if (isReset) {
-          if (inputName) {
-            set(fieldArrayDefaultValuesRef.current, inputName, fields);
-            setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
-          } else {
-            fieldArrayDefaultValuesRef.current = fields;
-            setFieldsAndNotify(get(fields, name));
-          }
+      next({ name: inputName, fields }) {
+        if (inputName) {
+          set(fieldArrayDefaultValuesRef.current, inputName, fields);
+          setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
+        } else {
+          fieldArrayDefaultValuesRef.current = fields;
+          setFieldsAndNotify(get(fields, name));
         }
       },
     });
