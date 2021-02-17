@@ -107,6 +107,7 @@ export function useForm<
     new Subject<{
       name?: InternalFieldName;
       fields: any;
+      isReset?: boolean;
     }>(),
   );
   const fieldArrayUpdatedValuesRef = React.useRef<{
@@ -492,6 +493,7 @@ export function useForm<
           fieldArraySubjectRef.current.next({
             fields: value,
             name,
+            isReset: true,
           });
 
           if (
@@ -1079,6 +1081,7 @@ export function useForm<
 
       fieldArraySubjectRef.current.next({
         fields: { ...updatedValues },
+        isReset: true,
       });
     }
 
