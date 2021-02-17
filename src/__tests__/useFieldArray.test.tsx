@@ -1301,7 +1301,7 @@ describe('useFieldArray', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should worked with deep nested field array without chaining', async () => {
+    it('should worked with deep nested field array without chaining useFieldArray', async () => {
       type FormValues = {
         nest: {
           value: string;
