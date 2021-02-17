@@ -408,7 +408,6 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      unset(fieldArrayDefaultValuesRef.current, name);
       fieldArrayNamesRef.current.delete(name);
     };
   }, []);

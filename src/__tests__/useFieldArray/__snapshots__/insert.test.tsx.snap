@@ -62,7 +62,7 @@ exports[`useFieldArray array of array fields should populate all array fields wi
 </DocumentFragment>
 `;
 
-exports[`useFieldArray array of array fields should worked with deep nested field array without chaining 1`] = `
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 1`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -91,7 +91,7 @@ exports[`useFieldArray array of array fields should worked with deep nested fiel
 </DocumentFragment>
 `;
 
-exports[`useFieldArray array of array fields should worked with deep nested field array without chaining 2`] = `
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 2`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -128,7 +128,7 @@ exports[`useFieldArray array of array fields should worked with deep nested fiel
 </DocumentFragment>
 `;
 
-exports[`useFieldArray array of array fields should worked with deep nested field array without chaining 3`] = `
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 3`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -139,6 +139,18 @@ exports[`useFieldArray array of array fields should worked with deep nested fiel
       <div>
         <input
           name="nest.0.nestedArray.deepNest.0.value"
+          value="1"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.1.value"
+          value="2"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.2.value"
+          value="3"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.3.value"
           value="test"
         />
         <button

@@ -1361,7 +1361,7 @@ describe('useFieldArray', () => {
               },
             ],
           });
-        }, [setValue]);
+        }, [reset]);
 
         return (
           <div>
@@ -1379,17 +1379,17 @@ describe('useFieldArray', () => {
                       'nest',
                       [
                         {
-                          value: 1,
+                          value: '1',
                           nestedArray: {
                             deepNest: [
                               {
-                                value: 1,
+                                value: '1',
                               },
                               {
-                                value: 2,
+                                value: '2',
                               },
                               {
-                                value: 3,
+                                value: '3',
                               },
                             ],
                           },
