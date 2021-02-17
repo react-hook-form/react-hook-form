@@ -396,10 +396,8 @@ export const useFieldArray = <
       next({ name: inputName, fields, isReset }) {
         if (isReset) {
           if (inputName) {
-            const value = getFieldsValues(fieldsRef, defaultValuesRef);
-            set(value, inputName, fields);
-            set(fieldArrayDefaultValuesRef.current, name, fields);
-            setFieldsAndNotify(get(value, name));
+            set(fieldArrayDefaultValuesRef.current, inputName, fields);
+            setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
           } else {
             fieldArrayDefaultValuesRef.current = fields;
             setFieldsAndNotify(get(fields, name));
