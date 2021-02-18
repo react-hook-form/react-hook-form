@@ -704,6 +704,7 @@ export function useForm<
       const { errors } =
         (await resolverRef.current!(
           {
+            ...defaultValuesRef.current,
             ...getValues(),
             ...values,
           },
