@@ -701,12 +701,14 @@ export function useForm<
 
   const validateResolver = React.useCallback(
     async (values = {}) => {
+      const newDefaultValues = isEmptyObject(fieldsRef.current)
+        ? defaultValuesRef.current
+        : {};
+
       const { errors } =
         (await resolverRef.current!(
           {
-            ...(isEmptyObject(fieldsRef.current)
-              ? { ...defaultValuesRef.current }
-              : {}),
+            ...newDefaultValues,
             ...getValues(),
             ...values,
           },
