@@ -896,7 +896,7 @@ export function useForm<
       if (
         isRadioOrCheckbox && Array.isArray(defaultValue)
           ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
-          : true
+          : isUndefined(get(fieldsRef.current, name)._f.value)
       ) {
         get(fieldsRef.current, name)._f.value = getFieldValue(
           get(fieldsRef.current, name),

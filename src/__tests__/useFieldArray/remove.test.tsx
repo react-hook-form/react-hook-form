@@ -1012,6 +1012,7 @@ describe('remove', () => {
                     name={`test.${index}.lastName` as const}
                     control={control}
                     render={() => <div />}
+                    defaultValue={field.lastName}
                   />
                   <button
                     type={'button'}
