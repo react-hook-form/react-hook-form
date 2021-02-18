@@ -5,7 +5,6 @@ import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
-import getFieldValue from './logic/getFieldValue';
 import { EVENTS } from './constants';
 import {
   FieldValues,
@@ -30,23 +29,21 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
-  const getInitialValue = (initial?: boolean) =>
-    initial ||
-    isUndefined(getFieldValue(get(fieldsRef.current, name))) ||
+  const getInitialValue = () =>
+    isUndefined(get(fieldsRef.current, name)._f.value) ||
     isNameInFieldArray(fieldArrayNamesRef.current, name)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
-      : getFieldValue(get(fieldsRef.current, name));
+      : get(fieldsRef.current, name)._f.value;
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const formState = useFormState({
     control: control || methods.control,
   });
+  get(fieldsRef.current, name)._f.value = value;
 
   React.useEffect(() => {
-    get(fieldsRef.current, name)._f.value = getInitialValue(true);
-
     const controllerSubscription = controllerSubjectRef.current.subscribe({
       next: (values) => setInputStateValue(get(values, name)),
     });
