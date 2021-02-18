@@ -99,11 +99,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
             return get(formState.errors, name);
           },
         },
-        isValidating: {
-          get() {
-            return formState.isValidating;
-          },
-        },
       },
     ),
   };
