@@ -3323,6 +3323,62 @@ describe('useForm', () => {
 
       expect(resolverData).toEqual({ test: 'value' });
     });
+
+    it('should have formState.isValid equals true with defined default values after executing resolver', async () => {
+      const Toggle = () => {
+        const [toggle, setToggle] = React.useState(false);
+
+        const { register, formState } = useForm({
+          defaultValues: { test: 'Test' },
+          mode: 'onChange',
+          resolver: async (values) => {
+            if (!values.test) {
+              const result = {
+                values: {},
+                errors: {
+                  test: {
+                    type: 'required',
+                  },
+                },
+              };
+              return result;
+            }
+
+            return {
+              values,
+              errors: {},
+            };
+          },
+        });
+
+        return (
+          <>
+            <button onClick={() => setToggle(!toggle)}>Toggle</button>
+            {toggle && <input id="test" name="test" ref={register} />}
+            <button disabled={!formState.isValid}>Submit</button>
+          </>
+        );
+      };
+
+      render(<Toggle />);
+
+      const toggle = async () =>
+        await actComponent(async () => {
+          await screen.getByText('Toggle').click();
+        });
+
+      // Show input and Submit button
+      await toggle();
+
+      expect(screen.getByText('Submit')).toBeEnabled();
+
+      // Hide input and Submit button
+      await toggle();
+      // Show input and Submit button again
+      await toggle();
+
+      expect(screen.getByText('Submit')).toBeEnabled();
+    });
   });
 
   describe('mode with onTouched', () => {
