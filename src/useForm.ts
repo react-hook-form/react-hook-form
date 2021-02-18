@@ -704,7 +704,9 @@ export function useForm<
       const { errors } =
         (await resolverRef.current!(
           {
-            ...defaultValuesRef.current,
+            ...(isEmptyObject(fieldsRef.current)
+              ? { ...defaultValuesRef.current }
+              : {}),
             ...getValues(),
             ...values,
           },
