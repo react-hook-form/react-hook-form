@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.0-beta.9] - 2021-02-19
+## [7.0.0-beta.10] - 2021-02-19
 
 ## Changes
 
@@ -11,7 +11,7 @@
 + const { field, fieldState, formState } = useController({ control });
 ```
 
-## [7.0.0-beta.8] - 2021-02-19
+## [7.0.0-beta.9] - 2021-02-19
 
 ## Changes
 
