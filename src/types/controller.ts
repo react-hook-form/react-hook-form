@@ -1,8 +1,15 @@
 import * as React from 'react';
-import { FieldValues, FieldName, Control, FieldPath, FieldError } from './';
+import {
+  FieldValues,
+  FieldName,
+  Control,
+  FieldPath,
+  FieldError,
+  UseFormStateReturn,
+} from './';
 import { RegisterOptions } from './validator';
 
-export type ControllerMeta = {
+export type ControllerFieldState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
@@ -36,15 +43,18 @@ export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues
 > = {
   field: ControllerRenderProps<TFieldValues>;
-  meta: ControllerMeta;
+  formState: UseFormStateReturn<TFieldValues>;
+  fieldState: ControllerFieldState;
 };
 
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
   render: ({
     field,
-    meta,
+    fieldState,
+    formState,
   }: {
     field: ControllerRenderProps<TFieldValues>;
-    meta: ControllerMeta;
+    fieldState: ControllerFieldState;
+    formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues>;

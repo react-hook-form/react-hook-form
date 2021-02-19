@@ -612,10 +612,10 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={({ field: props, meta }) => (
+          render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {meta.invalid && <p>Input is invalid.</p>}
+              {fieldState.invalid && <p>Input is invalid.</p>}
             </>
           )}
           control={control}
@@ -653,10 +653,10 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={({ field: props, meta }) => (
+          render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {meta.isTouched && <p>Input is touched.</p>}
+              {fieldState.isTouched && <p>Input is touched.</p>}
             </>
           )}
           control={control}
@@ -684,10 +684,10 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={({ field: props, meta }) => (
+          render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {meta.isTouched && <p>Input is dirty.</p>}
+              {fieldState.isTouched && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -721,10 +721,10 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={({ field: props, meta }) => (
+          render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {meta.error && <p>{meta.error.message}</p>}
+              {fieldState.error && <p>{fieldState.error.message}</p>}
             </>
           )}
           control={control}
@@ -753,10 +753,10 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={({ field: props, meta }) => (
+          render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {meta.isTouched && <p>Input is dirty.</p>}
+              {fieldState.isTouched && <p>Input is dirty.</p>}
             </>
           )}
           control={control}

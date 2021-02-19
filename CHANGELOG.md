@@ -1,6 +1,17 @@
 # Changelog
 
-## [7.0.0-beta.4] - 2021-02-19
+## [7.0.0-beta.9] - 2021-02-19
+
+## Changes
+
+- Change `useController`'s `meta` into `fieldState` and include `formState`, these change will be applied to `Controller` too.
+
+```diff
+- const { field, meta } = useController({ control });
++ const { field, fieldState, formState } = useController({ control });
+```
+
+## [7.0.0-beta.8] - 2021-02-19
 
 ## Changes
 
