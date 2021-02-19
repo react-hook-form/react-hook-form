@@ -236,4 +236,53 @@ describe('useController', () => {
       expect(watchResult).toEqual([{}, { test: 'on' }, { test: false }]);
     });
   });
+
+  it('should subscribe to formState update with trigger re-render at root', () => {
+    type FormValues = {
+      test: string;
+    };
+    let counter = 0;
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { field, formState } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      return (
+        <>
+          <input {...field} />
+          <p>{formState.dirtyFields.test && 'dirty'}</p>
+          <p>{formState.touchedFields.test && 'touched'}</p>
+        </>
+      );
+    };
+
+    const Component = () => {
+      const { control } = useForm<FormValues>();
+      counter++;
+
+      return <Test control={control} />;
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    act(() => {
+      fireEvent.blur(screen.getByRole('textbox'));
+    });
+
+    expect(counter).toEqual(1);
+
+    screen.getByText('dirty');
+    screen.getByText('touched');
+  });
 });
