@@ -45,7 +45,7 @@ describe('useController', () => {
     const Test1 = ({ control }: { control: Control<FormValues> }) => {
       const {
         field,
-        meta: { isDirty, isTouched },
+        fieldState: { isDirty, isTouched },
       } = useController({
         name: 'test1',
         control,

@@ -76,7 +76,8 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       value,
       ref,
     },
-    meta: Object.defineProperties(
+    formState,
+    fieldState: Object.defineProperties(
       {},
       {
         invalid: {
