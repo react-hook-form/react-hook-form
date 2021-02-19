@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.0-beta.4] - 2021-02-19
+
+## Changes
+
+- typescript array index support is changed to `49` instead of `99`
+
 ## [7.0.0-beta.4] - 2021-02-08
 
 - **Breaking change:** `valueAs` will be run before the build-in validation and `resolver`
