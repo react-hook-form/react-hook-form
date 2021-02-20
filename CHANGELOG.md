@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.0.0-beta.11] - 2021-02-20
+
+- change `ArrayKey` type to `number | '${number}'`
+
 ## [7.0.0-beta.10] - 2021-02-19
 
 ## Changes
