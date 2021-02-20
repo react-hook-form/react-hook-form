@@ -68,7 +68,7 @@ describe('setValue', () => {
 
     result.current.register('test');
 
-    const blob = new Blob([''], { type: 'image/png' });
+    const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
     const file = blob as File;
     const fileList = {
       0: file,
