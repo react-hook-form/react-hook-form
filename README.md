@@ -41,6 +41,9 @@ English | <a href="./docs/README.zh-TW.md">繁中</a> | <a href="./docs/README.z
 
     npm install react-hook-form
 
+## Code Quality
+We will be integrating SonarCloud to our PR for code quality checking.
+
 ## Links
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
