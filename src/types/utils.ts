@@ -59,11 +59,10 @@ export type IsFlatObject<T extends object> = Extract<
 
 type Digits = '0' | NonZeroDigits;
 type NonZeroDigits = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-type OneToFourDigits = '1' | '2' | '3' | '4';
 
 type IsPrimitive<T> = T extends Primitive ? true : false;
 
-type ArrayKey = number | Digits | `${OneToFourDigits}${Digits}`;
+type ArrayKey = number | `${number}`;
 
 type ValueOf<T> = T[keyof T];
 
