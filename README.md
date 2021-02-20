@@ -25,6 +25,8 @@
     </p>
 </div>
 
+Version 7 | [Version 6](/docs/README.V6.md)
+
 ## Features
 
 - Built with performance and DX in mind
