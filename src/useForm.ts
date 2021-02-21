@@ -701,14 +701,20 @@ export function useForm<
 
   const validateResolver = React.useCallback(
     async (values = {}) => {
-      const { errors } = await resolverRef.current!(
-        {
-          ...getValues(),
-          ...values,
-        },
-        contextRef.current,
-        isValidateAllFieldCriteria,
-      );
+      const newDefaultValues = isEmptyObject(fieldsRef.current)
+        ? defaultValuesRef.current
+        : {};
+
+      const { errors } =
+        (await resolverRef.current!(
+          {
+            ...newDefaultValues,
+            ...getValues(),
+            ...values,
+          },
+          contextRef.current,
+          isValidateAllFieldCriteria,
+        )) || {};
       const isValid = isEmptyObject(errors);
 
       formStateRef.current.isValid !== isValid &&
@@ -720,7 +726,7 @@ export function useForm<
   );
 
   const removeFieldEventListener = React.useCallback(
-    (field: Field, forceDelete?: boolean) =>
+    (field: Field, forceDelete?: boolean) => {
       findRemovedFieldAndRemoveListener(
         fieldsRef,
         handleChangeRef.current!,
@@ -728,7 +734,13 @@ export function useForm<
         shallowFieldsStateRef,
         shouldUnregister,
         forceDelete,
-      ),
+      );
+
+      if (shouldUnregister) {
+        unset(validFieldsRef.current, field.ref.name);
+        unset(fieldsWithValidationRef.current, field.ref.name);
+      }
+    },
     [shouldUnregister],
   );
 
@@ -753,8 +765,6 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister && !compact(field.options || []).length) {
-          unset(validFieldsRef.current, field.ref.name);
-          unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 

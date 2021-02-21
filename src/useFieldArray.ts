@@ -86,6 +86,7 @@ export const useFieldArray = <
   }
 
   const focusIndexRef = React.useRef(-1);
+  const isUnMount = React.useRef(false);
   const {
     isFormDirty,
     updateWatchedValue,
@@ -480,7 +481,6 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    let isMounted = true;
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
 
@@ -495,19 +495,18 @@ export const useFieldArray = <
           data || defaultValuesRef.current,
           name,
         );
-        if (isMounted) {
+        if (!isUnMount.current) {
           setFields(mapIds(memoizedDefaultValues.current, keyName));
         }
       };
     }
 
     return () => {
-      isMounted = false;
-
+      isUnMount.current = false;
       if (process.env.NODE_ENV !== 'production') {
         return;
       }
-
+      shouldUnregister && remove();
       resetFields();
       delete resetFunctions[name];
       unset(fieldArrayValuesRef, name);
