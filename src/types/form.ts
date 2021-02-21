@@ -126,13 +126,7 @@ export type KeepStateOptions = Partial<{
   keepSubmitCount: boolean;
 }>;
 
-export type SetFieldValue<TFieldValues> =
-  | FieldValue<TFieldValues>
-  | UnpackNestedValue<DeepPartial<TFieldValues>>
-  | unknown[]
-  | undefined
-  | null
-  | boolean;
+export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 export type RefCallbackHandler = {
   onChange: ChangeHandler;
