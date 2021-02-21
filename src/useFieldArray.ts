@@ -504,7 +504,7 @@ export const useFieldArray = <
     }
 
     return () => {
-      isUnMount.current = false;
+      isUnMount.current = true;
       shouldUnregister && remove();
       resetFields();
       delete resetFunctions[name];
