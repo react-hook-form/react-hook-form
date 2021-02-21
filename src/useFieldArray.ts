@@ -295,9 +295,11 @@ export const useFieldArray = <
       cleanup(fieldsWithValidationRef.current);
     }
 
-    updateFormState({
-      isDirty: isFormDirty(name, omitKey(updatedFormValues)),
-    });
+    if (!isUnMount.current && readFormStateRef.current.isDirty) {
+      updateFormState({
+        isDirty: isFormDirty(name, omitKey(updatedFormValues)),
+      });
+    }
   };
 
   const append = (
@@ -503,9 +505,6 @@ export const useFieldArray = <
 
     return () => {
       isUnMount.current = false;
-      if (process.env.NODE_ENV !== 'production') {
-        return;
-      }
       shouldUnregister && remove();
       resetFields();
       delete resetFunctions[name];
