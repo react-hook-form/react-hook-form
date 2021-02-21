@@ -86,6 +86,7 @@ export const useFieldArray = <
   }
 
   const focusIndexRef = React.useRef(-1);
+  const isUnMount = React.useRef(false);
   const {
     isFormDirty,
     updateWatchedValue,
@@ -294,9 +295,11 @@ export const useFieldArray = <
       cleanup(fieldsWithValidationRef.current);
     }
 
-    updateFormState({
-      isDirty: isFormDirty(name, omitKey(updatedFormValues)),
-    });
+    if (!isUnMount.current && readFormStateRef.current.isDirty) {
+      updateFormState({
+        isDirty: isFormDirty(name, omitKey(updatedFormValues)),
+      });
+    }
   };
 
   const append = (
@@ -494,11 +497,14 @@ export const useFieldArray = <
           data || defaultValuesRef.current,
           name,
         );
-        setFields(mapIds(memoizedDefaultValues.current, keyName));
+        if (!isUnMount.current) {
+          setFields(mapIds(memoizedDefaultValues.current, keyName));
+        }
       };
     }
 
     return () => {
+      isUnMount.current = false;
       shouldUnregister && remove();
       resetFields();
       delete resetFunctions[name];
