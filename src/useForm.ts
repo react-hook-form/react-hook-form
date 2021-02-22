@@ -682,11 +682,6 @@ export function useForm<
 
     if (fields && name) {
       set(values, name, fields);
-
-      fieldArrayUpdatedValuesRef.current = {
-        fields: undefined,
-        name: undefined,
-      };
     }
 
     if (isUndefined(fieldNames)) {
@@ -1108,9 +1103,9 @@ export function useForm<
 
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
-        if (state.fields && state.name) {
-          fieldArrayUpdatedValuesRef.current = state;
+        fieldArrayUpdatedValuesRef.current = state;
 
+        if (state.fields && state.name) {
           if (readFormStateRef.current.isValid) {
             const values = getValues();
             set(values, state.name, state.fields);

@@ -393,6 +393,13 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
+    fieldArraySubjectRef.current.next({
+      name: undefined,
+      fields: undefined,
+    });
+  }, [fields]);
+
+  React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next({ name: inputName, fields, isReset }) {
         if (isReset) {

@@ -8,6 +8,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 import isFunction from '../../utils/isFunction';
 import * as React from 'react';
+import { useFieldArray } from '../../useFieldArray';
+import { Controller } from '../../controller';
 
 describe('watch', () => {
   it('should return undefined when input gets unregister', async () => {
@@ -228,5 +230,77 @@ describe('watch', () => {
         test: 'test2',
       },
     ]);
+  });
+
+  it('should watch correctly with useFieldArray with action and then fallback to onChange', () => {
+    type FormValues = {
+      names: {
+        name: string;
+      }[];
+    };
+
+    let output: object[] = [];
+
+    const Component = () => {
+      const { control, handleSubmit, getValues, watch } = useForm<FormValues>({
+        defaultValues: {
+          names: [],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'names',
+      });
+
+      const handleAddElement = () => {
+        append({ name: 'test' });
+      };
+
+      output.push(watch());
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {fields.map((item, index) => {
+            return (
+              <div key={item.id}>
+                <Controller
+                  control={control}
+                  defaultValue={getValues().names[index].name}
+                  name={`names.${index}.name` as const}
+                  render={({ field }) => <input {...field} />}
+                />
+              </div>
+            );
+          })}
+          <button type="button" onClick={handleAddElement}>
+            Append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    actComponent(() => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: { value: '123' },
+      });
+    });
+
+    actComponent(() => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: '456' },
+      });
+    });
+
+    expect(output).toMatchSnapshot();
   });
 });
