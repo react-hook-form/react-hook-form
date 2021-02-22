@@ -676,7 +676,7 @@ export function useForm<
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
     const { fields, name } = fieldArrayUpdatedValuesRef.current;
-    let values = isMountedRef.current
+    const values = isMountedRef.current
       ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValues;
 
