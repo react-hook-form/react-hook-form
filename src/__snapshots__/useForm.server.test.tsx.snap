@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useForm with SSR should not output error 1`] = `"<div data-reactroot=\\"\\"><input name=\\"test\\"/></div>"`;

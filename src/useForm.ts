@@ -943,7 +943,7 @@ export function useForm<
       updateValueAndGetDefault(name);
 
       return isWindowUndefined
-        ? ({} as RefCallbackHandler)
+        ? ({ name: name as InternalFieldName } as RefCallbackHandler)
         : {
             name,
             onChange: handleChange,
