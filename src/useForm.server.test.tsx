@@ -17,7 +17,7 @@ describe('useForm with SSR', () => {
 
     const spy = jest.spyOn(console, 'error');
 
-    renderToString(<Component />);
+    expect(renderToString(<Component />)).toMatchSnapshot();
 
     expect(spy).not.toHaveBeenCalled();
   });
