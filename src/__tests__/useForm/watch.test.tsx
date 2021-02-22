@@ -239,7 +239,7 @@ describe('watch', () => {
       }[];
     };
 
-    let output: object[] = [];
+    const output: object[] = [];
 
     const Component = () => {
       const { control, handleSubmit, getValues, watch } = useForm<FormValues>({
