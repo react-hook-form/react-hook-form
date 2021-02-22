@@ -15,30 +15,30 @@ Array [
   Object {
     "options": Array [
       Object {
-        "option": undefined,
+        "option": "test",
       },
       Object {
-        "option": undefined,
-      },
-    ],
-  },
-  Object {
-    "options": Array [
-      Object {
-        "option": null,
-      },
-      Object {
-        "option": null,
+        "option": "test1",
       },
     ],
   },
   Object {
     "options": Array [
       Object {
-        "option": null,
+        "option": "test",
       },
       Object {
-        "option": null,
+        "option": "test1",
+      },
+    ],
+  },
+  Object {
+    "options": Array [
+      Object {
+        "option": "test",
+      },
+      Object {
+        "option": "test1",
       },
     ],
   },

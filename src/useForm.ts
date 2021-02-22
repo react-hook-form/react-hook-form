@@ -675,9 +675,14 @@ export function useForm<
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
+    const { fields, name } = fieldArrayUpdatedValuesRef.current;
     const values = isMountedRef.current
       ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValues;
+
+    if (fields && name) {
+      set(values, name, fields);
+    }
 
     if (isUndefined(fieldNames)) {
       return values;
@@ -746,24 +751,14 @@ export function useForm<
 
   const watchInternal: WatchInternal = React.useCallback(
     (fieldNames, defaultValue, isGlobal) => {
-      const { fields, name } = fieldArrayUpdatedValuesRef.current;
       const isArrayNames = Array.isArray(fieldNames);
-      let fieldValues = isMountedRef.current
+      const fieldValues = isMountedRef.current
         ? getValues()
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
         ? defaultValue || {}
         : { [fieldNames as string]: defaultValue };
-
-      if (fields) {
-        name ? set(fieldValues, name, fields) : (fieldValues = fields);
-
-        fieldArrayUpdatedValuesRef.current = {
-          fields: undefined,
-          name: undefined,
-        };
-      }
 
       if (isUndefined(fieldNames)) {
         isGlobal && (isWatchAllRef.current = true);
@@ -1108,9 +1103,9 @@ export function useForm<
 
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
-        if (state.fields && state.name) {
-          fieldArrayUpdatedValuesRef.current = state;
+        fieldArrayUpdatedValuesRef.current = state;
 
+        if (state.fields && state.name) {
           if (readFormStateRef.current.isValid) {
             const values = getValues();
             set(values, state.name, state.fields);
