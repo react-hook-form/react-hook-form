@@ -675,9 +675,19 @@ export function useForm<
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
-    const values = isMountedRef.current
+    const { fields, name } = fieldArrayUpdatedValuesRef.current;
+    let values = isMountedRef.current
       ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValues;
+
+    if (fields && name) {
+      set(values, name, fields);
+
+      fieldArrayUpdatedValuesRef.current = {
+        fields: undefined,
+        name: undefined,
+      };
+    }
 
     if (isUndefined(fieldNames)) {
       return values;
@@ -746,24 +756,14 @@ export function useForm<
 
   const watchInternal: WatchInternal = React.useCallback(
     (fieldNames, defaultValue, isGlobal) => {
-      const { fields, name } = fieldArrayUpdatedValuesRef.current;
       const isArrayNames = Array.isArray(fieldNames);
-      let fieldValues = isMountedRef.current
+      const fieldValues = isMountedRef.current
         ? getValues()
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
         ? defaultValue || {}
         : { [fieldNames as string]: defaultValue };
-
-      if (fields) {
-        name ? set(fieldValues, name, fields) : (fieldValues = fields);
-
-        fieldArrayUpdatedValuesRef.current = {
-          fields: undefined,
-          name: undefined,
-        };
-      }
 
       if (isUndefined(fieldNames)) {
         isGlobal && (isWatchAllRef.current = true);
