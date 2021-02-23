@@ -590,6 +590,188 @@ describe('useFieldArray', () => {
         {},
       );
     });
+
+    it('should unset field array values correctly on DOM removing', async () => {
+      interface NestedComponentProps
+        extends Pick<UseFormMethods, 'control' | 'register'> {
+        childIndex: number;
+      }
+
+      const NestedComponent = ({
+        childIndex,
+        control,
+        register,
+      }: NestedComponentProps) => {
+        const { fields } = useFieldArray({
+          control,
+          name: `children[${childIndex}].nested`,
+        });
+
+        return (
+          <div>
+            {fields.map((field, index) => {
+              return (
+                <>
+                  <input
+                    name={`children[${childIndex}].nested[${index}].name`}
+                    defaultValue={field.name}
+                    ref={register()}
+                  />
+                </>
+              );
+            })}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { control, register } = useForm();
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'children',
+        });
+
+        return (
+          <form>
+            <input name="title" ref={register()} />
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    name={`children[${index}].title`}
+                    defaultValue={field.title}
+                    ref={register()}
+                  />
+                  <button type="button" onClick={() => remove(index)}>
+                    Remove child
+                  </button>
+                  <NestedComponent
+                    childIndex={index}
+                    control={control}
+                    register={register}
+                  />
+                </div>
+              );
+            })}
+            <button type="button" onClick={() => append({})}>
+              Add child
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const addChild = async () =>
+        await actComponent(
+          async () => await screen.getByText('Add child').click(),
+        );
+
+      await addChild();
+
+      expect(screen.getByText('Remove child')).toBeInTheDocument();
+
+      await actComponent(
+        async () => await screen.getByText('Remove child').click(),
+      );
+
+      expect(screen.queryByText('Remove child')).toBeNull();
+
+      await addChild();
+
+      expect(screen.getByText('Remove child')).toBeInTheDocument();
+    });
+
+    it('should unset field array values correctly on DOM removing', async () => {
+      interface NestedComponentProps
+        extends Pick<UseFormMethods, 'control' | 'register'> {
+        childIndex: number;
+      }
+
+      const NestedComponent = ({
+        childIndex,
+        control,
+        register,
+      }: NestedComponentProps) => {
+        const { fields } = useFieldArray({
+          control,
+          name: `children[${childIndex}].nested`,
+        });
+
+        return (
+          <div>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    name={`children[${childIndex}].nested[${index}].name`}
+                    defaultValue={field.name}
+                    ref={register()}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { control, register } = useForm();
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'children',
+        });
+
+        return (
+          <form>
+            <input name="title" ref={register()} />
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    name={`children[${index}].title`}
+                    defaultValue={field.title}
+                    ref={register()}
+                  />
+                  <button type="button" onClick={() => remove(index)}>
+                    Remove child
+                  </button>
+                  <NestedComponent
+                    childIndex={index}
+                    control={control}
+                    register={register}
+                  />
+                </div>
+              );
+            })}
+            <button type="button" onClick={() => append({})}>
+              Add child
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const addChild = async () =>
+        await actComponent(
+          async () => await screen.getByText('Add child').click(),
+        );
+
+      await addChild();
+
+      expect(screen.getByText('Remove child')).toBeInTheDocument();
+
+      await actComponent(
+        async () => await screen.getByText('Remove child').click(),
+      );
+
+      expect(screen.queryByText('Remove child')).toBeNull();
+
+      await addChild();
+
+      expect(screen.getByText('Remove child')).toBeInTheDocument();
+    });
   });
 
   describe('unregister', () => {
@@ -4071,97 +4253,6 @@ describe('useFieldArray', () => {
       expect(
         HTMLInputElement.prototype.removeEventListener,
       ).toHaveBeenCalledTimes(6);
-    });
-
-    it('should unset field array values correctly on DOM removing', async () => {
-      interface NestedComponentProps
-        extends Pick<UseFormMethods, 'control' | 'register'> {
-        childIndex: number;
-      }
-
-      const NestedComponent = ({
-        childIndex,
-        control,
-        register,
-      }: NestedComponentProps) => {
-        const { fields } = useFieldArray({
-          control,
-          name: `children[${childIndex}].nested`,
-        });
-
-        return (
-          <div>
-            {fields.map((field, index) => {
-              return (
-                <>
-                  <input
-                    name={`children[${childIndex}].nested[${index}].name`}
-                    defaultValue={field.name}
-                    ref={register()}
-                  />
-                </>
-              );
-            })}
-          </div>
-        );
-      };
-
-      const Component = () => {
-        const { control, register } = useForm();
-        const { fields, append, remove } = useFieldArray({
-          control,
-          name: 'children',
-        });
-
-        return (
-          <form>
-            <input name="title" ref={register()} />
-            {fields.map((field, index) => {
-              return (
-                <div key={field.id}>
-                  <input
-                    name={`children[${index}].title`}
-                    defaultValue={field.title}
-                    ref={register()}
-                  />
-                  <button type="button" onClick={() => remove(index)}>
-                    Remove child
-                  </button>
-                  <NestedComponent
-                    childIndex={index}
-                    control={control}
-                    register={register}
-                  />
-                </div>
-              );
-            })}
-            <button type="button" onClick={() => append({})}>
-              Add child
-            </button>
-          </form>
-        );
-      };
-
-      render(<Component />);
-
-      const addChild = async () =>
-        await actComponent(
-          async () => await screen.getByText('Add child').click(),
-        );
-
-      await addChild();
-
-      expect(screen.getByText('Remove child')).toBeInTheDocument();
-
-      await actComponent(
-        async () => await screen.getByText('Remove child').click(),
-      );
-
-      expect(screen.queryByText('Remove child')).toBeNull();
-
-      await addChild();
-
-      expect(screen.getByText('Remove child')).toBeInTheDocument();
     });
 
     describe('with resolver', () => {
