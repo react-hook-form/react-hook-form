@@ -388,6 +388,107 @@ describe('useFieldArray', () => {
         new Set(),
       );
     });
+
+    it('should unset field array values correctly on DOM removing', async () => {
+      interface NestedComponentProps
+        extends Pick<UseFormReturn<FormValues>, 'control' | 'register'> {
+        childIndex: number;
+      }
+
+      type FormValues = {
+        test: {
+          title: string;
+          nested: {
+            name: string;
+          }[];
+        }[];
+        title: string;
+      };
+
+      const NestedComponent = ({
+        childIndex,
+        control,
+        register,
+      }: NestedComponentProps) => {
+        const { fields } = useFieldArray({
+          control,
+          name: `test.${childIndex}.nested` as `test.0.nested`,
+        });
+
+        return (
+          <div>
+            {fields.map((field, index) => {
+              return (
+                <>
+                  <input
+                    defaultValue={field.name}
+                    {...register(
+                      `test.${childIndex}.nested.${index}.name` as const,
+                    )}
+                  />
+                </>
+              );
+            })}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { control, register } = useForm<FormValues>();
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            <input {...register('title')} />
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    defaultValue={field.title}
+                    {...register(`test.${index}.title` as const)}
+                  />
+                  <button type="button" onClick={() => remove(index)}>
+                    Remove child
+                  </button>
+                  <NestedComponent
+                    childIndex={index}
+                    control={control}
+                    register={register}
+                  />
+                </div>
+              );
+            })}
+            <button type="button" onClick={() => append({})}>
+              Add child
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const addChild = async () =>
+        await actComponent(
+          async () => await screen.getByText('Add child').click(),
+        );
+
+      await addChild();
+
+      expect(screen.getByText('Remove child')).toBeInTheDocument();
+
+      await actComponent(
+        async () => await screen.getByText('Remove child').click(),
+      );
+
+      expect(screen.queryByText('Remove child')).toBeNull();
+
+      await addChild();
+
+      expect(screen.getByText('Remove child')).toBeInTheDocument();
+    });
   });
 
   describe('unregister', () => {
