@@ -611,13 +611,12 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((field, index) => {
               return (
-                <>
-                  <input
-                    name={`children[${childIndex}].nested[${index}].name`}
-                    defaultValue={field.name}
-                    ref={register()}
-                  />
-                </>
+                <input
+                  key={field.id}
+                  name={`children[${childIndex}].nested[${index}].name`}
+                  defaultValue={field.name}
+                  ref={register()}
+                />
               );
             })}
           </div>
