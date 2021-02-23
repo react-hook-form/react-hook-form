@@ -508,7 +508,7 @@ export const useFieldArray = <
       shouldUnregister && remove();
       resetFields();
       delete resetFunctions[name];
-      unset(fieldArrayValuesRef, name);
+      unset(fieldArrayValuesRef.current, name);
       fieldArrayNames.delete(name);
     };
   }, []);
