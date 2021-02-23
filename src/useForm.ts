@@ -882,7 +882,7 @@ export function useForm<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
   >(
-    name: TFieldName,
+    name?: TFieldName,
     defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
   ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
   function watch<TFieldName extends keyof TFieldValues>(
@@ -896,7 +896,7 @@ export function useForm<
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   function watch(
-    fieldNames?: string | string[],
+    fieldNames?: string | string[] | undefined,
     defaultValue?: unknown,
   ): unknown {
     return watchInternal(fieldNames, defaultValue);

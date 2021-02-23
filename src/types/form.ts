@@ -213,7 +213,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
   watch<TFieldName extends string, TFieldValue>(
-    name: TFieldName,
+    name?: TFieldName,
     defaultValue?: TFieldName extends keyof TFieldValues
       ? UnpackNestedValue<TFieldValues[TFieldName]>
       : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
