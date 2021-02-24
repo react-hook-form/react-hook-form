@@ -24,7 +24,7 @@ export default (options?: HTMLInputElement[]): CheckboxFieldResult => {
     const { checked, value, attributes } = options[0];
 
     return checked
-      ? // @ts-expect-error
+      ? // @ts-expect-error expected to work in the browser
         attributes && !isUndefined(attributes.value)
         ? isUndefined(value)
           ? validResult

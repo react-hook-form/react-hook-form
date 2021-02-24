@@ -356,7 +356,7 @@ export function useForm<
 
       return isUndefined(error);
     },
-    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
+    [isValidateAllFieldCriteria],
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
@@ -383,7 +383,7 @@ export function useForm<
 
       return errors;
     },
-    [shouldRenderBaseOnError, criteriaMode],
+    [criteriaMode],
   );
 
   const validateForm = async (fieldsRef: FieldRefs) => {
@@ -430,7 +430,7 @@ export function useForm<
         isValidating: true,
       });
 
-      if (resolver) {
+      if (resolverRef.current) {
         isValid = isEmptyObject(
           await executeSchemaOrResolverValidation(
             fields,
@@ -450,7 +450,7 @@ export function useForm<
       formStateSubjectRef.current.next({
         errors: formStateRef.current.errors,
         isValidating: false,
-        isValid: resolver ? isValid : getIsValid(),
+        isValid: resolverRef.current ? isValid : getIsValid(),
       });
     },
     [executeSchemaOrResolverValidation, executeValidation],
@@ -473,55 +473,7 @@ export function useForm<
         }
       }
     },
-    [trigger, setFieldValue, updateAndGetDirtyState],
-  );
-
-  const setInternalValue = React.useCallback(
-    (
-      name: FieldName<TFieldValues>,
-      value: SetFieldValue<TFieldValues>,
-      options: SetValueConfig,
-    ) => {
-      const field = get(fieldsRef.current, name);
-
-      if (field && field._f) {
-        setFieldValue(name, value, true);
-        options.shouldDirty && updateAndGetDirtyState(name);
-        options.shouldValidate && trigger(name as FieldName<TFieldValues>);
-      } else {
-        if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
-          fieldArraySubjectRef.current.next({
-            fields: value,
-            name,
-            isReset: true,
-          });
-
-          if (
-            (readFormStateRef.current.isDirty ||
-              readFormStateRef.current.dirtyFields) &&
-            options.shouldDirty
-          ) {
-            set(
-              formStateRef.current.dirtyFields,
-              name,
-              setFieldArrayDirtyFields(
-                value,
-                get(defaultValuesRef.current, name, []),
-                get(formStateRef.current.dirtyFields, name, []),
-              ),
-            );
-
-            formStateSubjectRef.current.next({
-              dirtyFields: formStateRef.current.dirtyFields,
-              isDirty: getFormIsDirty(name, value),
-            });
-          }
-        } else {
-          setInternalValues(name, value, options);
-        }
-      }
-    },
-    [updateAndGetDirtyState, setFieldValue, setInternalValues],
+    [trigger],
   );
 
   const isFieldWatched = <T extends FieldName<TFieldValues>>(name: T) =>
@@ -550,8 +502,48 @@ export function useForm<
     return defaultValue;
   };
 
-  const setValue: UseFormSetValue<TFieldValues> = (name, value, options) => {
-    setInternalValue(name, value, options || {});
+  const setValue: UseFormSetValue<TFieldValues> = (
+    name,
+    value,
+    options = {},
+  ) => {
+    const field = get(fieldsRef.current, name);
+
+    if (field && field._f) {
+      setFieldValue(name, value, true);
+      options.shouldDirty && updateAndGetDirtyState(name);
+      options.shouldValidate && trigger(name as FieldName<TFieldValues>);
+    } else if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+      fieldArraySubjectRef.current.next({
+        fields: value,
+        name,
+        isReset: true,
+      });
+
+      if (
+        (readFormStateRef.current.isDirty ||
+          readFormStateRef.current.dirtyFields) &&
+        options.shouldDirty
+      ) {
+        set(
+          formStateRef.current.dirtyFields,
+          name,
+          setFieldArrayDirtyFields(
+            value,
+            get(defaultValuesRef.current, name, []),
+            get(formStateRef.current.dirtyFields, name, []),
+          ),
+        );
+
+        formStateSubjectRef.current.next({
+          dirtyFields: formStateRef.current.dirtyFields,
+          isDirty: getFormIsDirty(name, value),
+        });
+      }
+    } else {
+      setInternalValues(name, value, options);
+    }
+
     isFieldWatched(name) && formStateSubjectRef.current.next({});
     watchSubjectRef.current.next({ name, value });
   };
@@ -836,7 +828,7 @@ export function useForm<
     formStateSubjectRef.current.next({
       ...formStateRef.current,
       ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
-      ...(resolver ? {} : { isValid: getIsValid() }),
+      ...(resolverRef.current ? {} : { isValid: getIsValid() }),
     });
 
     if (!options.keepIsValid) {
@@ -1084,10 +1076,6 @@ export function useForm<
   };
 
   React.useEffect(() => {
-    resolver && readFormStateRef.current.isValid && updateIsValid();
-  }, [defaultValuesRef.current]);
-
-  React.useEffect(() => {
     isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState: Partial<FormState<TFieldValues>> = {}) {
@@ -1114,6 +1102,8 @@ export function useForm<
         }
       },
     });
+
+    resolverRef.current && readFormStateRef.current.isValid && updateIsValid();
 
     return () => {
       watchSubjectRef.current.unsubscribe();
@@ -1154,7 +1144,7 @@ export function useForm<
     register,
     handleSubmit,
     watch: React.useCallback(watch, []),
-    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
+    setValue: React.useCallback(setValue, [setInternalValues]),
     getValues: React.useCallback(getValues, []),
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),

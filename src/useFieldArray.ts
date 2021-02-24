@@ -403,6 +403,8 @@ export const useFieldArray = <
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next({ name: inputName, fields, isReset }) {
         if (isReset) {
+          unset(fieldsRef.current, inputName || name);
+
           if (inputName) {
             set(fieldArrayDefaultValuesRef.current, inputName, fields);
             setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
