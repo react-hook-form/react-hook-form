@@ -48,7 +48,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     });
 
     return () => controllerSubscription.unsubscribe();
-  }, [name]);
+  }, [name, controllerSubjectRef]);
 
   return {
     field: {
