@@ -1004,36 +1004,39 @@ export function useForm<
     [shouldFocusError, isValidateAllFieldCriteria, criteriaMode],
   );
 
-  const resetFromState = ({
-    keepErrors,
-    keepDirty,
-    keepIsSubmitted,
-    keepTouched,
-    keepIsValid,
-    keepSubmitCount,
-  }: KeepStateOptions) => {
-    if (!keepIsValid) {
-      validFieldsRef.current = {};
-      fieldsWithValidationRef.current = {};
-    }
+  const resetFromState = React.useCallback(
+    ({
+      keepErrors,
+      keepDirty,
+      keepIsSubmitted,
+      keepTouched,
+      keepIsValid,
+      keepSubmitCount,
+    }: KeepStateOptions) => {
+      if (!keepIsValid) {
+        validFieldsRef.current = {};
+        fieldsWithValidationRef.current = {};
+      }
 
-    watchFieldsRef.current = new Set();
-    isWatchAllRef.current = false;
+      watchFieldsRef.current = new Set();
+      isWatchAllRef.current = false;
 
-    formStateSubjectRef.current.next({
-      submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
-      isDirty: keepDirty ? formStateRef.current.isDirty : false,
-      isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
-      isValid: keepIsValid
-        ? formStateRef.current.isValid
-        : !validationMode.isOnSubmit,
-      dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
-      touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
-      errors: keepErrors ? formStateRef.current.errors : {},
-      isSubmitting: false,
-      isSubmitSuccessful: false,
-    });
-  };
+      formStateSubjectRef.current.next({
+        submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
+        isDirty: keepDirty ? formStateRef.current.isDirty : false,
+        isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
+        isValid: keepIsValid
+          ? formStateRef.current.isValid
+          : !validationMode.isOnSubmit,
+        dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
+        touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
+        errors: keepErrors ? formStateRef.current.errors : {},
+        isSubmitting: false,
+        isSubmitSuccessful: false,
+      });
+    },
+    [],
+  );
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
     const updatedValues = values || defaultValuesRef.current;

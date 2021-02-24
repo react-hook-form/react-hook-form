@@ -72,7 +72,7 @@ export function useWatch<TFieldValues>({
     });
 
     return () => watchSubscription.unsubscribe();
-  }, [name, defaultValue]);
+  }, [name]);
 
   return value;
 }
