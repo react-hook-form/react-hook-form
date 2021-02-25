@@ -23,7 +23,7 @@ export type ControllerRenderProps<
   onChange: (...event: any[]) => void;
   onBlur: () => void;
   value: any;
-  name: FieldName<Control<TFieldValues>>;
+  name: FieldName<TFieldValues>;
   ref: React.Ref<any>;
 };
 
