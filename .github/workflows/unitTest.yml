@@ -29,10 +29,6 @@ jobs:
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
-      - name: Package Check
-        run: |
-          npm run check:package
-
       - name: Lint
         run: |
           npm run lint:types

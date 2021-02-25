@@ -1,5 +1,6 @@
 export * from './useForm';
 export * from './useFieldArray';
+export * from './useFormState';
 export * from './useController';
 export * from './useWatch';
 export * from './controller';

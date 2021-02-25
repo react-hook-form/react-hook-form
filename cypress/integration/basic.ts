@@ -7,7 +7,7 @@ describe('basic form validation', () => {
 
     cy.get('input[name="firstName"] + p').contains('firstName error');
     cy.get('input[name="nestItem.nest1"] + p').contains('nest 1 error');
-    cy.get('input[name="arrayItem[0].test1"] + p').contains(
+    cy.get('input[name="arrayItem.0.test1"] + p').contains(
       'array item 1 error',
     );
     cy.get('input[name="lastName"] + p').contains('lastName error');
@@ -23,7 +23,7 @@ describe('basic form validation', () => {
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="firstName"]').type('a');
-    cy.get('input[name="arrayItem[0].test1"]').type('ab');
+    cy.get('input[name="arrayItem.0.test1"]').type('ab');
     cy.get('input[name="nestItem.nest1"]').type('ab');
     cy.get('input[name="lastName"]').type('luo123456');
     cy.get('input[name="lastName"] + p').contains('lastName error');
@@ -85,9 +85,9 @@ describe('basic form validation', () => {
     cy.get('input[name="nestItem.nest1"]').blur();
     cy.get('input[name="nestItem.nest1"] + p').contains('nest 1 error');
 
-    cy.get('input[name="arrayItem[0].test1"]').focus();
-    cy.get('input[name="arrayItem[0].test1"]').blur();
-    cy.get('input[name="arrayItem[0].test1"] + p').contains(
+    cy.get('input[name="arrayItem.0.test1"]').focus();
+    cy.get('input[name="arrayItem.0.test1"]').blur();
+    cy.get('input[name="arrayItem.0.test1"] + p').contains(
       'array item 1 error',
     );
 
@@ -108,7 +108,7 @@ describe('basic form validation', () => {
     cy.get('input[name="checkbox"]').blur();
 
     cy.get('input[name="nestItem.nest1"]').type('test');
-    cy.get('input[name="arrayItem[0].test1"]').type('test');
+    cy.get('input[name="arrayItem.0.test1"]').type('test');
 
     cy.get('p').should('have.length', 0);
 
@@ -123,12 +123,12 @@ describe('basic form validation', () => {
     cy.get('input[name="nestItem.nest1"] + p').contains('nest 1 error');
     cy.get('input[name="nestItem.nest1"]').type('a');
 
-    cy.get('input[name="arrayItem[0].test1"]').focus();
-    cy.get('input[name="arrayItem[0].test1"]').blur();
-    cy.get('input[name="arrayItem[0].test1"] + p').contains(
+    cy.get('input[name="arrayItem.0.test1"]').focus();
+    cy.get('input[name="arrayItem.0.test1"]').blur();
+    cy.get('input[name="arrayItem.0.test1"] + p').contains(
       'array item 1 error',
     );
-    cy.get('input[name="arrayItem[0].test1"]').type('a');
+    cy.get('input[name="arrayItem.0.test1"]').type('a');
 
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
@@ -242,6 +242,6 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('30');
+    cy.get('#renderCount').contains('28');
   });
 });

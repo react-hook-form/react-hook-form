@@ -1,33 +1,18 @@
-import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
-import get from '../utils/get';
 import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, FieldValues, InternalFieldName } from '../types';
+import getFieldValueAs from './getFieldValueAs';
+import { Field } from '../types';
 
-export default function getFieldValue<TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  name: InternalFieldName<TFieldValues>,
-  shallowFieldsStateRef?: React.MutableRefObject<Partial<FieldValues>>,
-  excludeDisabled?: boolean,
-  shouldKeepRawValue?: boolean,
-) {
-  const field = fieldsRef.current[name]!;
+export default function getFieldValue(field?: Field) {
+  if (field && field._f) {
+    const { ref } = field._f;
 
-  if (field) {
-    const {
-      ref: { value, disabled },
-      ref,
-      valueAsNumber,
-      valueAsDate,
-      setValueAs,
-    } = field;
-
-    if (disabled && excludeDisabled) {
+    if (ref.disabled) {
       return;
     }
 
@@ -36,7 +21,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     if (isRadioInput(ref)) {
-      return getRadioValue(field.options).value;
+      return getRadioValue(field._f.refs).value;
     }
 
     if (isMultipleSelect(ref)) {
@@ -44,23 +29,9 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     if (isCheckBox(ref)) {
-      return getCheckboxValue(field.options).value;
+      return getCheckboxValue(field._f.refs).value;
     }
 
-    return shouldKeepRawValue
-      ? value
-      : valueAsNumber
-      ? value === ''
-        ? NaN
-        : +value
-      : valueAsDate
-      ? (ref as HTMLInputElement).valueAsDate
-      : setValueAs
-      ? setValueAs(value)
-      : value;
-  }
-
-  if (shallowFieldsStateRef) {
-    return get(shallowFieldsStateRef.current, name);
+    return getFieldValueAs(ref.value, field._f);
   }
 }

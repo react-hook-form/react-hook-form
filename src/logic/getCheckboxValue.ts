@@ -1,5 +1,4 @@
 import isUndefined from '../utils/isUndefined';
-import { RadioOrCheckboxOption } from '../types';
 
 type CheckboxFieldResult = {
   isValid: boolean;
@@ -13,20 +12,21 @@ const defaultResult: CheckboxFieldResult = {
 
 const validResult = { value: true, isValid: true };
 
-export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
+export default (options?: HTMLInputElement[]): CheckboxFieldResult => {
   if (Array.isArray(options)) {
     if (options.length > 1) {
       const values = options
-        .filter((option) => option && option.ref.checked)
-        .map(({ ref: { value } }) => value);
+        .filter((option) => option && option.checked)
+        .map(({ value }) => value);
       return { value: values, isValid: !!values.length };
     }
 
-    const { checked, value, attributes } = options[0].ref;
+    const { checked, value, attributes } = options[0];
 
     return checked
-      ? attributes && !isUndefined((attributes as any).value)
-        ? isUndefined(value) || value === ''
+      ? // @ts-expect-error expected to work in the browser
+        attributes && !isUndefined(attributes.value)
+        ? isUndefined(value)
           ? validResult
           : { value: value, isValid: true }
         : validResult

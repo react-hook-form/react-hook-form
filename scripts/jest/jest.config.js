@@ -2,10 +2,10 @@
 const { defaults: tsjPresets } = require('ts-jest/presets');
 const jestPresets = require('@testing-library/react-native/jest-preset');
 
-const getTestMatch = (name) =>
-  ['**/+([a-zA-Z])', name, '(spec|test).ts?(x)'].filter(Boolean).join('.');
-
 const common = {
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
   rootDir: '.',
   roots: ['<rootDir>/src'],
   transform: {
@@ -26,7 +26,7 @@ const web = {
     name: 'Web',
     color: 'cyan',
   },
-  testMatch: [getTestMatch()],
+  testMatch: ['**/__tests__/**/*.[jt]s?(x)'],
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
 };
 
@@ -36,7 +36,7 @@ const server = {
     name: 'Server',
     color: 'blue',
   },
-  testMatch: [getTestMatch('server')],
+  testMatch: ['**/+([a-zA-Z]).server.(spec|test).ts?(x)'],
   testEnvironment: 'node',
 };
 
@@ -47,7 +47,7 @@ const native = {
     color: 'magenta',
   },
   preset: '@testing-library/react-native',
-  testMatch: [getTestMatch('native')],
+  testMatch: ['**/+([a-zA-Z]).native.(spec|test).ts?(x)'],
   transform: {
     ...tsjPresets.transform,
     '^.+\\.tsx?$': 'ts-jest',

@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, NestedValue } from 'react-hook-form';
 
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors, reset } = useForm<{
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
@@ -17,7 +22,7 @@ const Basic: React.FC = (props: any) => {
     pattern: string;
     radio: string;
     checkbox: string;
-    checkboxArray: string[];
+    checkboxArray: NestedValue<string[]>;
     multiple: string;
     validate: string;
     nestItem: {
@@ -36,128 +41,108 @@ const Basic: React.FC = (props: any) => {
   return (
     <form onSubmit={handleSubmit(onValid, onInvalid)}>
       <input
-        name="nestItem.nest1"
         placeholder="nest.nest1"
-        ref={register({ required: true })}
+        {...register('nestItem.nest1', { required: true })}
       />
       {errors.nestItem?.nest1 && <p>nest 1 error</p>}
       <input
-        name="arrayItem[0].test1"
         placeholder="arrayItem[0].test1"
-        ref={register({ required: true })}
+        {...register('arrayItem.0.test1', { required: true })}
       />
       {errors.arrayItem?.[0]?.test1 && <p>array item 1 error</p>}
       <input
-        name="firstName"
-        ref={register({ required: true })}
+        {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       {errors.firstName && <p>firstName error</p>}
       <input
-        name="lastName"
-        ref={register({ required: true, maxLength: 5 })}
+        {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />
       {errors.lastName && <p>lastName error</p>}
       <input
         type="number"
-        name="min"
-        ref={register({ min: 10 })}
+        {...register('min', { min: 10 })}
         placeholder="min"
       />
       {errors.min && <p>min error</p>}
       <input
         type="number"
-        name="max"
-        ref={register({ max: 20 })}
+        {...register('max', { max: 20 })}
         placeholder="max"
       />
       {errors.max && <p>max error</p>}
       <input
         type="date"
-        name="minDate"
-        ref={register({ min: '2019-08-01' })}
+        {...register('minDate', { min: '2019-08-01' })}
         placeholder="minDate"
       />
       {errors.minDate && <p>minDate error</p>}
       <input
         type="date"
-        name="maxDate"
-        ref={register({ max: '2019-08-01' })}
+        {...register('maxDate', { max: '2019-08-01' })}
         placeholder="maxDate"
       />
       {errors.maxDate && <p>maxDate error</p>}
       <input
-        name="minLength"
-        ref={register({ minLength: 2 })}
+        {...register('minLength', { minLength: 2 })}
         placeholder="minLength"
       />
       {errors.minLength && <p>minLength error</p>}
       <input
-        name="minRequiredLength"
-        ref={register({ minLength: 2, required: true })}
+        {...register('minRequiredLength', { minLength: 2, required: true })}
         placeholder="minRequiredLength"
       />
       {errors.minRequiredLength && <p>minRequiredLength error</p>}
-      <select name="selectNumber" ref={register({ required: true })}>
+      <select {...register('selectNumber', { required: true })}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       {errors.selectNumber && <p>selectNumber error</p>}
       <input
-        name="pattern"
-        ref={register({ pattern: /\d+/ })}
+        {...register('pattern', { pattern: /\d+/ })}
         placeholder="pattern"
       />
       {errors.pattern && <p>pattern error</p>}
       Radio1
-      <input type="radio" name="radio" ref={register} value="1" />
+      <input type="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" value="2" ref={register} />
+      <input type="radio" value="2" {...register('radio')} />
       Radio3
       <input
         type="radio"
-        name="radio"
         value="3"
-        ref={register({ required: true })}
+        {...register('radio', { required: true })}
       />
       {errors.radio && <p>radio error</p>}
-      <input
-        type="checkbox"
-        name="checkbox"
-        ref={register({ required: true })}
-      />
+      <input type="checkbox" {...register('checkbox', { required: true })} />
       {errors.checkbox && <p>checkbox error</p>}
       <input
         type="checkbox"
-        name="checkboxArray"
         value="1"
-        ref={register({ required: true })}
+        {...register('checkboxArray', { required: true })}
       />
       <input
         type="checkbox"
-        name="checkboxArray"
         value="2"
-        ref={register({ required: true })}
+        {...register('checkboxArray', { required: true })}
       />
       <input
         type="checkbox"
-        name="checkboxArray"
         value="3"
-        ref={register({ required: true })}
+        {...register('checkboxArray', { required: true })}
       />
       {errors.checkboxArray && <p>checkboxArray error</p>}
-      <select name="multiple" multiple ref={register({ required: true })}>
+      <select multiple {...register('multiple', { required: true })}>
         <option value="optionA">optionA</option>
         <option value="optionB">optionB</option>
       </select>
       {errors.multiple && <p>multiple error</p>}
       <input
-        name="validate"
         type="validate"
         placeholder="validate"
-        ref={register({
+        {...register('validate', {
           validate: (value) => value === 'test',
         })}
       />

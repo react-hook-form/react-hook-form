@@ -12,7 +12,12 @@ const validationSchema = yup.object().shape({
 });
 
 const SetValueWithSchema: React.FC = () => {
-  const { register, setValue, handleSubmit, errors } = useForm<{
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{
     firstName: string;
     lastName: string;
     age: string;
@@ -28,12 +33,16 @@ const SetValueWithSchema: React.FC = () => {
   renderCounter++;
 
   useEffect(() => {
-    register({ name: 'firstName' }, { required: true });
-    register({ name: 'lastName' }, { required: true });
+    register('firstName', { required: true });
+    register('lastName', { required: true });
   }, [register]);
 
   return (
-    <form onSubmit={handleSubmit(() => {})}>
+    <form
+      onSubmit={handleSubmit((d) => {
+        console.log(d);
+      })}
+    >
       <input
         name="firstName"
         placeholder="firstName"
@@ -59,8 +68,7 @@ const SetValueWithSchema: React.FC = () => {
       {errors.lastName && <p>lastName error</p>}
 
       <input
-        name="age"
-        ref={register}
+        {...register('age')}
         onChange={(e) => {
           setValue('age', e.target.value, {
             shouldValidate: true,
@@ -69,7 +77,7 @@ const SetValueWithSchema: React.FC = () => {
         }}
       />
 
-      <input name="requiredField" placeholder="requiredField" ref={register} />
+      <input placeholder="requiredField" {...register('requiredField')} />
       {errors.requiredField && <p>RequiredField error</p>}
 
       <button

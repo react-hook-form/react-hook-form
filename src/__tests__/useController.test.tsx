@@ -1,0 +1,288 @@
+import * as React from 'react';
+import { useForm } from '../useForm';
+import { useController } from '../useController';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { Control } from '../types';
+
+describe('useController', () => {
+  it('should render input correctly', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        test1: { test: string }[];
+      }>();
+
+      useController({
+        name: 'test',
+        control,
+        defaultValue: '',
+      });
+
+      return null;
+    };
+
+    render(<Component />);
+  });
+
+  it('should only subscribe to formState at each useController level', async () => {
+    const renderCounter = [0, 0];
+    type FormValues = {
+      test: string;
+      test1: string;
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { field } = useController({
+        name: 'test',
+        control,
+      });
+
+      renderCounter[0]++;
+
+      return <input {...field} />;
+    };
+
+    const Test1 = ({ control }: { control: Control<FormValues> }) => {
+      const {
+        field,
+        fieldState: { isDirty, isTouched },
+      } = useController({
+        name: 'test1',
+        control,
+      });
+
+      renderCounter[1]++;
+
+      return (
+        <div>
+          <input {...field} />
+          {isDirty && <p>isDirty</p>}
+          {isTouched && <p>isTouched</p>}
+        </div>
+      );
+    };
+
+    const Component = () => {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: '',
+          test1: '',
+        },
+      });
+
+      return (
+        <div>
+          <Test control={control} />
+          <Test1 control={control} />
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    expect(renderCounter).toEqual([1, 1]);
+
+    await act(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: '1232',
+        },
+      });
+    });
+
+    screen.getByText('isDirty');
+
+    await act(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[1]);
+    });
+
+    screen.getByText('isTouched');
+
+    expect(renderCounter).toEqual([1, 3]);
+
+    await act(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: '1232',
+        },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+    });
+
+    expect(renderCounter).toEqual([2, 5]);
+  });
+
+  describe('checkbox', () => {
+    it('should work for checkbox by spread the field object', async () => {
+      const watchResult: unknown[] = [];
+      const Component = () => {
+        const { control, watch } = useForm<{
+          test: string;
+        }>();
+
+        watchResult.push(watch());
+
+        const { field } = useController({
+          name: 'test',
+          control,
+          defaultValue: '',
+        });
+
+        return <input type="checkbox" {...field} />;
+      };
+
+      render(<Component />);
+
+      expect(watchResult).toEqual([{}]);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('checkbox'));
+      });
+
+      expect(watchResult).toEqual([{}, { test: true }]);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('checkbox'));
+      });
+
+      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+    });
+
+    it('should work for checkbox by assign checked', async () => {
+      const watchResult: unknown[] = [];
+      const Component = () => {
+        const { control, watch } = useForm<{
+          test: string;
+        }>();
+
+        watchResult.push(watch());
+
+        const { field } = useController({
+          name: 'test',
+          control,
+          defaultValue: '',
+        });
+
+        return (
+          <input
+            type="checkbox"
+            checked={field.value}
+            onChange={(e) => field.onChange(e.target.checked)}
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(watchResult).toEqual([{}]);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('checkbox'));
+      });
+
+      expect(watchResult).toEqual([{}, { test: true }]);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('checkbox'));
+      });
+
+      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+    });
+
+    it('should work for checkbox by assign value manually', async () => {
+      const watchResult: unknown[] = [];
+      const Component = () => {
+        const { control, watch } = useForm<{
+          test: string;
+        }>();
+
+        watchResult.push(watch());
+
+        const { field } = useController({
+          name: 'test',
+          control,
+          defaultValue: '',
+        });
+
+        return (
+          <input
+            value="on"
+            type="checkbox"
+            checked={field.value}
+            onChange={(e) =>
+              field.onChange(e.target.checked ? e.target.value : false)
+            }
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(watchResult).toEqual([{}]);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('checkbox'));
+      });
+
+      expect(watchResult).toEqual([{}, { test: 'on' }]);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('checkbox'));
+      });
+
+      expect(watchResult).toEqual([{}, { test: 'on' }, { test: false }]);
+    });
+  });
+
+  it('should subscribe to formState update with trigger re-render at root', () => {
+    type FormValues = {
+      test: string;
+    };
+    let counter = 0;
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { field, formState } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      return (
+        <>
+          <input {...field} />
+          <p>{formState.dirtyFields.test && 'dirty'}</p>
+          <p>{formState.touchedFields.test && 'touched'}</p>
+        </>
+      );
+    };
+
+    const Component = () => {
+      const { control } = useForm<FormValues>();
+      counter++;
+
+      return <Test control={control} />;
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    act(() => {
+      fireEvent.blur(screen.getByRole('textbox'));
+    });
+
+    expect(counter).toEqual(1);
+
+    screen.getByText('dirty');
+    screen.getByText('touched');
+  });
+});

@@ -19,7 +19,7 @@ const FormState = (props: {
       dirtyFields,
       isSubmitted,
       submitCount,
-      touched,
+      touchedFields,
       isDirty,
       isSubmitting,
       isSubmitSuccessful,
@@ -48,15 +48,15 @@ const FormState = (props: {
   renderCounter++;
 
   return (
-    <form onSubmit={handleSubmit(() => {})}>
+    <form onSubmit={handleSubmit((d) => {
+      console.log(d)
+    })}>
       <input
-        name="firstName"
-        ref={register({ required: true })}
+        {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       <input
-        name="lastName"
-        ref={register({ required: true })}
+        {...register('lastName', { required: true })}
         placeholder="lastName"
       />
       <div id="state">
@@ -67,26 +67,21 @@ const FormState = (props: {
           isSubmitting,
           isSubmitSuccessful,
           isValid,
-          touched: Object.keys(touched),
-          dirtyFields: Object.keys(dirtyFields),
+          touched: Object.keys(touchedFields),
+          dirty: Object.keys(dirtyFields),
         })}
       </div>
-      <select name="select" ref={register} defaultValue="test">
+      <select {...register('select')} defaultValue="test">
         <option value="">Select</option>
         <option value="test">test</option>
         <option value="test1">test1</option>
         <option value="test2">test3</option>
       </select>
 
-      <input type="radio" name="radio" ref={register} />
+      <input type="radio" {...register('radio')} />
 
-      <input type="checkbox" name="checkbox" ref={register} />
-      <input
-        type="checkbox"
-        name="checkbox-checked"
-        defaultChecked
-        ref={register}
-      />
+      <input type="checkbox" {...register('checkbox')} />
+      <input type="checkbox" {...register('checkbox-checked')} />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset

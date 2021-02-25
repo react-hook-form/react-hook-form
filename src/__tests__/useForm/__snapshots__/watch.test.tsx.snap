@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`watch should watch correctly with useFieldArray with action and then fallback to onChange 1`] = `
+Array [
+  Object {
+    "names": Array [],
+  },
+  Object {
+    "names": Array [],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "test",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "test",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "test",
+      },
+      Object {
+        "name": "test",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "test",
+      },
+      Object {
+        "name": "test",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "123",
+      },
+      Object {
+        "name": "test",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "123",
+      },
+      Object {
+        "name": "456",
+      },
+    ],
+  },
+]
+`;

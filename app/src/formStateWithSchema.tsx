@@ -21,7 +21,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
       dirtyFields,
       isSubmitted,
       submitCount,
-      touched,
+      touchedFields,
       isDirty,
       isSubmitting,
       isSubmitSuccessful,
@@ -51,20 +51,20 @@ const FormStateWithSchema: React.FC = (props: any) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="firstName" ref={register} placeholder="firstName" />
-      <input name="lastName" ref={register} placeholder="lastName" />
-      <select name="select" ref={register}>
+      <input {...register('firstName')} placeholder="firstName" />
+      <input {...register('lastName')} placeholder="lastName" />
+      <select {...register('select')}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       Radio1
-      <input type="radio" name="radio" ref={register} value="1" />
+      <input type="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" ref={register} value="2" />
+      <input type="radio" {...register('radio')} value="2" />
       Radio3
-      <input type="radio" name="radio" ref={register} value="3" />
-      <input type="checkbox" name="checkbox" ref={register} />
+      <input type="radio" {...register('radio')} value="3" />
+      <input type="checkbox" {...register('checkbox')} />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
@@ -77,8 +77,8 @@ const FormStateWithSchema: React.FC = (props: any) => {
           isSubmitting,
           isSubmitSuccessful,
           isValid,
-          touched: Object.keys(touched),
-          dirtyFields: Object.keys(dirtyFields),
+          touched: Object.keys(touchedFields),
+          dirty: Object.keys(dirtyFields),
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>
