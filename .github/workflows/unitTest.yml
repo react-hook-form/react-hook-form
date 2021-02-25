@@ -4,14 +4,17 @@ on: [pull_request]
 
 jobs:
   build:
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Node Modules
+      - name: Set Up Node environment
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12.x
+
+      - name: Cache node modules
         id: node-modules
         uses: actions/cache@v2
         with:
@@ -23,20 +26,16 @@ jobs:
       - if: steps.node-modules.outputs.cache-hit != 'true'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
       - name: Package Check
         run: |
           npm run check:package
-
       - name: Lint
         run: |
           npm run lint:types
           npm run lint
-
       - name: Test
         run: npm test
         env:
           CI: true
-
       - name: Build
         run: npm run build
