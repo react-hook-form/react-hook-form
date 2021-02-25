@@ -8,22 +8,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set Up Node environment
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 12.x
-
-      - name: Cache node modules
-        id: node-modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - if: steps.node-modules.outputs.cache-hit != 'true'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Package Check
