@@ -768,7 +768,7 @@ export function useForm<
           unset(formStateRef.current.errors, field.ref.name);
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 
-          updateFormState({
+          readFormStateRef.current.isDirty && updateFormState({
             isDirty: isFormDirty(),
           });
 
