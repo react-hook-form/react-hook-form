@@ -4,22 +4,44 @@ on: [pull_request]
 
 jobs:
   build:
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12.x
+
+      - name: Cache Node Modules
+        id: node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
+      - if: steps.node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+
       - name: Package Check
         run: |
           npm run check:package
+
       - name: Lint
         run: |
           npm run lint:types
           npm run lint
+
       - name: Test
         run: npm test
         env:
           CI: true
+
       - name: Build
         run: npm run build
