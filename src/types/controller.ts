@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   FieldValues,
-  FieldName,
   Control,
   FieldPath,
   FieldError,
