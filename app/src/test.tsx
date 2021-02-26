@@ -1,74 +1,86 @@
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Control } from '../../src/types';
-import { useWatch } from '../../src/useWatch';
 
 type FormValues = {
-  options: { option: string }[];
+  nest: {
+    test: {
+      value: string;
+      nestedArray: {
+        value: string;
+      }[];
+    }[];
+  };
 };
-
-const watchedValue: object[] = [];
-
-const Test = ({ control }: { control: Control<FormValues> }) => {
-  watchedValue.push(
-    useWatch({
-      control,
-    }),
-  );
-
-  console.log(useWatch({
+const ChildComponent = ({
+  index,
+  control,
+}: {
+  control: Control<FormValues>;
+  index: number;
+}) => {
+  const { fields } = useFieldArray<FormValues>({
+    name: `nest.test.${index}.nestedArray` as const,
     control,
-  }))
+  });
 
-  return null;
+  return (
+    <div>
+      {fields.map((item, i) => (
+        <input
+          key={item.id}
+          {...control.register(
+            `nest.test.${index}.nestedArray.${i}.value` as const,
+          )}
+          // @ts-ignore
+          defaultValue={item.value}
+        />
+      ))}
+    </div>
+  );
 };
 
 const Component = () => {
-  const { register, reset, control } = useForm<FormValues>({
+  const { register, control } = useForm({
     defaultValues: {
-      options: [
-        {
-          option: 'yes',
-        },
-        {
-          option: 'no',
-        },
-      ],
-    }
+      nest: {
+        test: [
+          { value: '1', nestedArray: [{ value: '2' }] },
+          { value: '3', nestedArray: [{ value: '4' }] },
+        ],
+      },
+    },
   });
-  const { fields } = useFieldArray({ name: 'options', control });
-
-  React.useEffect(() => {
-    // reset({
-    //   options: [
-    //     {
-    //       option: 'yes',
-    //     },
-    //     {
-    //       option: 'no',
-    //     },
-    //   ],
-    // });
-  }, [reset]);
+  const { fields, remove, append } = useFieldArray({
+    name: 'nest.test',
+    control,
+  });
 
   return (
-    <form>
-      {fields.map((_, i) => (
-        <div key={i.toString()}>
+    <div>
+      {fields.map((item, i) => (
+        <div key={item.id}>
           <input
-            type="radio"
-            value="yes"
-            {...register(`options.${i}.option` as const)}
+            {...register(`nest.test.${i}.value` as const)}
+            defaultValue={item.value}
           />
-          <input
-            type="radio"
-            value="no"
-            {...register(`options.${i}.option` as const)}
-          />
-          <Test control={control} />
+
+          <ChildComponent control={control} index={i} />
+
+          <button
+            type={'button'}
+            onClick={() => remove(i)}
+            data-testid={item.value}
+          >
+            remove
+          </button>
         </div>
       ))}
-    </form>
+
+      <button type={'button'} onClick={() => append({ value: 'test' })}>
+        append
+      </button>
+    </div>
   );
 };
 
