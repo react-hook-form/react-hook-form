@@ -11,6 +11,7 @@ import moveArrayAt from './utils/move';
 import isKey from './utils/isKey';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
+import appendAt from './utils/append';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import compact from './utils/compact';
@@ -153,17 +154,13 @@ export const useFieldArray = <
       ),
     );
 
-  const batchStateUpdate = <
-    T extends Function,
-    K extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
-  >(
+  const batchStateUpdate = <T extends Function>(
     method: T,
     args: {
       argA?: unknown;
       argB?: unknown;
     },
-    updatedFieldValues?: K,
-    updatedFormValues: Partial<
+    updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = [],
     shouldSet = true,
@@ -205,12 +202,12 @@ export const useFieldArray = <
         formStateRef.current.dirtyFields,
         name,
         setFieldArrayDirtyFields(
-          omitKey(updatedFormValues),
+          omitKey(updatedFieldArrayValues),
           get(defaultValuesRef.current, name, []),
           get(formStateRef.current.dirtyFields, name, []),
         ),
       );
-      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
+      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
       cleanup(formStateRef.current.dirtyFields);
     }
 
@@ -231,7 +228,7 @@ export const useFieldArray = <
     }
 
     formStateSubjectRef.current.next({
-      isDirty: getFormIsDirty(name, omitKey(updatedFormValues)),
+      isDirty: getFormIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
     });
@@ -244,14 +241,17 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
-    const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
-    setFieldsAndNotify(updatedFieldValues);
+    const updatedFieldArrayValues = appendAt(
+      getCurrentFieldsValues(),
+      appendValue,
+    );
+    setFieldsAndNotify(updatedFieldArrayValues);
 
     if (
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
+      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
 
       formStateSubjectRef.current.next({
         isDirty: true,
@@ -261,7 +261,7 @@ export const useFieldArray = <
     }
 
     focusNameRef.current = getFocusDetail(
-      updatedFieldValues.length - 1,
+      updatedFieldArrayValues.length - 1,
       options,
     );
   };
@@ -290,7 +290,7 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
-    const updatedFieldValues: Partial<
+    const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = removeArrayAt(fieldValues, index);
     resetFields(index);
@@ -299,12 +299,11 @@ export const useFieldArray = <
       {
         argA: index,
       },
-      updatedFieldValues,
-      removeArrayAt(fieldValues, index),
+      updatedFieldArrayValues,
       true,
       true,
     );
-    setFieldsAndNotify(updatedFieldValues);
+    setFieldsAndNotify(updatedFieldArrayValues);
   };
 
   const insert = (
@@ -329,7 +328,6 @@ export const useFieldArray = <
         argB: fillEmptyArray(value),
       },
       updatedFieldArrayValues,
-      fieldValues && insertAt(fieldValues, index),
     );
 
     focusNameRef.current = getFocusDetail(index, options);
@@ -344,7 +342,6 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      undefined,
       fieldValues,
       false,
     );
@@ -361,7 +358,6 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      undefined,
       fieldValues,
       false,
     );
