@@ -739,7 +739,7 @@ describe('remove', () => {
     );
   });
 
-  it.only('should remove dirtyFields fields with nested field inputs', () => {
+  it('should remove dirtyFields fields with nested field inputs', () => {
     const { result } = renderHook(() => {
       const { register, formState, control } = useForm({
         defaultValues: {

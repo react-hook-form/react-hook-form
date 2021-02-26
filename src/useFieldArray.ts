@@ -75,6 +75,26 @@ export const useFieldArray = <
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
   fieldArrayNamesRef.current.add(name);
 
+  const registerFieldArray = <T extends Object[]>(values: T, index: number) => {
+    values.forEach((appendValueItem) => {
+      const submitData = Object.entries(appendValueItem)[0];
+      if (submitData) {
+        const [key, value] = submitData;
+        const inputName = `${name}.${index}.${key}`;
+
+        set(fieldsRef.current, inputName, {
+          _f: {
+            ref: {
+              name: inputName,
+            },
+            name: inputName,
+            value,
+          },
+        });
+      }
+    });
+  };
+
   const omitKey = <
     T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
   >(
@@ -252,6 +272,10 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
+    registerFieldArray(
+      appendValue,
+      get(fieldArrayDefaultValuesRef.current, name).length,
+    );
 
     focusNameRef.current = getFocusDetail(
       updatedFieldArrayValues.length - 1,
@@ -265,9 +289,10 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    const prependValue = Array.isArray(value) ? value : [value];
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
-      Array.isArray(value) ? value : [value],
+      prependValue,
     );
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
@@ -277,6 +302,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
+    registerFieldArray(prependValue, 0);
 
     focusNameRef.current = getFocusDetail(0, options);
   };
@@ -306,12 +332,9 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    const insertValue = Array.isArray(value) ? value : [value];
     const fieldValues = getCurrentFieldsValues();
-    const updatedFieldArrayValues = insertAt(
-      fieldValues,
-      index,
-      Array.isArray(value) ? value : [value],
-    );
+    const updatedFieldArrayValues = insertAt(fieldValues, index, insertValue);
 
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
@@ -322,6 +345,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
+    registerFieldArray(insertValue, index);
 
     focusNameRef.current = getFocusDetail(index, options);
   };

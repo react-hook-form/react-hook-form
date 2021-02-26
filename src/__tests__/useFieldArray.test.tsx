@@ -461,7 +461,7 @@ describe('useFieldArray', () => {
                 </div>
               );
             })}
-            <button type="button" onClick={() => append({})}>
+            <button type="button" onClick={() => append({ title: 'test' })}>
               Add child
             </button>
           </form>
