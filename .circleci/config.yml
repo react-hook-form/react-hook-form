@@ -7,6 +7,6 @@ jobs:
 
     steps:
       - checkout
-      - run: npm install
-      - run: npm run build
-      - run: npm run bundlesize
+      - run: yarn install
+      - run: yarn build
+      - run: yarn bundlesize
