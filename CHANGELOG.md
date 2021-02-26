@@ -1,6 +1,15 @@
 # Changelog
 
+## [7.0.0-beta.14] - 2021-02-27
+
+## Changes
+
+- `append`, `prepend` and `insert` will `register` inputs during each action at `useFieldArray`.
+
+
 ## [7.0.0-beta.11] - 2021-02-20
+
+## Changes
 
 - change `ArrayKey` type to `number | '${number}'`
 
