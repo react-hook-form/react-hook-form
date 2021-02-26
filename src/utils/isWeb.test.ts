@@ -16,6 +16,7 @@ describe('isWeb', () => {
   it('should return true when in a browser', () => {
     expect(isWeb()).toBeTruthy();
   });
+  
   it('should return false when navigator product is ReactNative', () => {
     productGetter.mockReturnValue('ReactNative');
     expect(isWeb()).toBeFalsy();
