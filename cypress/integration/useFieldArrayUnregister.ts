@@ -1,5 +1,5 @@
 describe('useFieldArrayUnregister', () => {
-  it('should behaviour correctly', () => {
+  it.only('should behaviour correctly', () => {
     cy.visit('http://localhost:3000/UseFieldArrayUnregister');
 
     cy.get('#field0').clear().type('bill');
@@ -28,7 +28,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true },
+          { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true },
           { name: true },
@@ -53,7 +53,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true },
+          { name: true, conditional: true },
           { conditional: true },
           { name: true, conditional: true },
           { name: true },
@@ -78,7 +78,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true },
+          { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
@@ -107,7 +107,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true },
+          { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true, conditional: true },

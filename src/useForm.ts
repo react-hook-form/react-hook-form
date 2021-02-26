@@ -480,7 +480,6 @@ export function useForm<
 
   const updateValueAndGetDefault = (name: InternalFieldName) => {
     let defaultValue;
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     const field = get(fieldsRef.current, name) as Field;
 
     if (
@@ -491,7 +490,7 @@ export function useForm<
         ? get(defaultValuesRef.current, name)
         : field._f.value;
 
-      if (!isUndefined(defaultValue) && !isFieldArray) {
+      if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
       }
     }
@@ -940,7 +939,10 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldValues = getFieldsValues(fieldsRef, defaultValuesRef);
+      let fieldValues = {
+        ...defaultValuesRef.current,
+        ...getFieldsValues(fieldsRef, defaultValuesRef),
+      };
 
       formStateSubjectRef.current.next({
         isSubmitting: true,
