@@ -652,10 +652,10 @@ describe('useWatch', () => {
             reset({
               options: [
                 {
-                  option: 'test',
+                  option: 'yes',
                 },
                 {
-                  option: 'test1',
+                  option: 'yes',
                 },
               ],
             });

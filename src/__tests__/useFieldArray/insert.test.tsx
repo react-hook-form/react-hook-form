@@ -135,7 +135,7 @@ describe('insert', () => {
         test: [
           undefined,
           { value1: true, value: true },
-          { value2: true, value: true },
+          { value2: true },
           { value: true },
         ],
       });

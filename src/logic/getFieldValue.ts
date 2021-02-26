@@ -6,6 +6,7 @@ import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
 import getFieldValueAs from './getFieldValueAs';
+import isUndefined from '../utils/isUndefined';
 import { Field } from '../types';
 
 export default function getFieldValue(field?: Field) {
@@ -32,6 +33,9 @@ export default function getFieldValue(field?: Field) {
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return getFieldValueAs(ref.value, field._f);
+    return getFieldValueAs(
+      isUndefined(ref.value) ? field._f.ref.value : ref.value,
+      field._f,
+    );
   }
 }

@@ -53,12 +53,11 @@ describe('prepend', () => {
   });
 
   it('should prepend undefined as value when value to be prepended is falsy', () => {
-    expect(prepend([2, 3, 4])).toEqual([undefined, 2, 3, 4]);
-    expect(prepend([2, 3, 4], 0)).toEqual([undefined, 2, 3, 4]);
+    expect(prepend([2, 3, 4], 0)).toEqual([0, 2, 3, 4]);
     // @ts-expect-error
-    expect(prepend([2, 3, 4], false)).toEqual([undefined, 2, 3, 4]);
+    expect(prepend([2, 3, 4], false)).toEqual([false, 2, 3, 4]);
     // @ts-expect-error
-    expect(prepend([2, 3, 4], '')).toEqual([undefined, 2, 3, 4]);
+    expect(prepend([2, 3, 4], '')).toEqual(['', 2, 3, 4]);
     expect(prepend([2, 3, 4], undefined)).toEqual([undefined, 2, 3, 4]);
   });
 

@@ -11,6 +11,7 @@ import moveArrayAt from './utils/move';
 import isKey from './utils/isKey';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
+import appendAt from './utils/append';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import compact from './utils/compact';
@@ -26,7 +27,6 @@ import {
   FieldArray,
   FieldArrayMethodProps,
   FieldErrors,
-  FieldNamesMarkedBoolean,
 } from './types';
 
 export const useFieldArray = <
@@ -74,6 +74,26 @@ export const useFieldArray = <
 
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
   fieldArrayNamesRef.current.add(name);
+
+  const registerFieldArray = <T extends Object[]>(values: T, index: number) => {
+    values.forEach((appendValueItem) => {
+      const [submitData] = Object.entries(appendValueItem);
+      if (submitData) {
+        const [key, value] = submitData;
+        const inputName = `${name}.${index}.${key}`;
+
+        set(fieldsRef.current, inputName, {
+          _f: {
+            ref: {
+              name: inputName,
+            },
+            name: inputName,
+            value,
+          },
+        });
+      }
+    });
+  };
 
   const omitKey = <
     T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
@@ -153,17 +173,13 @@ export const useFieldArray = <
       ),
     );
 
-  const batchStateUpdate = <
-    T extends Function,
-    K extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
-  >(
+  const batchStateUpdate = <T extends Function>(
     method: T,
     args: {
       argA?: unknown;
       argB?: unknown;
     },
-    updatedFieldValues?: K,
-    updatedFormValues: Partial<
+    updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = [],
     shouldSet = true,
@@ -205,12 +221,12 @@ export const useFieldArray = <
         formStateRef.current.dirtyFields,
         name,
         setFieldArrayDirtyFields(
-          omitKey(updatedFormValues),
+          omitKey(updatedFieldArrayValues),
           get(defaultValuesRef.current, name, []),
           get(formStateRef.current.dirtyFields, name, []),
         ),
       );
-      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
+      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
       cleanup(formStateRef.current.dirtyFields);
     }
 
@@ -231,7 +247,7 @@ export const useFieldArray = <
     }
 
     formStateSubjectRef.current.next({
-      isDirty: getFormIsDirty(name, omitKey(updatedFormValues)),
+      isDirty: getFormIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
     });
@@ -244,26 +260,22 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
-    const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
-    setFieldsAndNotify(updatedFieldValues);
-
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
-    ) {
-      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
-
-      formStateSubjectRef.current.next({
-        isDirty: true,
-        dirtyFields: formStateRef.current
-          .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
-      });
-    }
-
-    focusNameRef.current = getFocusDetail(
-      updatedFieldValues.length - 1,
-      options,
+    const updatedFieldArrayValues = appendAt(
+      getCurrentFieldsValues(),
+      appendValue,
     );
+    const currentIndex = updatedFieldArrayValues.length - 1;
+    setFieldsAndNotify(updatedFieldArrayValues);
+    batchStateUpdate(
+      appendAt,
+      {
+        argA: fillEmptyArray(value),
+      },
+      updatedFieldArrayValues,
+    );
+    registerFieldArray(appendValue, currentIndex);
+
+    focusNameRef.current = getFocusDetail(currentIndex, options);
   };
 
   const prepend = (
@@ -272,9 +284,10 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    const prependValue = Array.isArray(value) ? value : [value];
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
-      Array.isArray(value) ? value : [value],
+      prependValue,
     );
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
@@ -284,13 +297,14 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
+    registerFieldArray(prependValue, 0);
 
     focusNameRef.current = getFocusDetail(0, options);
   };
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
-    const updatedFieldValues: Partial<
+    const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = removeArrayAt(fieldValues, index);
     resetFields(index);
@@ -299,12 +313,11 @@ export const useFieldArray = <
       {
         argA: index,
       },
-      updatedFieldValues,
-      removeArrayAt(fieldValues, index),
+      updatedFieldArrayValues,
       true,
       true,
     );
-    setFieldsAndNotify(updatedFieldValues);
+    setFieldsAndNotify(updatedFieldArrayValues);
   };
 
   const insert = (
@@ -314,12 +327,9 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    const insertValue = Array.isArray(value) ? value : [value];
     const fieldValues = getCurrentFieldsValues();
-    const updatedFieldArrayValues = insertAt(
-      fieldValues,
-      index,
-      Array.isArray(value) ? value : [value],
-    );
+    const updatedFieldArrayValues = insertAt(fieldValues, index, insertValue);
 
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
@@ -329,8 +339,8 @@ export const useFieldArray = <
         argB: fillEmptyArray(value),
       },
       updatedFieldArrayValues,
-      fieldValues && insertAt(fieldValues, index),
     );
+    registerFieldArray(insertValue, index);
 
     focusNameRef.current = getFocusDetail(index, options);
   };
@@ -344,7 +354,6 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      undefined,
       fieldValues,
       false,
     );
@@ -361,7 +370,6 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      undefined,
       fieldValues,
       false,
     );
