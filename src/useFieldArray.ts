@@ -77,7 +77,7 @@ export const useFieldArray = <
 
   const registerFieldArray = <T extends Object[]>(values: T, index: number) => {
     values.forEach((appendValueItem) => {
-      const submitData = Object.entries(appendValueItem)[0];
+      const [submitData] = Object.entries(appendValueItem);
       if (submitData) {
         const [key, value] = submitData;
         const inputName = `${name}.${index}.${key}`;
@@ -264,6 +264,7 @@ export const useFieldArray = <
       getCurrentFieldsValues(),
       appendValue,
     );
+    const currentIndex = updatedFieldArrayValues.length - 1;
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       appendAt,
@@ -272,15 +273,9 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(
-      appendValue,
-      get(fieldArrayDefaultValuesRef.current, name).length,
-    );
+    registerFieldArray(appendValue, currentIndex);
 
-    focusNameRef.current = getFocusDetail(
-      updatedFieldArrayValues.length - 1,
-      options,
-    );
+    focusNameRef.current = getFocusDetail(currentIndex, options);
   };
 
   const prepend = (
