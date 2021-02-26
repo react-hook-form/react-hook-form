@@ -110,10 +110,6 @@ export function useForm<
       isReset?: boolean;
     }>(),
   );
-  const fieldArrayUpdatedValuesRef = React.useRef<{
-    name?: InternalFieldName;
-    fields?: DeepPartial<TFieldValues>;
-  }>({});
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
@@ -274,9 +270,10 @@ export function useForm<
         }
 
         if (shouldRender) {
-          const values = getValues();
+          const values = getFieldsValues(fieldsRef);
           set(values, name, rawValue);
           controllerSubjectRef.current.next({
+            ...defaultValuesRef.current,
             ...values,
           } as DefaultValues<TFieldValues>);
         }
@@ -287,7 +284,7 @@ export function useForm<
 
   const getFormIsDirty: GetFormIsDirty = React.useCallback((name, data) => {
     if (readFormStateRef.current.isDirty) {
-      const formValues = getValues();
+      const formValues = getFieldsValues(fieldsRef);
 
       name && data && set(formValues, name, data);
 
@@ -667,14 +664,9 @@ export function useForm<
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) {
-    const { fields, name } = fieldArrayUpdatedValuesRef.current;
     const values = isMountedRef.current
       ? getFieldsValues(fieldsRef, defaultValuesRef)
-      : defaultValues;
-
-    if (fields && name) {
-      set(values, name, fields);
-    }
+      : defaultValuesRef.current;
 
     if (isUndefined(fieldNames)) {
       return values;
@@ -1094,13 +1086,14 @@ export function useForm<
 
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
-        fieldArrayUpdatedValuesRef.current = state;
-
         if (state.fields && state.name) {
           if (readFormStateRef.current.isValid) {
-            const values = getValues();
+            const values = getFieldsValues(fieldsRef);
             set(values, state.name, state.fields);
-            updateIsValid(values);
+            updateIsValid({
+              ...defaultValuesRef.current,
+              ...values,
+            });
           }
         }
       },

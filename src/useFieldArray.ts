@@ -27,7 +27,6 @@ import {
   FieldArray,
   FieldArrayMethodProps,
   FieldErrors,
-  FieldNamesMarkedBoolean,
 } from './types';
 
 export const useFieldArray = <
@@ -246,19 +245,13 @@ export const useFieldArray = <
       appendValue,
     );
     setFieldsAndNotify(updatedFieldArrayValues);
-
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
-    ) {
-      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
-
-      formStateSubjectRef.current.next({
-        isDirty: true,
-        dirtyFields: formStateRef.current
-          .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
-      });
-    }
+    batchStateUpdate(
+      appendAt,
+      {
+        argA: fillEmptyArray(value),
+      },
+      updatedFieldArrayValues,
+    );
 
     focusNameRef.current = getFocusDetail(
       updatedFieldArrayValues.length - 1,

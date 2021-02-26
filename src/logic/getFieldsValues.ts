@@ -4,7 +4,7 @@ import { FieldRefs, FieldValues } from '../types';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
-  defaultValuesRef: React.MutableRefObject<FieldValues>,
+  defaultValuesRef: React.MutableRefObject<FieldValues> = { current: {} },
   output: Record<string, any> = {},
 ): any => {
   for (const name in fieldsRef.current) {
