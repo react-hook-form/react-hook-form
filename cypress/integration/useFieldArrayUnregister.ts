@@ -1,5 +1,5 @@
 describe('useFieldArrayUnregister', () => {
-  it.only('should behaviour correctly', () => {
+  it('should behaviour correctly', () => {
     cy.visit('http://localhost:3000/UseFieldArrayUnregister');
 
     cy.get('#field0').clear().type('bill');
