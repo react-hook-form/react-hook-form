@@ -183,7 +183,6 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = [],
     shouldSet = true,
-    shouldUpdateValid = false,
   ) => {
     if (get(fieldsRef.current, name)) {
       const output = method(get(fieldsRef.current, name), args.argA, args.argB);
@@ -230,7 +229,7 @@ export const useFieldArray = <
       cleanup(formStateRef.current.dirtyFields);
     }
 
-    if (shouldUpdateValid && readFormStateRef.current.isValid) {
+    if (readFormStateRef.current.isValid) {
       set(
         validFieldsRef.current,
         name,
@@ -313,8 +312,6 @@ export const useFieldArray = <
         argA: index,
       },
       updatedFieldArrayValues,
-      true,
-      true,
     );
     setFieldsAndNotify(updatedFieldArrayValues);
   };
