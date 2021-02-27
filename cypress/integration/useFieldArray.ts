@@ -631,7 +631,9 @@ describe('useFieldArray', () => {
       '[null,null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#delete4').click();
-    cy.get('#touched').contains('[null,null,null,{"name":true},{"name":true},null]');
+    cy.get('#touched').contains(
+      '[null,null,null,{"name":true},{"name":true},null]',
+    );
   });
 
   it('should return correct isValid formState', () => {
