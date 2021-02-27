@@ -303,10 +303,9 @@ export const useFieldArray = <
   };
 
   const remove = (index?: number | number[]) => {
-    const fieldValues = getCurrentFieldsValues();
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TName, TKeyName>
-    >[] = removeArrayAt(fieldValues, index);
+    >[] = removeArrayAt(getCurrentFieldsValues(), index);
     resetFields(index);
     batchStateUpdate(
       removeArrayAt,
@@ -328,9 +327,11 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = Array.isArray(value) ? value : [value];
-    const fieldValues = getCurrentFieldsValues();
-    const updatedFieldArrayValues = insertAt(fieldValues, index, insertValue);
-
+    const updatedFieldArrayValues = insertAt(
+      getCurrentFieldsValues(),
+      index,
+      insertValue,
+    );
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       insertAt,
