@@ -61,22 +61,27 @@ type Digits = '0' | NonZeroDigits;
 type NonZeroDigits = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 
 type IsPrimitive<T> = T extends Primitive ? true : false;
-
+type IsTuple<T extends any[]> = number extends T['length'] ? false : true;
 type ArrayKey = number | `${number}`;
+type TupleKey<T extends any[]> = Exclude<keyof T, keyof any[]>;
 
-type ValueOf<T> = T[keyof T];
+type Path<T> = T extends ReadonlyArray<infer V>
+  ? IsPrimitive<V> extends true
+    ? IsTuple<T & any[]> extends true
+      ? `${TupleKey<T & any[]> & string}`
+      : `${ArrayKey}`
+    : IsTuple<T & any[]> extends true
+    ?
+        | `${TupleKey<T & any[]> & string}`
+        | `${TupleKey<T & any[]> & string}.${Path<V>}`
+    : `${ArrayKey}` | `${ArrayKey}.${Path<V>}`
+  : {
+      [K in keyof T]: IsPrimitive<T[K]> extends true
+        ? K & string
+        : (K & string) | `${K & string}.${Path<T[K]>}`;
+    }[keyof T];
 
-export type FieldPath<Root> = Root extends ReadonlyArray<infer E>
-  ? IsPrimitive<E> extends true
-    ? ArrayKey
-    : ArrayKey | `${ArrayKey}.${FieldPath<E>}`
-  : ValueOf<
-      {
-        [K in keyof Root]: IsPrimitive<Root[K]> extends true
-          ? K & string
-          : (K & string) | `${K & string}.${FieldPath<Root[K]>}`;
-      }
-    >;
+export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
 export type FieldPathValue<
   TFieldValues extends FieldValues,
