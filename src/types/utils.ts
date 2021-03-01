@@ -57,9 +57,6 @@ export type IsFlatObject<T extends object> = Extract<
   ? true
   : false;
 
-type Digits = '0' | NonZeroDigits;
-type NonZeroDigits = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-
 type IsPrimitive<T> = T extends Primitive ? true : false;
 type IsTuple<T extends any[]> = number extends T['length'] ? false : true;
 type ArrayKey = number | `${number}`;
@@ -83,30 +80,24 @@ type Path<T> = T extends ReadonlyArray<infer V>
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
+type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer R}`
+  ? K extends keyof T
+    ? R extends Path<T[K]>
+      ? PathValue<T[K], R>
+      : never
+    : K & number extends keyof T
+    ? PathValue<T[K & number], R & Path<T[K & number]>>
+    : never
+  : P extends keyof T
+  ? T[P]
+  : P & number extends keyof T
+  ? T[P & number]
+  : never;
+
 export type FieldPathValue<
   TFieldValues extends FieldValues,
   TPath extends FieldPath<TFieldValues>
-> = TPath extends `${infer Key}.${infer Rest}`
-  ? Key extends keyof TFieldValues
-    ? Rest extends FieldPath<TFieldValues[Key]>
-      ? FieldPathValue<TFieldValues[Key], Rest>
-      : TFieldValues[Key] extends (infer U)[]
-      ? U
-      : never
-    : Key extends Digits
-    ? Key & number extends keyof TFieldValues
-      ? Rest extends FieldPath<TFieldValues[Key & number]>
-        ? FieldPathValue<TFieldValues[Key & number], Rest>
-        : TFieldValues[Key] extends (infer U)[]
-        ? U
-        : never
-      : never
-    : never
-  : TPath extends keyof TFieldValues
-  ? TFieldValues[TPath]
-  : TPath & number extends keyof TFieldValues
-  ? TFieldValues[TPath & number]
-  : never;
+> = PathValue<TFieldValues, TPath>;
 
 export type FieldPathValues<
   TFieldValues extends FieldValues,
