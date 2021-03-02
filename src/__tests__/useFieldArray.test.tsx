@@ -1568,4 +1568,74 @@ describe('useFieldArray', () => {
       });
     });
   });
+
+  it('should custom register append, prepend and insert inputs with values', () => {
+    type FormValues = {
+      test: {
+        test: string;
+        test1: string;
+      }[];
+    };
+    let watchValues: unknown[] = [];
+
+    const Component = () => {
+      const { control, watch } = useForm<FormValues>({
+        defaultValues: {
+          test: [],
+        },
+      });
+      const { append, prepend, insert } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      watchValues.push(watch('test'));
+
+      React.useEffect(() => {
+        append({
+          test: 'append',
+          test1: 'append',
+        });
+      }, [append]);
+
+      return (
+        <form>
+          <button
+            type={'button'}
+            onClick={() =>
+              prepend({
+                test: 'prepend',
+                test1: 'prepend',
+              })
+            }
+          >
+            prepend
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              insert(1, {
+                test: 'insert',
+                test1: 'insert',
+              })
+            }
+          >
+            insert
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'insert' }));
+    });
+
+    expect(watchValues).toMatchSnapshot();
+  });
 });

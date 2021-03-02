@@ -77,21 +77,22 @@ export const useFieldArray = <
 
   const registerFieldArray = <T extends Object[]>(values: T, index: number) => {
     values.forEach((appendValueItem) => {
-      const [submitData] = Object.entries(appendValueItem);
-      if (submitData) {
-        const [key, value] = submitData;
-        const inputName = `${name}.${index}.${key}`;
+      Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
+        if (fieldNameAndValue) {
+          const [key, value] = fieldNameAndValue;
+          const inputName = `${name}.${index}.${key}`;
 
-        set(fieldsRef.current, inputName, {
-          _f: {
-            ref: {
+          set(fieldsRef.current, inputName, {
+            _f: {
+              ref: {
+                name: inputName,
+              },
               name: inputName,
+              value,
             },
-            name: inputName,
-            value,
-          },
-        });
-      }
+          });
+        }
+      });
     });
   };
 
