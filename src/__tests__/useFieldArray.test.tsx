@@ -1576,7 +1576,7 @@ describe('useFieldArray', () => {
         test1: string;
       }[];
     };
-    let watchValues: unknown[] = [];
+    const watchValues: unknown[] = [];
 
     const Component = () => {
       const { control, watch } = useForm<FormValues>({
