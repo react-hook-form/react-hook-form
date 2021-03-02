@@ -72,6 +72,7 @@ import {
   WatchInternal,
   GetFormIsDirty,
   ChangeHandler,
+  PathValue,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -456,7 +457,9 @@ export function useForm<
   const setInternalValues = React.useCallback(
     (
       name: FieldPath<TFieldValues>,
-      value: SetFieldValue<TFieldValues>,
+      value: UnpackNestedValue<
+        PathValue<TFieldValues, FieldPath<TFieldValues>>
+      >,
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
       const data = {};
@@ -473,7 +476,7 @@ export function useForm<
     [trigger],
   );
 
-  const isFieldWatched = <T extends FieldName<TFieldValues>>(name: T) =>
+  const isFieldWatched = (name: FieldPath<TFieldValues>) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
@@ -508,8 +511,7 @@ export function useForm<
     if (field && field._f) {
       setFieldValue(name, value, true);
       options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate &&
-        trigger((name as any) as FieldPath<TFieldValues>);
+      options.shouldValidate && trigger(name);
     } else if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
       fieldArraySubjectRef.current.next({
         fields: value,
@@ -538,11 +540,7 @@ export function useForm<
         });
       }
     } else {
-      setInternalValues(
-        (name as any) as FieldPath<TFieldValues>,
-        value,
-        options,
-      );
+      setInternalValues(name, value, options);
     }
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
@@ -572,7 +570,7 @@ export function useForm<
           ...validationMode,
         });
         const isWatched =
-          !isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>);
+          !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
         if (!isUndefined(inputValue)) {
           field._f.value = inputValue;

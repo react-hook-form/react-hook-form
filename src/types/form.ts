@@ -8,7 +8,6 @@ import {
 } from './utils';
 import { Resolver } from './resolvers';
 import {
-  FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
@@ -150,9 +149,11 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => void;
 
-export type UseFormSetValue<TFieldValues extends FieldValues> = (
-  name: FieldName<TFieldValues>,
-  value: SetFieldValue<TFieldValues>,
+export type UseFormSetValue<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>(
+  name: TFieldName,
+  value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>,
   options?: SetValueConfig,
 ) => void;
 
