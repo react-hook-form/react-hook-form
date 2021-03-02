@@ -87,13 +87,13 @@ type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer R}`
     ? R extends Path<T[K]>
       ? PathValue<T[K], R>
       : never
-    : K & number extends keyof T
-    ? PathValue<T[K & number], R & Path<T[K & number]>>
+    : K & ArrayKey extends keyof T
+    ? PathValue<T[K & ArrayKey], R & Path<T[K & ArrayKey]>>
     : never
   : P extends keyof T
   ? T[P]
-  : P & number extends keyof T
-  ? T[P & number]
+  : P & ArrayKey extends keyof T
+  ? T[P & ArrayKey]
   : never;
 
 export type FieldPathValue<
