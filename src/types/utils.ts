@@ -64,7 +64,7 @@ type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
 type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 type ArrayKey = number;
 
-type Path<T> = T extends ReadonlyArray<infer V>
+export type Path<T> = T extends ReadonlyArray<infer V>
   ? IsPrimitive<V> extends true
     ? IsTuple<T & any[]> extends true
       ? `${TupleKey<T & any[]> & string}`
@@ -82,7 +82,7 @@ type Path<T> = T extends ReadonlyArray<infer V>
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer R}`
+export type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer R}`
   ? K extends keyof T
     ? R extends Path<T[K]>
       ? PathValue<T[K], R>
