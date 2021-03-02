@@ -58,9 +58,11 @@ export type IsFlatObject<T extends object> = Extract<
   : false;
 
 type IsPrimitive<T> = T extends Primitive ? true : false;
-type IsTuple<T extends any[]> = number extends T['length'] ? false : true;
 type ArrayKey = number | `${number}`;
-type TupleKey<T extends any[]> = Exclude<keyof T, keyof any[]>;
+type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
+  ? false
+  : true;
+type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 
 type Path<T> = T extends ReadonlyArray<infer V>
   ? IsPrimitive<V> extends true
