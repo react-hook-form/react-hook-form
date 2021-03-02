@@ -147,7 +147,7 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
 ) => void;
 
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (
-  name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => void;
 
 export type UseFormSetValue<TFieldValues extends FieldValues> = (
