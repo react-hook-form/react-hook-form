@@ -22,7 +22,7 @@ describe('setValue', () => {
 
   it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
     const { result } = renderHook(() =>
-      useForm<{ test: string }>({
+      useForm<{ test?: string | null }>({
         defaultValues: {
           test: 'test',
         },
@@ -70,12 +70,12 @@ describe('setValue', () => {
 
     const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
     const file = blob as File;
-    const fileList = {
+    const fileList = ({
       0: file,
       1: file,
       length: 2,
       item: () => file,
-    };
+    } as any) as FileList;
 
     act(() => result.current.setValue('test', fileList));
 
@@ -92,7 +92,7 @@ describe('setValue', () => {
   });
 
   it('should set value of multiple checkbox input correctly', async () => {
-    const { result } = renderHook(() => useForm<{ test: string }>());
+    const { result } = renderHook(() => useForm<{ test: string[] }>());
 
     const { ref } = result.current.register('test');
 
@@ -149,7 +149,7 @@ describe('setValue', () => {
   });
 
   it('should set value of multiple select correctly', async () => {
-    const { result } = renderHook(() => useForm<{ test: string }>());
+    const { result } = renderHook(() => useForm<{ test: string[] }>());
     const { ref } = result.current.register('test');
 
     isFunction(ref) &&
@@ -210,13 +210,17 @@ describe('setValue', () => {
 
   it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
     const { result } = renderHook(() =>
-      useForm<{ test: string; checkbox: string[] }>(),
+      useForm<{
+        test: string;
+        checkbox: string[];
+        test1: { one: string; two: string; three: string }[];
+      }>(),
     );
 
     act(() => {
       result.current.setValue('test', '1');
       result.current.setValue('checkbox', ['1', '2']);
-      result.current.setValue('test1[0]', {
+      result.current.setValue('test1.0', {
         one: 'ONE',
         two: 'TWO',
         three: 'THREE',
