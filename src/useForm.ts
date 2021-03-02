@@ -455,7 +455,7 @@ export function useForm<
 
   const setInternalValues = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: FieldPath<TFieldValues>,
       value: SetFieldValue<TFieldValues>,
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
@@ -466,7 +466,7 @@ export function useForm<
         if (get(fieldsRef.current, fieldName)) {
           setFieldValue(fieldName, get(data, fieldName), true);
           shouldDirty && updateAndGetDirtyState(fieldName);
-          shouldValidate && trigger(fieldName as FieldName<TFieldValues>);
+          shouldValidate && trigger(fieldName);
         }
       }
     },
@@ -508,7 +508,8 @@ export function useForm<
     if (field && field._f) {
       setFieldValue(name, value, true);
       options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate && trigger(name as FieldName<TFieldValues>);
+      options.shouldValidate &&
+        trigger((name as any) as FieldPath<TFieldValues>);
     } else if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
       fieldArraySubjectRef.current.next({
         fields: value,
@@ -537,7 +538,11 @@ export function useForm<
         });
       }
     } else {
-      setInternalValues(name, value, options);
+      setInternalValues(
+        (name as any) as FieldPath<TFieldValues>,
+        value,
+        options,
+      );
     }
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
