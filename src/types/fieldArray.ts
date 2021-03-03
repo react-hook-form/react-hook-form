@@ -1,6 +1,6 @@
 import { Control } from './form';
 import { FieldValues } from './fields';
-import { FieldPath, FieldPathValue } from './utils';
+import { FieldArrayPath, FieldArrayPathValue } from './utils';
 
 export type FieldArrayName = string;
 
@@ -8,10 +8,10 @@ export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
-  name: TName;
+  name: TFieldArrayName;
   keyName?: TKeyName;
   control?: Control<TFieldValues>;
 };
@@ -20,15 +20,15 @@ type InferArrayType<T> = T extends (infer U)[] ? U : never;
 
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id'
-> = InferArrayType<FieldPathValue<TFieldValues, TName>> &
+> = InferArrayType<FieldArrayPathValue<TFieldValues, TFieldArrayName>> &
   Record<TKeyName, string>;
 
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> = InferArrayType<FieldPathValue<TFieldValues, TName>>;
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>
+> = InferArrayType<FieldArrayPathValue<TFieldValues, TFieldArrayName>>;
 
 export type FieldArrayMethodProps = {
   shouldFocus?: boolean;
@@ -38,30 +38,30 @@ export type FieldArrayMethodProps = {
 
 export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
   swap: (indexA: number, indexB: number) => void;
   move: (indexA: number, indexB: number) => void;
   prepend: (
     value:
-      | Partial<FieldArray<TFieldValues, TName>>
-      | Partial<FieldArray<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => void;
   append: (
     value:
-      | Partial<FieldArray<TFieldValues, TName>>
-      | Partial<FieldArray<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
     index: number,
     value:
-      | Partial<FieldArray<TFieldValues, TName>>
-      | Partial<FieldArray<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => void;
-  fields: FieldArrayWithId<TFieldValues, TName, TKeyName>[];
+  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };
