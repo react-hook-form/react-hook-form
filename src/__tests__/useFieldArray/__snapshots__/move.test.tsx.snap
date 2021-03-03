@@ -168,3 +168,69 @@ exports[`useFieldArray array of array fields should worked with deep nested fiel
   </div>
 </DocumentFragment>
 `;
+
+exports[`useFieldArray should custom register append, prepend and insert inputs with values 1`] = `
+Array [
+  Array [],
+  Array [
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+]
+`;

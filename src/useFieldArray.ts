@@ -75,22 +75,32 @@ export const useFieldArray = <
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
   fieldArrayNamesRef.current.add(name);
 
-  const registerFieldArray = <T extends Object[]>(values: T, index: number) => {
-    values.forEach((appendValueItem) => {
+  const registerFieldArray = <T extends Object[]>(
+    values: T,
+    index: number,
+    parentName: string = '',
+  ) => {
+    values.forEach((appendValueItem, localIndex) => {
       Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
         if (fieldNameAndValue) {
           const [key, value] = fieldNameAndValue;
-          const inputName = `${name}.${index}.${key}`;
+          const inputName = `${parentName || name}.${
+            parentName ? localIndex : index
+          }.${key}`;
 
-          set(fieldsRef.current, inputName, {
-            _f: {
-              ref: {
+          if (Array.isArray(value)) {
+            registerFieldArray(value, localIndex, inputName);
+          } else {
+            set(fieldsRef.current, inputName, {
+              _f: {
+                ref: {
+                  name: inputName,
+                },
                 name: inputName,
+                value,
               },
-              name: inputName,
-              value,
-            },
-          });
+            });
+          }
         }
       });
     });
