@@ -80,7 +80,7 @@ export const useFieldArray = <
     index: number,
     parentName: string = '',
   ) => {
-    values.forEach((appendValueItem, localIndex) => {
+    values.forEach((appendValueItem, localIndex) =>
       Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
         if (fieldNameAndValue) {
           const [key, value] = fieldNameAndValue;
@@ -88,22 +88,20 @@ export const useFieldArray = <
             parentName ? localIndex : index
           }.${key}`;
 
-          if (Array.isArray(value)) {
-            registerFieldArray(value, localIndex, inputName);
-          } else {
-            set(fieldsRef.current, inputName, {
-              _f: {
-                ref: {
+          Array.isArray(value)
+            ? registerFieldArray(value, localIndex, inputName)
+            : set(fieldsRef.current, inputName, {
+                _f: {
+                  ref: {
+                    name: inputName,
+                  },
                   name: inputName,
+                  value,
                 },
-                name: inputName,
-                value,
-              },
-            });
-          }
+              });
         }
-      });
-    });
+      }),
+    );
   };
 
   const omitKey = <
