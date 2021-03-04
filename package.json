@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.0.0-beta.16",
+  "version": "7.0.0-beta.17",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "umd:main": "dist/index.umd.production.min.js",
