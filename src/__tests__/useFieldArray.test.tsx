@@ -1574,6 +1574,9 @@ describe('useFieldArray', () => {
       test: {
         test: string;
         test1: string;
+        test2: {
+          test: string;
+        }[];
       }[];
     };
     const watchValues: unknown[] = [];
@@ -1622,6 +1625,52 @@ describe('useFieldArray', () => {
           >
             insert
           </button>
+
+          <button
+            type={'button'}
+            onClick={() =>
+              prepend({
+                test: 'prepend',
+                test2: [
+                  {
+                    test: 'test',
+                  },
+                ],
+              })
+            }
+          >
+            deep append
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              append({
+                test: 'prepend',
+                test2: [
+                  {
+                    test: 'test',
+                  },
+                ],
+              })
+            }
+          >
+            deep prepend
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              insert(1, {
+                test: 'insert',
+                test2: [
+                  {
+                    test: 'test',
+                  },
+                ],
+              })
+            }
+          >
+            deep insert
+          </button>
         </form>
       );
     };
@@ -1634,6 +1683,18 @@ describe('useFieldArray', () => {
 
     act(() => {
       fireEvent.click(screen.getByRole('button', { name: 'insert' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
     });
 
     expect(watchValues).toMatchSnapshot();
