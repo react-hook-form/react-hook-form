@@ -21,27 +21,27 @@ import getFieldsValues from './logic/getFieldsValues';
 import {
   FieldValues,
   UseFieldArrayProps,
-  FieldPath,
   FieldArrayWithId,
   UseFieldArrayReturn,
   FieldArray,
   FieldArrayMethodProps,
   FieldErrors,
+  FieldArrayPath,
 } from './types';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id'
 >({
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayProps<TFieldValues, TName, TKeyName>): UseFieldArrayReturn<
+}: UseFieldArrayProps<
   TFieldValues,
-  TName,
+  TFieldArrayName,
   TKeyName
-> => {
+>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const focusNameRef = React.useRef('');
   const {
@@ -62,7 +62,7 @@ export const useFieldArray = <
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
+    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
       get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
@@ -105,7 +105,9 @@ export const useFieldArray = <
   };
 
   const omitKey = <
-    T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
+    T extends Partial<
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+    >[]
   >(
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
@@ -153,7 +155,7 @@ export const useFieldArray = <
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<
-      FieldArrayWithId<TFieldValues, TName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = [],
   ) => {
     setFields(mapIds(fieldsValues, keyName));
@@ -167,7 +169,9 @@ export const useFieldArray = <
     !compact(get(ref, name, [])).length && unset(ref, name);
 
   const updateDirtyFieldsWithDefaultValues = <
-    T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
+    T extends Partial<
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+    >[]
   >(
     updatedFieldArrayValues?: T,
   ) =>
@@ -189,7 +193,7 @@ export const useFieldArray = <
       argB?: unknown;
     },
     updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = [],
     shouldSet = true,
   ) => {
@@ -263,8 +267,8 @@ export const useFieldArray = <
 
   const append = (
     value:
-      | Partial<FieldArray<TFieldValues, TName>>
-      | Partial<FieldArray<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
@@ -288,8 +292,8 @@ export const useFieldArray = <
 
   const prepend = (
     value:
-      | Partial<FieldArray<TFieldValues, TName>>
-      | Partial<FieldArray<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const prependValue = Array.isArray(value) ? value : [value];
@@ -312,7 +316,7 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getCurrentFieldsValues(), index);
     resetFields(index);
     batchStateUpdate(
@@ -328,8 +332,8 @@ export const useFieldArray = <
   const insert = (
     index: number,
     value:
-      | Partial<FieldArray<TFieldValues, TName>>
-      | Partial<FieldArray<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = Array.isArray(value) ? value : [value];
@@ -416,12 +420,16 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next({ name: inputName, fields, isReset }) {
+      next({ name: inpuTFieldArrayName, fields, isReset }) {
         if (isReset) {
-          unset(fieldsRef.current, inputName || name);
+          unset(fieldsRef.current, inpuTFieldArrayName || name);
 
-          if (inputName) {
-            set(fieldArrayDefaultValuesRef.current, inputName, fields);
+          if (inpuTFieldArrayName) {
+            set(
+              fieldArrayDefaultValuesRef.current,
+              inpuTFieldArrayName,
+              fields,
+            );
             setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
           } else {
             fieldArrayDefaultValuesRef.current = fields;
@@ -445,6 +453,6 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields: fields as FieldArrayWithId<TFieldValues, TName, TKeyName>,
+    fields: fields as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
   };
 };

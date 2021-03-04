@@ -82,7 +82,30 @@ export type Path<T> = T extends ReadonlyArray<infer V>
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-export type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer R}`
+export type ArrayPath<T> = T extends ReadonlyArray<infer V>
+  ? IsTuple<T & any[]> extends true
+    ? `${TupleKey<T & any[]> & string}.${ArrayPath<V>}`
+    : `${ArrayKey}.${ArrayPath<V>}`
+  : {
+      [K in keyof T]: IsPrimitive<T[K]> extends true
+        ? never
+        : T[K] extends ReadonlyArray<infer V>
+        ? IsPrimitive<V> extends true
+          ? never
+          : IsFlatObject<V & object> extends true
+          ? K & string
+          : (K & string) | `${K & string}.${ArrayPath<T[K]>}`
+        : `${K & string}.${ArrayPath<T[K]>}`;
+    }[keyof T];
+
+export type FieldArrayPath<
+  TFieldValues extends FieldValues
+> = ArrayPath<TFieldValues>;
+
+export type PathValue<
+  T,
+  P extends Path<T> | ArrayPath<T>
+> = P extends `${infer K}.${infer R}`
   ? K extends keyof T
     ? R extends Path<T[K]>
       ? PathValue<T[K], R>
@@ -98,8 +121,13 @@ export type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer R}`
 
 export type FieldPathValue<
   TFieldValues extends FieldValues,
-  TPath extends FieldPath<TFieldValues>
-> = PathValue<TFieldValues, TPath>;
+  TFieldPath extends FieldPath<TFieldValues>
+> = PathValue<TFieldValues, TFieldPath>;
+
+export type FieldArrayPathValue<
+  TFieldValues extends FieldValues,
+  TFieldArrayPath extends FieldArrayPath<TFieldValues>
+> = PathValue<TFieldValues, TFieldArrayPath>;
 
 export type FieldPathValues<
   TFieldValues extends FieldValues,
