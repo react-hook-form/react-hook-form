@@ -78,7 +78,7 @@ export const useFieldArray = <
   const registerFieldArray = <T extends Object[]>(
     values: T,
     index: number,
-    parentName: string = '',
+    parentName = '',
   ) => {
     values.forEach((appendValueItem, localIndex) =>
       Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
