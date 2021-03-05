@@ -141,6 +141,16 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => RefCallbackHandler;
 
+export type UseFormGetValues<TFieldValues extends FieldValues> = {
+  (): UnpackNestedValue<TFieldValues>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <TFieldNames extends FieldPath<TFieldValues>[]>(
+    fieldNames: TFieldNames,
+  ): FieldPathValues<TFieldValues, TFieldNames>;
+};
+
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => void;
@@ -266,16 +276,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): Subscription;
   };
-  getValues: {
-    (): UnpackNestedValue<TFieldValues>;
-    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
-      TFieldValues,
-      TName
-    >;
-    <TName extends FieldPath<TFieldValues>[]>(
-      fieldNames: TName,
-    ): FieldPathValues<TFieldValues, TName>;
-  };
+  getValues: UseFormGetValues<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;

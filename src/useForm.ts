@@ -73,6 +73,7 @@ import {
   GetFormIsDirty,
   ChangeHandler,
   PathValue,
+  UseFormGetValues,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -656,16 +657,9 @@ export function useForm<
     [],
   );
 
-  function getValues(): UnpackNestedValue<TFieldValues>;
-  function getValues<TName extends FieldPath<TFieldValues>>(
-    fieldName: TName,
-  ): FieldPathValue<TFieldValues, TName>;
-  function getValues<TName extends FieldPath<TFieldValues>[]>(
-    fieldNames: TName,
-  ): FieldPathValues<TFieldValues, TName>;
-  function getValues(
+  const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-  ) {
+  ) => {
     const values = isMountedRef.current
       ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValuesRef.current;
@@ -679,7 +673,7 @@ export function useForm<
     }
 
     return fieldNames.map((name) => get(values, name as InternalFieldName));
-  }
+  };
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
