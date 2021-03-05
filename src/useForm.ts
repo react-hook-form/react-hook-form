@@ -11,7 +11,7 @@ import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
-import Subject, { Subscription } from './utils/Subject';
+import Subject from './utils/Subject';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -48,7 +48,6 @@ import {
   SetValueConfig,
   FormState,
   FieldNamesMarkedBoolean,
-  DeepPartial,
   InternalNameSet,
   DefaultValues,
   FieldError,
@@ -57,8 +56,6 @@ import {
   RefCallbackHandler,
   FieldPath,
   WatchObserver,
-  FieldPathValue,
-  FieldPathValues,
   KeepStateOptions,
   EventType,
   UseFormTrigger,
@@ -74,6 +71,7 @@ import {
   ChangeHandler,
   PathValue,
   UseFormGetValues,
+  UseFormWatch,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -757,26 +755,13 @@ export function useForm<
     [],
   );
 
-  function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<TName extends FieldPath<TFieldValues>>(
-    fieldName: TName,
-    defaultValue?: FieldPathValue<TFieldValues, TName>,
-  ): FieldPathValue<TFieldValues, TName>;
-  function watch<TName extends FieldPath<TFieldValues>[]>(
-    fieldName: TName,
-    defaultValue?: FieldPathValues<TFieldValues, TName>,
-  ): FieldPathValues<TFieldValues, TName>;
-  function watch(
-    callback: WatchObserver,
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): Subscription;
-  function watch(
+  const watch: UseFormWatch<TFieldValues> = (
     fieldName?:
       | FieldPath<TFieldValues>
       | FieldPath<TFieldValues>[]
       | WatchObserver,
     defaultValue?: unknown,
-  ) {
+  ) => {
     if (isFunction(fieldName)) {
       return watchSubjectRef.current.subscribe({
         next: (info) => fieldName(watchInternal(undefined, defaultValue), info),
@@ -784,7 +769,7 @@ export function useForm<
     }
 
     return watchInternal(fieldName as string | string[], defaultValue, true);
-  }
+  };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name

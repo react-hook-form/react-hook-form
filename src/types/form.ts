@@ -151,6 +151,22 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): FieldPathValues<TFieldValues, TFieldNames>;
 };
 
+export type UseFormWatch<TFieldValues extends FieldValues> = {
+  (): UnpackNestedValue<TFieldValues>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <TFieldNames extends FieldPath<TFieldValues>[]>(
+    fieldNames: TFieldNames,
+    defaultValue?: FieldPathValues<TFieldValues, TFieldNames>,
+  ): FieldPathValues<TFieldValues, TFieldNames>;
+  (
+    callback: WatchObserver,
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): Subscription;
+};
+
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => void;
@@ -203,7 +219,9 @@ export type WatchInternal = <T>(
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: T,
   isGlobal?: boolean,
-) => unknown;
+) =>
+  | FieldPathValue<FieldValues, InternalFieldName>
+  | FieldPathValues<FieldValues, InternalFieldName[]>;
 
 export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
@@ -261,21 +279,7 @@ export type WatchObserver = <TFieldValues>(
 ) => void;
 
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
-  watch: {
-    (): UnpackNestedValue<TFieldValues>;
-    <TName extends FieldPath<TFieldValues>>(
-      fieldName: TName,
-      defaultValue?: FieldPathValue<TFieldValues, TName>,
-    ): FieldPathValue<TFieldValues, TName>;
-    <TName extends FieldPath<TFieldValues>[]>(
-      fieldName: TName,
-      defaultValue?: FieldPathValues<TFieldValues, TName>,
-    ): FieldPathValues<TFieldValues, TName>;
-    (
-      callback: WatchObserver,
-      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    ): Subscription;
-  };
+  watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
