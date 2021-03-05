@@ -58,9 +58,7 @@ export default async (
       type: exceedMax ? maxType : minType,
       message,
       ref,
-      ...(exceedMax
-        ? appendErrorsCurry(maxType, message)
-        : appendErrorsCurry(minType, message)),
+      ...appendErrorsCurry(exceedMax ? maxType : minType, message),
     };
   };
 

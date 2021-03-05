@@ -231,33 +231,32 @@ export function useForm<
       rawValue: SetFieldValue<TFieldValues>,
       shouldRender?: boolean,
     ) => {
-      const { _f } = get(fieldsRef.current, name) as Field;
+      const _f = get(fieldsRef.current, name)._f as Field['_f'];
 
       if (_f) {
-        const { ref, refs } = _f;
         const value =
-          isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
+          isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
             ? ''
             : rawValue;
         _f.value = rawValue;
 
-        if (isRadioInput(ref)) {
-          (refs || []).forEach(
+        if (isRadioInput(_f.ref)) {
+          (_f.refs || []).forEach(
             (radioRef: HTMLInputElement) =>
               (radioRef.checked = radioRef.value === value),
           );
-        } else if (isFileInput(ref) && !isString(value)) {
-          ref.files = value as FileList;
-        } else if (isMultipleSelect(ref)) {
-          [...ref.options].forEach(
+        } else if (isFileInput(_f.ref) && !isString(value)) {
+          _f.ref.files = value as FileList;
+        } else if (isMultipleSelect(_f.ref)) {
+          [..._f.ref.options].forEach(
             (selectRef) =>
               (selectRef.selected = (value as string[]).includes(
                 selectRef.value,
               )),
           );
-        } else if (isCheckBoxInput(ref) && refs) {
-          refs.length > 1
-            ? refs.forEach(
+        } else if (isCheckBoxInput(_f.ref) && _f.refs) {
+          _f.refs.length > 1
+            ? _f.refs.forEach(
                 (checkboxRef) =>
                   (checkboxRef.checked = Array.isArray(value)
                     ? !!(value as []).find(
@@ -265,9 +264,9 @@ export function useForm<
                       )
                     : value === checkboxRef.value),
               )
-            : (refs[0].checked = !!value);
+            : (_f.refs[0].checked = !!value);
         } else {
-          ref.value = value;
+          _f.ref.value = value;
         }
 
         if (shouldRender) {
@@ -1040,8 +1039,9 @@ export function useForm<
     if (isWeb && !keepStateOptions.keepValues) {
       for (const field of Object.values(fieldsRef.current)) {
         if (field && field._f) {
-          const { ref, refs } = field._f;
-          const inputRef = Array.isArray(refs) ? refs[0] : ref;
+          const inputRef = Array.isArray(field._f.refs)
+            ? field._f.refs[0]
+            : field._f.ref;
 
           if (isHTMLElement(inputRef)) {
             try {
