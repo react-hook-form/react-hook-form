@@ -1231,9 +1231,9 @@ describe('useFieldArray', () => {
     it('should populate all array fields with setValue when name match Field Array', async () => {
       type FormInputs = {
         nest: {
-          value: string;
+          value: number;
           nestedArray: {
-            value: string;
+            value: number;
           }[];
         }[];
       };
@@ -1317,8 +1317,8 @@ describe('useFieldArray', () => {
     it('should populate all array fields correctly with setValue', async () => {
       type FormValues = {
         nest: {
-          value: string;
-          nestedArray: { value: string }[];
+          value: number;
+          nestedArray: { value: number }[];
         }[];
       };
 

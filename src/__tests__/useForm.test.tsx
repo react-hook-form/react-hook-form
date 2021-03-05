@@ -517,8 +517,8 @@ describe('useForm', () => {
       it('should be return undefined or null value', () => {
         const { result } = renderHook(() =>
           useForm<{
-            test: string;
-            test1: string;
+            test: string | null;
+            test1?: string;
           }>(),
         );
 

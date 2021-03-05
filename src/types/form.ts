@@ -8,7 +8,6 @@ import {
 } from './utils';
 import { Resolver } from './resolvers';
 import {
-  FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
@@ -142,22 +141,50 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => RefCallbackHandler;
 
+export type UseFormGetValues<TFieldValues extends FieldValues> = {
+  (): UnpackNestedValue<TFieldValues>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <TFieldNames extends FieldPath<TFieldValues>[]>(
+    fieldNames: TFieldNames,
+  ): FieldPathValues<TFieldValues, TFieldNames>;
+};
+
+export type UseFormWatch<TFieldValues extends FieldValues> = {
+  (): UnpackNestedValue<TFieldValues>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <TFieldNames extends FieldPath<TFieldValues>[]>(
+    fieldNames: TFieldNames,
+    defaultValue?: FieldPathValues<TFieldValues, TFieldNames>,
+  ): FieldPathValues<TFieldValues, TFieldNames>;
+  (
+    callback: WatchObserver,
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): Subscription;
+};
+
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
-  name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => void;
 
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (
-  name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => void;
 
-export type UseFormSetValue<TFieldValues extends FieldValues> = (
-  name: FieldName<TFieldValues>,
-  value: SetFieldValue<TFieldValues>,
+export type UseFormSetValue<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>(
+  name: TFieldName,
+  value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>,
   options?: SetValueConfig,
 ) => void;
 
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldName<TFieldValues>,
+  name: FieldPath<TFieldValues>,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -192,7 +219,9 @@ export type WatchInternal = <T>(
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: T,
   isGlobal?: boolean,
-) => unknown;
+) =>
+  | FieldPathValue<FieldValues, InternalFieldName>
+  | FieldPathValues<FieldValues, InternalFieldName[]>;
 
 export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
@@ -250,31 +279,8 @@ export type WatchObserver = <TFieldValues>(
 ) => void;
 
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
-  watch: {
-    (): UnpackNestedValue<TFieldValues>;
-    <TName extends FieldPath<TFieldValues>>(
-      fieldName: TName,
-      defaultValue?: FieldPathValue<TFieldValues, TName>,
-    ): FieldPathValue<TFieldValues, TName>;
-    <TName extends FieldPath<TFieldValues>[]>(
-      fieldName: TName,
-      defaultValue?: FieldPathValues<TFieldValues, TName>,
-    ): FieldPathValues<TFieldValues, TName>;
-    (
-      callback: WatchObserver,
-      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    ): Subscription;
-  };
-  getValues: {
-    (): UnpackNestedValue<TFieldValues>;
-    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
-      TFieldValues,
-      TName
-    >;
-    <TName extends FieldPath<TFieldValues>[]>(
-      fieldNames: TName,
-    ): FieldPathValues<TFieldValues, TName>;
-  };
+  watch: UseFormWatch<TFieldValues>;
+  getValues: UseFormGetValues<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;

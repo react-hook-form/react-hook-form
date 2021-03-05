@@ -11,7 +11,7 @@ import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
-import Subject, { Subscription } from './utils/Subject';
+import Subject from './utils/Subject';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -48,7 +48,6 @@ import {
   SetValueConfig,
   FormState,
   FieldNamesMarkedBoolean,
-  DeepPartial,
   InternalNameSet,
   DefaultValues,
   FieldError,
@@ -57,8 +56,6 @@ import {
   RefCallbackHandler,
   FieldPath,
   WatchObserver,
-  FieldPathValue,
-  FieldPathValues,
   KeepStateOptions,
   EventType,
   UseFormTrigger,
@@ -72,6 +69,9 @@ import {
   WatchInternal,
   GetFormIsDirty,
   ChangeHandler,
+  PathValue,
+  UseFormGetValues,
+  UseFormWatch,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -455,8 +455,10 @@ export function useForm<
 
   const setInternalValues = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
-      value: SetFieldValue<TFieldValues>,
+      name: FieldPath<TFieldValues>,
+      value: UnpackNestedValue<
+        PathValue<TFieldValues, FieldPath<TFieldValues>>
+      >,
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
       const data = {};
@@ -466,14 +468,14 @@ export function useForm<
         if (get(fieldsRef.current, fieldName)) {
           setFieldValue(fieldName, get(data, fieldName), true);
           shouldDirty && updateAndGetDirtyState(fieldName);
-          shouldValidate && trigger(fieldName as FieldName<TFieldValues>);
+          shouldValidate && trigger(fieldName);
         }
       }
     },
     [trigger],
   );
 
-  const isFieldWatched = <T extends FieldName<TFieldValues>>(name: T) =>
+  const isFieldWatched = (name: FieldPath<TFieldValues>) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
@@ -508,7 +510,7 @@ export function useForm<
     if (field && field._f) {
       setFieldValue(name, value, true);
       options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate && trigger(name as FieldName<TFieldValues>);
+      options.shouldValidate && trigger(name);
     } else if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
       fieldArraySubjectRef.current.next({
         fields: value,
@@ -567,7 +569,7 @@ export function useForm<
           ...validationMode,
         });
         const isWatched =
-          !isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>);
+          !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
         if (!isUndefined(inputValue)) {
           field._f.value = inputValue;
@@ -653,16 +655,9 @@ export function useForm<
     [],
   );
 
-  function getValues(): UnpackNestedValue<TFieldValues>;
-  function getValues<TName extends FieldPath<TFieldValues>>(
-    fieldName: TName,
-  ): FieldPathValue<TFieldValues, TName>;
-  function getValues<TName extends FieldPath<TFieldValues>[]>(
-    fieldNames: TName,
-  ): FieldPathValues<TFieldValues, TName>;
-  function getValues(
+  const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-  ) {
+  ) => {
     const values = isMountedRef.current
       ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValuesRef.current;
@@ -676,7 +671,7 @@ export function useForm<
     }
 
     return fieldNames.map((name) => get(values, name as InternalFieldName));
-  }
+  };
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
@@ -760,26 +755,13 @@ export function useForm<
     [],
   );
 
-  function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<TName extends FieldPath<TFieldValues>>(
-    fieldName: TName,
-    defaultValue?: FieldPathValue<TFieldValues, TName>,
-  ): FieldPathValue<TFieldValues, TName>;
-  function watch<TName extends FieldPath<TFieldValues>[]>(
-    fieldName: TName,
-    defaultValue?: FieldPathValues<TFieldValues, TName>,
-  ): FieldPathValues<TFieldValues, TName>;
-  function watch(
-    callback: WatchObserver,
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): Subscription;
-  function watch(
+  const watch: UseFormWatch<TFieldValues> = (
     fieldName?:
       | FieldPath<TFieldValues>
       | FieldPath<TFieldValues>[]
       | WatchObserver,
     defaultValue?: unknown,
-  ) {
+  ) => {
     if (isFunction(fieldName)) {
       return watchSubjectRef.current.subscribe({
         next: (info) => fieldName(watchInternal(undefined, defaultValue), info),
@@ -787,7 +769,7 @@ export function useForm<
     }
 
     return watchInternal(fieldName as string | string[], defaultValue, true);
-  }
+  };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
