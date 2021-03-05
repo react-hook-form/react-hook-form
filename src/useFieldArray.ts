@@ -111,8 +111,10 @@ export const useFieldArray = <
     >[]
   >(
     fields: T,
-    // @ts-expect-error
-  ) => fields.map((field) => omit(field || {}, keyName));
+  ) =>
+    fields.map((field) =>
+      omit((field || {}) as Record<TKeyName, any>, keyName),
+    );
 
   const getCurrentFieldsValues = () => {
     const values = get(getFieldsValues(fieldsRef, defaultValuesRef), name, []);
