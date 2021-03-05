@@ -30,6 +30,7 @@ import compact from './utils/compact';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isWeb from './utils/isWeb';
+import omit from './utils/omit';
 import isHTMLElement from './utils/isHTMLElement';
 import getFields from './logic/getFields';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
@@ -388,7 +389,8 @@ export function useForm<
       const field = fieldsRef[name];
 
       if (field) {
-        const { _f, ...current } = field;
+        const _f = field._f;
+        const current = omit(field, '_f');
 
         if (_f) {
           const fieldError = await validateField(

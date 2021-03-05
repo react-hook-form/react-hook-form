@@ -2,6 +2,7 @@ import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
 import { get } from '../utils';
 import { FieldRefs, InternalFieldName } from '../types';
+import omit from '../utils/omit';
 
 const focusFieldBy = (
   fields: FieldRefs,
@@ -12,7 +13,8 @@ const focusFieldBy = (
     const field = get(fields, key);
 
     if (field) {
-      const { _f, ...current } = field;
+      const _f = field._f;
+      const current = omit(field, '_f');
 
       if (_f && callback(_f.name)) {
         if (_f.ref.focus && isUndefined(_f.ref.focus())) {

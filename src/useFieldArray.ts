@@ -18,6 +18,7 @@ import compact from './utils/compact';
 import isUndefined from './utils/isUndefined';
 import focusFieldBy from './logic/focusFieldBy';
 import getFieldsValues from './logic/getFieldsValues';
+import omit from './utils/omit';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -110,7 +111,8 @@ export const useFieldArray = <
     >[]
   >(
     fields: T,
-  ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
+    // @ts-expect-error
+  ) => fields.map((field) => omit(field || {}, keyName));
 
   const getCurrentFieldsValues = () => {
     const values = get(getFieldsValues(fieldsRef, defaultValuesRef), name, []);

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import set from '../utils/set';
 import { FieldRefs, FieldValues } from '../types';
+import omit from '../utils/omit';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
@@ -11,7 +12,9 @@ const getFieldsValues = (
     const field = fieldsRef.current[name];
 
     if (field) {
-      const { _f, ...current } = field;
+      const _f = field._f;
+      const current = omit(field, '_f');
+
       set(
         output,
         name,
