@@ -1568,4 +1568,135 @@ describe('useFieldArray', () => {
       });
     });
   });
+
+  it('should custom register append, prepend and insert inputs with values', () => {
+    type FormValues = {
+      test: {
+        test: string;
+        test1: string;
+        test2: {
+          test: string;
+        }[];
+      }[];
+    };
+    const watchValues: unknown[] = [];
+
+    const Component = () => {
+      const { control, watch } = useForm<FormValues>({
+        defaultValues: {
+          test: [],
+        },
+      });
+      const { append, prepend, insert } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      watchValues.push(watch('test'));
+
+      React.useEffect(() => {
+        append({
+          test: 'append',
+          test1: 'append',
+        });
+      }, [append]);
+
+      return (
+        <form>
+          <button
+            type={'button'}
+            onClick={() =>
+              prepend({
+                test: 'prepend',
+                test1: 'prepend',
+              })
+            }
+          >
+            prepend
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              insert(1, {
+                test: 'insert',
+                test1: 'insert',
+              })
+            }
+          >
+            insert
+          </button>
+
+          <button
+            type={'button'}
+            onClick={() =>
+              prepend({
+                test: 'prepend',
+                test2: [
+                  {
+                    test: 'test',
+                  },
+                ],
+              })
+            }
+          >
+            deep append
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              append({
+                test: 'prepend',
+                test2: [
+                  {
+                    test: 'test',
+                  },
+                ],
+              })
+            }
+          >
+            deep prepend
+          </button>
+          <button
+            type={'button'}
+            onClick={() =>
+              insert(1, {
+                test: 'insert',
+                test2: [
+                  {
+                    test: 'test',
+                  },
+                ],
+              })
+            }
+          >
+            deep insert
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'insert' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
+    });
+
+    expect(watchValues).toMatchSnapshot();
+  });
 });

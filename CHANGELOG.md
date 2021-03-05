@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.0-beta.17] - 2021-03-03
+
+## Changes
+
+- `append`, `prepend` and `insert` will `register` deeply nested inputs at `useFieldArray`.
+
 ## [7.0.0-beta.15] - 2021-02-27
 
 ## Changes
