@@ -18,6 +18,7 @@ import compact from './utils/compact';
 import isUndefined from './utils/isUndefined';
 import focusFieldBy from './logic/focusFieldBy';
 import getFieldsValues from './logic/getFieldsValues';
+import omit from './utils/omit';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -110,7 +111,10 @@ export const useFieldArray = <
     >[]
   >(
     fields: T,
-  ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
+  ) =>
+    fields.map((field) =>
+      omit((field || {}) as Record<TKeyName, any>, keyName),
+    );
 
   const getCurrentFieldsValues = () => {
     const values = get(getFieldsValues(fieldsRef, defaultValuesRef), name, []);
@@ -130,18 +134,15 @@ export const useFieldArray = <
     index: number,
     options?: FieldArrayMethodProps,
   ): string => {
-    if (options) {
-      if (!isUndefined(options.focusIndex)) {
-        return `${name}.${options.focusIndex}`;
-      }
-      if (options.focusName) {
-        return options.focusName;
-      }
-      if (!options.shouldFocus) {
-        return '';
-      }
-    }
-    return `${name}.${index}`;
+    return options
+      ? !isUndefined(options.focusIndex)
+        ? `${name}.${options.focusIndex}`
+        : options.focusName
+        ? options.focusName
+        : !options.shouldFocus
+        ? ''
+        : `${name}.${index}`
+      : `${name}.${index}`;
   };
 
   const resetFields = <T>(index?: T) =>

@@ -17,18 +17,16 @@ export default (options?: HTMLInputElement[]): CheckboxFieldResult => {
     if (options.length > 1) {
       const values = options
         .filter((option) => option && option.checked)
-        .map(({ value }) => value);
+        .map((option) => option.value);
       return { value: values, isValid: !!values.length };
     }
 
-    const { checked, value, attributes } = options[0];
-
-    return checked
+    return options[0].checked
       ? // @ts-expect-error expected to work in the browser
-        attributes && !isUndefined(attributes.value)
-        ? isUndefined(value)
+        options[0].attributes && !isUndefined(options[0].attributes.value)
+        ? isUndefined(options[0].value)
           ? validResult
-          : { value: value, isValid: true }
+          : { value: options[0].value, isValid: true }
         : validResult
       : defaultResult;
   }

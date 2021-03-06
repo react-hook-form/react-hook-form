@@ -11,7 +11,7 @@ import { Field } from '../types';
 
 export default function getFieldValue(field?: Field) {
   if (field && field._f) {
-    const { ref } = field._f;
+    const ref = field._f.ref;
 
     if (ref.disabled) {
       return;
