@@ -439,10 +439,7 @@ export const useFieldArray = <
       },
     });
 
-    return () => {
-      fieldArraySubscription.unsubscribe();
-      fieldArrayNamesRef.current.delete(name);
-    };
+    return () => fieldArraySubscription.unsubscribe();
   }, []);
 
   return {

@@ -779,6 +779,7 @@ export function useForm<
         : [name]
       : Object.keys(fieldsNamesRef.current)) {
       fieldsNamesRef.current.delete(inputName);
+      fieldArrayNamesRef.current.delete(inputName);
 
       if (get(fieldsRef.current, inputName) as Field) {
         if (!options.keepIsValid) {
