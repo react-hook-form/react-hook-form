@@ -8,7 +8,6 @@ import set from './utils/set';
 import removeArrayAt from './utils/remove';
 import unset from './utils/unset';
 import moveArrayAt from './utils/move';
-import isKey from './utils/isKey';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import appendAt from './utils/append';
@@ -440,11 +439,7 @@ export const useFieldArray = <
       },
     });
 
-    return () => {
-      fieldArraySubscription.unsubscribe();
-      isKey(name) && unset(fieldArrayDefaultValuesRef.current, name);
-      fieldArrayNamesRef.current.delete(name);
-    };
+    return () => fieldArraySubscription.unsubscribe();
   }, []);
 
   return {
