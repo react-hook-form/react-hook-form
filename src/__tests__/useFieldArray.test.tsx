@@ -323,21 +323,29 @@ describe('useFieldArray', () => {
     it('should keep field array values', () => {
       let getValues: any;
       const Component = () => {
+        const [show, setShow] = React.useState(true);
         const { register, control, getValues: tempGetValues } = useForm();
         const { fields, append } = useFieldArray({ name: 'test', control });
         getValues = tempGetValues;
 
         return (
-          <div>
-            {fields.map((_, i) => (
-              <input key={i.toString()} {...register(`test.${i}.value`)} />
-            ))}
-            <button onClick={() => append({ value: '' })}>append</button>
-          </div>
+          <>
+            {show && (
+              <div>
+                {fields.map((_, i) => (
+                  <input key={i.toString()} {...register(`test.${i}.value`)} />
+                ))}
+                <button onClick={() => append({ value: '' })}>append</button>
+              </div>
+            )}
+            <button type={'button'} onClick={() => setShow(!show)}>
+              setShow
+            </button>
+          </>
         );
       };
 
-      const { unmount } = render(<Component />);
+      render(<Component />);
 
       const button = screen.getByRole('button', { name: /append/i });
 
@@ -345,11 +353,14 @@ describe('useFieldArray', () => {
       fireEvent.click(button);
       fireEvent.click(button);
 
-      unmount();
+      fireEvent.click(screen.getByRole('button', { name: 'setShow' }));
 
       expect(getValues()).toEqual({
         test: [{ value: '' }, { value: '' }, { value: '' }],
       });
+
+      fireEvent.click(screen.getByRole('button', { name: 'setShow' }));
+      expect(screen.getAllByRole('textbox').length).toEqual(3);
     });
 
     it('should remove reset method when field array is removed', () => {
