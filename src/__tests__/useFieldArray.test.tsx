@@ -396,7 +396,7 @@ describe('useFieldArray', () => {
         { id: '1', value: 'test' },
       ]);
       expect(result.current.control.fieldArrayNamesRef.current).toEqual(
-        new Set(),
+        new Set(['test']),
       );
     });
 
