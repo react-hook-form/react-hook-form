@@ -420,14 +420,14 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next({ name: inpuTFieldArrayName, fields, isReset }) {
+      next({ name: inputFieldArrayName, fields, isReset }) {
         if (isReset) {
-          unset(fieldsRef.current, inpuTFieldArrayName || name);
+          unset(fieldsRef.current, inputFieldArrayName || name);
 
-          if (inpuTFieldArrayName) {
+          if (inputFieldArrayName) {
             set(
               fieldArrayDefaultValuesRef.current,
-              inpuTFieldArrayName,
+              inputFieldArrayName,
               fields,
             );
             setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));

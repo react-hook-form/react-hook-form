@@ -5,40 +5,40 @@ Array [
   Object {
     "options": Array [
       Object {
-        "option": "yes",
+        "option": undefined,
       },
       Object {
-        "option": "yes",
-      },
-    ],
-  },
-  Object {
-    "options": Array [
-      Object {
-        "option": "yes",
-      },
-      Object {
-        "option": "yes",
+        "option": undefined,
       },
     ],
   },
   Object {
     "options": Array [
       Object {
-        "option": "yes",
+        "option": undefined,
       },
       Object {
-        "option": "yes",
+        "option": undefined,
       },
     ],
   },
   Object {
     "options": Array [
       Object {
-        "option": "yes",
+        "option": null,
       },
       Object {
-        "option": "yes",
+        "option": null,
+      },
+    ],
+  },
+  Object {
+    "options": Array [
+      Object {
+        "option": null,
+      },
+      Object {
+        "option": null,
       },
     ],
   },
