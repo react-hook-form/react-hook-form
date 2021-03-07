@@ -484,6 +484,7 @@ export function useForm<
   const updateValueAndGetDefault = (name: InternalFieldName) => {
     let defaultValue;
     const field = get(fieldsRef.current, name) as Field;
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
     if (
       field &&
@@ -493,7 +494,7 @@ export function useForm<
         ? get(defaultValuesRef.current, name)
         : field._f.value;
 
-      if (!isUndefined(defaultValue)) {
+      if (!isUndefined(defaultValue) && !isFieldArray) {
         setFieldValue(name, defaultValue);
       }
     }
