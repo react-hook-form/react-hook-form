@@ -1,0 +1,471 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`registerFieldArray should register the correct field array inputs 1`] = `
+Object {
+  "test": Array [
+    Object {
+      "nested": Array [
+        Object {
+          "data1": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data1",
+              "ref": Object {
+                "name": "test.0.nested.0.data1",
+              },
+              "value": "test1",
+            },
+          },
+          "data2": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data2",
+              "ref": Object {
+                "name": "test.0.nested.0.data2",
+              },
+              "value": "test1",
+            },
+          },
+        },
+      ],
+      "test1": Object {
+        "_f": Object {
+          "name": "test.0.test1",
+          "ref": Object {
+            "name": "test.0.test1",
+          },
+          "value": "1",
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`registerFieldArray should register the correct field array inputs 2`] = `
+Object {
+  "test": Array [
+    Object {
+      "nested": Array [
+        Object {
+          "data1": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data1",
+              "ref": Object {
+                "name": "test.0.nested.0.data1",
+              },
+              "value": "test1",
+            },
+          },
+          "data2": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data2",
+              "ref": Object {
+                "name": "test.0.nested.0.data2",
+              },
+              "value": "test2",
+            },
+          },
+          "data3": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data3",
+              "ref": Object {
+                "name": "test.0.nested.0.data3",
+              },
+              "value": "test2",
+            },
+          },
+        },
+        Object {
+          "data4": Object {
+            "_f": Object {
+              "name": "test.0.nested.1.data4",
+              "ref": Object {
+                "name": "test.0.nested.1.data4",
+              },
+              "value": "test2",
+            },
+          },
+          "data5": Object {
+            "_f": Object {
+              "name": "test.0.nested.1.data5",
+              "ref": Object {
+                "name": "test.0.nested.1.data5",
+              },
+              "value": "test2",
+            },
+          },
+        },
+      ],
+      "test1": Object {
+        "_f": Object {
+          "name": "test.0.test1",
+          "ref": Object {
+            "name": "test.0.test1",
+          },
+          "value": "1",
+        },
+      },
+      "test2": Object {
+        "_f": Object {
+          "name": "test.0.test2",
+          "ref": Object {
+            "name": "test.0.test2",
+          },
+          "value": "2",
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`registerFieldArray should register the correct field array inputs 3`] = `
+Object {
+  "test": Array [
+    Object {
+      "nested": Array [
+        Object {
+          "data1": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data1",
+              "ref": Object {
+                "name": "test.0.nested.0.data1",
+              },
+              "value": "test1",
+            },
+          },
+          "data2": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data2",
+              "ref": Object {
+                "name": "test.0.nested.0.data2",
+              },
+              "value": "test2",
+            },
+          },
+          "data3": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data3",
+              "ref": Object {
+                "name": "test.0.nested.0.data3",
+              },
+              "value": "test2",
+            },
+          },
+        },
+        Object {
+          "data4": Object {
+            "_f": Object {
+              "name": "test.0.nested.1.data4",
+              "ref": Object {
+                "name": "test.0.nested.1.data4",
+              },
+              "value": "test2",
+            },
+          },
+          "data5": Object {
+            "_f": Object {
+              "name": "test.0.nested.1.data5",
+              "ref": Object {
+                "name": "test.0.nested.1.data5",
+              },
+              "value": "test2",
+            },
+          },
+        },
+      ],
+      "test1": Object {
+        "_f": Object {
+          "name": "test.0.test1",
+          "ref": Object {
+            "name": "test.0.test1",
+          },
+          "value": "1",
+        },
+      },
+      "test2": Object {
+        "_f": Object {
+          "name": "test.0.test2",
+          "ref": Object {
+            "name": "test.0.test2",
+          },
+          "value": "2",
+        },
+      },
+    },
+    Object {
+      "nested": Array [
+        Object {
+          "data3": Object {
+            "_f": Object {
+              "name": "test.1.nested.0.data3",
+              "ref": Object {
+                "name": "test.1.nested.0.data3",
+              },
+              "value": "test3",
+            },
+          },
+          "data4": Object {
+            "_f": Object {
+              "name": "test.1.nested.0.data4",
+              "ref": Object {
+                "name": "test.1.nested.0.data4",
+              },
+              "value": "test3",
+            },
+          },
+        },
+        Object {
+          "data5": Object {
+            "_f": Object {
+              "name": "test.1.nested.1.data5",
+              "ref": Object {
+                "name": "test.1.nested.1.data5",
+              },
+              "value": "test3",
+            },
+          },
+          "data6": Object {
+            "_f": Object {
+              "name": "test.1.nested.1.data6",
+              "ref": Object {
+                "name": "test.1.nested.1.data6",
+              },
+              "value": "test3",
+            },
+          },
+        },
+      ],
+      "test": Object {
+        "_f": Object {
+          "name": "test.1.test",
+          "ref": Object {
+            "name": "test.1.test",
+          },
+          "value": "3",
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`registerFieldArray should register the correct field array inputs 4`] = `
+Object {
+  "test": Array [
+    Object {
+      "nested": Array [
+        Object {
+          "data1": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data1",
+              "ref": Object {
+                "name": "test.0.nested.0.data1",
+              },
+              "value": "test1",
+            },
+          },
+          "data2": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data2",
+              "ref": Object {
+                "name": "test.0.nested.0.data2",
+              },
+              "value": "test2",
+            },
+          },
+          "data3": Object {
+            "_f": Object {
+              "name": "test.0.nested.0.data3",
+              "ref": Object {
+                "name": "test.0.nested.0.data3",
+              },
+              "value": "test2",
+            },
+          },
+        },
+        Object {
+          "data4": Object {
+            "_f": Object {
+              "name": "test.0.nested.1.data4",
+              "ref": Object {
+                "name": "test.0.nested.1.data4",
+              },
+              "value": "test2",
+            },
+          },
+          "data5": Object {
+            "_f": Object {
+              "name": "test.0.nested.1.data5",
+              "ref": Object {
+                "name": "test.0.nested.1.data5",
+              },
+              "value": "test2",
+            },
+          },
+        },
+      ],
+      "test1": Object {
+        "_f": Object {
+          "name": "test.0.test1",
+          "ref": Object {
+            "name": "test.0.test1",
+          },
+          "value": "1",
+        },
+      },
+      "test2": Object {
+        "_f": Object {
+          "name": "test.0.test2",
+          "ref": Object {
+            "name": "test.0.test2",
+          },
+          "value": "2",
+        },
+      },
+    },
+    Object {
+      "nested": Array [
+        Object {
+          "data3": Object {
+            "_f": Object {
+              "name": "test.1.nested.0.data3",
+              "ref": Object {
+                "name": "test.1.nested.0.data3",
+              },
+              "value": "test3",
+            },
+          },
+          "data4": Object {
+            "_f": Object {
+              "name": "test.1.nested.0.data4",
+              "ref": Object {
+                "name": "test.1.nested.0.data4",
+              },
+              "value": "test3",
+            },
+          },
+        },
+        Object {
+          "data5": Object {
+            "_f": Object {
+              "name": "test.1.nested.1.data5",
+              "ref": Object {
+                "name": "test.1.nested.1.data5",
+              },
+              "value": "test3",
+            },
+          },
+          "data6": Object {
+            "_f": Object {
+              "name": "test.1.nested.1.data6",
+              "ref": Object {
+                "name": "test.1.nested.1.data6",
+              },
+              "value": "test3",
+            },
+          },
+        },
+      ],
+      "test": Object {
+        "_f": Object {
+          "name": "test.1.test",
+          "ref": Object {
+            "name": "test.1.test",
+          },
+          "value": "3",
+        },
+      },
+    },
+    undefined,
+    undefined,
+    Object {
+      "nested": Array [
+        Object {
+          "data8": Object {
+            "_f": Object {
+              "name": "test.4.nested.0.data8",
+              "ref": Object {
+                "name": "test.4.nested.0.data8",
+              },
+              "value": "test3",
+            },
+          },
+          "deeper": Array [
+            Object {
+              "deeper1": Object {
+                "_f": Object {
+                  "name": "test.4.nested.0.deeper.0.deeper1",
+                  "ref": Object {
+                    "name": "test.4.nested.0.deeper.0.deeper1",
+                  },
+                  "value": "test3",
+                },
+              },
+              "deeper2": Object {
+                "_f": Object {
+                  "name": "test.4.nested.0.deeper.0.deeper2",
+                  "ref": Object {
+                    "name": "test.4.nested.0.deeper.0.deeper2",
+                  },
+                  "value": "test3",
+                },
+              },
+            },
+            Object {
+              "deeper3": Object {
+                "_f": Object {
+                  "name": "test.4.nested.0.deeper.1.deeper3",
+                  "ref": Object {
+                    "name": "test.4.nested.0.deeper.1.deeper3",
+                  },
+                  "value": "test3",
+                },
+              },
+              "deeper4": Object {
+                "_f": Object {
+                  "name": "test.4.nested.0.deeper.1.deeper4",
+                  "ref": Object {
+                    "name": "test.4.nested.0.deeper.1.deeper4",
+                  },
+                  "value": "test3",
+                },
+              },
+            },
+          ],
+        },
+        Object {
+          "data10": Object {
+            "_f": Object {
+              "name": "test.4.nested.1.data10",
+              "ref": Object {
+                "name": "test.4.nested.1.data10",
+              },
+              "value": "test3",
+            },
+          },
+          "data11": Object {
+            "_f": Object {
+              "name": "test.4.nested.1.data11",
+              "ref": Object {
+                "name": "test.4.nested.1.data11",
+              },
+              "value": Object {
+                "extra": "test",
+              },
+            },
+          },
+        },
+      ],
+      "test": Object {
+        "_f": Object {
+          "name": "test.4.test",
+          "ref": Object {
+            "name": "test.4.test",
+          },
+          "value": "4",
+        },
+      },
+    },
+  ],
+}
+`;
