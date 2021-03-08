@@ -3,6 +3,7 @@ import { useFormContext } from './useFormContext';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import mapIds from './logic/mapId';
 import getFieldArrayParentName from './logic/getNodeParentName';
+import { registerFieldArray } from './logic/registerFieldArray';
 import get from './utils/get';
 import set from './utils/set';
 import removeArrayAt from './utils/remove';
@@ -59,7 +60,6 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
-    registerFieldArray,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -257,7 +257,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(name, appendValue, currentIndex);
+    registerFieldArray(fieldsRef, name, appendValue, currentIndex);
 
     focusNameRef.current = getFocusDetail(currentIndex, options);
   };
@@ -281,7 +281,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(name, prependValue);
+    registerFieldArray(fieldsRef, name, prependValue);
 
     focusNameRef.current = getFocusDetail(0, options);
   };
@@ -323,7 +323,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(name, insertValue, index);
+    registerFieldArray(fieldsRef, name, insertValue, index);
 
     focusNameRef.current = getFocusDetail(index, options);
   };

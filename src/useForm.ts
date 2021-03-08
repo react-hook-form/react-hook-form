@@ -8,6 +8,7 @@ import isErrorStateChanged from './logic/isErrorStateChanged';
 import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
+import { registerFieldArray } from './logic/registerFieldArray';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
@@ -520,7 +521,7 @@ export function useForm<
         isReset: true,
       });
 
-      registerFieldArray(name, value);
+      registerFieldArray(fieldsRef, name, value);
 
       if (
         (readFormStateRef.current.isDirty ||
@@ -920,37 +921,6 @@ export function useForm<
     [defaultValuesRef.current],
   );
 
-  const registerFieldArray = <T extends Object[]>(
-    name: InternalFieldName,
-    values: T,
-    index: number = 0,
-    parentName = '',
-  ) => {
-    Array.isArray(values) &&
-      values.forEach((appendValueItem, valueIndex) =>
-        Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
-          if (fieldNameAndValue) {
-            const [key, value] = fieldNameAndValue;
-            const inputName = `${parentName || name}.${
-              parentName ? valueIndex : index + valueIndex
-            }.${key}`;
-
-            Array.isArray(value)
-              ? registerFieldArray(name, value, valueIndex, inputName)
-              : set(fieldsRef.current, inputName, {
-                  _f: {
-                    ref: {
-                      name: inputName,
-                    },
-                    name: inputName,
-                    value,
-                  },
-                });
-          }
-        }),
-      );
-  };
-
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
       if (e && e.preventDefault) {
@@ -1133,7 +1103,6 @@ export function useForm<
     control: React.useMemo(
       () => ({
         register,
-        registerFieldArray,
         isWatchAllRef,
         watchFieldsRef,
         getFormIsDirty,
