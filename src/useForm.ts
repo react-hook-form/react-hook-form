@@ -8,6 +8,7 @@ import isErrorStateChanged from './logic/isErrorStateChanged';
 import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
+import { registerFieldArray } from './logic/registerFieldArray';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
@@ -519,6 +520,8 @@ export function useForm<
         name,
         isReset: true,
       });
+
+      registerFieldArray(fieldsRef, name, value);
 
       if (
         (readFormStateRef.current.isDirty ||
