@@ -73,6 +73,7 @@ import {
   PathValue,
   UseFormGetValues,
   UseFormWatch,
+  Path,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -463,19 +464,27 @@ export function useForm<
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
       Object.entries(value).forEach(([inputKey, inputValue]) => {
-        const fieldName = `${name}.${inputKey}`;
+        const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
 
         if (field) {
           if (field._f) {
-            setFieldValue(fieldName, inputValue as any, true);
+            setFieldValue(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              true,
+            );
             shouldDirty && updateAndGetDirtyState(fieldName);
-            shouldValidate && trigger(fieldName as any);
+            shouldValidate && trigger(fieldName);
           } else {
-            setInternalValues(fieldName as any, inputValue as any, {
-              shouldDirty,
-              shouldValidate,
-            });
+            setInternalValues(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              {
+                shouldDirty,
+                shouldValidate,
+              },
+            );
           }
         }
       });
