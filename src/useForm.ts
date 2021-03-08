@@ -18,7 +18,6 @@ import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
-import { getPath } from './utils/getPath';
 import isFunction from './utils/isFunction';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
@@ -74,6 +73,7 @@ import {
   PathValue,
   UseFormGetValues,
   UseFormWatch,
+  Path,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -461,18 +461,30 @@ export function useForm<
       value: UnpackNestedValue<
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
-      { shouldDirty, shouldValidate }: SetValueConfig,
+      options: SetValueConfig,
     ) => {
-      const data = {};
-      set(data, name, value);
+      Object.entries(value).forEach(([inputKey, inputValue]) => {
+        const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
+        const field = get(fieldsRef.current, fieldName);
 
-      for (const fieldName of getPath(name, value)) {
-        if (get(fieldsRef.current, fieldName)) {
-          setFieldValue(fieldName, get(data, fieldName), true);
-          shouldDirty && updateAndGetDirtyState(fieldName);
-          shouldValidate && trigger(fieldName);
+        if (field) {
+          if (field._f) {
+            setFieldValue(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              true,
+            );
+            options.shouldDirty && updateAndGetDirtyState(fieldName);
+            options.shouldValidate && trigger(fieldName);
+          } else {
+            setInternalValues(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              options,
+            );
+          }
         }
-      }
+      });
     },
     [trigger],
   );
