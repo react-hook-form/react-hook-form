@@ -425,14 +425,16 @@ describe('setValue', () => {
     });
   });
 
-  it('should not work if field is not registered', () => {
+  it('should work if field is not registered', () => {
     const { result } = renderHook(() => useForm());
 
     act(() => {
       result.current.setValue('test', '1');
     });
 
-    expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
+    expect(result.current.control.fieldsRef.current['test']).toEqual({
+      _f: { name: 'test', ref: { name: 'test', value: '1' }, value: '1' },
+    });
   });
 
   describe('with watch', () => {

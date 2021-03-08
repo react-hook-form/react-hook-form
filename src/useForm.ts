@@ -522,11 +522,7 @@ export function useForm<
   ) => {
     const field = get(fieldsRef.current, name);
 
-    if (field && field._f) {
-      setFieldValue(name, value, true);
-      options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate && trigger(name);
-    } else if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+    if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
       fieldArraySubjectRef.current.next({
         fields: value,
         name,
@@ -556,7 +552,14 @@ export function useForm<
         });
       }
     } else {
-      setInternalValues(name, value, options);
+      if (field && !field._f) {
+        setInternalValues(name, value, options);
+      } else {
+        !field && register(name);
+        setFieldValue(name, value, true);
+        options.shouldDirty && updateAndGetDirtyState(name);
+        options.shouldValidate && trigger(name);
+      }
     }
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
