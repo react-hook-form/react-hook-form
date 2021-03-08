@@ -59,6 +59,7 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
+    registerFieldArray,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -74,35 +75,6 @@ export const useFieldArray = <
 
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
   fieldArrayNamesRef.current.add(name);
-
-  const registerFieldArray = <T extends Object[]>(
-    values: T,
-    index: number,
-    parentName = '',
-  ) => {
-    values.forEach((appendValueItem, localIndex) =>
-      Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
-        if (fieldNameAndValue) {
-          const [key, value] = fieldNameAndValue;
-          const inputName = `${parentName || name}.${
-            parentName ? localIndex : index
-          }.${key}`;
-
-          Array.isArray(value)
-            ? registerFieldArray(value, localIndex, inputName)
-            : set(fieldsRef.current, inputName, {
-                _f: {
-                  ref: {
-                    name: inputName,
-                  },
-                  name: inputName,
-                  value,
-                },
-              });
-        }
-      }),
-    );
-  };
 
   const omitKey = <
     T extends Partial<
@@ -285,7 +257,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(appendValue, currentIndex);
+    registerFieldArray(name, appendValue, currentIndex);
 
     focusNameRef.current = getFocusDetail(currentIndex, options);
   };
@@ -309,7 +281,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(prependValue, 0);
+    registerFieldArray(name, prependValue);
 
     focusNameRef.current = getFocusDetail(0, options);
   };
@@ -351,7 +323,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(insertValue, index);
+    registerFieldArray(name, insertValue, index);
 
     focusNameRef.current = getFocusDetail(index, options);
   };

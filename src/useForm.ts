@@ -520,6 +520,8 @@ export function useForm<
         isReset: true,
       });
 
+      registerFieldArray(name, value);
+
       if (
         (readFormStateRef.current.isDirty ||
           readFormStateRef.current.dirtyFields) &&
@@ -918,6 +920,37 @@ export function useForm<
     [defaultValuesRef.current],
   );
 
+  const registerFieldArray = <T extends Object[]>(
+    name: InternalFieldName,
+    values: T,
+    index: number = 0,
+    parentName = '',
+  ) => {
+    Array.isArray(values) &&
+      values.forEach((appendValueItem, localIndex) =>
+        Object.entries(appendValueItem).forEach((fieldNameAndValue) => {
+          if (fieldNameAndValue) {
+            const [key, value] = fieldNameAndValue;
+            const inputName = `${parentName || name}.${
+              parentName ? localIndex : index
+            }.${key}`;
+
+            Array.isArray(value)
+              ? registerFieldArray(name, value, localIndex, inputName)
+              : set(fieldsRef.current, inputName, {
+                  _f: {
+                    ref: {
+                      name: inputName,
+                    },
+                    name: inputName,
+                    value,
+                  },
+                });
+          }
+        }),
+      );
+  };
+
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
       if (e && e.preventDefault) {
@@ -1100,6 +1133,7 @@ export function useForm<
     control: React.useMemo(
       () => ({
         register,
+        registerFieldArray,
         isWatchAllRef,
         watchFieldsRef,
         getFormIsDirty,

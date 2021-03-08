@@ -263,6 +263,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     FieldNamesMarkedBoolean<TFieldValues>
   >;
   fieldsRef: React.MutableRefObject<FieldRefs>;
+  registerFieldArray: <T extends Object[]>(
+    name: InternalFieldName,
+    values: T,
+    index?: number,
+    parentName?: string,
+  ) => void;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
