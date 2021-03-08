@@ -6,7 +6,7 @@ export const registerFieldArray = <T extends Object[]>(
   fieldsRef: React.MutableRefObject<any>,
   name: InternalFieldName,
   values: T,
-  index: number = 0,
+  index = 0,
   parentName = '',
 ) => {
   Array.isArray(values) &&

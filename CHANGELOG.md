@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.0-rc.1] - 2021-03-08
+
+## Changes
+
+- `setValue` with field array will `register` all input before rendering.
+
 ## [7.0.0-beta.17] - 2021-03-03
 
 ## Changes
