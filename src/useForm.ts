@@ -461,7 +461,7 @@ export function useForm<
       value: UnpackNestedValue<
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
-      { shouldDirty, shouldValidate }: SetValueConfig,
+      options: SetValueConfig,
     ) => {
       Object.entries(value).forEach(([inputKey, inputValue]) => {
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
@@ -474,16 +474,13 @@ export function useForm<
               inputValue as SetFieldValue<TFieldValues>,
               true,
             );
-            shouldDirty && updateAndGetDirtyState(fieldName);
-            shouldValidate && trigger(fieldName);
+            options.shouldDirty && updateAndGetDirtyState(fieldName);
+            options.shouldValidate && trigger(fieldName);
           } else {
             setInternalValues(
               fieldName,
               inputValue as SetFieldValue<TFieldValues>,
-              {
-                shouldDirty,
-                shouldValidate,
-              },
+              options,
             );
           }
         }
