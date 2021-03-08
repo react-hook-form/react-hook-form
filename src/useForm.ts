@@ -467,22 +467,21 @@ export function useForm<
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
 
-        if (field) {
-          if (field._f) {
-            setFieldValue(
-              fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
-              true,
-            );
-            options.shouldDirty && updateAndGetDirtyState(fieldName);
-            options.shouldValidate && trigger(fieldName);
-          } else {
-            setInternalValues(
-              fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
-              options,
-            );
-          }
+        if (field && !field._f) {
+          setInternalValues(
+            fieldName,
+            inputValue as SetFieldValue<TFieldValues>,
+            options,
+          );
+        } else {
+          !field && register(fieldName);
+          setFieldValue(
+            fieldName,
+            inputValue as SetFieldValue<TFieldValues>,
+            true,
+          );
+          options.shouldDirty && updateAndGetDirtyState(fieldName);
+          options.shouldValidate && trigger(fieldName);
         }
       });
     },
@@ -551,15 +550,13 @@ export function useForm<
           isDirty: getFormIsDirty(name, value),
         });
       }
+    } else if (field && !field._f) {
+      setInternalValues(name, value, options);
     } else {
-      if (field && !field._f) {
-        setInternalValues(name, value, options);
-      } else {
-        !field && register(name);
-        setFieldValue(name, value, true);
-        options.shouldDirty && updateAndGetDirtyState(name);
-        options.shouldValidate && trigger(name);
-      }
+      !field && register(name);
+      setFieldValue(name, value, true);
+      options.shouldDirty && updateAndGetDirtyState(name);
+      options.shouldValidate && trigger(name);
     }
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
