@@ -235,9 +235,6 @@ export function useForm<
       shouldRegister?: boolean,
     ) => {
       shouldRegister && register(name as Path<TFieldValues>);
-      options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate && trigger(name as Path<TFieldValues>);
-
       const _f = get(fieldsRef.current, name)._f as Field['_f'];
 
       if (_f) {
@@ -284,6 +281,9 @@ export function useForm<
             ...values,
           } as DefaultValues<TFieldValues>);
         }
+
+        options.shouldDirty && updateAndGetDirtyState(name);
+        options.shouldValidate && trigger(name as Path<TFieldValues>);
       }
     },
     [],
