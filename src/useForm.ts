@@ -230,10 +230,14 @@ export function useForm<
     (
       name: InternalFieldName,
       rawValue: SetFieldValue<TFieldValues>,
+      options: SetValueConfig = {},
       shouldRender?: boolean,
       shouldRegister?: boolean,
     ) => {
       shouldRegister && register(name as Path<TFieldValues>);
+      options.shouldDirty && updateAndGetDirtyState(name);
+      options.shouldValidate && trigger(name as Path<TFieldValues>);
+
       const _f = get(fieldsRef.current, name)._f as Field['_f'];
 
       if (_f) {
@@ -479,11 +483,10 @@ export function useForm<
           setFieldValue(
             fieldName,
             inputValue as SetFieldValue<TFieldValues>,
+            options,
             true,
             !field,
           );
-          options.shouldDirty && updateAndGetDirtyState(fieldName);
-          options.shouldValidate && trigger(fieldName);
         }
       });
     },
@@ -555,9 +558,7 @@ export function useForm<
     } else if (field && !field._f) {
       setInternalValues(name, value, options);
     } else {
-      setFieldValue(name, value, true, !field);
-      options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate && trigger(name);
+      setFieldValue(name, value, options, true, !field);
     }
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
