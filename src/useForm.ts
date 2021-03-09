@@ -231,7 +231,9 @@ export function useForm<
       name: InternalFieldName,
       rawValue: SetFieldValue<TFieldValues>,
       shouldRender?: boolean,
+      shouldRegister?: boolean,
     ) => {
+      shouldRegister && register(name as Path<TFieldValues>);
       const _f = get(fieldsRef.current, name)._f as Field['_f'];
 
       if (_f) {
@@ -474,11 +476,11 @@ export function useForm<
             options,
           );
         } else {
-          !field && register(fieldName);
           setFieldValue(
             fieldName,
             inputValue as SetFieldValue<TFieldValues>,
             true,
+            !field,
           );
           options.shouldDirty && updateAndGetDirtyState(fieldName);
           options.shouldValidate && trigger(fieldName);
@@ -553,8 +555,7 @@ export function useForm<
     } else if (field && !field._f) {
       setInternalValues(name, value, options);
     } else {
-      !field && register(name);
-      setFieldValue(name, value, true);
+      setFieldValue(name, value, true, !field);
       options.shouldDirty && updateAndGetDirtyState(name);
       options.shouldValidate && trigger(name);
     }
