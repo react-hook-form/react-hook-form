@@ -16,4 +16,4 @@ function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
 export default <T>(data: T[], index?: number | number[]): T[] =>
   isUndefined(index)
     ? []
-    : removeAtIndexes(data, (Array.isArray(index) ? index : [index]).sort());
+    : removeAtIndexes(data, (Array.isArray(index) ? index : [index]).sort((a, b) => a - b));
