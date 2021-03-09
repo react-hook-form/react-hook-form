@@ -467,22 +467,21 @@ export function useForm<
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
 
-        if (field) {
-          if (field._f) {
-            setFieldValue(
-              fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
-              true,
-            );
-            options.shouldDirty && updateAndGetDirtyState(fieldName);
-            options.shouldValidate && trigger(fieldName);
-          } else {
-            setInternalValues(
-              fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
-              options,
-            );
-          }
+        if (field && !field._f) {
+          setInternalValues(
+            fieldName,
+            inputValue as SetFieldValue<TFieldValues>,
+            options,
+          );
+        } else {
+          !field && register(fieldName);
+          setFieldValue(
+            fieldName,
+            inputValue as SetFieldValue<TFieldValues>,
+            true,
+          );
+          options.shouldDirty && updateAndGetDirtyState(fieldName);
+          options.shouldValidate && trigger(fieldName);
         }
       });
     },
@@ -522,11 +521,7 @@ export function useForm<
   ) => {
     const field = get(fieldsRef.current, name);
 
-    if (field && field._f) {
-      setFieldValue(name, value, true);
-      options.shouldDirty && updateAndGetDirtyState(name);
-      options.shouldValidate && trigger(name);
-    } else if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+    if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
       fieldArraySubjectRef.current.next({
         fields: value,
         name,
@@ -555,8 +550,13 @@ export function useForm<
           isDirty: getFormIsDirty(name, value),
         });
       }
-    } else {
+    } else if (field && !field._f) {
       setInternalValues(name, value, options);
+    } else {
+      !field && register(name);
+      setFieldValue(name, value, true);
+      options.shouldDirty && updateAndGetDirtyState(name);
+      options.shouldValidate && trigger(name);
     }
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});

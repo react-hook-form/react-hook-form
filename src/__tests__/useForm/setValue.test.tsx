@@ -425,14 +425,64 @@ describe('setValue', () => {
     });
   });
 
-  it('should not work if field is not registered', () => {
+  it('should work if field is not registered', () => {
     const { result } = renderHook(() => useForm());
 
     act(() => {
       result.current.setValue('test', '1');
     });
 
-    expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
+    expect(result.current.control.fieldsRef.current['test']).toEqual({
+      _f: { name: 'test', ref: { name: 'test', value: '1' }, value: '1' },
+    });
+  });
+
+  it('should work for nested fields which are not registered', () => {
+    const { result } = renderHook(() => useForm());
+
+    result.current.register('test.test');
+    result.current.register('test1.test');
+
+    act(() => {
+      result.current.setValue('test', {
+        test: 'test',
+        test1: 'test1',
+        test2: 'test2',
+      });
+    });
+
+    expect(result.current.control.fieldsRef.current['test']).toEqual({
+      test: {
+        _f: {
+          name: 'test.test',
+          ref: {
+            name: 'test.test',
+            value: 'test',
+          },
+          value: 'test',
+        },
+      },
+      test1: {
+        _f: {
+          name: 'test.test1',
+          ref: {
+            name: 'test.test1',
+            value: 'test1',
+          },
+          value: 'test1',
+        },
+      },
+      test2: {
+        _f: {
+          name: 'test.test2',
+          ref: {
+            name: 'test.test2',
+            value: 'test2',
+          },
+          value: 'test2',
+        },
+      },
+    });
   });
 
   describe('with watch', () => {
