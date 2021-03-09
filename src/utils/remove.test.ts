@@ -49,6 +49,13 @@ describe('remove', () => {
 
     expect(remove([true, true, true], [1])).toEqual([true, true]);
     expect(remove([true, true, true], [0])).toEqual([true, true]);
+
+    expect(
+      remove([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [6, 7, 8, 9, 10, 11]),
+    ).toEqual([0, 1, 2, 3, 4, 5]);
+    expect(
+      remove([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [11, 10, 9, 8, 7, 6]),
+    ).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('should remove correctly with indexes which contains gap', () => {
