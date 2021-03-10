@@ -462,7 +462,11 @@ export function useForm<
     ) => {
       !shouldUnregister &&
         !isPrimitive(value) &&
-        set(shallowFieldsStateRef.current, name, Array.isArray(value) ? [...value] : { ...value });
+        set(
+          shallowFieldsStateRef.current,
+          name,
+          Array.isArray(value) ? [...value] : { ...value },
+        );
 
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);
