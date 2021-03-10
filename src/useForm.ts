@@ -467,28 +467,25 @@ export function useForm<
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
       options: SetValueConfig,
-    ) => {
+    ) =>
       Object.entries(value).forEach(([inputKey, inputValue]) => {
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
 
-        if (field && !field._f) {
-          setInternalValues(
-            fieldName,
-            inputValue as SetFieldValue<TFieldValues>,
-            options,
-          );
-        } else {
-          setFieldValue(
-            fieldName,
-            inputValue as SetFieldValue<TFieldValues>,
-            options,
-            true,
-            !field,
-          );
-        }
-      });
-    },
+        field && !field._f
+          ? setInternalValues(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              options,
+            )
+          : setFieldValue(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              options,
+              true,
+              !field,
+            );
+      }),
     [trigger],
   );
 

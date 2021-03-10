@@ -243,23 +243,21 @@ export const useFieldArray = <
   ) =>
     values.forEach((appendValueItem, valueIndex) =>
       Object.entries(appendValueItem).forEach(([key, value]) => {
-        if (key) {
-          const inputName = `${parentName || name}.${
-            parentName ? valueIndex : index + valueIndex
-          }.${key}`;
+        const inputName = `${parentName || name}.${
+          parentName ? valueIndex : index + valueIndex
+        }.${key}`;
 
-          Array.isArray(value)
-            ? registerFieldArray(value, valueIndex, inputName)
-            : set(fieldsRef.current, inputName, {
-                _f: {
-                  ref: {
-                    name: inputName,
-                  },
+        Array.isArray(value)
+          ? registerFieldArray(value, valueIndex, inputName)
+          : set(fieldsRef.current, inputName, {
+              _f: {
+                ref: {
                   name: inputName,
-                  value,
                 },
-              });
-        }
+                name: inputName,
+                value,
+              },
+            });
       }),
     );
 
