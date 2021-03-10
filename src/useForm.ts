@@ -8,7 +8,6 @@ import isErrorStateChanged from './logic/isErrorStateChanged';
 import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
-import { registerFieldArray } from './logic/registerFieldArray';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
@@ -468,28 +467,25 @@ export function useForm<
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
       options: SetValueConfig,
-    ) => {
+    ) =>
       Object.entries(value).forEach(([inputKey, inputValue]) => {
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
 
-        if (field && !field._f) {
-          setInternalValues(
-            fieldName,
-            inputValue as SetFieldValue<TFieldValues>,
-            options,
-          );
-        } else {
-          setFieldValue(
-            fieldName,
-            inputValue as SetFieldValue<TFieldValues>,
-            options,
-            true,
-            !field,
-          );
-        }
-      });
-    },
+        field && !field._f
+          ? setInternalValues(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              options,
+            )
+          : setFieldValue(
+              fieldName,
+              inputValue as SetFieldValue<TFieldValues>,
+              options,
+              true,
+              !field,
+            );
+      }),
     [trigger],
   );
 
@@ -501,7 +497,6 @@ export function useForm<
   const updateValueAndGetDefault = (name: InternalFieldName) => {
     let defaultValue;
     const field = get(fieldsRef.current, name) as Field;
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
     if (
       field &&
@@ -511,7 +506,7 @@ export function useForm<
         ? get(defaultValuesRef.current, name)
         : field._f.value;
 
-      if (!isUndefined(defaultValue) && !isFieldArray) {
+      if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
       }
     }
@@ -525,15 +520,14 @@ export function useForm<
     options = {},
   ) => {
     const field = get(fieldsRef.current, name);
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
-    if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+    if (isFieldArray) {
       fieldArraySubjectRef.current.next({
         fields: value,
         name,
         isReset: true,
       });
-
-      registerFieldArray(fieldsRef, name, value);
 
       if (
         (readFormStateRef.current.isDirty ||
@@ -555,11 +549,11 @@ export function useForm<
           isDirty: getFormIsDirty(name, value),
         });
       }
-    } else if (field && !field._f) {
-      setInternalValues(name, value, options);
-    } else {
-      setFieldValue(name, value, options, true, !field);
     }
+
+    field && !field._f
+      ? setInternalValues(name, value, isFieldArray ? {} : options)
+      : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
     watchSubjectRef.current.next({ name, value });

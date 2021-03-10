@@ -228,10 +228,6 @@ export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
   data?: TData,
 ) => boolean;
 
-type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register: UseFormRegister<TFieldValues>;
-};
-
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
@@ -267,7 +263,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal;
-} & UseFormCommonMethods<TFieldValues>;
+  register: UseFormRegister<TFieldValues>;
+};
 
 export type WatchObserver = <TFieldValues>(
   value: UnpackNestedValue<TFieldValues>,
@@ -290,7 +287,8 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
   control: Control<TFieldValues>;
-} & UseFormCommonMethods<TFieldValues>;
+  register: UseFormRegister<TFieldValues>;
+};
 
 export type UseFormStateProps<TFieldValues> = Partial<{
   control?: Control<TFieldValues>;
