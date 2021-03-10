@@ -12,6 +12,14 @@ export default function cloneObject<T extends unknown>(data: T): T {
     return data;
   }
 
+  if (
+    !['Set', 'Map', 'Object', 'Date', 'Array'].includes(
+      (data as Object).constructor?.name,
+    )
+  ) {
+    return data;
+  }
+
   if (data instanceof Date) {
     copy = new Date(data.getTime());
     return copy;
