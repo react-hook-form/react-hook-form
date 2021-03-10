@@ -392,7 +392,7 @@ describe('useFieldArray', () => {
       unmount();
 
       expect(result.current.fields).toEqual([
-        { id: '0', value: '' },
+        { id: '0', value: 'default' },
         { id: '1', value: 'test' },
       ]);
       expect(result.current.control.fieldArrayNamesRef.current).toEqual(

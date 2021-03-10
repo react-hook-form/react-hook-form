@@ -8,7 +8,6 @@ import isErrorStateChanged from './logic/isErrorStateChanged';
 import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
-import { registerFieldArray } from './logic/registerFieldArray';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
@@ -501,7 +500,6 @@ export function useForm<
   const updateValueAndGetDefault = (name: InternalFieldName) => {
     let defaultValue;
     const field = get(fieldsRef.current, name) as Field;
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
     if (
       field &&
@@ -511,7 +509,7 @@ export function useForm<
         ? get(defaultValuesRef.current, name)
         : field._f.value;
 
-      if (!isUndefined(defaultValue) && !isFieldArray) {
+      if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
       }
     }
@@ -525,15 +523,14 @@ export function useForm<
     options = {},
   ) => {
     const field = get(fieldsRef.current, name);
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
-    if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+    if (isFieldArray) {
       fieldArraySubjectRef.current.next({
         fields: value,
         name,
         isReset: true,
       });
-
-      registerFieldArray(fieldsRef, name, value);
 
       if (
         (readFormStateRef.current.isDirty ||
@@ -555,8 +552,10 @@ export function useForm<
           isDirty: getFormIsDirty(name, value),
         });
       }
-    } else if (field && !field._f) {
-      setInternalValues(name, value, options);
+    }
+
+    if (field && !field._f) {
+      setInternalValues(name, value, isFieldArray ? {} : options);
     } else {
       setFieldValue(name, value, options, true, !field);
     }

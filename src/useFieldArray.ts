@@ -3,7 +3,6 @@ import { useFormContext } from './useFormContext';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import mapIds from './logic/mapId';
 import getFieldArrayParentName from './logic/getNodeParentName';
-import { registerFieldArray } from './logic/registerFieldArray';
 import get from './utils/get';
 import set from './utils/set';
 import removeArrayAt from './utils/remove';
@@ -237,6 +236,34 @@ export const useFieldArray = <
     });
   };
 
+  const registerFieldArray = <T extends Object[]>(
+    values: T,
+    index = 0,
+    parentName = '',
+  ) => {
+    values.forEach((appendValueItem, valueIndex) =>
+      Object.entries(appendValueItem).forEach(([key, value]) => {
+        if (key) {
+          const inputName = `${parentName || name}.${
+            parentName ? valueIndex : index + valueIndex
+          }.${key}`;
+
+          Array.isArray(value)
+            ? registerFieldArray(value, valueIndex, inputName)
+            : set(fieldsRef.current, inputName, {
+                _f: {
+                  ref: {
+                    name: inputName,
+                  },
+                  name: inputName,
+                  value,
+                },
+              });
+        }
+      }),
+    );
+  };
+
   const append = (
     value:
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
@@ -257,7 +284,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(fieldsRef, name, appendValue, currentIndex);
+    registerFieldArray(appendValue, currentIndex);
 
     focusNameRef.current = getFocusDetail(currentIndex, options);
   };
@@ -281,7 +308,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(fieldsRef, name, prependValue);
+    registerFieldArray(prependValue);
 
     focusNameRef.current = getFocusDetail(0, options);
   };
@@ -323,7 +350,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    registerFieldArray(fieldsRef, name, insertValue, index);
+    registerFieldArray(insertValue, index);
 
     focusNameRef.current = getFocusDetail(index, options);
   };
