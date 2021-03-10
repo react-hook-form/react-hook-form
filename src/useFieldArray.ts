@@ -240,7 +240,7 @@ export const useFieldArray = <
     values: T,
     index = 0,
     parentName = '',
-  ) => {
+  ) =>
     values.forEach((appendValueItem, valueIndex) =>
       Object.entries(appendValueItem).forEach(([key, value]) => {
         if (key) {
@@ -262,7 +262,6 @@ export const useFieldArray = <
         }
       }),
     );
-  };
 
   const append = (
     value:
