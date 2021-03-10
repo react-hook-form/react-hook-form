@@ -551,11 +551,9 @@ export function useForm<
       }
     }
 
-    if (field && !field._f) {
-      setInternalValues(name, value, isFieldArray ? {} : options);
-    } else {
-      setFieldValue(name, value, options, true, !field);
-    }
+    field && !field._f
+      ? setInternalValues(name, value, isFieldArray ? {} : options)
+      : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
     watchSubjectRef.current.next({ name, value });
