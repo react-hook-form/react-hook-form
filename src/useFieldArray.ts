@@ -103,8 +103,8 @@ export const useFieldArray = <
   const getFocusDetail = (
     index: number,
     options?: FieldArrayMethodProps,
-  ): string => {
-    return options
+  ): string =>
+    options
       ? !isUndefined(options.focusIndex)
         ? `${name}.${options.focusIndex}`
         : options.focusName
@@ -113,7 +113,6 @@ export const useFieldArray = <
         ? ''
         : `${name}.${index}`
       : `${name}.${index}`;
-  };
 
   const resetFields = <T>(index?: T) =>
     (Array.isArray(index) ? index : [index]).forEach((currentIndex) =>
@@ -435,7 +434,10 @@ export const useFieldArray = <
       },
     });
 
-    return () => fieldArraySubscription.unsubscribe();
+    return () => {
+      fieldArrayDefaultValuesRef.current = getFieldsValues(fieldsRef);
+      fieldArraySubscription.unsubscribe();
+    };
   }, []);
 
   return {
