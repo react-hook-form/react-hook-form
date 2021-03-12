@@ -1085,15 +1085,13 @@ export function useForm<
 
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
-        if (state.fields && state.name) {
-          if (readFormStateRef.current.isValid) {
-            const values = getFieldsValues(fieldsRef);
-            set(values, state.name, state.fields);
-            updateIsValid({
-              ...defaultValuesRef.current,
-              ...values,
-            });
-          }
+        if (state.fields && state.name && readFormStateRef.current.isValid) {
+          const values = getFieldsValues(fieldsRef);
+          set(values, state.name, state.fields);
+          updateIsValid({
+            ...defaultValuesRef.current,
+            ...values,
+          });
         }
       },
     });
