@@ -774,15 +774,13 @@ export function useForm<
       | FieldPath<TFieldValues>[]
       | WatchObserver,
     defaultValue?: unknown,
-  ) => {
-    if (isFunction(fieldName)) {
-      return watchSubjectRef.current.subscribe({
-        next: (info) => fieldName(watchInternal(undefined, defaultValue), info),
-      });
-    }
-
-    return watchInternal(fieldName as string | string[], defaultValue, true);
-  };
+  ) =>
+    isFunction(fieldName)
+      ? watchSubjectRef.current.subscribe({
+          next: (info) =>
+            fieldName(watchInternal(undefined, defaultValue), info),
+        })
+      : watchInternal(fieldName as string | string[], defaultValue, true);
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
