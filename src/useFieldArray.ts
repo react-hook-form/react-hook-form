@@ -412,17 +412,15 @@ export const useFieldArray = <
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
 
-          if (inputFieldArrayName) {
-            set(
-              fieldArrayDefaultValuesRef.current,
-              inputFieldArrayName,
-              fields,
-            );
-            setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
-          } else {
-            fieldArrayDefaultValuesRef.current = fields;
-            setFieldsAndNotify(get(fields, name));
-          }
+          inputFieldArrayName
+            ? set(
+                fieldArrayDefaultValuesRef.current,
+                inputFieldArrayName,
+                fields,
+              )
+            : (fieldArrayDefaultValuesRef.current = fields);
+
+          setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
         }
       },
     });

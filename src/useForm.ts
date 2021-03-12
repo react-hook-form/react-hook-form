@@ -675,15 +675,11 @@ export function useForm<
       ? getFieldsValues(fieldsRef, defaultValuesRef)
       : defaultValuesRef.current;
 
-    if (isUndefined(fieldNames)) {
-      return values;
-    }
-
-    if (isString(fieldNames)) {
-      return get(values, fieldNames as InternalFieldName);
-    }
-
-    return fieldNames.map((name) => get(values, name as InternalFieldName));
+    return isUndefined(fieldNames)
+      ? values
+      : isString(fieldNames)
+      ? get(values, fieldNames as InternalFieldName)
+      : fieldNames.map((name) => get(values, name as InternalFieldName));
   };
 
   const updateIsValid = React.useCallback(
