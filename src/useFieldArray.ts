@@ -271,7 +271,7 @@ export const useFieldArray = <
       getCurrentFieldsValues(),
       appendValue,
     );
-    const currentIndex = updatedFieldArrayValues.length - 1;
+    const currentIndex = updatedFieldArrayValues.length - appendValue.length;
     setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       appendAt,
