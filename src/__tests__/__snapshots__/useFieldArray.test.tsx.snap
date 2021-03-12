@@ -169,6 +169,51 @@ exports[`useFieldArray array of array fields should worked with deep nested fiel
 </DocumentFragment>
 `;
 
+exports[`useFieldArray should append multiple inputs correctly 1`] = `
+Array [
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+]
+`;
+
 exports[`useFieldArray should custom register append, prepend and insert inputs with values 1`] = `
 Array [
   Array [],

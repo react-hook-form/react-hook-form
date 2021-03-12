@@ -1710,4 +1710,54 @@ describe('useFieldArray', () => {
 
     expect(watchValues).toMatchSnapshot();
   });
+
+  it('should append multiple inputs correctly', () => {
+    type FormValues = {
+      test: {
+        value: string;
+      }[];
+    };
+
+    let watchedValue: unknown[] = [];
+
+    const Component = () => {
+      const { register, control, watch } = useForm<FormValues>({
+        defaultValues: {
+          test: [
+            {
+              value: 'data',
+            },
+          ],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      watchedValue.push(watch());
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              append([{ value: 'test' }, { value: 'test1' }]);
+            }}
+          >
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(watchedValue).toMatchSnapshot();
+  });
 });
