@@ -36,12 +36,18 @@ class Subscriber<T> implements Observer<T> {
   }
 
   next(value: T) {
-    !this.closed && this.observer.next(value);
+    if (!this.closed) {
+      this.observer.next(value);
+    }
   }
 }
 
 export default class Subject<T> {
-  observers: Observer<T>[] = [];
+  observers: Observer<T>[];
+
+  constructor() {
+    this.observers = [];
+  }
 
   next(value: T) {
     for (const observer of this.observers) {
