@@ -403,16 +403,12 @@ export function useForm<
             isValidateAllFieldCriteria,
           );
 
-          if (fieldError[field._f.name]) {
-            set(
-              formStateRef.current.errors,
-              field._f.name,
-              fieldError[field._f.name],
-            );
-            unset(validFieldsRef.current, field._f.name);
-          } else if (get(fieldsWithValidationRef.current, field._f.name)) {
-            set(validFieldsRef.current, field._f.name, true);
-            unset(formStateRef.current.errors, field._f.name);
+          if (fieldError[_f.name]) {
+            set(formStateRef.current.errors, _f.name, fieldError[_f.name]);
+            unset(validFieldsRef.current, _f.name);
+          } else if (get(fieldsWithValidationRef.current, _f.name)) {
+            set(validFieldsRef.current, _f.name, true);
+            unset(formStateRef.current.errors, _f.name);
           }
         }
 
