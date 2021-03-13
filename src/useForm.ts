@@ -251,12 +251,9 @@ export function useForm<
         } else if (isFileInput(_f.ref) && !isString(value)) {
           _f.ref.files = value as FileList;
         } else if (isMultipleSelect(_f.ref)) {
-          [..._f.ref.options].forEach(
-            (selectRef) =>
-              (selectRef.selected = (value as string[]).includes(
-                selectRef.value,
-              )),
-          );
+          for (const selectRef of _f.ref.options) {
+            selectRef.selected = (value as string[]).includes(selectRef.value);
+          }
         } else if (isCheckBoxInput(_f.ref) && _f.refs) {
           _f.refs.length > 1
             ? _f.refs.forEach(
