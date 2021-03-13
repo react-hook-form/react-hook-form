@@ -2,6 +2,7 @@ import * as React from 'react';
 import set from '../utils/set';
 import { FieldRefs, FieldValues } from '../types';
 import omit from '../utils/omit';
+import isBoolean from '../utils/isBoolean';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
@@ -15,17 +16,19 @@ const getFieldsValues = (
       const _f = field._f;
       const current = omit(field, '_f');
 
-      set(
-        output,
-        name,
-        _f
-          ? _f.ref.disabled
-            ? undefined
-            : _f.value
-          : Array.isArray(field)
-          ? []
-          : {},
-      );
+      if (_f && isBoolean(_f.ref.disabled) && _f.ref.disabled !== true) {
+        set(
+          output,
+          name,
+          _f
+            ? _f.ref.disabled
+              ? undefined
+              : _f.value
+            : Array.isArray(field)
+            ? []
+            : {},
+        );
+      }
 
       if (current) {
         getFieldsValues(
