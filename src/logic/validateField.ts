@@ -34,6 +34,8 @@ export default async (
   }: Field,
   validateAllFieldCriteria: boolean,
 ): Promise<InternalFieldErrors> => {
+  if (ref.disabled) return {};
+
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
@@ -61,8 +63,6 @@ export default async (
       ...appendErrorsCurry(exceedMax ? maxType : minType, message),
     };
   };
-
-  if (ref.disabled) return {};
 
   if (
     required &&
