@@ -196,6 +196,71 @@ describe('register', () => {
     });
   });
 
+  it('should omit all inputs which has disabled set to true', async () => {
+    const outputData: object = {};
+    const watchedData: object[] = [];
+
+    const Component = () => {
+      const { register, handleSubmit, watch } = useForm<{
+        test?: string;
+        test1?: string;
+        test2?: string;
+        test3?: string;
+        test4: string;
+      }>();
+
+      watchedData.push(watch());
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            outputData = data;
+          })}
+        >
+          <input {...register('test')} disabled />
+          <input
+            disabled={true}
+            value={'test'}
+            type={'checkbox'}
+            {...register('test1')}
+          />
+          <input
+            disabled={true}
+            value={'test'}
+            type={'radio'}
+            {...register('test2')}
+          />
+          <select {...register('test3')} disabled />
+          <input {...register('test4')} data-testid={'input'} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByTestId('input'), {
+      target: { value: '1234' },
+      test1: false,
+      test2: undefined,
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(watchedData).toEqual([
+      {},
+      { test4: '1234', test1: false, test2: undefined },
+    ]);
+
+    expect(outputData).toEqual({
+      test4: '1234',
+      test1: false,
+      test2: undefined,
+    });
+  });
+
   describe('register valueAs', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};
