@@ -19,6 +19,7 @@ const Component = () => {
   return (
     <form
       onSubmit={handleSubmit((data) => {
+        console.log(data)
         outputData = data;
       })}
     >

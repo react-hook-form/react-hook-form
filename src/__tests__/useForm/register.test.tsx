@@ -241,23 +241,16 @@ describe('register', () => {
 
     fireEvent.change(screen.getByTestId('input'), {
       target: { value: '1234' },
-      test1: false,
-      test2: undefined,
     });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    expect(watchedData).toEqual([
-      {},
-      { test4: '1234', test1: false, test2: undefined },
-    ]);
+    expect(watchedData).toEqual([{}, { test4: '1234' }]);
 
     expect(outputData).toEqual({
       test4: '1234',
-      test1: false,
-      test2: undefined,
     });
   });
 
