@@ -197,7 +197,7 @@ describe('register', () => {
   });
 
   it('should omit all inputs which has disabled set to true', async () => {
-    const outputData: object = {};
+    let outputData: object = {};
     const watchedData: object[] = [];
 
     const Component = () => {
