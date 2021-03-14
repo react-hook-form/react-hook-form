@@ -62,6 +62,8 @@ export default async (
     };
   };
 
+  if (ref.disabled) return {};
+
   if (
     required &&
     ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(inputValue))) ||

@@ -1,6 +1,6 @@
 type RadioFieldResult = {
   isValid: boolean;
-  value: number | string | null;
+  value: number | string | null | undefined;
 };
 
 const defaultReturn: RadioFieldResult = {
@@ -12,7 +12,12 @@ export default (options?: HTMLInputElement[]): RadioFieldResult =>
   Array.isArray(options)
     ? options.reduce(
         (previous, option): RadioFieldResult =>
-          option && option.checked
+          option && option.disabled
+            ? {
+                isValid: true,
+                value: undefined,
+              }
+            : option && option.checked
             ? {
                 isValid: true,
                 value: option.value,
