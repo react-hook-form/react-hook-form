@@ -247,9 +247,22 @@ describe('register', () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    expect(watchedData).toEqual([{}, { test4: '1234' }]);
+    expect(watchedData).toStrictEqual([
+      {},
+      {
+        test: undefined,
+        test1: undefined,
+        test2: undefined,
+        test3: undefined,
+        test4: '1234',
+      },
+    ]);
 
-    expect(outputData).toEqual({
+    expect(outputData).toStrictEqual({
+      test: undefined,
+      test1: undefined,
+      test2: undefined,
+      test3: undefined,
       test4: '1234',
     });
   });

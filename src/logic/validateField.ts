@@ -34,8 +34,6 @@ export default async (
   }: Field,
   validateAllFieldCriteria: boolean,
 ): Promise<InternalFieldErrors> => {
-  if (ref.disabled) return {};
-
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);

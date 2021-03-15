@@ -15,12 +15,18 @@ const getFieldsValues = (
       const _f = field._f;
       const current = omit(field, '_f');
 
-      (!_f ||
-        (_f &&
-          (_f.refs
-            ? _f.refs.every((ref) => !ref.disabled)
-            : !_f.ref.disabled))) &&
-        set(output, name, _f ? _f.value : Array.isArray(field) ? [] : {});
+      set(
+        output,
+        name,
+        _f
+          ? _f.ref.disabled ||
+            (_f.refs && _f.refs.every((ref) => ref.disabled))
+            ? undefined
+            : _f.value
+          : Array.isArray(field)
+          ? []
+          : {},
+      );
 
       if (current) {
         getFieldsValues(

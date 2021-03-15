@@ -19,4 +19,40 @@ describe('getRadioValue', () => {
       value: '2',
     });
   });
+
+  it('should return disabled input correctly', () => {
+    expect(
+      getRadioValue([
+        {
+          name: 'bill',
+          checked: false,
+          value: '1',
+          disabled: true,
+        } as HTMLInputElement,
+        { name: 'bill', checked: true, value: '2' } as HTMLInputElement,
+      ]),
+    ).toEqual({
+      isValid: true,
+      value: '2',
+    });
+
+    expect(
+      getRadioValue([
+        {
+          name: 'bill',
+          checked: false,
+          value: '1',
+        } as HTMLInputElement,
+        {
+          name: 'bill',
+          checked: true,
+          disabled: true,
+          value: '2',
+        } as HTMLInputElement,
+      ]),
+    ).toEqual({
+      isValid: false,
+      value: null,
+    });
+  });
 });
