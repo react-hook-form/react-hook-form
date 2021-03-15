@@ -12,7 +12,7 @@ export default (options?: HTMLInputElement[]): RadioFieldResult =>
   Array.isArray(options)
     ? options.reduce(
         (previous, option): RadioFieldResult =>
-          option && option.checked
+          option && option.checked && !option.disabled
             ? {
                 isValid: true,
                 value: option.value,

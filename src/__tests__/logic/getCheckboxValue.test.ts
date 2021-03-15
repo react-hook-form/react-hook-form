@@ -151,4 +151,69 @@ describe('getCheckboxValue', () => {
       ]),
     ).toEqual({ value: [], isValid: false });
   });
+
+  it('should return disabled input result', () => {
+    expect(
+      getCheckboxValue([
+        {
+          name: 'bill',
+          checked: true,
+          value: '2',
+          disabled: true,
+          // @ts-expect-error
+          attributes: { value: '2' },
+        },
+        {
+          name: 'bill',
+          checked: true,
+          value: '3',
+          // @ts-expect-error
+          attributes: { value: '3' },
+        },
+      ]),
+    ).toEqual({
+      value: ['3'],
+      isValid: true,
+    });
+
+    expect(
+      getCheckboxValue([
+        {
+          name: 'bill',
+          checked: true,
+          value: '2',
+          disabled: true,
+          // @ts-expect-error
+          attributes: { value: '2' },
+        },
+        {
+          name: 'bill',
+          disabled: true,
+          checked: true,
+          value: '3',
+          // @ts-expect-error
+          attributes: { value: '3' },
+        },
+      ]),
+    ).toEqual({
+      value: [],
+      isValid: false,
+    });
+
+    expect(
+      getCheckboxValue([
+        {
+          name: 'bill',
+          checked: true,
+          value: '2',
+          disabled: true,
+          // @ts-expect-error
+          attributes: { value: '2' },
+        },
+      ]),
+    ).toEqual({
+      value: false,
+      isValid: false,
+    });
+  });
 });
