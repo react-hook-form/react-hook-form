@@ -971,7 +971,7 @@ export function useForm<
             );
         }
       } finally {
-        formStateRef.current.isSubmitting = false;
+        formStateRef.current.isSubmitted = true;
         formStateSubjectRef.current.next({
           isSubmitted: true,
           isSubmitting: false,
