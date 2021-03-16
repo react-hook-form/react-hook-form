@@ -64,20 +64,20 @@ type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
 type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 type ArrayKey = number;
 
+type PathImpl<K, V> = K extends string | number
+  ? V extends Primitive
+    ? `${K}`
+    : `${K}` | `${K}.${Path<V>}`
+  : never;
+
 export type Path<T> = T extends ReadonlyArray<infer V>
-  ? IsPrimitive<V> extends true
-    ? IsTuple<T & any[]> extends true
-      ? `${TupleKey<T & any[]> & string}`
-      : `${ArrayKey}`
-    : IsTuple<T & any[]> extends true
-    ?
-        | `${TupleKey<T & any[]> & string}`
-        | `${TupleKey<T & any[]> & string}.${Path<V>}`
-    : `${ArrayKey}` | `${ArrayKey}.${Path<V>}`
+  ? IsTuple<T & any[]> extends true
+    ? {
+        [K in TupleKey<T>]-?: PathImpl<K, T[K]>;
+      }[TupleKey<T>]
+    : PathImpl<ArrayKey, V>
   : {
-      [K in keyof T]: IsPrimitive<T[K]> extends true
-        ? K & string
-        : (K & string) | `${K & string}.${Path<T[K]>}`;
+      [K in keyof T]-?: PathImpl<K, T[K]>;
     }[keyof T];
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
@@ -110,13 +110,17 @@ export type PathValue<
     ? R extends Path<T[K]>
       ? PathValue<T[K], R>
       : never
-    : K & ArrayKey extends keyof T
-    ? PathValue<T[K & ArrayKey], R & Path<T[K & ArrayKey]>>
+    : K extends `${ArrayKey}`
+    ? T extends ReadonlyArray<infer V>
+      ? PathValue<V, R & Path<V>>
+      : never
     : never
   : P extends keyof T
   ? T[P]
-  : P & ArrayKey extends keyof T
-  ? T[P & ArrayKey]
+  : P extends `${ArrayKey}`
+  ? T extends ReadonlyArray<infer V>
+    ? V
+    : never
   : never;
 
 export type FieldPathValue<
