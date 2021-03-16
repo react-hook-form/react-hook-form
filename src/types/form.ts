@@ -162,7 +162,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     defaultValue?: FieldPathValues<TFieldValues, TFieldNames>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
   (
-    callback: WatchObserver,
+    callback: WatchObserver<TFieldValues>,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): Subscription;
 };
@@ -215,13 +215,13 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
-export type WatchInternal = <T>(
+export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
-  defaultValue?: T,
+  defaultValue?: TFieldValues,
   isGlobal?: boolean,
 ) =>
-  | FieldPathValue<FieldValues, InternalFieldName>
-  | FieldPathValues<FieldValues, InternalFieldName[]>;
+  | FieldPathValue<FieldValues, FieldPath<TFieldValues>>
+  | FieldPathValues<FieldValues, FieldPath<TFieldValues>[]>;
 
 export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
@@ -262,11 +262,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  watchInternal: WatchInternal;
+  watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
 };
 
-export type WatchObserver = <TFieldValues>(
+export type WatchObserver<TFieldValues> = (
   value: UnpackNestedValue<TFieldValues>,
   info: {
     name?: string;

@@ -764,7 +764,7 @@ export function useForm<
     fieldName?:
       | FieldPath<TFieldValues>
       | FieldPath<TFieldValues>[]
-      | WatchObserver,
+      | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>
     isFunction(fieldName)
