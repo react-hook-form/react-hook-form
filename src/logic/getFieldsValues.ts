@@ -19,8 +19,7 @@ const getFieldsValues = (
         output,
         name,
         _f
-          ? _f.ref.disabled ||
-            (_f.refs && _f.refs.every((ref) => ref.disabled))
+          ? _f.ref.disabled || (_f.refs && _f.refs.every((ref) => ref.disabled))
             ? undefined
             : _f.value
           : Array.isArray(field)
