@@ -73,6 +73,7 @@ import {
   UseFormGetValues,
   UseFormWatch,
   Path,
+  DeepPartial,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -732,7 +733,7 @@ export function useForm<
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
-  const watchInternal: WatchInternal = React.useCallback(
+  const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
@@ -764,15 +765,25 @@ export function useForm<
     fieldName?:
       | FieldPath<TFieldValues>
       | FieldPath<TFieldValues>[]
-      | WatchObserver,
+      | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>
     isFunction(fieldName)
       ? watchSubjectRef.current.subscribe({
           next: (info) =>
-            fieldName(watchInternal(undefined, defaultValue), info),
+            fieldName(
+              watchInternal(
+                undefined,
+                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+              ) as UnpackNestedValue<TFieldValues>,
+              info,
+            ),
         })
-      : watchInternal(fieldName as string | string[], defaultValue, true);
+      : watchInternal(
+          fieldName as string | string[],
+          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          true,
+        );
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name

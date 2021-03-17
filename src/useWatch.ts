@@ -66,7 +66,10 @@ export function useWatch<TFieldValues>({
           updateValue(
             isString(inputName) && name === inputName && !isUndefined(value)
               ? value
-              : watchInternal(name as string, defaultValue),
+              : watchInternal(
+                  name as string,
+                  defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+                ),
           );
       },
     });
