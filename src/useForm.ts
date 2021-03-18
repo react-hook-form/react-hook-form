@@ -103,7 +103,10 @@ export function useForm<
     }>(),
   );
   const controllerSubjectRef = React.useRef(
-    new Subject<DefaultValues<TFieldValues>>(),
+    new Subject<{
+      name?: InternalFieldName;
+      values: DefaultValues<TFieldValues>;
+    }>(),
   );
   const fieldArraySubjectRef = React.useRef(
     new Subject<{
@@ -277,9 +280,12 @@ export function useForm<
           const values = getFieldsValues(fieldsRef);
           set(values, name, rawValue);
           controllerSubjectRef.current.next({
-            ...defaultValuesRef.current,
-            ...values,
-          } as DefaultValues<TFieldValues>);
+            values: {
+              ...defaultValuesRef.current,
+              ...values,
+            } as DefaultValues<TFieldValues>,
+            name,
+          });
         }
 
         options.shouldDirty && updateAndGetDirtyState(name);
@@ -1055,7 +1061,9 @@ export function useForm<
     if (!keepStateOptions.keepValues) {
       fieldsRef.current = {};
 
-      controllerSubjectRef.current.next({ ...updatedValues });
+      controllerSubjectRef.current.next({
+        values: { ...updatedValues },
+      });
 
       watchSubjectRef.current.next({
         value: { ...updatedValues },
