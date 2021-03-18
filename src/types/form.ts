@@ -245,7 +245,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     }>
   >;
   controllerSubjectRef: React.MutableRefObject<
-    SubjectType<DefaultValues<TFieldValues>>
+    SubjectType<{
+      values: DefaultValues<TFieldValues>;
+      name?: InternalFieldName;
+    }>
   >;
   fieldArraySubjectRef: React.MutableRefObject<
     SubjectType<{

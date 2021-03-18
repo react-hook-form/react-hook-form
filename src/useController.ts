@@ -44,7 +44,9 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
 
   React.useEffect(() => {
     const controllerSubscription = controllerSubjectRef.current.subscribe({
-      next: (values) => setInputStateValue(get(values, name)),
+      next: (data) =>
+        (!data.name || name === data.name) &&
+        setInputStateValue(get(data.values, name)),
     });
 
     return () => controllerSubscription.unsubscribe();
