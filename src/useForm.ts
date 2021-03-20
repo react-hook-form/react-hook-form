@@ -718,7 +718,9 @@ export function useForm<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    const ref = ((get(fieldsRef.current, name) as Field) || { _f: {} })._f.ref;
+    const ref = (
+      ((get(fieldsRef.current, name) as Field) || { _f: {} })._f || {}
+    ).ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
