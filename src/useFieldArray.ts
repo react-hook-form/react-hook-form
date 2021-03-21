@@ -114,15 +114,6 @@ export const useFieldArray = <
         : `${name}.${index}`
       : `${name}.${index}`;
 
-  const resetFields = <T>(index?: T) =>
-    (Array.isArray(index) ? index : [index]).forEach((currentIndex) =>
-      set(
-        fieldsRef.current,
-        `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
-        isUndefined(currentIndex) ? [] : undefined,
-      ),
-    );
-
   const setFieldsAndNotify = (
     fieldsValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
@@ -313,7 +304,6 @@ export const useFieldArray = <
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getCurrentFieldsValues(), index);
-    resetFields(index);
     batchStateUpdate(
       removeArrayAt,
       {
