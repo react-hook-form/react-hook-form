@@ -1101,10 +1101,7 @@ export function useForm<
         if (state.fields && state.name && readFormStateRef.current.isValid) {
           const values = getFieldsValues(fieldsRef);
           set(values, state.name, state.fields);
-          updateIsValid({
-            ...defaultValuesRef.current,
-            ...values,
-          });
+          updateIsValid(values);
         }
       },
     });
