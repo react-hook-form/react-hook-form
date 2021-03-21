@@ -323,7 +323,7 @@ describe('remove', () => {
   });
 
   it('should remove specific field if isValid is true', async () => {
-    let isValid:boolean = false;
+    let isValid: boolean = false;
     const Component = () => {
       const { register, formState, control } = useForm({
         mode: VALIDATION_MODE.onChange,
