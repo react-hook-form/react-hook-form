@@ -279,6 +279,7 @@ export const useFieldArray = <
         argA: fillEmptyArray(value),
       },
       updatedFieldArrayValues,
+      false,
     );
     registerFieldArray(appendValue, currentIndex);
 
