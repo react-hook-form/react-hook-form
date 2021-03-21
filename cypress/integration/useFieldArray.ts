@@ -8,67 +8,67 @@ describe('useFieldArray', () => {
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '1' }],
+        data: [{ name: '2' }],
       }),
     );
 
     cy.get('#prepend').click();
     cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
+    cy.get('ul > li').eq(0).get('input').should('have.value', '8');
 
     cy.get('#append').click();
     cy.get('ul > li').its('length').should('equal', 3);
 
-    cy.get('ul > li').eq(2).find('input').should('have.value', '8');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '10');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '6' }, { name: '1' }, { name: '8' }],
+        data: [{ name: '8' }, { name: '2' }, { name: '10' }],
       }),
     );
 
     cy.get('#swap').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '8');
-    cy.get('ul > li').eq(2).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '10');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '2');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '6' }, { name: '8' }, { name: '1' }],
+        data: [{ name: '8' }, { name: '10' }, { name: '2' }],
       }),
     );
 
     cy.get('#move').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '8');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '1' }, { name: '6' }, { name: '8' }],
+        data: [{ name: '2' }, { name: '8' }, { name: '10' }],
       }),
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '21');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '24');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '1' }, { name: '21' }, { name: '6' }, { name: '8' }],
+        data: [{ name: '2' }, { name: '24' }, { name: '8' }, { name: '10' }],
       }),
     );
 
     cy.get('#remove').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '8');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '1' }, { name: '6' }, { name: '8' }],
+        data: [{ name: '2' }, { name: '8' }, { name: '10' }],
       }),
     );
 
@@ -76,19 +76,19 @@ describe('useFieldArray', () => {
 
     cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '8');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '10');
 
     cy.get('#delete1').click();
 
     cy.get('ul > li').its('length').should('equal', 1);
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '1' }],
+        data: [{ name: '2' }],
       }),
     );
 
@@ -102,7 +102,7 @@ describe('useFieldArray', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('39');
+    cy.get('#renderCount').contains('44');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -185,14 +185,14 @@ describe('useFieldArray', () => {
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '19');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '20');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: 'test' },
-          { name: '19' },
+          { name: '20' },
           { name: '6' },
           { name: 'test1' },
           { name: 'test2' },
@@ -250,13 +250,13 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '37');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '40');
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '39');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '43');
 
-    cy.get('#renderCount').contains('40');
+    cy.get('#renderCount').contains('44');
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', () => {
@@ -339,14 +339,14 @@ describe('useFieldArray', () => {
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '17');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '18');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: 'test' },
-          { name: '17' },
+          { name: '18' },
           { name: '5' },
           { name: 'test1' },
           { name: 'test2' },
@@ -404,13 +404,13 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '34');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '37');
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '35');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '39');
 
-    cy.get('#renderCount').contains('36');
+    cy.get('#renderCount').contains('40');
   });
 
   it('should display the correct dirty value with default value', () => {

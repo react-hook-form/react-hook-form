@@ -687,6 +687,8 @@ export function useForm<
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
+      let previousIsValid = formStateRef.current.isValid;
+
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
@@ -699,15 +701,15 @@ export function useForm<
             fields: getFields(fieldsNamesRef.current, fieldsRef.current),
           },
         );
-        const isValid = isEmptyObject(errors);
-
-        formStateRef.current.isValid !== isValid &&
-          formStateSubjectRef.current.next({
-            isValid,
-          });
+        formStateRef.current.isValid = isEmptyObject(errors);
       } else {
         getIsValid();
       }
+
+      previousIsValid !== formStateRef.current.isValid &&
+        formStateSubjectRef.current.next({
+          isValid: formStateRef.current.isValid,
+        });
     },
     [criteriaMode],
   );
