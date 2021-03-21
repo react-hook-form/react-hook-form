@@ -39,7 +39,6 @@ English | <a href="./docs/README.zh-TW.md">繁中</a> | <a href="./docs/README.z
 
 ## Install
 
-    npm install react-hook-form
 
 ## Links
 
