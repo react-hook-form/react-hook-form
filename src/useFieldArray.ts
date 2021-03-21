@@ -119,7 +119,7 @@ export const useFieldArray = <
       set(
         fieldsRef.current,
         `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
-        [],
+        isUndefined(currentIndex) ? [] : undefined,
       ),
     );
 
