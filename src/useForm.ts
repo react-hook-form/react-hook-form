@@ -687,7 +687,7 @@ export function useForm<
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
-      let previousIsValid = formStateRef.current.isValid;
+      const previousIsValid = formStateRef.current.isValid;
 
       if (resolver) {
         const { errors } = await resolverRef.current!(
