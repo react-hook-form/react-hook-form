@@ -161,7 +161,7 @@ getValues(); // V7: result form value { test: [] }
 const { isDirty, errors } = useFormState();
 ```
 
-- `watch` support subscribe to entire form with callback
+- `watch` support can subscribe to the entire form with a callback
 
 ```ts
 watch((data, { name, type }) => {
