@@ -61,7 +61,7 @@
 
 ### Changes
 
-- `useWatch` will no longer required to supply `defaultValue` for field Array
+- `useWatch` will no longer required `defaultValue` for field Array
 
 ## [7.0.0-beta.0] - 2021-02-06
 
