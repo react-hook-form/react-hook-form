@@ -211,7 +211,7 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 
 ### Changes
 
-- **Breaking change:** `register` change from register at `ref` to function which return prop.
+- **Breaking change:** `register` has been changed from register at `ref` to a function which needs to be spread as props.
 
 ```diff
 - <input ref={register, { required: true }} name="test" />
