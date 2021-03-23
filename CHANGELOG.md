@@ -2,38 +2,38 @@
 
 ## [7.0.0-rc.7] - 2021-03-23
 
-## Changes
+#### Changes
 
 - `useFieldArray` will produce empty array `[]` when no field is presented.
 
 ## [7.0.0-rc.1] - 2021-03-08
 
-## Changes
+### Changes
 
 - `setValue` with field array will `register` all input before rendering.
 
 ## [7.0.0-beta.17] - 2021-03-03
 
-## Changes
+### Changes
 
 - `append`, `prepend` and `insert` will `register` deeply nested inputs at `useFieldArray`.
 
 ## [7.0.0-beta.15] - 2021-02-27
 
-## Changes
+### Changes
 
 - `append`, `prepend` and `insert` will `register` inputs during each action at `useFieldArray`.
 
 
 ## [7.0.0-beta.11] - 2021-02-20
 
-## Changes
+### Changes
 
 - change `ArrayKey` type to `number | '${number}'`
 
 ## [7.0.0-beta.10] - 2021-02-19
 
-## Changes
+### Changes
 
 - Change `useController`'s `meta` into `fieldState` and include `formState`, these change will be applied to `Controller` too.
 
@@ -44,7 +44,7 @@
 
 ## [7.0.0-beta.9] - 2021-02-19
 
-## Changes
+### Changes
 
 - typescript array index support is changed to `49` instead of `99`
 
@@ -59,13 +59,13 @@
 
 ## [7.0.0-beta.1] - 2021-02-08
 
-## Changes
+### Changes
 
 - `useWatch` will no longer required to supply `defaultValue` for field Array
 
 ## [7.0.0-beta.0] - 2021-02-06
 
-## Changes
+### Changes
 
 - **Breaking change:** shallow merge defaultValues with result (#4074)
 
@@ -78,7 +78,7 @@ getValues(); // v7 will return { test: 'test' }
 
 ## [v7.0.0-alpha.2] - 2021-02-04
 
-## Changes
+### Changes
 
 - **Breaking change:** `setError` set `shouldFocus` option is to move into the third argument.
 
@@ -106,13 +106,13 @@ getValues(); // v7 will return { test: 'test' }
 + FieldArray
 ```
 
-## Fixes
+### Fixes
 
 - fix `setValue` with `Controller` and `reset` with `useFieldArray` issues: 4111 & 4108 (#4113)
 
 ## [v7.0.0-alpha.2] - 2021-02-02
 
-## Changes
+### Changes
 
 - **Breaking change:** `setError` set `shouldFocus` option is to move into the third argument.
 
@@ -121,18 +121,18 @@ getValues(); // v7 will return { test: 'test' }
 + setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
 ```
 
-## Fixes
+### Fixes
 
 - fix #4078 issue with watch + mode: onChange
 
-## Improvements
+### Improvements
 
 - remove internal deep clone (#4088)
 - remove transformToNestObject (#4089)
 
 ## [v7.0.0-alpha.1] - 2021-02-01
 
-## Changes
+### Changes
 
 - field name reference will be removed with `unregister` (#4010)
 
@@ -145,7 +145,7 @@ getValues(); // V6: result form value {}
 getValues(); // V7: result form value { test: [] }
 ```
 
-## Improvements
+### Improvements
 
 - change internal field names into `Set` (#4015)
 - improve `onChange` perf with `resolver (#4017)
@@ -153,7 +153,7 @@ getValues(); // V7: result form value { test: [] }
 
 ## [v7.0.0-alpha.0] - 2021-01-31
 
-## Added
+### Added
 
 - new custom hook `useFormState` (#3740)
 
@@ -209,7 +209,7 @@ insert(object, config: { shouldDirty: boolean, focusIndex: number, focusName: st
 prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: string })
 ```
 
-## Changes
+### Changes
 
 - **Breaking change:** `register` change from register at `ref` to function which return prop.
 
@@ -265,7 +265,7 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 
 - input `register` will no longer be removed due to unmount, user will have to manually invoke `unregister`
 
-## Improvements
+### Improvements
 
 - `useWatch` internal mechanism improvement (#3754)
 - `Controller` and `useController` apply `useFormState` internally and improve performance (#3778)
