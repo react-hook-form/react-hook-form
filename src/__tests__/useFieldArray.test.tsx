@@ -526,7 +526,9 @@ describe('useFieldArray', () => {
             {fields.map((_, i) => (
               <input key={i.toString()} {...register(`test.${i}.value`)} />
             ))}
-            <button onClick={() => append({ value: '' })}>append</button>
+            <button type={'button'} onClick={() => append({ value: '' })}>
+              append
+            </button>
           </div>
         );
       };
@@ -542,6 +544,65 @@ describe('useFieldArray', () => {
       expect(getValues()).toEqual({
         test: [{ value: '' }, { value: '' }, { value: '' }],
       });
+    });
+  });
+
+  describe('setError', () => {
+    it('should be able to set an field array error', () => {
+      const Component = () => {
+        const {
+          register,
+          setError,
+          control,
+          formState: { errors },
+        } = useForm();
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        React.useEffect(() => {
+          if (fields.length === 0) {
+            setError('test', {
+              type: 'min length',
+            });
+          }
+        }, [fields]);
+
+        return (
+          <div>
+            {fields.map((_, i) => (
+              <div key={i.toString()}>
+                <input {...register(`test.${i}.value`)} />
+                <button type={'button'} onClick={() => remove(i)}>
+                  delete
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            <button>submit</button>
+            <p>{errors.test && 'Error'}</p>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+      });
+
+      screen.getByText('Error');
     });
   });
 

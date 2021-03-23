@@ -119,7 +119,7 @@ export const useFieldArray = <
       set(
         fieldsRef.current,
         `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
-        [],
+        isUndefined(currentIndex) ? [] : undefined,
       ),
     );
 
@@ -127,13 +127,7 @@ export const useFieldArray = <
     fieldsValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = [],
-  ) => {
-    setFields(mapIds(fieldsValues, keyName));
-    fieldArraySubjectRef.current.next({
-      name,
-      fields: omitKey([...fieldsValues]),
-    });
-  };
+  ) => setFields(mapIds(fieldsValues, keyName));
 
   const cleanup = <T>(ref: T) =>
     !compact(get(ref, name, [])).length && unset(ref, name);
@@ -279,6 +273,7 @@ export const useFieldArray = <
         argA: fillEmptyArray(value),
       },
       updatedFieldArrayValues,
+      false,
     );
     registerFieldArray(appendValue, currentIndex);
 
@@ -314,6 +309,7 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getCurrentFieldsValues(), index);
     resetFields(index);
+    setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       removeArrayAt,
       {
@@ -321,7 +317,6 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    setFieldsAndNotify(updatedFieldArrayValues);
   };
 
   const insert = (
@@ -404,6 +399,11 @@ export const useFieldArray = <
       );
 
     focusNameRef.current = '';
+
+    fieldArraySubjectRef.current.next({
+      name,
+      fields: omitKey([...fields]),
+    });
   }, [fields, name]);
 
   React.useEffect(() => {

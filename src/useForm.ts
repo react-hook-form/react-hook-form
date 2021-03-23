@@ -687,6 +687,8 @@ export function useForm<
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
+      const previousIsValid = formStateRef.current.isValid;
+
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
@@ -699,15 +701,15 @@ export function useForm<
             fields: getFields(fieldsNamesRef.current, fieldsRef.current),
           },
         );
-        const isValid = isEmptyObject(errors);
-
-        formStateRef.current.isValid !== isValid &&
-          formStateSubjectRef.current.next({
-            isValid,
-          });
+        formStateRef.current.isValid = isEmptyObject(errors);
       } else {
         getIsValid();
       }
+
+      previousIsValid !== formStateRef.current.isValid &&
+        formStateSubjectRef.current.next({
+          isValid: formStateRef.current.isValid,
+        });
     },
     [criteriaMode],
   );
@@ -724,7 +726,9 @@ export function useForm<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    const ref = ((get(fieldsRef.current, name) as Field) || { _f: {} })._f.ref;
+    const ref = (
+      ((get(fieldsRef.current, name) as Field) || { _f: {} })._f || {}
+    ).ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
@@ -1097,10 +1101,7 @@ export function useForm<
         if (state.fields && state.name && readFormStateRef.current.isValid) {
           const values = getFieldsValues(fieldsRef);
           set(values, state.name, state.fields);
-          updateIsValid({
-            ...defaultValuesRef.current,
-            ...values,
-          });
+          updateIsValid(values);
         }
       },
     });
