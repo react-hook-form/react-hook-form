@@ -57,7 +57,6 @@ export type IsFlatObject<T extends object> = Extract<
   ? true
   : false;
 
-type IsPrimitive<T> = T extends Primitive ? true : false;
 type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
   ? false
   : true;
@@ -80,20 +79,22 @@ export type Path<T> = T extends ReadonlyArray<infer V>
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
+type ArrayPathImpl<K extends string | number, V> = V extends Primitive
+  ? never
+  : V extends ReadonlyArray<infer U>
+  ? U extends Primitive
+    ? never
+    : `${K}` | `${K}.${ArrayPath<V>}`
+  : `${K}.${ArrayPath<V>}`;
+
 export type ArrayPath<T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T & any[]> extends true
-    ? `${TupleKey<T & any[]> & string}.${ArrayPath<V>}`
-    : `${ArrayKey}.${ArrayPath<V>}`
+  ? IsTuple<T> extends true
+    ? {
+        [K in TupleKey<T>]-?: ArrayPathImpl<K & string, T[K]>;
+      }[TupleKey<T>]
+    : ArrayPathImpl<ArrayKey, V>
   : {
-      [K in keyof T]: IsPrimitive<T[K]> extends true
-        ? never
-        : T[K] extends ReadonlyArray<infer V>
-        ? IsPrimitive<V> extends true
-          ? never
-          : IsFlatObject<V & object> extends true
-          ? K & string
-          : (K & string) | `${K & string}.${ArrayPath<T[K]>}`
-        : `${K & string}.${ArrayPath<T[K]>}`;
+      [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
     }[keyof T];
 
 export type FieldArrayPath<
