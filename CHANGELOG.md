@@ -22,6 +22,7 @@
 
 ### Changes
 
+- typescript array index restriction removed. 
 - `append`, `prepend` and `insert` will `register` inputs during each action at `useFieldArray`.
 
 
