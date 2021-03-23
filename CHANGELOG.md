@@ -4,7 +4,7 @@
 
 #### Changes
 
-- `useFieldArray` will produce empty array `[]` when no field is presented.
+- `useFieldArray` will produce an empty array `[]` when no field is presented.
 
 ## [7.0.0-rc.1] - 2021-03-08
 
