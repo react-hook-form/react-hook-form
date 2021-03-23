@@ -155,7 +155,7 @@ describe('useFieldArrayNested', () => {
     cy.get('#submit').click();
 
     cy.get('#result').contains(
-      '{"test":[{"firstName":"prepend"},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"1c"},{"name":"append"}]}]}',
+      '{"test":[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"1c"},{"name":"append"}]}]}',
     );
 
     cy.get(`#nest-append-0`).click();
@@ -222,7 +222,7 @@ describe('useFieldArrayNested', () => {
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"test":[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}]}]}',
+      '{"test":[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}]}]}',
     );
 
     cy.get('#nest-remove-all-3').click();

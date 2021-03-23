@@ -662,7 +662,7 @@ describe('remove', () => {
 
     expect(watched).toEqual([
       {}, // first render
-      {}, // render inside useEffect in useFieldArray
+      { test: [] }, // render inside useEffect in useFieldArray
       { test: [{ value: '' }] }, // render inside append method
       { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
       { test: [] }, // render inside remove method
