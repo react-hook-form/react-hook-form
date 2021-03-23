@@ -440,7 +440,7 @@ describe('insert', () => {
 
     expect(watched).toEqual([
       {}, // first render
-      {}, // render inside useEffect in useFieldArray
+      { test: [] }, // render inside useEffect in useFieldArray
       { test: [{ value: '' }] }, // render inside insert method
       { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
     ]);

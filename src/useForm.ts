@@ -9,7 +9,6 @@ import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
-import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
 import Subject from './utils/Subject';
 import isProxyEnabled from './utils/isProxyEnabled';
@@ -523,7 +522,7 @@ export function useForm<
     options = {},
   ) => {
     const field = get(fieldsRef.current, name);
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+    const isFieldArray = fieldArrayNamesRef.current.has(name);
 
     if (isFieldArray) {
       fieldArraySubjectRef.current.next({

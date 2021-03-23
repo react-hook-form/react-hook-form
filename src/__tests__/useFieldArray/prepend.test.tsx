@@ -249,7 +249,7 @@ describe('prepend', () => {
 
     expect(watched).toEqual([
       {}, // first render
-      {}, // render inside useEffect in useFieldArray
+      { test: [] }, // render inside useEffect in useFieldArray
       { test: [{ value: '' }] }, // render inside prepend method
       { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
     ]);

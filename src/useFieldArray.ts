@@ -424,6 +424,7 @@ export const useFieldArray = <
         }
       },
     });
+    !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
 
     return () => {
       fieldArrayDefaultValuesRef.current = getFieldsValues(fieldsRef);

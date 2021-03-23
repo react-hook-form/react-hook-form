@@ -242,7 +242,7 @@ describe('append', () => {
 
     expect(watched).toEqual([
       {},
-      {},
+      { test: [] },
       { test: [{ value: '' }] },
       { test: [{ value: '' }] },
     ]);
@@ -356,7 +356,7 @@ describe('append', () => {
     await waitFor(() =>
       expect(renderedItems).toEqual([
         undefined,
-        undefined,
+        [],
         [{ value: 'test' }],
         [{ value: 'test' }],
       ]),
