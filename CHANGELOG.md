@@ -114,7 +114,7 @@ getValues(); // v7 will return { test: 'test' }
 
 ### Changes
 
-- **Breaking change:** `setError` set `shouldFocus` option is to move into the third argument.
+- **Breaking change:** `setError`'s `shouldFocus` option has been moved to the third argument.
 
 ```diff
 - setError('test', { type: 'type', message: 'issue', shouldFocus: true })
