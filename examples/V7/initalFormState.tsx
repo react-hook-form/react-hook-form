@@ -12,7 +12,7 @@ const defaultValues = {
 
 function App() {
   const { register, handleSubmit } = useForm();
-  // or you can set up the defaultValues at useForm
+  // or you can set the defaultValues within useForm
   // const { register, handleSubmit } = useForm({
   //   defaultValues,
   // });
