@@ -20,7 +20,7 @@ export default function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <label>Develop?</label>
+        <label>Are you a Developer?</label>
         Yes
         <input type="radio" {...register('test')} value="yes" />
         No
