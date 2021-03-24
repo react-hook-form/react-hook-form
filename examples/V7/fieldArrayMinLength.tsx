@@ -39,7 +39,7 @@ function App() {
     });
 
     if (errors.questions?.type === "min") {
-      clearErrors("questions"); // always clear errors when there is add action.
+      clearErrors("questions"); // always clear errors when a question is appended
     }
   };
 
