@@ -16,23 +16,23 @@ export default function App() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label>First name</label>
-        <input type="text" {...register('FirstName')} />
+        <input type="text" {...register('firstName')} />
       </div>
       <div>
         <label>Last name</label>
-        <input type="text" {...register('LastName')} />
+        <input type="text" {...register('lastName')} />
       </div>
       <div>
         <label>Email</label>
-        <input type="text" {...register('Email')} />
+        <input type="text" {...register('email')} />
       </div>
       <div>
         <label>Mobile number</label>
-        <input type="tel" {...register('MobileNumber')} />
+        <input type="tel" {...register('mobileNumber')} />
       </div>
       <div>
         <label>Title</label>
-        <select {...register('Title')}>
+        <select {...register('title')}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
