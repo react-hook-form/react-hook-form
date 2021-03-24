@@ -9,7 +9,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    // you can do async server request and fill up form
+    // you can use `async` server requests to populate your form!
     setTimeout(() => {
       reset({
         firstName: 'bill',
