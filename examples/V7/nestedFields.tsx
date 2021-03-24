@@ -11,14 +11,14 @@ export default function Section1({ register }) {
         <label>First name</label>
         <input
           type="text"
-          {...register('FirstName', { required: true, maxLength: 80 })}
+          {...register('firstName', { required: true, maxLength: 80 })}
         />
       </div>
       <div>
         <label>Last name</label>
         <input
           type="text"
-          {...register('LastName', { required: true, maxLength: 100 })}
+          {...register('lastName', { required: true, maxLength: 100 })}
         />
       </div>
     </>
@@ -32,7 +32,7 @@ export default function formSection2({ register }) {
         <label>Email</label>
         <input
           type="text"
-          {...register('Email', {
+          {...register('email', {
             required: true,
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           })}
@@ -42,7 +42,7 @@ export default function formSection2({ register }) {
         <label>Mobile number</label>
         <input
           type="tel"
-          {...register('MobileNumber', {
+          {...register('mobileNumber', {
             required: true,
             maxLength: 11,
             minLength: 8,
@@ -51,7 +51,7 @@ export default function formSection2({ register }) {
       </div>
       <div>
         <label>Title</label>
-        <select {...register('Title', { required: true })}>
+        <select {...register('title', { required: true })}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
