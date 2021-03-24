@@ -40,7 +40,7 @@ export default function App() {
         {moreDetail && (
           <div>
             <label>Interests</label>
-            <input type="text" {...register('Interests')} />
+            <input type="text" {...register('interests')} />
           </div>
         )}
         <button type="submit">Submit</button>
