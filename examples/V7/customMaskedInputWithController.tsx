@@ -46,7 +46,6 @@ export default function App() {
   const [tel, setTel] = React.useState("7");
   return (
     <div className="App">
-      <h1>Hello CodeSandbox</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <Controller
