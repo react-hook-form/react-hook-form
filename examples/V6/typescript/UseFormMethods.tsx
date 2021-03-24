@@ -32,7 +32,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
 type FormProps<TFormValues> = {
   onSubmit: SubmitHandler<TFormValues>;
-  children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
+  children: (methods: UseFormMethods<TFormValues>) => React.ReactNode;
 };
 
 const Form = <TFormValues extends Record<string, any> = Record<string, any>>({
