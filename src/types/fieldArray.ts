@@ -16,19 +16,20 @@ export type UseFieldArrayProps<
   control?: Control<TFieldValues>;
 };
 
-type InferArrayType<T> = T extends (infer U)[] ? U : never;
-
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id'
-> = InferArrayType<FieldArrayPathValue<TFieldValues, TFieldArrayName>> &
-  Record<TKeyName, string>;
+> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>
-> = InferArrayType<FieldArrayPathValue<TFieldValues, TFieldArrayName>>;
+> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<
+  infer U
+>
+  ? U
+  : never;
 
 export type FieldArrayMethodProps = {
   shouldFocus?: boolean;
