@@ -127,7 +127,7 @@ export type KeepStateOptions = Partial<{
 
 export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
-export type RefCallbackHandler = {
+export type UseFormRegisterReturn = {
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
   ref: React.Ref<any>;
@@ -139,7 +139,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 >(
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
-) => RefCallbackHandler;
+) => UseFormRegisterReturn;
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;

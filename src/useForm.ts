@@ -52,7 +52,7 @@ import {
   FieldError,
   SetFieldValue,
   FieldArrayDefaultValues,
-  RefCallbackHandler,
+  UseFormRegisterReturn,
   FieldPath,
   WatchObserver,
   KeepStateOptions,
@@ -927,7 +927,7 @@ export function useForm<
       updateValueAndGetDefault(name);
 
       return isWindowUndefined
-        ? ({ name: name as InternalFieldName } as RefCallbackHandler)
+        ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
         : {
             name,
             onChange: handleChange,
