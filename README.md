@@ -246,6 +246,12 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
             width="40"
             height="40"
     /></a>
+    <a href="https://github.com/msc-insure"
+    ><img
+            src="https://avatars.githubusercontent.com/u/44406870?s=200&v=4"
+            width="40"
+            height="40"
+    /></a>
 </p>
 
 ## Backers
