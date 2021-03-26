@@ -124,9 +124,7 @@ export const useFieldArray = <
     );
 
   const setFieldsAndNotify = (
-    fieldsValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = [],
+    fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
   ) => setFields(mapIds(fieldsValues, keyName));
 
   const cleanup = <T>(ref: T) =>
@@ -272,7 +270,9 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      updatedFieldArrayValues,
+      updatedFieldArrayValues as Partial<
+        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      >[],
       false,
     );
     registerFieldArray(appendValue, currentIndex);
@@ -297,7 +297,9 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      updatedFieldArrayValues,
+      updatedFieldArrayValues as Partial<
+        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      >[],
     );
     registerFieldArray(prependValue);
 
@@ -339,7 +341,9 @@ export const useFieldArray = <
         argA: index,
         argB: fillEmptyArray(value),
       },
-      updatedFieldArrayValues,
+      updatedFieldArrayValues as Partial<
+        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      >[],
     );
     registerFieldArray(insertValue, index);
 
@@ -439,6 +443,10 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields: fields as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
+    fields: fields as FieldArrayWithId<
+      TFieldValues,
+      TFieldArrayName,
+      TKeyName
+    >[],
   };
 };
