@@ -105,14 +105,14 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
     /></a>
     <a href="https://github.com/washingtonsoares"
     ><img
-            src="https://avatars0.githubusercontent.com/u/5726145?s=460&u=b300a6fa08a24c59b9db6ebf246384cf8b16a145&v=4"
+            src="https://avatars.githubusercontent.com/u/5726140?v=4"
             width="45"
             height="45"
             alt="@washingtonsoares"
     /></a>
     <a href="https://github.com/lixunn"
     ><img
-            src="https://avatars0.githubusercontent.com/u/4517964?s=460&u=3a3fdffeb97749d7509d9c5e9be2cafcb98e426f&v=4"
+            src="https://avatars.githubusercontent.com/u/4017964?v=4"
             width="45"
             height="45"
             alt="@lixunn"
@@ -253,7 +253,7 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
     /></a>
     <a href="https://github.com/msc-insure"
     ><img
-            src="https://avatars.githubusercontent.com/u/44456870?s=200&v=4"
+            src="https://avatars.githubusercontent.com/u/44406870?s=200&v=4"
             width="45"
             height="45"
     /></a>
