@@ -36,11 +36,12 @@ export function useWatch<
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
 }): FieldPathValues<TFieldValues, TName>;
-export function useWatch<TFieldValues>({
-  control,
-  name,
-  defaultValue,
-}: UseWatchProps<TFieldValues>) {
+export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
+  const {
+    control,
+    name,
+    defaultValue,
+  } = props || {};
   const methods = useFormContext();
 
   const { watchInternal, watchSubjectRef } = control || methods.control;
