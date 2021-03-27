@@ -236,6 +236,7 @@ export function useForm<
       shouldRender?: boolean,
       shouldRegister?: boolean,
     ) => {
+      isMountedRef.current = true;
       shouldRegister && register(name as Path<TFieldValues>);
       const _f = get(fieldsRef.current, name, {})._f as Field['_f'];
 
