@@ -521,6 +521,7 @@ export function useForm<
     value,
     options = {},
   ) => {
+    isMountedRef.current = true;
     const field = get(fieldsRef.current, name);
     const isFieldArray = fieldArrayNamesRef.current.has(name);
 

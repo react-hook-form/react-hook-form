@@ -882,6 +882,42 @@ describe('useWatch', () => {
     });
   });
 
+  describe('setValue', () => {
+    it('should return correct value after input get unregistered', async () => {
+      type FormValues = { test: string };
+
+      const Child = ({ register, setValue }: UseFormReturn<FormValues>) => {
+        React.useEffect(() => {
+          setValue('test', 'bill');
+        }, [setValue]);
+
+        return <input {...register('test')} />;
+      };
+
+      const Component = ({ control }: { control: Control<FormValues> }) => {
+        const test = useWatch<{ test: string }>({ name: 'test', control });
+        return <div>{test === 'bill' ? 'no' : test}</div>;
+      };
+
+      const Form = () => {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: 'test' },
+        });
+
+        return (
+          <>
+            <Component control={methods.control} />
+            <Child {...methods} />
+          </>
+        );
+      };
+
+      render(<Form />);
+
+      await waitFor(async () => screen.getByText('no'));
+    });
+  });
+
   describe('formContext', () => {
     it('should work with form context', async () => {
       const Component = () => {
