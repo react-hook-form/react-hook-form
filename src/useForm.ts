@@ -236,7 +236,6 @@ export function useForm<
       shouldRender?: boolean,
       shouldRegister?: boolean,
     ) => {
-      isMountedRef.current = true;
       shouldRegister && register(name as Path<TFieldValues>);
       const _f = get(fieldsRef.current, name, {})._f as Field['_f'];
 
@@ -522,6 +521,7 @@ export function useForm<
     value,
     options = {},
   ) => {
+    isMountedRef.current = true;
     const field = get(fieldsRef.current, name);
     const isFieldArray = fieldArrayNamesRef.current.has(name);
 
