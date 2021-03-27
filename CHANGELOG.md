@@ -1,8 +1,14 @@
 # Changelog
 
+## [7.0.0-rc.7] - 2021-03-28
+
+### Changes
+
+- change type name from `RefCallbackHandler` to `UseFormRegisterReturn` for register callback's return 
+
 ## [7.0.0-rc.7] - 2021-03-23
 
-#### Changes
+### Changes
 
 - `useFieldArray` will produce an empty array `[]` when no field is presented.
 
