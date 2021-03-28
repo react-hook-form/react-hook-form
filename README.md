@@ -6,8 +6,6 @@
     </p>
 </div>
 
-<p align="center">Performant, flexible and extensible forms with easy to use validation.</p>
-
 <div align="center">
 
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
