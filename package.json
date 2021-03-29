@@ -109,7 +109,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.5.1",
-    "typescript": "^4.2.0-dev.20210101"
+    "typescript": "^4.1.0"
   },
   "bundlesize": [
     {
