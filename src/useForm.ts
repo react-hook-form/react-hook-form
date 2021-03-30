@@ -554,7 +554,7 @@ export function useForm<
       }
     }
 
-    field && !field._f
+    (field && !field._f) || isFieldArray
       ? setInternalValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
