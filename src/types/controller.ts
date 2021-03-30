@@ -5,6 +5,7 @@ import {
   FieldPath,
   FieldError,
   UseFormStateReturn,
+  FieldPathValue,
 } from './';
 import { RegisterOptions } from './validator';
 
@@ -17,12 +18,13 @@ export type ControllerFieldState = {
 };
 
 export type ControllerRenderProps<
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = {
   onChange: (...event: any[]) => void;
   onBlur: () => void;
-  value: any;
-  name: FieldPath<TFieldValues>;
+  value: FieldPathValue<TFieldValues, TName>;
+  name: TName;
   ref: React.Ref<any>;
 };
 
