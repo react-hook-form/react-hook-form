@@ -10,12 +10,12 @@ import {
   UseFormStateProps,
 } from './types';
 
-function useFormState<TFieldValues extends FieldValues = FieldValues>({
-  control,
-}: UseFormStateProps<TFieldValues> = {}): UseFormStateReturn<TFieldValues> {
+function useFormState<TFieldValues extends FieldValues = FieldValues>(
+  props?: UseFormStateProps<TFieldValues>,
+): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext();
   const { formStateRef, formStateSubjectRef, readFormStateRef } =
-    control || methods.control;
+    (props && props.control) || methods.control;
 
   const [formState, updateFormState] = React.useState(formStateRef.current);
   const readFormState = React.useRef({
