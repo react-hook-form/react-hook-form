@@ -14,7 +14,7 @@ export type ControllerFieldState = {
   isTouched: boolean;
   isDirty: boolean;
   isValidating: boolean;
-  error: FieldError;
+  error?: FieldError;
 };
 
 export type ControllerRenderProps<
