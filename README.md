@@ -88,12 +88,6 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
 <a href="https://www.leniolabs.com/" target="_blank">
   <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="84" height="84" />
 </a>
-<a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="84" height="84" />
-</a>
-<a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="84" height="84" />
-</a>
 
 <p>
     <a href="https://github.com/sayav"
