@@ -914,7 +914,7 @@ export function useForm<
         _f: {
           ...(get(fieldsRef.current, name)
             ? {
-                ref: get(fieldsRef.current, name)._f.ref,
+                ref: (get(fieldsRef.current, name)._f || {}).ref,
                 ...get(fieldsRef.current, name)._f,
               }
             : { ref: { name } }),
