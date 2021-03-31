@@ -1,4 +1,3 @@
-import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -9,46 +8,38 @@ import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
 import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
-import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import {
-  Field,
-  FieldValues,
-  FieldRefs,
-  Message,
-  FieldError,
-  InternalFieldName,
-  InternalFieldErrors,
-} from '../types';
+import { Field, Message, FieldError, InternalFieldErrors } from '../types';
 
-export default async <TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  validateAllFieldCriteria: boolean,
+export default async (
   {
-    ref,
-    ref: { value },
-    options,
-    required,
-    maxLength,
-    minLength,
-    min,
-    max,
-    pattern,
-    validate,
+    _f: {
+      ref,
+      refs,
+      required,
+      maxLength,
+      minLength,
+      min,
+      max,
+      pattern,
+      validate,
+      name,
+      value: inputValue,
+    },
   }: Field,
-  shallowFieldsStateRef: React.MutableRefObject<Record<string, any>>,
-): Promise<InternalFieldErrors<TFieldValues>> => {
-  const name: InternalFieldName<TFieldValues> = ref.name;
-  const error: InternalFieldErrors<TFieldValues> = {};
+  validateAllFieldCriteria: boolean,
+): Promise<InternalFieldErrors> => {
+  const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
-  const isEmpty = value === '';
+  const isEmpty =
+    !inputValue || (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
@@ -67,18 +58,16 @@ export default async <TFieldValues extends FieldValues>(
       type: exceedMax ? maxType : minType,
       message,
       ref,
-      ...(exceedMax
-        ? appendErrorsCurry(maxType, message)
-        : appendErrorsCurry(minType, message)),
+      ...appendErrorsCurry(exceedMax ? maxType : minType, message),
     };
   };
 
   if (
     required &&
-    ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
-      (isBoolean(value) && !value) ||
-      (isCheckBox && !getCheckboxValue(options).isValid) ||
-      (isRadio && !getRadioValue(options).isValid))
+    ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(inputValue))) ||
+      (isBoolean(inputValue) && !inputValue) ||
+      (isCheckBox && !getCheckboxValue(refs).isValid) ||
+      (isRadio && !getRadioValue(refs).isValid))
   ) {
     const { value, message } = isMessage(required)
       ? { value: !!required, message: required }
@@ -88,9 +77,7 @@ export default async <TFieldValues extends FieldValues>(
       error[name] = {
         type: INPUT_VALIDATION_RULES.required,
         message,
-        ref: isRadioOrCheckbox
-          ? (((fieldsRef.current[name] as Field).options || [])[0] || {}).ref
-          : ref,
+        ref: isRadioOrCheckbox ? (refs || [])[0] || {} : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
@@ -99,15 +86,18 @@ export default async <TFieldValues extends FieldValues>(
     }
   }
 
-  if ((!isNullOrUndefined(min) || !isNullOrUndefined(max)) && value !== '') {
+  if (
+    (!isNullOrUndefined(min) || !isNullOrUndefined(max)) &&
+    inputValue !== ''
+  ) {
     let exceedMax;
     let exceedMin;
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNaN(value)) {
+    if (!isNaN(inputValue)) {
       const valueNumber =
-        (ref as HTMLInputElement).valueAsNumber || parseFloat(value);
+        (ref as HTMLInputElement).valueAsNumber || parseFloat(inputValue);
       if (!isNullOrUndefined(maxOutput.value)) {
         exceedMax = valueNumber > maxOutput.value;
       }
@@ -116,7 +106,7 @@ export default async <TFieldValues extends FieldValues>(
       }
     } else {
       const valueDate =
-        (ref as HTMLInputElement).valueAsDate || new Date(value);
+        (ref as HTMLInputElement).valueAsDate || new Date(inputValue);
       if (isString(maxOutput.value)) {
         exceedMax = valueDate > new Date(maxOutput.value);
       }
@@ -139,15 +129,15 @@ export default async <TFieldValues extends FieldValues>(
     }
   }
 
-  if (isString(value) && !isEmpty && (maxLength || minLength)) {
+  if (isString(inputValue) && !isEmpty && (maxLength || minLength)) {
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =
       !isNullOrUndefined(maxLengthOutput.value) &&
-      value.length > maxLengthOutput.value;
+      inputValue.length > maxLengthOutput.value;
     const exceedMin =
       !isNullOrUndefined(minLengthOutput.value) &&
-      value.length < minLengthOutput.value;
+      inputValue.length < minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
@@ -161,10 +151,10 @@ export default async <TFieldValues extends FieldValues>(
     }
   }
 
-  if (isString(value) && pattern && !isEmpty) {
+  if (isString(inputValue) && pattern && !isEmpty) {
     const { value: patternValue, message } = getValueAndMessage(pattern);
 
-    if (isRegex(patternValue) && !patternValue.test(value)) {
+    if (isRegex(patternValue) && !patternValue.test(inputValue)) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message,
@@ -178,17 +168,10 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(
-      fieldsRef,
-      name,
-      shallowFieldsStateRef,
-      false,
-      true,
-    );
-    const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
+    const validateRef = isRadioOrCheckbox && refs ? refs[0] : ref;
 
     if (isFunction(validate)) {
-      const result = await validate(fieldValue);
+      const result = await validate(inputValue);
       const validateError = getValidateError(result, validateRef);
 
       if (validateError) {
@@ -210,7 +193,7 @@ export default async <TFieldValues extends FieldValues>(
           break;
         }
 
-        const validateResult = await validateFunction(fieldValue);
+        const validateResult = await validateFunction(inputValue);
         const validateError = getValidateError(
           validateResult,
           validateRef,

@@ -3,7 +3,6 @@ import { ValidationMode } from './types';
 export const EVENTS = {
   BLUR: 'blur',
   CHANGE: 'change',
-  INPUT: 'input',
 };
 
 export const VALIDATION_MODE: ValidationMode = {

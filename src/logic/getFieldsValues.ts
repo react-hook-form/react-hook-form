@@ -1,40 +1,48 @@
 import * as React from 'react';
-import getFieldValue from './getFieldValue';
-import isString from '../utils/isString';
-import { deepMerge } from '../utils/deepMerge';
-import isUndefined from '../utils/isUndefined';
-import { InternalFieldName, FieldValues, FieldRefs } from '../types';
-import transformToNestObject from './transformToNestObject';
+import set from '../utils/set';
+import { FieldRefs, FieldValues } from '../types';
+import omit from '../utils/omit';
 
-export default <TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  shallowFieldsState: Record<string, any>,
-  shouldUnregister: boolean,
-  excludeDisabled?: boolean,
-  search?:
-    | InternalFieldName<TFieldValues>
-    | InternalFieldName<TFieldValues>[]
-    | { nest: boolean },
-) => {
-  const output = {} as TFieldValues;
-
+const getFieldsValues = (
+  fieldsRef: React.MutableRefObject<FieldRefs>,
+  defaultValuesRef: React.MutableRefObject<FieldValues> = { current: {} },
+  output: Record<string, any> = {},
+): any => {
   for (const name in fieldsRef.current) {
-    if (
-      isUndefined(search) ||
-      (isString(search)
-        ? name.startsWith(search)
-        : Array.isArray(search) && search.find((data) => name.startsWith(data)))
-    ) {
-      output[name as InternalFieldName<TFieldValues>] = getFieldValue(
-        fieldsRef,
+    const field = fieldsRef.current[name];
+
+    if (field) {
+      const _f = field._f;
+      const current = omit(field, '_f');
+
+      set(
+        output,
         name,
-        undefined,
-        excludeDisabled,
+        _f
+          ? _f.ref.disabled || (_f.refs && _f.refs.every((ref) => ref.disabled))
+            ? undefined
+            : _f.value
+          : Array.isArray(field)
+          ? []
+          : {},
       );
+
+      if (current) {
+        getFieldsValues(
+          {
+            current,
+          },
+          defaultValuesRef,
+          output[name],
+        );
+      }
     }
   }
 
-  return shouldUnregister
-    ? transformToNestObject(output)
-    : deepMerge(shallowFieldsState, transformToNestObject(output));
+  return {
+    ...defaultValuesRef.current,
+    ...output,
+  };
 };
+
+export default getFieldsValues;

@@ -3,21 +3,23 @@ import { View, Text, TextInput, Button } from 'react-native';
 import { useForm } from './useForm';
 import { Controller } from './controller';
 import { render, fireEvent, wait } from '@testing-library/react-native';
-import * as focusOnErrorField from './logic/focusOnErrorField';
+import * as focusOnErrorField from './logic/focusFieldBy';
 
 describe('Controller with React Native', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('should not occur error when invoked reset', async () => {
     const mockFocus = jest.spyOn(focusOnErrorField, 'default');
     const callback = jest.fn();
 
     const Component = () => {
-      const { handleSubmit, errors, reset, control } = useForm<{
+      const {
+        handleSubmit,
+        formState: { errors },
+        reset,
+        control,
+      } = useForm<{
         test: string;
       }>();
+
       return (
         <View>
           <Controller
@@ -25,7 +27,7 @@ describe('Controller with React Native', () => {
             rules={{ minLength: 5 }}
             control={control}
             defaultValue=""
-            render={({ onChange, onBlur, value }) => (
+            render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 testID={'input'}
                 onChange={onChange}
@@ -57,7 +59,7 @@ describe('Controller with React Native', () => {
 
     fireEvent.press(getByText('reset'));
 
-    expect(input.props.value).toBe('');
+    expect(input.props.value).toBeUndefined();
     expect(queryByText('required')).toBeNull();
   });
 });

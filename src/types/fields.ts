@@ -1,14 +1,7 @@
 import { IsFlatObject } from './utils';
 import { RegisterOptions } from './validator';
 
-export type RadioOrCheckboxOption = {
-  ref: HTMLInputElement;
-  mutationWatcher?: MutationObserver;
-};
-
-export type InternalFieldName<TFieldValues extends FieldValues> =
-  | (keyof TFieldValues & string)
-  | string;
+export type InternalFieldName = string;
 
 export type FieldName<
   TFieldValues extends FieldValues
@@ -29,7 +22,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
 
 export type FieldValue<
   TFieldValues extends FieldValues
-> = TFieldValues[InternalFieldName<TFieldValues>];
+> = TFieldValues[InternalFieldName];
 
 export type FieldValues = Record<string, any>;
 
@@ -42,10 +35,12 @@ export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
 export type Ref = FieldElement;
 
 export type Field = {
-  ref: Ref;
-  options?: RadioOrCheckboxOption[];
-} & RegisterOptions;
+  _f: {
+    ref: Ref;
+    name: InternalFieldName;
+    value?: any;
+    refs?: HTMLInputElement[];
+  } & RegisterOptions;
+};
 
-export type FieldRefs<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, Field>
->;
+export type FieldRefs = Partial<Record<InternalFieldName, Field>>;

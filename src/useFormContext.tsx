@@ -1,20 +1,22 @@
 import * as React from 'react';
-import { UseFormMethods, FieldValues, FormProviderProps } from './types';
+import { UseFormReturn, FieldValues, FormProviderProps } from './types';
+import omit from './utils/omit';
 
-const FormContext = React.createContext<UseFormMethods | null>(null);
+const FormContext = React.createContext<UseFormReturn | null>(null);
 
 FormContext.displayName = 'RHFContext';
 
 export const useFormContext = <
   TFieldValues extends FieldValues
->(): UseFormMethods<TFieldValues> =>
-  React.useContext(FormContext) as UseFormMethods<TFieldValues>;
+>(): UseFormReturn<TFieldValues> =>
+  (React.useContext(FormContext) as unknown) as UseFormReturn<TFieldValues>;
 
-export const FormProvider = <TFieldValues extends FieldValues>({
-  children,
-  ...props
-}: FormProviderProps<TFieldValues>) => (
-  <FormContext.Provider value={{ ...props } as UseFormMethods}>
-    {children}
+export const FormProvider = <TFieldValues extends FieldValues>(
+  props: FormProviderProps<TFieldValues>,
+) => (
+  <FormContext.Provider
+    value={(omit(props, 'children') as unknown) as UseFormReturn}
+  >
+    {props.children}
   </FormContext.Provider>
 );

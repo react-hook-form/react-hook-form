@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useWatch reset with useFieldArray should return current value with radio type 1`] = `
+Array [
+  Object {
+    "options": Array [
+      Object {
+        "option": "yes",
+      },
+      Object {
+        "option": "yes",
+      },
+    ],
+  },
+  Object {
+    "options": Array [
+      Object {
+        "option": "yes",
+      },
+      Object {
+        "option": "yes",
+      },
+    ],
+  },
+  Object {
+    "options": Array [
+      Object {
+        "option": "yes",
+      },
+      Object {
+        "option": "yes",
+      },
+    ],
+  },
+  Object {
+    "options": Array [
+      Object {
+        "option": "yes",
+      },
+      Object {
+        "option": "yes",
+      },
+    ],
+  },
+]
+`;

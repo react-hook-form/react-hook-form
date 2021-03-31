@@ -1,5 +1,291 @@
 # Changelog
 
+## [7.0.0-rc.7] - 2021-03-28
+
+### Changes
+
+- change type name from `RefCallbackHandler` to `UseFormRegisterReturn` for register callback's return 
+
+## [7.0.0-rc.7] - 2021-03-23
+
+### Changes
+
+- `useFieldArray` will produce an empty array `[]` when no field is presented.
+
+## [7.0.0-rc.1] - 2021-03-08
+
+### Changes
+
+- `setValue` with field array will `register` all inputs before rendering.
+
+## [7.0.0-beta.17] - 2021-03-03
+
+### Changes
+
+- `append`, `prepend` and `insert` will `register` deeply nested inputs at `useFieldArray`.
+
+## [7.0.0-beta.15] - 2021-02-27
+
+### Changes
+
+- typescript array index restriction removed. 
+- `append`, `prepend` and `insert` will `register` inputs during each action at `useFieldArray`.
+
+
+## [7.0.0-beta.11] - 2021-02-20
+
+### Changes
+
+- change `ArrayKey` type to `number | '${number}'`
+
+## [7.0.0-beta.10] - 2021-02-19
+
+### Changes
+
+- Change `useController`'s `meta` into `fieldState` and include `formState`, these change will be applied to `Controller` too.
+
+```diff
+- const { field, meta } = useController({ control });
++ const { field, fieldState, formState } = useController({ control });
+```
+
+## [7.0.0-beta.9] - 2021-02-19
+
+### Changes
+
+- typescript array index support is changed to `49` instead of `99`
+
+## [7.0.0-beta.4] - 2021-02-08
+
+- **Breaking change:** `valueAs` will be run before the built-in validation and `resolver`
+
+```diff
+- <input {...register('test', { validate: (data: string) => {}, valueAsNumber: true })} />
++ <input {...register('test', { validate: (data: number) => {}, valueAsNumber: true })} />
+```
+
+## [7.0.0-beta.1] - 2021-02-08
+
+### Changes
+
+- `useWatch` will no longer required `defaultValue` for field Array
+
+## [7.0.0-beta.0] - 2021-02-06
+
+### Changes
+
+- **Breaking change:** shallow merge defaultValues with result (#4074)
+
+```ts
+useForm({ defaultValues: { test: 'test' } });
+
+getValues(); // v6 will return {}
+getValues(); // v7 will return { test: 'test' }
+```
+
+## [v7.0.0-alpha.2] - 2021-02-04
+
+### Changes
+
+- **Breaking change:** `setError`'s `shouldFocus` option has been moved into the third argument.
+
+```diff
+- setError('test', { type: 'type', message: 'issue', shouldFocus: true })
++ setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
+```
+
+- **Breaking change:** type name changes:
+
+```diff
+- UseFormMethods
++ UseFormReturn
+- UseFormOptions
++ UseFormProps
+- UseFieldArrayMethods
++ UseFieldArrayReturn
+- UseFieldArrayOptions
++ UseFieldArrayProps
+- UseControllerMethods
++ UseControllerReturn
+- UseControllerOptions
++ UseControllerProps
+- ArrayField
++ FieldArray
+```
+
+### Fixes
+
+- fix `setValue` with `Controller` and `reset` with `useFieldArray` issues: 4111 & 4108 (#4113)
+
+## [v7.0.0-alpha.2] - 2021-02-02
+
+### Changes
+
+- **Breaking change:** `setError`'s `shouldFocus` option has been moved to the third argument.
+
+```diff
+- setError('test', { type: 'type', message: 'issue', shouldFocus: true })
++ setError('test', { type: 'type', message: 'issue' }, { shouldFocus: true })
+```
+
+### Fixes
+
+- fix #4078 issue with watch + mode: onChange
+
+### Improvements
+
+- remove internal deep clone (#4088)
+- remove transformToNestObject (#4089)
+
+## [v7.0.0-alpha.1] - 2021-02-01
+
+### Changes
+
+- field name reference will be removed with `unregister` (#4010)
+
+- **Breaking change:** improve field array remove result and no longer remove field array value after unmount
+
+```diff
+const { remove } = useFieldArray({ name: 'test' })
+remove();
+getValues(); // V6: result form value {}
+getValues(); // V7: result form value { test: [] }
+```
+
+### Improvements
+
+- change internal field names into `Set` (#4015)
+- improve `onChange` perf with `resolver (#4017)
+- improve field array name look up perf (#4030)
+
+## [v7.0.0-alpha.0] - 2021-01-31
+
+### Added
+
+- new custom hook `useFormState` (#3740)
+
+```ts
+const { isDirty, errors } = useFormState();
+```
+
+- `watch` support can subscribe to the entire form with a callback
+
+```ts
+watch((data, { name, type }) => {
+  console.log('formValue', data);
+  console.log('name', name);
+  console.log('type', type);
+});
+```
+
+- `useController` includes new `isValidating` state (#3778)
+- `useController` includes new `error` state (#3921)
+
+```ts
+const {
+  meta: { error, isValidating },
+} = useController({ name: 'test' });
+```
+
+- new `unregister` second argument (#3964)
+
+```ts
+unregister('test', { keepDirty: true });
+```
+
+- Resolver add `field` being validated (#3881)
+
+```diff
+- resolver: (values: any, context?: object) => Promise<ResolverResult> | ResolverResult
++ resolver: (
++    values: any,
++    context?: object,
++    options: {
++       criteriaMode?: 'firstError' | 'all',
++       names?: string[],
++       fields: { [name]: field } // Support nested field
++    }
++  ) => Promise<ResolverResult> | ResolverResult
+```
+
+- `useFieldArray` action can focus input by name and index
+
+```ts
+append(object, config: { shouldDirty: boolean, focusIndex: number, focusName: string })
+insert(object, config: { shouldDirty: boolean, focusIndex: number, focusName: string })
+prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: string })
+```
+
+### Changes
+
+- **Breaking change:** `register` has been changed from register at `ref` to a function which needs to be spread as props.
+
+```diff
+- <input ref={register, { required: true }} name="test" />
++ <input {...register('name', { required: true })} />
++ <TextInput {...register('name', { required: true })} />
+```
+
+- **Breaking change:** `name` with array will only support dot syntax instead of brackets.
+
+```
+- test[2].test
++ test.2.test
+```
+
+- **Breaking change:** remove `as` prop at `Controller` and fix render prop consistency (#3732)
+
+```diff
+- <Controller render={props => <input {...props} />} />
++ <Controller render={({ field }) => <input {...field} />} />
+```
+
+- **Breaking change:** remove `errors` alias (#3737)
+
+```diff
+- const { errors } = useForm();
++ const { formState: { errors } } = useForm();
+```
+
+- **Breaking change:** improved `reset` second argument (#3905)
+
+```diff
+- reset({}, { isDirty: true })
++ reset({}, { keepIsDirty: true })
+```
+
+- **Breaking change:** change `touched` to `touchedFields` for consistency (#3923)
+
+```diff
+- const { formState: { touched } } = useForm();
++ const { formState: { touchedFields }} = useForm();
+```
+
+- **Breaking change:** `trigger` will no longer return validation result.
+
+```diff
+- await trigger('test') // return true or false
++ trigger('test') // void
+```
+
+- remove `isSubmitting` proxy (#4000)
+
+- input `register` will no longer be removed due to unmount, user will have to manually invoke `unregister`
+
+### Improvements
+
+- `useWatch` internal mechanism improvement (#3754)
+- `Controller` and `useController` apply `useFormState` internally and improve performance (#3778)
+- `register` type support for input name (#3738)
+- `Controller` and `useCOntroller` type support for input name (#3738)
+- `useFieldArray` internal logic and data structure improvement (#3858)
+- improve `useFieldArray` internal fields update with subscription (#3943)
+- improve tests structure (#3916)
+- `useWatch` type improvement (#3931)
+- improve type support for nested field array with `const` (#3920)
+- improve `useFieldArray` internal type structure (#3986)
+- `MutationObserver` removed from `useForm`
+
 ## [6.15.0] - 2021-02-02
 
 ### Changed

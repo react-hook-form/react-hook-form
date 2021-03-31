@@ -3,18 +3,18 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
 let renderCount = 0;
 
+type FormValues = { data: { name: string }[] };
+
 const UseFieldArray: React.FC = (props: any) => {
-  const withoutFocus = props.match.params.mode === 'defaultAndWithoutFocus';
+  const withoutFocus: boolean =
+    props.match.params.mode === 'defaultAndWithoutFocus';
   const {
     control,
     handleSubmit,
     register,
-    formState: { isDirty, touched, isValid, dirtyFields },
+    formState: { isDirty, touchedFields, isValid, dirtyFields, errors },
     reset,
-    errors,
-  } = useForm<{
-    data: { name: string }[];
-  }>({
+  } = useForm<FormValues>({
     ...(props.match.params.mode === 'default' || withoutFocus
       ? {
           defaultValues: {
@@ -24,20 +24,14 @@ const UseFieldArray: React.FC = (props: any) => {
       : {}),
     mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
-  const {
-    fields,
-    append,
-    prepend,
-    swap,
-    move,
-    insert,
-    remove,
-  } = useFieldArray<{ name: string }>({
-    control,
-    name: 'data',
-  });
-  const [data, setData] = React.useState([]);
-  const onSubmit = (data: any) => {
+  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
+    {
+      control,
+      name: 'data',
+    },
+  );
+  const [data, setData] = React.useState<FormValues>();
+  const onSubmit = (data: FormValues) => {
     setData(data);
   };
 
@@ -61,19 +55,22 @@ const UseFieldArray: React.FC = (props: any) => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({ required: 'This is required' })}
+                {...register(`data.${index}.name` as const, {
+                  required: 'This is required',
+                })}
               />
             ) : (
               <Controller
-                render={(props) => <input id={`field${index}`} {...props} />}
+                render={({ field }) => (
+                  <input id={`field${index}`} {...field} />
+                )}
                 control={control}
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data[${index}].name`}
+                name={`data.${index}.name`}
                 defaultValue={data.name}
                 data-order={index}
               />
@@ -91,7 +88,14 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="append"
         type="button"
-        onClick={() => append({ name: renderCount.toString() }, !withoutFocus)}
+        onClick={() =>
+          append(
+            { name: renderCount.toString() },
+            {
+              shouldFocus: !withoutFocus,
+            },
+          )
+        }
       >
         append
       </button>
@@ -99,7 +103,14 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="prepend"
         type="button"
-        onClick={() => prepend({ name: renderCount.toString() }, !withoutFocus)}
+        onClick={() =>
+          prepend(
+            { name: renderCount.toString() },
+            {
+              shouldFocus: !withoutFocus,
+            },
+          )
+        }
       >
         prepend
       </button>
@@ -116,7 +127,13 @@ const UseFieldArray: React.FC = (props: any) => {
         id="insert"
         type="button"
         onClick={() =>
-          insert(1, { name: renderCount.toString() }, !withoutFocus)
+          insert(
+            1,
+            { name: renderCount.toString() },
+            {
+              shouldFocus: !withoutFocus,
+            },
+          )
         }
       >
         insert
@@ -130,6 +147,18 @@ const UseFieldArray: React.FC = (props: any) => {
         remove all
       </button>
 
+      <button
+        id="reset"
+        type="button"
+        onClick={() => {
+          reset({
+            data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+          });
+        }}
+      >
+        reset
+      </button>
+
       <button id="submit">Submit</button>
 
       <div id="renderCount">{renderCount}</div>
@@ -137,7 +166,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <div id="dirty">{isDirty ? 'yes' : 'no'}</div>
       <div id="isValid">{isValid ? 'yes' : 'no'}</div>
       <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
-      <div id="touched">{JSON.stringify(touched.data)}</div>
+      <div id="touched">{JSON.stringify(touchedFields.data)}</div>
     </form>
   );
 };

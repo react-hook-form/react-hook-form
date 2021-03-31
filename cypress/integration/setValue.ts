@@ -4,9 +4,9 @@ describe('form setValue', () => {
 
     cy.get('input[name="firstName"]').should('have.value', 'wrong');
     cy.get('input[name="age"]').should('have.value', '2');
-    cy.get('input[name="array[0]"]').should('have.value', 'array[0]');
-    cy.get('input[name="array[1]"]').should('have.value', 'array[1]');
-    cy.get('input[name="array[2]"]').should('have.value', 'array[2]');
+    cy.get('input[name="array.0"]').should('have.value', 'array.0');
+    cy.get('input[name="array.1"]').should('have.value', 'array.1');
+    cy.get('input[name="array.2"]').should('have.value', 'array.2');
     cy.get('input[name="object.firstName').should('have.value', 'firstName');
     cy.get('input[name="object.lastName').should('have.value', 'lastName');
     cy.get('input[name="object.middleName').should('have.value', 'middleName');
@@ -37,16 +37,16 @@ describe('form setValue', () => {
 
     cy.get('#submit').click();
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('8');
+    cy.get('#renderCount').contains('9');
 
     cy.get('#setMultipleValues').click();
-    cy.get('input[name="array[0]"]').should('have.value', 'array[0]1');
-    cy.get('input[name="array[1]"]').should('have.value', 'array[1]1');
-    cy.get('input[name="array[2]"]').should('have.value', 'array[2]1');
+    cy.get('input[name="array.0"]').should('have.value', 'array[0]1');
+    cy.get('input[name="array.1"]').should('have.value', 'array[1]1');
+    cy.get('input[name="array.2"]').should('have.value', 'array[2]1');
     cy.get('input[name="object.firstName').should('have.value', 'firstName1');
     cy.get('input[name="object.lastName').should('have.value', 'lastName1');
     cy.get('input[name="object.middleName').should('have.value', 'middleName1');
     cy.get('input[name="nestedValue"]').should('have.value', 'a,b');
-    cy.get('#renderCount').contains('8');
+    cy.get('#renderCount').contains('9');
   });
 });

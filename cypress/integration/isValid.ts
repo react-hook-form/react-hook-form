@@ -20,7 +20,7 @@ describe('isValid', () => {
 
     cy.get('input[name="firstName"]').clear();
     cy.get('#isValid').contains('false');
-    cy.get('#renderCount').contains('2');
+    cy.get('#renderCount').contains('3');
     cy.get('#toggle').click();
     cy.get('#isValid').contains('false');
   });
@@ -50,7 +50,6 @@ describe('isValid', () => {
     cy.get('#isValid').contains('false');
     cy.get('#renderCount').contains('2');
     cy.get('input[name="firstName"]').type('test');
-    cy.get('#isValid').contains('true');
     cy.get('#isValid').contains('true');
     cy.get('#toggle').click();
     cy.get('#isValid').contains('false');
