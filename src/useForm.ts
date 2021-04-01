@@ -851,7 +851,8 @@ export function useForm<
               (option) => ref.value === option.value && option === ref,
             )
           : ref === field._f.ref) ||
-        !field
+        !field ||
+        (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref))
       ) {
         return;
       }

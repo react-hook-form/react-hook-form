@@ -49,6 +49,10 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
         setInputStateValue(get(data.values, name)),
     });
 
+    (ref as (instance: any) => void)({
+      target: value,
+    });
+
     return () => controllerSubscription.unsubscribe();
   }, [name]);
 
