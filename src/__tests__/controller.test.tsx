@@ -843,4 +843,68 @@ describe('Controller', () => {
       test1: 1,
     });
   });
+
+  it('should return correct isValid formState when input ref is not registered', async () => {
+    const Component = () => {
+      const {
+        control,
+        formState: { isValid },
+      } = useForm<{
+        test: string;
+        test1: string;
+      }>({
+        mode: 'onChange',
+        defaultValues: {
+          test: '2',
+          test1: '2',
+        },
+      });
+
+      return (
+        <>
+          <Controller
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            rules={{ required: true }}
+            name={'test'}
+            control={control}
+          />
+          <Controller
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            rules={{ required: true }}
+            name={'test1'}
+            control={control}
+          />
+          {isValid ? 'true' : 'false'}
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    screen.getByText('true');
+
+    act(() => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    await waitFor(() => screen.getByText('false'));
+
+    act(() => {
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    await waitFor(() => screen.getByText('true'));
+  });
 });
