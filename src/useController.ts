@@ -11,14 +11,21 @@ import {
   UseControllerProps,
   UseControllerReturn,
   InternalFieldName,
+  FieldPath,
 } from './types';
 
-export function useController<TFieldValues extends FieldValues = FieldValues>({
+export function useController<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
   name,
   rules,
   defaultValue,
   control,
-}: UseControllerProps<TFieldValues>): UseControllerReturn<TFieldValues> {
+}: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
+  TFieldValues,
+  TName
+> {
   const methods = useFormContext<TFieldValues>();
   const {
     defaultValuesRef,
