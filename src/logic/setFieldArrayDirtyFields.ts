@@ -1,7 +1,7 @@
 import { get } from '../utils';
-import set from '../utils/set';
-import { deepMerge } from '../utils/deepMerge';
 import deepEqual from '../utils/deepEqual';
+import { deepMerge } from '../utils/deepMerge';
+import set from '../utils/set';
 
 function setDirtyFields<
   T extends Record<string, unknown>[],

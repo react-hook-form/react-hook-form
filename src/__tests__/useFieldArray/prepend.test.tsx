@@ -1,5 +1,4 @@
-import { useForm } from '../../useForm';
-import { useFieldArray } from '../../useFieldArray';
+import * as React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -8,8 +7,10 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
-import * as React from 'react';
+
 import { VALIDATION_MODE } from '../../constants';
+import { useFieldArray } from '../../useFieldArray';
+import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
 describe('prepend', () => {

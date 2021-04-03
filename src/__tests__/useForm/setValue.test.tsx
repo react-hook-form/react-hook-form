@@ -1,16 +1,17 @@
-import { act, renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../../useForm';
 import * as React from 'react';
-import isFunction from '../../utils/isFunction';
-import { NestedValue } from '../../types';
-import get from '../../utils/get';
 import {
   act as actComponent,
   fireEvent,
   render,
   screen,
 } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
 import { VALIDATION_MODE } from '../../constants';
+import { NestedValue } from '../../types';
+import { useForm } from '../../useForm';
+import get from '../../utils/get';
+import isFunction from '../../utils/isFunction';
 
 describe('setValue', () => {
   it('should not setValue for unmounted state with shouldUnregister', () => {

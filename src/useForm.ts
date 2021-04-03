@@ -1,78 +1,79 @@
 import * as React from 'react';
+
 import focusFieldBy from './logic/focusFieldBy';
-import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
-import shouldRenderFormState from './logic/shouldRenderFormState';
+import getFields from './logic/getFields';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
-import isErrorStateChanged from './logic/isErrorStateChanged';
-import validateField from './logic/validateField';
-import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
-import deepEqual from './utils/deepEqual';
 import getProxyFormState from './logic/getProxyFormState';
-import Subject from './utils/Subject';
-import isProxyEnabled from './utils/isProxyEnabled';
+import isErrorStateChanged from './logic/isErrorStateChanged';
+import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
+import shouldRenderFormState from './logic/shouldRenderFormState';
+import skipValidation from './logic/skipValidation';
+import validateField from './logic/validateField';
+import compact from './utils/compact';
+import deepEqual from './utils/deepEqual';
+import get from './utils/get';
+import getValidationModes from './utils/getValidationModes';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
-import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
 import isFunction from './utils/isFunction';
+import isHTMLElement from './utils/isHTMLElement';
+import isMultipleSelect from './utils/isMultipleSelect';
+import isNullOrUndefined from './utils/isNullOrUndefined';
+import isProxyEnabled from './utils/isProxyEnabled';
+import isRadioInput from './utils/isRadioInput';
+import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
-import get from './utils/get';
-import set from './utils/set';
-import unset from './utils/unset';
-import getValidationModes from './utils/getValidationModes';
-import isMultipleSelect from './utils/isMultipleSelect';
-import compact from './utils/compact';
-import isNullOrUndefined from './utils/isNullOrUndefined';
-import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isWeb from './utils/isWeb';
 import omit from './utils/omit';
-import isHTMLElement from './utils/isHTMLElement';
-import getFields from './logic/getFields';
+import set from './utils/set';
+import Subject from './utils/Subject';
+import unset from './utils/unset';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
-  UseFormReturn,
-  FieldValues,
-  UnpackNestedValue,
-  FieldName,
-  InternalFieldName,
+  ChangeHandler,
+  DeepPartial,
+  DefaultValues,
+  EventType,
   Field,
+  FieldArrayDefaultValues,
+  FieldError,
+  FieldName,
+  FieldNamesMarkedBoolean,
+  FieldPath,
   FieldRefs,
-  UseFormProps,
-  RegisterOptions,
+  FieldValues,
+  FormState,
+  GetFormIsDirty,
+  InternalFieldName,
+  InternalNameSet,
+  KeepStateOptions,
+  Path,
+  PathValue,
   ReadFormState,
   Ref,
-  SetValueConfig,
-  FormState,
-  FieldNamesMarkedBoolean,
-  InternalNameSet,
-  DefaultValues,
-  FieldError,
+  RegisterOptions,
   SetFieldValue,
-  FieldArrayDefaultValues,
-  UseFormRegisterReturn,
-  FieldPath,
-  WatchObserver,
-  KeepStateOptions,
-  EventType,
-  UseFormTrigger,
-  UseFormSetValue,
-  UseFormUnregister,
+  SetValueConfig,
+  UnpackNestedValue,
   UseFormClearErrors,
-  UseFormSetError,
-  UseFormRegister,
-  UseFormHandleSubmit,
-  UseFormReset,
-  WatchInternal,
-  GetFormIsDirty,
-  ChangeHandler,
-  PathValue,
   UseFormGetValues,
+  UseFormHandleSubmit,
+  UseFormProps,
+  UseFormRegister,
+  UseFormRegisterReturn,
+  UseFormReset,
+  UseFormReturn,
+  UseFormSetError,
+  UseFormSetValue,
+  UseFormTrigger,
+  UseFormUnregister,
   UseFormWatch,
-  Path,
-  DeepPartial,
+  WatchInternal,
+  WatchObserver,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;

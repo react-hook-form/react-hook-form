@@ -1,20 +1,22 @@
+import 'jest-performance-testing';
+
 import * as React from 'react';
+import { perf, wait } from 'react-performance-testing';
 import {
+  act as actComponent,
+  fireEvent,
   render,
   screen,
-  fireEvent,
-  act as actComponent,
   waitFor,
 } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../useForm';
-import { useWatch } from '../useWatch';
+
 import * as generateId from '../logic/generateId';
-import { FormProvider } from '../useFormContext';
-import { useFieldArray } from '../useFieldArray';
 import { Control, UseFieldArrayReturn, UseFormReturn } from '../types';
-import { perf, wait } from 'react-performance-testing';
-import 'jest-performance-testing';
+import { useFieldArray } from '../useFieldArray';
+import { useForm } from '../useForm';
+import { FormProvider } from '../useFormContext';
+import { useWatch } from '../useWatch';
 
 const mockGenerateId = () => {
   let id = 0;

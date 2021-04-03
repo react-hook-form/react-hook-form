@@ -1,15 +1,16 @@
 import * as React from 'react';
 import {
-  render,
-  waitFor,
-  fireEvent,
   act,
+  fireEvent,
+  render,
   screen,
+  waitFor,
 } from '@testing-library/react';
+
 import { Controller } from '../controller';
+import { ControllerRenderProps } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
-import { ControllerRenderProps } from '../types';
 
 function Input<TFieldValues>({
   onChange,

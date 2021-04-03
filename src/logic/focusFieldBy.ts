@@ -1,7 +1,7 @@
-import isUndefined from '../utils/isUndefined';
-import isObject from '../utils/isObject';
-import { get } from '../utils';
 import { FieldRefs, InternalFieldName } from '../types';
+import { get } from '../utils';
+import isObject from '../utils/isObject';
+import isUndefined from '../utils/isUndefined';
 import omit from '../utils/omit';
 
 const focusFieldBy = (

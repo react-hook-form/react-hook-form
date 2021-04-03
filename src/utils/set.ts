@@ -1,7 +1,8 @@
-import isObject from './isObject';
-import isKey from './isKey';
-import stringToPath from './stringToPath';
 import { FieldValues } from '../types';
+
+import isKey from './isKey';
+import isObject from './isObject';
+import stringToPath from './stringToPath';
 
 export default function set(
   object: FieldValues,

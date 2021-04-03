@@ -1,14 +1,15 @@
 import * as React from 'react';
-import { useFormContext } from './useFormContext';
+
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
 import {
   FieldValues,
   FormState,
-  UseFormStateReturn,
   UseFormStateProps,
+  UseFormStateReturn,
 } from './types';
+import { useFormContext } from './useFormContext';
 
 function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,

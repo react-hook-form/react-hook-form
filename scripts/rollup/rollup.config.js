@@ -1,5 +1,6 @@
-import { createRollupConfig } from './createRollupConfig';
 import pkg from '../../package.json';
+
+import { createRollupConfig } from './createRollupConfig';
 
 const name = 'index';
 const options = [

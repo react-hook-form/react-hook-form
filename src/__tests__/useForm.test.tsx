@@ -1,18 +1,20 @@
-import * as React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
-import {
-  render,
-  fireEvent,
-  waitFor,
-  act as actComponent,
-  screen,
-} from '@testing-library/react';
-import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
+
+import * as React from 'react';
+import { perf, PerfTools, wait } from 'react-performance-testing';
+import {
+  act as actComponent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
+import { VALIDATION_MODE } from '../constants';
+import { NestedValue, RegisterOptions, UseFormReturn } from '../types';
 import isFunction from '../utils/isFunction';
 import { useForm } from '../';
-import { VALIDATION_MODE } from '../constants';
-import { NestedValue, UseFormReturn, RegisterOptions } from '../types';
 
 describe('useForm', () => {
   describe('when component unMount', () => {

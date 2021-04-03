@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
 import { render } from '@testing-library/react';
-import { FormProvider, useFormContext } from '../useFormContext';
-import { useForm } from '../useForm';
+import { act, renderHook } from '@testing-library/react-hooks';
+
 import { useController } from '../useController';
-import { useWatch } from '../useWatch';
+import { useForm } from '../useForm';
+import { FormProvider, useFormContext } from '../useFormContext';
 import { useFormState } from '../useFormState';
+import { useWatch } from '../useWatch';
 
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {

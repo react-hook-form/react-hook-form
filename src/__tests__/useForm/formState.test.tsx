@@ -1,4 +1,4 @@
-import { useForm } from '../../useForm';
+import * as React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -6,8 +6,9 @@ import {
   screen,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+
 import { VALIDATION_MODE } from '../../constants';
-import * as React from 'react';
+import { useForm } from '../../useForm';
 
 describe('formState', () => {
   it('should return isValid correctly with resolver', async () => {

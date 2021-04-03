@@ -1,6 +1,6 @@
-import validateField from '../../logic/validateField';
-import getRadioValue from '../../logic/getRadioValue';
 import getCheckboxValue from '../../logic/getCheckboxValue';
+import getRadioValue from '../../logic/getRadioValue';
+import validateField from '../../logic/validateField';
 
 jest.mock('../../logic/getRadioValue');
 jest.mock('../../logic/getCheckboxValue');

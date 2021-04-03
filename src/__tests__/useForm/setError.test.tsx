@@ -1,5 +1,6 @@
-import { DeepMap, ErrorOption, FieldError } from '../../types';
 import { act, renderHook } from '@testing-library/react-hooks';
+
+import { DeepMap, ErrorOption, FieldError } from '../../types';
 import { useForm } from '../../useForm';
 
 describe('setError', () => {

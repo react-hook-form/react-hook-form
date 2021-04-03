@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
-import { useForm } from './useForm';
-import { Controller } from './controller';
-import { render, fireEvent, wait } from '@testing-library/react-native';
+import { Button, Text, TextInput, View } from 'react-native';
+import { fireEvent, render, wait } from '@testing-library/react-native';
+
 import * as focusOnErrorField from './logic/focusFieldBy';
+import { Controller } from './controller';
+import { useForm } from './useForm';
 
 describe('Controller with React Native', () => {
   it('should not occur error when invoked reset', async () => {

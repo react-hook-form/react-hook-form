@@ -1,4 +1,3 @@
-import { act, renderHook } from '@testing-library/react-hooks';
 import * as React from 'react';
 import {
   act as actComponent,
@@ -7,9 +6,11 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
+import { VALIDATION_MODE } from '../../constants';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
-import { VALIDATION_MODE } from '../../constants';
 import isString from '../../utils/isString';
 
 describe('register', () => {

@@ -1,12 +1,13 @@
-import { act, renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../../useForm';
+import * as React from 'react';
 import {
   act as actComponent,
   fireEvent,
   render,
   screen,
 } from '@testing-library/react';
-import * as React from 'react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
+import { useForm } from '../../useForm';
 
 describe('clearErrors', () => {
   it('should remove error', () => {

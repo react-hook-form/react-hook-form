@@ -1,20 +1,21 @@
-import getRadioValue from './getRadioValue';
-import getCheckboxValue from './getCheckboxValue';
-import isNullOrUndefined from '../utils/isNullOrUndefined';
-import isRadioInput from '../utils/isRadioInput';
-import getValueAndMessage from './getValueAndMessage';
-import isCheckBoxInput from '../utils/isCheckBoxInput';
-import isString from '../utils/isString';
-import isEmptyObject from '../utils/isEmptyObject';
-import isObject from '../utils/isObject';
-import isFunction from '../utils/isFunction';
-import isRegex from '../utils/isRegex';
-import isBoolean from '../utils/isBoolean';
-import isMessage from '../utils/isMessage';
-import getValidateError from './getValidateError';
-import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { Field, Message, FieldError, InternalFieldErrors } from '../types';
+import { Field, FieldError, InternalFieldErrors, Message } from '../types';
+import isBoolean from '../utils/isBoolean';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isEmptyObject from '../utils/isEmptyObject';
+import isFunction from '../utils/isFunction';
+import isMessage from '../utils/isMessage';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
+import isRadioInput from '../utils/isRadioInput';
+import isRegex from '../utils/isRegex';
+import isString from '../utils/isString';
+
+import appendErrors from './appendErrors';
+import getCheckboxValue from './getCheckboxValue';
+import getRadioValue from './getRadioValue';
+import getValidateError from './getValidateError';
+import getValueAndMessage from './getValueAndMessage';
 
 export default async (
   {

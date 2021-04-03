@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../../useForm';
 import {
   act as actComponent,
   fireEvent,
   render,
   screen,
 } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
+import { Controller } from '../../controller';
 import { NestedValue, UseFormReturn } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
-import { Controller } from '../../controller';
+import { useForm } from '../../useForm';
 
 describe('reset', () => {
   it('should reset the form and re-render the form', async () => {

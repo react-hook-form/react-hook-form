@@ -1,6 +1,6 @@
-import { CriteriaMode, UnpackNestedValue } from './form';
-import { Field, FieldName, FieldValues, InternalFieldName } from './fields';
 import { FieldErrors } from './errors';
+import { Field, FieldName, FieldValues, InternalFieldName } from './fields';
+import { CriteriaMode, UnpackNestedValue } from './form';
 
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
   values: UnpackNestedValue<TFieldValues>;

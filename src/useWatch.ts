@@ -1,18 +1,19 @@
 import * as React from 'react';
-import { useFormContext } from './useFormContext';
-import isUndefined from './utils/isUndefined';
+
 import isString from './utils/isString';
+import isUndefined from './utils/isUndefined';
 import {
-  DeepPartial,
-  UseWatchProps,
-  FieldValues,
-  UnpackNestedValue,
   Control,
+  DeepPartial,
   FieldPath,
-  InternalFieldName,
   FieldPathValue,
   FieldPathValues,
+  FieldValues,
+  InternalFieldName,
+  UnpackNestedValue,
+  UseWatchProps,
 } from './types';
+import { useFormContext } from './useFormContext';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues

@@ -1,18 +1,19 @@
 import * as React from 'react';
 import {
-  render,
+  act as actComponent,
   fireEvent,
+  render,
   screen,
   waitFor,
-  act as actComponent,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+
+import { Controller } from '../controller';
+import * as generateId from '../logic/generateId';
+import { Control, FieldValues, SubmitHandler, UseFormReturn } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
-import * as generateId from '../logic/generateId';
-import { Controller } from '../controller';
 import { FormProvider } from '../useFormContext';
-import { Control, SubmitHandler, UseFormReturn, FieldValues } from '../types';
 import isFunction from '../utils/isFunction';
 
 export const mockGenerateId = () => {

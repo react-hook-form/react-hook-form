@@ -1,7 +1,8 @@
 import * as React from 'react';
-import set from '../utils/set';
+
 import { FieldRefs, FieldValues } from '../types';
 import omit from '../utils/omit';
+import set from '../utils/set';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
