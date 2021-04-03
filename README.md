@@ -28,11 +28,11 @@ Version 7 | [Version 6](/docs/README.V6.md)
 ## Features
 
 - Built with performance and DX in mind
-- Embrace native form validation
-- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
-- [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
+- Embraces native form validation
+- Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
+- [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest) or custom
+- [Validation resolver](https://github.com/react-hook-form/resolvers) support for [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest) or custom
 
 ## Install
 
@@ -63,9 +63,9 @@ function App() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('firstname')} /> {/* register an input */}
-      <input {...register('lastname', { required: true })} />
-      {errors.lastname && <p>Last name is required.</p>}
+      <input {...register('firstName')} /> {/* register an input */}
+      <input {...register('lastName', { required: true })} />
+      {errors.lastName && <p>Last name is required.</p>}
       <input {...register('age', { pattern: /\d+/ })} />
       {errors.age && <p>Please enter number for age.</p>}
       <input type="submit" />
@@ -80,7 +80,7 @@ function App() {
 
 ## Sponsors
 
-Thanks go to these kind and lovely sponsors (company and individuals)!
+Thanks go to these kind and lovely sponsors (companies and individuals)!
 
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="94" height="94" />
