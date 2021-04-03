@@ -1,6 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'react-hooks'],
+  plugins: ['@typescript-eslint', 'react-hooks', 'simple-import-sort'],
   extends: [
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
@@ -30,6 +30,23 @@ module.exports = {
     'react/display-name': 'warn',
     'react/prop-types': 'off',
     'no-console': ['error', { allow: ['warn', 'error'] }],
+    'simple-import-sort/imports': [
+      'error',
+      {
+        groups: [
+          // Side effect imports.
+          ['^\\u0000'],
+          // Packages. `react` related packages come first.
+          ['^react', '^@?\\w'],
+          // Parent imports. Put `..` last.
+          ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+          // Other relative imports. Put same-folder imports and `.` last.
+          ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+          // Style imports.
+          ['^.+\\.css$'],
+        ],
+      },
+    ],
   },
   overrides: [
     {
