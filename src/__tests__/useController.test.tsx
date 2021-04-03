@@ -169,7 +169,7 @@ describe('useController', () => {
         return (
           <input
             type="checkbox"
-            checked={field.value}
+            checked={!!field.value}
             onChange={(e) => field.onChange(e.target.checked)}
           />
         );
@@ -211,7 +211,7 @@ describe('useController', () => {
           <input
             value="on"
             type="checkbox"
-            checked={field.value}
+            checked={!!field.value}
             onChange={(e) =>
               field.onChange(e.target.checked ? e.target.value : false)
             }
