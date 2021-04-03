@@ -9541,10 +9541,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.3.0-dev.20210401:
-  version "4.3.0-dev.20210401"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.0-dev.20210401.tgz#4d48b29dd7c8617d51b55c1152d6531b28304223"
-  integrity sha512-CVEwofJvklq6xj1NK25nhh9diBOKOIdQTd4S6sOmB9aKcPtFvUC9XS/4w1NLZB6o+AazPrCilXJVmRzU6EdF8g==
+typescript@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.3.tgz#39062d8019912d43726298f09493d598048c1ce3"
+  integrity sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==
 
 ua-parser-js@^0.7.18:
   version "0.7.21"
