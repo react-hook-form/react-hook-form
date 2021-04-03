@@ -86,7 +86,7 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="94" height="94" />
 </a>
 <a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="84" height="84" />
+  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="94" height="94" />
 </a>
 
 <p>
