@@ -6,6 +6,6 @@ const Controller = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >(
   props: ControllerProps<TFieldValues, TName>,
-) => props.render(useController(props));
+) => props.render(useController<TFieldValues, TName>(props));
 
 export { Controller };
