@@ -1,13 +1,13 @@
-import get from '../utils/get';
-import isUndefined from '../utils/isUndefined';
-import deepEqual from '../utils/deepEqual';
 import {
-  FieldValues,
-  InternalFieldName,
+  FieldError,
   FieldErrors,
   FieldNamesMarkedBoolean,
-  FieldError,
+  FieldValues,
+  InternalFieldName,
 } from '../types';
+import deepEqual from '../utils/deepEqual';
+import get from '../utils/get';
+import isUndefined from '../utils/isUndefined';
 
 export default <TFieldValues extends FieldValues>({
   errors,

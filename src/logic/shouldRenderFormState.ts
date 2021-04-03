@@ -1,6 +1,6 @@
-import isEmptyObject from '../utils/isEmptyObject';
-import { ReadFormState } from '../types';
 import { VALIDATION_MODE } from '../constants';
+import { ReadFormState } from '../types';
+import isEmptyObject from '../utils/isEmptyObject';
 
 export default <T, K extends ReadFormState>(
   formState: T,

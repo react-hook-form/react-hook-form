@@ -1,5 +1,5 @@
-import { useController } from './useController';
 import { ControllerProps, FieldPath, FieldValues } from './types';
+import { useController } from './useController';
 
 const Controller = <
   TFieldValues extends FieldValues = FieldValues,

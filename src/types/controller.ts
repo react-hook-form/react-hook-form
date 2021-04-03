@@ -1,13 +1,14 @@
 import * as React from 'react';
-import {
-  FieldValues,
-  Control,
-  FieldPath,
-  FieldError,
-  UseFormStateReturn,
-  FieldPathValue,
-} from './';
+
 import { RegisterOptions } from './validator';
+import {
+  Control,
+  FieldError,
+  FieldPath,
+  FieldPathValue,
+  FieldValues,
+  UseFormStateReturn,
+} from './';
 
 export type ControllerFieldState = {
   invalid: boolean;

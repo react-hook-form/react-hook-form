@@ -1,9 +1,9 @@
-import isKey from './isKey';
-import stringToPath from './stringToPath';
+import isBoolean from './isBoolean';
 import isEmptyObject from './isEmptyObject';
+import isKey from './isKey';
 import isObject from './isObject';
 import isUndefined from './isUndefined';
-import isBoolean from './isBoolean';
+import stringToPath from './stringToPath';
 
 function baseGet(object: any, updatePath: (string | number)[]) {
   const length = updatePath.slice(0, -1).length;

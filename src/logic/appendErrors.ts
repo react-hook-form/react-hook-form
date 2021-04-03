@@ -1,7 +1,7 @@
 import {
+  InternalFieldErrors,
   InternalFieldName,
   ValidateResult,
-  InternalFieldErrors,
 } from '../types';
 
 export default (

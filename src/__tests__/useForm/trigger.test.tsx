@@ -1,5 +1,3 @@
-import { act, renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../../useForm';
 import * as React from 'react';
 import {
   act as actComponent,
@@ -8,7 +6,10 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
 import { VALIDATION_MODE } from '../../constants';
+import { useForm } from '../../useForm';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {

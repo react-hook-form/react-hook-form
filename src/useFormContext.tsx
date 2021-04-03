@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { UseFormReturn, FieldValues, FormProviderProps } from './types';
+
 import omit from './utils/omit';
+import { FieldValues, FormProviderProps, UseFormReturn } from './types';
 
 const FormContext = React.createContext<UseFormReturn | null>(null);
 

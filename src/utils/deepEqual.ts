@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import isObject from '../utils/isObject';
+
 import isPrimitive from './isPrimitive';
 
 export default function deepEqual(

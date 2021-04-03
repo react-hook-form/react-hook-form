@@ -1,5 +1,5 @@
-import validationModeChecker from '../../utils/getValidationModes';
 import { VALIDATION_MODE } from '../../constants';
+import validationModeChecker from '../../utils/getValidationModes';
 
 describe('validationModeChecker', () => {
   it('should return correct mode', () => {

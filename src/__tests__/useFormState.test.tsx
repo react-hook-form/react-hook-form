@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+
+import { Control } from '../types';
 import { useForm } from '../useForm';
 import { useFormState } from '../useFormState';
-import { Control } from '../types';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {

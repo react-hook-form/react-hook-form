@@ -1,4 +1,4 @@
-import { useForm } from '../../useForm';
+import * as React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -6,10 +6,11 @@ import {
   screen,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
-import isFunction from '../../utils/isFunction';
-import * as React from 'react';
-import { useFieldArray } from '../../useFieldArray';
+
 import { Controller } from '../../controller';
+import { useFieldArray } from '../../useFieldArray';
+import { useForm } from '../../useForm';
+import isFunction from '../../utils/isFunction';
 
 describe('watch', () => {
   it('should return undefined when input gets unregister', async () => {

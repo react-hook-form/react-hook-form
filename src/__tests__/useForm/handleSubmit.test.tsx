@@ -1,9 +1,10 @@
-import { act, renderHook } from '@testing-library/react-hooks';
-import { useForm } from '../../useForm';
 import * as React from 'react';
-import { VALIDATION_MODE } from '../../constants';
 import { perf } from 'react-performance-testing';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
+
+import { VALIDATION_MODE } from '../../constants';
+import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 
 describe('handleSubmit', () => {

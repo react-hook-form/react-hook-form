@@ -1,13 +1,14 @@
-import getRadioValue from './getRadioValue';
-import getMultipleSelectValue from './getMultipleSelectValue';
-import isRadioInput from '../utils/isRadioInput';
-import isFileInput from '../utils/isFileInput';
+import { Field } from '../types';
 import isCheckBox from '../utils/isCheckBoxInput';
+import isFileInput from '../utils/isFileInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
+import isRadioInput from '../utils/isRadioInput';
+import isUndefined from '../utils/isUndefined';
+
 import getCheckboxValue from './getCheckboxValue';
 import getFieldValueAs from './getFieldValueAs';
-import isUndefined from '../utils/isUndefined';
-import { Field } from '../types';
+import getMultipleSelectValue from './getMultipleSelectValue';
+import getRadioValue from './getRadioValue';
 
 export default function getFieldValue(field?: Field) {
   if (field && field._f) {

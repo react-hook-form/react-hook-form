@@ -1,23 +1,25 @@
 import * as React from 'react';
-import {
-  DeepPartial,
-  DeepMap,
-  FieldPath,
-  FieldPathValues,
-  FieldPathValue,
-} from './utils';
-import { Resolver } from './resolvers';
+
+import { SubjectType, Subscription } from '../utils/Subject';
+
+import { ErrorOption, FieldErrors } from './errors';
+import { EventType } from './events';
+import { FieldArrayDefaultValues } from './fieldArray';
 import {
   FieldRefs,
   FieldValue,
   FieldValues,
   InternalFieldName,
 } from './fields';
-import { ErrorOption, FieldErrors } from './errors';
+import { Resolver } from './resolvers';
+import {
+  DeepMap,
+  DeepPartial,
+  FieldPath,
+  FieldPathValue,
+  FieldPathValues,
+} from './utils';
 import { RegisterOptions } from './validator';
-import { FieldArrayDefaultValues } from './fieldArray';
-import { SubjectType, Subscription } from '../utils/Subject';
-import { EventType } from './events';
 
 declare const $NestedValue: unique symbol;
 

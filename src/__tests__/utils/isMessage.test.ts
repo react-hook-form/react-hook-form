@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import isMessage from '../../utils/isMessage';
 
 describe('isBoolean', () => {

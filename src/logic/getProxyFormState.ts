@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { FormState, FormStateProxy, ReadFormState } from '../types';
+
 import { VALIDATION_MODE } from '../constants';
+import { FormState, FormStateProxy, ReadFormState } from '../types';
 
 export default <TFieldValues>(
   isProxyEnabled: boolean,

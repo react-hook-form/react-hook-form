@@ -1,18 +1,19 @@
 import * as React from 'react';
-import { useFormContext } from './useFormContext';
-import { useFormState } from './useFormState';
-import isUndefined from './utils/isUndefined';
-import get from './utils/get';
+
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import get from './utils/get';
+import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
+  FieldPath,
   FieldValues,
+  InternalFieldName,
   UseControllerProps,
   UseControllerReturn,
-  InternalFieldName,
-  FieldPath,
 } from './types';
+import { useFormContext } from './useFormContext';
+import { useFormState } from './useFormState';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,

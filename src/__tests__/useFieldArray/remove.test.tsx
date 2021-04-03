@@ -1,5 +1,4 @@
-import { useForm } from '../../useForm';
-import { useFieldArray } from '../../useFieldArray';
+import * as React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -8,10 +7,12 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+
 import { VALIDATION_MODE } from '../../constants';
-import { Control, DeepMap, FieldError } from '../../types';
-import * as React from 'react';
 import { Controller } from '../../controller';
+import { Control, DeepMap, FieldError } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
+import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
 describe('remove', () => {

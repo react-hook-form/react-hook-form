@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
-import { render, fireEvent, wait } from '@testing-library/react-native';
-import { useForm } from './useForm';
+import { Button, Text, TextInput, View } from 'react-native';
+import { fireEvent, render, wait } from '@testing-library/react-native';
+
 import * as focusOnErrorField from './logic/focusFieldBy';
+import { useForm } from './useForm';
 
 describe('useForm with React Native', () => {
   it('should register field', () => {

@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { useForm } from '../useForm';
-import { useController } from '../useController';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+
 import { Control } from '../types';
+import { useController } from '../useController';
+import { useForm } from '../useForm';
 
 describe('useController', () => {
   it('should render input correctly', () => {

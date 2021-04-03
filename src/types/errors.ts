@@ -1,6 +1,6 @@
-import { DeepMap, LiteralUnion } from './utils';
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { ValidateResult, RegisterOptions } from './validator';
+import { DeepMap, LiteralUnion } from './utils';
+import { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
 

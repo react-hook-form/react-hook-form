@@ -1,15 +1,17 @@
-import ts from 'typescript';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import path from 'path';
 import external from 'rollup-plugin-peer-deps-external';
-import replace from '@rollup/plugin-replace';
-import typescript from 'rollup-plugin-typescript2';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import { terser } from 'rollup-plugin-terser';
-import { safePackageName } from './safePackageName';
-import { pascalcase } from './pascalcase';
+import typescript from 'rollup-plugin-typescript2';
+import ts from 'typescript';
+
 import pkg from '../../package.json';
+
+import { pascalcase } from './pascalcase';
+import { safePackageName } from './safePackageName';
 
 export function createRollupConfig(options, callback) {
   const name = options.name || safePackageName(pkg.name);
