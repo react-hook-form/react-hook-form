@@ -11,7 +11,7 @@ import getMultipleSelectValue from './getMultipleSelectValue';
 import getRadioValue from './getRadioValue';
 
 export default function getFieldValue(field?: Field) {
-  if (field?._f) {
+  if (field && field._f) {
     const ref = field._f.ref;
 
     if (ref.disabled) {
