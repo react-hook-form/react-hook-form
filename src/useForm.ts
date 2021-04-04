@@ -865,8 +865,8 @@ export function useForm<
           ? {
               ...field._f,
               refs: [
-                ...compact(field._f.refs || []).filter(
-                  (ref) => isHTMLElement(ref) && document.contains(ref),
+                ...compact(field._f.refs || []).filter((ref) =>
+                  isHTMLElement(ref),
                 ),
                 ref,
               ],
