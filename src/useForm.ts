@@ -1088,7 +1088,7 @@ export function useForm<
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
-    get(fieldsRef.current, name)._f.ref?.focus();
+    get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
     isMountedRef.current = true;
