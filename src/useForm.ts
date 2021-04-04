@@ -68,6 +68,7 @@ import {
   UseFormReset,
   UseFormReturn,
   UseFormSetError,
+  UseFormSetFocus,
   UseFormSetValue,
   UseFormTrigger,
   UseFormUnregister,
@@ -1086,6 +1087,9 @@ export function useForm<
     resetFromState(keepStateOptions);
   };
 
+  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
+    get(fieldsRef.current, name)._f.ref.focus();
+
   React.useEffect(() => {
     isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
@@ -1157,5 +1161,6 @@ export function useForm<
     clearErrors: React.useCallback(clearErrors, []),
     unregister: React.useCallback(unregister, []),
     setError: React.useCallback(setError, []),
+    setFocus: React.useCallback(setFocus, []),
   };
 }
