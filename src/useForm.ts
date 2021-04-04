@@ -478,7 +478,7 @@ export function useForm<
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
 
-        field && !field._f
+        !field?._f
           ? setInternalValues(
               fieldName,
               inputValue as SetFieldValue<TFieldValues>,
@@ -558,7 +558,7 @@ export function useForm<
       }
     }
 
-    (field && !field._f) || isFieldArray
+    (!field?._f) || isFieldArray
       ? setInternalValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
@@ -1049,7 +1049,7 @@ export function useForm<
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const field of Object.values(fieldsRef.current)) {
-        if (field && field._f) {
+        if (field?._f) {
           const inputRef = Array.isArray(field._f.refs)
             ? field._f.refs[0]
             : field._f.ref;
