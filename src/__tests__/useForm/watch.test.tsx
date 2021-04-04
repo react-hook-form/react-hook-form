@@ -309,4 +309,46 @@ describe('watch', () => {
 
     expect(output).toMatchSnapshot();
   });
+
+  it('should have dirty marked when watch is enabled', () => {
+    function Component() {
+      const {
+        register,
+        formState: { isDirty },
+        watch,
+      } = useForm<{
+        lastName: string;
+      }>({
+        defaultValues: { lastName: '' },
+      });
+      watch('lastName');
+
+      return (
+        <form>
+          <input {...register('lastName')} />
+          <p>{isDirty ? 'True' : 'False'}</p>
+        </form>
+      );
+    }
+
+    render(<Component />);
+
+    screen.getByText('False');
+
+    actComponent(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+    });
+
+    screen.getByText('True');
+
+    actComponent(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+    });
+
+    screen.getByText('False');
+  });
 });
