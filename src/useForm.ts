@@ -329,8 +329,10 @@ export function useForm<
           ? set(formStateRef.current.dirtyFields, name, true)
           : unset(formStateRef.current.dirtyFields, name);
 
+        formStateRef.current.isDirty = getFormIsDirty();
+
         const state = {
-          isDirty: getFormIsDirty(),
+          isDirty: formStateRef.current.isDirty,
           dirtyFields: formStateRef.current.dirtyFields,
         };
 
