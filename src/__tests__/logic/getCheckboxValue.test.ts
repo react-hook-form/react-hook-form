@@ -40,7 +40,7 @@ describe('getCheckboxValue', () => {
           attributes: { value: 'test' },
         },
       ]),
-    ).toEqual({ value: '', isValid: true });
+    ).toEqual({ value: true, isValid: true });
     expect(
       getCheckboxValue([
         {
