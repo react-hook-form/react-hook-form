@@ -143,12 +143,6 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
-export type UseFormSetFocus<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->(
-  name: TFieldName,
-) => void;
-
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
   <TFieldName extends FieldPath<TFieldValues>>(
@@ -299,7 +293,6 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   unregister: UseFormUnregister<TFieldValues>;
   control: Control<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
-  setFocus: UseFormSetFocus<TFieldValues>;
 };
 
 export type UseFormStateProps<TFieldValues> = Partial<{
