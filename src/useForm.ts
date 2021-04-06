@@ -919,14 +919,16 @@ export function useForm<
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options) => {
+      const isInitialRegister = !get(fieldsRef.current, name);
+
       set(fieldsRef.current, name, {
         _f: {
-          ...(get(fieldsRef.current, name)
-            ? {
+          ...(isInitialRegister
+            ? { ref: { name } }
+            : {
                 ref: (get(fieldsRef.current, name)._f || {}).ref,
                 ...get(fieldsRef.current, name)._f,
-              }
-            : { ref: { name } }),
+              }),
           name,
           ...options,
         },
@@ -934,7 +936,7 @@ export function useForm<
       options && set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
 
-      updateValueAndGetDefault(name);
+      isInitialRegister && updateValueAndGetDefault(name);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
