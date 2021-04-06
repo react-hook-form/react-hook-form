@@ -1830,7 +1830,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    let result: unknown[] = [];
+    const result: unknown[] = [];
 
     const Child = () => {
       const { fields } = useFieldArray<FormValues>({
