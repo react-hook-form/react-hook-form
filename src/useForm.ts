@@ -556,6 +556,10 @@ export function useForm<
           isDirty: getFormIsDirty(name, value),
         });
       }
+
+      !(value as []).length &&
+        set(fieldsRef.current, name, []) &&
+        set(fieldArrayDefaultValuesRef.current, name, []);
     }
 
     (field && !field._f) || isFieldArray
