@@ -595,7 +595,7 @@ export function useForm<
           field._f.value = inputValue;
         }
 
-        const state = updateAndGetDirtyState(name, inputValue, false);
+        const state = updateAndGetDirtyState(name, field._f.value, false);
 
         if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
           set(formStateRef.current.touchedFields, name, true);
