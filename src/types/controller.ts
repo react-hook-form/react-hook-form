@@ -34,7 +34,7 @@ export type UseControllerProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = {
   name: TName;
-  rules?: Exclude<
+  rules?: Omit<
     RegisterOptions,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs'
   >;
