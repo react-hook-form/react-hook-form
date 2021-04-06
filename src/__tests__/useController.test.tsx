@@ -262,8 +262,8 @@ describe('useController', () => {
     const Component = () => {
       const { control } = useForm<FormValues>({
         defaultValues: {
-          test: ''
-        }
+          test: '',
+        },
       });
       counter++;
 
