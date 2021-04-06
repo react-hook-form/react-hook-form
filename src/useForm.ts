@@ -879,7 +879,7 @@ export function useForm<
             }
           : {
               ...field._f,
-              ref,
+              ref: { ...ref },
             },
       };
 
