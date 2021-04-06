@@ -1822,4 +1822,87 @@ describe('useFieldArray', () => {
 
     expect(watchedValue).toMatchSnapshot();
   });
+
+  it('should update field array defaultValues when invoke setValue', async () => {
+    type FormValues = {
+      names: {
+        name: string;
+      }[];
+    };
+
+    let result: unknown[] = [];
+
+    const Child = () => {
+      const { fields } = useFieldArray<FormValues>({
+        name: 'names',
+      });
+
+      return (
+        <>
+          {fields.map((item, index) => (
+            <Controller
+              key={item.id}
+              name={`names.${index}.name` as const}
+              render={({ field }) => <input {...field} />}
+              defaultValue={item.name}
+            />
+          ))}
+        </>
+      );
+    };
+
+    function Component() {
+      const [hide, setHide] = React.useState(true);
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          names: [{ name: 'will' }, { name: 'Mike' }],
+        },
+      });
+      const { setValue } = methods;
+
+      result.push(methods.watch());
+
+      return (
+        <form>
+          <FormProvider {...methods}>{hide && <Child />}</FormProvider>
+          <button type={'button'} onClick={() => setValue('names', [])}>
+            Change value
+          </button>
+          <button type={'button'} onClick={() => setHide(!hide)}>
+            Toggle hide
+          </button>
+        </form>
+      );
+    }
+
+    render(<Component />);
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
+    });
+
+    expect(screen.queryAllByRole('textbox')).toEqual([]);
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Change value' }));
+    });
+
+    actComponent(() => {
+      expect(screen.queryByRole('textbox')).toBeNull();
+    });
+
+    actComponent(() => {
+      expect(screen.queryByRole('textbox')).toBeNull();
+    });
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
+    });
+
+    actComponent(() => {
+      expect(screen.queryByRole('textbox')).toBeNull();
+    });
+
+    expect(result).toMatchSnapshot();
+  });
 });
