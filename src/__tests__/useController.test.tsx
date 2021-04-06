@@ -248,7 +248,6 @@ describe('useController', () => {
       const { field, formState } = useController({
         control,
         name: 'test',
-        defaultValue: '',
       });
 
       return (
@@ -261,7 +260,11 @@ describe('useController', () => {
     };
 
     const Component = () => {
-      const { control } = useForm<FormValues>();
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: ''
+        }
+      });
       counter++;
 
       return <Test control={control} />;

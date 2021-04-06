@@ -908,4 +908,49 @@ describe('Controller', () => {
 
     await waitFor(() => screen.getByText('true'));
   });
+
+  it('should subscribe the correct dirty fields', () => {
+    type FormValues = {
+      test: string;
+    };
+
+    const Component = () => {
+      const {
+        control,
+        formState: { dirtyFields, isDirty },
+      } = useForm<FormValues>({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      return (
+        <>
+          <Controller
+            control={control}
+            name={'test'}
+            render={({ field }) => <input {...field} />}
+          />
+          <p>{JSON.stringify(dirtyFields)}</p>
+          <p>{isDirty ? 'true' : 'false'}</p>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
+    });
+
+    screen.getByText('{"test":true}');
+    screen.getByText('true');
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
+    });
+
+    screen.getByText('{}');
+    screen.getByText('false');
+  });
 });

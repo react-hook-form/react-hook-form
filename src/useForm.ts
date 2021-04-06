@@ -288,7 +288,7 @@ export function useForm<
           });
         }
 
-        options.shouldDirty && updateAndGetDirtyState(name);
+        options.shouldDirty && updateAndGetDirtyState(name, value);
         options.shouldValidate && trigger(name as Path<TFieldValues>);
       }
     },
@@ -310,6 +310,7 @@ export function useForm<
   const updateAndGetDirtyState = React.useCallback(
     (
       name: InternalFieldName,
+      inputValue: unknown,
       shouldRender = true,
     ): Partial<
       Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
@@ -320,7 +321,7 @@ export function useForm<
       ) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(get(fieldsRef.current, name) as Field),
+          inputValue,
         );
         const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -594,7 +595,7 @@ export function useForm<
           field._f.value = inputValue;
         }
 
-        const state = updateAndGetDirtyState(name, false);
+        const state = updateAndGetDirtyState(name, inputValue, false);
 
         if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
           set(formStateRef.current.touchedFields, name, true);
