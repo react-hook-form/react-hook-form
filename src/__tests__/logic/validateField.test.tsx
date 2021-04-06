@@ -209,10 +209,25 @@ describe('validateField', () => {
       },
     });
 
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { type: 'text', value: '0', name: 'test' },
+            required: true,
+            value: '0',
+          },
+        },
+        false,
+      ),
+    ).toEqual({});
+
     (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
+
     expect(
       await validateField(
         {

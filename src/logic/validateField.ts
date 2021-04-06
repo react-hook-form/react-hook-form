@@ -40,7 +40,7 @@ export default async (
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    !inputValue || (Array.isArray(inputValue) && !inputValue.length);
+    inputValue === '' || (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
