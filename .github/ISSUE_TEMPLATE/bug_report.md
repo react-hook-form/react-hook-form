@@ -20,6 +20,13 @@ Steps to reproduce the behavior:
 **Codesandbox link (Required)**
 Include a codesandbox will help us to investigate the issue quicker.
 
+V7
+
+- [JS](https://codesandbox.io/s/elated-dubinsky-vol10) Template
+- [TS](https://codesandbox.io/s/frosty-wave-f1pco) Template
+
+V6
+
 - [useForm](https://codesandbox.io/s/react-hook-form-useform-template-lsm61) Template
 - [useFieldArray](https://codesandbox.io/s/react-hook-form-usefieldarray-template-q0jek) Template
 - [Controller](https://codesandbox.io/s/react-hook-form-controller-template-yu0z5) Template
