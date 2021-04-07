@@ -41,7 +41,7 @@ export default async (
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    rawValue === '' ||
+    (!isNaN(inputValue) && rawValue === '') ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
@@ -134,7 +134,6 @@ export default async (
   }
 
   if (isString(inputValue) && !isEmpty && (maxLength || minLength)) {
-    console.log('got here')
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =

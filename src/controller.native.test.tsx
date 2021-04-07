@@ -25,7 +25,7 @@ describe('Controller with React Native', () => {
         <View>
           <Controller
             name="test"
-            rules={{ required: true }}
+            rules={{ minLength: 5 }}
             control={control}
             defaultValue=""
             render={({ field: { onChange, onBlur, value } }) => (
