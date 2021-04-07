@@ -37,11 +37,10 @@ export default async (
 ): Promise<InternalFieldErrors> => {
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
-  const rawValue = ref.value;
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    (!isNaN(inputValue) && rawValue === '') ||
+    (!isNaN(inputValue) && ref.value === '') ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
