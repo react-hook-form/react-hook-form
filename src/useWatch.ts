@@ -52,7 +52,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     watchInternal(name as InternalFieldName);
 
     const watchSubscription = watchSubjectRef.current.subscribe({
-      next: ({ name: inputName, value }) => {
+      next: ({ name: inputName, value }) =>
         (!name ||
           !inputName ||
           (Array.isArray(name) ? name : [name]).some(
@@ -61,19 +61,18 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
               fieldName &&
               inputName.startsWith(fieldName as InternalFieldName),
           )) &&
-          updateValue(
-            isString(inputName) && name === inputName && !isUndefined(value)
-              ? value
-              : watchInternal(
-                  name as string,
-                  defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-                ),
-          );
-      },
+        updateValue(
+          isString(inputName) && name === inputName && !isUndefined(value)
+            ? value
+            : watchInternal(
+                name as string,
+                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+              ),
+        ),
     });
 
     return () => watchSubscription.unsubscribe();
-  }, [name]);
+  }, []);
 
   return value;
 }
