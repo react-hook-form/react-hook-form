@@ -37,10 +37,13 @@ export default async (
 ): Promise<InternalFieldErrors> => {
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
+  const rawValue = ref.value;
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    inputValue === '' || (Array.isArray(inputValue) && !inputValue.length);
+    rawValue === '' ||
+    inputValue === '' ||
+    (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
@@ -131,6 +134,7 @@ export default async (
   }
 
   if (isString(inputValue) && !isEmpty && (maxLength || minLength)) {
+    console.log('got here')
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =

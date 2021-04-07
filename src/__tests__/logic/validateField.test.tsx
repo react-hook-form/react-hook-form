@@ -240,6 +240,29 @@ describe('validateField', () => {
         false,
       ),
     ).toEqual({});
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { name: 'test', value: '' },
+            required: true,
+            value: NaN,
+          },
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: {
+          name: 'test',
+          value: '',
+        },
+      },
+    });
   });
 
   it('should return max error', async () => {
