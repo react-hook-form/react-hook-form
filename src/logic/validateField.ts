@@ -31,6 +31,7 @@ export default async (
       validate,
       name,
       value: inputValue,
+      valueAsNumber,
     },
   }: Field,
   validateAllFieldCriteria: boolean,
@@ -40,7 +41,7 @@ export default async (
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    (isNaN(inputValue) && ref.value === '') ||
+    (valueAsNumber && ref.value === '') ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(

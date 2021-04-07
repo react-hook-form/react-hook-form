@@ -246,6 +246,7 @@ describe('validateField', () => {
         {
           _f: {
             name: 'test',
+            valueAsNumber: true,
             ref: { name: 'test', value: '' },
             required: true,
             value: NaN,
