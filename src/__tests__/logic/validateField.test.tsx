@@ -264,6 +264,30 @@ describe('validateField', () => {
         },
       },
     });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { name: 'test', type: 'file', value: '' },
+            required: true,
+            value: {},
+          },
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: {
+          type: 'file',
+          name: 'test',
+          value: '',
+        },
+      },
+    });
   });
 
   it('should return max error', async () => {

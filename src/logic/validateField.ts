@@ -16,6 +16,7 @@ import getCheckboxValue from './getCheckboxValue';
 import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
+import isFileInput from '../utils/isFileInput';
 
 export default async (
   {
@@ -41,7 +42,7 @@ export default async (
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    (valueAsNumber && ref.value === '') ||
+    ((valueAsNumber || isFileInput(ref)) && !ref.value) ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
