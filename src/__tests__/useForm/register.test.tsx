@@ -268,7 +268,7 @@ describe('register', () => {
     });
   });
 
-  it.skip('should update isValid correctly with custom registered input', () => {
+  it('should update isValid correctly with custom registered input', async () => {
     function Component() {
       const {
         register,
@@ -301,7 +301,7 @@ describe('register', () => {
               setValue('b', value, { shouldDirty: true, shouldValidate: true })
             }
           />
-          <div>isValid: {String(isValid)}</div>
+          <div>{String(isValid)}</div>
         </form>
       );
     }
@@ -310,7 +310,13 @@ describe('register', () => {
 
     screen.getByText('true');
 
-    screen.getByPlaceholderText('inputA');
+    await actComponent(async () => {
+      fireEvent.input(screen.getByPlaceholderText('inputA'), {
+        target: { value: 'test' },
+      });
+    });
+
+    screen.getByText('true');
   });
 
   describe('register valueAs', () => {
