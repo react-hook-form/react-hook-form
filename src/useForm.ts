@@ -500,21 +500,44 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  const updateValueAndGetDefault = (name: InternalFieldName) => {
+  const updateValidAndValue = (
+    name: InternalFieldName,
+    options?: RegisterOptions,
+    isWithinRefCallback?: boolean,
+  ) => {
     let defaultValue;
     const field = get(fieldsRef.current, name) as Field;
+    const useFormDefaultValue = get(defaultValuesRef.current, name);
 
     if (
       field &&
       (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field._f.value))
     ) {
       defaultValue = isUndefined(field._f.value)
-        ? get(defaultValuesRef.current, name)
+        ? useFormDefaultValue
         : field._f.value;
 
       if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
       }
+    }
+
+    if (
+      (useFormDefaultValue || (!useFormDefaultValue && isWithinRefCallback)) &&
+      options &&
+      !validationMode.isOnSubmit &&
+      field &&
+      readFormStateRef.current.isValid
+    ) {
+      validateField(field, isValidateAllFieldCriteria).then((error) => {
+        isEmptyObject(error)
+          ? set(validFieldsRef.current, name, true)
+          : unset(validFieldsRef.current, name);
+
+        formStateRef.current.isValid &&
+          !isEmptyObject(error) &&
+          setFormState({ ...formStateRef.current, isValid: getIsValid() });
+      });
     }
 
     return defaultValue;
@@ -885,7 +908,7 @@ export function useForm<
 
       set(fieldsRef.current, name, field);
 
-      const defaultValue = updateValueAndGetDefault(name);
+      const defaultValue = updateValidAndValue(name, options, true);
 
       if (
         isRadioOrCheckbox && Array.isArray(defaultValue)
@@ -895,24 +918,6 @@ export function useForm<
         get(fieldsRef.current, name)._f.value = getFieldValue(
           get(fieldsRef.current, name),
         );
-      }
-
-      if (options) {
-        if (
-          !validationMode.isOnSubmit &&
-          field &&
-          readFormStateRef.current.isValid
-        ) {
-          validateField(field, isValidateAllFieldCriteria).then((error) => {
-            isEmptyObject(error)
-              ? set(validFieldsRef.current, name, true)
-              : unset(validFieldsRef.current, name);
-
-            formStateRef.current.isValid &&
-              !isEmptyObject(error) &&
-              setFormState({ ...formStateRef.current, isValid: getIsValid() });
-          });
-        }
       }
     }
   };
@@ -935,8 +940,7 @@ export function useForm<
       });
       options && set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
-
-      isInitialRegister && updateValueAndGetDefault(name);
+      isInitialRegister && updateValidAndValue(name, options);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
