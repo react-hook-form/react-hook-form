@@ -507,13 +507,14 @@ export function useForm<
   ) => {
     let defaultValue;
     const field = get(fieldsRef.current, name) as Field;
+    const useFormDefaultValue = get(defaultValuesRef.current, name);
 
     if (
       field &&
       (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field._f.value))
     ) {
       defaultValue = isUndefined(field._f.value)
-        ? get(defaultValuesRef.current, name)
+        ? useFormDefaultValue
         : field._f.value;
 
       if (!isUndefined(defaultValue)) {
@@ -522,8 +523,7 @@ export function useForm<
     }
 
     if (
-      (get(defaultValuesRef.current, name) ||
-        (!get(defaultValuesRef.current, name) && isWithinRefCallback)) &&
+      (useFormDefaultValue || (!useFormDefaultValue && isWithinRefCallback)) &&
       options &&
       !validationMode.isOnSubmit &&
       field &&
