@@ -6,7 +6,6 @@ import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
-import isErrorStateChanged from './logic/isErrorStateChanged';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -176,16 +175,15 @@ export function useForm<
       isValid?: boolean,
       isWatched?: boolean,
     ): boolean | void => {
+      const previousError = get(formStateRef.current.errors, name);
+
       let shouldReRender =
         shouldRender ||
-        isErrorStateChanged<TFieldValues>({
-          errors: formStateRef.current.errors,
-          error,
-          name,
-          validFields: validFieldsRef.current,
-          fieldsWithValidation: fieldsWithValidationRef.current,
-        });
-      const previousError = get(formStateRef.current.errors, name);
+        !deepEqual(previousError, error, true) ||
+        (isUndefined(error) &&
+          ((get(fieldsWithValidationRef.current, name) &&
+            !get(validFieldsRef.current, name)) ||
+            !!previousError));
 
       if (error) {
         unset(validFieldsRef.current, name);
