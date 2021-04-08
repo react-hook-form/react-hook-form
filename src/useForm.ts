@@ -180,10 +180,10 @@ export function useForm<
       let shouldReRender =
         shouldRender ||
         !deepEqual(previousError, error, true) ||
-        (isUndefined(error) &&
-          ((get(fieldsWithValidationRef.current, name) &&
-            !get(validFieldsRef.current, name)) ||
-            !!previousError));
+        (readFormStateRef.current.isValid &&
+          isUndefined(error) &&
+          get(fieldsWithValidationRef.current, name) &&
+          !get(validFieldsRef.current, name));
 
       if (error) {
         unset(validFieldsRef.current, name);
@@ -624,7 +624,8 @@ export function useForm<
 
         if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
           set(formStateRef.current.touchedFields, name, true);
-          state.touchedFields = formStateRef.current.touchedFields;
+          readFormStateRef.current.touchedFields &&
+            (state.touchedFields = formStateRef.current.touchedFields);
         }
 
         let shouldRender = !isEmptyObject(state) || isWatched;
