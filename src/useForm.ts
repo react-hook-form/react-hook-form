@@ -181,9 +181,8 @@ export function useForm<
         shouldRender ||
         !deepEqual(previousError, error, true) ||
         (isUndefined(error) &&
-          ((get(fieldsWithValidationRef.current, name) &&
-            !get(validFieldsRef.current, name)) ||
-            !!previousError));
+          get(fieldsWithValidationRef.current, name) &&
+          !get(validFieldsRef.current, name));
 
       if (error) {
         unset(validFieldsRef.current, name);
