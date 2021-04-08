@@ -919,24 +919,6 @@ export function useForm<
           get(fieldsRef.current, name),
         );
       }
-
-      if (options) {
-        if (
-          !validationMode.isOnSubmit &&
-          field &&
-          readFormStateRef.current.isValid
-        ) {
-          validateField(field, isValidateAllFieldCriteria).then((error) => {
-            isEmptyObject(error)
-              ? set(validFieldsRef.current, name, true)
-              : unset(validFieldsRef.current, name);
-
-            formStateRef.current.isValid &&
-              !isEmptyObject(error) &&
-              setFormState({ ...formStateRef.current, isValid: getIsValid() });
-          });
-        }
-      }
     }
   };
 
