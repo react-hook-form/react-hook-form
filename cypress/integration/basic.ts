@@ -191,7 +191,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('30');
+    cy.get('#renderCount').contains('28');
   });
 
   it('should validate the form with onChange mode and reset the form', () => {

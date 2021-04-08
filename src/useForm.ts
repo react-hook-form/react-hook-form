@@ -624,7 +624,8 @@ export function useForm<
 
         if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
           set(formStateRef.current.touchedFields, name, true);
-          state.touchedFields = formStateRef.current.touchedFields;
+          readFormStateRef.current.touchedFields &&
+            (state.touchedFields = formStateRef.current.touchedFields);
         }
 
         let shouldRender = !isEmptyObject(state) || isWatched;
