@@ -37,12 +37,12 @@ export const title : object = {
   fontWeight: "600",
   marginBottom: ".5rem",
   display: "inline-block",
-  paddingBottom: ".25rem",
-  borderBottom: "2px solid #ec5990"
+  borderBottom: "1px solid #ec5990"
 }
 
 export const description : object = {
   fontSize: "1rem",
+  fontWeight: '300',
   marginBottom: ".5rem"
 }
 
