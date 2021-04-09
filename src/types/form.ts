@@ -163,7 +163,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   ): FieldPathValue<TFieldValues, TFieldName>;
   <TFieldNames extends FieldPath<TFieldValues>[]>(
     fieldNames: TFieldNames,
-    defaultValue?: FieldPathValues<TFieldValues, TFieldNames>,
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
   (
     callback: WatchObserver<TFieldValues>,
