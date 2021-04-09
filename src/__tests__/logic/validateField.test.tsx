@@ -209,10 +209,25 @@ describe('validateField', () => {
       },
     });
 
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { type: 'text', value: '0', name: 'test' },
+            required: true,
+            value: '0',
+          },
+        },
+        false,
+      ),
+    ).toEqual({});
+
     (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
+
     expect(
       await validateField(
         {
@@ -225,6 +240,54 @@ describe('validateField', () => {
         false,
       ),
     ).toEqual({});
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            valueAsNumber: true,
+            ref: { name: 'test', value: '' },
+            required: true,
+            value: NaN,
+          },
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: {
+          name: 'test',
+          value: '',
+        },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { name: 'test', type: 'file', value: '' },
+            required: true,
+            value: {},
+          },
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: {
+          type: 'file',
+          name: 'test',
+          value: '',
+        },
+      },
+    });
   });
 
   it('should return max error', async () => {

@@ -40,6 +40,8 @@ export function useWatch<
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const { control, name, defaultValue } = props || {};
   const methods = useFormContext();
+  const nameRef = React.useRef(name);
+  nameRef.current = name;
 
   const { watchInternal, watchSubjectRef } = control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
@@ -52,28 +54,32 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     watchInternal(name as InternalFieldName);
 
     const watchSubscription = watchSubjectRef.current.subscribe({
-      next: ({ name: inputName, value }) => {
-        (!name ||
+      next: ({ name: inputName, value }) =>
+        (!nameRef.current ||
           !inputName ||
-          (Array.isArray(name) ? name : [name]).some(
+          (Array.isArray(nameRef.current)
+            ? nameRef.current
+            : [nameRef.current]
+          ).some(
             (fieldName) =>
               inputName &&
               fieldName &&
               inputName.startsWith(fieldName as InternalFieldName),
           )) &&
-          updateValue(
-            isString(inputName) && name === inputName && !isUndefined(value)
-              ? value
-              : watchInternal(
-                  name as string,
-                  defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-                ),
-          );
-      },
+        updateValue(
+          isString(inputName) &&
+            nameRef.current === inputName &&
+            !isUndefined(value)
+            ? value
+            : watchInternal(
+                nameRef.current as string,
+                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+              ),
+        ),
     });
 
     return () => watchSubscription.unsubscribe();
-  }, [name]);
+  }, []);
 
   return value;
 }

@@ -268,6 +268,57 @@ describe('register', () => {
     });
   });
 
+  it('should update isValid correctly with custom registered input', async () => {
+    function Component() {
+      const {
+        register,
+        setValue,
+        formState: { isValid },
+      } = useForm({
+        defaultValues: { a: 'default', b: 'default' },
+        mode: 'onChange',
+      });
+
+      React.useEffect(() => {
+        register('a', {
+          required: 'required',
+        });
+        register('b', {
+          required: 'required',
+        });
+      }, [register]);
+
+      return (
+        <form>
+          <input
+            placeholder={'inputA'}
+            onChange={({ target: { value } }) =>
+              setValue('a', value, { shouldDirty: true, shouldValidate: true })
+            }
+          />
+          <input
+            onChange={({ target: { value } }) =>
+              setValue('b', value, { shouldDirty: true, shouldValidate: true })
+            }
+          />
+          <div>{String(isValid)}</div>
+        </form>
+      );
+    }
+
+    render(<Component />);
+
+    screen.getByText('true');
+
+    await actComponent(async () => {
+      fireEvent.input(screen.getByPlaceholderText('inputA'), {
+        target: { value: 'test' },
+      });
+    });
+
+    screen.getByText('true');
+  });
+
   describe('register valueAs', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};

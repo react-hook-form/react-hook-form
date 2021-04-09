@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const { register, errors, handleSubmit } = useForm();
+  const { register, formState: { errors } , handleSubmit } = useForm();
   const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };

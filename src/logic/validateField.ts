@@ -3,6 +3,7 @@ import { Field, FieldError, InternalFieldErrors, Message } from '../types';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isEmptyObject from '../utils/isEmptyObject';
+import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isMessage from '../utils/isMessage';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -31,6 +32,7 @@ export default async (
       validate,
       name,
       value: inputValue,
+      valueAsNumber,
     },
   }: Field,
   validateAllFieldCriteria: boolean,
@@ -40,7 +42,9 @@ export default async (
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    !inputValue || (Array.isArray(inputValue) && !inputValue.length);
+    ((valueAsNumber || isFileInput(ref)) && !ref.value) ||
+    inputValue === '' ||
+    (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,

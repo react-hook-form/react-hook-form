@@ -10,6 +10,7 @@ import compact from './utils/compact';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
+import isPrimitive from './utils/isPrimitive';
 import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
@@ -233,24 +234,26 @@ export const useFieldArray = <
     index = 0,
     parentName = '',
   ) =>
-    values.forEach((appendValueItem, valueIndex) =>
-      Object.entries(appendValueItem).forEach(([key, value]) => {
-        const inputName = `${parentName || name}.${
-          parentName ? valueIndex : index + valueIndex
-        }.${key}`;
+    values.forEach(
+      (appendValueItem, valueIndex) =>
+        !isPrimitive(appendValueItem) &&
+        Object.entries(appendValueItem).forEach(([key, value]) => {
+          const inputName = `${parentName || name}.${
+            parentName ? valueIndex : index + valueIndex
+          }.${key}`;
 
-        Array.isArray(value)
-          ? registerFieldArray(value, valueIndex, inputName)
-          : set(fieldsRef.current, inputName, {
-              _f: {
-                ref: {
+          Array.isArray(value)
+            ? registerFieldArray(value, valueIndex, inputName)
+            : set(fieldsRef.current, inputName, {
+                _f: {
+                  ref: {
+                    name: inputName,
+                  },
                   name: inputName,
+                  value,
                 },
-                name: inputName,
-                value,
-              },
-            });
-      }),
+              });
+        }),
     );
 
   const append = (
