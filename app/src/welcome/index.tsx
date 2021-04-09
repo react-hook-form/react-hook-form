@@ -44,13 +44,6 @@ const items: Item[] = [
     title: "Controller",
     description: "controller basic form validation",
     paths: [
-      ["should validate the form and reset the form", '/controller/onSubmit']
-    ]
-  },
-  {
-    title: "Controller",
-    description: "controller basic form validation",
-    paths: [
       ["should validate the form and reset the form", '/controller/onSubmit'],
       ["should validate the form with onBlur mode and reset the form", '/controller/onBlur'],
       ["should validate the form with onChange mode and reset the form", '/controller/onChange']
@@ -120,7 +113,7 @@ const Component : React.FC = () => {
           <div style={S.label}>{title}</div>
           <div style={S.description}>{description}</div>
           <div>
-            {paths.map(([label, url]) => <div style={S.path} key={url}><Link to={url} style={S.link}>{label}</Link></div>)}
+            {paths.map(([label, url]) => <div style={S.path} key={`${url}-${label}`}><Link to={url} style={S.link}>{label}</Link></div>)}
           </div>
       </div>
     ))}
