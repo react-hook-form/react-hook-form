@@ -3,6 +3,7 @@ import { Field, FieldError, InternalFieldErrors, Message } from '../types';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isEmptyObject from '../utils/isEmptyObject';
+import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isMessage from '../utils/isMessage';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -16,7 +17,6 @@ import getCheckboxValue from './getCheckboxValue';
 import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
-import isFileInput from '../utils/isFileInput';
 
 export default async (
   {
