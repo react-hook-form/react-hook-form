@@ -5,122 +5,199 @@ import * as S from './styles'
 type Item = {
   title: string,
   description: string,
-  paths: string[][]
+  slugs: string[]
 }
 
 const items: Item[] = [
   {
     title: "AutoUnregister",
-    description: "autoUnregister",
-    paths: [["should keep all inputs data when inputs get unmounted", "/autoUnregister"]]
+    description: "Should keep all inputs data when inputs get unmounted",
+    slugs: ["/autoUnregister"]
   },
   {
     title: "Basic",
-    description: "form validation",
-    paths: [
-      ["should validate the form and reset the form", "/basic/onSubmit"],
-      ["should validate the form with onTouched mode",  "/basic/onTouched"],
-      ["should validate the form with onBlur mode and reset the form", "/basic/onBlur"],
-      ["should validate the form with onChange mode and reset the form",  "/basic/onChange"]
-    ]
+    description: "Should validate the form in different modes",
+    slugs: ["/basic/onSubmit", "/basic/onBlur", "/basic/onChange"]
   },
   {
     title: "BasicSchemaValidation",
-    description: "basicSchemaValidation form validation",
-    paths: [
-      ["should validate the form with onSubmit mode", "/basic-schema-validation/onSubmit"],
-      ["should validate the form with onBlur mode", "/basic-schema-validation/onBlur"],
-      ["should validate the form with onChange mode", "basic-schema-validation/onChange"]
-    ]
+    description: "BasicSchemaValidation form validation",
+    slugs: ["/basic-schema-validation/onSubmit", "/basic-schema-validation/onBlur", "/basic-schema-validation/onChange"]
   },
   {
     title: "ConditionalField",
-    description: "ConditionalField",
-    paths: [
-      ["should reflect correct form state and data collection", '/conditionalField']
-    ]
+    description: "Should reflect correct form state and data collection",
+    slugs: ["/conditionalField"]
   },
   {
     title: "Controller",
-    description: "controller basic form validation",
-    paths: [
-      ["should validate the form and reset the form", '/controller/onSubmit'],
-      ["should validate the form with onBlur mode and reset the form", '/controller/onBlur'],
-      ["should validate the form with onChange mode and reset the form", '/controller/onChange']
-    ]
+    description: "Should validate the form in different modes",
+    slugs: ["/controller/onSubmit", "/controller/onBlur", "/controller/onChange"]
   },
   {
     title: "CustomSchemaValidation",
-    description: "customSchemaValidation form validation",
-    paths: [
-      ["should validate the form with onSubmit mode", '/customSchemaValidation/onSubmit'],
-      ["should validate the form with onBlur mode", '/customSchemaValidation/onBlur'],
-      ["should validate the form with onChange mode", '/customSchemaValidation/onChange']
-    ]
+    description: "Should validate the form in different modes",
+    slugs: ["/customSchemaValidation/onSubmit", "/customSchemaValidation/onBlur", "/customSchemaValidation/onChange"]
   },
   {
     title: "DefaultValues",
-    description: "defaultValues",
-    paths: [
-      ["should populate defaultValue for inputs", '/default-values'],
-    ]
+    description: "Should populate defaultValue for inputs",
+    slugs: ["/default-values"]
   },
   {
     title: "FormState",
-    description: "form state",
-    paths: [
-      ["should return correct form state with onSubmit mode", '/formState/onSubmit'],
-      ["should return correct form state with onChange mode", '/formState/onChange'],
-      ["should return correct form state with onBlur mode", '/formState/onBlur'],
-      ["should reset dirty value when inputs reset back to default with onSubmit mode", '/formState/onSubmit'],
-      ["should reset dirty value when inputs reset back to default with onBlur mode", '/formState/onBlur'],
-      ["should reset dirty value when inputs reset back to default with onChange mode", '/formState/onChange'],
-    ]
+    description: "Should return correct form state in different modes",
+    slugs: ["/formState/onSubmit", "/formState/onBlur", "/formState/onChange"]
   },
   {
     title: "FormStateWithNestedFields",
-    description: "form state with nested fields",
-    paths: [
-      ['should return correct form state with onSubmit mode', '/formStateWithNestedFields/onSubmit'],
-      ['should return correct form state with onChange mode', '/formStateWithNestedFields/onChange'],
-      ['should return correct form state with onBlur mode', '/formStateWithNestedFields/onBlur'],
-      ['should reset dirty value when inputs reset back to default with onSubmit mode','/formStateWithNestedFields/onSubmit' ],
-      ['should reset dirty value when inputs reset back to default with onBlur mode', '/formStateWithNestedFields/onBlur'],
-      ['should reset dirty value when inputs reset back to default with onChange mode', '/formStateWithNestedFields/onChange']
-    ]
+    description: "Should return correct form state with nested fields in different modes",
+    slugs: ["/formStateWithNestedFields/onSubmit", "/formStateWithNestedFields/onBlur", "/formStateWithNestedFields/onChange"]
   },
   {
     title: "FormStateWithSchema",
-    description: "form state with schema validation",
-    paths: [
-      ['should return correct form state with onSubmit mode', '/formStateWithSchema/onSubmit'],
-      ['should return correct form state with onChange mode', '/formStateWithSchema/onChange'],
-      ['should return correct form state with onBlur mode', '/formStateWithSchema/onBlur'],
-      ['should reset dirty value when inputs reset back to default with onSubmit mode','/formStateWithSchema/onSubmit' ],
-      ['should reset dirty value when inputs reset back to default with onBlur mode', '/formStateWithSchema/onBlur'],
-      ['should reset dirty value when inputs reset back to default with onChange mode', '/formStateWithSchema/onChange']
+    description: "Should return correct form state with schema validation in different modes",
+    slugs: ["/formStateWithSchema/onSubmit", "/formStateWithSchema/onBlur", "/formStateWithSchema/onChange"]
+  },
+  {
+    title: "IsValid",
+    description: "Should showing valid correctly",
+    slugs: ['/isValid/build-in/defaultValue', '/isValid/build-in/defaultValues', '/isValid/schema/defaultValue', '/isValid/schema/defaultValues']
+  },
+  {
+    title: "ManualRegisterForm",
+    description: "Should validate the form",
+    slugs: ['/manual-register-form']
+  },
+  {
+    title: "Reset",
+    description: "Should be able to re-populate the form while reset",
+    slugs: ['/rest']
+  },
+  {
+    title: "ReValidateMode",
+    description: "Should re-validate the form in different modes",
+    slugs: [
+      '/re-validate-mode/onSubmit/onSubmit',
+      '/re-validate-mode/onSubmit/onBlur',
+      '/re-validate-mode/onBlur/onSubmit',
+      '/re-validate-mode/onChange/onSubmit',
+      '/re-validate-mode/onBlur/onBlur',
+      '/re-validate-mode/onBlur/onChange',
     ]
+  },
+  {
+    title: "SetError",
+    description: "Form setError",
+    slugs: ['/setError']
+  },
+  {
+    title: "SetValue",
+    description: "Should set input value",
+    slugs: ['/setValue']
+  },
+  {
+    title: "SetValueCustomRegister",
+    description: "Should only trigger re-render when form state changed or error triggered",
+    slugs: ['/setValueCustomRegister']
+  },
+  {
+    title: "SetValueWithSchema",
+    description: "Should set input value, trigger validation and clear all errors",
+    slugs: ['/setValueWithSchema']
+  },
+  {
+    title: "SetValueWithTrigger",
+    description: "Should set input value and trigger validation",
+    slugs: ['/setValueWithTrigger']
+  },
+  {
+    title: "TriggerValidation",
+    description: "Should trigger input validation",
+    slugs: ['/trigger-validation']
+  },
+  {
+    title: "UseFieldArray",
+    description: "Should behaviour correctly in different situations",
+    slugs: [
+      '/useFieldArray/normal',
+      '/useFieldArray/default',
+      '/useFieldArray/defaultAndWithoutFocus',
+      '/useFieldArray/asyncReset',
+      '/useFieldArray/defaultAndWithoutFocus',
+      '/useFieldArray/formState'
+    ]
+  },
+  {
+    title: "UseFieldArrayNested",
+    description: "Should work correctly with nested field array",
+    slugs: ['/useFieldArrayNested']
+  },
+  {
+    title: "UseFieldArrayUnregister",
+    description: "Should work correctly",
+    slugs: ['/useFieldArrayUnregister']
+  },
+  {
+    title: "UseFormState",
+    description: "Should subscribed to the form state without re-render the root",
+    slugs: ['/useFormState']
+  },
+  {
+    title: "UseWatch",
+    description: "Should watch correctly",
+    slugs: ['/useWatch']
+  },
+  {
+    title: "UseWatchUseFieldArrayNested",
+    description: "Should watch the correct nested field array",
+    slugs: ['/useWatchUseFieldArrayNested']
+  },
+  {
+    title: "ValidateFieldCriteria",
+    description: "Should validate the form, show all errors and clear all",
+    slugs: ['/validate-field-criteria']
+  },
+  {
+    title: "Watch",
+    description: "Should watch all inputs",
+    slugs: ['/watch']
+  },
+  {
+    title: "WatchDefaultValues",
+    description: "Should return default value with watch",
+    slugs: ['/watch-default-values']
+  },
+  {
+    title: "WatchUseFieldArray",
+    description: "should behaviour correctly when watching the field array",
+    slugs: ['/watch-field-array/normal', '/watch-field-array/default']
+  },
+  {
+    title: "WatchUseFieldArrayNested",
+    description: "should watch the correct nested field array",
+    slugs: ['/watchUseFieldArrayNested']
   },
 ]
 
 const Component : React.FC = () => {
   return (
     <div style={S.page}>
-      <div style={S.title}>App for cypress automation</div>
-      <div style={S.subtitle}>Here you have an example of the full list of the available testing routes:</div>
-      {items.map(({title, description, paths} : Item) => (
-        <div style={S.item} key={title}>
-          <div style={S.label}>{title}</div>
-          <div style={S.description}>{description}</div>
-          <div>
-            {paths.map(([label, url]) => <div style={S.path} key={`${url}-${label}`}><Link to={url} style={S.link}>{label}</Link></div>)}
-          </div>
+      <h1 style={S.h1}>App for cypress automation</h1>
+      <h2 style={S.h2}>Here you have the full list of the available testing routes:</h2>
+      <div style={S.items}>
+        {items.map(({title, description, slugs} : Item) => (
+          <div style={S.item} key={title}>
+            <div style={S.title}>{title}</div>
+            <div style={S.description}>{description}</div>
+            <div>
+              {slugs.map((slug) => <Link to={slug} style={S.slug}>{slug}</Link>)}
+            </div>
+        </div>
+      ))}
       </div>
-    ))}
     </div>
   )
 }
-
-
 
 export default Component
