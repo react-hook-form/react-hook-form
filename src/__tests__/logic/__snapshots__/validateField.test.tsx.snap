@@ -1,5 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`validateField should handle pattern with g flag 1`] = `
+Object {
+  "test": Object {
+    "message": "",
+    "ref": Object {
+      "name": "test",
+      "type": "text",
+    },
+    "type": "minLength",
+    "types": Object {
+      "minLength": true,
+      "validate": true,
+    },
+  },
+}
+`;
+
+exports[`validateField should handle pattern with g flag 2`] = `
+Object {
+  "test": Object {
+    "message": "",
+    "ref": Object {
+      "name": "test",
+      "type": "text",
+    },
+    "type": "minLength",
+    "types": Object {
+      "minLength": true,
+      "validate": true,
+    },
+  },
+}
+`;
+
 exports[`validateField should return all validation error messages 1`] = `
 Object {
   "test": Object {
