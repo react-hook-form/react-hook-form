@@ -157,6 +157,194 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>,
+    T5 extends FieldPath<TFieldValues>,
+    T6 extends FieldPath<TFieldValues>,
+    T7 extends FieldPath<TFieldValues>,
+    T8 extends FieldPath<TFieldValues>,
+    T9 extends FieldPath<TFieldValues>,
+    T10 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7, T8, T9, T10],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+    FieldPathValue<TFieldValues, T5>,
+    FieldPathValue<TFieldValues, T6>,
+    FieldPathValue<TFieldValues, T7>,
+    FieldPathValue<TFieldValues, T8>,
+    FieldPathValue<TFieldValues, T9>,
+    FieldPathValue<TFieldValues, T10>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>,
+    T5 extends FieldPath<TFieldValues>,
+    T6 extends FieldPath<TFieldValues>,
+    T7 extends FieldPath<TFieldValues>,
+    T8 extends FieldPath<TFieldValues>,
+    T9 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7, T8, T9],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+    FieldPathValue<TFieldValues, T5>,
+    FieldPathValue<TFieldValues, T6>,
+    FieldPathValue<TFieldValues, T7>,
+    FieldPathValue<TFieldValues, T8>,
+    FieldPathValue<TFieldValues, T9>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>,
+    T5 extends FieldPath<TFieldValues>,
+    T6 extends FieldPath<TFieldValues>,
+    T7 extends FieldPath<TFieldValues>,
+    T8 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7, T8],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+    FieldPathValue<TFieldValues, T5>,
+    FieldPathValue<TFieldValues, T6>,
+    FieldPathValue<TFieldValues, T7>,
+    FieldPathValue<TFieldValues, T8>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>,
+    T5 extends FieldPath<TFieldValues>,
+    T6 extends FieldPath<TFieldValues>,
+    T7 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+    FieldPathValue<TFieldValues, T5>,
+    FieldPathValue<TFieldValues, T6>,
+    FieldPathValue<TFieldValues, T7>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>,
+    T5 extends FieldPath<TFieldValues>,
+    T6 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4, T5, T6],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+    FieldPathValue<TFieldValues, T5>,
+    FieldPathValue<TFieldValues, T6>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>,
+    T5 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4, T5],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+    FieldPathValue<TFieldValues, T5>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>,
+    T4 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3, T4],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+    FieldPathValue<TFieldValues, T4>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <
+    T1 extends FieldPath<TFieldValues>,
+    T2 extends FieldPath<TFieldValues>,
+    T3 extends FieldPath<TFieldValues>
+  >(
+    fieldNames: readonly [T1, T2, T3],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [
+    FieldPathValue<TFieldValues, T1>,
+    FieldPathValue<TFieldValues, T2>,
+    FieldPathValue<TFieldValues, T3>,
+  ];
+  <TFieldName extends FieldPath<TFieldValues>>(
+    fieldName: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
+  <T1 extends FieldPath<TFieldValues>, T2 extends FieldPath<TFieldValues>>(
+    fieldNames: readonly [T1, T2],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [FieldPathValue<TFieldValues, T1>, FieldPathValue<TFieldValues, T2>];
   <TFieldName extends FieldPath<TFieldValues>>(
     fieldName: TFieldName,
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
