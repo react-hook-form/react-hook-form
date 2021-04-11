@@ -6,6 +6,7 @@ import isProxyEnabled from './utils/isProxyEnabled';
 import {
   FieldValues,
   FormState,
+  InternalFieldName,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
@@ -18,8 +19,8 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const methods = useFormContext();
   const { formStateRef, formStateSubjectRef, readFormStateRef } =
     control || methods.control;
-
-  console.log(name)
+  const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
+  nameRef.current = name as InternalFieldName;
 
   const [formState, updateFormState] = React.useState(formStateRef.current);
   const readFormState = React.useRef({
@@ -34,11 +35,19 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   React.useEffect(() => {
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next: (formState) => {
-        shouldRenderFormState(formState, readFormState.current) &&
-          updateFormState({
-            ...formStateRef.current,
-            ...formState,
-          });
+        if (
+          !formState.name ||
+          (Array.isArray(nameRef.current)
+            ? nameRef.current
+            : [nameRef.current]
+          ).includes(formState.name)
+        ) {
+          shouldRenderFormState(formState, readFormState.current) &&
+            updateFormState({
+              ...formStateRef.current,
+              ...formState,
+            });
+        }
       },
     });
 
