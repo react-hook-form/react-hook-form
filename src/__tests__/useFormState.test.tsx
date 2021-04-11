@@ -350,4 +350,131 @@ describe('useFormState', () => {
 
     expect(count).toEqual(1);
   });
+
+  it('should only re-render when subscribed field names updated', async () => {
+    let count = 0;
+
+    type FormValues = {
+      firstName: string;
+      lastName: string;
+      age: number;
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { errors } = useFormState({
+        control,
+        name: ['firstName', 'lastName'],
+      });
+
+      count++;
+
+      return <>{errors?.firstName?.message}</>;
+    };
+
+    const Component = () => {
+      const { control, register } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: {
+          firstName: 'a',
+          lastName: 'b',
+        },
+      });
+
+      return (
+        <form>
+          <Test control={control} />
+          <input
+            {...register('firstName', { required: true })}
+            placeholder={'firstName'}
+          />
+          <input
+            {...register('lastName', { required: true })}
+            placeholder={'lastName'}
+          />
+          <input
+            {...register('age', { valueAsNumber: true, required: true })}
+            type="number"
+          />
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('firstName'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('lastName'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    expect(count).toEqual(3);
+  });
+
+  it('should only re-render when subscribed field names updated', async () => {
+    let count = 0;
+
+    type FormValues = {
+      firstName: string;
+      lastName: string;
+      age: number;
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { errors } = useFormState({
+        control,
+        name: ['age', 'lastName'],
+      });
+
+      count++;
+
+      return <>{errors?.firstName?.message}</>;
+    };
+
+    const Component = () => {
+      const { control, register } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: {
+          firstName: 'a',
+          lastName: 'b',
+        },
+      });
+
+      return (
+        <form>
+          <Test control={control} />
+          <input
+            {...register('firstName', { required: true })}
+            placeholder={'firstName'}
+          />
+          <input {...register('lastName')} placeholder={'lastName'} />
+          <input
+            {...register('age', { valueAsNumber: true, required: true })}
+            type="number"
+          />
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('firstName'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    expect(count).toEqual(1);
+  });
 });
