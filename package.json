@@ -113,7 +113,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/index.cjs.production.js",
+      "path": "./dist/index.cjs.js",
       "maxSize": "9.5 kB"
     }
   ],
