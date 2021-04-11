@@ -54,12 +54,13 @@ export function createRollupConfig(options, callback) {
           include: /\/node_modules\//,
         }),
       sourcemaps(),
-      terser({
-        output: { comments: false },
-        compress: {
-          drop_console: true,
-        },
-      }),
+      options.format !== 'esm' &&
+        terser({
+          output: { comments: false },
+          compress: {
+            drop_console: true,
+          },
+        }),
     ].filter(Boolean),
   };
 
