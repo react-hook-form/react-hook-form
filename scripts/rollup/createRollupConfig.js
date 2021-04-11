@@ -1,6 +1,5 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import replace from '@rollup/plugin-replace';
 import path from 'path';
 import external from 'rollup-plugin-peer-deps-external';
 import sourcemaps from 'rollup-plugin-sourcemaps';
@@ -16,7 +15,6 @@ import { safePackageName } from './safePackageName';
 export function createRollupConfig(options, callback) {
   const name = options.name || safePackageName(pkg.name);
   const umdName = options.umdName || pascalcase(safePackageName(pkg.name));
-  const shouldMinify = options.minify || options.env === 'production';
   const tsconfigPath = options.tsconfig || 'tsconfig.json';
   const tsconfigJSON = ts.readConfigFile(tsconfigPath, ts.sys.readFile).config;
   const tsCompilerOptions = ts.parseJsonConfigFileContent(
@@ -29,7 +27,6 @@ export function createRollupConfig(options, callback) {
     path.join(tsCompilerOptions.outDir, name),
     options.formatName || options.format,
     options.env,
-    shouldMinify ? 'min' : '',
     'js',
   ]
     .filter(Boolean)
@@ -56,18 +53,13 @@ export function createRollupConfig(options, callback) {
         commonjs({
           include: /\/node_modules\//,
         }),
-      options.env !== undefined &&
-        replace({
-          'process.env.NODE_ENV': JSON.stringify(options.env),
-        }),
       sourcemaps(),
-      shouldMinify &&
-        terser({
-          output: { comments: false },
-          compress: {
-            drop_console: true,
-          },
-        }),
+      terser({
+        output: { comments: false },
+        compress: {
+          drop_console: true,
+        },
+      }),
     ].filter(Boolean),
   };
 
