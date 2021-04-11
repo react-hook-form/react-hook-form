@@ -131,19 +131,21 @@ export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 type RefCallBack = (instance: any) => void;
 
-export type UseFormRegisterReturn = {
+export type UseFormRegisterReturn<TRefName extends string = string> = {
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
-  ref: RefCallBack;
   name: InternalFieldName;
-};
+  ref: RefCallBack;
+} & { [k: TRefName]: React.Ref<any> };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TRefName extends string = string
 >(
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
-) => UseFormRegisterReturn;
+  refProp?: string,
+) => UseFormRegisterReturn<TRefName>;
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;

@@ -922,7 +922,7 @@ export function useForm<
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
-    (name, options) => {
+    (name, options, refProp = 'ref') => {
       const isInitialRegister = !get(fieldsRef.current, name);
 
       set(fieldsRef.current, name, {
@@ -942,12 +942,14 @@ export function useForm<
       isInitialRegister && updateValidAndValue(name, options);
 
       return isWindowUndefined
-        ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
+        ? ({
+            name: name as InternalFieldName,
+          } as UseFormRegisterReturn)
         : {
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) =>
+            [refProp]: (ref: HTMLInputElement | null) =>
               ref && registerFieldRef(name, ref, options),
           };
     },
