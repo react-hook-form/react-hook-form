@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 import isProxyEnabled from './utils/isProxyEnabled';
 import {
   FieldValues,
@@ -37,10 +38,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
       next: ({ name, ...formState }) =>
         (!name ||
           !nameRef.current ||
-          (Array.isArray(nameRef.current)
-            ? nameRef.current
-            : [nameRef.current]
-          ).includes(name)) &&
+          convertToArrayPayload(nameRef.current).includes(name)) &&
         shouldRenderFormState(formState, readFormState.current) &&
         updateFormState({
           ...formStateRef.current,

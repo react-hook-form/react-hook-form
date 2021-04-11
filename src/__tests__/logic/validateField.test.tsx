@@ -1440,7 +1440,7 @@ describe('validateField', () => {
 
   it('should handle pattern with g flag', async () => {
     const reusedRe = /a/g;
-    
+
     (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
