@@ -7,6 +7,7 @@ import mapIds from './logic/mapId';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
 import compact from './utils/compact';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
@@ -30,7 +31,6 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
-import convertToArrayPayload from './utils/convertToArrayPayload';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,

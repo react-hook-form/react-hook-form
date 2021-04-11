@@ -11,6 +11,7 @@ import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
 import validateField from './logic/validateField';
 import compact from './utils/compact';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
@@ -75,7 +76,6 @@ import {
   WatchInternal,
   WatchObserver,
 } from './types';
-import convertToArrayPayload from './utils/convertToArrayPayload';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 

@@ -1,6 +1,6 @@
 import compact from './compact';
-import isUndefined from './isUndefined';
 import convertToArrayPayload from './convertToArrayPayload';
+import isUndefined from './isUndefined';
 
 function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
   let i = 0;
