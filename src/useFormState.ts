@@ -35,10 +35,11 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   React.useEffect(() => {
     const formStateSubscription = formStateSubjectRef.current.subscribe({
-      next: ({ name, ...formState }) =>
+      next: (formState) =>
         (!name ||
           !nameRef.current ||
-          convertToArrayPayload(nameRef.current).includes(name)) &&
+          (formState.name &&
+            convertToArrayPayload(nameRef.current).includes(formState.name))) &&
         shouldRenderFormState(formState, readFormState.current) &&
         updateFormState({
           ...formStateRef.current,

@@ -134,7 +134,7 @@ export function useForm<
   const fieldArrayNamesRef = React.useRef<InternalNameSet>(new Set());
   const validationMode = getValidationModes(mode);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
-  const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
     dirtyFields: {},
@@ -538,7 +538,7 @@ export function useForm<
 
         formStateRef.current.isValid &&
           !isEmptyObject(error) &&
-          setFormState({ ...formStateRef.current, isValid: getIsValid() });
+          updateFormState({ ...formStateRef.current, isValid: getIsValid() });
       });
     }
 
@@ -1108,13 +1108,13 @@ export function useForm<
   React.useEffect(() => {
     isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
-      next({ name, ...formState } = {}) {
+      next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
             ...formStateRef.current,
             ...formState,
           };
-          setFormState(formStateRef.current);
+          updateFormState(formStateRef.current);
         }
       },
     });

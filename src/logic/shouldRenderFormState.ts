@@ -1,9 +1,17 @@
 import { VALIDATION_MODE } from '../constants';
-import { ReadFormState } from '../types';
+import {
+  FieldValues,
+  FormState,
+  InternalFieldName,
+  ReadFormState,
+} from '../types';
 import isEmptyObject from '../utils/isEmptyObject';
 
-export default <T, K extends ReadFormState>(
-  formState: T,
+export default <
+  T extends Partial<FormState<FieldValues>> & { name?: InternalFieldName },
+  K extends ReadFormState
+>(
+  { name, ...formState }: T,
   readFormStateRef: K,
   isRoot?: boolean,
 ) =>
