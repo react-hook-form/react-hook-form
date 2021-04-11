@@ -811,7 +811,7 @@ export function useForm<
   const watch: UseFormWatch<TFieldValues> = (
     fieldName?:
       | FieldPath<TFieldValues>
-      | FieldPath<TFieldValues>[]
+      | ReadonlyArray<FieldPath<TFieldValues>>
       | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>
