@@ -1107,7 +1107,7 @@ export function useForm<
   React.useEffect(() => {
     isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
-      next(formState: Partial<FormState<TFieldValues>> = {}) {
+      next({ name, ...formState } = {}) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
             ...formStateRef.current,
