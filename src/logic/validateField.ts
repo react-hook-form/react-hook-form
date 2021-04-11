@@ -159,7 +159,7 @@ export default async (
   if (isString(inputValue) && pattern && !isEmpty) {
     const { value: patternValue, message } = getValueAndMessage(pattern);
 
-    if (isRegex(patternValue) && !patternValue.test(inputValue)) {
+    if (isRegex(patternValue) && !inputValue.match(patternValue)) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message,

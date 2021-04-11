@@ -1438,6 +1438,47 @@ describe('validateField', () => {
     ).toMatchSnapshot();
   });
 
+  it('should handle pattern with g flag', async () => {
+    const reusedRe = /a/g;
+    
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+      value: '',
+    }));
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: 'a',
+            required: true,
+            minLength: 10,
+            pattern: reusedRe,
+            validate: (value) => value === 'test',
+          },
+        },
+        true,
+      ),
+    ).toMatchSnapshot();
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: 'a',
+            required: true,
+            minLength: 10,
+            pattern: reusedRe,
+            validate: (value) => value === 'test',
+          },
+        },
+        true,
+      ),
+    ).toMatchSnapshot();
+  });
+
   it('should return all validation error messages', async () => {
     (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
