@@ -244,4 +244,110 @@ describe('useFormState', () => {
 
     expect(count).toEqual(1);
   });
+
+  it('should only re-render when subscribed field name updated', async () => {
+    let count = 0;
+
+    type FormValues = {
+      firstName: string;
+      lastName: string;
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { errors } = useFormState({
+        control,
+        name: 'firstName',
+      });
+
+      count++;
+
+      return <>{errors?.firstName?.message}</>;
+    };
+
+    const Component = () => {
+      const { control, register } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: {
+          firstName: 'a',
+          lastName: 'b',
+        },
+      });
+
+      return (
+        <form>
+          <Test control={control} />
+          <input
+            {...register('firstName', { required: true })}
+            placeholder={'firstName'}
+          />
+          <input {...register('lastName')} />
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('firstName'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    expect(count).toEqual(2);
+  });
+
+  it('should not re-render when subscribed field name is not included', async () => {
+    let count = 0;
+
+    type FormValues = {
+      firstName: string;
+      lastName: string;
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const { errors } = useFormState({
+        control,
+        name: 'lastName',
+      });
+
+      count++;
+
+      return <>{errors?.lastName?.message}</>;
+    };
+
+    const Component = () => {
+      const { control, register } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: {
+          firstName: 'a',
+          lastName: 'b',
+        },
+      });
+
+      return (
+        <form>
+          <Test control={control} />
+          <input
+            {...register('firstName', { required: true })}
+            placeholder={'firstName'}
+          />
+          <input {...register('lastName')} />
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('firstName'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    expect(count).toEqual(1);
+  });
 });
