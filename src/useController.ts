@@ -47,6 +47,7 @@ export function useController<
   );
   const formState = useFormState({
     control: control || methods.control,
+    name,
   });
   get(fieldsRef.current, name)._f.value = value;
 
