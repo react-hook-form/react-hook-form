@@ -75,6 +75,7 @@ import {
   WatchInternal,
   WatchObserver,
 } from './types';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 
@@ -752,7 +753,7 @@ export function useForm<
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     name &&
-      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
+      convertToArrayPayload(name).forEach((inputName) =>
         unset(formStateRef.current.errors, inputName),
       );
 

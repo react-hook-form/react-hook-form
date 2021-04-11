@@ -1,5 +1,6 @@
 import compact from './compact';
 import isUndefined from './isUndefined';
+import convertToArrayPayload from './convertToArrayPayload';
 
 function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
   let i = 0;
@@ -18,5 +19,5 @@ export default <T>(data: T[], index?: number | number[]): T[] =>
     ? []
     : removeAtIndexes(
         data,
-        (Array.isArray(index) ? index : [index]).sort((a, b) => a - b),
+        (convertToArrayPayload(index) as number[]).sort((a, b) => a - b),
       );
