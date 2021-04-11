@@ -210,7 +210,6 @@ export function useForm<
       ) {
         const updatedFormState = {
           ...state,
-          name,
           isValid: resolverRef.current ? !!isValid : getIsValid(),
           errors: formStateRef.current.errors,
         };
@@ -338,6 +337,7 @@ export function useForm<
         const state = {
           isDirty: formStateRef.current.isDirty,
           dirtyFields: formStateRef.current.dirtyFields,
+          name,
         };
 
         const isChanged =
@@ -434,9 +434,7 @@ export function useForm<
     async (name) => {
       const fields = isUndefined(name)
         ? Object.keys(fieldsRef.current)
-        : Array.isArray(name)
-        ? name
-        : [name];
+        : (convertToArrayPayload(name) as InternalFieldName[]);
       let isValid;
 
       formStateSubjectRef.current.next({
@@ -461,6 +459,7 @@ export function useForm<
       }
 
       formStateSubjectRef.current.next({
+        ...(isString(name) ? { name } : {}),
         errors: formStateRef.current.errors,
         isValidating: false,
         isValid: resolverRef.current ? isValid : getIsValid(),
@@ -578,6 +577,7 @@ export function useForm<
         );
 
         formStateSubjectRef.current.next({
+          name,
           dirtyFields: formStateRef.current.dirtyFields,
           isDirty: getFormIsDirty(name, value),
         });
