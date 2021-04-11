@@ -46,6 +46,7 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
+  FormStateSubjectRef,
   GetFormIsDirty,
   InternalFieldName,
   InternalNameSet,
@@ -91,8 +92,8 @@ export function useForm<
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
   const fieldsNamesRef = React.useRef<Set<InternalFieldName>>(new Set());
-  const formStateSubjectRef = React.useRef(
-    new Subject<Partial<FormState<TFieldValues>>>(),
+  const formStateSubjectRef = React.useRef<FormStateSubjectRef<TFieldValues>>(
+    new Subject(),
   );
   const watchSubjectRef = React.useRef(
     new Subject<{
@@ -208,6 +209,7 @@ export function useForm<
       ) {
         const updatedFormState = {
           ...state,
+          name,
           isValid: resolverRef.current ? !!isValid : getIsValid(),
           errors: formStateRef.current.errors,
         };
@@ -217,7 +219,9 @@ export function useForm<
           ...updatedFormState,
         };
 
-        formStateSubjectRef.current.next(isWatched ? {} : updatedFormState);
+        formStateSubjectRef.current.next(
+          isWatched ? { name } : updatedFormState,
+        );
       }
 
       formStateSubjectRef.current.next({
@@ -639,7 +643,9 @@ export function useForm<
             });
           return (
             shouldRender &&
-            formStateSubjectRef.current.next(isWatched ? {} : state)
+            formStateSubjectRef.current.next(
+              isWatched ? { name } : { ...state, name },
+            )
           );
         }
 
@@ -766,6 +772,7 @@ export function useForm<
     });
 
     formStateSubjectRef.current.next({
+      name,
       errors: formStateRef.current.errors,
       isValid: false,
     });
@@ -854,6 +861,7 @@ export function useForm<
     }
 
     formStateSubjectRef.current.next({
+      name: name as InternalFieldName,
       ...formStateRef.current,
       ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
       ...(resolverRef.current ? {} : { isValid: getIsValid() }),

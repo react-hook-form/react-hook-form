@@ -232,6 +232,10 @@ export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
   data?: TData,
 ) => boolean;
 
+export type FormStateSubjectRef<TFieldValues> = SubjectType<
+  Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
+>;
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
@@ -239,7 +243,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
-    SubjectType<Partial<FormState<TFieldValues>>>
+    FormStateSubjectRef<TFieldValues>
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
@@ -299,6 +303,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
 
 export type UseFormStateProps<TFieldValues> = Partial<{
   control?: Control<TFieldValues>;
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
 }>;
 
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
