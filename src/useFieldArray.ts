@@ -30,6 +30,7 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
@@ -117,7 +118,7 @@ export const useFieldArray = <
       : `${name}.${index}`;
 
   const resetFields = <T>(index?: T) =>
-    (Array.isArray(index) ? index : [index]).forEach((currentIndex) =>
+    convertToArrayPayload(index).forEach((currentIndex) =>
       set(
         fieldsRef.current,
         `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
@@ -262,13 +263,17 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const appendValue = Array.isArray(value) ? value : [value];
+    const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(
       getCurrentFieldsValues(),
       appendValue,
     );
     const currentIndex = updatedFieldArrayValues.length - appendValue.length;
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFieldsAndNotify(
+      updatedFieldArrayValues as Partial<
+        FieldArray<TFieldValues, TFieldArrayName>
+      >[],
+    );
     batchStateUpdate(
       appendAt,
       {
@@ -290,12 +295,16 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const prependValue = Array.isArray(value) ? value : [value];
+    const prependValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
       prependValue,
     );
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFieldsAndNotify(
+      updatedFieldArrayValues as Partial<
+        FieldArray<TFieldValues, TFieldArrayName>
+      >[],
+    );
     batchStateUpdate(
       prependAt,
       {
@@ -332,13 +341,17 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const insertValue = Array.isArray(value) ? value : [value];
+    const insertValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = insertAt(
       getCurrentFieldsValues(),
       index,
       insertValue,
     );
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFieldsAndNotify(
+      updatedFieldArrayValues as Partial<
+        FieldArray<TFieldValues, TFieldArrayName>
+      >[],
+    );
     batchStateUpdate(
       insertAt,
       {
