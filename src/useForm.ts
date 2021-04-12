@@ -515,7 +515,7 @@ export function useForm<
         ? useFormDefaultValue
         : field._f.value;
 
-      if (!isUndefined(defaultValue)) {
+      if (!isNullOrUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
       }
     }
