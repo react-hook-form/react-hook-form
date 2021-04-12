@@ -600,7 +600,9 @@ export function useForm<
       const field = get(fieldsRef.current, name) as Field;
 
       if (field) {
-        const inputValue = inputType ? getFieldValue(field) : value;
+        let inputValue = inputType ? getFieldValue(field) : undefined;
+        inputValue = isUndefined(inputValue) ? value : inputValue;
+
         const isBlurEvent = type === EVENTS.BLUR;
         const {
           isOnBlur: isReValidateOnBlur,
@@ -876,14 +878,11 @@ export function useForm<
       const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
 
       if (
-        (isRadioOrCheckbox
-          ? Array.isArray(field._f.refs) &&
-            compact(field._f.refs).find(
-              (option) => ref.value === option.value && option === ref,
-            )
-          : ref === field._f.ref) ||
-        !field ||
-        (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref))
+        ref === field._f.ref ||
+        (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref)) ||
+        (isRadioOrCheckbox &&
+          Array.isArray(field._f.refs) &&
+          compact(field._f.refs).find((option) => option === ref))
       ) {
         return;
       }
