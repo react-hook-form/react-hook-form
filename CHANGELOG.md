@@ -1,10 +1,16 @@
 # Changelog
 
+## [7.0.5] - 2021-04-12
+
+### Changes
+
+- `register` will retrieve `onChange`'s target value when component'ref is not a valid input element.
+
 ## [7.0.0-rc.7] - 2021-03-28
 
 ### Changes
 
-- change type name from `RefCallbackHandler` to `UseFormRegisterReturn` for register callback's return 
+- change type name from `RefCallbackHandler` to `UseFormRegisterReturn` for register callback's return
 
 ## [7.0.0-rc.7] - 2021-03-23
 
@@ -28,9 +34,8 @@
 
 ### Changes
 
-- typescript array index restriction removed. 
+- typescript array index restriction removed.
 - `append`, `prepend` and `insert` will `register` inputs during each action at `useFieldArray`.
-
 
 ## [7.0.0-beta.11] - 2021-02-20
 
