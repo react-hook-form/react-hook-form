@@ -1,46 +1,20 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import replace from '@rollup/plugin-replace';
-import path from 'path';
 import external from 'rollup-plugin-peer-deps-external';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
-import ts from 'typescript';
-
-import pkg from '../../package.json';
-
-import { pascalcase } from './pascalcase';
-import { safePackageName } from './safePackageName';
 
 export function createRollupConfig(options, callback) {
-  const name = options.name || safePackageName(pkg.name);
-  const umdName = options.umdName || pascalcase(safePackageName(pkg.name));
-  const shouldMinify = options.minify || options.env === 'production';
-  const tsconfigPath = options.tsconfig || 'tsconfig.json';
-  const tsconfigJSON = ts.readConfigFile(tsconfigPath, ts.sys.readFile).config;
-  const tsCompilerOptions = ts.parseJsonConfigFileContent(
-    tsconfigJSON,
-    ts.sys,
-    './',
-  ).options;
-
-  const outputName = [
-    path.join(tsCompilerOptions.outDir, name),
-    options.formatName || options.format,
-    options.env,
-    shouldMinify ? 'min' : '',
-    'js',
-  ]
-    .filter(Boolean)
-    .join('.');
+  const name = options.name;
+  const outputName = 'dist/' + [name, options.format, 'js'].join('.');
 
   const config = {
     input: options.input,
     output: {
       file: outputName,
       format: options.format,
-      name: umdName,
+      name: 'ReactHookForm',
       sourcemap: true,
       globals: { react: 'React' },
       exports: 'named',
@@ -56,12 +30,8 @@ export function createRollupConfig(options, callback) {
         commonjs({
           include: /\/node_modules\//,
         }),
-      options.env !== undefined &&
-        replace({
-          'process.env.NODE_ENV': JSON.stringify(options.env),
-        }),
       sourcemaps(),
-      shouldMinify &&
+      options.format !== 'esm' &&
         terser({
           output: { comments: false },
           compress: {
