@@ -64,7 +64,8 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
             (fieldName) =>
               inputName &&
               fieldName &&
-              fieldName.startsWith(inputName as InternalFieldName),
+              (fieldName.startsWith(inputName as InternalFieldName) ||
+                inputName.startsWith(fieldName as InternalFieldName)),
           )) &&
         updateValue(
           isString(inputName) &&
