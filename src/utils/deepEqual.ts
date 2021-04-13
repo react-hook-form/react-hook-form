@@ -4,6 +4,14 @@ import isObject from '../utils/isObject';
 
 import isPrimitive from './isPrimitive';
 
+function getKeys(object: any): string[] {
+  return Array.isArray(object)
+    ? Object.keys(object)
+    : Object.entries(object).flatMap(([key, value]) =>
+        value === undefined ? [] : key,
+      );
+}
+
 export default function deepEqual(
   object1: any,
   object2: any,
@@ -19,8 +27,8 @@ export default function deepEqual(
   }
 
   if (!React.isValidElement(object1)) {
-    const keys1 = Object.keys(object1);
-    const keys2 = Object.keys(object2);
+    const keys1 = getKeys(object1);
+    const keys2 = getKeys(object2);
 
     if (keys1.length !== keys2.length) {
       return false;

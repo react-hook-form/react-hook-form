@@ -73,5 +73,15 @@ describe('deepEqual', () => {
         ],
       ),
     ).toBeTruthy();
+
+    expect(
+      deepEqual(
+        {},
+        {
+          foo: undefined,
+          bar: undefined,
+        },
+      ),
+    ).toBeTruthy();
   });
 });
