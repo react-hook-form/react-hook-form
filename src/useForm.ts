@@ -501,27 +501,24 @@ export function useForm<
   const updateValidAndValue = (
     name: InternalFieldName,
     options?: RegisterOptions,
+    ref?: Ref,
     isWithinRefCallback?: boolean,
   ) => {
-    let defaultValue;
     const field = get(fieldsRef.current, name) as Field;
-    const useFormDefaultValue = get(defaultValuesRef.current, name);
+    const defaultValue = isUndefined(field._f.value)
+      ? get(defaultValuesRef.current, name)
+      : field._f.value;
 
-    if (
-      field &&
-      (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field._f.value))
-    ) {
-      defaultValue = isUndefined(field._f.value)
-        ? useFormDefaultValue
-        : field._f.value;
-
-      if (!isNullOrUndefined(defaultValue)) {
+    if (field && !isUndefined(defaultValue)) {
+      if (ref && (ref as HTMLInputElement).defaultChecked) {
+        field._f.value = getFieldValue(field);
+      } else {
         setFieldValue(name, defaultValue);
       }
     }
 
     if (
-      (useFormDefaultValue || (!useFormDefaultValue && isWithinRefCallback)) &&
+      (!isUndefined(defaultValue) || isWithinRefCallback) &&
       options &&
       !validationMode.isOnSubmit &&
       field &&
@@ -906,7 +903,7 @@ export function useForm<
 
       set(fieldsRef.current, name, field);
 
-      const defaultValue = updateValidAndValue(name, options, true);
+      const defaultValue = updateValidAndValue(name, options, ref, true);
 
       if (
         isRadioOrCheckbox && Array.isArray(defaultValue)
