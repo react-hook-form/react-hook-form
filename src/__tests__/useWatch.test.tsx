@@ -15,7 +15,7 @@ import * as generateId from '../logic/generateId';
 import { Control, UseFieldArrayReturn, UseFormReturn } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
-import { FormProvider } from '../useFormContext';
+import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
 const mockGenerateId = () => {
@@ -917,6 +917,70 @@ describe('useWatch', () => {
       render(<Form />);
 
       await waitFor(async () => screen.getByText('no'));
+    });
+
+    it('should watch nested object field update', () => {
+      interface FormData {
+        one: {
+          two: {
+            dep: number;
+          };
+        };
+      }
+
+      const Component1 = () => {
+        const watchedDep = useWatch({ name: 'one.two.dep' });
+        return <p>{watchedDep}</p>;
+      };
+
+      const Component2 = () => {
+        const { register, setValue } = useFormContext<FormData>();
+        const field = register('one.two.dep');
+
+        return (
+          <>
+            <input {...field} />
+            <button
+              onClick={() => {
+                setValue('one.two', { dep: 333 });
+              }}
+            >
+              set deep
+            </button>
+          </>
+        );
+      };
+
+      const Component: React.FC = () => {
+        const form = useForm<FormData>({
+          defaultValues: {
+            one: {
+              two: {
+                dep: 111,
+              },
+            },
+          },
+        });
+
+        return (
+          <>
+            <FormProvider {...form}>
+              <Component1 />
+              <Component2 />
+            </FormProvider>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      screen.getByText('333');
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '333',
+      );
     });
   });
 
