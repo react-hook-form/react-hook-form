@@ -944,7 +944,9 @@ export function useForm<
             onChange: handleChange,
             onBlur: handleChange,
             ref: (ref: HTMLInputElement | null) =>
-              ref && registerFieldRef(name, ref, options),
+              ref
+                ? registerFieldRef(name, ref, options)
+                : options && options.shouldUnregister && unregister(name),
           };
     },
     [defaultValuesRef.current],
@@ -1145,6 +1147,7 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
+        unregister,
       }),
       [],
     ),

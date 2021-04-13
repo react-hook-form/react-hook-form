@@ -459,6 +459,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
+  unregister: UseFormUnregister<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues> = (

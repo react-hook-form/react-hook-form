@@ -35,6 +35,7 @@ export type UseControllerProps<
 > = {
   name: TName;
   rules?: Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
+  shouldUnregister?: boolean;
   defaultValue?: unknown;
   control?: Control<TFieldValues>;
 };

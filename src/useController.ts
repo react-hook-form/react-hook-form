@@ -23,6 +23,7 @@ export function useController<
   rules,
   defaultValue,
   control,
+  shouldUnregister,
 }: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
   TFieldValues,
   TName
@@ -32,6 +33,7 @@ export function useController<
     defaultValuesRef,
     register,
     fieldsRef,
+    unregister,
     fieldArrayNamesRef,
     controllerSubjectRef,
   } = control || methods.control;
@@ -61,7 +63,10 @@ export function useController<
       target: value,
     });
 
-    return () => controllerSubscription.unsubscribe();
+    return () => {
+      controllerSubscription.unsubscribe();
+      shouldUnregister && unregister(name);
+    };
   }, [name]);
 
   return {
