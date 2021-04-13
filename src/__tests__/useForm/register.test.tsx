@@ -319,6 +319,55 @@ describe('register', () => {
     screen.getByText('true');
   });
 
+  it('should not affect or check against defaultChecked inputs', async () => {
+    type FormValues = Partial<{
+      radio: string;
+      checkbox: string[];
+    }>;
+    let output: FormValues;
+
+    output = {};
+
+    function Component() {
+      const { register, handleSubmit } = useForm<FormValues>();
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            output = data;
+          })}
+        >
+          <input {...register('radio')} type="radio" value="Yes" />
+          <input
+            {...register('radio')}
+            type="radio"
+            value="No"
+            defaultChecked
+          />
+          <input {...register('checkbox')} type="checkbox" value="Yes" />
+          <input
+            {...register('checkbox')}
+            type="checkbox"
+            value="No"
+            defaultChecked
+          />
+          <button />
+        </form>
+      );
+    }
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(output).toEqual({
+      checkbox: ['No'],
+      radio: 'No',
+    });
+  });
+
   describe('register valueAs', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};
