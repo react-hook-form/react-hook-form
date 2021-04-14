@@ -88,6 +88,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
+  shouldUnregister = false,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
@@ -947,7 +948,8 @@ export function useForm<
             ref: (ref: HTMLInputElement | null) =>
               ref
                 ? registerFieldRef(name, ref, options)
-                : options && options.shouldUnregister && unregister(name),
+                : shouldUnregister ||
+                  (options && options.shouldUnregister && unregister(name)),
           };
     },
     [defaultValuesRef.current],
@@ -1153,6 +1155,7 @@ export function useForm<
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
         unregister,
+        shouldUnmountUnregister: shouldUnregister,
       }),
       [],
     ),
