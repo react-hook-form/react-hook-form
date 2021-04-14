@@ -61,7 +61,10 @@ export function useController<
       target: value,
     });
 
-    return () => controllerSubscription.unsubscribe();
+    return () => {
+      controllerSubscription.unsubscribe();
+      get(fieldsRef.current, name)._f.mount = false;
+    };
   }, [name]);
 
   return {

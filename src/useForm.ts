@@ -930,6 +930,7 @@ export function useForm<
                 ...get(fieldsRef.current, name)._f,
               }),
           name,
+          mount: true,
           ...options,
         },
       });
@@ -943,8 +944,13 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) =>
-              ref && registerFieldRef(name, ref, options),
+            ref: (ref: HTMLInputElement | null): void => {
+              if (ref) {
+                registerFieldRef(name, ref, options);
+              } else {
+                (get(fieldsRef.current, name) as Field)._f.mount = false;
+              }
+            },
           };
     },
     [defaultValuesRef.current],
