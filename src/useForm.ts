@@ -947,7 +947,7 @@ export function useForm<
             ref: (ref: HTMLInputElement | null): void => {
               if (ref) {
                 registerFieldRef(name, ref, options);
-              } else {
+              } else if (get(fieldsRef.current, name)) {
                 (get(fieldsRef.current, name) as Field)._f.mount = false;
               }
             },

@@ -261,6 +261,7 @@ describe('setValue', () => {
 
     expect(result.current.control.fieldsRef.current['test1']).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test1', value: ['1', '2', '3'] },
         name: 'test1',
         value: ['1', '2', '3'],
@@ -268,6 +269,7 @@ describe('setValue', () => {
     });
     expect(result.current.control.fieldsRef.current['test2']).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
         name: 'test2',
         value: { key1: '1', key2: 2 },
@@ -275,6 +277,7 @@ describe('setValue', () => {
     });
     expect(result.current.control.fieldsRef.current['test3']).toEqual({
       _f: {
+        mount: true,
         ref: {
           name: 'test3',
           value: [
@@ -310,6 +313,7 @@ describe('setValue', () => {
 
     expect(get(result.current.control.fieldsRef.current, 'test.0')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.0', value: '1' },
         name: 'test.0',
         value: '1',
@@ -317,6 +321,7 @@ describe('setValue', () => {
     });
     expect(get(result.current.control.fieldsRef.current, 'test.1')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.1', value: '2' },
         name: 'test.1',
         value: '2',
@@ -324,6 +329,7 @@ describe('setValue', () => {
     });
     expect(get(result.current.control.fieldsRef.current, 'test.2')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.2', value: '3' },
         name: 'test.2',
         value: '3',
@@ -356,6 +362,7 @@ describe('setValue', () => {
       get(result.current.control.fieldsRef.current, 'test.0.test'),
     ).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.0.test', value: '1' },
         name: 'test.0.test',
         value: '1',
@@ -365,6 +372,7 @@ describe('setValue', () => {
       get(result.current.control.fieldsRef.current, 'test.1.test'),
     ).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.1.test', value: '2' },
         name: 'test.1.test',
         value: '2',
@@ -374,6 +382,7 @@ describe('setValue', () => {
       get(result.current.control.fieldsRef.current, 'test.2.test'),
     ).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.2.test', value: '3' },
         name: 'test.2.test',
         value: '3',
@@ -406,12 +415,14 @@ describe('setValue', () => {
     expect(get(result.current.control.fieldsRef.current, 'test.bill')).toEqual({
       _f: {
         ref: { name: 'test.bill', value: '1' },
+        mount: true,
         name: 'test.bill',
         value: '1',
       },
     });
     expect(get(result.current.control.fieldsRef.current, 'test.luo')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.luo', value: '2' },
         name: 'test.luo',
         value: '2',
@@ -419,6 +430,7 @@ describe('setValue', () => {
     });
     expect(get(result.current.control.fieldsRef.current, 'test.test')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.test', value: '3' },
         name: 'test.test',
         value: '3',
@@ -434,7 +446,12 @@ describe('setValue', () => {
     });
 
     expect(result.current.control.fieldsRef.current['test']).toEqual({
-      _f: { name: 'test', ref: { name: 'test', value: '1' }, value: '1' },
+      _f: {
+        name: 'test',
+        mount: true,
+        ref: { name: 'test', value: '1' },
+        value: '1',
+      },
     });
   });
 
@@ -455,6 +472,7 @@ describe('setValue', () => {
     expect(result.current.control.fieldsRef.current['test']).toEqual({
       test: {
         _f: {
+          mount: true,
           name: 'test.test',
           ref: {
             name: 'test.test',
@@ -465,6 +483,7 @@ describe('setValue', () => {
       },
       test1: {
         _f: {
+          mount: true,
           name: 'test.test1',
           ref: {
             name: 'test.test1',
@@ -475,6 +494,7 @@ describe('setValue', () => {
       },
       test2: {
         _f: {
+          mount: true,
           name: 'test.test2',
           ref: {
             name: 'test.test2',

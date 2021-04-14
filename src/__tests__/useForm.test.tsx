@@ -784,12 +784,14 @@ describe('useForm', () => {
         const fields = {
           test: {
             sub: {
+              mount: true,
               name: 'test.sub',
               ref: { name: 'test.sub', value: 'test' },
               value: 'test',
             },
           },
           test1: {
+            mount: true,
             name: 'test1',
             ref: {
               name: 'test1',
@@ -872,6 +874,7 @@ describe('useForm', () => {
           criteriaMode: undefined,
           fields: {
             test: {
+              mount: true,
               name: 'test',
               ref: {
                 target: {
@@ -915,6 +918,7 @@ describe('useForm', () => {
         criteriaMode: undefined,
         fields: {
           test: {
+            mount: true,
             name: 'test',
             ref: { name: 'test', value: 'value' },
             value: 'value',
