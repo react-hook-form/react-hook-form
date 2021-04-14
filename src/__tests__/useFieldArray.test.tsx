@@ -10,7 +10,13 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../controller';
 import * as generateId from '../logic/generateId';
-import { Control, FieldValues, SubmitHandler, UseFormReturn } from '../types';
+import {
+  Control,
+  FieldValues,
+  SubmitHandler,
+  UseFormRegister,
+  UseFormReturn,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -1906,36 +1912,55 @@ describe('useFieldArray', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it.only('should unregister field array when shouldUnregister set to true', () => {
-    const Component = () => {
-      const { register, control, watch } = useForm<{
-        test: {
-          value: string;
-        }[];
-      }>({
-        defaultValues: {
-          test: [{ value: 'test' }, { value: 'test1' }],
-        },
-      });
-      const [show, setShow] = React.useState(true);
+  it('should unregister field array when shouldUnregister set to true', () => {
+    type FormValues = {
+      test: {
+        value: string;
+      }[];
+    };
+
+    let watchedValues: FormValues[] = [];
+
+    const Child = ({
+      control,
+      register,
+    }: {
+      show: boolean;
+      control: Control<FormValues>;
+      register: UseFormRegister<FormValues>;
+    }) => {
       const { fields } = useFieldArray({
         control,
         name: 'test',
         shouldUnregister: true,
       });
 
-      console.log(watch());
+      return (
+        <>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.value` as const)}
+              defaultValue={field.value}
+            />
+          ))}
+        </>
+      );
+    };
+
+    const Component = () => {
+      const { register, control, watch } = useForm<FormValues>({
+        defaultValues: {
+          test: [{ value: 'test' }, { value: 'test1' }],
+        },
+      });
+      const [show, setShow] = React.useState(true);
+
+      watchedValues.push(watch());
 
       return (
         <form>
-          {show &&
-            fields.map((field, i) => (
-              <input
-                key={field.id}
-                {...register(`test.${i}.value` as const)}
-                defaultValue={field.value}
-              />
-            ))}
+          {show && <Child register={register} control={control} show={show} />}
           <button type="button" onClick={() => setShow(!show)}>
             toggle
           </button>
@@ -1946,5 +1971,7 @@ describe('useFieldArray', () => {
     render(<Component />);
 
     fireEvent.click(screen.getByRole('button'));
+
+    expect(watchedValues).toMatchSnapshot();
   });
 });
