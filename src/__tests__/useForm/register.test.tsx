@@ -368,6 +368,35 @@ describe('register', () => {
     });
   });
 
+  it('should remove input value and reference with shouldUnregister: true', () => {
+    type FormValue = {
+      test: string;
+    };
+    const watchedValue: FormValue[] = [];
+    const Component = () => {
+      const { register, watch } = useForm<FormValue>({
+        defaultValues: {
+          test: 'bill',
+        },
+      });
+      const [show, setShow] = React.useState(true);
+      watchedValue.push(watch());
+
+      return (
+        <>
+          {show && <input {...register('test', { shouldUnregister: true })} />}
+          <button onClick={() => setShow(false)}>hide</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(watchedValue).toMatchSnapshot();
+  });
+
   describe('register valueAs', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};
