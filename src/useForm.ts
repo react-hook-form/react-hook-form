@@ -67,6 +67,7 @@ import {
   UseFormReset,
   UseFormReturn,
   UseFormSetError,
+  UseFormSetFocus,
   UseFormSetValue,
   UseFormTrigger,
   UseFormUnregister,
@@ -1055,7 +1056,8 @@ export function useForm<
     const updatedValues = values || defaultValuesRef.current;
 
     if (isWeb && !keepStateOptions.keepValues) {
-      for (const field of Object.values(fieldsRef.current)) {
+      for (const name of fieldsNamesRef.current) {
+        const field = get(fieldsRef.current, name);
         if (field && field._f) {
           const inputRef = Array.isArray(field._f.refs)
             ? field._f.refs[0]
@@ -1093,6 +1095,9 @@ export function useForm<
 
     resetFromState(keepStateOptions);
   };
+
+  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
+    get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
     isMountedRef.current = true;
@@ -1166,5 +1171,6 @@ export function useForm<
     clearErrors: React.useCallback(clearErrors, []),
     unregister: React.useCallback(unregister, []),
     setError: React.useCallback(setError, []),
+    setFocus: React.useCallback(setFocus, []),
   };
 }
