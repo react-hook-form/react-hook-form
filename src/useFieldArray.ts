@@ -39,6 +39,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
+  shouldUnregister,
 }: UseFieldArrayProps<
   TFieldValues,
   TFieldArrayName,
@@ -61,6 +62,7 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
+    unregister,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -437,6 +439,7 @@ export const useFieldArray = <
     return () => {
       fieldArrayDefaultValuesRef.current = getFieldsValues(fieldsRef);
       fieldArraySubscription.unsubscribe();
+      shouldUnregister && unregister(name);
     };
   }, []);
 
