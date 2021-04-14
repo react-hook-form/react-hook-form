@@ -1905,4 +1905,46 @@ describe('useFieldArray', () => {
 
     expect(result).toMatchSnapshot();
   });
+
+  it.only('should unregister field array when shouldUnregister set to true', () => {
+    const Component = () => {
+      const { register, control, watch } = useForm<{
+        test: {
+          value: string;
+        }[];
+      }>({
+        defaultValues: {
+          test: [{ value: 'test' }, { value: 'test1' }],
+        },
+      });
+      const [show, setShow] = React.useState(true);
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+        shouldUnregister: true,
+      });
+
+      console.log(watch());
+
+      return (
+        <form>
+          {show &&
+            fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as const)}
+                defaultValue={field.value}
+              />
+            ))}
+          <button type="button" onClick={() => setShow(!show)}>
+            toggle
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+  });
 });
