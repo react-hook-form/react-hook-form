@@ -247,59 +247,6 @@ describe('useForm', () => {
 
       expect(submittedData).toMatchSnapshot();
     });
-
-    it.only('should remove and unregister inputs when inputs gets unmounted expect register set shouldUnregister', async () => {
-      let submittedData: FormValues[] = [];
-      submittedData = [];
-
-      const Component = () => {
-        const [show, setShow] = React.useState(true);
-        const { register, handleSubmit, control } = useForm<FormValues>({
-          shouldUnregister: true,
-          defaultValues: {
-            test: 'bill',
-            test1: 'bill1',
-            test2: [{ value: 'bill2' }],
-          },
-        });
-
-        return (
-          <form onSubmit={handleSubmit((data) => submittedData.push(data))}>
-            {show && (
-              <>
-                <input {...register('test', { shouldUnregister: false })} />
-                <Controller
-                  control={control}
-                  render={({ field }) => <input {...field} />}
-                  name={'test1'}
-                />
-                <Child control={control} register={register} />
-              </>
-            )}
-            <button>Submit</button>
-            <button type={'button'} onClick={() => setShow(false)}>
-              Toggle
-            </button>
-          </form>
-        );
-      };
-
-      render(<Component />);
-
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
-
-      actComponent(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-      });
-
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
-
-      expect(submittedData).toMatchSnapshot();
-    });
   });
 
   describe('when errors changes', () => {

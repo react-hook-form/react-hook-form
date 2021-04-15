@@ -63,18 +63,3 @@ Array [
   Object {},
 ]
 `;
-
-exports[`useForm when shouldUnregister set to true should remove and unregister inputs when inputs gets unmounted expect register set shouldUnregister 1`] = `
-Array [
-  Object {
-    "test": "bill",
-    "test1": "bill1",
-    "test2": Array [
-      Object {
-        "value": "bill2",
-      },
-    ],
-  },
-  Object {},
-]
-`;
