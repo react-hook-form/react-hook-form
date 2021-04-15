@@ -307,10 +307,10 @@ export const useFieldArray = <
     shouldFocus = true,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
-    const updateFormValues = [
+    const updateFormValues = compact([
       ...getCurrentFieldsValues(),
       ...mapIds(appendValue, keyName),
-    ];
+    ]);
     setFieldAndValidState(updateFormValues);
 
     if (
