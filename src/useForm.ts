@@ -948,8 +948,8 @@ export function useForm<
             ref: (ref: HTMLInputElement | null) =>
               ref
                 ? registerFieldRef(name, ref, options)
-                : shouldUnregister ||
-                  (options && options.shouldUnregister && unregister(name)),
+                : (shouldUnregister || (options && options.shouldUnregister)) &&
+                  unregister(name),
           };
     },
     [defaultValuesRef.current],
