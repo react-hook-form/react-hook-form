@@ -531,8 +531,7 @@ export function useForm<
           ? set(validFieldsRef.current, name, true)
           : unset(validFieldsRef.current, name);
 
-        formStateRef.current.isValid &&
-          !isEmptyObject(error) &&
+        formStateRef.current.isValid !== getIsValid() &&
           setFormState({ ...formStateRef.current, isValid: getIsValid() });
       });
     }
@@ -935,7 +934,9 @@ export function useForm<
           ...options,
         },
       });
-      options && set(fieldsWithValidationRef.current, name, true);
+      options &&
+        Object.keys(options).every((option) => option.indexOf('lu')) &&
+        set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
 
@@ -1021,14 +1022,17 @@ export function useForm<
   );
 
   const resetFromState = React.useCallback(
-    ({
-      keepErrors,
-      keepDirty,
-      keepIsSubmitted,
-      keepTouched,
-      keepIsValid,
-      keepSubmitCount,
-    }: KeepStateOptions) => {
+    (
+      {
+        keepErrors,
+        keepDirty,
+        keepIsSubmitted,
+        keepTouched,
+        keepIsValid,
+        keepSubmitCount,
+      }: KeepStateOptions,
+      values?: DefaultValues<TFieldValues>,
+    ) => {
       if (!keepIsValid) {
         validFieldsRef.current = {};
         fieldsWithValidationRef.current = {};
@@ -1043,7 +1047,7 @@ export function useForm<
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
-          : !validationMode.isOnSubmit,
+          : !!updateIsValid(values),
         dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
         touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
         errors: keepErrors ? formStateRef.current.errors : {},
@@ -1095,7 +1099,7 @@ export function useForm<
       });
     }
 
-    resetFromState(keepStateOptions);
+    resetFromState(keepStateOptions, values);
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
