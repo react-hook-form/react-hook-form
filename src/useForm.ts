@@ -933,7 +933,9 @@ export function useForm<
           ...options,
         },
       });
-      options && set(fieldsWithValidationRef.current, name, true);
+      options &&
+        Object.keys(options).every((option) => option.indexOf('lu')) &&
+        set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
 
