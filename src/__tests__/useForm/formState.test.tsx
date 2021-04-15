@@ -4,11 +4,13 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useForm } from '../../useForm';
+import { Controller } from '../../controller';
 
 describe('formState', () => {
   it('should return isValid correctly with resolver', async () => {
@@ -142,5 +144,84 @@ describe('formState', () => {
     const { result } = renderHook(() => useForm());
 
     expect(result.current.formState).toHaveProperty('hasOwnProperty');
+  });
+
+  describe('when using with reset API', () => {
+    type FormValues = {
+      foo: string;
+      foo1: string;
+    };
+
+    it('should render isValid as true with reset at useEffect with valid data', async () => {
+      function Component() {
+        const {
+          register,
+          control,
+          formState: { isValid },
+          reset,
+        } = useForm<FormValues>({
+          mode: 'onBlur',
+          defaultValues: { foo: '', foo1: '' },
+        });
+
+        React.useEffect(() => {
+          reset({ foo: 'test', foo1: 'test2' });
+        }, [reset]);
+
+        return (
+          <div>
+            <h2>Form with controlled input</h2>
+            <Controller
+              name="foo"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+            <input {...register('foo1', { required: true })} />
+            {isValid ? 'valid' : 'nope'}
+          </div>
+        );
+      }
+
+      render(<Component />);
+
+      await waitFor(async () => screen.getByText('valid'));
+    });
+
+    it('should render isValid as false with reset at useEffect with valid data', async () => {
+      function Component() {
+        const {
+          register,
+          control,
+          formState: { isValid },
+          reset,
+        } = useForm<FormValues>({
+          mode: 'onBlur',
+          defaultValues: { foo: '', foo1: '' },
+        });
+
+        React.useEffect(() => {
+          reset({ foo: 'test', foo1: '' });
+        }, [reset]);
+
+        return (
+          <div>
+            <h2>Form with controlled input</h2>
+            <Controller
+              name="foo"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+            <input {...register('foo1', { required: true })} />
+            {isValid ? 'valid' : 'nope'}
+          </div>
+        );
+      }
+
+      render(<Component />);
+
+      await waitFor(async () => screen.getByText('nope'));
+    });
   });
 });
