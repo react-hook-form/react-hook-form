@@ -86,8 +86,8 @@ describe('reset', () => {
       methods = useForm<{ test: string }>();
       return (
         <>
-          <form id="formWithId" />
-          <input form={'formWithId'} {...methods.register('test')} />
+          <form id="exampleFormId" />
+          <input form="exampleFormId" {...methods.register('test')} />
         </>
       );
     };
