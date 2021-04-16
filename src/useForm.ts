@@ -954,9 +954,9 @@ export function useForm<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
-      if (e && e.preventDefault) {
-        e.preventDefault();
-        e.persist();
+      if (e) {
+        e.preventDefault && e.preventDefault();
+        e.persist && e.persist();
       }
       let fieldValues = {
         ...defaultValuesRef.current,
