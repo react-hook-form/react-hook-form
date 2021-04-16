@@ -1067,6 +1067,16 @@ export function useForm<
 
           if (isHTMLElement(inputRef)) {
             try {
+              const formId = inputRef.getAttribute('form');
+              if (formId) {
+                const formForField = document.getElementById(
+                  formId,
+                ) as HTMLFormElement | null;
+                if (formForField) {
+                  formForField.reset();
+                  break;
+                }
+              }
               inputRef.closest('form')!.reset();
               break;
             } catch {}
