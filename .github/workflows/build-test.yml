@@ -1,6 +1,6 @@
 name: Unit Test / Lint
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -8,34 +8,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Setup Node Environment
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 12.x
-
-      - name: Cache Node Modules
-        id: node-modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-      - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-
-      - name: Lint
-        run: |
-          npm run lint:types
-          npm run lint
-
-      - name: Test
-        run: npm test
-        env:
-          CI: true
-
-      - name: Build
-        run: npm run build
+      - name: Run install
+        run: npm install
+      - name: Run test
+        run: npm run lint && npm run test
