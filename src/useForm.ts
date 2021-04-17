@@ -75,6 +75,7 @@ import {
   WatchInternal,
   WatchObserver,
 } from './types';
+import hasValidation from './logic/hasValidation';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 
@@ -913,16 +914,6 @@ export function useForm<
       }
     }
   };
-
-  const hasValidation = <T extends RegisterOptions>(options?: T) =>
-    options &&
-    (options.required ||
-      options.min ||
-      options.max ||
-      options.maxLength ||
-      options.minLength ||
-      options.pattern ||
-      options.validate);
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options) => {
