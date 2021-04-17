@@ -46,7 +46,7 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
-  getIsDirty,
+  GetIsDirty,
   InternalFieldName,
   InternalNameSet,
   KeepStateOptions,
@@ -294,7 +294,7 @@ export function useForm<
     [],
   );
 
-  const getIsDirty: getIsDirty = React.useCallback((name, data) => {
+  const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
     if (readFormStateRef.current.isDirty) {
       const formValues = getFieldsValues(fieldsRef);
 
