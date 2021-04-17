@@ -1035,7 +1035,9 @@ export function useForm<
 
       formStateSubjectRef.current.next({
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
-        isDirty: keepDirty ? formStateRef.current.isDirty : getIsDirty(),
+        isDirty: keepDirty
+          ? formStateRef.current.isDirty
+          : !!(values && getIsDirty()),
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
