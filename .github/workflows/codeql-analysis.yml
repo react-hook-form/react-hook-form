@@ -1,18 +1,22 @@
-name: 'CodeQL'
+name: "CodeQL"
 
 on:
   push:
-    branches: [master]
+    branches: [ master, v6 ]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [master]
+    branches: [ master ]
   schedule:
-    - cron: '0 6 * * 5'
+    - cron: '40 0 * * 3'
 
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
 
     steps:
       - name: Checkout repository
@@ -20,6 +24,8 @@ jobs:
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v1
