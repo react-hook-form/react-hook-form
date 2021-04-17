@@ -533,7 +533,7 @@ export function useForm<
           : unset(validFieldsRef.current, name);
 
         formStateRef.current.isValid !== getIsValid() &&
-          setFormState({ ...formStateRef.current, isValid: getIsValid() });
+        updateFormState({ ...formStateRef.current, isValid: getIsValid() });
       });
     }
 
