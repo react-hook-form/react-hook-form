@@ -9,8 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import { useForm } from '../../useForm';
 import { Controller } from '../../controller';
+import { useForm } from '../../useForm';
 
 describe('formState', () => {
   it('should return isValid correctly with resolver', async () => {
