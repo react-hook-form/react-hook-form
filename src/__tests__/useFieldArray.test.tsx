@@ -1919,7 +1919,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    let watchedValues: FormValues[] = [];
+    const watchedValues: FormValues[] = [];
 
     const Child = ({
       control,
