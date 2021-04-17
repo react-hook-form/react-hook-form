@@ -6,6 +6,7 @@ import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
+import hasValidation from './logic/hasValidation';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -75,7 +76,6 @@ import {
   WatchInternal,
   WatchObserver,
 } from './types';
-import hasValidation from './logic/hasValidation';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 
