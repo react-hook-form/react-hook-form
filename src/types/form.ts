@@ -84,6 +84,7 @@ export type UseFormProps<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
+  shouldUnregister: boolean;
   criteriaMode: CriteriaMode;
 }>;
 
@@ -427,6 +428,7 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(
 ) => boolean;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
+  shouldUnmountUnregister: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   getIsDirty: GetIsDirty;
@@ -465,6 +467,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
+  unregister: UseFormUnregister<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues> = (
