@@ -1,6 +1,6 @@
 name: Unit Test / Lint
 
-on: [pull_request]
+on: [push]
 
 jobs:
   build:
@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+        - 
       - name: Setup Node Environment
         uses: actions/setup-node@v2-beta
         with:
