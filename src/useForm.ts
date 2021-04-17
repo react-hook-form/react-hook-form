@@ -46,7 +46,7 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
-  GetFormIsDirty,
+  GetIsDirty,
   InternalFieldName,
   InternalNameSet,
   KeepStateOptions,
@@ -295,16 +295,12 @@ export function useForm<
     [],
   );
 
-  const getFormIsDirty: GetFormIsDirty = React.useCallback((name, data) => {
-    if (readFormStateRef.current.isDirty) {
-      const formValues = getFieldsValues(fieldsRef);
+  const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
+    const formValues = getFieldsValues(fieldsRef);
 
-      name && data && set(formValues, name, data);
+    name && data && set(formValues, name, data);
 
-      return !deepEqual(formValues, defaultValuesRef.current);
-    }
-
-    return false;
+    return !deepEqual(formValues, defaultValuesRef.current);
   }, []);
 
   const updateAndGetDirtyState = React.useCallback(
@@ -330,7 +326,7 @@ export function useForm<
           ? set(formStateRef.current.dirtyFields, name, true)
           : unset(formStateRef.current.dirtyFields, name);
 
-        formStateRef.current.isDirty = getFormIsDirty();
+        formStateRef.current.isDirty = getIsDirty();
 
         const state = {
           isDirty: formStateRef.current.isDirty,
@@ -572,7 +568,7 @@ export function useForm<
 
         formStateSubjectRef.current.next({
           dirtyFields: formStateRef.current.dirtyFields,
-          isDirty: getFormIsDirty(name, value),
+          isDirty: getIsDirty(name, value),
         });
       }
 
@@ -855,7 +851,7 @@ export function useForm<
 
     formStateSubjectRef.current.next({
       ...formStateRef.current,
-      ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
+      ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
       ...(resolverRef.current ? {} : { isValid: getIsValid() }),
     });
 
@@ -958,9 +954,9 @@ export function useForm<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
-      if (e && e.preventDefault) {
-        e.preventDefault();
-        e.persist();
+      if (e) {
+        e.preventDefault && e.preventDefault();
+        e.persist && e.persist();
       }
       let fieldValues = {
         ...defaultValuesRef.current,
@@ -1043,7 +1039,9 @@ export function useForm<
 
       formStateSubjectRef.current.next({
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
-        isDirty: keepDirty ? formStateRef.current.isDirty : false,
+        isDirty: keepDirty
+          ? formStateRef.current.isDirty
+          : !!(values && getIsDirty()),
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
@@ -1144,7 +1142,7 @@ export function useForm<
         register,
         isWatchAllRef,
         watchFieldsRef,
-        getFormIsDirty,
+        getIsDirty,
         formStateSubjectRef,
         fieldArraySubjectRef,
         controllerSubjectRef,

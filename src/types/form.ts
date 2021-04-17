@@ -422,7 +422,7 @@ export type WatchInternal<TFieldValues> = (
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;
 
-export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
+export type GetIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
   data?: TData,
 ) => boolean;
@@ -431,7 +431,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmountUnregister: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
-  getFormIsDirty: GetFormIsDirty;
+  getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<

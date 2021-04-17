@@ -223,6 +223,8 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 
 ### Changes
 
+- **Breaking change:** No longger support IE 11 support
+
 - **Breaking change:** `register` has been changed from register at `ref` to a function which needs to be spread as props.
 
 ```diff

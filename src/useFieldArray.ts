@@ -50,7 +50,7 @@ export const useFieldArray = <
   const {
     isWatchAllRef,
     watchFieldsRef,
-    getFormIsDirty,
+    getIsDirty,
     watchSubjectRef,
     fieldArraySubjectRef,
     fieldArrayNamesRef,
@@ -226,7 +226,7 @@ export const useFieldArray = <
     }
 
     formStateSubjectRef.current.next({
-      isDirty: getFormIsDirty(name, omitKey(updatedFieldArrayValues)),
+      isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
     });
