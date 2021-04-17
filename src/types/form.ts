@@ -84,6 +84,7 @@ export type UseFormProps<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
+  shouldUnregister: boolean;
   criteriaMode: CriteriaMode;
 }>;
 
@@ -144,6 +145,12 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
+
+export type UseFormSetFocus<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>(
+  name: TFieldName,
+) => void;
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
@@ -415,7 +422,7 @@ export type WatchInternal<TFieldValues> = (
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;
 
-export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
+export type GetIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
   data?: TData,
 ) => boolean;
@@ -425,9 +432,10 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
 >;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
+  shouldUnmountUnregister: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
-  getFormIsDirty: GetFormIsDirty;
+  getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
@@ -463,6 +471,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
+  unregister: UseFormUnregister<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues> = (
@@ -487,6 +496,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   unregister: UseFormUnregister<TFieldValues>;
   control: Control<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
+  setFocus: UseFormSetFocus<TFieldValues>;
 };
 
 export type UseFormStateProps<TFieldValues> = Partial<{

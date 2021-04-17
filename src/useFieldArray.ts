@@ -40,6 +40,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
+  shouldUnregister,
 }: UseFieldArrayProps<
   TFieldValues,
   TFieldArrayName,
@@ -50,7 +51,7 @@ export const useFieldArray = <
   const {
     isWatchAllRef,
     watchFieldsRef,
-    getFormIsDirty,
+    getIsDirty,
     watchSubjectRef,
     fieldArraySubjectRef,
     fieldArrayNamesRef,
@@ -62,6 +63,8 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
+    unregister,
+    shouldUnmountUnregister,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -224,7 +227,7 @@ export const useFieldArray = <
     }
 
     formStateSubjectRef.current.next({
-      isDirty: getFormIsDirty(name, omitKey(updatedFieldArrayValues)),
+      isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
     });
@@ -450,6 +453,7 @@ export const useFieldArray = <
     return () => {
       fieldArrayDefaultValuesRef.current = getFieldsValues(fieldsRef);
       fieldArraySubscription.unsubscribe();
+      (shouldUnmountUnregister || shouldUnregister) && unregister(name);
     };
   }, []);
 

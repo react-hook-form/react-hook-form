@@ -10,7 +10,13 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../controller';
 import * as generateId from '../logic/generateId';
-import { Control, FieldValues, SubmitHandler, UseFormReturn } from '../types';
+import {
+  Control,
+  FieldValues,
+  SubmitHandler,
+  UseFormRegister,
+  UseFormReturn,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -1904,5 +1910,68 @@ describe('useFieldArray', () => {
     });
 
     expect(result).toMatchSnapshot();
+  });
+
+  it('should unregister field array when shouldUnregister set to true', () => {
+    type FormValues = {
+      test: {
+        value: string;
+      }[];
+    };
+
+    let watchedValues: FormValues[] = [];
+
+    const Child = ({
+      control,
+      register,
+    }: {
+      show: boolean;
+      control: Control<FormValues>;
+      register: UseFormRegister<FormValues>;
+    }) => {
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+        shouldUnregister: true,
+      });
+
+      return (
+        <>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.value` as const)}
+              defaultValue={field.value}
+            />
+          ))}
+        </>
+      );
+    };
+
+    const Component = () => {
+      const { register, control, watch } = useForm<FormValues>({
+        defaultValues: {
+          test: [{ value: 'test' }, { value: 'test1' }],
+        },
+      });
+      const [show, setShow] = React.useState(true);
+
+      watchedValues.push(watch());
+
+      return (
+        <form>
+          {show && <Child register={register} control={control} show={show} />}
+          <button type="button" onClick={() => setShow(!show)}>
+            toggle
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(watchedValues).toMatchSnapshot();
   });
 });
