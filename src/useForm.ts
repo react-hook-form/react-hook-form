@@ -517,7 +517,7 @@ export function useForm<
 
     if (
       (!isUndefined(defaultValue) || isWithinRefCallback) &&
-      options &&
+      hasValidation(options) &&
       !validationMode.isOnSubmit &&
       field &&
       readFormStateRef.current.isValid
@@ -914,6 +914,16 @@ export function useForm<
     }
   };
 
+  const hasValidation = <T extends RegisterOptions>(options?: T) =>
+    options &&
+    (options.required ||
+      options.min ||
+      options.max ||
+      options.maxLength ||
+      options.minLength ||
+      options.pattern ||
+      options.validate);
+
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options) => {
       const isInitialRegister = !get(fieldsRef.current, name);
@@ -930,14 +940,7 @@ export function useForm<
           ...options,
         },
       });
-      options &&
-        (options.required ||
-          options.min ||
-          options.max ||
-          options.maxLength ||
-          options.minLength ||
-          options.pattern ||
-          options.validate) &&
+      hasValidation(options) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
