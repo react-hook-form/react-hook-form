@@ -11,7 +11,7 @@ jobs:
       - name: Run install
         run: |
           npm install
-          npm run lint && npm run test
-          npm run lint:types
           npm run lint
+          npm run lint:types
+          npm run test
           npm run build
