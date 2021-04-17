@@ -748,7 +748,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
       });
 
@@ -788,7 +788,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
       });
 
@@ -828,7 +828,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
       });
 

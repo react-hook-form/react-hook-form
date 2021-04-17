@@ -14,7 +14,7 @@ export type UseFieldArrayProps<
   name: TFieldArrayName;
   keyName?: TKeyName;
   control?: Control<TFieldValues>;
-  shouldUnregister?: boolean,
+  shouldUnregister?: boolean;
 };
 
 export type FieldArrayWithId<

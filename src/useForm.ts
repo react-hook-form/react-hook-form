@@ -6,6 +6,7 @@ import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
+import hasValidation from './logic/hasValidation';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -521,7 +522,7 @@ export function useForm<
 
     if (
       (!isUndefined(defaultValue) || isWithinRefCallback) &&
-      options &&
+      hasValidation(options) &&
       !validationMode.isOnSubmit &&
       field &&
       readFormStateRef.current.isValid
@@ -606,14 +607,17 @@ export function useForm<
           isOnBlur: isReValidateOnBlur,
           isOnChange: isReValidateOnChange,
         } = getValidationModes(reValidateMode);
-        const shouldSkipValidation = skipValidation({
-          isBlurEvent,
-          isTouched: !!get(formStateRef.current.touchedFields, name),
-          isSubmitted: formStateRef.current.isSubmitted,
-          isReValidateOnBlur,
-          isReValidateOnChange,
-          ...validationMode,
-        });
+
+        const shouldSkipValidation =
+          (!hasValidation(field._f) && !resolverRef.current) ||
+          skipValidation({
+            isBlurEvent,
+            isTouched: !!get(formStateRef.current.touchedFields, name),
+            isSubmitted: formStateRef.current.isSubmitted,
+            isReValidateOnBlur,
+            isReValidateOnChange,
+            ...validationMode,
+          });
         const isWatched =
           !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
@@ -939,8 +943,7 @@ export function useForm<
           ...options,
         },
       });
-      options &&
-        Object.keys(options).every((option) => option.indexOf('lu')) &&
+      hasValidation(options) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
