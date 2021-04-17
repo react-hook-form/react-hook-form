@@ -602,14 +602,17 @@ export function useForm<
           isOnBlur: isReValidateOnBlur,
           isOnChange: isReValidateOnChange,
         } = getValidationModes(reValidateMode);
-        const shouldSkipValidation = skipValidation({
-          isBlurEvent,
-          isTouched: !!get(formStateRef.current.touchedFields, name),
-          isSubmitted: formStateRef.current.isSubmitted,
-          isReValidateOnBlur,
-          isReValidateOnChange,
-          ...validationMode,
-        });
+
+        const shouldSkipValidation =
+          (!hasValidation(field._f) && !resolverRef.current) ||
+          skipValidation({
+            isBlurEvent,
+            isTouched: !!get(formStateRef.current.touchedFields, name),
+            isSubmitted: formStateRef.current.isSubmitted,
+            isReValidateOnBlur,
+            isReValidateOnChange,
+            ...validationMode,
+          });
         const isWatched =
           !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
