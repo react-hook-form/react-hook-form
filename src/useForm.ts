@@ -295,15 +295,11 @@ export function useForm<
   );
 
   const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
-    if (readFormStateRef.current.isDirty) {
-      const formValues = getFieldsValues(fieldsRef);
+    const formValues = getFieldsValues(fieldsRef);
 
-      name && data && set(formValues, name, data);
+    name && data && set(formValues, name, data);
 
-      return !deepEqual(formValues, defaultValuesRef.current);
-    }
-
-    return false;
+    return !deepEqual(formValues, defaultValuesRef.current);
   }, []);
 
   const updateAndGetDirtyState = React.useCallback(
