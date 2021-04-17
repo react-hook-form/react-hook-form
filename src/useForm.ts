@@ -931,7 +931,13 @@ export function useForm<
         },
       });
       options &&
-        Object.keys(options).every((option) => option.indexOf('lu')) &&
+        (options.required ||
+          options.min ||
+          options.max ||
+          options.maxLength ||
+          options.minLength ||
+          options.pattern ||
+          options.validate) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
