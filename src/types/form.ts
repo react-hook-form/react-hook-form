@@ -85,6 +85,7 @@ export type UseFormProps<
   context: TContext;
   shouldFocusError: boolean;
   shouldUnregister: boolean;
+  shouldMergeDefaults: boolean;
   criteriaMode: CriteriaMode;
 }>;
 
@@ -428,7 +429,7 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(
 ) => boolean;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
-  shouldUnmountUnregister: boolean;
+  shouldUnmountUnregister?: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   getIsDirty: GetIsDirty;
