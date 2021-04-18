@@ -1,4 +1,4 @@
-describe('useWatchUseFieldArrayNested', () => {
+describe.only('useWatchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', () => {
     cy.visit('http://localhost:3000/useWatchUseFieldArrayNested');
 
@@ -64,8 +64,6 @@ describe('useWatchUseFieldArrayNested', () => {
     cy.get('#remove').click();
 
     cy.get('#result').contains('[{"firstName":"prepend","keyValue":[]}]');
-
-    cy.get('#count-nest-0').contains('2');
 
     cy.get('#count').contains('8');
   });
