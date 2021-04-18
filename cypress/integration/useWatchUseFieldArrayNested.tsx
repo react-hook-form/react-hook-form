@@ -65,8 +65,6 @@ describe('useWatchUseFieldArrayNested', () => {
 
     cy.get('#result').contains('[{"firstName":"prepend","keyValue":[]}]');
 
-    cy.get('#count-nest-0').contains('2');
-
     cy.get('#count').contains('8');
   });
 });
