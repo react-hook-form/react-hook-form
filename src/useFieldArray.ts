@@ -77,15 +77,6 @@ export const useFieldArray = <
     ),
   );
 
-  console.log(
-    'get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))',
-    get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name)),
-  );
-  console.log(
-    'get(fieldArrayDefaultValuesRef.current, name, [])',
-    get(fieldArrayDefaultValuesRef.current, name, []),
-  );
-
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
   fieldArrayNamesRef.current.add(name);
 
