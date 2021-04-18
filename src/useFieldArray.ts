@@ -77,6 +77,15 @@ export const useFieldArray = <
     ),
   );
 
+  console.log(
+    'get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))',
+    get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name)),
+  );
+  console.log(
+    'get(fieldArrayDefaultValuesRef.current, name, [])',
+    get(fieldArrayDefaultValuesRef.current, name, []),
+  );
+
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
   fieldArrayNamesRef.current.add(name);
 
@@ -438,7 +447,6 @@ export const useFieldArray = <
     !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
 
     return () => {
-      fieldArrayDefaultValuesRef.current = getFieldsValues(fieldsRef);
       fieldArraySubscription.unsubscribe();
       (shouldUnmountUnregister || shouldUnregister) && unregister(name);
     };
