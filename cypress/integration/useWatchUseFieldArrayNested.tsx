@@ -1,4 +1,4 @@
-describe.only('useWatchUseFieldArrayNested', () => {
+describe('useWatchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', () => {
     cy.visit('http://localhost:3000/useWatchUseFieldArrayNested');
 
