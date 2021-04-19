@@ -1,5 +1,27 @@
 # Changelog
 
+## [7.2.0] - 2021-04-19
+
+- `shouldUnregister` config to remove input value after unmount
+
+```tsx
+// Global config (can't be overwrite)
+useForm({
+  shouldUnregister: true // default to false
+})
+
+// Component/Hook level config (can not overwrites global cocnfig)
+register('test', {
+  shouldUnregister: true // default to false
+})
+
+<Controller  shouldUnregister={true} />
+
+useController({ shouldUnregister: true })
+
+useFieldArray({ shouldUnregister: true })
+```
+
 ## [7.0.6] - 2021-04-12
 
 ### Changes
