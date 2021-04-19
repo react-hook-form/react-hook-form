@@ -500,7 +500,7 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    expect(screen.getByRole('textbox')).not.toHaveValue();
+    expect(screen.getByRole('textbox')).toHaveValue('test');
   });
 
   it('should not assign default value when field is removed with useFieldArray', () => {
