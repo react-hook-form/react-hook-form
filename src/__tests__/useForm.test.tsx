@@ -211,11 +211,7 @@ describe('useForm', () => {
         });
 
         return (
-          <form
-            onSubmit={handleSubmit((data) => {
-              submittedData.push(data);
-            })}
-          >
+          <form onSubmit={handleSubmit((data) => submittedData.push(data))}>
             {show && (
               <>
                 <input {...register('test')} />
