@@ -40,19 +40,18 @@ export function useController<
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
-  const inputNode = get(fieldsRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    isUndefined(inputNode._f.value) ||
+    isUndefined(get(fieldsRef.current, name)._f.value) ||
       isNameInFieldArray(fieldArrayNamesRef.current, name)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
-      : inputNode._f.value,
+      : get(fieldsRef.current, name)._f.value,
   );
   const formState = useFormState({
     control: control || methods.control,
   });
-  inputNode._f.value = value;
+  get(fieldsRef.current, name)._f.value = value;
 
   React.useEffect(() => {
     const controllerSubscription = controllerSubjectRef.current.subscribe({
@@ -95,7 +94,7 @@ export function useController<
       },
       name,
       value,
-      ref: (ref) => (inputNode._f.ref = ref),
+      ref: (elm) => elm && ref(elm),
     },
     formState,
     fieldState: Object.defineProperties(
