@@ -462,16 +462,7 @@ Array [
 
 exports[`useFieldArray should unregister field array when shouldUnregister set to true 1`] = `
 Array [
-  Object {
-    "test": Array [
-      Object {
-        "value": "test",
-      },
-      Object {
-        "value": "test1",
-      },
-    ],
-  },
+  Object {},
   Object {
     "test": Array [
       Object {

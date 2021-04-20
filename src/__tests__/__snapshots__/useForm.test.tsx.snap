@@ -60,14 +60,6 @@ Array [
       },
     ],
   },
-  Object {
-    "test": "bill",
-    "test1": "bill1",
-    "test2": Array [
-      Object {
-        "value": "bill2",
-      },
-    ],
-  },
+  Object {},
 ]
 `;
