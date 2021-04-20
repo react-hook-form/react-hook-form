@@ -62,6 +62,7 @@ import {
   UseFormClearErrors,
   UseFormGetValues,
   UseFormHandleSubmit,
+  UseFormInternalUnregister,
   UseFormProps,
   UseFormRegister,
   UseFormRegisterReturn,
@@ -837,7 +838,11 @@ export function useForm<
           true,
         );
 
-  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
+  const unregisterInternal: UseFormInternalUnregister<TFieldValues> = (
+    name,
+    options = {},
+    notify,
+  ) => {
     for (const inputName of name
       ? Array.isArray(name)
         ? name
@@ -859,22 +864,25 @@ export function useForm<
           unset(formStateRef.current.touchedFields, inputName);
         !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
 
-        watchSubjectRef.current.next({
-          name: inputName,
-        });
+        notify &&
+          watchSubjectRef.current.next({
+            name: inputName,
+          });
       }
     }
 
-    formStateSubjectRef.current.next({
-      ...formStateRef.current,
-      ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
-      ...(resolverRef.current ? {} : { isValid: getIsValid() }),
-    });
-
-    if (!options.keepIsValid) {
-      updateIsValid();
+    if (notify) {
+      formStateSubjectRef.current.next({
+        ...formStateRef.current,
+        ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
+        ...(resolverRef.current ? {} : { isValid: getIsValid() }),
+      });
+      !options.keepIsValid && updateIsValid();
     }
   };
+
+  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) =>
+    unregisterInternal(name, options, true);
 
   const registerFieldRef = (
     name: InternalFieldName,
@@ -961,7 +969,7 @@ export function useForm<
               ref
                 ? registerFieldRef(name, ref, options)
                 : (shouldUnregister || (options && options.shouldUnregister)) &&
-                  unregister(name),
+                  unregisterInternal(name),
           };
     },
     [defaultValuesRef.current],
@@ -1174,7 +1182,7 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
-        unregister,
+        unregister: unregisterInternal,
         shouldUnmountUnregister: shouldUnregister,
       }),
       [],
