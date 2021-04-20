@@ -90,7 +90,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  shouldUnregister = false,
+  shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
@@ -376,7 +376,10 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(fieldsRef, defaultValuesRef),
+        getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        ),
         contextRef.current,
         {
           criteriaMode,
@@ -650,7 +653,10 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(fieldsRef, defaultValuesRef),
+            getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             contextRef.current,
             {
               criteriaMode,
@@ -706,7 +712,10 @@ export function useForm<
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => {
     const values = isMountedRef.current
-      ? getFieldsValues(fieldsRef, defaultValuesRef)
+      ? getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        )
       : defaultValuesRef.current;
 
     return isUndefined(fieldNames)
@@ -723,7 +732,10 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(fieldsRef, defaultValuesRef),
+            ...getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             ...values,
           },
           contextRef.current,
@@ -971,7 +983,10 @@ export function useForm<
       }
       let fieldValues = {
         ...defaultValuesRef.current,
-        ...getFieldsValues(fieldsRef, defaultValuesRef),
+        ...getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        ),
       };
 
       formStateSubjectRef.current.next({
