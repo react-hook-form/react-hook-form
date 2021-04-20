@@ -213,7 +213,6 @@ describe('useForm', () => {
         return (
           <form
             onSubmit={handleSubmit((data) => {
-              console.log(data);
               submittedData.push(data);
             })}
           >
