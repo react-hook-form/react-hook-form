@@ -1067,7 +1067,9 @@ export function useForm<
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
         isDirty: keepDirty
           ? formStateRef.current.isDirty
-          : keepDefaultValues ? deepEqual(values, defaultValuesRef.current) : false,
+          : keepDefaultValues
+          ? deepEqual(values, defaultValuesRef.current)
+          : false,
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
