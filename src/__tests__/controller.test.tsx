@@ -463,7 +463,9 @@ describe('Controller', () => {
 
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
-      const { control } = useForm();
+      const { control } = useForm<{
+        test: { value: string }[];
+      }>();
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,
@@ -474,8 +476,8 @@ describe('Controller', () => {
           {fields.map((field, i) => (
             <Controller
               key={field.id}
-              defaultValue=""
-              name={`test.${i}.value`}
+              defaultValue={field.value}
+              name={`test.${i}.value` as const}
               render={({ field }) => <input {...field} />}
               control={control}
             />
