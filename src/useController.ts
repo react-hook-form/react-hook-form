@@ -94,7 +94,7 @@ export function useController<
       },
       name,
       value,
-      ref,
+      ref: (elm) => elm && ref(elm),
     },
     formState,
     fieldState: Object.defineProperties(
