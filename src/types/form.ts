@@ -85,7 +85,6 @@ export type UseFormProps<
   context: TContext;
   shouldFocusError: boolean;
   shouldUnregister: boolean;
-  shouldMergeDefaults: boolean;
   criteriaMode: CriteriaMode;
 }>;
 

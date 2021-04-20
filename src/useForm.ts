@@ -89,7 +89,6 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  shouldMergeDefaults = true,
   shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
@@ -378,7 +377,7 @@ export function useForm<
       const { errors } = await resolverRef.current!(
         getFieldsValues(
           fieldsRef,
-          shouldMergeDefaults ? defaultValuesRef.current : {},
+          shouldUnregister ? {} : defaultValuesRef.current,
         ),
         contextRef.current,
         {
@@ -655,7 +654,7 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getFieldsValues(
               fieldsRef,
-              shouldMergeDefaults ? defaultValuesRef.current : {},
+              shouldUnregister ? {} : defaultValuesRef.current,
             ),
             contextRef.current,
             {
@@ -714,7 +713,7 @@ export function useForm<
     const values = isMountedRef.current
       ? getFieldsValues(
           fieldsRef,
-          shouldMergeDefaults ? defaultValuesRef.current : {},
+          shouldUnregister ? {} : defaultValuesRef.current,
         )
       : defaultValuesRef.current;
 
@@ -734,7 +733,7 @@ export function useForm<
           {
             ...getFieldsValues(
               fieldsRef,
-              shouldMergeDefaults ? defaultValuesRef.current : {},
+              shouldUnregister ? {} : defaultValuesRef.current,
             ),
             ...values,
           },
@@ -978,7 +977,7 @@ export function useForm<
         ...defaultValuesRef.current,
         ...getFieldsValues(
           fieldsRef,
-          shouldMergeDefaults ? defaultValuesRef.current : {},
+          shouldUnregister ? {} : defaultValuesRef.current,
         ),
       };
 
