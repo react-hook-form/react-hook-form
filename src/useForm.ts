@@ -1049,6 +1049,7 @@ export function useForm<
         keepDirty,
         keepIsSubmitted,
         keepTouched,
+        keepDefaultValues,
         keepIsValid,
         keepSubmitCount,
       }: KeepStateOptions,
@@ -1066,7 +1067,9 @@ export function useForm<
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
         isDirty: keepDirty
           ? formStateRef.current.isDirty
-          : !!(values && getIsDirty()),
+          : keepDefaultValues
+          ? deepEqual(values, defaultValuesRef.current)
+          : false,
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
