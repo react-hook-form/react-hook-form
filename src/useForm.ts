@@ -862,7 +862,9 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
+        (!shouldUnregister || notify) &&
+          !options.keepDefaultValue &&
+          unset(defaultValuesRef.current, inputName);
 
         notify &&
           watchSubjectRef.current.next({
@@ -982,11 +984,8 @@ export function useForm<
         e.persist && e.persist();
       }
       let fieldValues = {
-        ...defaultValuesRef.current,
-        ...getFieldsValues(
-          fieldsRef,
-          shouldUnregister ? {} : defaultValuesRef.current,
-        ),
+        ...(shouldUnregister ? {} : defaultValuesRef.current),
+        ...getFieldsValues(fieldsRef),
       };
 
       formStateSubjectRef.current.next({
