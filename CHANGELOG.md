@@ -1,6 +1,14 @@
 # Changelog
 
+## [7.2.2] - 2021-04-21
+
+### Changes
+
+- set `shouldUnregister` to `true` will not shallow merge `defaultValues`
+
 ## [7.2.0] - 2021-04-19
+
+### Changes
 
 - `shouldUnregister` config to remove input value after unmount
 
