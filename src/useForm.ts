@@ -608,7 +608,9 @@ export function useForm<
         } = getValidationModes(reValidateMode);
 
         const shouldSkipValidation =
-          (!hasValidation(field._f) && !resolverRef.current) ||
+          (!hasValidation(field._f) &&
+            !resolverRef.current &&
+            !get(formStateRef.current.errors, name)) ||
           skipValidation({
             isBlurEvent,
             isTouched: !!get(formStateRef.current.touchedFields, name),

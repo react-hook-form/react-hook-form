@@ -735,5 +735,56 @@ describe('register', () => {
       expect(screen.queryByText('test error')).toBeNull();
       expect(screen.queryByText('test1 error')).toBeNull();
     });
+
+    it('should still validate with an error existed', async () => {
+      function App() {
+        const {
+          register,
+          handleSubmit,
+          setError,
+          formState: { errors },
+        } = useForm<{ firstName: string }>();
+        const { name, ref, onBlur, onChange } = register('firstName');
+
+        return (
+          <form
+            onSubmit={handleSubmit(() => {
+              setError('firstName', {
+                type: 'manual',
+                message: 'Empty',
+              });
+            })}
+          >
+            <input
+              placeholder="First Name"
+              name={name}
+              ref={ref}
+              onBlur={onBlur}
+              onChange={onChange}
+            />
+            {errors.firstName && <div>{errors.firstName.message}</div>}
+            <input type="submit" />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(async () => {
+        screen.getByText('Empty');
+      });
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      expect(screen.queryByText('Empty')).toBeNull();
+    });
   });
 });
