@@ -139,8 +139,7 @@ export type UseFormRegisterReturn = {
   name: InternalFieldName;
 };
 
-export type UseFormRegister<TFieldValues extends FieldValues> =
-  <
+export type UseFormRegister<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >(
   name: TFieldName,
