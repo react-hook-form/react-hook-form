@@ -90,7 +90,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  shouldUnregister = false,
+  shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
@@ -376,7 +376,10 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(fieldsRef, defaultValuesRef),
+        getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        ),
         contextRef.current,
         {
           criteriaMode,
@@ -650,7 +653,10 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(fieldsRef, defaultValuesRef),
+            getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             contextRef.current,
             {
               criteriaMode,
@@ -706,7 +712,10 @@ export function useForm<
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => {
     const values = isMountedRef.current
-      ? getFieldsValues(fieldsRef, defaultValuesRef)
+      ? getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        )
       : defaultValuesRef.current;
 
     return isUndefined(fieldNames)
@@ -723,7 +732,10 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(fieldsRef, defaultValuesRef),
+            ...getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             ...values,
           },
           contextRef.current,
@@ -850,7 +862,9 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
+        (!shouldUnregister || notify) &&
+          !options.keepDefaultValue &&
+          unset(defaultValuesRef.current, inputName);
 
         notify &&
           watchSubjectRef.current.next({
@@ -970,8 +984,8 @@ export function useForm<
         e.persist && e.persist();
       }
       let fieldValues = {
-        ...defaultValuesRef.current,
-        ...getFieldsValues(fieldsRef, defaultValuesRef),
+        ...(shouldUnregister ? {} : defaultValuesRef.current),
+        ...getFieldsValues(fieldsRef),
       };
 
       formStateSubjectRef.current.next({
@@ -1035,6 +1049,7 @@ export function useForm<
         keepDirty,
         keepIsSubmitted,
         keepTouched,
+        keepDefaultValues,
         keepIsValid,
         keepSubmitCount,
       }: KeepStateOptions,
@@ -1052,7 +1067,9 @@ export function useForm<
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
         isDirty: keepDirty
           ? formStateRef.current.isDirty
-          : !!(values && getIsDirty()),
+          : keepDefaultValues
+          ? deepEqual(values, defaultValuesRef.current)
+          : false,
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
