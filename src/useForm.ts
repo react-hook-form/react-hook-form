@@ -610,7 +610,9 @@ export function useForm<
         } = getValidationModes(reValidateMode);
 
         const shouldSkipValidation =
-          (!hasValidation(field._f) && !resolverRef.current) ||
+          (!hasValidation(field._f) &&
+            !resolverRef.current &&
+            !get(formStateRef.current.errors, name)) ||
           skipValidation({
             isBlurEvent,
             isTouched: !!get(formStateRef.current.touchedFields, name),
@@ -893,52 +895,51 @@ export function useForm<
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
+    register(name as FieldPath<TFieldValues>);
     let field = get(fieldsRef.current, name) as Field;
 
-    if (field) {
-      const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
 
-      if (
-        ref === field._f.ref ||
-        (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref)) ||
-        (isRadioOrCheckbox &&
-          Array.isArray(field._f.refs) &&
-          compact(field._f.refs).find((option) => option === ref))
-      ) {
-        return;
-      }
+    if (
+      ref === field._f.ref ||
+      (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref)) ||
+      (isRadioOrCheckbox &&
+        Array.isArray(field._f.refs) &&
+        compact(field._f.refs).find((option) => option === ref))
+    ) {
+      return;
+    }
 
-      field = {
-        _f: isRadioOrCheckbox
-          ? {
-              ...field._f,
-              refs: [
-                ...compact(field._f.refs || []).filter(
-                  (ref) => isHTMLElement(ref) && document.contains(ref),
-                ),
-                ref,
-              ],
-              ref: { type: ref.type, name },
-            }
-          : {
-              ...field._f,
+    field = {
+      _f: isRadioOrCheckbox
+        ? {
+            ...field._f,
+            refs: [
+              ...compact(field._f.refs || []).filter(
+                (ref) => isHTMLElement(ref) && document.contains(ref),
+              ),
               ref,
-            },
-      };
+            ],
+            ref: { type: ref.type, name },
+          }
+        : {
+            ...field._f,
+            ref,
+          },
+    };
 
-      set(fieldsRef.current, name, field);
+    set(fieldsRef.current, name, field);
 
-      const defaultValue = updateValidAndValue(name, options, ref, true);
+    const defaultValue = updateValidAndValue(name, options, ref, true);
 
-      if (
-        isRadioOrCheckbox && Array.isArray(defaultValue)
-          ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
-          : isUndefined(get(fieldsRef.current, name)._f.value)
-      ) {
-        get(fieldsRef.current, name)._f.value = getFieldValue(
-          get(fieldsRef.current, name),
-        );
-      }
+    if (
+      isRadioOrCheckbox && Array.isArray(defaultValue)
+        ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
+        : isUndefined(get(fieldsRef.current, name)._f.value)
+    ) {
+      get(fieldsRef.current, name)._f.value = getFieldValue(
+        get(fieldsRef.current, name),
+      );
     }
   };
 
