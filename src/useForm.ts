@@ -969,11 +969,17 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) =>
-              ref
-                ? registerFieldRef(name, ref, options)
-                : (shouldUnregister || (options && options.shouldUnregister)) ?
-                  unregisterInternal(name) : ((get(fieldsRef.current, name) as Field)._f.mount = false),
+            ref: (ref: HTMLInputElement | null): void => {
+              if (ref) {
+                registerFieldRef(name, ref, options);
+              } else if (get(fieldsRef.current, name)) {
+                if (shouldUnregister || (options && options.shouldUnregister)) {
+                  unregisterInternal(name);
+                } else {
+                  (get(fieldsRef.current, name) as Field)._f.mount = false;
+                }
+              }
+            },
           };
     },
     [defaultValuesRef.current],
