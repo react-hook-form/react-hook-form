@@ -68,7 +68,7 @@ export function useController<
       controllerSubscription.unsubscribe();
       if (shouldUnmountUnregister || shouldUnregister) {
         unregister(name);
-      } else {
+      } else if (get(fieldsRef.current, name)) {
         get(fieldsRef.current, name)._f.mount = false;
       }
     };
