@@ -15,7 +15,7 @@ export type ValidationValueMessage<
   message: Message;
 };
 
-export type ValidateResult = Message | Message[] | boolean | undefined;
+export type ValidateResult = Message | boolean | undefined;
 
 export type Validate<TFieldValue> = (
   value: TFieldValue,
