@@ -6,6 +6,7 @@ import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
+import hasValidation from './logic/hasValidation';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -46,7 +47,7 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
-  GetFormIsDirty,
+  GetIsDirty,
   InternalFieldName,
   InternalNameSet,
   KeepStateOptions,
@@ -61,12 +62,14 @@ import {
   UseFormClearErrors,
   UseFormGetValues,
   UseFormHandleSubmit,
+  UseFormInternalUnregister,
   UseFormProps,
   UseFormRegister,
   UseFormRegisterReturn,
   UseFormReset,
   UseFormReturn,
   UseFormSetError,
+  UseFormSetFocus,
   UseFormSetValue,
   UseFormTrigger,
   UseFormUnregister,
@@ -87,6 +90,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
+  shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
@@ -293,16 +297,12 @@ export function useForm<
     [],
   );
 
-  const getFormIsDirty: GetFormIsDirty = React.useCallback((name, data) => {
-    if (readFormStateRef.current.isDirty) {
-      const formValues = getFieldsValues(fieldsRef);
+  const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
+    const formValues = getFieldsValues(fieldsRef);
 
-      name && data && set(formValues, name, data);
+    name && data && set(formValues, name, data);
 
-      return !deepEqual(formValues, defaultValuesRef.current);
-    }
-
-    return false;
+    return !deepEqual(formValues, defaultValuesRef.current);
   }, []);
 
   const updateAndGetDirtyState = React.useCallback(
@@ -328,7 +328,7 @@ export function useForm<
           ? set(formStateRef.current.dirtyFields, name, true)
           : unset(formStateRef.current.dirtyFields, name);
 
-        formStateRef.current.isDirty = getFormIsDirty();
+        formStateRef.current.isDirty = getIsDirty();
 
         const state = {
           isDirty: formStateRef.current.isDirty,
@@ -376,7 +376,10 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(fieldsRef, defaultValuesRef),
+        getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        ),
         contextRef.current,
         {
           criteriaMode,
@@ -519,7 +522,7 @@ export function useForm<
 
     if (
       (!isUndefined(defaultValue) || isWithinRefCallback) &&
-      options &&
+      hasValidation(options) &&
       !validationMode.isOnSubmit &&
       field &&
       readFormStateRef.current.isValid
@@ -529,8 +532,7 @@ export function useForm<
           ? set(validFieldsRef.current, name, true)
           : unset(validFieldsRef.current, name);
 
-        formStateRef.current.isValid &&
-          !isEmptyObject(error) &&
+        formStateRef.current.isValid !== getIsValid() &&
           setFormState({ ...formStateRef.current, isValid: getIsValid() });
       });
     }
@@ -571,7 +573,7 @@ export function useForm<
 
         formStateSubjectRef.current.next({
           dirtyFields: formStateRef.current.dirtyFields,
-          isDirty: getFormIsDirty(name, value),
+          isDirty: getIsDirty(name, value),
         });
       }
 
@@ -604,14 +606,19 @@ export function useForm<
           isOnBlur: isReValidateOnBlur,
           isOnChange: isReValidateOnChange,
         } = getValidationModes(reValidateMode);
-        const shouldSkipValidation = skipValidation({
-          isBlurEvent,
-          isTouched: !!get(formStateRef.current.touchedFields, name),
-          isSubmitted: formStateRef.current.isSubmitted,
-          isReValidateOnBlur,
-          isReValidateOnChange,
-          ...validationMode,
-        });
+
+        const shouldSkipValidation =
+          (!hasValidation(field._f) &&
+            !resolverRef.current &&
+            !get(formStateRef.current.errors, name)) ||
+          skipValidation({
+            isBlurEvent,
+            isTouched: !!get(formStateRef.current.touchedFields, name),
+            isSubmitted: formStateRef.current.isSubmitted,
+            isReValidateOnBlur,
+            isReValidateOnChange,
+            ...validationMode,
+          });
         const isWatched =
           !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
@@ -648,7 +655,10 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(fieldsRef, defaultValuesRef),
+            getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             contextRef.current,
             {
               criteriaMode,
@@ -704,7 +714,10 @@ export function useForm<
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => {
     const values = isMountedRef.current
-      ? getFieldsValues(fieldsRef, defaultValuesRef)
+      ? getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        )
       : defaultValuesRef.current;
 
     return isUndefined(fieldNames)
@@ -721,7 +734,10 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(fieldsRef, defaultValuesRef),
+            ...getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             ...values,
           },
           contextRef.current,
@@ -824,7 +840,11 @@ export function useForm<
           true,
         );
 
-  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
+  const unregisterInternal: UseFormInternalUnregister<TFieldValues> = (
+    name,
+    options = {},
+    notify,
+  ) => {
     for (const inputName of name
       ? Array.isArray(name)
         ? name
@@ -844,76 +864,80 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
+        (!shouldUnregister || notify) &&
+          !options.keepDefaultValue &&
+          unset(defaultValuesRef.current, inputName);
 
-        watchSubjectRef.current.next({
-          name: inputName,
-        });
+        notify &&
+          watchSubjectRef.current.next({
+            name: inputName,
+          });
       }
     }
 
-    formStateSubjectRef.current.next({
-      ...formStateRef.current,
-      ...(!options.keepDirty ? {} : { isDirty: getFormIsDirty() }),
-      ...(resolverRef.current ? {} : { isValid: getIsValid() }),
-    });
-
-    if (!options.keepIsValid) {
-      updateIsValid();
+    if (notify) {
+      formStateSubjectRef.current.next({
+        ...formStateRef.current,
+        ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
+        ...(resolverRef.current ? {} : { isValid: getIsValid() }),
+      });
+      !options.keepIsValid && updateIsValid();
     }
   };
+
+  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) =>
+    unregisterInternal(name, options, true);
 
   const registerFieldRef = (
     name: InternalFieldName,
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
+    register(name as FieldPath<TFieldValues>);
     let field = get(fieldsRef.current, name) as Field;
 
-    if (field) {
-      const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
 
-      if (
-        ref === field._f.ref ||
-        (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref)) ||
-        (isRadioOrCheckbox &&
-          Array.isArray(field._f.refs) &&
-          compact(field._f.refs).find((option) => option === ref))
-      ) {
-        return;
-      }
+    if (
+      ref === field._f.ref ||
+      (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref)) ||
+      (isRadioOrCheckbox &&
+        Array.isArray(field._f.refs) &&
+        compact(field._f.refs).find((option) => option === ref))
+    ) {
+      return;
+    }
 
-      field = {
-        _f: isRadioOrCheckbox
-          ? {
-              ...field._f,
-              refs: [
-                ...compact(field._f.refs || []).filter(
-                  (ref) => isHTMLElement(ref) && document.contains(ref),
-                ),
-                ref,
-              ],
-              ref: { type: ref.type, name },
-            }
-          : {
-              ...field._f,
+    field = {
+      _f: isRadioOrCheckbox
+        ? {
+            ...field._f,
+            refs: [
+              ...compact(field._f.refs || []).filter(
+                (ref) => isHTMLElement(ref) && document.contains(ref),
+              ),
               ref,
-            },
-      };
+            ],
+            ref: { type: ref.type, name },
+          }
+        : {
+            ...field._f,
+            ref,
+          },
+    };
 
-      set(fieldsRef.current, name, field);
+    set(fieldsRef.current, name, field);
 
-      const defaultValue = updateValidAndValue(name, options, ref, true);
+    const defaultValue = updateValidAndValue(name, options, ref, true);
 
-      if (
-        isRadioOrCheckbox && Array.isArray(defaultValue)
-          ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
-          : isUndefined(get(fieldsRef.current, name)._f.value)
-      ) {
-        get(fieldsRef.current, name)._f.value = getFieldValue(
-          get(fieldsRef.current, name),
-        );
-      }
+    if (
+      isRadioOrCheckbox && Array.isArray(defaultValue)
+        ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
+        : isUndefined(get(fieldsRef.current, name)._f.value)
+    ) {
+      get(fieldsRef.current, name)._f.value = getFieldValue(
+        get(fieldsRef.current, name),
+      );
     }
   };
 
@@ -934,7 +958,8 @@ export function useForm<
           ...options,
         },
       });
-      options && set(fieldsWithValidationRef.current, name, true);
+      hasValidation(options) &&
+        set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
 
@@ -944,13 +969,11 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null): void => {
-              if (ref) {
-                registerFieldRef(name, ref, options);
-              } else if (get(fieldsRef.current, name)) {
-                (get(fieldsRef.current, name) as Field)._f.mount = false;
-              }
-            },
+            ref: (ref: HTMLInputElement | null) =>
+              ref
+                ? registerFieldRef(name, ref, options)
+                : (shouldUnregister || (options && options.shouldUnregister)) ?
+                  unregisterInternal(name) : ((get(fieldsRef.current, name) as Field)._f.mount = false),
           };
     },
     [defaultValuesRef.current],
@@ -958,13 +981,13 @@ export function useForm<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
-      if (e && e.preventDefault) {
-        e.preventDefault();
-        e.persist();
+      if (e) {
+        e.preventDefault && e.preventDefault();
+        e.persist && e.persist();
       }
       let fieldValues = {
-        ...defaultValuesRef.current,
-        ...getFieldsValues(fieldsRef, defaultValuesRef),
+        ...(shouldUnregister ? {} : defaultValuesRef.current),
+        ...getFieldsValues(fieldsRef),
       };
 
       formStateSubjectRef.current.next({
@@ -1022,14 +1045,18 @@ export function useForm<
   );
 
   const resetFromState = React.useCallback(
-    ({
-      keepErrors,
-      keepDirty,
-      keepIsSubmitted,
-      keepTouched,
-      keepIsValid,
-      keepSubmitCount,
-    }: KeepStateOptions) => {
+    (
+      {
+        keepErrors,
+        keepDirty,
+        keepIsSubmitted,
+        keepTouched,
+        keepDefaultValues,
+        keepIsValid,
+        keepSubmitCount,
+      }: KeepStateOptions,
+      values?: DefaultValues<TFieldValues>,
+    ) => {
       if (!keepIsValid) {
         validFieldsRef.current = {};
         fieldsWithValidationRef.current = {};
@@ -1040,11 +1067,15 @@ export function useForm<
 
       formStateSubjectRef.current.next({
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
-        isDirty: keepDirty ? formStateRef.current.isDirty : false,
+        isDirty: keepDirty
+          ? formStateRef.current.isDirty
+          : keepDefaultValues
+          ? deepEqual(values, defaultValuesRef.current)
+          : false,
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
         isValid: keepIsValid
           ? formStateRef.current.isValid
-          : !validationMode.isOnSubmit,
+          : !!updateIsValid(values),
         dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
         touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
         errors: keepErrors ? formStateRef.current.errors : {},
@@ -1096,8 +1127,11 @@ export function useForm<
       });
     }
 
-    resetFromState(keepStateOptions);
+    resetFromState(keepStateOptions, values);
   };
+
+  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
+    get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
     isMountedRef.current = true;
@@ -1138,7 +1172,7 @@ export function useForm<
         register,
         isWatchAllRef,
         watchFieldsRef,
-        getFormIsDirty,
+        getIsDirty,
         formStateSubjectRef,
         fieldArraySubjectRef,
         controllerSubjectRef,
@@ -1152,6 +1186,8 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
+        unregister: unregisterInternal,
+        shouldUnmountUnregister: shouldUnregister,
       }),
       [],
     ),
@@ -1170,5 +1206,6 @@ export function useForm<
     clearErrors: React.useCallback(clearErrors, []),
     unregister: React.useCallback(unregister, []),
     setError: React.useCallback(setError, []),
+    setFocus: React.useCallback(setFocus, []),
   };
 }

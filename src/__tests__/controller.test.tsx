@@ -463,7 +463,9 @@ describe('Controller', () => {
 
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
-      const { control } = useForm();
+      const { control } = useForm<{
+        test: { value: string }[];
+      }>();
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,
@@ -474,8 +476,8 @@ describe('Controller', () => {
           {fields.map((field, i) => (
             <Controller
               key={field.id}
-              defaultValue=""
-              name={`test.${i}.value`}
+              defaultValue={field.value}
+              name={`test.${i}.value` as const}
               render={({ field }) => <input {...field} />}
               control={control}
             />
@@ -500,7 +502,7 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    expect(screen.getByRole('textbox')).not.toHaveValue();
+    expect(screen.getByRole('textbox')).toHaveValue('test');
   });
 
   it('should not assign default value when field is removed with useFieldArray', () => {
@@ -952,5 +954,41 @@ describe('Controller', () => {
 
     screen.getByText('{}');
     screen.getByText('false');
+  });
+
+  it('should remove input value and reference with Controller and set shouldUnregister: true', () => {
+    type FormValue = {
+      test: string;
+    };
+    const watchedValue: FormValue[] = [];
+    const Component = () => {
+      const { control, watch } = useForm<FormValue>({
+        defaultValues: {
+          test: 'bill',
+        },
+      });
+      const [show, setShow] = React.useState(true);
+      watchedValue.push(watch());
+
+      return (
+        <>
+          {show && (
+            <Controller
+              control={control}
+              name={'test'}
+              shouldUnregister
+              render={({ field }) => <input {...field} />}
+            />
+          )}
+          <button onClick={() => setShow(false)}>hide</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(watchedValue).toMatchSnapshot();
   });
 });

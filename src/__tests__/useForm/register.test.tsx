@@ -368,6 +368,35 @@ describe('register', () => {
     });
   });
 
+  it('should remove input value and reference with shouldUnregister: true', () => {
+    type FormValue = {
+      test: string;
+    };
+    const watchedValue: FormValue[] = [];
+    const Component = () => {
+      const { register, watch } = useForm<FormValue>({
+        defaultValues: {
+          test: 'bill',
+        },
+      });
+      const [show, setShow] = React.useState(true);
+      watchedValue.push(watch());
+
+      return (
+        <>
+          {show && <input {...register('test', { shouldUnregister: true })} />}
+          <button onClick={() => setShow(false)}>hide</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(watchedValue).toMatchSnapshot();
+  });
+
   describe('register valueAs', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};
@@ -705,6 +734,57 @@ describe('register', () => {
 
       expect(screen.queryByText('test error')).toBeNull();
       expect(screen.queryByText('test1 error')).toBeNull();
+    });
+
+    it('should still validate with an error existed', async () => {
+      function App() {
+        const {
+          register,
+          handleSubmit,
+          setError,
+          formState: { errors },
+        } = useForm<{ firstName: string }>();
+        const { name, ref, onBlur, onChange } = register('firstName');
+
+        return (
+          <form
+            onSubmit={handleSubmit(() => {
+              setError('firstName', {
+                type: 'manual',
+                message: 'Empty',
+              });
+            })}
+          >
+            <input
+              placeholder="First Name"
+              name={name}
+              ref={ref}
+              onBlur={onBlur}
+              onChange={onChange}
+            />
+            {errors.firstName && <div>{errors.firstName.message}</div>}
+            <input type="submit" />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(async () => {
+        screen.getByText('Empty');
+      });
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      expect(screen.queryByText('Empty')).toBeNull();
     });
   });
 });

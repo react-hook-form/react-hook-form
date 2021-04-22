@@ -15,7 +15,7 @@ export type ValidationValueMessage<
   message: Message;
 };
 
-export type ValidateResult = Message | Message[] | boolean | undefined;
+export type ValidateResult = Message | boolean | undefined;
 
 export type Validate<TFieldValue> = (
   value: TFieldValue,
@@ -37,4 +37,5 @@ export type RegisterOptions<
   valueAsNumber: boolean;
   valueAsDate: boolean;
   setValueAs: (value: any) => any;
+  shouldUnregister?: boolean;
 }>;

@@ -1,5 +1,35 @@
 # Changelog
 
+## [7.2.2] - 2021-04-21
+
+### Changes
+
+- set `shouldUnregister` to `true` will not shallow merge `defaultValues`
+
+## [7.2.0] - 2021-04-19
+
+### Changes
+
+- `shouldUnregister` config to remove input value after unmount
+
+```tsx
+// Global config (can't be overwrite)
+useForm({
+  shouldUnregister: true // default to false
+})
+
+// Component/Hook level config (can not overwrites global cocnfig)
+register('test', {
+  shouldUnregister: true // default to false
+})
+
+<Controller  shouldUnregister={true} />
+
+useController({ shouldUnregister: true })
+
+useFieldArray({ shouldUnregister: true })
+```
+
 ## [7.0.6] - 2021-04-12
 
 ### Changes
@@ -222,6 +252,8 @@ prepend(object, config: { shouldDirty: boolean, focusIndex: number, focusName: s
 ```
 
 ### Changes
+
+- **Breaking change:** No longer support IE 11 support
 
 - **Breaking change:** `register` has been changed from register at `ref` to a function which needs to be spread as props.
 

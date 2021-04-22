@@ -23,6 +23,7 @@ export function useController<
   rules,
   defaultValue,
   control,
+  shouldUnregister,
 }: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
   TFieldValues,
   TName
@@ -32,8 +33,10 @@ export function useController<
     defaultValuesRef,
     register,
     fieldsRef,
+    unregister,
     fieldArrayNamesRef,
     controllerSubjectRef,
+    shouldUnmountUnregister,
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
@@ -63,8 +66,11 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      get(fieldsRef.current, name) &&
-        (get(fieldsRef.current, name)._f.mount = false);
+      if (shouldUnmountUnregister || shouldUnregister) {
+        unregister(name);
+      } else {
+        get(fieldsRef.current, name)._f.mount = false;
+      }
     };
   }, [name]);
 
@@ -92,7 +98,7 @@ export function useController<
       },
       name,
       value,
-      ref,
+      ref: (elm) => elm && ref(elm),
     },
     formState,
     fieldState: Object.defineProperties(

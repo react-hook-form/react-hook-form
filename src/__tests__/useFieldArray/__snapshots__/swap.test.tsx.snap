@@ -460,6 +460,22 @@ Array [
 ]
 `;
 
+exports[`useFieldArray should unregister field array when shouldUnregister set to true 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+]
+`;
+
 exports[`useFieldArray should update field array defaultValues when invoke setValue 1`] = `
 Array [
   Object {

@@ -1,0 +1,17 @@
+name: Unit Test / Lint
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run install
+        run: |
+          npm install
+          npm run lint
+          npm run lint:types
+          npm run test
+          npm run build
