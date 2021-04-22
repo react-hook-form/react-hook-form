@@ -429,8 +429,6 @@ export const useFieldArray = <
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next({ name: inputFieldArrayName, fields, isReset }) {
         if (isReset) {
-          unset(fieldsRef.current, inputFieldArrayName || name);
-
           inputFieldArrayName
             ? set(
                 fieldArrayDefaultValuesRef.current,
