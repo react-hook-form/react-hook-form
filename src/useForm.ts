@@ -451,11 +451,11 @@ export function useForm<
           ),
         );
       } else {
-        isUndefined(name)
+        isValid = !!(isUndefined(name)
           ? await validateForm(fieldsRef.current)
           : await Promise.all(
               fields.map(async (data) => await executeValidation(data, null)),
-            );
+            ));
       }
 
       formStateSubjectRef.current.next({
@@ -463,6 +463,8 @@ export function useForm<
         isValidating: false,
         isValid: resolverRef.current ? isValid : getIsValid(),
       });
+
+      return isValid;
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
