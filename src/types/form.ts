@@ -445,7 +445,7 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
 >;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
-  shouldUnmountUnregister: boolean;
+  shouldUnmountUnregister?: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   getIsDirty: GetIsDirty;
