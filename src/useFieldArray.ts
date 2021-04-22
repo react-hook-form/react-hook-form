@@ -307,10 +307,10 @@ export const useFieldArray = <
     shouldFocus = true,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
-    const updateFormValues = compact([
+    const updateFormValues = [
       ...getCurrentFieldsValues(),
       ...mapIds(appendValue, keyName),
-    ]);
+    ];
     setFieldAndValidState(updateFormValues);
 
     if (
@@ -520,6 +520,6 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields,
+    fields: compact(fields),
   };
 };
