@@ -60,7 +60,7 @@ export const useFieldArray = <
     formStateSubjectRef,
     readFormStateRef,
     validFieldsRef,
-    fieldsWithValidationRef,
+    _fieldsHasRules,
     fieldArrayDefaultValuesRef,
     unregister,
     shouldUnmountUnregister,
@@ -222,11 +222,11 @@ export const useFieldArray = <
       cleanup(validFieldsRef.current);
 
       set(
-        fieldsWithValidationRef.current,
+        _fieldsHasRules.current,
         name,
-        method(get(fieldsWithValidationRef.current, name, []), args.argA),
+        method(get(_fieldsHasRules.current, name, []), args.argA),
       );
-      cleanup(fieldsWithValidationRef.current);
+      cleanup(_fieldsHasRules.current);
     }
 
     formStateSubjectRef.current.next({

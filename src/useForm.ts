@@ -121,7 +121,7 @@ export function useForm<
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
-  const fieldsWithValidationRef = React.useRef<
+  const _fieldsHasRules = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
   const validFieldsRef = React.useRef<FieldNamesMarkedBoolean<TFieldValues>>(
@@ -163,7 +163,7 @@ export function useForm<
 
   const getIsValid = () =>
     (formStateRef.current.isValid =
-      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
+      deepEqual(validFieldsRef.current, _fieldsHasRules.current) &&
       isEmptyObject(formStateRef.current.errors));
 
   const shouldRenderBaseOnError = React.useCallback(
@@ -186,7 +186,7 @@ export function useForm<
         !deepEqual(previousError, error, true) ||
         (readFormStateRef.current.isValid &&
           isUndefined(error) &&
-          get(fieldsWithValidationRef.current, name) &&
+          get(_fieldsHasRules.current, name) &&
           !get(validFieldsRef.current, name));
 
       if (error) {
@@ -197,7 +197,7 @@ export function useForm<
           !deepEqual(previousError, error, true);
         set(formStateRef.current.errors, name, error);
       } else {
-        if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
+        if (get(_fieldsHasRules.current, name) || resolverRef.current) {
           set(validFieldsRef.current, name, true);
           shouldReRender = shouldReRender || previousError;
         }
@@ -417,7 +417,7 @@ export function useForm<
           if (fieldError[_f.name]) {
             set(formStateRef.current.errors, _f.name, fieldError[_f.name]);
             unset(validFieldsRef.current, _f.name);
-          } else if (get(fieldsWithValidationRef.current, _f.name)) {
+          } else if (get(_fieldsHasRules.current, _f.name)) {
             set(validFieldsRef.current, _f.name, true);
             unset(formStateRef.current.errors, _f.name);
           }
@@ -855,7 +855,7 @@ export function useForm<
 
       if (get(fieldsRef.current, inputName) as Field) {
         if (!options.keepIsValid) {
-          unset(fieldsWithValidationRef.current, inputName);
+          unset(_fieldsHasRules.current, inputName);
           unset(validFieldsRef.current, inputName);
         }
         !options.keepError && unset(formStateRef.current.errors, inputName);
@@ -958,7 +958,7 @@ export function useForm<
         },
       });
       hasValidation(options) &&
-        set(fieldsWithValidationRef.current, name, true);
+        set(_fieldsHasRules.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
 
@@ -1058,7 +1058,7 @@ export function useForm<
     ) => {
       if (!keepIsValid) {
         validFieldsRef.current = {};
-        fieldsWithValidationRef.current = {};
+        _fieldsHasRules.current = {};
       }
 
       watchFieldsRef.current = new Set();
@@ -1179,7 +1179,7 @@ export function useForm<
         watchInternal,
         fieldsRef,
         validFieldsRef,
-        fieldsWithValidationRef,
+        _fieldsHasRules,
         fieldArrayNamesRef,
         readFormStateRef,
         formStateRef,

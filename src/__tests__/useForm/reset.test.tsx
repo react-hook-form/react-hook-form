@@ -279,7 +279,7 @@ describe('reset', () => {
     result.current.control.validFieldsRef.current = {
       test: true,
     };
-    result.current.control.fieldsWithValidationRef.current = {
+    result.current.control._fieldsHasRules.current = {
       test: true,
     };
 
@@ -313,7 +313,7 @@ describe('reset', () => {
     expect(result.current.control.validFieldsRef.current).toEqual({
       test: true,
     });
-    expect(result.current.control.fieldsWithValidationRef.current).toEqual({
+    expect(result.current.control._fieldsHasRules.current).toEqual({
       test: true,
     });
     expect(result.current.formState.isDirty).toBeTruthy();

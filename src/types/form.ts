@@ -471,7 +471,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     }>
   >;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
-  fieldsWithValidationRef: React.MutableRefObject<
+  _fieldsHasRules: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
   >;
   fieldsRef: React.MutableRefObject<FieldRefs>;
