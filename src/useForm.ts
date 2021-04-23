@@ -454,7 +454,11 @@ export function useForm<
         isValid = !!(isUndefined(name)
           ? await validateForm(fieldsRef.current)
           : await Promise.all(
-              fields.map(async (data) => await executeValidation(data, null)),
+              fields
+                .filter((fieldName) => get(fieldsRef.current, fieldName))
+                .map(
+                  async (fieldName) => await executeValidation(fieldName, null),
+                ),
             ));
       }
 
@@ -517,8 +521,15 @@ export function useForm<
     if (field && !isUndefined(defaultValue)) {
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
-      } else {
+      } else if (
+        !fieldArrayNamesRef.current.size ||
+        ![...fieldArrayNamesRef.current].find((fieldArrayName) =>
+          name.startsWith(fieldArrayName),
+        )
+      ) {
         setFieldValue(name, defaultValue);
+      } else {
+        field._f.value = defaultValue;
       }
     }
 
