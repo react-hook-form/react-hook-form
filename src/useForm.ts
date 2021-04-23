@@ -545,7 +545,6 @@ export function useForm<
     value,
     options = {},
   ) => {
-    isMountedRef.current = true;
     const field = get(fieldsRef.current, name);
     const isFieldArray = fieldArrayNamesRef.current.has(name);
 
@@ -1127,13 +1126,13 @@ export function useForm<
     }
 
     resetFromState(keepStateOptions, values);
+    isMountedRef.current = false;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
-    isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState: Partial<FormState<TFieldValues>> = {}) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
@@ -1164,6 +1163,10 @@ export function useForm<
       useFieldArraySubscription.unsubscribe();
     };
   }, []);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+  });
 
   return {
     control: React.useMemo(
