@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import getControllerValue from './logic/getControllerValue';
-import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
@@ -34,15 +33,13 @@ export function useController<
     register,
     fieldsRef,
     unregister,
-    fieldArrayNamesRef,
     controllerSubjectRef,
     shouldUnmountUnregister,
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
   const [value, setInputStateValue] = React.useState(
-    isUndefined(get(fieldsRef.current, name)._f.value) ||
-      isNameInFieldArray(fieldArrayNamesRef.current, name)
+    isUndefined(get(fieldsRef.current, name)._f.value)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
