@@ -517,7 +517,11 @@ export function useForm<
     if (field && !isUndefined(defaultValue)) {
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
-      } else if (!isWithinRefCallback) {
+      } else if (
+        [...fieldArrayNamesRef.current].some((fieldArrayName) =>
+          fieldArrayName.startsWith(name),
+        )
+      ) {
         setFieldValue(name, defaultValue);
       }
     }
