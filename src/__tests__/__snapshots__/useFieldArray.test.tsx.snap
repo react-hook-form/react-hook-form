@@ -181,14 +181,14 @@ Array [
   Object {
     "test": Array [
       Object {
-        "value": "",
+        "value": "data",
       },
     ],
   },
   Object {
     "test": Array [
       Object {
-        "value": "",
+        "value": "data",
       },
       Object {
         "value": "test",
@@ -201,7 +201,7 @@ Array [
   Object {
     "test": Array [
       Object {
-        "value": "",
+        "value": "data",
       },
       Object {
         "value": "test",

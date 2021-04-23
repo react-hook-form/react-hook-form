@@ -528,6 +528,8 @@ export function useForm<
         )
       ) {
         setFieldValue(name, defaultValue);
+      } else {
+        field._f.value = defaultValue;
       }
     }
 
