@@ -517,7 +517,7 @@ export function useForm<
     if (field && !isUndefined(defaultValue)) {
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
-      } else {
+      } else if (!isWithinRefCallback) {
         setFieldValue(name, defaultValue);
       }
     }
