@@ -454,7 +454,11 @@ export function useForm<
         isValid = !!(isUndefined(name)
           ? await validateForm(fieldsRef.current)
           : await Promise.all(
-              fields.map(async (data) => await executeValidation(data, null)),
+              fields
+                .filter((fieldName) => get(fieldsRef.current, fieldName))
+                .map(
+                  async (fieldName) => await executeValidation(fieldName, null),
+                ),
             ));
       }
 
