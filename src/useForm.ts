@@ -518,8 +518,9 @@ export function useForm<
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
       } else if (
-        [...fieldArrayNamesRef.current].some((fieldArrayName) =>
-          fieldArrayName.startsWith(name),
+        !fieldArrayNamesRef.current.size ||
+        ![...fieldArrayNamesRef.current].find((fieldArrayName) =>
+          name.startsWith(fieldArrayName),
         )
       ) {
         setFieldValue(name, defaultValue);
