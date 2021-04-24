@@ -33,10 +33,12 @@ export default async (
       name,
       value: inputValue,
       valueAsNumber,
+      mount,
     },
   }: Field,
   validateAllFieldCriteria: boolean,
 ): Promise<InternalFieldErrors> => {
+  if (!mount) return {};
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);

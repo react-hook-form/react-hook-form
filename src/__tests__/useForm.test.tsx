@@ -158,6 +158,56 @@ describe('useForm', () => {
       expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
+
+    it('should only validate input which are mounted even with shouldUnregister: false', async () => {
+      const Component = () => {
+        const [show, setShow] = React.useState(true);
+        const {
+          handleSubmit,
+          register,
+          formState: { errors },
+        } = useForm<{
+          firstName: string;
+          lastName: string;
+        }>();
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {show && <input {...register('firstName', { required: true })} />}
+            {errors.firstName && <p>First name is required.</p>}
+
+            <input {...register('lastName', { required: true })} />
+            {errors.lastName && <p>Last name is required.</p>}
+
+            <button type={'button'} onClick={() => setShow(!show)}>
+              toggle
+            </button>
+            <button type={'submit'}>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('First name is required.');
+      screen.getByText('Last name is required.');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Last name is required.');
+
+      expect(screen.queryByText('First name is required.')).toBeNull();
+    });
   });
 
   describe('when shouldUnregister set to true', () => {
