@@ -453,13 +453,16 @@ export function useForm<
       } else {
         isValid = !!(isUndefined(name)
           ? await validateForm(fieldsRef.current)
-          : await Promise.all(
-              fields
-                .filter((fieldName) => get(fieldsRef.current, fieldName))
-                .map(
-                  async (fieldName) => await executeValidation(fieldName, null),
-                ),
-            ));
+          : (
+              await Promise.all(
+                fields
+                  .filter((fieldName) => get(fieldsRef.current, fieldName))
+                  .map(
+                    async (fieldName) =>
+                      await executeValidation(fieldName, null),
+                  ),
+              )
+            ).every(Boolean));
       }
 
       formStateSubjectRef.current.next({
