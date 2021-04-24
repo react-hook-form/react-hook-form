@@ -454,11 +454,18 @@ export function useForm<
           ),
         );
       } else {
-        isUndefined(name)
+        isValid = !!(isUndefined(name)
           ? await validateForm(fieldsRef.current)
-          : await Promise.all(
-              fields.map(async (data) => await executeValidation(data, null)),
-            );
+          : (
+              await Promise.all(
+                fields
+                  .filter((fieldName) => get(fieldsRef.current, fieldName))
+                  .map(
+                    async (fieldName) =>
+                      await executeValidation(fieldName, null),
+                  ),
+              )
+            ).every(Boolean));
       }
 
       formStateSubjectRef.current.next({
@@ -467,6 +474,8 @@ export function useForm<
         isValidating: false,
         isValid: resolverRef.current ? isValid : getIsValid(),
       });
+
+      return isValid;
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
@@ -519,8 +528,15 @@ export function useForm<
     if (field && !isUndefined(defaultValue)) {
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
-      } else {
+      } else if (
+        !fieldArrayNamesRef.current.size ||
+        ![...fieldArrayNamesRef.current].find((fieldArrayName) =>
+          name.startsWith(fieldArrayName),
+        )
+      ) {
         setFieldValue(name, defaultValue);
+      } else {
+        field._f.value = defaultValue;
       }
     }
 
@@ -549,7 +565,6 @@ export function useForm<
     value,
     options = {},
   ) => {
-    isMountedRef.current = true;
     const field = get(fieldsRef.current, name);
     const isFieldArray = fieldArrayNamesRef.current.has(name);
 
@@ -1135,13 +1150,13 @@ export function useForm<
     }
 
     resetFromState(keepStateOptions, values);
+    isMountedRef.current = false;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
-    isMountedRef.current = true;
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
@@ -1172,6 +1187,10 @@ export function useForm<
       useFieldArraySubscription.unsubscribe();
     };
   }, []);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+  });
 
   return {
     control: React.useMemo(

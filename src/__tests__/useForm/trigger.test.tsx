@@ -324,4 +324,82 @@ describe('trigger', () => {
       });
     });
   });
+
+  it('should return the status of the requested fields with array of fields for validation', async () => {
+    const resolver = async (data: any) => {
+      return {
+        values: data,
+        errors: { test3: 'test3' },
+      };
+    };
+
+    const { result } = renderHook(() =>
+      useForm<{ test1: string; test2: string; test3: string }>({
+        mode: VALIDATION_MODE.onChange,
+        resolver,
+      }),
+    );
+
+    result.current.register('test1', { required: false });
+    result.current.register('test2', { required: false });
+    result.current.register('test3', { required: true });
+
+    await act(async () =>
+      expect(await result.current.trigger(['test1', 'test2'])).toBeFalsy(),
+    );
+  });
+
+  it('should return true when field is found and validation pass', async () => {
+    const { result } = renderHook(() => useForm<{ test: string }>());
+
+    result.current.register('test');
+
+    expect(await result.current.trigger('test')).toBeTruthy();
+  });
+
+  it('should remove all errors before set new errors when trigger entire form', async () => {
+    const Component = () => {
+      const [show, setShow] = React.useState(true);
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<{
+        test: string;
+      }>({
+        shouldUnregister: true,
+      });
+
+      return (
+        <div>
+          {show && <input {...register('test', { required: true })} />}
+          <button type={'button'} onClick={() => trigger()}>
+            trigger
+          </button>
+          <button type={'button'} onClick={() => setShow(false)}>
+            toggle
+          </button>
+          {errors.test && <span>error</span>}
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    await waitFor(() => screen.getByText('error'));
+
+    await actComponent(async () => {
+      await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    });
+
+    await actComponent(async () => {
+      await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    expect(screen.queryByText('error')).toBeNull();
+  });
 });
