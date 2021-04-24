@@ -120,7 +120,6 @@ export function useForm<
   );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
-  const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
@@ -728,12 +727,12 @@ export function useForm<
   const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => {
-    const values = isMountedRef.current
-      ? getFieldsValues(
+    const values = isEmptyObject(fieldsRef.current)
+      ? defaultValuesRef.current
+      : getFieldsValues(
           fieldsRef,
           shouldUnregister ? {} : defaultValuesRef.current,
-        )
-      : defaultValuesRef.current;
+        );
 
     return isUndefined(fieldNames)
       ? values
@@ -806,7 +805,7 @@ export function useForm<
   const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
-      const fieldValues = isMountedRef.current
+      const fieldValues = !isEmptyObject(fieldsRef.current)
         ? getValues()
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
@@ -1142,7 +1141,6 @@ export function useForm<
     }
 
     resetFromState(keepStateOptions, values);
-    isMountedRef.current = false;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
@@ -1179,10 +1177,6 @@ export function useForm<
       useFieldArraySubscription.unsubscribe();
     };
   }, []);
-
-  React.useEffect(() => {
-    isMountedRef.current = true;
-  });
 
   return {
     control: React.useMemo(
