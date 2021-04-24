@@ -535,7 +535,7 @@ export function useForm<
 
     if (
       (!isUndefined(defaultValue) || isWithinRefCallback) &&
-      hasValidation(options) &&
+      hasValidation(options, field._f.mount) &&
       !validationMode.isOnSubmit &&
       field &&
       readFormStateRef.current.isValid
@@ -620,7 +620,7 @@ export function useForm<
         } = getValidationModes(reValidateMode);
 
         const shouldSkipValidation =
-          (!hasValidation(field._f) &&
+          (!hasValidation(field._f, field._f.mount) &&
             !resolverRef.current &&
             !get(formStateRef.current.errors, name)) ||
           skipValidation({
@@ -970,7 +970,7 @@ export function useForm<
           ...options,
         },
       });
-      hasValidation(options) &&
+      hasValidation(options, true) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
