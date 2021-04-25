@@ -904,7 +904,7 @@ export function useForm<
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
-    register(name as FieldPath<TFieldValues>);
+    register(name as FieldPath<TFieldValues>, options);
     let field = get(fieldsRef.current, name) as Field;
 
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
