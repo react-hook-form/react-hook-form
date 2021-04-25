@@ -7,6 +7,7 @@ import getFieldValue from './logic/getFieldValue';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
 import hasValidation from './logic/hasValidation';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -524,12 +525,7 @@ export function useForm<
     if (field && !isUndefined(defaultValue)) {
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
-      } else if (
-        !fieldArrayNamesRef.current.size ||
-        ![...fieldArrayNamesRef.current].find((fieldArrayName) =>
-          name.startsWith(fieldArrayName),
-        )
-      ) {
+      } else if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
         setFieldValue(name, defaultValue);
       } else {
         field._f.value = defaultValue;
