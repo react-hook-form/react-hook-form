@@ -1186,6 +1186,7 @@ export function useForm<
         unregisterInternal(name as FieldPath<TFieldValues>);
       }
     });
+    unregisterFieldsNamesRef.current = new Set();
   });
 
   return {
