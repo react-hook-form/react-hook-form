@@ -357,7 +357,7 @@ describe('trigger', () => {
     expect(await result.current.trigger('test')).toBeTruthy();
   });
 
-  it.only('should remove all errors before set new errors when trigger entire form', async () => {
+  it('should remove all errors before set new errors when trigger entire form', async () => {
     const Component = () => {
       const [show, setShow] = React.useState(true);
       const {
