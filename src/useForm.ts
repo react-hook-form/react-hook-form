@@ -99,6 +99,9 @@ export function useForm<
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
+  const unregisterFieldsNamesRef = React.useRef<Set<InternalFieldName>>(
+    new Set(),
+  );
   const watchSubjectRef = React.useRef(
     new Subject<{
       name?: InternalFieldName;
@@ -869,17 +872,13 @@ export function useForm<
           unset(fieldsWithValidationRef.current, inputName);
           unset(validFieldsRef.current, inputName);
         }
-        if (notify) {
-          !options.keepError && unset(formStateRef.current.errors, inputName);
-          !options.keepDirty &&
-            unset(formStateRef.current.dirtyFields, inputName);
-          !options.keepTouched &&
-            unset(formStateRef.current.touchedFields, inputName);
-          !options.keepError && unset(formStateRef.current.errors, inputName);
-        }
-
+        !options.keepError && unset(formStateRef.current.errors, inputName);
         !options.keepValue && unset(fieldsRef.current, inputName);
-        (notify || !shouldUnregister) &&
+        !options.keepDirty &&
+          unset(formStateRef.current.dirtyFields, inputName);
+        !options.keepTouched &&
+          unset(formStateRef.current.touchedFields, inputName);
+        (!shouldUnregister || notify) &&
           !options.keepDefaultValue &&
           unset(defaultValuesRef.current, inputName);
 
@@ -987,7 +986,7 @@ export function useForm<
               ref
                 ? registerFieldRef(name, ref, options)
                 : (shouldUnregister || (options && options.shouldUnregister)) &&
-                  unregisterInternal(name),
+                  unregisterFieldsNamesRef.current.add(name),
           };
     },
     [defaultValuesRef.current],
@@ -1179,9 +1178,14 @@ export function useForm<
       useFieldArraySubscription.unsubscribe();
     };
   }, []);
-
   React.useEffect(() => {
     isMountedRef.current = true;
+    unregisterFieldsNamesRef.current.forEach((name) => {
+      const field = get(fieldsRef.current.ref, name);
+      if (field && field._ref && !isHTMLElement(field._ref._f)) {
+        unregisterInternal(name as FieldPath<TFieldValues>);
+      }
+    });
   });
 
   return {
