@@ -869,13 +869,17 @@ export function useForm<
           unset(fieldsWithValidationRef.current, inputName);
           unset(validFieldsRef.current, inputName);
         }
-        !options.keepError && unset(formStateRef.current.errors, inputName);
+        if (notify) {
+          !options.keepError && unset(formStateRef.current.errors, inputName);
+          !options.keepDirty &&
+            unset(formStateRef.current.dirtyFields, inputName);
+          !options.keepTouched &&
+            unset(formStateRef.current.touchedFields, inputName);
+          !options.keepError && unset(formStateRef.current.errors, inputName);
+        }
+
         !options.keepValue && unset(fieldsRef.current, inputName);
-        !options.keepDirty &&
-          unset(formStateRef.current.dirtyFields, inputName);
-        !options.keepTouched &&
-          unset(formStateRef.current.touchedFields, inputName);
-        (!shouldUnregister || notify) &&
+        (notify || !shouldUnregister) &&
           !options.keepDefaultValue &&
           unset(defaultValuesRef.current, inputName);
 
