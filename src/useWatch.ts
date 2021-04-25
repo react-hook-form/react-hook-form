@@ -44,10 +44,10 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   nameRef.current = name;
 
   const { watchInternal, watchSubjectRef } = control || methods.control;
+
+  const firstValue = watchInternal(name as InternalFieldName);
   const [value, updateValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? watchInternal(name as InternalFieldName)
-      : defaultValue,
+    isUndefined(firstValue) ? defaultValue : firstValue,
   );
 
   React.useEffect(() => {
