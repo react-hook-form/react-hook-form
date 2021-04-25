@@ -986,6 +986,7 @@ export function useForm<
               ref
                 ? registerFieldRef(name, ref, options)
                 : (shouldUnregister || (options && options.shouldUnregister)) &&
+                  isWeb &&
                   unregisterFieldsNamesRef.current.add(name),
           };
     },
@@ -1182,10 +1183,9 @@ export function useForm<
   React.useEffect(() => {
     isMountedRef.current = true;
     unregisterFieldsNamesRef.current.forEach((name) => {
-      const field = get(fieldsRef.current, name);
+      const field = get(fieldsRef.current, name) as Field;
       field &&
-        field._ref &&
-        !isHTMLElement(field._ref._f) &&
+        (!isHTMLElement(field._f.ref) || !document.contains(field._f.ref)) &&
         unregisterInternal(name as FieldPath<TFieldValues>);
     });
     unregisterFieldsNamesRef.current = new Set();
