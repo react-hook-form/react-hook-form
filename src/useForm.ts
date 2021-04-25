@@ -1182,8 +1182,9 @@ export function useForm<
   React.useEffect(() => {
     isMountedRef.current = true;
     unregisterFieldsNamesRef.current.forEach((name) => {
-      const field = get(fieldsRef.current.ref, name);
+      const field = get(fieldsRef.current, name);
       field &&
+        field._ref &&
         !isHTMLElement(field._ref._f) &&
         unregisterInternal(name as FieldPath<TFieldValues>);
     });
