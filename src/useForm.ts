@@ -1178,13 +1178,14 @@ export function useForm<
       useFieldArraySubscription.unsubscribe();
     };
   }, []);
+
   React.useEffect(() => {
     isMountedRef.current = true;
     unregisterFieldsNamesRef.current.forEach((name) => {
       const field = get(fieldsRef.current.ref, name);
-      if (field && field._ref && !isHTMLElement(field._ref._f)) {
+      field &&
+        !isHTMLElement(field._ref._f) &&
         unregisterInternal(name as FieldPath<TFieldValues>);
-      }
     });
     unregisterFieldsNamesRef.current = new Set();
   });

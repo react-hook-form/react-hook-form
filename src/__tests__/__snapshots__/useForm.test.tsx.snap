@@ -60,6 +60,8 @@ Array [
       },
     ],
   },
-  Object {},
+  Object {
+    "test": "bill",
+  },
 ]
 `;
