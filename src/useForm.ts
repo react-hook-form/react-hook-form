@@ -1191,11 +1191,17 @@ export function useForm<
   }, []);
 
   React.useEffect(() => {
+    const isLiveInDom = (ref: Ref) =>
+      !isHTMLElement(ref) || !document.contains(ref);
+
     isMountedRef.current = true;
     unregisterFieldsNamesRef.current.forEach((name) => {
       const field = get(fieldsRef.current, name) as Field;
+
       field &&
-        (!isHTMLElement(field._f.ref) || !document.contains(field._f.ref)) &&
+        (field._f.refs
+          ? field._f.refs.every(isLiveInDom)
+          : isLiveInDom(field._f.ref)) &&
         unregisterInternal(name as FieldPath<TFieldValues>);
     });
     unregisterFieldsNamesRef.current = new Set();
