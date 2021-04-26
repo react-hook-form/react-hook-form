@@ -99,6 +99,9 @@ export function useForm<
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
+  const unregisterFieldsNamesRef = React.useRef<Set<InternalFieldName>>(
+    new Set(),
+  );
   const watchSubjectRef = React.useRef(
     new Subject<{
       name?: InternalFieldName;
@@ -980,14 +983,21 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
+            ref: (ref: HTMLInputElement | null) =>
+              ref
+                ? registerFieldRef(name, ref, options)
+                : (shouldUnregister || (options && options.shouldUnregister)) &&
+                  isWeb &&
+                  unregisterFieldsNamesRef.current.add(name),
             ref: (ref: HTMLInputElement | null): void => {
+              const field = get(fieldsRef.current, name);
               if (ref) {
                 registerFieldRef(name, ref, options);
-              } else if (get(fieldsRef.current, name)) {
-                if (shouldUnregister || (options && options.shouldUnregister)) {
-                  unregisterInternal(name);
-                } else {
-                  (get(fieldsRef.current, name) as Field)._f.mount = false;
+              } else {
+                if (isWeb && (shouldUnregister || (options && options.shouldUnregister))) {
+                  unregisterFieldsNamesRef.current.add(name);
+                } else if (field) {
+                  field._f.mount = false;
                 }
               }
             },
@@ -1185,6 +1195,13 @@ export function useForm<
 
   React.useEffect(() => {
     isMountedRef.current = true;
+    unregisterFieldsNamesRef.current.forEach((name) => {
+      const field = get(fieldsRef.current, name) as Field;
+      field &&
+        (!isHTMLElement(field._f.ref) || !document.contains(field._f.ref)) &&
+        unregisterInternal(name as FieldPath<TFieldValues>);
+    });
+    unregisterFieldsNamesRef.current = new Set();
   });
 
   return {
