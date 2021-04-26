@@ -983,21 +983,18 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) =>
-              ref
-                ? registerFieldRef(name, ref, options)
-                : (shouldUnregister || (options && options.shouldUnregister)) &&
-                  isWeb &&
-                  unregisterFieldsNamesRef.current.add(name),
             ref: (ref: HTMLInputElement | null): void => {
-              const field = get(fieldsRef.current, name);
               if (ref) {
                 registerFieldRef(name, ref, options);
               } else {
-                if (isWeb && (shouldUnregister || (options && options.shouldUnregister))) {
+                const field = get(fieldsRef.current, name) as Field;
+                field && (field._f.mount = false);
+
+                if (
+                  isWeb &&
+                  (shouldUnregister || (options && options.shouldUnregister))
+                ) {
                   unregisterFieldsNamesRef.current.add(name);
-                } else if (field) {
-                  field._f.mount = false;
                 }
               }
             },
