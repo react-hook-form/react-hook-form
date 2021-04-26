@@ -405,6 +405,8 @@ export function useForm<
   );
 
   const validateForm = async (fieldsRef: FieldRefs) => {
+    let isValid = true;
+
     for (const name in fieldsRef) {
       const field = fieldsRef[name];
 
@@ -421,6 +423,7 @@ export function useForm<
           if (fieldError[_f.name]) {
             set(formStateRef.current.errors, _f.name, fieldError[_f.name]);
             unset(validFieldsRef.current, _f.name);
+            isValid = false;
           } else if (get(fieldsWithValidationRef.current, _f.name)) {
             set(validFieldsRef.current, _f.name, true);
             unset(formStateRef.current.errors, _f.name);
@@ -430,11 +433,13 @@ export function useForm<
         current && (await validateForm(current));
       }
     }
+
+    return isValid;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
-    async (name) => {
-      const fields = isUndefined(name)
+    async (name, options = {}) => {
+      const fieldNames = isUndefined(name)
         ? Object.keys(fieldsRef.current)
         : Array.isArray(name)
         ? name
@@ -448,25 +453,23 @@ export function useForm<
       if (resolverRef.current) {
         isValid = isEmptyObject(
           await executeSchemaOrResolverValidation(
-            fields,
+            fieldNames,
             isUndefined(name)
               ? undefined
-              : (fields as FieldName<TFieldValues>[]),
+              : (fieldNames as FieldName<TFieldValues>[]),
           ),
         );
       } else {
-        isValid = !!(isUndefined(name)
+        const result = isUndefined(name)
           ? await validateForm(fieldsRef.current)
-          : (
-              await Promise.all(
-                fields
-                  .filter((fieldName) => get(fieldsRef.current, fieldName))
-                  .map(
-                    async (fieldName) =>
-                      await executeValidation(fieldName, null),
-                  ),
-              )
-            ).every(Boolean));
+          : await Promise.all(
+              fieldNames
+                .filter((fieldName) => get(fieldsRef.current, fieldName))
+                .map(
+                  async (fieldName) => await executeValidation(fieldName, null),
+                ),
+            );
+        isValid = Array.isArray(result) ? result.every(Boolean) : result;
       }
 
       formStateSubjectRef.current.next({
@@ -474,6 +477,14 @@ export function useForm<
         isValidating: false,
         isValid: resolverRef.current ? isValid : getIsValid(),
       });
+
+      if (!isValid && options.shouldFocus) {
+        focusFieldBy(
+          fieldsRef.current,
+          (key) => get(formStateRef.current.errors, key),
+          fieldNames,
+        );
+      }
 
       return isValid;
     },
@@ -1040,7 +1051,7 @@ export function useForm<
           shouldFocusError &&
             focusFieldBy(
               fieldsRef.current,
-              (key: string) => get(formStateRef.current.errors, key),
+              (key) => get(formStateRef.current.errors, key),
               fieldsNamesRef.current,
             );
         }

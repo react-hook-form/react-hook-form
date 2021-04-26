@@ -72,6 +72,10 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
+export type TriggerConfig = Partial<{
+  shouldFocus: boolean;
+}>;
+
 export type ChangeHandler = (event: any) => Promise<void | boolean>;
 
 export type UseFormProps<
@@ -368,6 +372,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+  options?: TriggerConfig,
 ) => Promise<Boolean>;
 
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (

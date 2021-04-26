@@ -7,7 +7,7 @@ import omit from '../utils/omit';
 const focusFieldBy = (
   fields: FieldRefs,
   callback: (name: string) => boolean,
-  fieldsNames?: Set<InternalFieldName>,
+  fieldsNames?: Set<InternalFieldName> | InternalFieldName[],
 ) => {
   for (const key of fieldsNames || Object.keys(fields)) {
     const field = get(fields, key);
