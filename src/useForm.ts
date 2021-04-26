@@ -7,6 +7,7 @@ import getFieldValue from './logic/getFieldValue';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
 import hasValidation from './logic/hasValidation';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -64,7 +65,6 @@ import {
   UseFormClearErrors,
   UseFormGetValues,
   UseFormHandleSubmit,
-  UseFormInternalUnregister,
   UseFormProps,
   UseFormRegister,
   UseFormRegisterReturn,
@@ -99,6 +99,9 @@ export function useForm<
   const fieldsNamesRef = React.useRef<Set<InternalFieldName>>(new Set());
   const formStateSubjectRef = React.useRef<FormStateSubjectRef<TFieldValues>>(
     new Subject(),
+  );
+  const unregisterFieldsNamesRef = React.useRef<Set<InternalFieldName>>(
+    new Set(),
   );
   const watchSubjectRef = React.useRef(
     new Subject<{
@@ -528,12 +531,7 @@ export function useForm<
     if (field && !isUndefined(defaultValue)) {
       if (ref && (ref as HTMLInputElement).defaultChecked) {
         field._f.value = getFieldValue(field);
-      } else if (
-        !fieldArrayNamesRef.current.size ||
-        ![...fieldArrayNamesRef.current].find((fieldArrayName) =>
-          name.startsWith(fieldArrayName),
-        )
-      ) {
+      } else if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
         setFieldValue(name, defaultValue);
       } else {
         field._f.value = defaultValue;
@@ -815,7 +813,7 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getValues()
+        ? getFieldsValues(fieldsRef, defaultValuesRef.current)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
@@ -863,11 +861,7 @@ export function useForm<
           true,
         );
 
-  const unregisterInternal: UseFormInternalUnregister<TFieldValues> = (
-    name,
-    options = {},
-    notify,
-  ) => {
+  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
       ? Array.isArray(name)
         ? name
@@ -887,36 +881,30 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        (!shouldUnregister || notify) &&
+        !shouldUnregister &&
           !options.keepDefaultValue &&
           unset(defaultValuesRef.current, inputName);
 
-        notify &&
-          watchSubjectRef.current.next({
-            name: inputName,
-          });
+        watchSubjectRef.current.next({
+          name: inputName,
+        });
       }
     }
 
-    if (notify) {
-      formStateSubjectRef.current.next({
-        ...formStateRef.current,
-        ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
-        ...(resolverRef.current ? {} : { isValid: getIsValid() }),
-      });
-      !options.keepIsValid && updateIsValid();
-    }
+    formStateSubjectRef.current.next({
+      ...formStateRef.current,
+      ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
+      ...(resolverRef.current ? {} : { isValid: getIsValid() }),
+    });
+    !options.keepIsValid && updateIsValid();
   };
-
-  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) =>
-    unregisterInternal(name, options, true);
 
   const registerFieldRef = (
     name: InternalFieldName,
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
-    register(name as FieldPath<TFieldValues>);
+    register(name as FieldPath<TFieldValues>, options);
     let field = get(fieldsRef.current, name) as Field;
 
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
@@ -991,11 +979,13 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) =>
+            ref: (ref: HTMLInputElement | null) => {
               ref
                 ? registerFieldRef(name, ref, options)
                 : (shouldUnregister || (options && options.shouldUnregister)) &&
-                  unregisterInternal(name),
+                  isWeb &&
+                  unregisterFieldsNamesRef.current.add(name);
+            },
           };
     },
     [defaultValuesRef.current],
@@ -1189,7 +1179,20 @@ export function useForm<
   }, []);
 
   React.useEffect(() => {
+    const isLiveInDom = (ref: Ref) =>
+      !isHTMLElement(ref) || !document.contains(ref);
+
     isMountedRef.current = true;
+    unregisterFieldsNamesRef.current.forEach((name) => {
+      const field = get(fieldsRef.current, name) as Field;
+
+      field &&
+        (field._f.refs
+          ? field._f.refs.every(isLiveInDom)
+          : isLiveInDom(field._f.ref)) &&
+        unregister(name as FieldPath<TFieldValues>);
+    });
+    unregisterFieldsNamesRef.current = new Set();
   });
 
   return {
@@ -1212,7 +1215,7 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
-        unregister: unregisterInternal,
+        unregister,
         shouldUnmountUnregister: shouldUnregister,
       }),
       [],

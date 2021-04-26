@@ -161,91 +161,202 @@ describe('useForm', () => {
   });
 
   describe('when shouldUnregister set to true', () => {
-    type FormValues = {
-      test: string;
-      test1: string;
-      test2: {
-        value: string;
-      }[];
-    };
+    describe('with useFieldArray', () => {
+      type FormValues = {
+        test: string;
+        test1: string;
+        test2: {
+          value: string;
+        }[];
+      };
 
-    const Child = ({
-      control,
-      register,
-    }: {
-      control: Control<FormValues>;
-      register: UseFormRegister<FormValues>;
-    }) => {
-      const { fields } = useFieldArray({
+      const Child = ({
         control,
-        name: 'test2',
-        shouldUnregister: true,
-      });
-
-      return (
-        <>
-          {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test2.${i}.value` as const)}
-              defaultValue={field.value}
-            />
-          ))}
-        </>
-      );
-    };
-
-    it('should remove and unregister inputs when inputs gets unmounted', async () => {
-      let submittedData: FormValues[] = [];
-      submittedData = [];
-
-      const Component = () => {
-        const [show, setShow] = React.useState(true);
-        const { register, handleSubmit, control } = useForm<FormValues>({
+        register,
+      }: {
+        control: Control<FormValues>;
+        register: UseFormRegister<FormValues>;
+      }) => {
+        const { fields } = useFieldArray({
+          control,
+          name: 'test2',
           shouldUnregister: true,
-          defaultValues: {
-            test: 'bill',
-            test1: 'bill1',
-            test2: [{ value: 'bill2' }],
-          },
         });
 
         return (
-          <form onSubmit={handleSubmit((data) => submittedData.push(data))}>
-            {show && (
-              <>
-                <input {...register('test')} />
-                <Controller
-                  control={control}
-                  render={({ field }) => <input {...field} />}
-                  name={'test1'}
-                />
-                <Child control={control} register={register} />
-              </>
-            )}
+          <>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test2.${i}.value` as const)}
+                defaultValue={field.value}
+              />
+            ))}
+          </>
+        );
+      };
+
+      it('should remove and unregister inputs when inputs gets unmounted', async () => {
+        let submittedData: FormValues[] = [];
+        submittedData = [];
+
+        const Component = () => {
+          const [show, setShow] = React.useState(true);
+          const { register, handleSubmit, control } = useForm<FormValues>({
+            shouldUnregister: true,
+            defaultValues: {
+              test: 'bill',
+              test1: 'bill1',
+              test2: [{ value: 'bill2' }],
+            },
+          });
+
+          return (
+            <form onSubmit={handleSubmit((data) => submittedData.push(data))}>
+              {show && (
+                <>
+                  <input {...register('test')} />
+                  <Controller
+                    control={control}
+                    render={({ field }) => <input {...field} />}
+                    name={'test1'}
+                  />
+                  <Child control={control} register={register} />
+                </>
+              )}
+              <button>Submit</button>
+              <button type={'button'} onClick={() => setShow(false)}>
+                Toggle
+              </button>
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        await actComponent(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        });
+
+        actComponent(() => {
+          fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
+        });
+
+        await actComponent(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        });
+
+        expect(submittedData).toMatchSnapshot();
+      });
+    });
+
+    it('should keep validation during unmount', async () => {
+      function Component() {
+        const {
+          register,
+          handleSubmit,
+          watch,
+          formState: { errors },
+        } = useForm<{
+          firstName: string;
+          moreDetail: boolean;
+        }>({
+          shouldUnregister: true,
+        });
+        const moreDetail = watch('moreDetail');
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input
+              placeholder="firstName"
+              {...register('firstName', { maxLength: 3 })}
+            />
+            {errors.firstName && <p>max length</p>}
+            <input
+              type="checkbox"
+              {...register('moreDetail')}
+              placeholder={'checkbox'}
+            />
+
+            {moreDetail && <p>show more</p>}
             <button>Submit</button>
-            <button type={'button'} onClick={() => setShow(false)}>
-              Toggle
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.change(screen.getByPlaceholderText('firstName'), {
+        target: {
+          value: 'testtesttest',
+        },
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      screen.getByText('max length');
+
+      fireEvent.click(screen.getByPlaceholderText('checkbox'));
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      screen.getByText('max length');
+    });
+
+    it('should only unregister inputs when all checkboxes are unmounted', async () => {
+      let result;
+
+      const Component = () => {
+        const { register, handleSubmit } = useForm({
+          shouldUnregister: true,
+        });
+        const [radio1, setRadio1] = React.useState(true);
+        const [radio2, setRadio2] = React.useState(true);
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              result = data;
+            })}
+          >
+            {radio1 && (
+              <input {...register('test')} type={'radio'} value={'1'} />
+            )}
+            {radio2 && (
+              <input {...register('test')} type={'radio'} value={'2'} />
+            )}
+            <button type={'button'} onClick={() => setRadio1(!radio1)}>
+              setRadio1
             </button>
+            <button type={'button'} onClick={() => setRadio2(!radio2)}>
+              setRadio2
+            </button>
+            <button>Submit</button>
           </form>
         );
       };
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
-
-      actComponent(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'setRadio1' }));
 
       await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
       });
 
-      expect(submittedData).toMatchSnapshot();
+      expect(result).toEqual({ test: null });
+
+      fireEvent.click(screen.getByRole('button', { name: 'setRadio2' }));
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      });
+
+      expect(result).toEqual({});
     });
   });
 
