@@ -306,6 +306,58 @@ describe('useForm', () => {
 
       screen.getByText('max length');
     });
+
+    it('should only unregister inputs when all checkboxes are unmounted', async () => {
+      let result;
+
+      const Component = () => {
+        const { register, handleSubmit } = useForm({
+          shouldUnregister: true,
+        });
+        const [radio1, setRadio1] = React.useState(true);
+        const [radio2, setRadio2] = React.useState(true);
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              result = data;
+            })}
+          >
+            {radio1 && (
+              <input {...register('test')} type={'radio'} value={'1'} />
+            )}
+            {radio2 && (
+              <input {...register('test')} type={'radio'} value={'2'} />
+            )}
+            <button type={'button'} onClick={() => setRadio1(!radio1)}>
+              setRadio1
+            </button>
+            <button type={'button'} onClick={() => setRadio2(!radio2)}>
+              setRadio2
+            </button>
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'setRadio1' }));
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      });
+
+      expect(result).toEqual({ test: null });
+
+      fireEvent.click(screen.getByRole('button', { name: 'setRadio2' }));
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      });
+
+      expect(result).toEqual({});
+    });
   });
 
   describe('when errors changes', () => {
