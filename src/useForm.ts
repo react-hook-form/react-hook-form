@@ -63,7 +63,6 @@ import {
   UseFormClearErrors,
   UseFormGetValues,
   UseFormHandleSubmit,
-  UseFormInternalUnregister,
   UseFormProps,
   UseFormRegister,
   UseFormRegisterReturn,
@@ -865,11 +864,7 @@ export function useForm<
           true,
         );
 
-  const unregisterInternal: UseFormInternalUnregister<TFieldValues> = (
-    name,
-    options = {},
-    notify,
-  ) => {
+  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
       ? Array.isArray(name)
         ? name
@@ -889,29 +884,23 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        (!shouldUnregister || notify) &&
+        !shouldUnregister &&
           !options.keepDefaultValue &&
           unset(defaultValuesRef.current, inputName);
 
-        notify &&
-          watchSubjectRef.current.next({
-            name: inputName,
-          });
+        watchSubjectRef.current.next({
+          name: inputName,
+        });
       }
     }
 
-    if (notify) {
-      formStateSubjectRef.current.next({
-        ...formStateRef.current,
-        ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
-        ...(resolverRef.current ? {} : { isValid: getIsValid() }),
-      });
-      !options.keepIsValid && updateIsValid();
-    }
+    formStateSubjectRef.current.next({
+      ...formStateRef.current,
+      ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
+      ...(resolverRef.current ? {} : { isValid: getIsValid() }),
+    });
+    !options.keepIsValid && updateIsValid();
   };
-
-  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) =>
-    unregisterInternal(name, options, true);
 
   const registerFieldRef = (
     name: InternalFieldName,
@@ -993,12 +982,13 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) =>
+            ref: (ref: HTMLInputElement | null) => {
               ref
                 ? registerFieldRef(name, ref, options)
                 : (shouldUnregister || (options && options.shouldUnregister)) &&
                   isWeb &&
-                  unregisterFieldsNamesRef.current.add(name),
+                  unregisterFieldsNamesRef.current.add(name);
+            },
           };
     },
     [defaultValuesRef.current],
@@ -1192,12 +1182,18 @@ export function useForm<
   }, []);
 
   React.useEffect(() => {
+    const isLiveInDom = (ref: Ref) =>
+      !isHTMLElement(ref) || !document.contains(ref);
+
     isMountedRef.current = true;
     unregisterFieldsNamesRef.current.forEach((name) => {
       const field = get(fieldsRef.current, name) as Field;
+
       field &&
-        (!isHTMLElement(field._f.ref) || !document.contains(field._f.ref)) &&
-        unregisterInternal(name as FieldPath<TFieldValues>);
+        (field._f.refs
+          ? field._f.refs.every(isLiveInDom)
+          : isLiveInDom(field._f.ref)) &&
+        unregister(name as FieldPath<TFieldValues>);
     });
     unregisterFieldsNamesRef.current = new Set();
   });
@@ -1222,7 +1218,7 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
-        unregister: unregisterInternal,
+        unregister,
         shouldUnmountUnregister: shouldUnregister,
       }),
       [],
