@@ -26,6 +26,8 @@ export type FieldValue<
 
 export type FieldValues = Record<string, any>;
 
+export type CustomFieldErrors = Record<string, any>;
+
 export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
   | HTMLInputElement
   | HTMLSelectElement

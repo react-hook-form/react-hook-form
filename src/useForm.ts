@@ -82,7 +82,8 @@ const isWindowUndefined = typeof window === UNDEFINED;
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object
+  TContext extends object = object,
+  TCustomErrors extends object = object
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
@@ -92,11 +93,14 @@ export function useForm<
   shouldFocusError = true,
   shouldUnregister,
   criteriaMode,
-}: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
+}: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<
+  TFieldValues,
+  TCustomErrors
+> {
   const fieldsRef = React.useRef<FieldRefs>({});
   const fieldsNamesRef = React.useRef<Set<InternalFieldName>>(new Set());
   const formStateSubjectRef = React.useRef(
-    new Subject<Partial<FormState<TFieldValues>>>(),
+    new Subject<Partial<FormState<TFieldValues, TCustomErrors>>>(),
   );
   const unregisterFieldsNamesRef = React.useRef<Set<InternalFieldName>>(
     new Set(),
@@ -139,7 +143,9 @@ export function useForm<
   const fieldArrayNamesRef = React.useRef<InternalNameSet>(new Set());
   const validationMode = getValidationModes(mode);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
-  const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, setFormState] = React.useState<
+    FormState<TFieldValues, TCustomErrors>
+  >({
     isDirty: false,
     isValidating: false,
     dirtyFields: {},
@@ -314,7 +320,10 @@ export function useForm<
       inputValue: unknown,
       shouldRender = true,
     ): Partial<
-      Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
+      Pick<
+        FormState<TFieldValues, TCustomErrors>,
+        'dirtyFields' | 'isDirty' | 'touchedFields'
+      >
     > => {
       if (
         readFormStateRef.current.isDirty ||
@@ -772,10 +781,12 @@ export function useForm<
     [criteriaMode],
   );
 
-  const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
+  const clearErrors: UseFormClearErrors<TFieldValues, TCustomErrors> = (
+    name,
+  ) => {
     name &&
       (Array.isArray(name) ? name : [name]).forEach((inputName) =>
-        unset(formStateRef.current.errors, inputName),
+        unset(formStateRef.current.errors, inputName as InternalFieldName),
       );
 
     formStateSubjectRef.current.next({
@@ -783,12 +794,20 @@ export function useForm<
     });
   };
 
-  const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
+  const setError: UseFormSetError<TFieldValues, TCustomErrors> = (
+    name,
+    error,
+    options,
+  ) => {
     const ref = (
-      ((get(fieldsRef.current, name) as Field) || { _f: {} })._f || {}
+      (
+        (get(fieldsRef.current, name as InternalFieldName) as Field) || {
+          _f: {},
+        }
+      )._f || {}
     ).ref;
 
-    set(formStateRef.current.errors, name, {
+    set(formStateRef.current.errors, name as InternalFieldName, {
       ...error,
       ref,
     });
@@ -1140,7 +1159,7 @@ export function useForm<
 
   React.useEffect(() => {
     const formStateSubscription = formStateSubjectRef.current.subscribe({
-      next(formState: Partial<FormState<TFieldValues>> = {}) {
+      next(formState: Partial<FormState<TFieldValues, TCustomErrors>> = {}) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
             ...formStateRef.current,

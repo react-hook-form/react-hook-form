@@ -6,6 +6,7 @@ import { ErrorOption, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArrayDefaultValues } from './fieldArray';
 import {
+  CustomFieldErrors,
   FieldRefs,
   FieldValue,
   FieldValues,
@@ -104,7 +105,10 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
-export type FormState<TFieldValues> = {
+export type FormState<
+  TFieldValues extends FieldValues = FieldValues,
+  TCustomErrors extends CustomFieldErrors = CustomFieldErrors
+> = {
   isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
@@ -114,7 +118,7 @@ export type FormState<TFieldValues> = {
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
-  errors: FieldErrors<TFieldValues>;
+  errors: FieldErrors<TFieldValues, TCustomErrors>;
 };
 
 export type KeepStateOptions = Partial<{
@@ -370,8 +374,15 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
 ) => Promise<Boolean>;
 
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (
-  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+export type UseFormClearErrors<
+  TFieldValues extends FieldValues,
+  TCustomErrors extends CustomFieldErrors = CustomFieldErrors
+> = (
+  name?:
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | keyof TCustomErrors
+    | keyof TCustomErrors[],
 ) => void;
 
 export type UseFormSetValue<TFieldValues extends FieldValues> = <
@@ -382,8 +393,11 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   options?: SetValueConfig,
 ) => void;
 
-export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues>,
+export type UseFormSetError<
+  TFieldValues extends FieldValues,
+  TCustomErrors extends CustomFieldErrors = CustomFieldErrors
+> = (
+  name: FieldPath<TFieldValues> | keyof TCustomErrors,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -400,19 +414,6 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
     | 'keepDefaultValues'
     | 'keepErrors'
   > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
-) => void;
-
-export type UseFormInternalUnregister<TFieldValues extends FieldValues> = (
-  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-  options?: Omit<
-    KeepStateOptions,
-    | 'keepIsSubmitted'
-    | 'keepSubmitCount'
-    | 'keepValues'
-    | 'keepDefaultValues'
-    | 'keepErrors'
-  > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
-  notify?: boolean,
 ) => void;
 
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
@@ -440,15 +441,18 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(
   data?: TData,
 ) => boolean;
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = {
+export type Control<
+  TFieldValues extends FieldValues = FieldValues,
+  TCustomErrors extends CustomFieldErrors = CustomFieldErrors
+> = {
   shouldUnmountUnregister?: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
-  formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
+  formStateRef: React.MutableRefObject<FormState<TFieldValues, TCustomErrors>>;
   formStateSubjectRef: React.MutableRefObject<
-    SubjectType<Partial<FormState<TFieldValues>>>
+    SubjectType<Partial<FormState<TFieldValues, TCustomErrors>>>
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
@@ -492,14 +496,17 @@ export type WatchObserver<TFieldValues> = (
   },
 ) => void;
 
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
+export type UseFormReturn<
+  TFieldValues extends FieldValues = FieldValues,
+  TCustomErrors extends CustomFieldErrors = CustomFieldErrors
+> = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
-  setError: UseFormSetError<TFieldValues>;
-  clearErrors: UseFormClearErrors<TFieldValues>;
+  setError: UseFormSetError<TFieldValues, TCustomErrors>;
+  clearErrors: UseFormClearErrors<TFieldValues, TCustomErrors>;
   setValue: UseFormSetValue<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
-  formState: FormState<TFieldValues>;
+  formState: FormState<TFieldValues, TCustomErrors>;
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
@@ -512,7 +519,10 @@ export type UseFormStateProps<TFieldValues> = Partial<{
   control?: Control<TFieldValues>;
 }>;
 
-export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
+export type UseFormStateReturn<
+  TFieldValues extends FieldValues = FieldValues,
+  TCustomErrors extends CustomFieldErrors = CustomFieldErrors
+> = FormState<TFieldValues, TCustomErrors>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;

@@ -44,6 +44,7 @@ describe('setError', () => {
       },
     ],
   ];
+
   test.each(tests)('%s', (_, input, output) => {
     const { result } = renderHook(() => useForm<{ input: string }>());
     act(() => {
@@ -51,5 +52,23 @@ describe('setError', () => {
     });
     expect(result.current.formState.errors).toEqual(output);
     expect(result.current.formState.isValid).toBeFalsy();
+  });
+
+  it('should be able to set server error', () => {
+    const { result } = renderHook(() =>
+      useForm<{ input: string }, {}, { server: string }>(),
+    );
+
+    result.current.setError('server', {
+      type: 'server',
+      message: 'something is wrong',
+    });
+
+    expect(result.current.formState.errors).toEqual({
+      server: {
+        type: 'server',
+        message: 'something is wrong',
+      },
+    });
   });
 });

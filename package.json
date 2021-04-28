@@ -82,7 +82,7 @@
     "bundlesize": "^0.18.0",
     "copyfiles": "^2.4.1",
     "coveralls": "^3.1.0",
-    "cypress": "6.4.0",
+    "cypress": "^7.2.0",
     "cypress-parallel": "^0.1.9",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^6.15.0",
