@@ -16,6 +16,7 @@ import compact from './utils/compact';
 import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
+import getFieldValueAs from './logic/getFieldValueAs';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isFileInput from './utils/isFileInput';
@@ -250,7 +251,7 @@ export function useForm<
           isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
             ? ''
             : rawValue;
-        _f.value = rawValue;
+        _f.value = getFieldValueAs(rawValue, _f);
 
         if (isRadioInput(_f.ref)) {
           (_f.refs || []).forEach(
