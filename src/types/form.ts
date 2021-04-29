@@ -372,7 +372,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-) => Promise<Boolean>;
+) => Promise<boolean>;
 
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (
   name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],

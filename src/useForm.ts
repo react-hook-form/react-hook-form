@@ -4,6 +4,7 @@ import focusFieldBy from './logic/focusFieldBy';
 import getFields from './logic/getFields';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
+import getFieldValueAs from './logic/getFieldValueAs';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
 import hasValidation from './logic/hasValidation';
@@ -250,7 +251,7 @@ export function useForm<
           isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
             ? ''
             : rawValue;
-        _f.value = rawValue;
+        _f.value = getFieldValueAs(rawValue, _f);
 
         if (isRadioInput(_f.ref)) {
           (_f.refs || []).forEach(
