@@ -60,10 +60,6 @@ export function useController<
         setInputStateValue(get(data.values, name)),
     });
 
-    (ref as (instance: any) => void)({
-      target: value,
-    });
-
     return () => {
       controllerSubscription.unsubscribe();
       if (shouldUnmountUnregister || shouldUnregister) {

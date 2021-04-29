@@ -32,7 +32,7 @@ Version 7 | [Version 6](/docs/README.V6.md)
 - Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
 - [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- [Validation resolver](https://github.com/react-hook-form/resolvers) support for [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest) or custom
+- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) or custom
 
 ## Install
 
@@ -255,6 +255,12 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     <a href="https://github.com/msc-insure"
     ><img
             src="https://avatars.githubusercontent.com/u/44406870?s=200&v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/ccheney"
+    ><img
+            src="https://avatars.githubusercontent.com/u/302437?v=4"
             width="45"
             height="45"
     /></a>

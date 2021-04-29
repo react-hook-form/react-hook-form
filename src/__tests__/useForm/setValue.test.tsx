@@ -822,4 +822,40 @@ describe('setValue', () => {
 
     expect(result.current.formState.isValid).toBeTruthy();
   });
+
+  it('should setValue with valueAs', async () => {
+    let result;
+
+    function App() {
+      const { register, handleSubmit, setValue } = useForm();
+
+      React.useEffect(() => {
+        setValue('setStringDate', '2021-04-23');
+      }, []);
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            result = data;
+          })}
+        >
+          <input
+            type="date"
+            {...register('setStringDate', { valueAsDate: true })}
+          />
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(result).toEqual({
+      setStringDate: new Date('2021-04-23'),
+    });
+  });
 });
