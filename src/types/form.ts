@@ -158,12 +158,16 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
     fieldName: TFieldName,
   ): FieldPathValue<TFieldValues, TFieldName>;
   <TFieldNames extends FieldPath<TFieldValues>[]>(
-    fieldNames: TFieldNames,
-  ): FieldPathValues<TFieldValues, TFieldNames>;
+    fieldNames: readonly [...TFieldNames],
+  ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
+  <TFieldNames extends FieldPath<TFieldValues>[]>(
+    fieldNames: readonly [...TFieldNames],
+    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): [...FieldPathValues<TFieldValues, TFieldNames>];
   <
     T1 extends FieldPath<TFieldValues>,
     T2 extends FieldPath<TFieldValues>,

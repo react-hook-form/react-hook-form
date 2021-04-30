@@ -725,7 +725,9 @@ export function useForm<
   );
 
   const getValues: UseFormGetValues<TFieldValues> = (
-    fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+    fieldNames?:
+      | FieldPath<TFieldValues>
+      | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = isMountedRef.current
       ? getFieldsValues(
