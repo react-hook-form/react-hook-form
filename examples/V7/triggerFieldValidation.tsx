@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const { register, errors, trigger, handleSubmit } = useForm();
+  const { register, formState: { errors }, trigger, handleSubmit } = useForm();
 
   console.log('errors', errors);
 

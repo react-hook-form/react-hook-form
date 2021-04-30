@@ -40,7 +40,7 @@ const onSubmit = data => {
 };
 
 export default function App() {
-  const { handleSubmit, errors, control } = useForm({
+  const { handleSubmit, formState: { errors }, control } = useForm({
     reValidateMode: "onSubmit"
   });
   const [tel, setTel] = React.useState("7");
