@@ -614,7 +614,7 @@ describe('register', () => {
                 setValueAs: (value) => parseInt(value),
               })}
             />
-            {errors.test && <p>test1 error</p>}
+            {errors.test1 && <p>test1 error</p>}
             <button onClick={() => trigger()}>trigger</button>
           </>
         );
