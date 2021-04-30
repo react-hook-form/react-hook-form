@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const { register, errors, getValues, handleSubmit } = useForm();
+  const { register, formState: { errors }, getValues, handleSubmit } = useForm();
 
   return (
     <div className="App">

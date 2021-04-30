@@ -17,7 +17,7 @@ function App() {
   const {
     control,
     register,
-    errors,
+    formState: { errors },
     clearErrors,
     setValue,
     unregister,
