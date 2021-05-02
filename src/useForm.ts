@@ -866,9 +866,7 @@ export function useForm<
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
-      ? Array.isArray(name)
-        ? name
-        : [name]
+      ? convertToArrayPayload(name)
       : Object.keys(fieldsNamesRef.current)) {
       fieldsNamesRef.current.delete(inputName);
       fieldArrayNamesRef.current.delete(inputName);
