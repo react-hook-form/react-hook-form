@@ -10,7 +10,7 @@ const SignupSchema = yup.object().shape({
 });
 
 export default function App() {
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     validationSchema: SignupSchema,
   });
   const onSubmit = (data) => {
