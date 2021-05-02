@@ -1,7 +1,8 @@
 import isObject from './isObject';
+import convertToArrayPayload from './convertToArrayPayload';
 
 export default <T>(value: T) =>
-  ((Array.isArray(value) ? value : [value]) as T[]).map((data) => {
+  (convertToArrayPayload(value) as T[]).map((data) => {
     if (isObject(data)) {
       const object: Record<string, boolean> = {};
 
