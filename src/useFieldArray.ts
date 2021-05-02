@@ -7,6 +7,7 @@ import mapIds from './logic/mapId';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
 import compact from './utils/compact';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
@@ -124,7 +125,7 @@ export const useFieldArray = <
       : `${name}.${index}`;
 
   const resetFields = <T>(index?: T) =>
-    (Array.isArray(index) ? index : [index]).forEach((currentIndex) =>
+    convertToArrayPayload(index).forEach((currentIndex) =>
       set(
         fieldsRef.current,
         `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
@@ -269,13 +270,17 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const appendValue = Array.isArray(value) ? value : [value];
+    const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(
       getCurrentFieldsValues(),
       appendValue,
     );
     const currentIndex = updatedFieldArrayValues.length - appendValue.length;
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFieldsAndNotify(
+      updatedFieldArrayValues as Partial<
+        FieldArray<TFieldValues, TFieldArrayName>
+      >[],
+    );
     batchStateUpdate(
       appendAt,
       {
@@ -297,12 +302,16 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const prependValue = Array.isArray(value) ? value : [value];
+    const prependValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
       prependValue,
     );
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFieldsAndNotify(
+      updatedFieldArrayValues as Partial<
+        FieldArray<TFieldValues, TFieldArrayName>
+      >[],
+    );
     batchStateUpdate(
       prependAt,
       {
@@ -339,13 +348,17 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const insertValue = Array.isArray(value) ? value : [value];
+    const insertValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = insertAt(
       getCurrentFieldsValues(),
       index,
       insertValue,
     );
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFieldsAndNotify(
+      updatedFieldArrayValues as Partial<
+        FieldArray<TFieldValues, TFieldArrayName>
+      >[],
+    );
     batchStateUpdate(
       insertAt,
       {

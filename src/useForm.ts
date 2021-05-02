@@ -14,6 +14,7 @@ import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
 import validateField from './logic/validateField';
 import compact from './utils/compact';
+import convertToArrayPayload from './utils/convertToArrayPayload';
 import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
@@ -49,6 +50,7 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
+  FormStateSubjectRef,
   GetIsDirty,
   InternalFieldName,
   InternalNameSet,
@@ -96,8 +98,8 @@ export function useForm<
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
   const fieldsNamesRef = React.useRef<Set<InternalFieldName>>(new Set());
-  const formStateSubjectRef = React.useRef(
-    new Subject<Partial<FormState<TFieldValues>>>(),
+  const formStateSubjectRef = React.useRef<FormStateSubjectRef<TFieldValues>>(
+    new Subject(),
   );
   const unregisterFieldsNamesRef = React.useRef<Set<InternalFieldName>>(
     new Set(),
@@ -140,7 +142,7 @@ export function useForm<
   const fieldArrayNamesRef = React.useRef<InternalNameSet>(new Set());
   const validationMode = getValidationModes(mode);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
-  const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
     dirtyFields: {},
@@ -225,7 +227,9 @@ export function useForm<
           ...updatedFormState,
         };
 
-        formStateSubjectRef.current.next(isWatched ? {} : updatedFormState);
+        formStateSubjectRef.current.next(
+          isWatched ? { name } : updatedFormState,
+        );
       }
 
       formStateSubjectRef.current.next({
@@ -337,6 +341,7 @@ export function useForm<
         const state = {
           isDirty: formStateRef.current.isDirty,
           dirtyFields: formStateRef.current.dirtyFields,
+          name,
         };
 
         const isChanged =
@@ -436,9 +441,7 @@ export function useForm<
     async (name) => {
       const fields = isUndefined(name)
         ? Object.keys(fieldsRef.current)
-        : Array.isArray(name)
-        ? name
-        : [name];
+        : (convertToArrayPayload(name) as InternalFieldName[]);
       let isValid;
 
       formStateSubjectRef.current.next({
@@ -470,6 +473,7 @@ export function useForm<
       }
 
       formStateSubjectRef.current.next({
+        ...(isString(name) ? { name } : {}),
         errors: formStateRef.current.errors,
         isValidating: false,
         isValid: resolverRef.current ? isValid : getIsValid(),
@@ -548,7 +552,7 @@ export function useForm<
           : unset(validFieldsRef.current, name);
 
         formStateRef.current.isValid !== getIsValid() &&
-          setFormState({ ...formStateRef.current, isValid: getIsValid() });
+          updateFormState({ ...formStateRef.current, isValid: getIsValid() });
       });
     }
 
@@ -586,6 +590,7 @@ export function useForm<
         );
 
         formStateSubjectRef.current.next({
+          name,
           dirtyFields: formStateRef.current.dirtyFields,
           isDirty: getIsDirty(name, value),
         });
@@ -659,7 +664,9 @@ export function useForm<
             });
           return (
             shouldRender &&
-            formStateSubjectRef.current.next(isWatched ? {} : state)
+            formStateSubjectRef.current.next(
+              isWatched ? { name } : { ...state, name },
+            )
           );
         }
 
@@ -777,7 +784,7 @@ export function useForm<
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     name &&
-      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
+      convertToArrayPayload(name).forEach((inputName) =>
         unset(formStateRef.current.errors, inputName),
       );
 
@@ -797,6 +804,7 @@ export function useForm<
     });
 
     formStateSubjectRef.current.next({
+      name,
       errors: formStateRef.current.errors,
       isValid: false,
     });
@@ -858,9 +866,7 @@ export function useForm<
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
-      ? Array.isArray(name)
-        ? name
-        : [name]
+      ? convertToArrayPayload(name)
       : Object.keys(fieldsNamesRef.current)) {
       fieldsNamesRef.current.delete(inputName);
       fieldArrayNamesRef.current.delete(inputName);
@@ -1143,13 +1149,13 @@ export function useForm<
 
   React.useEffect(() => {
     const formStateSubscription = formStateSubjectRef.current.subscribe({
-      next(formState: Partial<FormState<TFieldValues>> = {}) {
+      next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
             ...formStateRef.current,
             ...formState,
           };
-          setFormState(formStateRef.current);
+          updateFormState(formStateRef.current);
         }
       },
     });
