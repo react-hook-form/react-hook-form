@@ -1,5 +1,5 @@
-import isObject from './isObject';
 import convertToArrayPayload from './convertToArrayPayload';
+import isObject from './isObject';
 
 export default <T>(value: T) =>
   (convertToArrayPayload(value) as T[]).map((data) => {
