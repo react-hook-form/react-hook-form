@@ -29,6 +29,9 @@ export function useController<
   TName
 > {
   const methods = useFormContext<TFieldValues>();
+  if(!methods && !control) {
+    return undefined;
+  }
   const {
     defaultValuesRef,
     register,
