@@ -1974,7 +1974,7 @@ describe('useFieldArray', () => {
     expect(watchedValues).toMatchSnapshot();
   });
 
-  it('should keep field values when field array gets unmounted and mounted', () => {
+  it('should keep field values when field array gets unmounted and mounted', async () => {
     type FormValues = {
       test: { firstName: string }[];
     };
@@ -1986,7 +1986,7 @@ describe('useFieldArray', () => {
       register: UseFormRegister<FormValues>;
       control: Control<FormValues>;
     }) => {
-      const { fields } = useFieldArray({
+      const { fields, append } = useFieldArray({
         name: 'test',
         control,
       });
@@ -2002,6 +2002,15 @@ describe('useFieldArray', () => {
               />
             );
           })}
+          <button
+            onClick={() =>
+              append({
+                firstName: 'test',
+              })
+            }
+          >
+            append
+          </button>
         </div>
       );
     };
@@ -2019,5 +2028,20 @@ describe('useFieldArray', () => {
     };
 
     render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'show' }));
+    });
+
+    expect(screen.queryByRole('textbox')).toBeNull();
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'show' }));
+    });
+
+    expect(screen.getAllByRole('textbox').length).toEqual(2);
   });
 });
