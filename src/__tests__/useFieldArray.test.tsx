@@ -637,8 +637,7 @@ describe('useFieldArray', () => {
       act(() => {
         result.current.reset();
       });
-
-      expect(result.current.fields).toEqual([{ id: '2', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -665,7 +664,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '2', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -673,7 +672,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -1973,5 +1972,52 @@ describe('useFieldArray', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValues).toMatchSnapshot();
+  });
+
+  it('should keep field values when field array gets unmounted and mounted', () => {
+    type FormValues = {
+      test: { firstName: string }[];
+    };
+
+    const Test = ({
+      register,
+      control,
+    }: {
+      register: UseFormRegister<FormValues>;
+      control: Control<FormValues>;
+    }) => {
+      const { fields } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      return (
+        <div>
+          {fields.map((field, i) => {
+            return (
+              <input
+                key={field.id}
+                {...register(`test.${i}.firstName` as const)}
+                defaultValue={field.firstName}
+              />
+            );
+          })}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control, register } = useForm<FormValues>();
+      const [show, setShow] = React.useState(true);
+
+      return (
+        <>
+          {show && <Test control={control} register={register} />}
+          <button onClick={() => setShow(!show)}>show</button>
+        </>
+      );
+    };
+
+    render(<App />);
   });
 });
