@@ -71,7 +71,9 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
+      get(fieldsRef.current, name)
+        ? get(getFieldsValues(fieldsRef), name)
+        : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name, [])
         : get(defaultValuesRef.current, name, []),
       keyName,
