@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.4.0] - 2021-05-4
+
+### Added
+
+- new `name` prop for `useFormState` to subscribe to individual inputs.
+
+```ts
+useFormState({
+  name: 'inputName' // optional and can be array of inputs' name as well
+})
+```
+
 ## [7.2.2] - 2021-04-21
 
 ### Changes

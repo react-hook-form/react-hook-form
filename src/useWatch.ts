@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import convertToArrayPayload from './utils/convertToArrayPayload';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import {
@@ -57,10 +58,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
       next: ({ name: inputName, value }) =>
         (!nameRef.current ||
           !inputName ||
-          (Array.isArray(nameRef.current)
-            ? nameRef.current
-            : [nameRef.current]
-          ).some(
+          convertToArrayPayload(nameRef.current).some(
             (fieldName) =>
               inputName &&
               fieldName &&
