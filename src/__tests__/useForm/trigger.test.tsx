@@ -402,4 +402,53 @@ describe('trigger', () => {
 
     expect(screen.queryByText('error')).toBeNull();
   });
+
+  it('should return isValid for the entire form', async () => {
+    const App = () => {
+      const [isValid, setIsValid] = React.useState(false);
+      const { register, trigger } = useForm();
+
+      return (
+        <div>
+          <input
+            {...register('firstName', { required: true })}
+            placeholder={'firstName'}
+          />
+          <input
+            {...register('lastName', { required: true })}
+            placeholder={'lastName'}
+          />
+          <button
+            onClick={async () => {
+              setIsValid(await trigger());
+            }}
+          >
+            trigger
+          </button>
+          <p>{isValid ? 'true' : 'false'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    screen.getByText('false');
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: {
+        value: '1234',
+      },
+    });
+    fireEvent.change(screen.getByPlaceholderText('lastName'), {
+      target: {
+        value: '1234',
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(async () => {
+      screen.getByText('true');
+    });
+  });
 });

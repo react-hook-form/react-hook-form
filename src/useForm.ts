@@ -410,6 +410,8 @@ export function useForm<
   );
 
   const validateForm = async (fieldsRef: FieldRefs) => {
+    let isValid = true;
+
     for (const name in fieldsRef) {
       const field = fieldsRef[name];
 
@@ -424,6 +426,7 @@ export function useForm<
           );
 
           if (fieldError[_f.name]) {
+            isValid = false;
             set(formStateRef.current.errors, _f.name, fieldError[_f.name]);
             unset(validFieldsRef.current, _f.name);
           } else if (get(fieldsWithValidationRef.current, _f.name)) {
@@ -435,6 +438,8 @@ export function useForm<
         current && (await validateForm(current));
       }
     }
+
+    return isValid;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
