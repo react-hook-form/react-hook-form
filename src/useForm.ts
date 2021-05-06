@@ -44,6 +44,7 @@ import {
   Field,
   FieldArrayDefaultValues,
   FieldError,
+  FieldErrors,
   FieldName,
   FieldNamesMarkedBoolean,
   FieldPath,
@@ -448,22 +449,20 @@ export function useForm<
         ? Object.keys(fieldsRef.current)
         : (convertToArrayPayload(name) as InternalFieldName[]);
       let isValid;
+      let schemaResult: FieldErrors<TFieldValues> | {} = {};
 
       formStateSubjectRef.current.next({
         isValidating: true,
       });
 
       if (resolverRef.current) {
-        isValid = isEmptyObject(
-          await executeSchemaOrResolverValidation(
-            fields,
-            isUndefined(name)
-              ? undefined
-              : (fields as FieldName<TFieldValues>[]),
-          ),
+        schemaResult = await executeSchemaOrResolverValidation(
+          fields,
+          isUndefined(name) ? undefined : (fields as FieldName<TFieldValues>[]),
         );
+        isValid = fields.every((name) => !get(schemaResult, name));
       } else {
-        isValid = !!(isUndefined(name)
+        isValid = isUndefined(name)
           ? await validateForm(fieldsRef.current)
           : (
               await Promise.all(
@@ -474,14 +473,16 @@ export function useForm<
                       await executeValidation(fieldName, null),
                   ),
               )
-            ).every(Boolean));
+            ).every(Boolean);
       }
 
       formStateSubjectRef.current.next({
         ...(isString(name) ? { name } : {}),
         errors: formStateRef.current.errors,
         isValidating: false,
-        isValid: resolverRef.current ? isValid : getIsValid(),
+        isValid: resolverRef.current
+          ? isEmptyObject(schemaResult)
+          : getIsValid(),
       });
 
       return isValid;
