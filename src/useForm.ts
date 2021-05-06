@@ -460,7 +460,7 @@ export function useForm<
           fields,
           isUndefined(name) ? undefined : (fields as FieldName<TFieldValues>[]),
         );
-        isValid = fields.some((name) => !get(schemaResult, name));
+        isValid = fields.every((name) => !get(schemaResult, name));
       } else {
         isValid = isUndefined(name)
           ? await validateForm(fieldsRef.current)

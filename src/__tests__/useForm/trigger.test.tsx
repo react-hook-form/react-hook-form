@@ -345,8 +345,22 @@ describe('trigger', () => {
     result.current.register('test3', { required: true });
 
     await act(async () =>
-      expect(await result.current.trigger(['test1', 'test2'])).toBeFalsy(),
+      expect(await result.current.trigger(['test1', 'test2'])).toBeTruthy(),
     );
+
+    await act(async () =>
+      expect(await result.current.trigger(['test3', 'test2'])).toBeFalsy(),
+    );
+
+    await act(async () =>
+      expect(await result.current.trigger(['test3'])).toBeFalsy(),
+    );
+
+    await act(async () =>
+      expect(await result.current.trigger(['test1'])).toBeTruthy(),
+    );
+
+    await act(async () => expect(await result.current.trigger()).toBeFalsy());
   });
 
   it('should return true when field is found and validation pass', async () => {
