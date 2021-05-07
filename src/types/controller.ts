@@ -7,6 +7,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  RefCallBack,
   UseFormStateReturn,
 } from './';
 
@@ -26,7 +27,7 @@ export type ControllerRenderProps<
   onBlur: () => void;
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;
-  ref: React.Ref<any>;
+  ref: RefCallBack;
 };
 
 export type UseControllerProps<
