@@ -50,7 +50,7 @@ export default async (
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
-    {},
+    null,
     name,
     validateAllFieldCriteria,
     error,

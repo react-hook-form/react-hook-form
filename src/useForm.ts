@@ -93,7 +93,6 @@ export function useForm<
   resolver,
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
-  defaultValuesStrategy,
   shouldFocusError = true,
   shouldUnregister,
   criteriaMode,
@@ -165,12 +164,6 @@ export function useForm<
     errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
-  const getFieldsValuesBind = getFieldsValues.bind(
-    null,
-    fieldsRef,
-    defaultValuesRef.current,
-    defaultValuesStrategy,
-  );
 
   contextRef.current = context;
   resolverRef.current = resolver;
@@ -296,7 +289,7 @@ export function useForm<
         }
 
         if (shouldRender) {
-          const values = getFieldsValuesBind();
+          const values = getFieldsValues(fieldsRef);
           set(values, name, rawValue);
           controllerSubjectRef.current.next({
             values: {
@@ -315,7 +308,7 @@ export function useForm<
   );
 
   const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
-    const formValues = getFieldsValuesBind(fieldsRef);
+    const formValues = getFieldsValues(fieldsRef);
 
     name && data && set(formValues, name, data);
 
@@ -394,7 +387,10 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValuesBind(),
+        getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        ),
         contextRef.current,
         {
           criteriaMode,
@@ -687,7 +683,10 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValuesBind(),
+            getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             contextRef.current,
             {
               criteriaMode,
@@ -745,7 +744,10 @@ export function useForm<
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = isMountedRef.current
-      ? getFieldsValuesBind()
+      ? getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? {} : defaultValuesRef.current,
+        )
       : defaultValuesRef.current;
 
     return isUndefined(fieldNames)
@@ -762,7 +764,10 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValuesBind(),
+            ...getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? {} : defaultValuesRef.current,
+            ),
             ...values,
           },
           contextRef.current,
@@ -818,7 +823,7 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getFieldsValuesBind()
+        ? getFieldsValues(fieldsRef, defaultValuesRef.current)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
@@ -1009,7 +1014,10 @@ export function useForm<
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
       }
-      let fieldValues = getFieldsValuesBind();
+      let fieldValues = getFieldsValues(
+        fieldsRef,
+        shouldUnregister ? {} : defaultValuesRef.current,
+      );
 
       formStateSubjectRef.current.next({
         isSubmitting: true,
@@ -1171,7 +1179,7 @@ export function useForm<
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
         if (state.fields && state.name && readFormStateRef.current.isValid) {
-          const values = getFieldsValuesBind(fieldsRef);
+          const values = getFieldsValues(fieldsRef);
           set(values, state.name, state.fields);
           updateIsValid(values);
         }
