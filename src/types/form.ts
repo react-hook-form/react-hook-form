@@ -81,6 +81,7 @@ export type UseFormProps<
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues>;
+  defaultValuesStrategy?: 'shallow' | 'deep';
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;

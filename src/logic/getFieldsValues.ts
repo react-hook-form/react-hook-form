@@ -7,8 +7,10 @@ import set from '../utils/set';
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: FieldValues,
+  defaultValuesStrategy?: any,
   output: Record<string, any> = {},
 ): any => {
+  console.log(defaultValuesStrategy);
   for (const name in fieldsRef.current) {
     const field = fieldsRef.current[name];
 
