@@ -166,7 +166,7 @@ export function useForm<
   });
   const formStateRef = React.useRef(formState);
   const getFieldsValuesBind = getFieldsValues.bind(
-    {},
+    null,
     fieldsRef,
     defaultValuesRef.current,
     defaultValuesStrategy,
