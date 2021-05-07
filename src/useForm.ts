@@ -825,7 +825,7 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getFieldsValues(fieldsRef, defaultValuesRef)
+        ? getFieldsValues(fieldsRef, defaultValuesRef, defaultValuesStrategy)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
