@@ -165,6 +165,9 @@ export function useForm<
     errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
+  const defaultValuesStrategyValue = shouldUnregister
+    ? ''
+    : defaultValuesStrategy;
 
   contextRef.current = context;
   resolverRef.current = resolver;
@@ -390,8 +393,8 @@ export function useForm<
       const { errors } = await resolverRef.current!(
         getFieldsValues(
           fieldsRef,
-          shouldUnregister ? {} : defaultValuesRef.current,
-          defaultValuesStrategy,
+          defaultValuesRef.current,
+          defaultValuesStrategyValue,
         ),
         contextRef.current,
         {
@@ -687,8 +690,8 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getFieldsValues(
               fieldsRef,
-              shouldUnregister ? {} : defaultValuesRef.current,
-              defaultValuesStrategy,
+              defaultValuesRef.current,
+              defaultValuesStrategyValue,
             ),
             contextRef.current,
             {
@@ -770,8 +773,8 @@ export function useForm<
           {
             ...getFieldsValues(
               fieldsRef,
-              shouldUnregister ? {} : defaultValuesRef.current,
-              defaultValuesStrategy,
+              defaultValuesRef.current,
+              defaultValuesStrategyValue,
             ),
             ...values,
           },

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { FieldRefs, FieldValues } from '../types';
 import omit from '../utils/omit';
 import set from '../utils/set';
+import { deepMerge } from '../utils/deepMerge';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
@@ -42,11 +43,13 @@ const getFieldsValues = (
     }
   }
 
-  return defaultValuesStrategy === 'shallow'
-    ? {
-        ...defaultValuesRef,
-        ...output,
-      }
+  return defaultValuesStrategy && defaultValuesRef
+    ? defaultValuesStrategy === 'shallow'
+      ? {
+          ...defaultValuesRef,
+          ...output,
+        }
+      : deepMerge(defaultValuesRef, output)
     : output;
 };
 
