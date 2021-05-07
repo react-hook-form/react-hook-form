@@ -74,6 +74,8 @@ export type SetValueConfig = Partial<{
 
 export type ChangeHandler = (event: any) => Promise<void | boolean>;
 
+export type DefaultValuesStrategy = 'shallow' | 'deep';
+
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object
@@ -81,7 +83,7 @@ export type UseFormProps<
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues>;
-  defaultValuesStrategy: 'shallow' | 'deep';
+  defaultValuesStrategy: DefaultValuesStrategy;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;

@@ -1,14 +1,14 @@
 import * as React from 'react';
 
-import { FieldRefs, FieldValues } from '../types';
+import { DefaultValuesStrategy, FieldRefs, FieldValues } from '../types';
+import { deepMerge } from '../utils/deepMerge';
 import omit from '../utils/omit';
 import set from '../utils/set';
-import { deepMerge } from '../utils/deepMerge';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: FieldValues,
-  defaultValuesStrategy: any = 'shallow',
+  defaultValuesStrategy: DefaultValuesStrategy | '' = 'shallow',
   output: Record<string, any> = {},
 ): any => {
   for (const name in fieldsRef.current) {
