@@ -130,7 +130,7 @@ export type KeepStateOptions = Partial<{
 
 export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
-type RefCallBack = (instance: any) => void;
+export type RefCallBack = (instance: any) => void;
 
 export type UseFormRegisterReturn = {
   onChange: ChangeHandler;
