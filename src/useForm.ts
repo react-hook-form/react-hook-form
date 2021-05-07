@@ -165,9 +165,7 @@ export function useForm<
     errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
-  const defaultValuesStrategyValue = shouldUnregister
-    ? ''
-    : defaultValuesStrategy;
+  const defaultValuesStrategyValue = shouldUnregister && defaultValuesStrategy;
 
   contextRef.current = context;
   resolverRef.current = resolver;

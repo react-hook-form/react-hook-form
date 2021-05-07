@@ -9,7 +9,7 @@ import set from '../utils/set';
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
-  defaultValuesStrategy: DefaultValuesStrategy | '' = SHALLOW,
+  defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
   output: Record<string, any> = {},
 ): any => {
   for (const name in fieldsRef.current) {
