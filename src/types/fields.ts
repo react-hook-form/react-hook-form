@@ -40,6 +40,7 @@ export type Field = {
     name: InternalFieldName;
     value?: any;
     refs?: HTMLInputElement[];
+    mount?: boolean;
   } & RegisterOptions;
 };
 
