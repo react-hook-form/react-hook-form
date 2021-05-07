@@ -982,28 +982,38 @@ export function useForm<
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
 
-      return isWindowUndefined
-        ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
-        : {
-            name,
-            onChange: handleChange,
-            onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null): void => {
-              if (ref) {
-                registerFieldRef(name, ref, options);
-              } else {
-                const field = get(fieldsRef.current, name) as Field;
-                field && (field._f.mount = false);
+      const callbackRef = (ref: HTMLInputElement | null): void => {
+        if (ref) {
+          registerFieldRef(name, ref, options);
+        } else {
+          const field = get(fieldsRef.current, name) as Field;
+          field && (field._f.mount = false);
 
-                if (
-                  isWeb &&
-                  (shouldUnregister || (options && options.shouldUnregister))
-                ) {
-                  unregisterFieldsNamesRef.current.add(name);
-                }
-              }
-            },
-          };
+          if (
+            isWeb &&
+            (shouldUnregister || (options && options.shouldUnregister))
+          ) {
+            unregisterFieldsNamesRef.current.add(name);
+          }
+        }
+      };
+
+      if (isWindowUndefined) {
+        const result = ([name] as unknown) as UseFormRegisterReturn;
+        result.name = result[0];
+        return result;
+      }
+      const result = [
+        name as InternalFieldName,
+        callbackRef,
+        handleChange,
+        handleChange,
+      ] as UseFormRegisterReturn;
+      result.name = result[0];
+      result.ref = result[1];
+      result.onChange = result[2];
+      result.onBlur = result[3];
+      return result;
     },
     [defaultValuesRef.current],
   );

@@ -132,11 +132,16 @@ export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 export type RefCallBack = (instance: any) => void;
 
-export type UseFormRegisterReturn = {
+export type UseFormRegisterReturn = [
+  name: InternalFieldName,
+  ref: RefCallBack,
+  onChange: ChangeHandler,
+  onBlur: ChangeHandler,
+] & {
+  name: InternalFieldName;
+  ref: RefCallBack;
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
-  ref: RefCallBack;
-  name: InternalFieldName;
 };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <
