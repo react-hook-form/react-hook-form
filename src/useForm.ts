@@ -393,7 +393,7 @@ export function useForm<
       const { errors } = await resolverRef.current!(
         getFieldsValues(
           fieldsRef,
-          defaultValuesRef.current,
+          defaultValuesRef,
           defaultValuesStrategyValue,
         ),
         contextRef.current,
@@ -690,7 +690,7 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getFieldsValues(
               fieldsRef,
-              defaultValuesRef.current,
+              defaultValuesRef,
               defaultValuesStrategyValue,
             ),
             contextRef.current,
@@ -750,11 +750,7 @@ export function useForm<
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = isMountedRef.current
-      ? getFieldsValues(
-          fieldsRef,
-          shouldUnregister ? {} : defaultValuesRef.current,
-          defaultValuesStrategy,
-        )
+      ? getFieldsValues(fieldsRef, defaultValuesRef, defaultValuesStrategy)
       : defaultValuesRef.current;
 
     return isUndefined(fieldNames)
@@ -773,7 +769,7 @@ export function useForm<
           {
             ...getFieldsValues(
               fieldsRef,
-              defaultValuesRef.current,
+              defaultValuesRef,
               defaultValuesStrategyValue,
             ),
             ...values,
@@ -831,7 +827,7 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getFieldsValues(fieldsRef, defaultValuesRef.current)
+        ? getFieldsValues(fieldsRef, defaultValuesRef)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
@@ -1024,7 +1020,8 @@ export function useForm<
       }
       let fieldValues = getFieldsValues(
         fieldsRef,
-        shouldUnregister ? {} : defaultValuesRef.current,
+        defaultValuesRef,
+        defaultValuesStrategyValue,
       );
 
       formStateSubjectRef.current.next({
@@ -1120,7 +1117,7 @@ export function useForm<
         isSubmitSuccessful: false,
       });
     },
-    [],
+    [defaultValuesStrategyValue],
   );
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {

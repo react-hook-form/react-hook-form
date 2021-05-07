@@ -22,7 +22,9 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
+        {
+          current: {},
+        },
       ),
     ).toEqual({
       test: 'test',
@@ -58,7 +60,9 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
+        {
+          current: {},
+        },
       ),
     ).toEqual({
       test: 'test',
@@ -102,7 +106,7 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
+        { current: {} },
       ),
     ).toEqual({
       156: 'test',
@@ -135,7 +139,7 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
+        { current: {} },
       ),
     ).toEqual({
       test: 'test',
@@ -164,7 +168,7 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -256,12 +260,14 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          test: 'data',
-          test2: [
-            {
-              test: 'test',
-            },
-          ],
+          current: {
+            test: 'data',
+            test2: [
+              {
+                test: 'test',
+              },
+            ],
+          },
         },
       ),
     ).toEqual({ test1: 'test', test: 'data', test2: [] });
@@ -282,7 +288,7 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          test: 'data',
+          current: { test: 'data' },
         },
       ),
     ).toEqual({ test1: undefined, test: 'data' });

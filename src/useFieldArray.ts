@@ -95,11 +95,7 @@ export const useFieldArray = <
     );
 
   const getCurrentFieldsValues = () => {
-    const values = get(
-      getFieldsValues(fieldsRef, defaultValuesRef.current),
-      name,
-      [],
-    );
+    const values = get(getFieldsValues(fieldsRef, defaultValuesRef), name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayDefaultValuesRef.current, name, []).map(
@@ -420,11 +416,7 @@ export const useFieldArray = <
 
     watchSubjectRef.current.next({
       name,
-      value: get(
-        getFieldsValues(fieldsRef, defaultValuesRef.current),
-        name,
-        [],
-      ),
+      value: get(getFieldsValues(fieldsRef, defaultValuesRef), name, []),
     });
 
     focusNameRef.current &&

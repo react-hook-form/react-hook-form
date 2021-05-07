@@ -8,7 +8,7 @@ import set from '../utils/set';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
-  defaultValuesRef?: FieldValues,
+  defaultValuesRef?: React.MutableRefObject<FieldValues>,
   defaultValuesStrategy: DefaultValuesStrategy | '' = SHALLOW,
   output: Record<string, any> = {},
 ): any => {
@@ -44,13 +44,13 @@ const getFieldsValues = (
     }
   }
 
-  return defaultValuesStrategy && defaultValuesRef
+  return defaultValuesStrategy && defaultValuesRef && defaultValuesRef.current
     ? defaultValuesStrategy === 'shallow'
       ? {
-          ...defaultValuesRef,
+          ...defaultValuesRef.current,
           ...output,
         }
-      : deepMerge(defaultValuesRef, output)
+      : deepMerge(defaultValuesRef.current, output)
     : output;
 };
 
