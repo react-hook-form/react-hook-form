@@ -35,7 +35,7 @@ import omit from './utils/omit';
 import set from './utils/set';
 import Subject from './utils/Subject';
 import unset from './utils/unset';
-import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, SHALLOW, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
   ChangeHandler,
   DeepPartial,
@@ -93,7 +93,7 @@ export function useForm<
   resolver,
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
-  defaultValuesStrategy = 'shallow',
+  defaultValuesStrategy = SHALLOW,
   shouldFocusError = true,
   shouldUnregister,
   criteriaMode,
