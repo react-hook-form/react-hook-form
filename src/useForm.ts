@@ -1120,7 +1120,7 @@ export function useForm<
         isSubmitSuccessful: false,
       });
     },
-    [defaultValuesStrategyValue],
+    [],
   );
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
