@@ -1,10 +1,10 @@
 import * as React from 'react';
 
+import { SHALLOW } from '../constants';
 import { DefaultValuesStrategy, FieldRefs, FieldValues } from '../types';
 import { deepMerge } from '../utils/deepMerge';
 import omit from '../utils/omit';
 import set from '../utils/set';
-import { SHALLOW } from '../constants';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
