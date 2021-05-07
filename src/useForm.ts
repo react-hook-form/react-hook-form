@@ -93,6 +93,7 @@ export function useForm<
   resolver,
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
+  defaultValuesStrategy = 'shallow',
   shouldFocusError = true,
   shouldUnregister,
   criteriaMode,
@@ -390,6 +391,7 @@ export function useForm<
         getFieldsValues(
           fieldsRef,
           shouldUnregister ? {} : defaultValuesRef.current,
+          defaultValuesStrategy,
         ),
         contextRef.current,
         {
@@ -686,6 +688,7 @@ export function useForm<
             getFieldsValues(
               fieldsRef,
               shouldUnregister ? {} : defaultValuesRef.current,
+              defaultValuesStrategy,
             ),
             contextRef.current,
             {
@@ -747,6 +750,7 @@ export function useForm<
       ? getFieldsValues(
           fieldsRef,
           shouldUnregister ? {} : defaultValuesRef.current,
+          defaultValuesStrategy,
         )
       : defaultValuesRef.current;
 
@@ -767,6 +771,7 @@ export function useForm<
             ...getFieldsValues(
               fieldsRef,
               shouldUnregister ? {} : defaultValuesRef.current,
+              defaultValuesStrategy,
             ),
             ...values,
           },
