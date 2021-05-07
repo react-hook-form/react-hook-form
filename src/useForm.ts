@@ -1014,10 +1014,10 @@ export function useForm<
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
       }
-      let fieldValues = {
-        ...(shouldUnregister ? {} : defaultValuesRef.current),
-        ...getFieldsValues(fieldsRef),
-      };
+      let fieldValues = getFieldsValues(
+        fieldsRef,
+        shouldUnregister ? {} : defaultValuesRef.current,
+      );
 
       formStateSubjectRef.current.next({
         isSubmitting: true,
