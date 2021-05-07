@@ -1073,7 +1073,12 @@ export function useForm<
         });
       }
     },
-    [shouldFocusError, defaultValuesStrategyValue, isValidateAllFieldCriteria, criteriaMode],
+    [
+      shouldFocusError,
+      defaultValuesStrategyValue,
+      isValidateAllFieldCriteria,
+      criteriaMode,
+    ],
   );
 
   const resetFromState = React.useCallback(
