@@ -22,14 +22,13 @@ Include a codesandbox will help us to investigate the issue quicker.
 
 V7
 
-- [JS](https://codesandbox.io/s/elated-dubinsky-vol10) Template
-- [TS](https://codesandbox.io/s/frosty-wave-f1pco) Template
+- [JS](https://codesandbox.io/s/great-paper-deove) Template
+- [TS](https://codesandbox.io/s/eager-sun-jt4df) Template
 
 V6
 
-- [useForm](https://codesandbox.io/s/react-hook-form-useform-template-lsm61) Template
-- [useFieldArray](https://codesandbox.io/s/react-hook-form-usefieldarray-template-q0jek) Template
-- [Controller](https://codesandbox.io/s/react-hook-form-controller-template-yu0z5) Template
+- [JS](https://codesandbox.io/s/mystifying-keller-5jwf5) Template
+- [TS](https://codesandbox.io/s/romantic-moon-0chz7) Template
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
