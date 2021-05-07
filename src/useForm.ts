@@ -221,6 +221,7 @@ export function useForm<
           ...state,
           isValid: resolverRef.current ? !!isValid : getIsValid(),
           errors: formStateRef.current.errors,
+          name,
         };
 
         formStateRef.current = {

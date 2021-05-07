@@ -348,7 +348,7 @@ describe('useFormState', () => {
       });
     });
 
-    expect(count).toEqual(2);
+    expect(count).toEqual(1);
   });
 
   it('should only re-render when subscribed field names updated', async () => {
@@ -475,6 +475,6 @@ describe('useFormState', () => {
       });
     });
 
-    expect(count).toEqual(2);
+    expect(count).toEqual(1);
   });
 });
