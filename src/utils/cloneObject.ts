@@ -1,5 +1,5 @@
-import isPrimitive from './isPrimitive';
 import isHTMLElement from './isHTMLElement';
+import isPrimitive from './isPrimitive';
 import isWeb from './isWeb';
 
 export default function cloneObject<T extends unknown>(data: T): T {

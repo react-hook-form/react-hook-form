@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { SHALLOW } from '../constants';
 import { DefaultValuesStrategy, FieldRefs, FieldValues } from '../types';
+import cloneObject from '../utils/cloneObject';
 import { deepMerge } from '../utils/deepMerge';
 import omit from '../utils/omit';
 import set from '../utils/set';
@@ -63,7 +64,7 @@ const getFieldsValues = (
           ...defaultValuesRef.current,
           ...output,
         }
-      : deepMerge(defaultValuesRef.current, output)
+      : deepMerge(cloneObject(defaultValuesRef.current), output)
     : output;
 };
 
