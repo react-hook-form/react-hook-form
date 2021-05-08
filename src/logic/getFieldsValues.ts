@@ -10,7 +10,6 @@ import set from '../utils/set';
 const getFieldsValuesInternal = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
-  defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
   output: FieldValues = {},
 ) => {
   for (const name in fieldsRef.current) {
@@ -38,7 +37,6 @@ const getFieldsValuesInternal = (
             current,
           },
           defaultValuesRef,
-          defaultValuesStrategy,
           output[name],
         );
     }
@@ -50,13 +48,9 @@ const getFieldsValuesInternal = (
 export default (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
-  defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
+  defaultValuesStrategy?: DefaultValuesStrategy | boolean,
 ): any => {
-  const output = getFieldsValuesInternal(
-    fieldsRef,
-    defaultValuesRef,
-    defaultValuesStrategy,
-  );
+  const output = getFieldsValuesInternal(fieldsRef, defaultValuesRef);
 
   return defaultValuesStrategy && defaultValuesRef && defaultValuesRef.current
     ? defaultValuesStrategy === SHALLOW
