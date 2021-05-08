@@ -81,38 +81,4 @@ describe('clone', () => {
 
     expect(copy.items).toEqual([2]);
   });
-
-  it('should copy prototype methods', () => {
-    class Counter {
-      count = 1;
-      increment() {
-        this.count++;
-      }
-    }
-    const counter = new Counter();
-    const copy = cloneObject(counter);
-
-    expect(copy.count).toBe(1);
-    expect(typeof copy.increment).toBe('function');
-  });
-
-  it('should copy prototype methods with private fields', () => {
-    class Counter {
-      #value;
-      constructor() {
-        this.#value = 1;
-      }
-      get count() {
-        return this.#value;
-      }
-      increment() {
-        this.#value++;
-      }
-    }
-    const counter = new Counter();
-    const copy = cloneObject(counter);
-
-    expect(copy.count).toBe(1);
-    expect(typeof copy.increment).toBe('function');
-  });
 });
