@@ -47,7 +47,7 @@ const getFieldsValuesInternal = (
   return output;
 };
 
-const getFieldsValues = (
+export default (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
   defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
@@ -67,5 +67,3 @@ const getFieldsValues = (
       : deepMerge(cloneObject(defaultValuesRef.current), output)
     : output;
 };
-
-export default getFieldsValues;
