@@ -1,6 +1,7 @@
 import isHTMLElement from './isHTMLElement';
 import isPrimitive from './isPrimitive';
 import isWeb from './isWeb';
+import isObject from './isObject';
 
 export default function cloneObject<T extends unknown>(data: T): T {
   let copy: any;
@@ -8,14 +9,6 @@ export default function cloneObject<T extends unknown>(data: T): T {
   if (
     isPrimitive(data) ||
     (isWeb && (data instanceof File || isHTMLElement(data)))
-  ) {
-    return data;
-  }
-
-  if (
-    !['Set', 'Map', 'Object', 'Date', 'Array'].includes(
-      (data as Object).constructor.name,
-    )
   ) {
     return data;
   }
@@ -41,10 +34,12 @@ export default function cloneObject<T extends unknown>(data: T): T {
     return copy;
   }
 
-  copy = Array.isArray(data) ? [] : {};
+  if (Array.isArray(data) || isObject(data)) {
+    copy = Array.isArray(data) ? [] : {};
 
-  for (const key in data) {
-    copy[key] = cloneObject(data[key]);
+    for (const key in data) {
+      copy[key] = cloneObject(data[key]);
+    }
   }
 
   return copy;
