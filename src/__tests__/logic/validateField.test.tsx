@@ -19,6 +19,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: true,
@@ -39,6 +40,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: 'required',
@@ -58,6 +60,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: 'required',
@@ -77,6 +80,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: {
@@ -99,6 +103,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: {
@@ -121,6 +126,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: {
@@ -137,6 +143,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'radio', name: 'test' },
             required: true,
@@ -156,6 +163,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: 'test',
@@ -175,6 +183,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'radio', value: '', name: 'test' },
             required: 'test',
@@ -194,6 +203,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'checkbox', name: 'test' },
             required: 'test',
@@ -213,6 +223,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', value: '0', name: 'test' },
             required: true,
@@ -232,6 +243,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'checkbox', name: 'test' },
             required: 'test',
@@ -245,6 +257,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             valueAsNumber: true,
             ref: { name: 'test', value: '' },
@@ -269,6 +282,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { name: 'test', type: 'file', value: '' },
             required: true,
@@ -295,6 +309,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: 10 },
             value: 10,
@@ -316,6 +331,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: 10 },
             value: 10,
@@ -340,6 +356,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: 10 },
             required: true,
@@ -364,6 +381,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: 8 },
             value: 8,
@@ -379,6 +397,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: 10 },
             value: 10,
@@ -402,6 +421,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
             value: '',
@@ -422,6 +442,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'custom',
@@ -451,6 +472,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'custom',
@@ -475,6 +497,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'custom', name: 'test' },
             required: true,
@@ -489,6 +512,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'date',
@@ -518,6 +542,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: -1 },
             value: -1,
@@ -539,6 +564,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: -1 },
             value: -1,
@@ -563,6 +589,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: -1 },
             value: -1,
@@ -587,6 +614,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'number', name: 'test', valueAsNumber: 10 },
             value: 10,
@@ -608,6 +636,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'date',
@@ -637,6 +666,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'date',
@@ -667,6 +697,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'date',
@@ -701,6 +732,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: '', name: 'test' },
             value: '1',
@@ -722,6 +754,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: '', name: 'test' },
             value: '4',
@@ -743,6 +776,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: '',
@@ -774,6 +808,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -801,6 +836,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -831,6 +867,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -863,6 +900,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -890,6 +928,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -920,6 +959,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -954,6 +994,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -981,6 +1022,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1011,6 +1053,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1041,6 +1084,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1059,6 +1103,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1079,6 +1124,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1097,6 +1143,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1124,6 +1171,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1161,6 +1209,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1190,6 +1239,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'radio',
@@ -1217,6 +1267,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'radio',
@@ -1243,6 +1294,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1276,6 +1328,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1311,6 +1364,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1337,6 +1391,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1365,6 +1420,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1384,6 +1440,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: {
               type: 'text',
@@ -1407,6 +1464,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: '',
@@ -1424,6 +1482,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: '123',
@@ -1448,6 +1507,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: 'a',
@@ -1465,6 +1525,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: 'a',
@@ -1487,6 +1548,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: '',
@@ -1514,6 +1576,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: 'bil',
@@ -1541,6 +1604,7 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            mount: true,
             name: 'test',
             ref: { type: 'text', name: 'test' },
             value: 'bil',

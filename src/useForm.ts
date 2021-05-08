@@ -548,7 +548,7 @@ export function useForm<
 
     if (
       (!isUndefined(defaultValue) || isWithinRefCallback) &&
-      hasValidation(options) &&
+      hasValidation(options, field._f.mount) &&
       !validationMode.isOnSubmit &&
       field &&
       readFormStateRef.current.isValid
@@ -634,7 +634,7 @@ export function useForm<
         } = getValidationModes(reValidateMode);
 
         const shouldSkipValidation =
-          (!hasValidation(field._f) &&
+          (!hasValidation(field._f, field._f.mount) &&
             !resolverRef.current &&
             !get(formStateRef.current.errors, name)) ||
           skipValidation({
@@ -973,10 +973,11 @@ export function useForm<
                 ...get(fieldsRef.current, name)._f,
               }),
           name,
+          mount: true,
           ...options,
         },
       });
-      hasValidation(options) &&
+      hasValidation(options, true) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
       isInitialRegister && updateValidAndValue(name, options);
@@ -987,12 +988,20 @@ export function useForm<
             name,
             onChange: handleChange,
             onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null) => {
-              ref
-                ? registerFieldRef(name, ref, options)
-                : (shouldUnregister || (options && options.shouldUnregister)) &&
+            ref: (ref: HTMLInputElement | null): void => {
+              if (ref) {
+                registerFieldRef(name, ref, options);
+              } else {
+                const field = get(fieldsRef.current, name) as Field;
+                field && (field._f.mount = false);
+
+                if (
                   isWeb &&
+                  (shouldUnregister || (options && options.shouldUnregister))
+                ) {
                   unregisterFieldsNamesRef.current.add(name);
+                }
+              }
             },
           };
     },
@@ -1006,10 +1015,10 @@ export function useForm<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues = {
-        ...(shouldUnregister ? {} : defaultValuesRef.current),
-        ...getFieldsValues(fieldsRef),
-      };
+      let fieldValues = getFieldsValues(
+        fieldsRef,
+        shouldUnregister ? {} : defaultValuesRef.current,
+      );
 
       formStateSubjectRef.current.next({
         isSubmitting: true,

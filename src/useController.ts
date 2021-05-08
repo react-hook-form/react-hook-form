@@ -63,7 +63,11 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      (shouldUnmountUnregister || shouldUnregister) && unregister(name);
+      if (shouldUnmountUnregister || shouldUnregister) {
+        unregister(name);
+      } else if (get(fieldsRef.current, name)) {
+        get(fieldsRef.current, name)._f.mount = false;
+      }
     };
   }, [name]);
 
