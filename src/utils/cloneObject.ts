@@ -1,7 +1,7 @@
 import isHTMLElement from './isHTMLElement';
+import isObject from './isObject';
 import isPrimitive from './isPrimitive';
 import isWeb from './isWeb';
-import isObject from './isObject';
 
 export default function cloneObject<T extends unknown>(data: T): T {
   let copy: any;
