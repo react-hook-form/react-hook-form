@@ -351,4 +351,48 @@ describe('watch', () => {
 
     screen.getByText('False');
   });
+
+  describe('when defaultValuesStrategy set to deep', () => {
+    it('should return deeply nested field values with defaultValues', async () => {
+      let data;
+
+      function App() {
+        const { register, watch } = useForm<{
+          test: {
+            firstName: string;
+            lastName: string;
+          };
+        }>({
+          defaultValuesStrategy: 'deep',
+          defaultValues: {
+            test: { lastName: '', firstName: '' },
+          },
+        });
+        data = watch();
+
+        return (
+          <form>
+            <input {...register('test.lastName')} />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '1234',
+          },
+        });
+      });
+
+      expect(data).toEqual({
+        test: {
+          firstName: '',
+          lastName: '1234',
+        },
+      });
+    });
+  });
 });
