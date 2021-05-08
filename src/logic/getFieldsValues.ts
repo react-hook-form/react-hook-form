@@ -6,12 +6,12 @@ import { deepMerge } from '../utils/deepMerge';
 import omit from '../utils/omit';
 import set from '../utils/set';
 
-const getFieldsValues = (
+const getFieldsValuesInternal = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
   defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
   output: Record<string, any> = {},
-): any => {
+) => {
   for (const name in fieldsRef.current) {
     const field = fieldsRef.current[name];
 
@@ -31,8 +31,8 @@ const getFieldsValues = (
           : {},
       );
 
-      if (current) {
-        getFieldsValues(
+      current &&
+        getFieldsValuesInternal(
           {
             current,
           },
@@ -40,12 +40,25 @@ const getFieldsValues = (
           defaultValuesStrategy,
           output[name],
         );
-      }
     }
   }
 
+  return output;
+};
+
+const getFieldsValues = (
+  fieldsRef: React.MutableRefObject<FieldRefs>,
+  defaultValuesRef?: React.MutableRefObject<FieldValues>,
+  defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
+): any => {
+  const output = getFieldsValuesInternal(
+    fieldsRef,
+    defaultValuesRef,
+    defaultValuesStrategy,
+  );
+
   return defaultValuesStrategy && defaultValuesRef && defaultValuesRef.current
-    ? defaultValuesStrategy === 'shallow'
+    ? defaultValuesStrategy === SHALLOW
       ? {
           ...defaultValuesRef.current,
           ...output,
