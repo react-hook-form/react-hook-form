@@ -1014,6 +1014,7 @@ export function useForm<
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
       }
+      let hasNoPromiseError = true;
       let fieldValues = getFieldsValues(
         fieldsRef,
         shouldUnregister ? {} : defaultValuesRef.current,
@@ -1059,12 +1060,15 @@ export function useForm<
               fieldsNamesRef.current,
             );
         }
+      } catch {
+        hasNoPromiseError = false;
       } finally {
         formStateRef.current.isSubmitted = true;
         formStateSubjectRef.current.next({
           isSubmitted: true,
           isSubmitting: false,
-          isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
+          isSubmitSuccessful:
+            isEmptyObject(formStateRef.current.errors) && hasNoPromiseError,
           submitCount: formStateRef.current.submitCount + 1,
           errors: formStateRef.current.errors,
         });

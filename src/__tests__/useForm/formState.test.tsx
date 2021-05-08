@@ -224,4 +224,40 @@ describe('formState', () => {
       await waitFor(async () => screen.getByText('nope'));
     });
   });
+
+  it('should only set isSubmitSuccessful to false when there is a promise reject', async () => {
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { isSubmitSuccessful, isSubmitted },
+      } = useForm();
+
+      return (
+        <form
+          onSubmit={handleSubmit(async () => {
+            throw new Error('something is wrong');
+          })}
+        >
+          <input {...register('test')} />
+          <p>{isSubmitted ? 'isSubmitted' : 'no'}</p>
+          <p>
+            {isSubmitSuccessful
+              ? 'isSubmitSuccessful'
+              : 'isNotSubmitSuccessful'}
+          </p>
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    screen.getByText('isSubmitted');
+    screen.getByText('isNotSubmitSuccessful');
+  });
 });
