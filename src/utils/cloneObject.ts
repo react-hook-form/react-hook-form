@@ -28,8 +28,8 @@ export default function cloneObject<T extends unknown>(data: T): T {
 
   if (data instanceof Map) {
     copy = new Map();
-    for (const key of data.keys()) {
-      copy.set(key, cloneObject(data.get(key)));
+    for (const [key, value] of data) {
+      copy.set(key, cloneObject(value));
     }
     return copy;
   }
