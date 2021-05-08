@@ -11,7 +11,7 @@ const getFieldsValuesInternal = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
   defaultValuesStrategy: DefaultValuesStrategy | boolean = SHALLOW,
-  output: Record<string, any> = {},
+  output: FieldValues = {},
 ) => {
   for (const name in fieldsRef.current) {
     const field = fieldsRef.current[name];
