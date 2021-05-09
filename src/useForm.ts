@@ -1113,11 +1113,9 @@ export function useForm<
     value: T,
     name = '',
   ): void => {
-    if (
+    !get(fieldsRef.current, name) &&
       (isPrimitive(value) ||
         (isWeb && (value instanceof File || isHTMLElement(value)))) &&
-      !get(fieldsRef.current, name)
-    ) {
       set(fieldsRef.current, name, {
         _f: {
           ref: { name, value },
@@ -1125,7 +1123,6 @@ export function useForm<
           name,
         },
       });
-    }
 
     if (Array.isArray(value) || isObject(value)) {
       if (name && !get(fieldsRef.current, name)) {
