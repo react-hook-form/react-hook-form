@@ -1109,7 +1109,7 @@ export function useForm<
     [],
   );
 
-  const preRegister = <T extends DefaultValues<TFieldValues>>(
+  const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
     data: T,
     parentKey: any = '',
   ): void => {
@@ -1134,7 +1134,10 @@ export function useForm<
       }
 
       for (const key in data) {
-        preRegister(data[key], parentKey + (parentKey ? '.' : '') + key);
+        registerAbsentFields(
+          data[key],
+          parentKey + (parentKey ? '.' : '') + key,
+        );
       }
     }
   };
@@ -1162,7 +1165,7 @@ export function useForm<
 
     if (!keepStateOptions.keepDefaultValues) {
       defaultValuesRef.current = { ...updatedValues };
-      preRegister(updatedValues);
+      registerAbsentFields(updatedValues);
     }
 
     if (!keepStateOptions.keepValues) {
@@ -1190,7 +1193,7 @@ export function useForm<
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
-    preRegister(defaultValuesRef.current);
+    registerAbsentFields(defaultValuesRef.current);
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
