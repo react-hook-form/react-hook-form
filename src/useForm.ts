@@ -791,13 +791,14 @@ export function useForm<
   );
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name &&
-      convertToArrayPayload(name).forEach((inputName) =>
-        unset(formStateRef.current.errors, inputName),
-      );
+    name
+      ? convertToArrayPayload(name).forEach((inputName) =>
+          unset(formStateRef.current.errors, inputName),
+        )
+      : (formStateRef.current.errors = {});
 
     formStateSubjectRef.current.next({
-      errors: name ? formStateRef.current.errors : {},
+      errors: formStateRef.current.errors,
     });
   };
 
