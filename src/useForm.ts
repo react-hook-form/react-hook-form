@@ -501,8 +501,9 @@ export function useForm<
       Object.entries(value).forEach(([inputKey, inputValue]) => {
         const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
+        const isFieldArray = fieldArrayNamesRef.current.has(name);
 
-        field && !field._f
+        isFieldArray || (field && !field._f)
           ? setInternalValues(
               fieldName,
               inputValue as SetFieldValue<TFieldValues>,
