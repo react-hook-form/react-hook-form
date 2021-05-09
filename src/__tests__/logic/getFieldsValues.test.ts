@@ -243,54 +243,19 @@ describe('getFieldsValues', () => {
     });
   });
 
-  it('should shallow merge with default values', () => {
-    expect(
-      getFieldsValues(
-        {
-          current: {
-            test1: {
-              _f: {
-                name: 'test.test',
-                ref: { name: 'test.test' },
-                value: 'test',
-              },
-            },
-            // @ts-ignore
-            test2: [],
-          },
-        },
-        {
-          current: {
-            test: 'data',
-            test2: [
-              {
-                test: 'test',
-              },
-            ],
-          },
-        },
-      ),
-    ).toEqual({ test1: 'test', test: 'data', test2: [] });
-  });
-
   it('should return undefined for disabled input', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test1: {
-              _f: {
-                name: 'test.test',
-                ref: { name: 'test.test', disabled: true },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          test1: {
+            _f: {
+              name: 'test.test',
+              ref: { name: 'test.test', disabled: true },
+              value: 'test',
             },
           },
         },
-        {
-          current: { test: 'data' },
-        },
-      ),
-    ).toEqual({ test1: undefined, test: 'data' });
+      }),
+    ).toEqual({ test1: undefined });
   });
 });

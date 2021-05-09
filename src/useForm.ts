@@ -740,7 +740,10 @@ export function useForm<
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
-    const values = getFieldsValues(fieldsRef, defaultValuesRef);
+    const values = {
+      ...defaultValuesRef.current,
+      ...getFieldsValues(fieldsRef),
+    };
 
     return isUndefined(fieldNames)
       ? values
@@ -812,7 +815,10 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getFieldsValues(fieldsRef, defaultValuesRef)
+        ? {
+            ...defaultValuesRef.current,
+            ...getFieldsValues(fieldsRef),
+          }
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames

@@ -4,11 +4,11 @@ import { FieldRefs, FieldValues } from '../types';
 import omit from '../utils/omit';
 import set from '../utils/set';
 
-const getFieldsValuesInternal = (
+const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
   output: FieldValues = {},
-) => {
+): any => {
   for (const name in fieldsRef.current) {
     const field = fieldsRef.current[name];
 
@@ -29,7 +29,7 @@ const getFieldsValuesInternal = (
       );
 
       current &&
-        getFieldsValuesInternal(
+        getFieldsValues(
           {
             current,
           },
@@ -42,16 +42,4 @@ const getFieldsValuesInternal = (
   return output;
 };
 
-export default (
-  fieldsRef: React.MutableRefObject<FieldRefs>,
-  defaultValuesRef?: React.MutableRefObject<FieldValues>,
-): any => {
-  const output = getFieldsValuesInternal(fieldsRef, defaultValuesRef);
-
-  return defaultValuesRef && defaultValuesRef.current
-    ? {
-        ...defaultValuesRef.current,
-        ...output,
-      }
-    : output;
-};
+export default getFieldsValues;
