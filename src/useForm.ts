@@ -1066,7 +1066,8 @@ export function useForm<
               fieldsNamesRef.current,
             );
         }
-      } catch {
+      } catch (e) {
+        console.log(e);
         hasNoPromiseError = false;
       } finally {
         formStateRef.current.isSubmitted = true;
@@ -1185,8 +1186,9 @@ export function useForm<
     ) {
       set(fieldsRef.current, parentKey, {
         _f: {
-          ref: { name: parentKey },
+          ref: { name: parentKey, value: data },
           value: data,
+          name: parentKey,
         },
       });
       return;
