@@ -363,7 +363,6 @@ describe('watch', () => {
             lastName: string;
           };
         }>({
-          defaultValuesStrategy: 'deep',
           defaultValues: {
             test: { lastName: '', firstName: '' },
           },

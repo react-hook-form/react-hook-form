@@ -196,7 +196,6 @@ describe('getValues', () => {
 
     const Component = () => {
       const { getValues, register } = useForm({
-        defaultValuesStrategy: 'deep',
         defaultValues: {
           test: {
             firstName: 'test',
