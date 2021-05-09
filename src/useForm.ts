@@ -389,10 +389,7 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(
-          fieldsRef,
-          shouldUnregister ? { current: {} } : defaultValuesRef,
-        ),
+        getFieldsValues(fieldsRef),
         contextRef.current,
         {
           criteriaMode,
@@ -685,7 +682,10 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(fieldsRef, shouldUnregister ? { current: {} } : defaultValuesRef,),
+            getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? { current: {} } : defaultValuesRef,
+            ),
             contextRef.current,
             {
               criteriaMode,
@@ -743,7 +743,10 @@ export function useForm<
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = isMountedRef.current
-      ? getFieldsValues(fieldsRef, shouldUnregister ? { current: {} } : defaultValuesRef,)
+      ? getFieldsValues(
+          fieldsRef,
+          shouldUnregister ? { current: {} } : defaultValuesRef,
+        )
       : defaultValuesRef.current;
 
     return isUndefined(fieldNames)
@@ -760,7 +763,10 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(fieldsRef, shouldUnregister ? { current: {} } : defaultValuesRef,),
+            ...getFieldsValues(
+              fieldsRef,
+              shouldUnregister ? { current: {} } : defaultValuesRef,
+            ),
             ...values,
           },
           contextRef.current,
@@ -816,7 +822,7 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getFieldsValues(fieldsRef, shouldUnregister ? { current: {} } : defaultValuesRef,)
+        ? getFieldsValues(fieldsRef, defaultValuesRef)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
@@ -1008,7 +1014,7 @@ export function useForm<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues = getFieldsValues(fieldsRef, shouldUnregister ? { current: {} } : defaultValuesRef,);
+      let fieldValues = getFieldsValues(fieldsRef);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,
@@ -1109,54 +1115,6 @@ export function useForm<
     [],
   );
 
-  const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
-    const updatedValues = values || defaultValuesRef.current;
-
-    if (isWeb && !keepStateOptions.keepValues) {
-      for (const name of fieldsNamesRef.current) {
-        const field = get(fieldsRef.current, name);
-        if (field && field._f) {
-          const inputRef = Array.isArray(field._f.refs)
-            ? field._f.refs[0]
-            : field._f.ref;
-
-          if (isHTMLElement(inputRef)) {
-            try {
-              inputRef.closest('form')!.reset();
-              break;
-            } catch {}
-          }
-        }
-      }
-    }
-
-    !keepStateOptions.keepDefaultValues &&
-      (defaultValuesRef.current = { ...updatedValues });
-
-    if (!keepStateOptions.keepValues) {
-      fieldsRef.current = {};
-
-      controllerSubjectRef.current.next({
-        values: { ...updatedValues },
-      });
-
-      watchSubjectRef.current.next({
-        value: { ...updatedValues },
-      });
-
-      fieldArraySubjectRef.current.next({
-        fields: { ...updatedValues },
-        isReset: true,
-      });
-    }
-
-    resetFromState(keepStateOptions, values);
-    isMountedRef.current = false;
-  };
-
-  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
-    get(fieldsRef.current, name)._f.ref.focus();
-
   const preRegister = <T extends DefaultValues<TFieldValues>>(
     data: T,
     parentKey: any = '',
@@ -1186,6 +1144,56 @@ export function useForm<
       }
     }
   };
+
+  const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
+    const updatedValues = values || defaultValuesRef.current;
+
+    if (isWeb && !keepStateOptions.keepValues) {
+      for (const name of fieldsNamesRef.current) {
+        const field = get(fieldsRef.current, name);
+        if (field && field._f) {
+          const inputRef = Array.isArray(field._f.refs)
+            ? field._f.refs[0]
+            : field._f.ref;
+
+          if (isHTMLElement(inputRef)) {
+            try {
+              inputRef.closest('form')!.reset();
+              break;
+            } catch {}
+          }
+        }
+      }
+    }
+
+    if (!keepStateOptions.keepDefaultValues) {
+      defaultValuesRef.current = { ...updatedValues };
+      preRegister(updatedValues);
+    }
+
+    if (!keepStateOptions.keepValues) {
+      fieldsRef.current = {};
+
+      controllerSubjectRef.current.next({
+        values: { ...updatedValues },
+      });
+
+      watchSubjectRef.current.next({
+        value: { ...updatedValues },
+      });
+
+      fieldArraySubjectRef.current.next({
+        fields: { ...updatedValues },
+        isReset: true,
+      });
+    }
+
+    resetFromState(keepStateOptions, values);
+    isMountedRef.current = false;
+  };
+
+  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
+    get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
     preRegister(defaultValuesRef.current);
