@@ -1066,8 +1066,7 @@ export function useForm<
               fieldsNamesRef.current,
             );
         }
-      } catch (e) {
-        console.log(e);
+      } catch {
         hasNoPromiseError = false;
       } finally {
         formStateRef.current.isSubmitted = true;
