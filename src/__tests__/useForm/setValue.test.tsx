@@ -8,12 +8,12 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
 import { NestedValue } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
-import { useFieldArray } from '../../useFieldArray';
-import { Controller } from '../../controller';
 
 describe('setValue', () => {
   it('should not setValue for unmounted state with shouldUnregister', () => {
