@@ -8,7 +8,9 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
 import { NestedValue } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
@@ -857,5 +859,48 @@ describe('setValue', () => {
     expect(result).toEqual({
       setStringDate: new Date('2021-04-23'),
     });
+  });
+
+  it('should set value for field array name correctly', () => {
+    const inputId = 'name';
+
+    const App = () => {
+      const { control, setValue } = useForm<{
+        names: { name: string; id?: string }[];
+      }>();
+
+      const { fields } = useFieldArray({ control, name: 'names' });
+
+      React.useEffect(() => {
+        setValue('names', [{ name: 'initial value' }]);
+      }, []);
+
+      const onChangeValue = () => {
+        setValue('names.0', { name: 'updated value', id: 'test' });
+      };
+
+      return (
+        <>
+          {fields.map((item, index) => (
+            <Controller
+              key={item.id}
+              control={control}
+              name={`names.${index}.name` as const}
+              defaultValue={item.name}
+              render={({ field }) => <input data-testid={inputId} {...field} />}
+            />
+          ))}
+          <button onClick={onChangeValue}>Update</button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId(inputId)).toHaveValue('initial value');
+
+    fireEvent.click(screen.getByText('Update'));
+
+    expect(screen.getByTestId(inputId)).toHaveValue('updated value');
   });
 });
