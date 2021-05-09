@@ -19,6 +19,7 @@ import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
+import isString from './utils/isString';
 import unset from './utils/unset';
 import {
   FieldArray,
@@ -420,8 +421,9 @@ export const useFieldArray = <
     });
 
     focusNameRef.current &&
-      focusFieldBy(fieldsRef.current, (key: string) =>
-        key.startsWith(focusNameRef.current),
+      focusFieldBy(
+        fieldsRef.current,
+        (key: string) => isString(key) && key.startsWith(focusNameRef.current),
       );
 
     focusNameRef.current = '';
