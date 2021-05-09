@@ -1,10 +1,13 @@
 import cloneObject from '../utils/cloneObject';
+import isHTMLElement from '../utils/isHTMLElement';
 import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
-import isHTMLElement from '../utils/isHTMLElement';
 import isWeb from '../utils/isWeb';
 
-export default function preRegister<T extends unknown>(data: T, register: any): T {
+export default function preRegister<T extends unknown>(
+  data: T,
+  register: any,
+): T {
   let copy: any;
 
   if (

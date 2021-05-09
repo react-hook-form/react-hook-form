@@ -25,6 +25,8 @@ import isFunction from './utils/isFunction';
 import isHTMLElement from './utils/isHTMLElement';
 import isMultipleSelect from './utils/isMultipleSelect';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import isObject from './utils/isObject';
+import isPrimitive from './utils/isPrimitive';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isRadioInput from './utils/isRadioInput';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
@@ -81,8 +83,6 @@ import {
   WatchInternal,
   WatchObserver,
 } from './types';
-import isObject from './utils/isObject';
-import isPrimitive from './utils/isPrimitive';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 
@@ -682,10 +682,7 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(
-              fieldsRef,
-              shouldUnregister ? { current: {} } : defaultValuesRef,
-            ),
+            getFieldsValues(fieldsRef),
             contextRef.current,
             {
               criteriaMode,
@@ -763,10 +760,7 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(
-              fieldsRef,
-              shouldUnregister ? { current: {} } : defaultValuesRef,
-            ),
+            ...getFieldsValues(fieldsRef),
             ...values,
           },
           contextRef.current,

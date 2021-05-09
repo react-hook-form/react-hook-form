@@ -12,6 +12,7 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
+import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
@@ -19,7 +20,6 @@ import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
-import isString from './utils/isString';
 import unset from './utils/unset';
 import {
   FieldArray,
