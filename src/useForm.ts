@@ -1117,10 +1117,7 @@ export function useForm<
   ): void => {
     !get(fieldsRef.current, name) &&
       (isPrimitive(value) ||
-        (isWeb &&
-          (value instanceof File ||
-            value instanceof Date ||
-            isHTMLElement(value)))) &&
+        (isWeb && (value instanceof File || value instanceof Date))) &&
       set(fieldsRef.current, name, {
         _f: {
           ref: { name, value },
