@@ -1184,14 +1184,15 @@ export function useForm<
       isPrimitive(data) ||
       (isWeb && (data instanceof File || isHTMLElement(data)))
     ) {
-      set(fieldsRef.current, parentKey, {
-        _f: {
-          ref: { name: parentKey, value: data },
-          value: data,
-          name: parentKey,
-        },
-      });
-      return;
+      if (!get(fieldsRef.current, parentKey)) {
+        set(fieldsRef.current, parentKey, {
+          _f: {
+            ref: { name: parentKey, value: data },
+            value: data,
+            name: parentKey,
+          },
+        });
+      }
     }
 
     if (Array.isArray(data) || isObject(data)) {
