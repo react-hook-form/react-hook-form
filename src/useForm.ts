@@ -1,3 +1,4 @@
+// @ts-no-check
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
@@ -81,6 +82,8 @@ import {
   WatchInternal,
   WatchObserver,
 } from './types';
+import isObject from './utils/isObject';
+import isPrimitive from './utils/isPrimitive';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 
@@ -1175,7 +1178,36 @@ export function useForm<
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(fieldsRef.current, name)._f.ref.focus();
 
+  const preRegister = (data: any, parentKey: any = ''): void => {
+    if (
+      isPrimitive(data) ||
+      (isWeb && (data instanceof File || isHTMLElement(data)))
+    ) {
+      set(fieldsRef.current, parentKey, {
+        _f: {
+          ref: { name: parentKey },
+          value: data,
+        },
+      });
+      return;
+    }
+
+    if (Array.isArray(data) || isObject(data)) {
+      if (!get(fieldsRef.current, parentKey)) {
+        if (parentKey) {
+          set(fieldsRef.current, parentKey, Array.isArray(data) ? [] : {});
+        }
+
+        for (const key in data) {
+          // @ts-ignore
+          preRegister(data[key], parentKey + (parentKey ? '.' : '') + key);
+        }
+      }
+    }
+  };
+
   React.useEffect(() => {
+    preRegister(defaultValuesRef.current);
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
