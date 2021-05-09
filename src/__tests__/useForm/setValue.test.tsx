@@ -865,7 +865,9 @@ describe('setValue', () => {
     const inputId = 'name';
 
     const App = () => {
-      const { control, setValue } = useForm<{ names: { name: string }[] }>();
+      const { control, setValue } = useForm<{
+        names: { name: string; id?: string }[];
+      }>();
 
       const { fields } = useFieldArray({ control, name: 'names' });
 
@@ -874,7 +876,7 @@ describe('setValue', () => {
       }, []);
 
       const onChangeValue = () => {
-        setValue('names.0', { name: 'updated value' });
+        setValue('names.0', { name: 'updated value', id: 'test' });
       };
 
       return (
