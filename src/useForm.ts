@@ -739,12 +739,10 @@ export function useForm<
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
-    const values = isMountedRef.current
-      ? getFieldsValues(
-          fieldsRef,
-          shouldUnregister ? { current: {} } : defaultValuesRef,
-        )
-      : defaultValuesRef.current;
+    const values = getFieldsValues(
+      fieldsRef,
+      shouldUnregister ? { current: {} } : defaultValuesRef,
+    );
 
     return isUndefined(fieldNames)
       ? values
