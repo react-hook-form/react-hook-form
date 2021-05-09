@@ -1,9 +1,6 @@
 import * as React from 'react';
 
-import { SHALLOW } from '../constants';
-import { DefaultValuesStrategy, FieldRefs, FieldValues } from '../types';
-import cloneObject from '../utils/cloneObject';
-import { deepMerge } from '../utils/deepMerge';
+import { FieldRefs, FieldValues } from '../types';
 import omit from '../utils/omit';
 import set from '../utils/set';
 
@@ -48,16 +45,13 @@ const getFieldsValuesInternal = (
 export default (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   defaultValuesRef?: React.MutableRefObject<FieldValues>,
-  defaultValuesStrategy?: DefaultValuesStrategy | boolean,
 ): any => {
   const output = getFieldsValuesInternal(fieldsRef, defaultValuesRef);
 
-  return defaultValuesStrategy && defaultValuesRef && defaultValuesRef.current
-    ? defaultValuesStrategy === SHALLOW
-      ? {
-          ...defaultValuesRef.current,
-          ...output,
-        }
-      : deepMerge(cloneObject(defaultValuesRef.current), output)
+  return defaultValuesRef && defaultValuesRef.current
+    ? {
+        ...defaultValuesRef.current,
+        ...output,
+      }
     : output;
 };

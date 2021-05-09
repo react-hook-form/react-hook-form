@@ -269,7 +269,6 @@ describe('getFieldsValues', () => {
             ],
           },
         },
-        'shallow',
       ),
     ).toEqual({ test1: 'test', test: 'data', test2: [] });
   });
@@ -291,7 +290,6 @@ describe('getFieldsValues', () => {
         {
           current: { test: 'data' },
         },
-        'shallow',
       ),
     ).toEqual({ test1: undefined, test: 'data' });
   });
