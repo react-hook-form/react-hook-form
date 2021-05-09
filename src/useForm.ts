@@ -1111,33 +1111,30 @@ export function useForm<
 
   const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
     data: T,
-    parentKey: any = '',
+    name = '',
   ): void => {
     if (
       isPrimitive(data) ||
       (isWeb && (data instanceof File || isHTMLElement(data)))
     ) {
-      if (!get(fieldsRef.current, parentKey)) {
-        set(fieldsRef.current, parentKey, {
+      if (!get(fieldsRef.current, name)) {
+        set(fieldsRef.current, name, {
           _f: {
-            ref: { name: parentKey, value: data },
+            ref: { name, value: data },
             value: data,
-            name: parentKey,
+            name,
           },
         });
       }
     }
 
     if (Array.isArray(data) || isObject(data)) {
-      if (parentKey && !get(fieldsRef.current, parentKey)) {
-        set(fieldsRef.current, parentKey, Array.isArray(data) ? [] : {});
+      if (name && !get(fieldsRef.current, name)) {
+        set(fieldsRef.current, name, Array.isArray(data) ? [] : {});
       }
 
       for (const key in data) {
-        registerAbsentFields(
-          data[key],
-          parentKey + (parentKey ? '.' : '') + key,
-        );
+        registerAbsentFields(data[key], name + (name ? '.' : '') + key);
       }
     }
   };
