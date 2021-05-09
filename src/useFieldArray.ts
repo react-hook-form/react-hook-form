@@ -12,6 +12,7 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
+import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
@@ -420,8 +421,9 @@ export const useFieldArray = <
     });
 
     focusNameRef.current &&
-      focusFieldBy(fieldsRef.current, (key: string) =>
-        key.startsWith(focusNameRef.current),
+      focusFieldBy(
+        fieldsRef.current,
+        (key: string) => isString(key) && key.startsWith(focusNameRef.current),
       );
 
     focusNameRef.current = '';

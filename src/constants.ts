@@ -26,5 +26,3 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 };
-
-export const SHALLOW = 'shallow';
