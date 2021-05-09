@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.5.0] - 2021-09-5
+
+### Changed
+
+- `isSubmitSuccessful` will return false when `handleSubmit` callback failed with `Error` or `Promise` reject.
+- unmounted input will no longer get validated even with `shouldUnregister: false`
+
 ## [7.4.0] - 2021-05-4
 
 ### Added
@@ -8,8 +15,8 @@
 
 ```ts
 useFormState({
-  name: 'inputName' // optional and can be array of inputs' name as well
-})
+  name: 'inputName', // optional and can be array of inputs' name as well
+});
 ```
 
 ## [7.2.2] - 2021-04-21
