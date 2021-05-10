@@ -1,13 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
 const defaultValues = {
-  firstName: "bill",
-  lastName: "luo",
-  email: "bluebill1049@hotmail.com"
+  firstName: 'bill',
+  lastName: 'luo',
+  email: 'bluebill1049@hotmail.com',
 };
 
 function App() {

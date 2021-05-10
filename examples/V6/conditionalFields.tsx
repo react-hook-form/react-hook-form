@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, watch, handleSubmit } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
