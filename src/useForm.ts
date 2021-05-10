@@ -823,7 +823,7 @@ export function useForm<
         ? defaultValuesRef.current
         : isArrayNames
         ? defaultValue || {}
-        : { [fieldNames as string]: defaultValue };
+        : { [fieldNames as InternalFieldName]: defaultValue };
 
       if (isUndefined(fieldNames)) {
         isGlobal && (isWatchAllRef.current = true);
@@ -833,8 +833,8 @@ export function useForm<
       const result = [];
 
       for (const fieldName of convertToArrayPayload(fieldNames)) {
-        isGlobal && watchFieldsRef.current.add(fieldName as string);
-        result.push(get(fieldValues, fieldName as string));
+        isGlobal && watchFieldsRef.current.add(fieldName as InternalFieldName);
+        result.push(get(fieldValues, fieldName as InternalFieldName));
       }
 
       return isArrayNames ? result : result[0];
