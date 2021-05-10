@@ -36,7 +36,7 @@ export function useController<
     unregister,
     fieldArrayNamesRef,
     controllerSubjectRef,
-    shouldUnmountUnregister,
+    shouldUnmount,
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
@@ -63,7 +63,7 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      if (shouldUnmountUnregister || shouldUnregister) {
+      if (shouldUnmount || shouldUnregister) {
         unregister(name);
       } else if (get(fieldsRef.current, name)) {
         get(fieldsRef.current, name)._f.mount = false;

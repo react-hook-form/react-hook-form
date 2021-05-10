@@ -1258,7 +1258,7 @@ export function useForm<
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
         unregister,
-        shouldUnmountUnregister: shouldUnregister,
+        shouldUnmount: shouldUnregister,
       }),
       [],
     ),

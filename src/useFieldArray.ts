@@ -65,7 +65,7 @@ export const useFieldArray = <
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
     unregister,
-    shouldUnmountUnregister,
+    shouldUnmount,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -456,7 +456,7 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      (shouldUnmountUnregister || shouldUnregister) && unregister(name);
+      (shouldUnmount || shouldUnregister) && unregister(name);
     };
   }, []);
 
