@@ -1223,7 +1223,8 @@ export function useForm<
       !isHTMLElement(ref) || !document.contains(ref);
 
     isMountedRef.current = true;
-    unregisterFieldsNamesRef.current.forEach((name) => {
+
+    for (const name of unregisterFieldsNamesRef.current) {
       const field = get(fieldsRef.current, name) as Field;
 
       field &&
@@ -1231,7 +1232,8 @@ export function useForm<
           ? field._f.refs.every(isLiveInDom)
           : isLiveInDom(field._f.ref)) &&
         unregister(name as FieldPath<TFieldValues>);
-    });
+    }
+
     unregisterFieldsNamesRef.current = new Set();
   });
 
