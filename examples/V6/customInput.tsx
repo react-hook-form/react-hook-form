@@ -22,14 +22,14 @@ const MyInput = ({ name, label, register }) => {
 
 export default function App() {
   const { register, handleSubmit, setValue } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data, null));
   };
   const [values, setReactSelect] = useState({
     selectedOption: [],
   });
 
-  const handleMultiChange = selectedOption => {
+  const handleMultiChange = (selectedOption) => {
     setValue('reactSelect', selectedOption);
     setReactSelect({ selectedOption });
   };

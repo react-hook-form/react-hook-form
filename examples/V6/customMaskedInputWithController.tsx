@@ -1,31 +1,31 @@
-import React from "react";
-import MaskedInput from "react-input-mask";
-import { useForm, Controller } from "react-hook-form";
+import React from 'react';
+import MaskedInput from 'react-input-mask';
+import { useForm, Controller } from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
-export const clearTel = tel => tel.replace(/[^0-9]/g, "");
+export const clearTel = (tel) => tel.replace(/[^0-9]/g, '');
 
-const isNotFilledTel = v => {
+const isNotFilledTel = (v) => {
   const clearedTel = clearTel(v);
-  return clearedTel.length < 11 ? "Phone number is required." : undefined;
+  return clearedTel.length < 11 ? 'Phone number is required.' : undefined;
 };
 
-const Input = props => {
+const Input = (props) => {
   const { onChange, ...restProps } = props;
   return <input {...restProps} onChange={onChange} />;
 };
 
-const CustomMaskedInput = props => {
+const CustomMaskedInput = (props) => {
   const { value, onChange, name } = props;
   return (
     <MaskedInput
       name={name}
       value={value}
       mask="+7 (999) 999-99-99"
-      maskPlaceholder={"_"}
+      maskPlaceholder={'_'}
       alwaysShowMask
-      onChange={e => {
+      onChange={(e) => {
         e.persist();
         onChange(e.target.value);
       }}
@@ -35,15 +35,15 @@ const CustomMaskedInput = props => {
   );
 };
 
-const onSubmit = data => {
-  console.log("submit", data);
+const onSubmit = (data) => {
+  console.log('submit', data);
 };
 
 export default function App() {
   const { handleSubmit, errors, control } = useForm({
-    reValidateMode: "onSubmit"
+    reValidateMode: 'onSubmit',
   });
-  const [tel, setTel] = React.useState("7");
+  const [tel, setTel] = React.useState('7');
   return (
     <div className="App">
       <h1>Hello CodeSandbox</h1>
@@ -58,8 +58,8 @@ export default function App() {
             }}
             rules={{
               validate: {
-                inputTelRequired: isNotFilledTel
-              }
+                inputTelRequired: isNotFilledTel,
+              },
             }}
             defaultValue={tel}
             name="ContolledMaskedInput"

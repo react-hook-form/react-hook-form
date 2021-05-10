@@ -48,9 +48,11 @@ const FormState = (props: {
   renderCounter++;
 
   return (
-    <form onSubmit={handleSubmit((d) => {
-      console.log(d)
-    })}>
+    <form
+      onSubmit={handleSubmit((d) => {
+        console.log(d);
+      })}
+    >
       <input
         {...register('firstName', { required: true })}
         placeholder="firstName"

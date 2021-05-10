@@ -29,7 +29,7 @@
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "cp:dts": "copyfiles -f ./src/**/*.d.ts dist && rimraf dist/__tests__",
-    "prettier:fix": "prettier --config .prettierrc --write \"src/**/*.{ts,tsx}\"",
+    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "yarn lint -- --fix",
     "lint:types": "tsc --noEmit",

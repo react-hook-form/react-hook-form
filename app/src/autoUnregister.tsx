@@ -9,14 +9,15 @@ const options = [
 ];
 
 export default function AutoUnregister() {
-  const { register, control, handleSubmit } = useForm<{
-    test: string;
-    test1: string;
-    test2: boolean;
-    test3: string;
-    test4: string;
-    ReactSelect: NestedValue<{ label: string; value: string }>;
-  }>();
+  const { register, control, handleSubmit } =
+    useForm<{
+      test: string;
+      test1: string;
+      test2: boolean;
+      test3: string;
+      test4: string;
+      ReactSelect: NestedValue<{ label: string; value: string }>;
+    }>();
   const [show, setShow] = useState(true);
 
   return (

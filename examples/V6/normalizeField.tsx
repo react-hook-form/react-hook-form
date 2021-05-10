@@ -1,16 +1,16 @@
-import React from "react";
-import { useForm, Controller } from "react-hook-form";
-import NumberFormat from "react-number-format";
-import { TextField, ThemeProvider, createMuiTheme } from "@material-ui/core";
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import NumberFormat from 'react-number-format';
+import { TextField, ThemeProvider, createMuiTheme } from '@material-ui/core';
 
 const theme = createMuiTheme({
   palette: {
-    type: "dark"
-  }
+    type: 'dark',
+  },
 });
 const defaultValues = {
   priceInCents: 1234567,
-  muiPriceInCents: 1234567
+  muiPriceInCents: 1234567,
 };
 function App() {
   const form = useForm({ defaultValues });
@@ -32,13 +32,13 @@ function App() {
 
         <input type="submit" />
         <input
-          style={{ display: "block", marginTop: 20 }}
+          style={{ display: 'block', marginTop: 20 }}
           type="button"
           onClick={() => form.reset(defaultValues)}
           value="Custom Reset"
         />
 
-        <pre style={{ color: "#fff", marginTop: 24 }}>
+        <pre style={{ color: '#fff', marginTop: 24 }}>
           {JSON.stringify(form.watch(), null, 2)}
         </pre>
       </form>

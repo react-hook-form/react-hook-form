@@ -78,16 +78,16 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
           isSubmitting,
           isSubmitSuccessful,
           isValid,
-          touched: (Object.keys(touchedFields) as Array<
-            keyof typeof touchedFields
-          >).flatMap((topLevelKey) =>
+          touched: (
+            Object.keys(touchedFields) as Array<keyof typeof touchedFields>
+          ).flatMap((topLevelKey) =>
             Object.keys(touchedFields[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
-          dirty: (Object.keys(dirtyFields) as Array<
-            keyof typeof touchedFields
-          >).flatMap((topLevelKey) =>
+          dirty: (
+            Object.keys(dirtyFields) as Array<keyof typeof touchedFields>
+          ).flatMap((topLevelKey) =>
             Object.keys(dirtyFields[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),

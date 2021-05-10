@@ -34,11 +34,7 @@ const GrandChild = ({
   );
 };
 
-const GrandChild1 = ({
-  control,
-}: {
-  control: Control<FormInputs>;
-}) => {
+const GrandChild1 = ({ control }: { control: Control<FormInputs> }) => {
   const counter = useRef(0);
   const output = useWatch<FormInputs>({
     name: ['test', 'test1'],

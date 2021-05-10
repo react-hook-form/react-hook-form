@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function App() {
   const { register, handleSubmit, errors } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -21,7 +21,7 @@ export default function App() {
             name="username"
             placeholder="Bill"
             ref={register({
-              validate: async value => {
+              validate: async (value) => {
                 await sleep(3000);
                 return value === 'bill';
               },

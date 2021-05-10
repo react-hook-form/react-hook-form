@@ -2,15 +2,16 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 const Watch: React.FC = () => {
-  const { register, handleSubmit, watch } = useForm<{
-    testSingle: string;
-    test: string[];
-    testObject: {
-      firstName: string;
-      lastName: string;
-    };
-    toggle: string;
-  }>();
+  const { register, handleSubmit, watch } =
+    useForm<{
+      testSingle: string;
+      test: string[];
+      testObject: {
+        firstName: string;
+        lastName: string;
+      };
+      toggle: string;
+    }>();
   const onSubmit = () => {};
   const test = watch('test');
   const testObject = watch('testObject');
