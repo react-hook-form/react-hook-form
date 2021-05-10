@@ -123,11 +123,17 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "yarn lint:fix"
+      "yarn lint:fix",
+      "yarn prettier"
     ],
     "*.{md,json,yml}": [
       "prettier --write"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "funding": {
     "type": "opencollective",
