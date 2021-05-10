@@ -37,7 +37,7 @@ useForm({
   shouldUnregister: true // default to false
 })
 
-// Component/Hook level config (can not overwrites global cocnfig)
+// Component/Hook level config (can not overwrites global config)
 register('test', {
   shouldUnregister: true // default to false
 })
