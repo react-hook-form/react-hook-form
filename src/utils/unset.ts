@@ -5,12 +5,14 @@ import isObject from './isObject';
 import isUndefined from './isUndefined';
 import stringToPath from './stringToPath';
 
-function baseGet(object: any, updatePath: (string | number)[]) {
+function baseGet(object: any, updatePath: string[]) {
   const length = updatePath.slice(0, -1).length;
   let index = 0;
 
   while (index < length) {
-    object = isUndefined(object) ? index++ : object[updatePath[index++]];
+    object = isUndefined(object)
+      ? index++
+      : object[updatePath[index++].replace(/^\[/, '')];
   }
 
   return object;
@@ -20,7 +22,7 @@ export default function unset(object: any, path: string) {
   const updatePath = isKey(path) ? [path] : stringToPath(path);
   const childObject =
     updatePath.length == 1 ? object : baseGet(object, updatePath);
-  const key = updatePath[updatePath.length - 1];
+  const key = updatePath[updatePath.length - 1].replace(/^\[/, '');
   let previousObjRef;
 
   if (childObject) {
@@ -38,7 +40,7 @@ export default function unset(object: any, path: string) {
     }
 
     while (++index < currentPaths.length) {
-      const item = currentPaths[index];
+      const item = currentPaths[index].replace(/^\[/, '');
       objectRef = objectRef ? objectRef[item] : object[item];
 
       if (

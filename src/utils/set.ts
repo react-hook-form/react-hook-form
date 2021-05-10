@@ -15,7 +15,7 @@ export default function set(
   const lastIndex = length - 1;
 
   while (++index < length) {
-    const key = tempPath[index];
+    const key = tempPath[index].replace(/^\[/, '');
     let newValue = value;
 
     if (index !== lastIndex) {
@@ -23,7 +23,9 @@ export default function set(
       newValue =
         isObject(objValue) || Array.isArray(objValue)
           ? objValue
-          : !isNaN(+tempPath[index + 1])
+          : (tempPath[index + 1].startsWith('[') &&
+              !isNaN(+tempPath[index + 1].slice(1))) ||
+            !isNaN(+tempPath[index + 1])
           ? []
           : {};
     }
