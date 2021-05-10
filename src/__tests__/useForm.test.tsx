@@ -100,10 +100,9 @@ describe('useForm', () => {
     it('should not unregister touched', () => {
       let formState: any;
       const Component = () => {
-        const { register, formState: tempFormState } =
-          useForm<{
-            test: string;
-          }>();
+        const { register, formState: tempFormState } = useForm<{
+          test: string;
+        }>();
         formState = tempFormState;
 
         formState.touchedFields;
@@ -134,10 +133,9 @@ describe('useForm', () => {
     it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
-        const { register, formState: tempFormState } =
-          useForm<{
-            test: string;
-          }>();
+        const { register, formState: tempFormState } = useForm<{
+          test: string;
+        }>();
         formState = tempFormState;
 
         formState.isDirty;
@@ -803,10 +801,9 @@ describe('useForm', () => {
       it('should be called reRender method if isWatchAllRef is true', async () => {
         let watchedField: any;
         const Component = () => {
-          const { register, handleSubmit, watch } =
-            useForm<{
-              test: string;
-            }>();
+          const { register, handleSubmit, watch } = useForm<{
+            test: string;
+          }>();
           watchedField = watch();
           return (
             <form onSubmit={handleSubmit(() => {})}>
@@ -827,10 +824,9 @@ describe('useForm', () => {
       it('should be called reRender method if field is watched', async () => {
         let watchedField: any;
         const Component = () => {
-          const { register, handleSubmit, watch } =
-            useForm<{
-              test: string;
-            }>();
+          const { register, handleSubmit, watch } = useForm<{
+            test: string;
+          }>();
           watchedField = watch('test');
           return (
             <form onSubmit={handleSubmit(() => {})}>
@@ -851,10 +847,9 @@ describe('useForm', () => {
       it('should be called reRender method if array field is watched', async () => {
         let watchedField: any;
         const Component = () => {
-          const { register, handleSubmit, watch } =
-            useForm<{
-              test: string[];
-            }>();
+          const { register, handleSubmit, watch } = useForm<{
+            test: string[];
+          }>();
           watchedField = watch('test');
           return (
             <form onSubmit={handleSubmit(() => {})}>
@@ -1392,10 +1387,9 @@ describe('useForm', () => {
       let control;
 
       const Component = () => {
-        const form =
-          useForm<{
-            test: string;
-          }>();
+        const form = useForm<{
+          test: string;
+        }>();
 
         control = form.control;
 

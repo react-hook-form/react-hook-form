@@ -18,8 +18,11 @@ function useInputCache(values, causeField, effectField, callback) {
   const currentRegState = React.useRef(false);
 
   React.useEffect(() => {
-    const { isRegistered, registrationStatusChanged, hasValue } =
-      evaluateRegStatus(values, currentRegState.current);
+    const {
+      isRegistered,
+      registrationStatusChanged,
+      hasValue,
+    } = evaluateRegStatus(values, currentRegState.current);
 
     if (registrationStatusChanged && hasValue) {
       if (isRegistered && !!effectCache) {

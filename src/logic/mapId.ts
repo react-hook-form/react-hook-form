@@ -4,7 +4,7 @@ import generateId from './generateId';
 
 export default <
   TFieldArrayValues extends FieldValues = FieldValues,
-  TKeyName extends string = 'id',
+  TKeyName extends string = 'id'
 >(
   values: Partial<TFieldArrayValues>[] = [],
   keyName: TKeyName,

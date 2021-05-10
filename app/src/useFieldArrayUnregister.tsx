@@ -62,11 +62,18 @@ const UseFieldArrayUnregister: React.FC = () => {
     },
     mode: 'onSubmit',
   });
-  const { fields, append, prepend, swap, move, insert, remove } =
-    useFieldArray<FormInputs>({
-      control,
-      name: 'data',
-    });
+  const {
+    fields,
+    append,
+    prepend,
+    swap,
+    move,
+    insert,
+    remove,
+  } = useFieldArray<FormInputs>({
+    control,
+    name: 'data',
+  });
   const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
     setData(data);

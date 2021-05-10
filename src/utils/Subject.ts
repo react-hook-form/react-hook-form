@@ -6,7 +6,9 @@ type TearDown = () => void;
 
 export type SubjectType<T> = {
   next: (value: T) => void;
-  subscribe: (value: Observer<T>) => {
+  subscribe: (
+    value: Observer<T>,
+  ) => {
     unsubscribe: TearDown;
   };
 };

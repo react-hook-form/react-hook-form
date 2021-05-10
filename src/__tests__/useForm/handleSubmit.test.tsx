@@ -84,10 +84,9 @@ describe('handleSubmit', () => {
 
   it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
     const Component = () => {
-      const { register, handleSubmit, formState } =
-        useForm<{
-          test: string;
-        }>();
+      const { register, handleSubmit, formState } = useForm<{
+        test: string;
+      }>();
       return (
         <div>
           <input {...register('test')} />
