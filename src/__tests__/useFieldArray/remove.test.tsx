@@ -23,7 +23,11 @@ describe('remove', () => {
   it('should update isDirty formState when item removed', () => {
     let formState: any;
     const Component = () => {
-      const { register, control, formState: tempFormState } = useForm({
+      const {
+        register,
+        control,
+        formState: tempFormState,
+      } = useForm({
         defaultValues: {
           test: [{ name: 'default' }],
         },
@@ -80,7 +84,11 @@ describe('remove', () => {
   it('should update isValid formState when item removed', async () => {
     let formState: any;
     const Component = () => {
-      const { register, control, formState: tempFormState } = useForm({
+      const {
+        register,
+        control,
+        formState: tempFormState,
+      } = useForm({
         mode: 'onChange',
         defaultValues: {
           test: [{ name: 'default' }],
@@ -625,11 +633,12 @@ describe('remove', () => {
   it('should trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
-      const { register, watch, control } = useForm<{
-        test: {
-          value: string;
-        }[];
-      }>();
+      const { register, watch, control } =
+        useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
       const { fields, append, remove } = useFieldArray({
         control,
         name: 'test',
@@ -674,11 +683,12 @@ describe('remove', () => {
   it('should return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
-      const { watch, register, control } = useForm<{
-        test: {
-          value: string;
-        }[];
-      }>();
+      const { watch, register, control } =
+        useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,

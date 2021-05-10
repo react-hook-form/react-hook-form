@@ -26,7 +26,7 @@ declare const $NestedValue: unique symbol;
 export type NestedValue<
   TValue extends unknown[] | Record<string, unknown> | Map<unknown, unknown> =
     | unknown[]
-    | Record<string, unknown>
+    | Record<string, unknown>,
 > = {
   [$NestedValue]: never;
 } & TValue;
@@ -76,7 +76,7 @@ export type ChangeHandler = (event: any) => Promise<void | boolean>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object
+  TContext extends object = object,
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
@@ -140,14 +140,14 @@ export type UseFormRegisterReturn = {
 };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
 ) => void;
@@ -178,7 +178,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T7 extends FieldPath<TFieldValues>,
     T8 extends FieldPath<TFieldValues>,
     T9 extends FieldPath<TFieldValues>,
-    T10 extends FieldPath<TFieldValues>
+    T10 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7, T8, T9, T10],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -207,7 +207,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T6 extends FieldPath<TFieldValues>,
     T7 extends FieldPath<TFieldValues>,
     T8 extends FieldPath<TFieldValues>,
-    T9 extends FieldPath<TFieldValues>
+    T9 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7, T8, T9],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -234,7 +234,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T5 extends FieldPath<TFieldValues>,
     T6 extends FieldPath<TFieldValues>,
     T7 extends FieldPath<TFieldValues>,
-    T8 extends FieldPath<TFieldValues>
+    T8 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7, T8],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -259,7 +259,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T4 extends FieldPath<TFieldValues>,
     T5 extends FieldPath<TFieldValues>,
     T6 extends FieldPath<TFieldValues>,
-    T7 extends FieldPath<TFieldValues>
+    T7 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4, T5, T6, T7],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -282,7 +282,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T3 extends FieldPath<TFieldValues>,
     T4 extends FieldPath<TFieldValues>,
     T5 extends FieldPath<TFieldValues>,
-    T6 extends FieldPath<TFieldValues>
+    T6 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4, T5, T6],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -303,7 +303,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T2 extends FieldPath<TFieldValues>,
     T3 extends FieldPath<TFieldValues>,
     T4 extends FieldPath<TFieldValues>,
-    T5 extends FieldPath<TFieldValues>
+    T5 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4, T5],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -322,7 +322,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     T1 extends FieldPath<TFieldValues>,
     T2 extends FieldPath<TFieldValues>,
     T3 extends FieldPath<TFieldValues>,
-    T4 extends FieldPath<TFieldValues>
+    T4 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3, T4],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -339,7 +339,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   <
     T1 extends FieldPath<TFieldValues>,
     T2 extends FieldPath<TFieldValues>,
-    T3 extends FieldPath<TFieldValues>
+    T3 extends FieldPath<TFieldValues>,
   >(
     fieldNames: readonly [T1, T2, T3],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -379,7 +379,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
 ) => void;
 
 export type UseFormSetValue<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
   value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>,
@@ -420,7 +420,7 @@ export type UseFormInternalUnregister<TFieldValues extends FieldValues> = (
 ) => void;
 
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
-  TSubmitFieldValues extends FieldValues = TFieldValues
+  TSubmitFieldValues extends FieldValues = TFieldValues,
 >(
   onValid: SubmitHandler<TSubmitFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
@@ -529,8 +529,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   control?: Control<TFieldValues>;
 };
 
-export type FormProviderProps<
-  TFieldValues extends FieldValues = FieldValues
-> = {
-  children: React.ReactNode;
-} & UseFormReturn<TFieldValues>;
+export type FormProviderProps<TFieldValues extends FieldValues = FieldValues> =
+  {
+    children: React.ReactNode;
+  } & UseFormReturn<TFieldValues>;

@@ -17,14 +17,14 @@ import {
 import { useFormContext } from './useFormContext';
 
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
 >(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(props: {
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
@@ -32,7 +32,7 @@ export function useWatch<
 }): FieldPathValue<TFieldValues, TName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[]
+  TName extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
 >(props: {
   name: TName;
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;

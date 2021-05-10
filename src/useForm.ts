@@ -86,7 +86,7 @@ const isWindowUndefined = typeof window === UNDEFINED;
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object
+  TContext extends object = object,
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
@@ -134,9 +134,8 @@ export function useForm<
   const validFieldsRef = React.useRef<FieldNamesMarkedBoolean<TFieldValues>>(
     {},
   );
-  const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
-    defaultValues,
-  );
+  const defaultValuesRef =
+    React.useRef<DefaultValues<TFieldValues>>(defaultValues);
   const isWatchAllRef = React.useRef(false);
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);

@@ -185,10 +185,11 @@ describe('watch', () => {
     const output: any[] = [];
 
     const Component = () => {
-      const { watch, register } = useForm<{
-        test: string;
-        test1: string;
-      }>();
+      const { watch, register } =
+        useForm<{
+          test: string;
+          test1: string;
+        }>();
 
       React.useEffect(() => {
         const subscription = watch((data) => {

@@ -29,6 +29,7 @@
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "cp:dts": "copyfiles -f ./src/**/*.d.ts dist && rimraf dist/__tests__",
+    "prettier:fix": "prettier --config .prettierrc --write \"src/**/*.{ts,tsx}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "yarn lint -- --fix",
     "lint:types": "tsc --noEmit",
@@ -42,10 +43,9 @@
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "cypress:parallel": "cypress-parallel -s cypress -t 4 -d -a",
-    "prepublishOnly": "yarn lint:fix && yarn lint:types && yarn test && yarn build",
+    "prepublishOnly": "yarn && yarn lint:fix && yarn lint:types && yarn test && yarn build",
     "bundlesize": "yarn build:modern && bundlesize",
-    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev",
-    "prepare": "husky install"
+    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
   },
   "keywords": [
     "react",
@@ -124,7 +124,7 @@
   "lint-staged": {
     "*.{js,ts,tsx}": [
       "yarn lint:fix",
-      "yarn prettier"
+      "yarn prettier:fix"
     ],
     "*.{md,json,yml}": [
       "prettier --write"
