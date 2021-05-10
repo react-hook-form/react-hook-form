@@ -29,9 +29,10 @@ describe('useFormState', () => {
     };
 
     const Component = () => {
-      const { register, control } = useForm<{
-        test: string;
-      }>();
+      const { register, control } =
+        useForm<{
+          test: string;
+        }>();
 
       count++;
 
