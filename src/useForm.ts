@@ -1158,7 +1158,7 @@ export function useForm<
 
     if (!keepStateOptions.keepDefaultValues) {
       defaultValuesRef.current = { ...updatedValues };
-      registerAbsentFields(updatedValues);
+      registerAbsentFields({ ...updatedValues });
     }
 
     if (!keepStateOptions.keepValues) {
