@@ -56,5 +56,19 @@ describe('set', () => {
         ],
       },
     });
+
+    const test7 = { a: { 1: { 2: true, 3: false }, 4: { 5: true } } };
+    expect(set(test7, 'a.1.2', false)).toEqual(false);
+    expect(test7).toEqual({
+      a: {
+        1: {
+          2: false,
+          3: false,
+        },
+        4: {
+          5: true,
+        },
+      },
+    });
   });
 });
