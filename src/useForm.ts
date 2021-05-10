@@ -923,21 +923,20 @@ export function useForm<
     }
 
     field = {
-      _f: isRadioOrCheckbox
-        ? {
-            ...field._f,
-            refs: [
-              ...compact(field._f.refs || []).filter(
-                (ref) => isHTMLElement(ref) && document.contains(ref),
-              ),
-              ref,
-            ],
-            ref: { type: ref.type, name },
-          }
-        : {
-            ...field._f,
-            ref,
-          },
+      _f: {
+        ...field._f,
+        ...(isRadioOrCheckbox
+          ? {
+              refs: [
+                ...compact(field._f.refs || []).filter(
+                  (ref) => isHTMLElement(ref) && document.contains(ref),
+                ),
+                ref,
+              ],
+            }
+          : {}),
+        ref: { type: ref.type, name },
+      },
     };
 
     set(fieldsRef.current, name, field);
