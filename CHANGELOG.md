@@ -1,13 +1,13 @@
 # Changelog
 
-## [7.5.0] - 2021-09-5
+## [7.5.0] - 2021-05-09
 
 ### Changed
 
 - `isSubmitSuccessful` will return false when `handleSubmit` callback failed with `Error` or `Promise` reject.
 - unmounted input will no longer get validated even with `shouldUnregister: false`
 
-## [7.4.0] - 2021-05-4
+## [7.4.0] - 2021-05-04
 
 ### Added
 
@@ -37,7 +37,7 @@ useForm({
   shouldUnregister: true // default to false
 })
 
-// Component/Hook level config (can not overwrites global cocnfig)
+// Component/Hook level config (can not overwrites global config)
 register('test', {
   shouldUnregister: true // default to false
 })
