@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, errors, handleSubmit } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -51,7 +51,8 @@ export default function App() {
           ref={register({
             required: 'this is required',
             pattern: {
-              value: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+              value:
+                /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
               message: 'Invalid email address',
             },
           })}

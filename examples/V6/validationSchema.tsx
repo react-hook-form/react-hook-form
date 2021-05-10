@@ -5,11 +5,7 @@ import * as yup from 'yup'; // you will have to install yup
 
 const SignupSchema = yup.object().shape({
   firstName: yup.string().required(),
-  age: yup
-    .number()
-    .required()
-    .positive()
-    .integer(),
+  age: yup.number().required().positive().integer(),
   website: yup.string().url(),
 });
 
@@ -17,7 +13,7 @@ export default function App() {
   const { register, handleSubmit, errors } = useForm({
     validationSchema: SignupSchema,
   });
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 

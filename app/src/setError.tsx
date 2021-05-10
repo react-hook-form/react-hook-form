@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import {FieldPath} from "../../src/types";
+import { FieldPath } from '../../src/types';
 
 type FormInputs = {
   firstName: string;
