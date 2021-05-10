@@ -6,9 +6,10 @@ import { useForm } from './useForm';
 describe('useForm with SSR', () => {
   it('should not output error', () => {
     const Component = () => {
-      const { register } = useForm<{
-        test: string;
-      }>();
+      const { register } =
+        useForm<{
+          test: string;
+        }>();
       return (
         <div>
           <input {...register('test')} />

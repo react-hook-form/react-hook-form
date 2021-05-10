@@ -251,11 +251,12 @@ describe('swap', () => {
   it('should return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
-      const { watch, register, control } = useForm<{
-        test: {
-          value: string;
-        }[];
-      }>();
+      const { watch, register, control } =
+        useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
       const { fields, append, swap } = useFieldArray({
         name: 'test',
         control,
