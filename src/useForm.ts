@@ -1148,12 +1148,10 @@ export function useForm<
             ? field._f.refs[0]
             : field._f.ref;
 
-          if (isHTMLElement(inputRef)) {
-            try {
-              inputRef.closest('form')!.reset();
-              break;
-            } catch {}
-          }
+          try {
+            isHTMLElement(inputRef) && inputRef.closest('form')!.reset();
+            break;
+          } catch {}
         }
       }
     }
