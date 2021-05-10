@@ -39,9 +39,10 @@ describe('reset', () => {
   it('should reset form value', () => {
     let methods: any;
     const Component = () => {
-      methods = useForm<{
-        test: string;
-      }>();
+      methods =
+        useForm<{
+          test: string;
+        }>();
       return (
         <form>
           <input {...methods.register('test')} />
@@ -114,9 +115,10 @@ describe('reset', () => {
       test: string;
     }>;
     const Component = () => {
-      methods = useForm<{
-        test: string;
-      }>();
+      methods =
+        useForm<{
+          test: string;
+        }>();
       return <input {...methods.register('test')} />;
     };
     render(<Component />);
@@ -323,12 +325,13 @@ describe('reset', () => {
   it('should reset field array fine with empty value', async () => {
     let data: unknown;
     const Component = () => {
-      const { control, register, reset, handleSubmit } = useForm<{
-        test: {
-          firstName: string;
-          lastName: string;
-        }[];
-      }>();
+      const { control, register, reset, handleSubmit } =
+        useForm<{
+          test: {
+            firstName: string;
+            lastName: string;
+          }[];
+        }>();
       const { fields } = useFieldArray({
         control,
         name: 'test',

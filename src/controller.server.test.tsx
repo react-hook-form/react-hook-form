@@ -8,9 +8,10 @@ describe('Controller with SSR', () => {
   // issue: https://github.com/react-hook-form/react-hook-form/issues/1398
   it('should render correctly with as with component', () => {
     const Component = () => {
-      const { control } = useForm<{
-        test: string;
-      }>();
+      const { control } =
+        useForm<{
+          test: string;
+        }>();
 
       return (
         <Controller

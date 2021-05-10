@@ -22,11 +22,12 @@ describe('prepend', () => {
     let currentFields: any = [];
 
     const Component = () => {
-      const { control, register } = useForm<{
-        test: {
-          test: string;
-        }[];
-      }>();
+      const { control, register } =
+        useForm<{
+          test: {
+            test: string;
+          }[];
+        }>();
       const { fields, prepend } = useFieldArray({
         control,
         name: 'test',
@@ -219,9 +220,10 @@ describe('prepend', () => {
   it('should trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
-      const { register, watch, control } = useForm<{
-        test: { value: string }[];
-      }>();
+      const { register, watch, control } =
+        useForm<{
+          test: { value: string }[];
+        }>();
       const { fields, prepend } = useFieldArray({
         control,
         name: 'test',
@@ -259,11 +261,12 @@ describe('prepend', () => {
   it('should return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
-      const { watch, register, control } = useForm<{
-        test: {
-          value: string;
-        }[];
-      }>();
+      const { watch, register, control } =
+        useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
       const { fields, append, prepend } = useFieldArray({
         name: 'test',
         control,

@@ -102,24 +102,18 @@ function NestedArray({
 }
 
 export default () => {
-  const {
-    register,
-    control,
-    reset,
-    setValue,
-    handleSubmit,
-    watch,
-  } = useForm<FormValues>({
-    defaultValues: {
-      test: [
-        {
-          firstName: 'Bill',
-          lastName: 'Luo',
-          keyValue: [{ name: '1a' }, { name: '1c' }],
-        },
-      ],
-    },
-  });
+  const { register, control, reset, setValue, handleSubmit, watch } =
+    useForm<FormValues>({
+      defaultValues: {
+        test: [
+          {
+            firstName: 'Bill',
+            lastName: 'Luo',
+            keyValue: [{ name: '1a' }, { name: '1c' }],
+          },
+        ],
+      },
+    });
   const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
     {
       control,

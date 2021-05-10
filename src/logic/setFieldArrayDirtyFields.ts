@@ -6,7 +6,7 @@ import set from '../utils/set';
 function setDirtyFields<
   T extends Record<string, unknown>[],
   U extends Record<string, unknown>[],
-  K extends Record<string, boolean | []>
+  K extends Record<string, boolean | []>,
 >(
   values: T,
   defaultValues: U,
