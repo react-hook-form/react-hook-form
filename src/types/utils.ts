@@ -97,41 +97,44 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V>
       [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
     }[keyof T];
 
-export type FieldArrayPath<TFieldValues extends FieldValues> =
-  ArrayPath<TFieldValues>;
+export type FieldArrayPath<
+  TFieldValues extends FieldValues
+> = ArrayPath<TFieldValues>;
 
-export type PathValue<T, P extends Path<T> | ArrayPath<T>> =
-  P extends `${infer K}.${infer R}`
-    ? K extends keyof T
-      ? R extends Path<T[K]>
-        ? PathValue<T[K], R>
-        : never
-      : K extends `${ArrayKey}`
-      ? T extends ReadonlyArray<infer V>
-        ? PathValue<V, R & Path<V>>
-        : never
+export type PathValue<
+  T,
+  P extends Path<T> | ArrayPath<T>
+> = P extends `${infer K}.${infer R}`
+  ? K extends keyof T
+    ? R extends Path<T[K]>
+      ? PathValue<T[K], R>
       : never
-    : P extends keyof T
-    ? T[P]
-    : P extends `${ArrayKey}`
+    : K extends `${ArrayKey}`
     ? T extends ReadonlyArray<infer V>
-      ? V
+      ? PathValue<V, R & Path<V>>
       : never
-    : never;
+    : never
+  : P extends keyof T
+  ? T[P]
+  : P extends `${ArrayKey}`
+  ? T extends ReadonlyArray<infer V>
+    ? V
+    : never
+  : never;
 
 export type FieldPathValue<
   TFieldValues extends FieldValues,
-  TFieldPath extends FieldPath<TFieldValues>,
+  TFieldPath extends FieldPath<TFieldValues>
 > = PathValue<TFieldValues, TFieldPath>;
 
 export type FieldArrayPathValue<
   TFieldValues extends FieldValues,
-  TFieldArrayPath extends FieldArrayPath<TFieldValues>,
+  TFieldArrayPath extends FieldArrayPath<TFieldValues>
 > = PathValue<TFieldValues, TFieldArrayPath>;
 
 export type FieldPathValues<
   TFieldValues extends FieldValues,
-  TPath extends FieldPath<TFieldValues>[],
+  TPath extends FieldPath<TFieldValues>[]
 > = {} & {
   [K in keyof TPath]: FieldPathValue<
     TFieldValues,

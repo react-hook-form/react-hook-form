@@ -36,7 +36,7 @@ import { useFormContext } from './useFormContext';
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TKeyName extends string = 'id'
 >({
   control,
   name,
@@ -87,7 +87,7 @@ export const useFieldArray = <
   const omitKey = <
     T extends Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
+    >[]
   >(
     fields: T,
   ) =>
@@ -142,7 +142,7 @@ export const useFieldArray = <
   const updateDirtyFieldsWithDefaultValues = <
     T extends Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
+    >[]
   >(
     updatedFieldArrayValues?: T,
   ) =>

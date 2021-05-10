@@ -108,10 +108,9 @@ describe('Controller', () => {
 
   it('should set defaultValue to value props when input was reset', () => {
     const Component = () => {
-      const { reset, control } =
-        useForm<{
-          test: string;
-        }>();
+      const { reset, control } = useForm<{
+        test: string;
+      }>();
 
       React.useEffect(() => {
         reset({ test: 'default' });
@@ -359,10 +358,9 @@ describe('Controller', () => {
   it('should invoke custom onChange method', () => {
     const onChange = jest.fn();
     const Component = () => {
-      const { control } =
-        useForm<{
-          test: string;
-        }>();
+      const { control } = useForm<{
+        test: string;
+      }>();
       return (
         <>
           <Controller
@@ -465,10 +463,9 @@ describe('Controller', () => {
 
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
-      const { control } =
-        useForm<{
-          test: { value: string }[];
-        }>();
+      const { control } = useForm<{
+        test: { value: string }[];
+      }>();
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,
@@ -786,10 +783,9 @@ describe('Controller', () => {
 
   it('should update Controller value with setValue', () => {
     const Component = () => {
-      const { control, setValue } =
-        useForm<{
-          test: string;
-        }>();
+      const { control, setValue } = useForm<{
+        test: string;
+      }>();
 
       React.useEffect(() => {
         setValue('test', 'data');

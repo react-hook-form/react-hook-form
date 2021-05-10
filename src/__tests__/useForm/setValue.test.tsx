@@ -73,12 +73,12 @@ describe('setValue', () => {
 
     const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
     const file = blob as File;
-    const fileList = {
+    const fileList = ({
       0: file,
       1: file,
       length: 2,
       item: () => file,
-    } as any as FileList;
+    } as any) as FileList;
 
     act(() => result.current.setValue('test', fileList));
 
@@ -752,10 +752,9 @@ describe('setValue', () => {
     let submitData = undefined;
 
     const Component = () => {
-      const { register, handleSubmit, setValue } =
-        useForm<{
-          test: string;
-        }>();
+      const { register, handleSubmit, setValue } = useForm<{
+        test: string;
+      }>();
 
       return (
         <div>
@@ -866,10 +865,9 @@ describe('setValue', () => {
     const inputId = 'name';
 
     const App = () => {
-      const { control, setValue } =
-        useForm<{
-          names: { name: string; id?: string }[];
-        }>();
+      const { control, setValue } = useForm<{
+        names: { name: string; id?: string }[];
+      }>();
 
       const { fields } = useFieldArray({ control, name: 'names' });
 
