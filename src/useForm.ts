@@ -832,7 +832,7 @@ export function useForm<
 
       const result = [];
 
-      for (const fieldName of isArrayNames ? fieldNames : [fieldNames]) {
+      for (const fieldName of convertToArrayPayload(fieldNames)) {
         isGlobal && watchFieldsRef.current.add(fieldName as string);
         result.push(get(fieldValues, fieldName as string));
       }
