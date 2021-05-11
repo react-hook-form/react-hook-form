@@ -73,7 +73,8 @@ export function useController<
 
   return {
     field: {
-      onChange: (event: any) => {
+      onChange: React.useCallback(
+        (event: any) => {
         const value = getControllerValue(event);
         setInputStateValue(value);
 
@@ -85,17 +86,19 @@ export function useController<
           type: EVENTS.CHANGE,
         });
       },
-      onBlur: () => {
+        [onChange, name],
+      ),
+      onBlur: React.useCallback(() => {
         onBlur({
           target: {
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
         });
-      },
+      }, [onBlur]),
       name,
       value,
-      ref: (elm) => elm && ref(elm),
+      ref: React.useCallback((elm) => elm && ref(elm), [ref]),
     },
     formState,
     fieldState: Object.defineProperties(
