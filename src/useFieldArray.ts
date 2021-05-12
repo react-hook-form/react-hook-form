@@ -65,6 +65,7 @@ export const useFieldArray = <
     fieldArrayDefaultValuesRef,
     unregister,
     shouldUnmountUnregister,
+    inFieldArrayActionRef,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -171,6 +172,7 @@ export const useFieldArray = <
     >[] = [],
     shouldSet = true,
   ) => {
+    inFieldArrayActionRef.current = true;
     if (get(fieldsRef.current, name)) {
       const output = method(get(fieldsRef.current, name), args.argA, args.argB);
       shouldSet && set(fieldsRef.current, name, output);
@@ -407,6 +409,8 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
+    inFieldArrayActionRef.current = false;
+
     if (isWatchAllRef.current) {
       formStateSubjectRef.current.next({});
     } else {

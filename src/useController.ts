@@ -37,12 +37,13 @@ export function useController<
     fieldArrayNamesRef,
     controllerSubjectRef,
     shouldUnmountUnregister,
+    inFieldArrayActionRef,
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
+  const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    isUndefined(get(fieldsRef.current, name)._f.value) ||
-      isNameInFieldArray(fieldArrayNamesRef.current, name)
+    isUndefined(get(fieldsRef.current, name)._f.value) || isFieldArray
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
@@ -63,7 +64,13 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      if (shouldUnmountUnregister || shouldUnregister) {
+      const shouldUnmount = shouldUnmountUnregister || shouldUnregister;
+
+      if (
+        isFieldArray
+          ? shouldUnmount && !inFieldArrayActionRef.current
+          : shouldUnmount
+      ) {
         unregister(name);
       } else if (get(fieldsRef.current, name)) {
         get(fieldsRef.current, name)._f.mount = false;
