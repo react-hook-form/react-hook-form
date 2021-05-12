@@ -270,6 +270,18 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/tsongas"
+    ><img
+            src="https://avatars.githubusercontent.com/u/2079598?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/knoefel"
+    ><img
+            src="https://avatars.githubusercontent.com/u/2396344?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ## Backers

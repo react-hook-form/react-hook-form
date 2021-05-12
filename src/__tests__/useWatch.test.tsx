@@ -13,6 +13,7 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import * as generateId from '../logic/generateId';
 import { Control, UseFieldArrayReturn, UseFormReturn } from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -515,6 +516,103 @@ describe('useWatch', () => {
         'Type',
         'Totals',
       ]);
+    });
+  });
+
+  describe('fieldArray with shouldUnregister true', () => {
+    it('should watch correct input update with single field array input', () => {
+      const watchData: unknown[] = [];
+
+      type Unpacked<T> = T extends (infer U)[] ? U : T;
+
+      type FormValues = {
+        items: { prop: string }[];
+      };
+
+      function App() {
+        const rhfProps = useForm<FormValues>({
+          defaultValues: {
+            items: [{ prop: 'test' }, { prop: 'test1' }],
+          },
+          shouldUnregister: true,
+        });
+        const { control } = rhfProps;
+
+        const { fields, insert, remove } = useFieldArray({
+          control,
+          name: 'items',
+        });
+
+        return (
+          <form>
+            {fields.map((item, index, items) => {
+              return (
+                <div key={item.id}>
+                  <Child
+                    control={control}
+                    index={index}
+                    itemDefault={item}
+                    itemsDefault={items}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      insert(index + 1, { prop: 'ShouldBeTHere' });
+                    }}
+                  >
+                    insert
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      remove(index);
+                    }}
+                  >
+                    remove
+                  </button>
+                </div>
+              );
+            })}
+            <input type="submit" />
+          </form>
+        );
+      }
+
+      function Child({
+        index,
+        itemDefault,
+        itemsDefault,
+        control,
+      }: {
+        index: number;
+        itemDefault: Unpacked<FormValues['items']>;
+        itemsDefault: FormValues['items'];
+        control: Control<FormValues>;
+      }) {
+        const useWatchedItems = useWatch({
+          name: 'items',
+          control,
+          defaultValue: itemsDefault,
+        });
+
+        watchData.push(useWatchedItems);
+
+        const { field } = useController({
+          name: `items.${index}.prop` as const,
+          control,
+          defaultValue: itemDefault.prop,
+        });
+
+        return <input {...field} />;
+      }
+
+      render(<App />);
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'insert' })[0]);
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
+
+      expect(watchData).toMatchSnapshot();
     });
   });
 

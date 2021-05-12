@@ -128,6 +128,7 @@ export function useForm<
     }>(),
   );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
+  const inFieldArrayActionRef = React.useRef(false);
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
@@ -988,11 +989,15 @@ export function useForm<
                 registerFieldRef(name, ref, options);
               } else {
                 const field = get(fieldsRef.current, name) as Field;
+                const shouldUnmount =
+                  shouldUnregister || (options && options.shouldUnregister);
                 field && (field._f.mount = false);
 
                 if (
                   isWeb &&
-                  (shouldUnregister || (options && options.shouldUnregister))
+                  (isNameInFieldArray(fieldArrayNamesRef.current, name)
+                    ? shouldUnmount && !inFieldArrayActionRef.current
+                    : shouldUnmount)
                 ) {
                   unregisterFieldsNamesRef.current.add(name);
                 }
@@ -1242,6 +1247,7 @@ export function useForm<
       () => ({
         register,
         isWatchAllRef,
+        inFieldArrayActionRef,
         watchFieldsRef,
         getIsDirty,
         formStateSubjectRef,
