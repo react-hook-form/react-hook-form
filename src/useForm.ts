@@ -1156,10 +1156,8 @@ export function useForm<
       }
     }
 
-    if (!keepStateOptions.keepDefaultValues) {
-      defaultValuesRef.current = { ...updatedValues };
-      registerAbsentFields({ ...updatedValues });
-    }
+    !keepStateOptions.keepDefaultValues &&
+      (defaultValuesRef.current = { ...updatedValues });
 
     if (!keepStateOptions.keepValues) {
       fieldsRef.current = {};
@@ -1178,8 +1176,10 @@ export function useForm<
       });
     }
 
+    !keepStateOptions.keepDefaultValues &&
+      registerAbsentFields({ ...updatedValues });
+
     resetFromState(keepStateOptions, values);
-    isMountedRef.current = false;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
