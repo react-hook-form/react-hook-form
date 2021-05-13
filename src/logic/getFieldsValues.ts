@@ -19,7 +19,7 @@ const getFieldsValues = (
       set(
         output,
         name,
-        _f
+        _f && _f.ref
           ? _f.ref.disabled || (_f.refs && _f.refs.every((ref) => ref.disabled))
             ? undefined
             : _f.value
