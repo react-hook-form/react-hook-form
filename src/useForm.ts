@@ -301,9 +301,9 @@ export function useForm<
         }
 
         options.shouldDirty && updateAndGetDirtyState(name, value);
-        options.shouldValidate && trigger(name as Path<TFieldValues>);
         options.shouldTouch &&
           set(formStateRef.current.touchedFields, name, true);
+        options.shouldValidate && trigger(name as Path<TFieldValues>);
       }
     },
     [],
