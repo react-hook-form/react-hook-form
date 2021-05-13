@@ -1,8 +1,10 @@
+import { ReactElement } from 'react';
+
 import { FieldValues, InternalFieldName, Ref } from './fields';
 import { DeepMap, LiteralUnion } from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
 
-export type Message = string;
+export type Message = string | ReactElement;
 
 export type MultipleFieldErrors = {
   [K in keyof RegisterOptions]?: ValidateResult;
