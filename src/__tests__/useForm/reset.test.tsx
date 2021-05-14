@@ -397,4 +397,40 @@ describe('reset', () => {
       test: [{ firstName: 'test', lastName: 'test' }],
     });
   });
+
+  it('should return reset nested value', () => {
+    const getValuesResult: unknown[] = [];
+
+    function App() {
+      const [, update] = React.useState({});
+      const { register, reset, getValues } = useForm<{
+        names: { name: string }[];
+      }>({
+        defaultValues: {
+          names: [{ name: 'test' }],
+        },
+      });
+
+      React.useEffect(() => {
+        reset({ names: [{ name: 'Bill' }, { name: 'Luo' }] });
+      }, []);
+
+      getValuesResult.push(getValues());
+
+      return (
+        <form>
+          <input {...register('names.0.name')} placeholder="Name" />
+          <button type={'button'} onClick={() => update({})}>
+            update
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(getValuesResult).toMatchSnapshot();
+  });
 });

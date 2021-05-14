@@ -25,6 +25,8 @@ import isFunction from './utils/isFunction';
 import isHTMLElement from './utils/isHTMLElement';
 import isMultipleSelect from './utils/isMultipleSelect';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import isObject from './utils/isObject';
+import isPrimitive from './utils/isPrimitive';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isRadioInput from './utils/isRadioInput';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
@@ -387,10 +389,7 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(
-          fieldsRef,
-          shouldUnregister ? {} : defaultValuesRef.current,
-        ),
+        getFieldsValues(fieldsRef),
         contextRef.current,
         {
           criteriaMode,
@@ -684,10 +683,7 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getFieldsValues(
-              fieldsRef,
-              shouldUnregister ? {} : defaultValuesRef.current,
-            ),
+            getFieldsValues(fieldsRef),
             contextRef.current,
             {
               criteriaMode,
@@ -744,12 +740,10 @@ export function useForm<
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
-    const values = isMountedRef.current
-      ? getFieldsValues(
-          fieldsRef,
-          shouldUnregister ? {} : defaultValuesRef.current,
-        )
-      : defaultValuesRef.current;
+    const values = {
+      ...defaultValuesRef.current,
+      ...getFieldsValues(fieldsRef),
+    };
 
     return isUndefined(fieldNames)
       ? values
@@ -765,10 +759,7 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getFieldsValues(
-              fieldsRef,
-              shouldUnregister ? {} : defaultValuesRef.current,
-            ),
+            ...getFieldsValues(fieldsRef),
             ...values,
           },
           contextRef.current,
@@ -825,12 +816,15 @@ export function useForm<
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? getFieldsValues(fieldsRef, defaultValuesRef.current)
+        ? {
+            ...defaultValuesRef.current,
+            ...getFieldsValues(fieldsRef),
+          }
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
         ? defaultValue || {}
-        : { [fieldNames as string]: defaultValue };
+        : { [fieldNames as InternalFieldName]: defaultValue };
 
       if (isUndefined(fieldNames)) {
         isGlobal && (isWatchAllRef.current = true);
@@ -839,9 +833,9 @@ export function useForm<
 
       const result = [];
 
-      for (const fieldName of isArrayNames ? fieldNames : [fieldNames]) {
-        isGlobal && watchFieldsRef.current.add(fieldName as string);
-        result.push(get(fieldValues, fieldName as string));
+      for (const fieldName of convertToArrayPayload(fieldNames)) {
+        isGlobal && watchFieldsRef.current.add(fieldName as InternalFieldName);
+        result.push(get(fieldValues, fieldName as InternalFieldName));
       }
 
       return isArrayNames ? result : result[0];
@@ -1021,10 +1015,7 @@ export function useForm<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues = getFieldsValues(
-        fieldsRef,
-        shouldUnregister ? {} : defaultValuesRef.current,
-      );
+      let fieldValues = getFieldsValues(fieldsRef);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,
@@ -1125,6 +1116,32 @@ export function useForm<
     [],
   );
 
+  const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
+    value: T,
+    name = '',
+  ): void => {
+    !get(fieldsRef.current, name) &&
+      (isPrimitive(value) ||
+        (isWeb && (value instanceof File || value instanceof Date))) &&
+      set(fieldsRef.current, name, {
+        _f: {
+          ref: { name, value },
+          value,
+          name,
+        },
+      });
+
+    if (Array.isArray(value) || isObject(value)) {
+      if (name && !get(fieldsRef.current, name)) {
+        set(fieldsRef.current, name, Array.isArray(value) ? [] : {});
+      }
+
+      for (const key in value) {
+        registerAbsentFields(value[key], name + (name ? '.' : '') + key);
+      }
+    }
+  };
+
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
     const updatedValues = values || defaultValuesRef.current;
 
@@ -1136,12 +1153,10 @@ export function useForm<
             ? field._f.refs[0]
             : field._f.ref;
 
-          if (isHTMLElement(inputRef)) {
-            try {
-              inputRef.closest('form')!.reset();
-              break;
-            } catch {}
-          }
+          try {
+            isHTMLElement(inputRef) && inputRef.closest('form')!.reset();
+            break;
+          } catch {}
         }
       }
     }
@@ -1166,14 +1181,17 @@ export function useForm<
       });
     }
 
+    !keepStateOptions.keepDefaultValues &&
+      registerAbsentFields({ ...updatedValues });
+
     resetFromState(keepStateOptions, values);
-    isMountedRef.current = false;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
+    registerAbsentFields(defaultValuesRef.current);
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
@@ -1210,7 +1228,8 @@ export function useForm<
       !isHTMLElement(ref) || !document.contains(ref);
 
     isMountedRef.current = true;
-    unregisterFieldsNamesRef.current.forEach((name) => {
+
+    for (const name of unregisterFieldsNamesRef.current) {
       const field = get(fieldsRef.current, name) as Field;
 
       field &&
@@ -1218,7 +1237,8 @@ export function useForm<
           ? field._f.refs.every(isLiveInDom)
           : isLiveInDom(field._f.ref)) &&
         unregister(name as FieldPath<TFieldValues>);
-    });
+    }
+
     unregisterFieldsNamesRef.current = new Set();
   });
 
@@ -1244,7 +1264,7 @@ export function useForm<
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
         unregister,
-        shouldUnmountUnregister: shouldUnregister,
+        shouldUnmount: shouldUnregister,
       }),
       [],
     ),
