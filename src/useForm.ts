@@ -820,7 +820,7 @@ export function useForm<
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
-        ? defaultValue || {}
+        ? defaultValue
         : { [fieldNames as InternalFieldName]: defaultValue };
 
       if (isUndefined(fieldNames)) {
