@@ -815,13 +815,12 @@ export function useForm<
   const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
-      const fieldValues = isMountedRef.current
-        ? getValues()
-        : isUndefined(defaultValue)
-        ? defaultValuesRef.current
-        : isArrayNames
-        ? defaultValue
-        : { [fieldNames as InternalFieldName]: defaultValue };
+      const fieldValues =
+        isMountedRef.current || isUndefined(defaultValue)
+          ? getValues()
+          : isArrayNames
+          ? defaultValue
+          : { [fieldNames as InternalFieldName]: defaultValue };
 
       if (isUndefined(fieldNames)) {
         isGlobal && (isWatchAllRef.current = true);
