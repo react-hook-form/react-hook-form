@@ -735,23 +735,6 @@ export function useForm<
     [],
   );
 
-  const getValues: UseFormGetValues<TFieldValues> = (
-    fieldNames?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
-  ) => {
-    const values = {
-      ...defaultValuesRef.current,
-      ...getFieldsValues(fieldsRef),
-    };
-
-    return isUndefined(fieldNames)
-      ? values
-      : isString(fieldNames)
-      ? get(values, fieldNames as InternalFieldName)
-      : fieldNames.map((name) => get(values, name as InternalFieldName));
-  };
-
   const updateIsValid = React.useCallback(
     async (values = {}) => {
       const previousIsValid = formStateRef.current.isValid;
@@ -812,14 +795,28 @@ export function useForm<
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
+  const getValues: UseFormGetValues<TFieldValues> = (
+    fieldNames?:
+      | FieldPath<TFieldValues>
+      | ReadonlyArray<FieldPath<TFieldValues>>,
+  ) => {
+    const values = {
+      ...defaultValuesRef.current,
+      ...getFieldsValues(fieldsRef),
+    };
+
+    return isUndefined(fieldNames)
+      ? values
+      : isString(fieldNames)
+      ? get(values, fieldNames as InternalFieldName)
+      : fieldNames.map((name) => get(values, name as InternalFieldName));
+  };
+
   const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
     (fieldNames, defaultValue, isGlobal) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? {
-            ...defaultValuesRef.current,
-            ...getFieldsValues(fieldsRef),
-          }
+        ? getValues()
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
