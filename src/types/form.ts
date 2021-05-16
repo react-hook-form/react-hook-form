@@ -435,6 +435,7 @@ export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   isGlobal?: boolean,
+  formValues?: unknown,
 ) =>
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;
@@ -462,7 +463,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
       name?: InternalFieldName;
-      value?: unknown;
+      formValues: unknown;
       type?: EventType;
     }>
   >;

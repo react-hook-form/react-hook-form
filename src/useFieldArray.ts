@@ -421,7 +421,7 @@ export const useFieldArray = <
 
     watchSubjectRef.current.next({
       name,
-      value: get(getFieldsValues(fieldsRef), name, []),
+      formValues: getFieldsValues(fieldsRef),
     });
 
     focusNameRef.current &&
