@@ -436,6 +436,7 @@ export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   isGlobal?: boolean,
+  formValues?: unknown,
 ) =>
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;
@@ -450,7 +451,7 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
 >;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
-  shouldUnmountUnregister?: boolean;
+  shouldUnmount?: boolean;
   isWatchAllRef: React.MutableRefObject<boolean>;
   inFieldArrayActionRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
@@ -463,7 +464,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
       name?: InternalFieldName;
-      value?: unknown;
+      formValues: unknown;
       type?: EventType;
     }>
   >;

@@ -1,5 +1,33 @@
 # Changelog
 
+## [7.6.0] - 2021-05-15
+
+### Changed
+
+- `useForm` will `register` missing inputs from `defaultValues`
+
+```tsx
+const App = () => {
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      test: { firstName: 'bill', lastName: 'luo' },
+    },
+  });
+
+  const onSubmit = (data) => {
+    // missing registered input will be included
+    console.log(data); // { test: { firstName: 'bill', lastName: 'luo' } }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('test.firstName')} />
+      <button />
+    </form>
+  );
+};
+```
+
 ## [7.5.0] - 2021-05-09
 
 ### Changed

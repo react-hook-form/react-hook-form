@@ -299,6 +299,7 @@ describe('register', () => {
             }
           />
           <input
+            placeholder={'inputB'}
             onChange={({ target: { value } }) =>
               setValue('b', value, { shouldDirty: true, shouldValidate: true })
             }
@@ -314,6 +315,14 @@ describe('register', () => {
 
     await actComponent(async () => {
       fireEvent.input(screen.getByPlaceholderText('inputA'), {
+        target: { value: 'test' },
+      });
+    });
+
+    screen.getByText('false');
+
+    await actComponent(async () => {
+      fireEvent.input(screen.getByPlaceholderText('inputB'), {
         target: { value: 'test' },
       });
     });

@@ -36,7 +36,7 @@ export function useController<
     unregister,
     fieldArrayNamesRef,
     controllerSubjectRef,
-    shouldUnmountUnregister,
+    shouldUnmount,
     inFieldArrayActionRef,
   } = control || methods.control;
 
@@ -64,12 +64,12 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      const shouldUnmount = shouldUnmountUnregister || shouldUnregister;
+      const shouldUnmountField = shouldUnmount || shouldUnregister;
 
       if (
         isFieldArray
-          ? shouldUnmount && !inFieldArrayActionRef.current
-          : shouldUnmount
+          ? shouldUnmountField && !inFieldArrayActionRef.current
+          : shouldUnmountField
       ) {
         unregister(name);
       } else if (get(fieldsRef.current, name)) {

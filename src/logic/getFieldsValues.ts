@@ -6,8 +6,8 @@ import set from '../utils/set';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
-  defaultValuesRef?: FieldValues,
-  output: Record<string, any> = {},
+  defaultValuesRef?: React.MutableRefObject<FieldValues>,
+  output: FieldValues = {},
 ): any => {
   for (const name in fieldsRef.current) {
     const field = fieldsRef.current[name];
@@ -19,7 +19,7 @@ const getFieldsValues = (
       set(
         output,
         name,
-        _f
+        _f && _f.ref
           ? _f.ref.disabled || (_f.refs && _f.refs.every((ref) => ref.disabled))
             ? undefined
             : _f.value
@@ -28,7 +28,7 @@ const getFieldsValues = (
           : {},
       );
 
-      if (current) {
+      current &&
         getFieldsValues(
           {
             current,
@@ -36,14 +36,10 @@ const getFieldsValues = (
           defaultValuesRef,
           output[name],
         );
-      }
     }
   }
 
-  return {
-    ...defaultValuesRef,
-    ...output,
-  };
+  return output;
 };
 
 export default getFieldsValues;
