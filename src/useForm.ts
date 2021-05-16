@@ -815,8 +815,10 @@ export function useForm<
   const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
     (fieldNames, defaultValue, isGlobal, formValues) => {
       const isArrayNames = Array.isArray(fieldNames);
-      const fieldValues = isMountedRef.current
-        ? formValues || {
+      const fieldValues = formValues
+        ? formValues
+        : isMountedRef.current
+        ? {
             ...defaultValuesRef.current,
             ...getFieldsValues(fieldsRef),
           }

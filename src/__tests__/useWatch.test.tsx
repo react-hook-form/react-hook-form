@@ -988,7 +988,7 @@ describe('useWatch', () => {
   });
 
   describe('setValue', () => {
-    it('should return correct value after input get unregistered', async () => {
+    it.only('should return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
       const Child = ({ register, setValue }: UseFormReturn<FormValues>) => {
@@ -1019,7 +1019,7 @@ describe('useWatch', () => {
 
       render(<Form />);
 
-      // await waitFor(async () => screen.getByText('no'));
+      await waitFor(async () => screen.getByText('no'));
     });
 
     it('should watch nested object field update', () => {
