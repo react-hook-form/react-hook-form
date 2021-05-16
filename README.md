@@ -1,17 +1,13 @@
 <div align="center">
-    <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
             <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" />
         </a>
-    </p>
 </div>
 
 <div align="center">
-    <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
             <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/v7_example.gif" alt="React Hook Form video - React custom hook for form validation" width="100%" />
         </a>
-    </p>
 </div>
 
 <div align="center">
