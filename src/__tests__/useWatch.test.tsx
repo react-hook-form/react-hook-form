@@ -988,7 +988,7 @@ describe('useWatch', () => {
   });
 
   describe('setValue', () => {
-    it.only('should return correct value after input get unregistered', async () => {
+    it('should return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
       const Child = ({ register, setValue }: UseFormReturn<FormValues>) => {
