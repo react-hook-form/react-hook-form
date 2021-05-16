@@ -43,7 +43,6 @@
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "cypress:parallel": "cypress-parallel -s cypress -t 4 -d -a",
-    "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "yarn && yarn lint:fix && yarn lint:types && yarn test && yarn build",
     "bundlesize": "yarn build:modern && bundlesize",
     "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
