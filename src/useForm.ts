@@ -111,7 +111,7 @@ export function useForm<
     new Subject<{
       name?: InternalFieldName;
       type?: EventType;
-      value?: unknown;
+      formValues: unknown;
     }>(),
   );
   const controllerSubjectRef = React.useRef(
@@ -613,7 +613,7 @@ export function useForm<
       : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
-    watchSubjectRef.current.next({ name, value });
+    watchSubjectRef.current.next({ name, formValues: getValues() });
   };
 
   const handleChange: ChangeHandler = React.useCallback(
@@ -667,7 +667,7 @@ export function useForm<
             watchSubjectRef.current.next({
               name,
               type,
-              value: inputValue,
+              formValues: getValues(),
             });
           return (
             shouldRender &&
@@ -720,7 +720,7 @@ export function useForm<
           watchSubjectRef.current.next({
             name,
             type,
-            value: inputValue,
+            formValues: getValues(),
           });
         shouldRenderBaseOnError(
           name,
@@ -813,10 +813,10 @@ export function useForm<
   };
 
   const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
-    (fieldNames, defaultValue, isGlobal) => {
+    (fieldNames, defaultValue, isGlobal, formValues) => {
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
-        ? {
+        ? formValues || {
             ...defaultValuesRef.current,
             ...getFieldsValues(fieldsRef),
           }
@@ -891,6 +891,7 @@ export function useForm<
 
         watchSubjectRef.current.next({
           name: inputName,
+          formValues: getValues(),
         });
       }
     }
@@ -1172,7 +1173,7 @@ export function useForm<
       });
 
       watchSubjectRef.current.next({
-        value: { ...updatedValues },
+        formValues: { ...updatedValues },
       });
 
       fieldArraySubjectRef.current.next({

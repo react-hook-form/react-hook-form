@@ -15,6 +15,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { get } from './utils';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -55,7 +56,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     watchInternal(name as InternalFieldName);
 
     const watchSubscription = watchSubjectRef.current.subscribe({
-      next: ({ name: inputName, value }) =>
+      next: ({ name: inputName, formValues }) =>
         (!nameRef.current ||
           !inputName ||
           convertToArrayPayload(nameRef.current).some(
@@ -69,10 +70,12 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           isString(inputName) &&
             nameRef.current === inputName &&
             !isUndefined(value)
-            ? value
+            ? get(formValues, inputName)
             : watchInternal(
                 nameRef.current as string,
                 defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+                false,
+                formValues,
               ),
         ),
     });
