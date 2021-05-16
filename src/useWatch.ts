@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import convertToArrayPayload from './utils/convertToArrayPayload';
-import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import {
   Control,
@@ -15,7 +14,6 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { get } from './utils';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -67,16 +65,12 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
                 inputName.startsWith(fieldName as InternalFieldName)),
           )) &&
         updateValue(
-          isString(inputName) &&
-            nameRef.current === inputName &&
-            !isUndefined(value)
-            ? get(formValues, inputName)
-            : watchInternal(
-                nameRef.current as string,
-                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-                false,
-                formValues,
-              ),
+          watchInternal(
+            nameRef.current as string,
+            defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+            false,
+            formValues,
+          ),
         ),
     });
 
