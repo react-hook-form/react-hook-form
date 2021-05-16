@@ -259,7 +259,7 @@ export const useFieldArray = <
                     name: inputName,
                   },
                   name: inputName,
-                  value,
+                  value: isPrimitive(value) ? value : { ...value },
                 },
               });
         }),
