@@ -190,32 +190,29 @@ export function useForm<
     ): boolean | void => {
       const previousError = get(formStateRef.current.errors, name);
 
-      let shouldReRender =
+      const shouldReRender =
         shouldRender || isWatched || !deepEqual(previousError, error, true);
 
       if (error) {
         unset(validFieldsRef.current, name);
-        shouldReRender =
-          shouldReRender ||
-          !previousError ||
-          !deepEqual(previousError, error, true);
         set(formStateRef.current.errors, name, error);
       } else {
         if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
           set(validFieldsRef.current, name, true);
-          shouldReRender = shouldReRender || previousError;
         }
 
         unset(formStateRef.current.errors, name);
       }
 
       if (
-        shouldReRender ||
-        (readFormStateRef.current.isValid &&
-          formStateRef.current.isValid !==
-            (resolverRef.current ? !!isValid : getIsValid()) &&
-          !isNullOrUndefined(shouldRender)) ||
-        !isEmptyObject(state)
+        shouldReRender || error
+          ? !previousError || !deepEqual(previousError, error, true)
+          : previousError ||
+            (readFormStateRef.current.isValid &&
+              formStateRef.current.isValid !==
+                (resolverRef.current ? !!isValid : getIsValid()) &&
+              !isNullOrUndefined(shouldRender)) ||
+            !isEmptyObject(state)
       ) {
         const updatedFormState = {
           ...state,
