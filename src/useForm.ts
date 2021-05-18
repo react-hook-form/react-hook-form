@@ -193,10 +193,7 @@ export function useForm<
       let shouldReRender =
         shouldRender ||
         !deepEqual(previousError, error, true) ||
-        (readFormStateRef.current.isValid &&
-          isUndefined(error) &&
-          get(fieldsWithValidationRef.current, name) &&
-          !get(validFieldsRef.current, name));
+        readFormStateRef.current.isValid;
 
       if (error) {
         unset(validFieldsRef.current, name);
