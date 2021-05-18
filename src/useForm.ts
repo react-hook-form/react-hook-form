@@ -191,12 +191,7 @@ export function useForm<
       const previousError = get(formStateRef.current.errors, name);
 
       let shouldReRender =
-        shouldRender ||
-        !deepEqual(previousError, error, true) ||
-        (readFormStateRef.current.isValid &&
-          isUndefined(error) &&
-          get(fieldsWithValidationRef.current, name) &&
-          !get(validFieldsRef.current, name));
+        shouldRender || isWatched || !deepEqual(previousError, error, true);
 
       if (error) {
         unset(validFieldsRef.current, name);
@@ -213,6 +208,12 @@ export function useForm<
 
         unset(formStateRef.current.errors, name);
       }
+
+      shouldReRender =
+        shouldReRender ||
+        (readFormStateRef.current.isValid &&
+          formStateRef.current.isValid !==
+            (resolverRef.current ? !!isValid : getIsValid()));
 
       if (
         (shouldReRender && !isNullOrUndefined(shouldRender)) ||
