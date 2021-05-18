@@ -995,4 +995,43 @@ describe('Controller', () => {
 
     expect(watchedValue).toMatchSnapshot();
   });
+
+  it('should set ref to empty object when ref is not defined', () => {
+    const App = () => {
+      const [show, setShow] = React.useState(false);
+      const { control } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          test: {
+            firstName: '',
+            lastName: '',
+          },
+        },
+      });
+
+      return (
+        <div>
+          {show && (
+            <Controller
+              name={'test'}
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => (
+                <input value={field.value as any} onChange={field.onChange} />
+              )}
+            />
+          )}
+          <button onClick={() => setShow(!show)}>setShow</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test' },
+    });
+  });
 });
