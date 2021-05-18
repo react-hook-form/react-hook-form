@@ -970,7 +970,7 @@ export function useForm<
           ...(isInitialRegister
             ? { ref: { name } }
             : {
-                ref: (get(fieldsRef.current, name)._f || {}).ref,
+                ref: (get(fieldsRef.current, name)._f || {}).ref || {},
                 ...get(fieldsRef.current, name)._f,
               }),
           name,
