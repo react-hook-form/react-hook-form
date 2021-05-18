@@ -200,14 +200,14 @@ export function useForm<
       }
 
       if (
-        (shouldRender ||
-          isWatched ||
-          (error ? !deepEqual(previousError, error, true) : previousError) ||
-          !isEmptyObject(state) ||
-          (readFormStateRef.current.isValid &&
-            formStateRef.current.isValid !==
-              (resolverRef.current ? !!isValid : getIsValid()))) &&
-        !isNullOrUndefined(shouldRender)
+        shouldRender ||
+        isWatched ||
+        (error ? !deepEqual(previousError, error, true) : previousError) ||
+        (readFormStateRef.current.isValid &&
+          formStateRef.current.isValid !==
+            (resolverRef.current ? !!isValid : getIsValid()) &&
+          !isNullOrUndefined(shouldRender)) ||
+        !isEmptyObject(state)
       ) {
         const updatedFormState = {
           ...state,
