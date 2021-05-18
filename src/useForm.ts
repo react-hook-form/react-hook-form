@@ -194,10 +194,8 @@ export function useForm<
         unset(validFieldsRef.current, name);
         set(formStateRef.current.errors, name, error);
       } else {
-        if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
+        (get(fieldsWithValidationRef.current, name) || resolverRef.current) &&
           set(validFieldsRef.current, name, true);
-        }
-
         unset(formStateRef.current.errors, name);
       }
 
