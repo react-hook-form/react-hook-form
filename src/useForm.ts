@@ -209,14 +209,12 @@ export function useForm<
         unset(formStateRef.current.errors, name);
       }
 
-      shouldReRender =
+      if (
         shouldReRender ||
         (readFormStateRef.current.isValid &&
           formStateRef.current.isValid !==
-            (resolverRef.current ? !!isValid : getIsValid()));
-
-      if (
-        (shouldReRender && !isNullOrUndefined(shouldRender)) ||
+            (resolverRef.current ? !!isValid : getIsValid()) &&
+          !isNullOrUndefined(shouldRender)) ||
         !isEmptyObject(state) ||
         isWatched
       ) {
