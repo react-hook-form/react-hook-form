@@ -215,8 +215,7 @@ export function useForm<
           formStateRef.current.isValid !==
             (resolverRef.current ? !!isValid : getIsValid()) &&
           !isNullOrUndefined(shouldRender)) ||
-        !isEmptyObject(state) ||
-        isWatched
+        !isEmptyObject(state)
       ) {
         const updatedFormState = {
           ...state,
