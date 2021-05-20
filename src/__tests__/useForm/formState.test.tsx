@@ -10,6 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 describe('formState', () => {
@@ -259,5 +260,155 @@ describe('formState', () => {
 
     screen.getByText('isSubmitted');
     screen.getByText('isNotSubmitSuccessful');
+  });
+
+  it('should update correct isValid formState with dynamic fields', async () => {
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { isValid },
+      } = useForm<{
+        list: {
+          firstName: string;
+          lastName: string;
+        }[];
+        test: string;
+        test1: string;
+        test2: string;
+        test3: string;
+      }>({
+        mode: 'onChange',
+      });
+      const { append, fields } = useFieldArray({
+        control,
+        name: 'list',
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field }) => (
+              <input {...field} placeholder={field.name} />
+            )}
+            name={'test'}
+            rules={{ required: true }}
+            control={control}
+            defaultValue={''}
+          />
+          <input
+            {...register('test1', { required: true })}
+            placeholder={'test1'}
+          />
+          <input {...register('test2')} placeholder={'test2'} />
+          <Controller
+            render={({ field }) => (
+              <input {...field} placeholder={field.name} />
+            )}
+            name={'test3'}
+            control={control}
+            defaultValue={''}
+          />
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <Controller
+                  render={({ field }) => (
+                    <input {...field} placeholder={field.name} />
+                  )}
+                  name={`list.${index}.firstName` as const}
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={field.firstName}
+                />
+                <input
+                  {...register(`list.${index}.lastName` as const, {
+                    required: true,
+                  })}
+                  placeholder={`list.${index}.lastName`}
+                  defaultValue={field.lastName}
+                />
+              </div>
+            );
+          })}
+          <button
+            type={'button'}
+            onClick={() =>
+              append({
+                firstName: '',
+                lastName: '',
+              })
+            }
+          >
+            append
+          </button>
+          <p>{isValid ? 'valid' : 'inValid'}</p>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    screen.getByText('inValid');
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: '1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('test1'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(async () => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+      target: { value: '1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+      target: { value: '' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+      target: { value: '' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
   });
 });
