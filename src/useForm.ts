@@ -598,7 +598,7 @@ export function useForm<
         set(fieldArrayDefaultValuesRef.current, name, []);
     }
 
-    (field && !field._f) || isFieldArray
+    ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
       ? setInternalValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
