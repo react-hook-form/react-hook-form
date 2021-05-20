@@ -170,10 +170,13 @@ export function useForm<
   contextRef.current = context;
   resolverRef.current = resolver;
 
-  const getIsValid = () =>
-    (formStateRef.current.isValid =
+  const getIsValid = () => {
+    formStateRef.current.isValid =
       deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
-      isEmptyObject(formStateRef.current.errors));
+      isEmptyObject(formStateRef.current.errors);
+
+    return formStateRef.current.isValid;
+  };
 
   const shouldRenderBaseOnError = React.useCallback(
     (
