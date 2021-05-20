@@ -493,7 +493,7 @@ export function useForm<
         const field = get(fieldsRef.current, fieldName);
         const isFieldArray = fieldArrayNamesRef.current.has(name);
 
-        isFieldArray || (field && !field._f)
+        isFieldArray || !isPrimitive(inputValue) || (field && !field._f)
           ? setInternalValues(
               fieldName,
               inputValue as SetFieldValue<TFieldValues>,
@@ -1113,7 +1113,9 @@ export function useForm<
     value: T,
     name = '',
   ): void => {
-    !get(fieldsRef.current, name) &&
+    const field = get(fieldsRef.current, name);
+
+    !field &&
       (isPrimitive(value) ||
         (isWeb && (value instanceof File || value instanceof Date))) &&
       set(fieldsRef.current, name, {
@@ -1123,6 +1125,10 @@ export function useForm<
           name,
         },
       });
+
+    if (field && field._f && field._f.refs) {
+      return;
+    }
 
     if (Array.isArray(value) || isObject(value)) {
       if (name && !get(fieldsRef.current, name)) {
