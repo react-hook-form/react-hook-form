@@ -905,4 +905,38 @@ describe('setValue', () => {
 
     expect(screen.getByTestId(inputId)).toHaveValue('updated value');
   });
+
+  it('should register deeply nested inputs correctly', () => {
+    let fields: unknown;
+    const App = () => {
+      const { setValue, control } = useForm();
+      useFieldArray({
+        control,
+        name: 'test',
+      });
+      const [, setShow] = React.useState(false);
+      fields = control.fieldsRef.current;
+
+      return (
+        <button
+          onClick={() => {
+            setValue('test', [
+              {
+                name: 'append',
+                nestedArray: [{ field1: 'append', field2: 'append' }],
+              },
+            ]);
+            setShow(true);
+          }}
+        >
+          setValue
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(fields).toMatchSnapshot();
+  });
 });

@@ -493,7 +493,7 @@ export function useForm<
         const field = get(fieldsRef.current, fieldName);
         const isFieldArray = fieldArrayNamesRef.current.has(name);
 
-        isFieldArray || (field && !field._f)
+        isFieldArray || !isPrimitive(inputValue) || (field && !field._f)
           ? setInternalValues(
               fieldName,
               inputValue as SetFieldValue<TFieldValues>,
