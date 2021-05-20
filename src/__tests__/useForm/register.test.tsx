@@ -408,6 +408,46 @@ describe('register', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
+  it.only('should skip register absent fields which are checkbox/radio inputs', async () => {
+    let data: unknown;
+
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        defaultValues: {
+          test: ['1', '2', '3'],
+        },
+      });
+      return (
+        <form onSubmit={handleSubmit((d) => (data = d))}>
+          <input type="checkbox" {...register('test')} value={'1'} />
+          <input type="checkbox" {...register('test')} value={'2'} />
+          <input type="checkbox" {...register('test')} value={'3'} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(data).toEqual({
+      test: ['1', '2', '3'],
+    });
+
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(data).toEqual({
+      test: ['2', '3'],
+    });
+  });
+
   describe('register valueAs', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};
