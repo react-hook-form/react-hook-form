@@ -245,58 +245,70 @@ export function useForm<
       shouldRegister?: boolean,
     ) => {
       shouldRegister && register(name as Path<TFieldValues>);
-      const _f = get(fieldsRef.current, name, {})._f as Field['_f'];
+      const field = get(fieldsRef.current, name);
 
-      if (_f) {
-        const value =
-          isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
-            ? ''
-            : rawValue;
-        _f.value = getFieldValueAs(rawValue, _f);
+      if (field) {
+        const _f = (field as Field)._f;
 
-        if (isRadioInput(_f.ref)) {
-          (_f.refs || []).forEach(
-            (radioRef: HTMLInputElement) =>
-              (radioRef.checked = radioRef.value === value),
-          );
-        } else if (isFileInput(_f.ref) && !isString(value)) {
-          _f.ref.files = value as FileList;
-        } else if (isMultipleSelect(_f.ref)) {
-          [..._f.ref.options].forEach(
-            (selectRef) =>
-              (selectRef.selected = (value as string[]).includes(
-                selectRef.value,
-              )),
-          );
-        } else if (isCheckBoxInput(_f.ref) && _f.refs) {
-          _f.refs.length > 1
-            ? _f.refs.forEach(
-                (checkboxRef) =>
-                  (checkboxRef.checked = Array.isArray(value)
-                    ? !!(value as []).find(
-                        (data: string) => data === checkboxRef.value,
-                      )
-                    : value === checkboxRef.value),
-              )
-            : (_f.refs[0].checked = !!value);
+        if (_f) {
+          const value =
+            isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
+              ? ''
+              : rawValue;
+          _f.value = getFieldValueAs(rawValue, _f);
+
+          if (isRadioInput(_f.ref)) {
+            (_f.refs || []).forEach(
+              (radioRef: HTMLInputElement) =>
+                (radioRef.checked = radioRef.value === value),
+            );
+          } else if (isFileInput(_f.ref) && !isString(value)) {
+            _f.ref.files = value as FileList;
+          } else if (isMultipleSelect(_f.ref)) {
+            [..._f.ref.options].forEach(
+              (selectRef) =>
+                (selectRef.selected = (value as string[]).includes(
+                  selectRef.value,
+                )),
+            );
+          } else if (isCheckBoxInput(_f.ref) && _f.refs) {
+            _f.refs.length > 1
+              ? _f.refs.forEach(
+                  (checkboxRef) =>
+                    (checkboxRef.checked = Array.isArray(value)
+                      ? !!(value as []).find(
+                          (data: string) => data === checkboxRef.value,
+                        )
+                      : value === checkboxRef.value),
+                )
+              : (_f.refs[0].checked = !!value);
+          } else {
+            _f.ref.value = value;
+          }
+
+          if (shouldRender) {
+            const values = getFieldsValues(fieldsRef);
+            set(values, name, rawValue);
+            controllerSubjectRef.current.next({
+              values: {
+                ...defaultValuesRef.current,
+                ...values,
+              } as DefaultValues<TFieldValues>,
+              name,
+            });
+          }
+
+          options.shouldDirty && updateAndGetDirtyState(name, value);
+          options.shouldValidate && trigger(name as Path<TFieldValues>);
         } else {
-          _f.ref.value = value;
+          field._f = {
+            ref: {
+              name,
+              value: rawValue,
+            },
+            value: rawValue,
+          };
         }
-
-        if (shouldRender) {
-          const values = getFieldsValues(fieldsRef);
-          set(values, name, rawValue);
-          controllerSubjectRef.current.next({
-            values: {
-              ...defaultValuesRef.current,
-              ...values,
-            } as DefaultValues<TFieldValues>,
-            name,
-          });
-        }
-
-        options.shouldDirty && updateAndGetDirtyState(name, value);
-        options.shouldValidate && trigger(name as Path<TFieldValues>);
       }
     },
     [],
@@ -601,7 +613,7 @@ export function useForm<
         set(fieldArrayDefaultValuesRef.current, name, []);
     }
 
-    (field && !field._f) || isFieldArray
+    ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
       ? setInternalValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
