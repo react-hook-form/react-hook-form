@@ -939,4 +939,84 @@ describe('setValue', () => {
     fireEvent.click(screen.getByRole('button'));
     expect(fields).toMatchSnapshot();
   });
+
+  describe('when set field to null', () => {
+    it('should be able to set correctly with register', () => {
+      let result: unknown;
+
+      type FormData = {
+        user: { name: string } | null;
+      };
+
+      function App() {
+        const { setValue, watch, register } = useForm<FormData>({
+          defaultValues: {
+            user: {
+              name: 'John Doe',
+            },
+          },
+        });
+
+        result = watch();
+
+        register('user');
+
+        return (
+          <div>
+            <button onClick={() => setValue('user', null)}>
+              Set user to null
+            </button>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(result).toEqual({
+        user: null,
+      });
+    });
+
+    it('should be able to set correctly without register', () => {
+      let result: unknown;
+
+      type FormData = {
+        user: { name: string } | null;
+      };
+
+      function App() {
+        const { setValue, watch } = useForm<FormData>({
+          defaultValues: {
+            user: {
+              name: 'John Doe',
+            },
+          },
+        });
+
+        result = watch();
+
+        return (
+          <div>
+            <button onClick={() => setValue('user', null)}>
+              Set user to null
+            </button>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(result).toEqual({
+        user: null,
+      });
+    });
+  });
 });
