@@ -408,7 +408,7 @@ describe('register', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
-  it.only('should skip register absent fields which are checkbox/radio inputs', async () => {
+  it('should skip register absent fields which are checkbox/radio inputs', async () => {
     let data: unknown;
 
     const App = () => {
