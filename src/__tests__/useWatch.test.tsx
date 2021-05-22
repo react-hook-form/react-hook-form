@@ -517,6 +517,52 @@ describe('useWatch', () => {
         'Totals',
       ]);
     });
+
+    it('should return shallow merged watch values', () => {
+      const watchedValue: unknown[] = [];
+
+      function App() {
+        const methods = useForm({
+          defaultValues: {
+            name: 'foo',
+            arr: [],
+          },
+          mode: 'onSubmit',
+          reValidateMode: 'onChange',
+          criteriaMode: 'all',
+          shouldUnregister: false,
+        });
+
+        return (
+          <FormProvider {...methods}>
+            <input {...methods.register('name')} placeholder="First Name" />
+            <Preview />
+            <FieldArray />
+            <input type="submit" />
+          </FormProvider>
+        );
+      }
+
+      function Preview() {
+        const form = useWatch({});
+        watchedValue.push(form);
+
+        return null;
+      }
+
+      function FieldArray() {
+        useFieldArray({
+          name: 'arr',
+          shouldUnregister: false,
+        });
+
+        return null;
+      }
+
+      render(<App />);
+
+      expect(watchedValue).toMatchSnapshot();
+    });
   });
 
   describe('fieldArray with shouldUnregister true', () => {
