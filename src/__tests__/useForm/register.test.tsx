@@ -9,6 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
+import { ControllerRenderProps } from '../../types';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
@@ -839,5 +841,77 @@ describe('register', () => {
 
       expect(screen.queryByText('Empty')).toBeNull();
     });
+  });
+
+  it('should not register nested input', () => {
+    const watchedValue: unknown[] = [];
+    let inputs: unknown;
+
+    const Checkboxes = ({
+      value,
+      onChange,
+    }: {
+      value: boolean[];
+      onChange: ControllerRenderProps['onChange'];
+    }) => {
+      const [checkboxValue, setCheckboxValue] = React.useState(value);
+
+      return (
+        <div>
+          {value.map((_, index) => (
+            <input
+              key={index}
+              onChange={(e) => {
+                const updatedValue = checkboxValue.map((item, i) => {
+                  if (index === i) {
+                    return e.target.checked;
+                  }
+                  return item;
+                });
+
+                setCheckboxValue(updatedValue);
+                onChange(updatedValue);
+              }}
+              type="checkbox"
+              checked={checkboxValue[index]}
+            />
+          ))}
+        </div>
+      );
+    };
+
+    function App() {
+      const { control, watch } = useForm({
+        defaultValues: {
+          test: [true, false, false],
+        },
+      });
+      inputs = control.fieldsRef;
+      watchedValue.push(watch());
+
+      return (
+        <form>
+          <Controller
+            name="test"
+            control={control}
+            render={({ field }) => (
+              <Checkboxes onChange={field.onChange} value={field.value} />
+            )}
+          />
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+
+    expect(watchedValue).toEqual([
+      { test: [true, false, false] },
+      { test: [false, false, false] },
+    ]);
+
+    expect(inputs).toMatchSnapshot();
   });
 });
