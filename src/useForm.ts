@@ -940,6 +940,7 @@ export function useForm<
               ),
               ref,
             ],
+            nest: true,
             ref: { type: ref.type, name },
           }
         : {
@@ -1140,7 +1141,7 @@ export function useForm<
         },
       });
 
-    if (field && field._f && field._f.refs) {
+    if (field && field._f && field._f.nest) {
       return;
     }
 

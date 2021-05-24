@@ -39,6 +39,7 @@ export type Field = {
     value?: any;
     refs?: HTMLInputElement[];
     mount?: boolean;
+    nest?: boolean;
   } & RegisterOptions;
 };
 
