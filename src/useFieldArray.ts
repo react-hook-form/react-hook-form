@@ -49,6 +49,7 @@ export const useFieldArray = <
 >): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const focusNameRef = React.useRef('');
+  const isMountedRef = React.useRef(false);
   const {
     isWatchAllRef,
     watchFieldsRef,
@@ -73,7 +74,7 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      get(fieldsRef.current, name)
+      get(fieldsRef.current, name) && isMountedRef.current
         ? get(getFieldsValues(fieldsRef), name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name, [])
@@ -457,6 +458,7 @@ export const useFieldArray = <
       },
     });
     !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
+    isMountedRef.current = true;
 
     return () => {
       fieldArraySubscription.unsubscribe();
