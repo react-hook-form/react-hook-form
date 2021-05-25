@@ -8,6 +8,7 @@ import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
 import compact from './utils/compact';
 import convertToArrayPayload from './utils/convertToArrayPayload';
+import { deepMerge } from './utils/deepMerge';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
@@ -74,7 +75,10 @@ export const useFieldArray = <
   >(
     mapIds(
       get(fieldsRef.current, name)
-        ? get(getFieldsValues(fieldsRef), name)
+        ? deepMerge(
+            fieldArrayDefaultValuesRef.current,
+            get(getFieldsValues(fieldsRef), name),
+          )
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name, [])
         : get(defaultValuesRef.current, name, []),
