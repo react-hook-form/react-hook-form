@@ -37,7 +37,7 @@ import omit from './utils/omit';
 import set from './utils/set';
 import Subject from './utils/Subject';
 import unset from './utils/unset';
-import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, VALIDATION_MODE } from './constants';
 import {
   ChangeHandler,
   DeepPartial,
@@ -84,7 +84,7 @@ import {
   WatchObserver,
 } from './types';
 
-const isWindowUndefined = typeof window === UNDEFINED;
+const isWindowUndefined = typeof window === 'undefined';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
