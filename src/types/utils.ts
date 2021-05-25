@@ -131,7 +131,7 @@ export type FieldArrayPathValue<
 
 export type FieldPathValues<
   TFieldValues extends FieldValues,
-  TPath extends FieldPath<TFieldValues>[],
+  TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[],
 > = {} & {
   [K in keyof TPath]: FieldPathValue<
     TFieldValues,
