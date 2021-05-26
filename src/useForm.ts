@@ -1130,31 +1130,29 @@ export function useForm<
   ): void => {
     const field = get(fieldsRef.current, name);
 
-    if (field && field._f && field._f.nest) {
-      return;
-    } else if (
-      !field &&
-      name &&
-      (isPrimitive(value) ||
-        (isWeb &&
-          (value instanceof File ||
-            value instanceof FileList ||
-            value instanceof Date)))
-    ) {
-      set(fieldsRef.current, name, {
-        _f: {
-          ref: { name, value },
-          value,
-          name,
-        },
-      });
-    } else if (Array.isArray(value) || isObject(value)) {
-      if (name && !get(fieldsRef.current, name)) {
-        set(fieldsRef.current, name, Array.isArray(value) ? [] : {});
+    if (!field || (field && !field._f)) {
+      if (
+        !field &&
+        (isPrimitive(value) ||
+          (isWeb && (value instanceof FileList || value instanceof Date)))
+      ) {
+        set(fieldsRef.current, name, {
+          _f: {
+            ref: { name, value },
+            value,
+            name,
+          },
+        });
       }
 
-      for (const key in value) {
-        registerAbsentFields(value[key], name + (name ? '.' : '') + key);
+      if (Array.isArray(value) || isObject(value)) {
+        if (name && !get(fieldsRef.current, name)) {
+          set(fieldsRef.current, name, Array.isArray(value) ? [] : {});
+        }
+
+        for (const key in value) {
+          registerAbsentFields(value[key], name + (name ? '.' : '') + key);
+        }
       }
     }
   };
