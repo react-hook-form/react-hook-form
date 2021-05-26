@@ -1134,8 +1134,12 @@ export function useForm<
       return;
     } else if (
       !field &&
+      name &&
       (isPrimitive(value) ||
-        (isWeb && (value instanceof File || value instanceof Date)))
+        (isWeb &&
+          (value instanceof File ||
+            value instanceof FileList ||
+            value instanceof Date)))
     ) {
       set(fieldsRef.current, name, {
         _f: {
