@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { FieldRefs, FieldValues } from '../types';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
-import isWeb from '../utils/isWeb';
 import omit from '../utils/omit';
 import set from '../utils/set';
 
@@ -30,12 +29,7 @@ const getFieldsValues = (
       );
 
       current &&
-        (!_f ||
-          !_f.nest ||
-          (isWeb &&
-            (output[name] instanceof File ||
-              output[name] instanceof FileList ||
-              output[name] instanceof Date))) &&
+        (!_f || !_f.nest) &&
         getFieldsValues(
           {
             current,
