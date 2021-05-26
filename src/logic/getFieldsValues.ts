@@ -29,7 +29,7 @@ const getFieldsValues = (
       );
 
       current &&
-        (!_f || !_f.nest) &&
+        !_f &&
         getFieldsValues(
           {
             current,
