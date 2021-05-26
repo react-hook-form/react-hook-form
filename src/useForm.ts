@@ -1128,6 +1128,9 @@ export function useForm<
     value: T,
     name = '',
   ): void => {
+    if (!name) {
+      return;
+    }
     const field = get(fieldsRef.current, name);
 
     if (field && field._f && field._f.nest) {
