@@ -55,7 +55,6 @@ export function useController<
   });
   const field = get(fieldsRef.current, name);
   field._f.value = value;
-  field._f.nest = true;
 
   React.useEffect(() => {
     const controllerSubscription = controllerSubjectRef.current.subscribe({

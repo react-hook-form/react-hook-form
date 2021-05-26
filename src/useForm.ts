@@ -940,7 +940,6 @@ export function useForm<
               ),
               ref,
             ],
-            nest: true,
             ref: { type: ref.type, name },
           }
         : {
