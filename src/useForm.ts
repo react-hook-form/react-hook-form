@@ -1130,9 +1130,13 @@ export function useForm<
   ): void => {
     const field = get(fieldsRef.current, name);
 
-    !field &&
+    if (field && field._f && field._f.nest) {
+      return;
+    } else if (
+      !field &&
       (isPrimitive(value) ||
-        (isWeb && (value instanceof File || value instanceof Date))) &&
+        (isWeb && (value instanceof File || value instanceof Date)))
+    ) {
       set(fieldsRef.current, name, {
         _f: {
           ref: { name, value },
@@ -1140,12 +1144,7 @@ export function useForm<
           name,
         },
       });
-
-    if (field && field._f && field._f.nest) {
-      return;
-    }
-
-    if (Array.isArray(value) || isObject(value)) {
+    } else if (Array.isArray(value) || isObject(value)) {
       if (name && !get(fieldsRef.current, name)) {
         set(fieldsRef.current, name, Array.isArray(value) ? [] : {});
       }
