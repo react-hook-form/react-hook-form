@@ -7,7 +7,6 @@ Object {
       "_f": Object {
         "mount": true,
         "name": "test",
-        "nest": true,
         "ref": Object {
           "name": "test",
           "value": Array [
