@@ -106,30 +106,11 @@ export function useController<
       ref: (elm) => elm && ref(elm),
     },
     formState,
-    fieldState: Object.defineProperties(
-      {},
-      {
-        invalid: {
-          get() {
-            return !!get(formState.errors, name);
-          },
-        },
-        isDirty: {
-          get() {
-            return !!get(formState.dirtyFields, name);
-          },
-        },
-        isTouched: {
-          get() {
-            return !!get(formState.touchedFields, name);
-          },
-        },
-        error: {
-          get() {
-            return get(formState.errors, name);
-          },
-        },
-      },
-    ),
+    fieldState: {
+      invalid: !!get(formState.errors, name),
+      isDirty: !!get(formState.dirtyFields, name),
+      isTouched: !!get(formState.touchedFields, name),
+      error: get(formState.errors, name),
+    },
   };
 }
