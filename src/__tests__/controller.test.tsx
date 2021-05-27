@@ -996,7 +996,7 @@ describe('Controller', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
-  it.only('should set ref to empty object when ref is not defined', async () => {
+  it('should set ref to empty object when ref is not defined', async () => {
     const App = () => {
       const [show, setShow] = React.useState(false);
       const { control } = useForm({
