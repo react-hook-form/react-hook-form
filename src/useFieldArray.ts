@@ -27,6 +27,7 @@ import {
   FieldArrayPath,
   FieldArrayWithId,
   FieldErrors,
+  FieldPath,
   FieldValues,
   UseFieldArrayProps,
   UseFieldArrayReturn,
@@ -462,7 +463,8 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      (shouldUnmount || shouldUnregister) && unregister(name);
+      (shouldUnmount || shouldUnregister) &&
+        unregister(name as FieldPath<TFieldValues>);
     };
   }, []);
 
