@@ -998,6 +998,7 @@ export function useForm<
                 const field = get(fieldsRef.current, name) as Field;
                 const shouldUnmount =
                   shouldUnregister || (options && options.shouldUnregister);
+
                 if (field && field._f) {
                   field._f.mount = false;
                   // If initial state of field element is disabled,
