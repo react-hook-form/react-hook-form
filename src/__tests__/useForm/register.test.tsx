@@ -914,4 +914,51 @@ describe('register', () => {
 
     expect(inputs).toMatchSnapshot();
   });
+
+  it('should validate value after toggling enabled/disabled on input', async () => {
+    const defaultValue = 'Test';
+    const validate = jest.fn();
+    const submit = jest.fn();
+    const onSubmit = (values: unknown) => {
+      submit(values);
+    };
+
+    const App = () => {
+      const [editable, setEditable] = React.useState(false);
+      const { register, handleSubmit } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input
+            disabled={!editable}
+            defaultValue={defaultValue}
+            {...register('test', { validate })}
+          />
+          <button type="button" onClick={() => setEditable(!editable)}>
+            Toggle Edit
+          </button>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(validate).toBeCalledTimes(0);
+
+    fireEvent.click(screen.getByText('Toggle Edit'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByText('Submit'));
+    });
+
+    expect(validate).toBeCalledWith(defaultValue);
+    expect(submit).toBeCalledWith({ test: defaultValue });
+
+    fireEvent.click(screen.getByText('Toggle Edit'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByText('Submit'));
+    });
+
+    expect(submit).toBeCalledWith({ test: undefined });
+  });
 });
