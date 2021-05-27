@@ -29,7 +29,6 @@ const getFieldsValues = (
       );
 
       current &&
-        !_f &&
         getFieldsValues(
           {
             current,
