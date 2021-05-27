@@ -998,7 +998,15 @@ export function useForm<
                 const field = get(fieldsRef.current, name) as Field;
                 const shouldUnmount =
                   shouldUnregister || (options && options.shouldUnregister);
-                field && (field._f.mount = false);
+                if (field && field._f) {
+                  field._f.mount = false;
+                  // If initial state of field element is disabled,
+                  // value is not set on first "register"
+                  // re-sync the value in when it switched to enabled
+                  if (!field._f.value && field._f.ref.value) {
+                    field._f.value = field._f.ref.value;
+                  }
+                }
 
                 if (
                   isWeb &&
