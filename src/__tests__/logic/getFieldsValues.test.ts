@@ -157,6 +157,46 @@ describe('getFieldsValues', () => {
         test1: 'test',
       },
     });
+
+    expect(
+      getFieldsValues({
+        current: {
+          users: [
+            {
+              name: {
+                _f: {
+                  ref: {
+                    name: 'users.0.name',
+                  },
+                  name: 'users.0.name',
+                  value: '1',
+                },
+              },
+              company: {
+                _f: {
+                  ref: {
+                    name: 'users.0.company',
+                  },
+                  name: 'users.0.company',
+                  value: {
+                    name: '2',
+                  },
+                },
+              },
+            },
+          ] as any,
+        },
+      }),
+    ).toEqual({
+      users: [
+        {
+          company: {
+            name: '2',
+          },
+          name: '1',
+        },
+      ],
+    });
   });
 
   it('should work with nested fieldsRef object', () => {
