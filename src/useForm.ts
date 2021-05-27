@@ -1005,7 +1005,7 @@ export function useForm<
                   // re-sync the value in when it switched to enabled
                   if (
                     isUndefined(field._f.value) &&
-                    isUndefined(field._f.ref.value)
+                    !isUndefined(field._f.ref.value)
                   ) {
                     field._f.value = field._f.ref.value;
                   }
