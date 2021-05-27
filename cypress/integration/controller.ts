@@ -74,6 +74,6 @@ describe('controller basic form validation', () => {
     cy.get('#input-switch input').click();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('10');
   });
 });
