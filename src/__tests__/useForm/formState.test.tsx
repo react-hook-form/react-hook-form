@@ -412,7 +412,7 @@ describe('formState', () => {
     });
   });
 
-  it('should update isValid to true for valdiation with inline defaultValue', () => {
+  it('should update isValid to true for validation with inline defaultValue', () => {
     function App() {
       const {
         register,
