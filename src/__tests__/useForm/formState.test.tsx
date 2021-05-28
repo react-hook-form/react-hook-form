@@ -226,7 +226,39 @@ describe('formState', () => {
     });
   });
 
-  it('should only set isSubmitSuccessful to false when there is a promise reject', async () => {
+  it('should bubble the error up when an error occurs in the provided handleSubmit function', async () => {
+    const errorMsg = 'this is an error';
+    const App = () => {
+      const [error, setError] = React.useState('');
+      const { register, handleSubmit } = useForm();
+
+      const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
+
+      return (
+        <form
+          onSubmit={() =>
+            handleSubmit(rejectPromiseFn)().catch((err) =>
+              setError(err.message),
+            )
+          }
+        >
+          <input {...register('test')} />
+          <p>{error}</p>
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    screen.getByText(errorMsg);
+  });
+
+  it('should set isSubmitSuccessful to false when there is a promise reject', async () => {
     const App = () => {
       const {
         register,
@@ -234,12 +266,12 @@ describe('formState', () => {
         formState: { isSubmitSuccessful, isSubmitted },
       } = useForm();
 
+      const rejectPromiseFn = jest
+        .fn()
+        .mockRejectedValue(new Error('this is an error'));
+
       return (
-        <form
-          onSubmit={handleSubmit(async () => {
-            throw new Error('something is wrong');
-          })}
-        >
+        <form onSubmit={() => handleSubmit(rejectPromiseFn)().catch(() => {})}>
           <input {...register('test')} />
           <p>{isSubmitted ? 'isSubmitted' : 'no'}</p>
           <p>
