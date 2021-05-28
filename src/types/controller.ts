@@ -39,7 +39,7 @@ export type UseControllerProps<
     'valueAsNumber' | 'valueAsDate' | 'setValueAs'
   >;
   shouldUnregister?: boolean;
-  defaultValue?: unknown;
+  defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
 };
 
