@@ -1072,8 +1072,9 @@ export function useForm<
               fieldsNamesRef.current,
             );
         }
-      } catch {
+      } catch (err) {
         hasNoPromiseError = false;
+        throw err;
       } finally {
         formStateRef.current.isSubmitted = true;
         formStateSubjectRef.current.next({
