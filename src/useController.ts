@@ -43,13 +43,11 @@ export function useController<
   const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
   const field = get(fieldsRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    isFieldArray
-      ? defaultValue
-      : field && field._f
-      ? field._f.value
-      : isUndefined(defaultValue)
-      ? get(defaultValuesRef.current, name)
-      : defaultValue,
+    isFieldArray || !field || !field._f
+      ? isUndefined(defaultValue)
+        ? get(defaultValuesRef.current, name)
+        : defaultValue
+      : get(fieldsRef.current, name)._f.value,
   );
   const { onChange, onBlur, ref } = register(name, {
     ...rules,
