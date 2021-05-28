@@ -549,6 +549,8 @@ export function useForm<
       } else {
         field._f.value = defaultValue;
       }
+    } else {
+      field._f.value = getFieldValue(field);
     }
 
     if (
