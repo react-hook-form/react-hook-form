@@ -411,4 +411,32 @@ describe('formState', () => {
       screen.getByText('valid');
     });
   });
+
+  it('should update isValid to true for valdiation with inline defaultValue', () => {
+    function App() {
+      const {
+        register,
+        formState: { isValid },
+      } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <form>
+          <input
+            type="text"
+            placeholder="Any value"
+            autoComplete="on"
+            {...register('value', { required: true })}
+            defaultValue="Any default value!"
+          />
+          <p>isValid = {isValid ? 'true' : 'false'}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    screen.getByText('isValid = true');
+  });
 });
