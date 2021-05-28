@@ -416,8 +416,6 @@ export function useForm<
   );
 
   const validateForm = async (fieldsRef: FieldRefs) => {
-    let isValid = true;
-
     for (const name in fieldsRef) {
       const field = fieldsRef[name];
 
@@ -432,7 +430,6 @@ export function useForm<
           );
 
           if (fieldError[_f.name]) {
-            isValid = false;
             set(formStateRef.current.errors, _f.name, fieldError[_f.name]);
             unset(validFieldsRef.current, _f.name);
           } else if (get(fieldsWithValidationRef.current, _f.name)) {
@@ -444,8 +441,6 @@ export function useForm<
         current && (await validateForm(current));
       }
     }
-
-    return isValid;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
@@ -467,18 +462,20 @@ export function useForm<
         );
         isValid = fields.every((name) => !get(schemaResult, name));
       } else {
-        isValid = isUndefined(name)
-          ? await validateForm(fieldsRef.current)
-          : (
-              await Promise.all(
-                fields
-                  .filter((fieldName) => get(fieldsRef.current, fieldName))
-                  .map(
-                    async (fieldName) =>
-                      await executeValidation(fieldName, null),
-                  ),
-              )
-            ).every(Boolean);
+        if (isUndefined(name)) {
+          await validateForm(fieldsRef.current);
+          isValid = isEmptyObject(formStateRef.current.errors);
+        } else {
+          isValid = (
+            await Promise.all(
+              fields
+                .filter((fieldName) => get(fieldsRef.current, fieldName))
+                .map(
+                  async (fieldName) => await executeValidation(fieldName, null),
+                ),
+            )
+          ).every(Boolean);
+        }
       }
 
       formStateSubjectRef.current.next({

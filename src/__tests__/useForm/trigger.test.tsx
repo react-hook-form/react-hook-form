@@ -465,4 +465,39 @@ describe('trigger', () => {
       screen.getByText('true');
     });
   });
+
+  it('should return correct valid state when trigger the entire form with build in validation', async () => {
+    let isValid;
+
+    function App() {
+      const { register, trigger } = useForm();
+
+      const onTrigger = async () => {
+        isValid = await trigger();
+      };
+
+      return (
+        <form>
+          <input
+            {...register('firstName', { required: true })}
+            placeholder="First name"
+          />
+          <input
+            {...register('last.name', { required: true })}
+            placeholder="Last name"
+          />
+
+          <input type="button" onClick={onTrigger} value="trigger" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(isValid).toBeFalsy();
+  });
 });
