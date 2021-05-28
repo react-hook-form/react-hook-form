@@ -1,10 +1,13 @@
 import { Field } from '../types';
+import isUndefined from '../utils/isUndefined';
 
 export default (
   value: any,
   { valueAsNumber, valueAsDate, setValueAs }: Field['_f'],
 ) =>
-  valueAsNumber
+  isUndefined(value)
+    ? value
+    : valueAsNumber
     ? value === ''
       ? NaN
       : +value
