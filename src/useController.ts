@@ -40,21 +40,25 @@ export function useController<
     inFieldArrayActionRef,
   } = control || methods.control;
 
-  const { onChange, onBlur, ref } = register(name, rules);
   const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+  const field = get(fieldsRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    isUndefined(get(fieldsRef.current, name)._f.value) || isFieldArray
-      ? isUndefined(defaultValue)
-        ? get(defaultValuesRef.current, name)
-        : defaultValue
-      : get(fieldsRef.current, name)._f.value,
+    isFieldArray
+      ? defaultValue
+      : field && field._f
+      ? field._f.value
+      : isUndefined(defaultValue)
+      ? get(defaultValuesRef.current, name)
+      : defaultValue,
   );
+  const { onChange, onBlur, ref } = register(name, {
+    ...rules,
+    value,
+  });
   const formState = useFormState({
     control: control || methods.control,
     name,
   });
-  const field = get(fieldsRef.current, name);
-  field._f.value = value;
 
   React.useEffect(() => {
     const controllerSubscription = controllerSubjectRef.current.subscribe({
