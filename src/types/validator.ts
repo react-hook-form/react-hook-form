@@ -38,4 +38,5 @@ export type RegisterOptions<
   valueAsDate: boolean;
   setValueAs: (value: any) => any;
   shouldUnregister?: boolean;
+  shouldListen?: boolean;
 }>;
