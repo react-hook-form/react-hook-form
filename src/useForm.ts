@@ -972,16 +972,15 @@ export function useForm<
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options = {}) => {
-      const isInitialRegister = !get(fieldsRef.current, name);
+      const field = get(fieldsRef.current, name);
 
       set(fieldsRef.current, name, {
         _f: {
-          ...(isInitialRegister
+          ...(!field
             ? { ref: { name } }
             : {
-                ref: get(fieldsRef.current, name, { _f: { ref: { name } } })._f
-                  .ref,
-                ...get(fieldsRef.current, name)._f,
+                ref: (field._f || {}).ref || { name },
+                ...field._f,
               }),
           name,
           mount: true,
@@ -991,7 +990,7 @@ export function useForm<
       hasValidation(options, true) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
-      isInitialRegister && updateValidAndValue(name, options);
+      field && updateValidAndValue(name, options);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
