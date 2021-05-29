@@ -8,7 +8,9 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
 import { NestedValue } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
@@ -71,12 +73,12 @@ describe('setValue', () => {
 
     const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
     const file = blob as File;
-    const fileList = ({
+    const fileList = {
       0: file,
       1: file,
       length: 2,
       item: () => file,
-    } as any) as FileList;
+    } as any as FileList;
 
     act(() => result.current.setValue('test', fileList));
 
@@ -261,6 +263,7 @@ describe('setValue', () => {
 
     expect(result.current.control.fieldsRef.current['test1']).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test1', value: ['1', '2', '3'] },
         name: 'test1',
         value: ['1', '2', '3'],
@@ -268,6 +271,7 @@ describe('setValue', () => {
     });
     expect(result.current.control.fieldsRef.current['test2']).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
         name: 'test2',
         value: { key1: '1', key2: 2 },
@@ -275,6 +279,7 @@ describe('setValue', () => {
     });
     expect(result.current.control.fieldsRef.current['test3']).toEqual({
       _f: {
+        mount: true,
         ref: {
           name: 'test3',
           value: [
@@ -310,6 +315,7 @@ describe('setValue', () => {
 
     expect(get(result.current.control.fieldsRef.current, 'test.0')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.0', value: '1' },
         name: 'test.0',
         value: '1',
@@ -317,6 +323,7 @@ describe('setValue', () => {
     });
     expect(get(result.current.control.fieldsRef.current, 'test.1')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.1', value: '2' },
         name: 'test.1',
         value: '2',
@@ -324,6 +331,7 @@ describe('setValue', () => {
     });
     expect(get(result.current.control.fieldsRef.current, 'test.2')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.2', value: '3' },
         name: 'test.2',
         value: '3',
@@ -356,6 +364,7 @@ describe('setValue', () => {
       get(result.current.control.fieldsRef.current, 'test.0.test'),
     ).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.0.test', value: '1' },
         name: 'test.0.test',
         value: '1',
@@ -365,6 +374,7 @@ describe('setValue', () => {
       get(result.current.control.fieldsRef.current, 'test.1.test'),
     ).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.1.test', value: '2' },
         name: 'test.1.test',
         value: '2',
@@ -374,6 +384,7 @@ describe('setValue', () => {
       get(result.current.control.fieldsRef.current, 'test.2.test'),
     ).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.2.test', value: '3' },
         name: 'test.2.test',
         value: '3',
@@ -406,12 +417,14 @@ describe('setValue', () => {
     expect(get(result.current.control.fieldsRef.current, 'test.bill')).toEqual({
       _f: {
         ref: { name: 'test.bill', value: '1' },
+        mount: true,
         name: 'test.bill',
         value: '1',
       },
     });
     expect(get(result.current.control.fieldsRef.current, 'test.luo')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.luo', value: '2' },
         name: 'test.luo',
         value: '2',
@@ -419,6 +432,7 @@ describe('setValue', () => {
     });
     expect(get(result.current.control.fieldsRef.current, 'test.test')).toEqual({
       _f: {
+        mount: true,
         ref: { name: 'test.test', value: '3' },
         name: 'test.test',
         value: '3',
@@ -434,7 +448,12 @@ describe('setValue', () => {
     });
 
     expect(result.current.control.fieldsRef.current['test']).toEqual({
-      _f: { name: 'test', ref: { name: 'test', value: '1' }, value: '1' },
+      _f: {
+        name: 'test',
+        mount: true,
+        ref: { name: 'test', value: '1' },
+        value: '1',
+      },
     });
   });
 
@@ -455,6 +474,7 @@ describe('setValue', () => {
     expect(result.current.control.fieldsRef.current['test']).toEqual({
       test: {
         _f: {
+          mount: true,
           name: 'test.test',
           ref: {
             name: 'test.test',
@@ -465,6 +485,7 @@ describe('setValue', () => {
       },
       test1: {
         _f: {
+          mount: true,
           name: 'test.test1',
           ref: {
             name: 'test.test1',
@@ -475,6 +496,7 @@ describe('setValue', () => {
       },
       test2: {
         _f: {
+          mount: true,
           name: 'test.test2',
           ref: {
             name: 'test.test2',
@@ -730,9 +752,10 @@ describe('setValue', () => {
     let submitData = undefined;
 
     const Component = () => {
-      const { register, handleSubmit, setValue } = useForm<{
-        test: string;
-      }>();
+      const { register, handleSubmit, setValue } =
+        useForm<{
+          test: string;
+        }>();
 
       return (
         <div>
@@ -801,5 +824,199 @@ describe('setValue', () => {
     });
 
     expect(result.current.formState.isValid).toBeTruthy();
+  });
+
+  it('should setValue with valueAs', async () => {
+    let result;
+
+    function App() {
+      const { register, handleSubmit, setValue } = useForm();
+
+      React.useEffect(() => {
+        setValue('setStringDate', '2021-04-23');
+      }, []);
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            result = data;
+          })}
+        >
+          <input
+            type="date"
+            {...register('setStringDate', { valueAsDate: true })}
+          />
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(result).toEqual({
+      setStringDate: new Date('2021-04-23'),
+    });
+  });
+
+  it('should set value for field array name correctly', () => {
+    const inputId = 'name';
+
+    const App = () => {
+      const { control, setValue } =
+        useForm<{
+          names: { name: string; id?: string }[];
+        }>();
+
+      const { fields } = useFieldArray({ control, name: 'names' });
+
+      React.useEffect(() => {
+        setValue('names', [{ name: 'initial value' }]);
+      }, []);
+
+      const onChangeValue = () => {
+        setValue('names.0', { name: 'updated value', id: 'test' });
+      };
+
+      return (
+        <>
+          {fields.map((item, index) => (
+            <Controller
+              key={item.id}
+              control={control}
+              name={`names.${index}.name` as const}
+              defaultValue={item.name}
+              render={({ field }) => <input data-testid={inputId} {...field} />}
+            />
+          ))}
+          <button onClick={onChangeValue}>Update</button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId(inputId)).toHaveValue('initial value');
+
+    fireEvent.click(screen.getByText('Update'));
+
+    expect(screen.getByTestId(inputId)).toHaveValue('updated value');
+  });
+
+  it('should register deeply nested inputs correctly', () => {
+    let fields: unknown;
+    const App = () => {
+      const { setValue, control } = useForm();
+      useFieldArray({
+        control,
+        name: 'test',
+      });
+      const [, setShow] = React.useState(false);
+      fields = control.fieldsRef.current;
+
+      return (
+        <button
+          onClick={() => {
+            setValue('test', [
+              {
+                name: 'append',
+                nestedArray: [{ field1: 'append', field2: 'append' }],
+              },
+            ]);
+            setShow(true);
+          }}
+        >
+          setValue
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(fields).toMatchSnapshot();
+  });
+
+  describe('when set field to null', () => {
+    it('should be able to set correctly with register', () => {
+      let result: unknown;
+
+      type FormData = {
+        user: { name: string } | null;
+      };
+
+      function App() {
+        const { setValue, watch, register } = useForm<FormData>({
+          defaultValues: {
+            user: {
+              name: 'John Doe',
+            },
+          },
+        });
+
+        result = watch();
+
+        register('user');
+
+        return (
+          <div>
+            <button onClick={() => setValue('user', null)}>
+              Set user to null
+            </button>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(result).toEqual({
+        user: null,
+      });
+    });
+
+    it('should be able to set correctly without register', () => {
+      let result: unknown;
+
+      type FormData = {
+        user: { name: string } | null;
+      };
+
+      function App() {
+        const { setValue, watch } = useForm<FormData>({
+          defaultValues: {
+            user: {
+              name: 'John Doe',
+            },
+          },
+        });
+
+        result = watch();
+
+        return (
+          <div>
+            <button onClick={() => setValue('user', null)}>
+              Set user to null
+            </button>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(result).toEqual({
+        user: null,
+      });
+    });
   });
 });

@@ -1,5 +1,5 @@
-import React from "react";
-import { useForm, useWatch } from "react-hook-form";
+import React from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 
 function useInputCache(values, causeField, effectField, callback) {
   const [effectCache, setEffectCache] = React.useState(values[effectField]);
@@ -10,7 +10,7 @@ function useInputCache(values, causeField, effectField, callback) {
     return {
       isRegistered,
       registrationStatusChanged: isRegistered !== currentState,
-      hasValue: vals[effectField] !== undefined
+      hasValue: vals[effectField] !== undefined,
     };
   };
 
@@ -18,18 +18,15 @@ function useInputCache(values, causeField, effectField, callback) {
   const currentRegState = React.useRef(false);
 
   React.useEffect(() => {
-    const {
-      isRegistered,
-      registrationStatusChanged,
-      hasValue
-    } = evaluateRegStatus(values, currentRegState.current);
+    const { isRegistered, registrationStatusChanged, hasValue } =
+      evaluateRegStatus(values, currentRegState.current);
 
     if (registrationStatusChanged && hasValue) {
       if (isRegistered && !!effectCache) {
-        console.debug("Deploying cache");
+        console.debug('Deploying cache');
         callback(effectField, effectCache);
       } else if (!isRegistered) {
-        console.debug("Caching before unmount");
+        console.debug('Caching before unmount');
         setEffectCache(values[effectField]);
       }
       currentRegState.current = !!isRegistered;
@@ -40,44 +37,44 @@ function useInputCache(values, causeField, effectField, callback) {
 
 export default function App() {
   const { register, handleSubmit, setValue, control } = useForm({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      name: "",
+      name: '',
       check: false,
-      optionalText: ""
-    }
+      optionalText: '',
+    },
   });
 
   const values = useWatch({
-    control
+    control,
   });
-  useInputCache(values, "check", "optionalText", setValue);
+  useInputCache(values, 'check', 'optionalText', setValue);
 
   return (
     <div className="App">
       <h1>Here's a form with conditional fields.</h1>
       <form onSubmit={handleSubmit(console.log)}>
         <input
-          name={"name"}
-          type={"text"}
+          name={'name'}
+          type={'text'}
           ref={register({ required: true, min: 3 })}
-          placeholder={"Enter a name"}
+          placeholder={'Enter a name'}
         />
         <br />
-        <label htmlFor={"check"}>
+        <label htmlFor={'check'}>
           toggle field:
           <input
-            name={"check"}
-            type={"checkbox"}
+            name={'check'}
+            type={'checkbox'}
             ref={register({ required: true })}
           />
         </label>
         <br />
         {values.check && (
           <input
-            name={"optionalText"}
+            name={'optionalText'}
             ref={register({ required: false })}
-            placeholder={"Mandatory when check=true"}
+            placeholder={'Mandatory when check=true'}
           />
         )}
       </form>

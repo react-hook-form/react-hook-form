@@ -1,51 +1,51 @@
-import React from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { object, array, string } from "yup";
-import { yupResolver } from "@hookform/resolvers";
+import React from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { object, array, string } from 'yup';
+import { yupResolver } from '@hookform/resolvers';
 
 const validationSchema = object().shape({
   questions: array()
     .of(
       object().shape({
-        text: string().required("Some text is required")
-      })
+        text: string().required('Some text is required'),
+      }),
     )
-    .required()
+    .required(),
 });
 
 function App() {
   const {
     control,
     register,
-    errors,
+    formState: { errors },
     clearErrors,
     setValue,
     unregister,
     handleSubmit,
-    trigger
+    trigger,
   } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(validationSchema)
+    mode: 'onChange',
+    resolver: yupResolver(validationSchema),
   });
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "questions"
+    name: 'questions',
   });
 
   const isInitalRender = React.useRef(true);
   const appendQuestion = () => {
     append({
-      text: ""
+      text: '',
     });
 
-    if (errors.questions?.type === "min") {
-      clearErrors("questions"); // always clear errors when a question is appended
+    if (errors.questions?.type === 'min') {
+      clearErrors('questions'); // always clear errors when a question is appended
     }
   };
 
   React.useEffect(() => {
     if (!fields.length && !isInitalRender.current) {
-      trigger("questions");
+      trigger('questions');
     }
 
     if (isInitalRender.current) {

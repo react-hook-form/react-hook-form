@@ -2,9 +2,13 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const { errors, handleSubmit, register } = useForm();
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm();
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     console.log({ data });
   };
 
@@ -16,7 +20,7 @@ export default function App() {
         type="email"
         ref={register({
           required: 'Email is required',
-          validate: value =>
+          validate: (value) =>
             value.includes('@') || "Email must include '@' symbol",
         })}
       />

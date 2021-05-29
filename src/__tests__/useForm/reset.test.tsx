@@ -39,9 +39,10 @@ describe('reset', () => {
   it('should reset form value', () => {
     let methods: any;
     const Component = () => {
-      methods = useForm<{
-        test: string;
-      }>();
+      methods =
+        useForm<{
+          test: string;
+        }>();
       return (
         <form>
           <input {...methods.register('test')} />
@@ -114,9 +115,10 @@ describe('reset', () => {
       test: string;
     }>;
     const Component = () => {
-      methods = useForm<{
-        test: string;
-      }>();
+      methods =
+        useForm<{
+          test: string;
+        }>();
       return <input {...methods.register('test')} />;
     };
     render(<Component />);
@@ -323,12 +325,13 @@ describe('reset', () => {
   it('should reset field array fine with empty value', async () => {
     let data: unknown;
     const Component = () => {
-      const { control, register, reset, handleSubmit } = useForm<{
-        test: {
-          firstName: string;
-          lastName: string;
-        }[];
-      }>();
+      const { control, register, reset, handleSubmit } =
+        useForm<{
+          test: {
+            firstName: string;
+            lastName: string;
+          }[];
+        }>();
       const { fields } = useFieldArray({
         control,
         name: 'test',
@@ -393,5 +396,41 @@ describe('reset', () => {
     await expect(data).toEqual({
       test: [{ firstName: 'test', lastName: 'test' }],
     });
+  });
+
+  it('should return reset nested value', () => {
+    const getValuesResult: unknown[] = [];
+
+    function App() {
+      const [, update] = React.useState({});
+      const { register, reset, getValues } = useForm<{
+        names: { name: string }[];
+      }>({
+        defaultValues: {
+          names: [{ name: 'test' }],
+        },
+      });
+
+      React.useEffect(() => {
+        reset({ names: [{ name: 'Bill' }, { name: 'Luo' }] });
+      }, []);
+
+      getValuesResult.push(getValues());
+
+      return (
+        <form>
+          <input {...register('names.0.name')} placeholder="Name" />
+          <button type={'button'} onClick={() => update({})}>
+            update
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(getValuesResult).toMatchSnapshot();
   });
 });

@@ -3,27 +3,24 @@ import getFieldsValues from '../../logic/getFieldsValues';
 describe('getFieldsValues', () => {
   it('should return all fields value', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              _f: {
-                name: 'test',
-                ref: { name: 'test' },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          test: {
+            _f: {
+              name: 'test',
+              ref: { name: 'test' },
+              value: 'test',
             },
-            test1: {
-              _f: {
-                name: 'test1',
-                ref: { name: 'test1' },
-                value: 'test',
-              },
+          },
+          test1: {
+            _f: {
+              name: 'test1',
+              ref: { name: 'test1' },
+              value: 'test',
             },
           },
         },
-        {},
-      ),
+      }),
     ).toEqual({
       test: 'test',
       test1: 'test',
@@ -32,34 +29,31 @@ describe('getFieldsValues', () => {
 
   it('should return searched string with fields value', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              _f: {
-                name: 'test',
-                ref: { name: 'test' },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          test: {
+            _f: {
+              name: 'test',
+              ref: { name: 'test' },
+              value: 'test',
             },
-            tex: {
-              _f: {
-                name: 'test1',
-                ref: { name: 'test1' },
-                value: 'test',
-              },
+          },
+          tex: {
+            _f: {
+              name: 'test1',
+              ref: { name: 'test1' },
+              value: 'test',
             },
-            tex123: {
-              _f: {
-                name: 'test123',
-                ref: { name: 'test123' },
-                value: 'test',
-              },
+          },
+          tex123: {
+            _f: {
+              name: 'test123',
+              ref: { name: 'test123' },
+              value: 'test',
             },
           },
         },
-        {},
-      ),
+      }),
     ).toEqual({
       test: 'test',
       tex: 'test',
@@ -69,41 +63,38 @@ describe('getFieldsValues', () => {
 
   it('should return searched array string with fields value', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              _f: {
-                name: 'test',
-                ref: { name: 'test' },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          test: {
+            _f: {
+              name: 'test',
+              ref: { name: 'test' },
+              value: 'test',
             },
-            tex: {
-              _f: {
-                name: 'tex',
-                ref: { name: 'tex' },
-                value: 'test',
-              },
+          },
+          tex: {
+            _f: {
+              name: 'tex',
+              ref: { name: 'tex' },
+              value: 'test',
             },
-            whattest123: {
-              _f: {
-                name: 'whattest123',
-                ref: { name: 'test123' },
-                value: 'test',
-              },
+          },
+          whattest123: {
+            _f: {
+              name: 'whattest123',
+              ref: { name: 'test123' },
+              value: 'test',
             },
-            156: {
-              _f: {
-                name: '156',
-                ref: { name: 'test1456s' },
-                value: 'test',
-              },
+          },
+          156: {
+            _f: {
+              name: '156',
+              ref: { name: 'test1456s' },
+              value: 'test',
             },
           },
         },
-        {},
-      ),
+      }),
     ).toEqual({
       156: 'test',
       test: 'test',
@@ -114,29 +105,26 @@ describe('getFieldsValues', () => {
 
   it('should return unmounted values', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              _f: {
-                name: 'test',
-                ref: { name: 'test' },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          test: {
+            _f: {
+              name: 'test',
+              ref: { name: 'test' },
+              value: 'test',
             },
-            test1: {
-              _f: {
+          },
+          test1: {
+            _f: {
+              name: 'test1',
+              ref: {
                 name: 'test1',
-                ref: {
-                  name: 'test1',
-                },
-                value: 'test',
               },
+              value: 'test',
             },
           },
         },
-        {},
-      ),
+      }),
     ).toEqual({
       test: 'test',
       test1: 'test',
@@ -145,32 +133,69 @@ describe('getFieldsValues', () => {
 
   it('should return nested value', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            ['test.test']: {
-              _f: {
-                name: 'test',
-                ref: { name: 'test' },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          ['test.test']: {
+            _f: {
+              name: 'test',
+              ref: { name: 'test' },
+              value: 'test',
             },
-            ['test.test1']: {
-              _f: {
-                name: 'test',
-                ref: { name: 'test' },
-                value: 'test',
-              },
+          },
+          ['test.test1']: {
+            _f: {
+              name: 'test',
+              ref: { name: 'test' },
+              value: 'test',
             },
           },
         },
-        {},
-      ),
+      }),
     ).toEqual({
       test: {
         test: 'test',
         test1: 'test',
       },
+    });
+
+    expect(
+      getFieldsValues({
+        current: {
+          users: [
+            {
+              name: {
+                _f: {
+                  ref: {
+                    name: 'users.0.name',
+                  },
+                  name: 'users.0.name',
+                  value: '1',
+                },
+              },
+              company: {
+                _f: {
+                  ref: {
+                    name: 'users.0.company',
+                  },
+                  name: 'users.0.company',
+                  value: {
+                    name: '2',
+                  },
+                },
+              },
+            },
+          ] as any,
+        },
+      }),
+    ).toEqual({
+      users: [
+        {
+          company: {
+            name: '2',
+          },
+          name: '1',
+        },
+      ],
     });
   });
 
@@ -239,52 +264,19 @@ describe('getFieldsValues', () => {
     });
   });
 
-  it('should shallow merge with default values', () => {
-    expect(
-      getFieldsValues(
-        {
-          current: {
-            test1: {
-              _f: {
-                name: 'test.test',
-                ref: { name: 'test.test' },
-                value: 'test',
-              },
-            },
-            // @ts-ignore
-            test2: [],
-          },
-        },
-        {
-          test: 'data',
-          test2: [
-            {
-              test: 'test',
-            },
-          ],
-        },
-      ),
-    ).toEqual({ test1: 'test', test: 'data', test2: [] });
-  });
-
   it('should return undefined for disabled input', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test1: {
-              _f: {
-                name: 'test.test',
-                ref: { name: 'test.test', disabled: true },
-                value: 'test',
-              },
+      getFieldsValues({
+        current: {
+          test1: {
+            _f: {
+              name: 'test.test',
+              ref: { name: 'test.test', disabled: true },
+              value: 'test',
             },
           },
         },
-        {
-          test: 'data',
-        },
-      ),
-    ).toEqual({ test1: undefined, test: 'data' });
+      }),
+    ).toEqual({ test1: undefined });
   });
 });

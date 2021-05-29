@@ -7,6 +7,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  RefCallBack,
   UseFormStateReturn,
 } from './';
 
@@ -14,35 +15,37 @@ export type ControllerFieldState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  isValidating: boolean;
   error?: FieldError;
 };
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   onChange: (...event: any[]) => void;
   onBlur: () => void;
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;
-  ref: React.Ref<any>;
+  ref: RefCallBack;
 };
 
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   name: TName;
-  rules?: Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
+  rules?: Omit<
+    RegisterOptions<TFieldValues, TName>,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >;
   shouldUnregister?: boolean;
-  defaultValue?: unknown;
+  defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
 };
 
 export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
@@ -51,7 +54,7 @@ export type UseControllerReturn<
 
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   render: ({
     field,

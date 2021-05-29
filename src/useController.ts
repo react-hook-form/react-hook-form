@@ -17,7 +17,7 @@ import { useFormState } from './useFormState';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   name,
   rules,
@@ -36,13 +36,14 @@ export function useController<
     unregister,
     fieldArrayNamesRef,
     controllerSubjectRef,
-    shouldUnmountUnregister,
+    shouldUnmount,
+    inFieldArrayActionRef,
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
+  const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    isUndefined(get(fieldsRef.current, name)._f.value) ||
-      isNameInFieldArray(fieldArrayNamesRef.current, name)
+    isUndefined(get(fieldsRef.current, name)._f.value) || isFieldArray
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
@@ -50,8 +51,10 @@ export function useController<
   );
   const formState = useFormState({
     control: control || methods.control,
+    name,
   });
-  get(fieldsRef.current, name)._f.value = value;
+  const field = get(fieldsRef.current, name);
+  field._f.value = value;
 
   React.useEffect(() => {
     const controllerSubscription = controllerSubjectRef.current.subscribe({
@@ -60,13 +63,19 @@ export function useController<
         setInputStateValue(get(data.values, name)),
     });
 
-    (ref as (instance: any) => void)({
-      target: value,
-    });
-
     return () => {
       controllerSubscription.unsubscribe();
-      (shouldUnmountUnregister || shouldUnregister) && unregister(name);
+      const shouldUnmountField = shouldUnmount || shouldUnregister;
+
+      if (
+        isFieldArray
+          ? shouldUnmountField && !inFieldArrayActionRef.current
+          : shouldUnmountField
+      ) {
+        unregister(name);
+      } else if (get(fieldsRef.current, name)) {
+        get(fieldsRef.current, name)._f.mount = false;
+      }
     };
   }, [name]);
 
@@ -97,30 +106,11 @@ export function useController<
       ref: (elm) => elm && ref(elm),
     },
     formState,
-    fieldState: Object.defineProperties(
-      {},
-      {
-        invalid: {
-          get() {
-            return !!get(formState.errors, name);
-          },
-        },
-        isDirty: {
-          get() {
-            return !!get(formState.dirtyFields, name);
-          },
-        },
-        isTouched: {
-          get() {
-            return !!get(formState.touchedFields, name);
-          },
-        },
-        error: {
-          get() {
-            return get(formState.errors, name);
-          },
-        },
-      },
-    ),
+    fieldState: {
+      invalid: !!get(formState.errors, name),
+      isDirty: !!get(formState.dirtyFields, name),
+      isTouched: !!get(formState.touchedFields, name),
+      error: get(formState.errors, name),
+    },
   };
 }

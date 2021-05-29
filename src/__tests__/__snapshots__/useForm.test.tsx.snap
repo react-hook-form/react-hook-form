@@ -11,6 +11,7 @@ Array [
       "criteriaMode": undefined,
       "fields": Object {
         "test": Object {
+          "mount": true,
           "name": "test",
           "ref": <input
             name="test"
@@ -37,6 +38,7 @@ Array [
     "criteriaMode": undefined,
     "fields": Object {
       "test": Object {
+        "mount": true,
         "name": "test",
         "ref": <input
           name="test"

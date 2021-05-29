@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { perf } from 'react-performance-testing';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act as actComponent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -84,9 +90,10 @@ describe('handleSubmit', () => {
 
   it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
     const Component = () => {
-      const { register, handleSubmit, formState } = useForm<{
-        test: string;
-      }>();
+      const { register, handleSubmit, formState } =
+        useForm<{
+          test: string;
+        }>();
       return (
         <div>
           <input {...register('test')} />
@@ -245,6 +252,41 @@ describe('handleSubmit', () => {
     });
 
     expect(callback).toBeCalled();
+  });
+
+  it('should bubble the error up when an error occurs in the provided handleSubmit function', async () => {
+    const errorMsg = 'this is an error';
+    const App = () => {
+      const [error, setError] = React.useState('');
+      const { register, handleSubmit } = useForm();
+
+      const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <p>{error}</p>
+          <button
+            type={'button'}
+            onClick={() =>
+              handleSubmit(rejectPromiseFn)().catch((err) =>
+                setError(err.message),
+              )
+            }
+          >
+            Submit
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    screen.getByText(errorMsg);
   });
 
   describe('with validationSchema', () => {

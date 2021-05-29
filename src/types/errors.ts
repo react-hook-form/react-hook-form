@@ -28,9 +28,8 @@ export type ErrorOption =
       shouldFocus?: boolean;
     };
 
-export type FieldErrors<
-  TFieldValues extends FieldValues = FieldValues
-> = DeepMap<TFieldValues, FieldError>;
+export type FieldErrors<TFieldValues extends FieldValues = FieldValues> =
+  DeepMap<TFieldValues, FieldError>;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>

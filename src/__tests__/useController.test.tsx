@@ -8,10 +8,11 @@ import { useForm } from '../useForm';
 describe('useController', () => {
   it('should render input correctly', () => {
     const Component = () => {
-      const { control } = useForm<{
-        test: string;
-        test1: { test: string }[];
-      }>();
+      const { control } =
+        useForm<{
+          test: string;
+          test1: { test: string }[];
+        }>();
 
       useController({
         name: 'test',
@@ -113,16 +114,17 @@ describe('useController', () => {
       fireEvent.blur(screen.getAllByRole('textbox')[0]);
     });
 
-    expect(renderCounter).toEqual([2, 5]);
+    expect(renderCounter).toEqual([3, 3]);
   });
 
   describe('checkbox', () => {
     it('should work for checkbox by spread the field object', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
-        const { control, watch } = useForm<{
-          test: string;
-        }>();
+        const { control, watch } =
+          useForm<{
+            test: string;
+          }>();
 
         watchResult.push(watch());
 
@@ -155,9 +157,10 @@ describe('useController', () => {
     it('should work for checkbox by assign checked', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
-        const { control, watch } = useForm<{
-          test: string;
-        }>();
+        const { control, watch } =
+          useForm<{
+            test: string;
+          }>();
 
         watchResult.push(watch());
 
@@ -196,9 +199,10 @@ describe('useController', () => {
     it('should work for checkbox by assign value manually', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
-        const { control, watch } = useForm<{
-          test: string;
-        }>();
+        const { control, watch } =
+          useForm<{
+            test: string;
+          }>();
 
         watchResult.push(watch());
 

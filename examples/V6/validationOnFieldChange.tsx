@@ -6,7 +6,7 @@ export default function App() {
   const { register, errors, handleSubmit } = useForm({
     mode: 'onChange',
   });
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 

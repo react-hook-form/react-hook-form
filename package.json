@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.3.4",
+  "version": "7.6.10",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "umd:main": "dist/index.umd.js",
@@ -24,27 +24,29 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "prebuild": "npm run clean",
-    "build": "npm run build:modern && npm run cp:dts",
+    "prebuild": "yarn clean",
+    "build": "yarn build:modern && yarn cp:dts",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "cp:dts": "copyfiles -f ./src/**/*.d.ts dist && rimraf dist/__tests__",
+    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "yarn lint -- --fix",
     "lint:types": "tsc --noEmit",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test": "jest --config ./scripts/jest/jest.config.js",
-    "test:coverage": "npm run test -- --coverage",
-    "test:watch": "npm run test -- --onlyChanged --watch",
-    "test:web": "TEST_ENV=web npm run test",
-    "test:server": "TEST_ENV=server npm run test",
-    "test:native": "TEST_ENV=native npm run test",
+    "test:coverage": "yarn test -- --coverage",
+    "test:watch": "yarn test -- --onlyChanged --watch",
+    "test:web": "TEST_ENV=web yarn test",
+    "test:server": "TEST_ENV=server yarn test",
+    "test:native": "TEST_ENV=native yarn test",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "cypress:parallel": "cypress-parallel -s cypress -t 4 -d -a",
-    "prepublishOnly": "npm run lint:fix && npm run lint:types && npm test && npm run build",
-    "bundlesize": "npm run build:modern && bundlesize",
-    "start:app": "npm run build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
+    "postversion": "git push && git push origin v$npm_package_version",
+    "prepublishOnly": "yarn && yarn lint:fix && yarn lint:types && yarn test && yarn build",
+    "bundlesize": "yarn build:modern && bundlesize",
+    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
   },
   "keywords": [
     "react",
@@ -64,37 +66,37 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.0",
-    "@testing-library/jest-dom": "^5.11.9",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/react-hooks": "^5.0.3",
+    "@testing-library/react-hooks": "^5.1.2",
     "@testing-library/react-native": "^5.0.3",
-    "@types/jest": "^26.0.20",
-    "@types/react": "^17.0.2",
+    "@types/jest": "^26.0.23",
+    "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.1",
     "@types/react-native": "^0.63.50",
     "@types/react-test-renderer": "^17.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.15.1",
-    "@typescript-eslint/parser": "^4.15.1",
-    "@vitejs/plugin-react-refresh": "^1.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "@vitejs/plugin-react-refresh": "^1.3.3",
     "babel-jest": "^26.6.3",
     "bundlesize": "^0.18.0",
     "copyfiles": "^2.4.1",
     "coveralls": "^3.1.0",
-    "cypress": "6.4.0",
-    "cypress-parallel": "^0.1.9",
-    "eslint": "^7.20.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-cypress": "^2.11.1",
-    "eslint-plugin-prettier": "^3.3.1",
+    "cypress": "7.2.0",
+    "cypress-parallel": "^0.3.0",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-cypress": "^2.11.3",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "husky": "^4.3.0",
+    "husky": "^6.0.0",
     "jest": "^26.6.3",
     "jest-performance-testing": "^1.0.0",
-    "lint-staged": "^10.5.4",
+    "lint-staged": "^11.0.0",
     "metro-react-native-babel-preset": "^0.63.0",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
@@ -103,13 +105,13 @@
     "react-performance-testing": "^1.2.0",
     "react-test-renderer": "^17.0.1",
     "rimraf": "^3.0.2",
-    "rollup": "^2.39.0",
+    "rollup": "^2.47.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-sourcemaps": "^0.6.2",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.30.0",
-    "ts-jest": "^26.5.1",
-    "typescript": "^4.2.3"
+    "ts-jest": "^26.5.6",
+    "typescript": "^4.3.2"
   },
   "bundlesize": [
     {
@@ -120,18 +122,19 @@
   "peerDependencies": {
     "react": "^16.8.0 || ^17"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:types && lint-staged"
-    }
-  },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "npm run lint:fix"
+      "yarn lint:fix",
+      "yarn prettier:fix"
     ],
     "*.{md,json,yml}": [
       "prettier --write"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "funding": {
     "type": "opencollective",

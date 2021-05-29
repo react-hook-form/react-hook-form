@@ -185,10 +185,11 @@ describe('watch', () => {
     const output: any[] = [];
 
     const Component = () => {
-      const { watch, register } = useForm<{
-        test: string;
-        test1: string;
-      }>();
+      const { watch, register } =
+        useForm<{
+          test: string;
+          test1: string;
+        }>();
 
       React.useEffect(() => {
         const subscription = watch((data) => {
@@ -350,5 +351,46 @@ describe('watch', () => {
     });
 
     screen.getByText('False');
+  });
+
+  it('should return deeply nested field values with defaultValues', async () => {
+    let data;
+
+    function App() {
+      const { register, watch } = useForm<{
+        test: {
+          firstName: string;
+          lastName: string;
+        };
+      }>({
+        defaultValues: {
+          test: { lastName: '', firstName: '' },
+        },
+      });
+      data = watch();
+
+      return (
+        <form>
+          <input {...register('test.lastName')} />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '1234',
+        },
+      });
+    });
+
+    expect(data).toEqual({
+      test: {
+        firstName: '',
+        lastName: '1234',
+      },
+    });
   });
 });

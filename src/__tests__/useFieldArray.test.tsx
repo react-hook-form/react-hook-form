@@ -77,11 +77,12 @@ describe('useFieldArray', () => {
   describe('with should unregister false', () => {
     it('should still remain input value with toggle', () => {
       const Component = () => {
-        const { register, control } = useForm<{
-          test: {
-            value: string;
-          }[];
-        }>();
+        const { register, control } =
+          useForm<{
+            test: {
+              value: string;
+            }[];
+          }>();
         const [show, setShow] = React.useState(true);
         const { fields, append } = useFieldArray({
           control,
@@ -637,8 +638,7 @@ describe('useFieldArray', () => {
       act(() => {
         result.current.reset();
       });
-
-      expect(result.current.fields).toEqual([{ id: '2', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -665,7 +665,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '2', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -673,7 +673,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -1049,7 +1049,8 @@ describe('useFieldArray', () => {
               type="button"
               onClick={() => {
                 append({
-                  value: `fieldArray.${arrayIndex}.nestedFieldArray.${fields.length}.value` as const,
+                  value:
+                    `fieldArray.${arrayIndex}.nestedFieldArray.${fields.length}.value` as const,
                 });
               }}
             >
@@ -1973,5 +1974,76 @@ describe('useFieldArray', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValues).toMatchSnapshot();
+  });
+
+  it('should keep field values when field array gets unmounted and mounted', async () => {
+    type FormValues = {
+      test: { firstName: string }[];
+    };
+
+    const Test = ({
+      register,
+      control,
+    }: {
+      register: UseFormRegister<FormValues>;
+      control: Control<FormValues>;
+    }) => {
+      const { fields, append } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      return (
+        <div>
+          {fields.map((field, i) => {
+            return (
+              <input
+                key={field.id}
+                {...register(`test.${i}.firstName` as const)}
+                defaultValue={field.firstName}
+              />
+            );
+          })}
+          <button
+            onClick={() =>
+              append({
+                firstName: 'test',
+              })
+            }
+          >
+            append
+          </button>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control, register } = useForm<FormValues>();
+      const [show, setShow] = React.useState(true);
+
+      return (
+        <>
+          {show && <Test control={control} register={register} />}
+          <button onClick={() => setShow(!show)}>show</button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'show' }));
+    });
+
+    expect(screen.queryByRole('textbox')).toBeNull();
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'show' }));
+    });
+
+    expect(screen.getAllByRole('textbox').length).toEqual(2);
   });
 });

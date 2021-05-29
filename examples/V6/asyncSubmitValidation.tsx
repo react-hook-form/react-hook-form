@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function App() {
   const { register, handleSubmit, errors, setError } = useForm();
-  const onSubmit = async data => {
+  const onSubmit = async (data) => {
     await sleep(2000);
     if (data.username === 'bill') {
       alert(JSON.stringify(data));

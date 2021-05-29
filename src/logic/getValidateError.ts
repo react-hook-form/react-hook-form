@@ -7,7 +7,11 @@ export default function getValidateError(
   ref: Ref,
   type = 'validate',
 ): FieldError | void {
-  if (isMessage(result) || (isBoolean(result) && !result)) {
+  if (
+    isMessage(result) ||
+    (Array.isArray(result) && result.every(isMessage)) ||
+    (isBoolean(result) && !result)
+  ) {
     return {
       type,
       message: isMessage(result) ? result : '',

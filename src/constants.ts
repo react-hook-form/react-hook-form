@@ -13,10 +13,6 @@ export const VALIDATION_MODE: ValidationMode = {
   all: 'all',
 };
 
-export const SELECT = 'select';
-
-export const UNDEFINED = 'undefined';
-
 export const INPUT_VALIDATION_RULES = {
   max: 'max',
   min: 'min',

@@ -100,9 +100,10 @@ describe('useForm', () => {
     it('should not unregister touched', () => {
       let formState: any;
       const Component = () => {
-        const { register, formState: tempFormState } = useForm<{
-          test: string;
-        }>();
+        const { register, formState: tempFormState } =
+          useForm<{
+            test: string;
+          }>();
         formState = tempFormState;
 
         formState.touchedFields;
@@ -133,9 +134,10 @@ describe('useForm', () => {
     it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
-        const { register, formState: tempFormState } = useForm<{
-          test: string;
-        }>();
+        const { register, formState: tempFormState } =
+          useForm<{
+            test: string;
+          }>();
         formState = tempFormState;
 
         formState.isDirty;
@@ -157,6 +159,56 @@ describe('useForm', () => {
 
       expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
+    });
+
+    it('should only validate input which are mounted even with shouldUnregister: false', async () => {
+      const Component = () => {
+        const [show, setShow] = React.useState(true);
+        const {
+          handleSubmit,
+          register,
+          formState: { errors },
+        } = useForm<{
+          firstName: string;
+          lastName: string;
+        }>();
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {show && <input {...register('firstName', { required: true })} />}
+            {errors.firstName && <p>First name is required.</p>}
+
+            <input {...register('lastName', { required: true })} />
+            {errors.lastName && <p>Last name is required.</p>}
+
+            <button type={'button'} onClick={() => setShow(!show)}>
+              toggle
+            </button>
+            <button type={'submit'}>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('First name is required.');
+      screen.getByText('Last name is required.');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Last name is required.');
+
+      expect(screen.queryByText('First name is required.')).toBeNull();
     });
   });
 
@@ -751,9 +803,10 @@ describe('useForm', () => {
       it('should be called reRender method if isWatchAllRef is true', async () => {
         let watchedField: any;
         const Component = () => {
-          const { register, handleSubmit, watch } = useForm<{
-            test: string;
-          }>();
+          const { register, handleSubmit, watch } =
+            useForm<{
+              test: string;
+            }>();
           watchedField = watch();
           return (
             <form onSubmit={handleSubmit(() => {})}>
@@ -774,9 +827,10 @@ describe('useForm', () => {
       it('should be called reRender method if field is watched', async () => {
         let watchedField: any;
         const Component = () => {
-          const { register, handleSubmit, watch } = useForm<{
-            test: string;
-          }>();
+          const { register, handleSubmit, watch } =
+            useForm<{
+              test: string;
+            }>();
           watchedField = watch('test');
           return (
             <form onSubmit={handleSubmit(() => {})}>
@@ -797,9 +851,10 @@ describe('useForm', () => {
       it('should be called reRender method if array field is watched', async () => {
         let watchedField: any;
         const Component = () => {
-          const { register, handleSubmit, watch } = useForm<{
-            test: string[];
-          }>();
+          const { register, handleSubmit, watch } =
+            useForm<{
+              test: string[];
+            }>();
           watchedField = watch('test');
           return (
             <form onSubmit={handleSubmit(() => {})}>
@@ -990,12 +1045,14 @@ describe('useForm', () => {
         const fields = {
           test: {
             sub: {
+              mount: true,
               name: 'test.sub',
               ref: { name: 'test.sub', value: 'test' },
               value: 'test',
             },
           },
           test1: {
+            mount: true,
             name: 'test1',
             ref: {
               name: 'test1',
@@ -1078,6 +1135,7 @@ describe('useForm', () => {
           criteriaMode: undefined,
           fields: {
             test: {
+              mount: true,
               name: 'test',
               ref: {
                 target: {
@@ -1121,6 +1179,7 @@ describe('useForm', () => {
         criteriaMode: undefined,
         fields: {
           test: {
+            mount: true,
             name: 'test',
             ref: { name: 'test', value: 'value' },
             value: 'value',
@@ -1333,9 +1392,10 @@ describe('useForm', () => {
       let control;
 
       const Component = () => {
-        const form = useForm<{
-          test: string;
-        }>();
+        const form =
+          useForm<{
+            test: string;
+          }>();
 
         control = form.control;
 

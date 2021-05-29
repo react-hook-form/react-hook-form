@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, handleSubmit, reset } = useForm();
-  const onSumbit = data => {
+  const onSumbit = (data) => {
     alert(JSON.stringify(data));
   };
 

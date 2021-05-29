@@ -345,8 +345,22 @@ describe('trigger', () => {
     result.current.register('test3', { required: true });
 
     await act(async () =>
-      expect(await result.current.trigger(['test1', 'test2'])).toBeFalsy(),
+      expect(await result.current.trigger(['test1', 'test2'])).toBeTruthy(),
     );
+
+    await act(async () =>
+      expect(await result.current.trigger(['test3', 'test2'])).toBeFalsy(),
+    );
+
+    await act(async () =>
+      expect(await result.current.trigger(['test3'])).toBeFalsy(),
+    );
+
+    await act(async () =>
+      expect(await result.current.trigger(['test1'])).toBeTruthy(),
+    );
+
+    await act(async () => expect(await result.current.trigger()).toBeFalsy());
   });
 
   it('should return true when field is found and validation pass', async () => {
@@ -405,9 +419,10 @@ describe('trigger', () => {
 
   it('should focus on errored input with build in validation', async () => {
     const Component = () => {
-      const { register, trigger } = useForm<{
-        test: string;
-      }>();
+      const { register, trigger } =
+        useForm<{
+          test: string;
+        }>();
 
       return (
         <>
@@ -463,5 +478,89 @@ describe('trigger', () => {
     });
 
     expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+  });
+
+  it('should return isValid for the entire form', async () => {
+    const App = () => {
+      const [isValid, setIsValid] = React.useState(false);
+      const { register, trigger } = useForm();
+
+      return (
+        <div>
+          <input
+            {...register('firstName', { required: true })}
+            placeholder={'firstName'}
+          />
+          <input
+            {...register('lastName', { required: true })}
+            placeholder={'lastName'}
+          />
+          <button
+            onClick={async () => {
+              setIsValid(await trigger());
+            }}
+          >
+            trigger
+          </button>
+          <p>{isValid ? 'true' : 'false'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    screen.getByText('false');
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: {
+        value: '1234',
+      },
+    });
+    fireEvent.change(screen.getByPlaceholderText('lastName'), {
+      target: {
+        value: '1234',
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(async () => {
+      screen.getByText('true');
+    });
+  });
+
+  it('should return correct valid state when trigger the entire form with build in validation', async () => {
+    let isValid;
+
+    function App() {
+      const { register, trigger } = useForm();
+
+      const onTrigger = async () => {
+        isValid = await trigger();
+      };
+
+      return (
+        <form>
+          <input
+            {...register('firstName', { required: true })}
+            placeholder="First name"
+          />
+          <input
+            {...register('last.name', { required: true })}
+            placeholder="Last name"
+          />
+
+          <input type="button" onClick={onTrigger} value="trigger" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(isValid).toBeFalsy();
   });
 });

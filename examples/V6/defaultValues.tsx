@@ -11,7 +11,7 @@ export default function App() {
       isDeveloper: true,
     },
   });
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
