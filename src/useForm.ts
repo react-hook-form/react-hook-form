@@ -978,9 +978,9 @@ export function useForm<
 
       set(fieldsRef.current, name, {
         _f: {
-          ...(field
+          ...(field && field._f
             ? {
-                ref: (field._f || {}).ref || { name },
+                ref: field._f.ref,
                 ...field._f,
               }
             : { ref: { name } }),
