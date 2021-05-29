@@ -974,16 +974,11 @@ export function useForm<
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options = {}) => {
-      const isInitialRegister = !get(fieldsRef.current, name);
+      const field = get(fieldsRef.current, name);
 
       set(fieldsRef.current, name, {
         _f: {
-          ...(isInitialRegister
-            ? { ref: { name } }
-            : {
-                ref: (get(fieldsRef.current, name)._f || {}).ref || { name },
-                ...get(fieldsRef.current, name)._f,
-              }),
+          ...(field && field._f ? field._f : { ref: { name } }),
           name,
           mount: true,
           ...options,
@@ -992,7 +987,7 @@ export function useForm<
       hasValidation(options, true) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
-      isInitialRegister && updateValidAndValue(name, options);
+      !field && updateValidAndValue(name, options);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
@@ -1004,11 +999,11 @@ export function useForm<
               if (ref) {
                 registerFieldRef(name, ref, options);
               } else {
-                const field = get(fieldsRef.current, name) as Field;
+                const field = get(fieldsRef.current, name, {}) as Field;
                 const shouldUnmount =
                   shouldUnregister || options.shouldUnregister;
 
-                if (field && field._f) {
+                if (field._f) {
                   field._f.mount = false;
                   // If initial state of field element is disabled,
                   // value is not set on first "register"
@@ -1019,10 +1014,9 @@ export function useForm<
                 }
 
                 if (
-                  isWeb &&
-                  (isNameInFieldArray(fieldArrayNamesRef.current, name)
+                  isNameInFieldArray(fieldArrayNamesRef.current, name)
                     ? shouldUnmount && !inFieldArrayActionRef.current
-                    : shouldUnmount)
+                    : shouldUnmount
                 ) {
                   unregisterFieldsNamesRef.current.add(name);
                 }
