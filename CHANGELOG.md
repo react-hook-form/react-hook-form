@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.6.0] - 2021-05-29
+## [7.7.0] - 2021-05-29
 
 - `trigger` support focus with error input
 
