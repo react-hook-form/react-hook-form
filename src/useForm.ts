@@ -808,9 +808,7 @@ export function useForm<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    const ref = (
-      ((get(fieldsRef.current, name) as Field) || { _f: {} })._f || {}
-    ).ref;
+    const ref = (get(fieldsRef.current, name, { _f: {} }) as Field)._f.ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
@@ -981,7 +979,8 @@ export function useForm<
           ...(isInitialRegister
             ? { ref: { name } }
             : {
-                ref: (get(fieldsRef.current, name)._f || {}).ref || { name },
+                ref: get(fieldsRef.current, name, { _f: { ref: { name } } })._f
+                  .ref,
                 ...get(fieldsRef.current, name)._f,
               }),
           name,
