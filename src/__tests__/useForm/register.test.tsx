@@ -332,6 +332,59 @@ describe('register', () => {
     screen.getByText('true');
   });
 
+  it('should custom register with value and can be updated', async () => {
+    const App = () => {
+      const [inputValue, setInput] = React.useState(1);
+      const [data, setData] = React.useState('');
+      const { handleSubmit, register, setValue } = useForm<{ test: string }>();
+
+      React.useEffect(() => {
+        register('test', {
+          value: 'bill',
+        });
+      }, [register]);
+
+      return (
+        <>
+          <button
+            onClick={handleSubmit((data) => {
+              setData(data.test);
+            })}
+          >
+            handleSubmit
+          </button>
+          <button
+            onClick={() => {
+              setValue('test', '1234');
+              setInput(inputValue + 1);
+            }}
+          >
+            update
+          </button>
+          <p>{data}</p>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'handleSubmit' }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'update' }));
+    });
+
+    screen.getByText('bill');
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'handleSubmit' }));
+    });
+
+    screen.getByText('1234');
+  });
+
   it('should not affect or check against defaultChecked inputs', async () => {
     type FormValues = Partial<{
       radio: string;
