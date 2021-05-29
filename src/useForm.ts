@@ -808,7 +808,9 @@ export function useForm<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    const ref = (get(fieldsRef.current, name, { _f: {} }) as Field)._f.ref;
+    const ref = (
+      ((get(fieldsRef.current, name) as Field) || { _f: {} })._f || {}
+    ).ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
@@ -976,12 +978,12 @@ export function useForm<
 
       set(fieldsRef.current, name, {
         _f: {
-          ...(!field
-            ? { ref: { name } }
-            : {
+          ...(field
+            ? {
                 ref: (field._f || {}).ref || { name },
                 ...field._f,
-              }),
+              }
+            : { ref: { name } }),
           name,
           mount: true,
           ...options,
@@ -990,7 +992,7 @@ export function useForm<
       hasValidation(options, true) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
-      field && updateValidAndValue(name, options);
+      !field && updateValidAndValue(name, options);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
@@ -999,30 +1001,31 @@ export function useForm<
             onChange: handleChange,
             onBlur: handleChange,
             ref: (ref: HTMLInputElement | null): void => {
-              if (ref) {
-                registerFieldRef(name, ref, options);
-              } else {
-                const field = get(fieldsRef.current, name) as Field;
-                const shouldUnmount =
-                  shouldUnregister || options.shouldUnregister;
+              if (isWeb) {
+                if (ref) {
+                  registerFieldRef(name, ref, options);
+                } else {
+                  const field = get(fieldsRef.current, name, {}) as Field;
+                  const shouldUnmount =
+                    shouldUnregister || options.shouldUnregister;
 
-                if (field && field._f) {
-                  field._f.mount = false;
-                  // If initial state of field element is disabled,
-                  // value is not set on first "register"
-                  // re-sync the value in when it switched to enabled
-                  if (isUndefined(field._f.value)) {
-                    field._f.value = field._f.ref.value;
+                  if (field._f) {
+                    field._f.mount = false;
+                    // If initial state of field element is disabled,
+                    // value is not set on first "register"
+                    // re-sync the value in when it switched to enabled
+                    if (isUndefined(field._f.value)) {
+                      field._f.value = field._f.ref.value;
+                    }
                   }
-                }
 
-                if (
-                  isWeb &&
-                  (isNameInFieldArray(fieldArrayNamesRef.current, name)
-                    ? shouldUnmount && !inFieldArrayActionRef.current
-                    : shouldUnmount)
-                ) {
-                  unregisterFieldsNamesRef.current.add(name);
+                  if (
+                    isNameInFieldArray(fieldArrayNamesRef.current, name)
+                      ? shouldUnmount && !inFieldArrayActionRef.current
+                      : shouldUnmount
+                  ) {
+                    unregisterFieldsNamesRef.current.add(name);
+                  }
                 }
               }
             },
