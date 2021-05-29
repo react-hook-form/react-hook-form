@@ -1,8 +1,8 @@
 import { RegisterOptions } from '../types';
 
 export default <T extends RegisterOptions>(options?: T, mounted?: boolean) =>
-  options &&
   mounted &&
+  options &&
   (options.required ||
     options.min ||
     options.max ||
