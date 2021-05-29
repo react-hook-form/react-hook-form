@@ -445,7 +445,7 @@ describe('formState', () => {
   });
 
   describe('when defaultValue supplied', () => {
-    it.skip('should update isValid to true for native input validation', () => {
+    it('should update isValid to true for native input validation', () => {
       function App() {
         const {
           register,
@@ -470,7 +470,7 @@ describe('formState', () => {
       screen.getByText('isValid = true');
     });
 
-    it.skip('should update isValid to true for Controller validation', () => {
+    it('should update isValid to true for Controller validation', () => {
       function App() {
         const {
           control,

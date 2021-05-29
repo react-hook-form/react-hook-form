@@ -345,8 +345,9 @@ describe('register', () => {
       }, [register]);
 
       return (
-        <>
+        <form>
           <button
+            type={'button'}
             onClick={handleSubmit((data) => {
               setData(data.test);
             })}
@@ -354,6 +355,7 @@ describe('register', () => {
             handleSubmit
           </button>
           <button
+            type={'button'}
             onClick={() => {
               setValue('test', '1234');
               setInput(inputValue + 1);
@@ -362,7 +364,7 @@ describe('register', () => {
             update
           </button>
           <p>{data}</p>
-        </>
+        </form>
       );
     };
 
