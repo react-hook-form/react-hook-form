@@ -1042,7 +1042,9 @@ export function useForm<
       };
 
       return isWindowUndefined
-        ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
+        ? !options.shouldListen
+          ? null
+          : ({ name: name as InternalFieldName } as UseFormRegisterReturn)
         : options.shouldListen
         ? ref
         : {
