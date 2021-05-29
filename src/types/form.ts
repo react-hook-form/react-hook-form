@@ -148,7 +148,9 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 >(
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
-) => UseFormRegisterReturn;
+) => RegisterOptions<TFieldValues, TFieldName>['shouldListen'] extends undefined
+  ? UseFormRegisterReturn
+  : any;
 
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
