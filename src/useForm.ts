@@ -973,7 +973,7 @@ export function useForm<
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
-    (name, options) => {
+    (name, options = {}) => {
       const isInitialRegister = !get(fieldsRef.current, name);
 
       set(fieldsRef.current, name, {
@@ -1006,7 +1006,7 @@ export function useForm<
               } else {
                 const field = get(fieldsRef.current, name) as Field;
                 const shouldUnmount =
-                  shouldUnregister || (options && options.shouldUnregister);
+                  shouldUnregister || options.shouldUnregister;
 
                 if (field && field._f) {
                   field._f.mount = false;
@@ -1030,7 +1030,7 @@ export function useForm<
             },
           };
     },
-    [defaultValuesRef.current],
+    [],
   );
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
