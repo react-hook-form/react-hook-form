@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.6.0] - 2021-05-29
+
+- `trigger` support focus with error input
+
+```ts
+trigger('inputName', { shouldFocus: true });
+```
+
+- `handleSubmit` will `throw` error within the onSubmit callback
+
 ## [7.6.0] - 2021-05-15
 
 ### Changed
