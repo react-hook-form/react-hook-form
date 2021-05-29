@@ -996,31 +996,29 @@ export function useForm<
             onChange: handleChange,
             onBlur: handleChange,
             ref: (ref: HTMLInputElement | null): void => {
-              if (isWeb) {
-                if (ref) {
-                  registerFieldRef(name, ref, options);
-                } else {
-                  const field = get(fieldsRef.current, name, {}) as Field;
-                  const shouldUnmount =
-                    shouldUnregister || options.shouldUnregister;
+              if (ref) {
+                registerFieldRef(name, ref, options);
+              } else {
+                const field = get(fieldsRef.current, name, {}) as Field;
+                const shouldUnmount =
+                  shouldUnregister || options.shouldUnregister;
 
-                  if (field._f) {
-                    field._f.mount = false;
-                    // If initial state of field element is disabled,
-                    // value is not set on first "register"
-                    // re-sync the value in when it switched to enabled
-                    if (isUndefined(field._f.value)) {
-                      field._f.value = field._f.ref.value;
-                    }
+                if (field._f) {
+                  field._f.mount = false;
+                  // If initial state of field element is disabled,
+                  // value is not set on first "register"
+                  // re-sync the value in when it switched to enabled
+                  if (isUndefined(field._f.value)) {
+                    field._f.value = field._f.ref.value;
                   }
+                }
 
-                  if (
-                    isNameInFieldArray(fieldArrayNamesRef.current, name)
-                      ? shouldUnmount && !inFieldArrayActionRef.current
-                      : shouldUnmount
-                  ) {
-                    unregisterFieldsNamesRef.current.add(name);
-                  }
+                if (
+                  isNameInFieldArray(fieldArrayNamesRef.current, name)
+                    ? shouldUnmount && !inFieldArrayActionRef.current
+                    : shouldUnmount
+                ) {
+                  unregisterFieldsNamesRef.current.add(name);
                 }
               }
             },
