@@ -444,31 +444,58 @@ describe('formState', () => {
     });
   });
 
-  it('should update isValid to true for validation with inline defaultValue', () => {
-    function App() {
-      const {
-        register,
-        formState: { isValid },
-      } = useForm({
-        mode: 'onChange',
-      });
+  describe('when defaultValue supplied', () => {
+    it.skip('should update isValid to true for native input validation', () => {
+      function App() {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm({
+          mode: 'onChange',
+        });
 
-      return (
-        <form>
-          <input
-            type="text"
-            placeholder="Any value"
-            autoComplete="on"
-            {...register('value', { required: true })}
-            defaultValue="Any default value!"
-          />
-          <p>isValid = {isValid ? 'true' : 'false'}</p>
-        </form>
-      );
-    }
+        return (
+          <form>
+            <input
+              {...register('value', { required: true })}
+              defaultValue="Any default value!"
+            />
+            <p>isValid = {isValid ? 'true' : 'false'}</p>
+          </form>
+        );
+      }
 
-    render(<App />);
+      render(<App />);
 
-    screen.getByText('isValid = true');
+      screen.getByText('isValid = true');
+    });
+
+    it.skip('should update isValid to true for Controller validation', () => {
+      function App() {
+        const {
+          control,
+          formState: { isValid },
+        } = useForm({
+          mode: 'onChange',
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              render={({ field }) => <input {...field} />}
+              name={'test'}
+              defaultValue="Any default value!"
+            />
+            <p>isValid = {isValid ? 'true' : 'false'}</p>
+            <button>Submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      screen.getByText('isValid = true');
+    });
   });
 });
