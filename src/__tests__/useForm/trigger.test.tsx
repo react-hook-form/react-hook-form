@@ -417,6 +417,69 @@ describe('trigger', () => {
     expect(screen.queryByText('error')).toBeNull();
   });
 
+  it('should focus on errored input with build in validation', async () => {
+    const Component = () => {
+      const { register, trigger } =
+        useForm<{
+          test: string;
+        }>();
+
+      return (
+        <>
+          <input
+            {...register('test', { required: true })}
+            placeholder={'test'}
+          />
+          <button onClick={() => trigger('test', { shouldFocus: true })}>
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+  });
+
+  it('should focus on errored input with schema validation', async () => {
+    const Component = () => {
+      const { register, trigger } = useForm<{
+        test: string;
+      }>({
+        resolver: () => ({
+          values: {},
+          errors: {
+            test: {
+              type: 'test',
+            },
+          },
+        }),
+      });
+
+      return (
+        <>
+          <input {...register('test')} placeholder={'test'} />
+          <button onClick={() => trigger('test', { shouldFocus: true })}>
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+  });
+
   it('should return isValid for the entire form', async () => {
     const App = () => {
       const [isValid, setIsValid] = React.useState(false);
