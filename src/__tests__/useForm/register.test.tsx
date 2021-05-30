@@ -279,7 +279,7 @@ describe('register', () => {
         setValue,
         formState: { isValid },
       } = useForm({
-        defaultValues: { a: 'default', b: 'default' },
+        defaultValues: { a: 'default', b: '' },
         mode: 'onChange',
       });
 
@@ -313,7 +313,9 @@ describe('register', () => {
 
     render(<Component />);
 
-    screen.getByText('true');
+    await waitFor(() => {
+      screen.getByText('true');
+    });
 
     await actComponent(async () => {
       fireEvent.input(screen.getByPlaceholderText('inputA'), {
@@ -321,7 +323,9 @@ describe('register', () => {
       });
     });
 
-    screen.getByText('false');
+    await waitFor(() => {
+      screen.getByText('false');
+    });
 
     await actComponent(async () => {
       fireEvent.input(screen.getByPlaceholderText('inputB'), {
