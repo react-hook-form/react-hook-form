@@ -408,7 +408,7 @@ export function useForm<
     fieldsRef: FieldRefs,
     shouldCheckValid?: boolean,
     context = {
-      inValid: false,
+      valid: true,
     },
   ) => {
     for (const name in fieldsRef) {
@@ -426,7 +426,7 @@ export function useForm<
 
           if (shouldCheckValid) {
             if (fieldError[_f.name]) {
-              context.inValid = true;
+              context.valid = false;
               break;
             }
           } else {
@@ -442,7 +442,7 @@ export function useForm<
       }
     }
 
-    return !context.inValid;
+    return context.valid;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
