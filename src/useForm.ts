@@ -174,11 +174,11 @@ export function useForm<
         isDirty?: boolean;
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
       } = {},
-      isValid?: boolean,
+      isValidFromResolver?: boolean,
       isWatched?: boolean,
     ): Promise<boolean | void> => {
       const previousError = get(formStateRef.current.errors, name);
-      let isValidState = !!isValid;
+      let isValid = !!isValidFromResolver;
 
       if (error) {
         set(formStateRef.current.errors, name, error);
@@ -187,7 +187,7 @@ export function useForm<
       }
 
       if (readFormStateRef.current.isValid && !resolverRef.current) {
-        isValidState = await validateForm(fieldsRef.current, true);
+        isValid = await validateForm(fieldsRef.current, true);
       }
 
       if (
@@ -196,14 +196,12 @@ export function useForm<
           (error ? !deepEqual(previousError, error, true) : previousError) ||
           !isEmptyObject(state) ||
           (readFormStateRef.current.isValid &&
-            formStateRef.current.isValid !== isValidState)) &&
+            formStateRef.current.isValid !== isValid)) &&
         !isNullOrUndefined(shouldRender)
       ) {
         const updatedFormState = {
           ...state,
-          isValid: resolverRef.current
-            ? isValidState
-            : await validateForm(fieldsRef.current, true),
+          isValid,
           errors: formStateRef.current.errors,
           name,
         };
@@ -957,7 +955,7 @@ export function useForm<
         },
       });
       fieldsNamesRef.current.add(name);
-      !field && updateValidAndValue(name, options);
+      !field && updateValidAndValue(name);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
