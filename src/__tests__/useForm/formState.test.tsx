@@ -112,7 +112,7 @@ describe('formState', () => {
     expect(result.current.formState.isValid).toBeFalsy();
   });
 
-  it('should return true when default value meet the validation criteria', async () => {
+  it('should return false when custom register with validation', async () => {
     const { result } = renderHook(() =>
       useForm<{ input: string; issue: string }>({
         mode: VALIDATION_MODE.onChange,
@@ -125,7 +125,7 @@ describe('formState', () => {
       result.current.register('issue', { required: true });
     });
 
-    expect(result.current.formState.isValid).toBeTruthy();
+    expect(result.current.formState.isValid).toBeFalsy();
   });
 
   it('should be a proxy object that returns undefined for unknown properties', () => {

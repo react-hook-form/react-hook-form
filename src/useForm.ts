@@ -555,6 +555,8 @@ export function useForm<
       field._f.value = getFieldValue(field);
     }
 
+    isMountedRef.current && readFormStateRef.current.isValid && updateIsValid();
+
     return defaultValue;
   };
 
