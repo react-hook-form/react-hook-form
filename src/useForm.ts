@@ -1095,15 +1095,14 @@ export function useForm<
           ? deepEqual(values, defaultValuesRef.current)
           : false,
         isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
-        isValid: keepIsValid
-          ? formStateRef.current.isValid
-          : !!updateIsValid(values),
         dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
         touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
         errors: keepErrors ? formStateRef.current.errors : {},
         isSubmitting: false,
         isSubmitSuccessful: false,
       });
+
+      !keepIsValid && updateIsValid(values);
     },
     [],
   );

@@ -354,7 +354,9 @@ describe('formState', () => {
 
     render(<Component />);
 
-    screen.getByText('inValid');
+    await waitFor(() => {
+      screen.getByText('inValid');
+    });
 
     fireEvent.change(screen.getByPlaceholderText('test'), {
       target: { value: '1' },
