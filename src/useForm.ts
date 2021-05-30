@@ -1209,6 +1209,7 @@ export function useForm<
     }
 
     !keepStateOptions.keepDefaultValues &&
+      !shouldUnregister &&
       registerAbsentFields({ ...updatedValues });
 
     resetFromState(keepStateOptions, values);
@@ -1218,7 +1219,8 @@ export function useForm<
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
-    registerAbsentFields(defaultValuesRef.current);
+    !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
+
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
