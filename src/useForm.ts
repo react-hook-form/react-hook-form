@@ -456,15 +456,12 @@ export function useForm<
       if (resolverRef.current) {
         schemaResult = await executeSchemaOrResolverValidation(
           fieldNames,
-          isUndefined(name)
-            ? undefined
-            : (fieldNames as FieldName<TFieldValues>[]),
+          name ? (fieldNames as FieldName<TFieldValues>[]) : undefined,
         );
         isValid = fieldNames.every((name) => !get(schemaResult, name));
       } else {
-        isValid = isUndefined(name)
-          ? await validateForm(fieldsRef.current)
-          : (
+        isValid = name
+          ? (
               await Promise.all(
                 fieldNames
                   .filter((fieldName) => get(fieldsRef.current, fieldName))
@@ -473,7 +470,8 @@ export function useForm<
                       await executeValidation(fieldName, null),
                   ),
               )
-            ).every(Boolean);
+            ).every(Boolean)
+          : await validateForm(fieldsRef.current);
       }
 
       formStateSubjectRef.current.next({
