@@ -127,6 +127,8 @@ describe('remove', () => {
           >
             append
           </button>
+
+          <p>{formState.isValid ? 'isValid' : 'notValid'}</p>
         </form>
       );
     };
@@ -137,7 +139,9 @@ describe('remove', () => {
       await fireEvent.click(screen.getByRole('button', { name: /append/i }));
     });
 
-    expect(formState.isValid).toBeFalsy();
+    await waitFor(() => {
+      screen.getByText('notValid');
+    });
 
     await actComponent(async () => {
       await fireEvent.click(
@@ -145,7 +149,9 @@ describe('remove', () => {
       );
     });
 
-    expect(formState.isValid).toBeTruthy();
+    await waitFor(() => {
+      screen.getByText('isValid');
+    });
   });
 
   it('should remove field according index', () => {
@@ -332,7 +338,6 @@ describe('remove', () => {
   });
 
   it('should remove specific field if isValid is true', async () => {
-    let isValid = false;
     const Component = () => {
       const { register, formState, control } = useForm({
         mode: VALIDATION_MODE.onChange,
@@ -341,7 +346,8 @@ describe('remove', () => {
         control,
         name: 'test',
       });
-      isValid = formState.isValid;
+
+      formState.isValid;
 
       return (
         <form>
@@ -357,6 +363,7 @@ describe('remove', () => {
           <button type="button" onClick={() => remove(1)}>
             remove
           </button>
+          <p>{formState.isValid ? 'valid' : 'notValid'}</p>
         </form>
       );
     };
@@ -379,7 +386,9 @@ describe('remove', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
     });
 
-    expect(isValid).toBeFalsy();
+    await waitFor(() => {
+      screen.getByText('notValid');
+    });
 
     const inputs = screen.getAllByRole('textbox');
 
@@ -401,13 +410,17 @@ describe('remove', () => {
       });
     });
 
-    expect(isValid).toBeFalsy();
+    await waitFor(() => {
+      screen.getByText('notValid');
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'remove' }));
     });
 
-    expect(isValid).toBeTruthy();
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
   it('should remove all field if isValid is true', async () => {

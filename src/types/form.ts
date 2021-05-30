@@ -508,10 +508,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
       isReset?: boolean;
     }>
   >;
-  validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
-  fieldsWithValidationRef: React.MutableRefObject<
-    FieldNamesMarkedBoolean<TFieldValues>
-  >;
+  updateIsValid: any;
   fieldsRef: React.MutableRefObject<FieldRefs>;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;

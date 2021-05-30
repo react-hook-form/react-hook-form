@@ -63,8 +63,7 @@ export const useFieldArray = <
     formStateRef,
     formStateSubjectRef,
     readFormStateRef,
-    validFieldsRef,
-    fieldsWithValidationRef,
+    updateIsValid,
     fieldArrayDefaultValuesRef,
     unregister,
     shouldUnmount,
@@ -215,22 +214,6 @@ export const useFieldArray = <
       );
       updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
       cleanup(formStateRef.current.dirtyFields);
-    }
-
-    if (readFormStateRef.current.isValid) {
-      set(
-        validFieldsRef.current,
-        name,
-        method(get(validFieldsRef.current, name, []), args.argA),
-      );
-      cleanup(validFieldsRef.current);
-
-      set(
-        fieldsWithValidationRef.current,
-        name,
-        method(get(fieldsWithValidationRef.current, name, []), args.argA),
-      );
-      cleanup(fieldsWithValidationRef.current);
     }
 
     formStateSubjectRef.current.next({
@@ -438,6 +421,8 @@ export const useFieldArray = <
       name,
       fields: omitKey([...fields]),
     });
+
+    readFormStateRef.current.isValid && updateIsValid();
   }, [fields, name]);
 
   React.useEffect(() => {
