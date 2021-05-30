@@ -1,5 +1,5 @@
 describe('isValid', () => {
-  it.only('should showing valid correctly with build in validation', () => {
+  it('should showing valid correctly with build in validation', () => {
     cy.visit('http://localhost:3000/isValid/build-in/defaultValue');
     cy.get('#isValid').contains('false');
 
@@ -20,7 +20,7 @@ describe('isValid', () => {
 
     cy.get('input[name="firstName"]').clear();
     cy.get('#isValid').contains('false');
-    cy.get('#renderCount').contains('4');
+    cy.get('#renderCount').contains('3');
     cy.get('#toggle').click();
     cy.get('#isValid').contains('false');
   });
