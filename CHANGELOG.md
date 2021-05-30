@@ -1,12 +1,22 @@
 # Changelog
 
+## [7.7.1] - 2021-05-30
+
+### Fxied
+
+- `shouldUnregister: false` should not shallow merge or register absent input fields from `defaultValues`
+
 ## [7.7.0] - 2021-05-29
+
+### Added
 
 - `trigger` support focus with error input
 
 ```ts
 trigger('inputName', { shouldFocus: true });
 ```
+
+### Changed
 
 - `handleSubmit` will `throw` error within the onSubmit callback
 
