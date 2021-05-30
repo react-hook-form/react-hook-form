@@ -4,6 +4,26 @@ exports[`useForm handleChangeRef with resolver should call the resolver with the
 Array [
   Array [
     Object {
+      "test": "",
+    },
+    undefined,
+    Object {
+      "criteriaMode": undefined,
+      "fields": Object {
+        "test": Object {
+          "mount": true,
+          "name": "test",
+          "ref": <input
+            name="test"
+            type="text"
+          />,
+          "value": "test",
+        },
+      },
+    },
+  ],
+  Array [
+    Object {
       "test": "test",
     },
     undefined,
@@ -47,6 +67,9 @@ Array [
         "value": "test",
       },
     },
+    "names": Array [
+      "test",
+    ],
   },
 ]
 `;

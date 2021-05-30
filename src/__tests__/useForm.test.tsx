@@ -492,7 +492,7 @@ describe('useForm', () => {
         const {
           register,
           handleSubmit,
-          formState: { errors },
+          formState: { errors, isValid },
         } = internationalMethods;
         methods = internationalMethods;
 
@@ -506,6 +506,7 @@ describe('useForm', () => {
               {errors?.test?.message && errors.test.message}
             </span>
             <button onClick={handleSubmit(() => {})}>button</button>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
           </div>
         );
       };
@@ -632,7 +633,7 @@ describe('useForm', () => {
         );
         expect(screen.getByRole('alert').textContent).toBe('');
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(4),
+          expect(renderCount.current.Component).toBeRenderedTimes(5),
         );
       });
 
@@ -914,7 +915,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
+          expect(renderCount.current.Component).toBeRenderedTimes(4),
         );
       });
 
@@ -952,9 +953,13 @@ describe('useForm', () => {
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
-        expect(methods.formState.isValid).toBeFalsy();
+
+        await waitFor(() => {
+          screen.getByText('invalid');
+        });
+
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
+          expect(renderCount.current.Component).toBeRenderedTimes(4),
         );
       });
 
@@ -994,7 +999,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
+          expect(renderCount.current.Component).toBeRenderedTimes(4),
         );
       });
 
@@ -1002,7 +1007,7 @@ describe('useForm', () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
 
         render(<Component resolver={resolver} mode="onChange" />);
-        expect(resolver).not.toHaveBeenCalled();
+        expect(resolver).toHaveBeenCalled();
 
         await actComponent(async () => {
           await fireEvent.input(screen.getByRole('textbox'), {

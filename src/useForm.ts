@@ -186,7 +186,7 @@ export function useForm<
         unset(formStateRef.current.errors, name);
       }
 
-      if (readFormStateRef.current.isValid) {
+      if (readFormStateRef.current.isValid && !resolverRef.current) {
         isValidState = await validateForm(fieldsRef.current, true);
       }
 
