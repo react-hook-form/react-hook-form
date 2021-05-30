@@ -485,8 +485,9 @@ export function useForm<
         ...(isString(name) ? { name } : {}),
         errors: formStateRef.current.errors,
         isValidating: false,
-        isValid: !!isValid,
       });
+
+      readFormStateRef.current.isValid && updateIsValid();
 
       if (!isValid && options.shouldFocus) {
         focusFieldBy(
