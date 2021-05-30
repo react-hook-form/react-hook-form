@@ -176,7 +176,7 @@ export function useForm<
       } = {},
       isValidFromResolver?: boolean,
       isWatched?: boolean,
-    ): Promise<boolean | void> => {
+    ): Promise<void> => {
       const previousError = get(formStateRef.current.errors, name);
       const isValid = readFormStateRef.current.isValid
         ? resolverRef.current
