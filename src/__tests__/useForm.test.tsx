@@ -302,6 +302,36 @@ describe('useForm', () => {
       });
     });
 
+    it('should not register or shallow defaultValues into submission data', () => {
+      let data = {};
+
+      const App = () => {
+        const { handleSubmit } = useForm({
+          defaultValues: {
+            test: 'test',
+          },
+        });
+
+        return (
+          <button
+            onClick={handleSubmit((d) => {
+              data = d;
+            })}
+          >
+            sumbit
+          </button>
+        );
+      };
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(data).toEqual({});
+    });
+
     it('should keep validation during unmount', async () => {
       function Component() {
         const {
