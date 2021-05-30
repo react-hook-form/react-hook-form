@@ -430,11 +430,9 @@ export function useForm<
               break;
             }
           } else {
-            if (fieldError[_f.name]) {
-              set(formStateRef.current.errors, _f.name, fieldError[_f.name]);
-            } else {
-              unset(formStateRef.current.errors, _f.name);
-            }
+            fieldError[_f.name]
+              ? set(formStateRef.current.errors, _f.name, fieldError[_f.name])
+              : unset(formStateRef.current.errors, _f.name);
           }
         }
 
