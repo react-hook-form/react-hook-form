@@ -178,30 +178,28 @@ export function useForm<
       isWatched?: boolean,
     ): Promise<boolean | void> => {
       const previousError = get(formStateRef.current.errors, name);
-      let isValid = !!isValidFromResolver;
+      const isValid = readFormStateRef.current.isValid
+        ? resolverRef.current
+          ? isValidFromResolver
+          : await validateForm(fieldsRef.current, true)
+        : null;
 
-      if (error) {
-        set(formStateRef.current.errors, name, error);
-      } else {
-        unset(formStateRef.current.errors, name);
-      }
-
-      if (readFormStateRef.current.isValid && !resolverRef.current) {
-        isValid = await validateForm(fieldsRef.current, true);
-      }
+      error
+        ? set(formStateRef.current.errors, name, error)
+        : unset(formStateRef.current.errors, name);
 
       if (
         (shouldRender ||
           isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
           !isEmptyObject(state) ||
-          (readFormStateRef.current.isValid &&
+          (!isNullOrUndefined(isValid) &&
             formStateRef.current.isValid !== isValid)) &&
         !isNullOrUndefined(shouldRender)
       ) {
         const updatedFormState = {
           ...state,
-          isValid,
+          isValid: !!isValid,
           errors: formStateRef.current.errors,
           name,
         };
