@@ -739,24 +739,23 @@ export function useForm<
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
-      let isValid;
-
-      if (resolver) {
-        const { errors } = await resolverRef.current!(
-          {
-            ...getFieldsValues(fieldsRef),
-            ...values,
-          },
-          contextRef.current,
-          {
-            criteriaMode,
-            fields: getFields(fieldsNamesRef.current, fieldsRef.current),
-          },
-        );
-        isValid = isEmptyObject(errors);
-      } else {
-        isValid = await validateForm(fieldsRef.current, true);
-      }
+      const isValid = resolverRef.current
+        ? isEmptyObject(
+            (
+              await resolverRef.current(
+                {
+                  ...getFieldsValues(fieldsRef),
+                  ...values,
+                },
+                contextRef.current,
+                {
+                  criteriaMode,
+                  fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+                },
+              )
+            ).errors,
+          )
+        : await validateForm(fieldsRef.current, true);
 
       isValid !== formStateRef.current.isValid &&
         formStateSubjectRef.current.next({
