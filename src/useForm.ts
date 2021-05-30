@@ -464,19 +464,18 @@ export function useForm<
         );
         isValid = fieldNames.every((name) => !get(schemaResult, name));
       } else {
-        if (isUndefined(name)) {
-          isValid = await validateForm(fieldsRef.current);
-        } else {
-          isValid = (
-            await Promise.all(
-              fieldNames
-                .filter((fieldName) => get(fieldsRef.current, fieldName))
-                .map(
-                  async (fieldName) => await executeValidation(fieldName, null),
-                ),
-            )
-          ).every(Boolean);
-        }
+        isValid = isUndefined(name)
+          ? await validateForm(fieldsRef.current)
+          : (
+              await Promise.all(
+                fieldNames
+                  .filter((fieldName) => get(fieldsRef.current, fieldName))
+                  .map(
+                    async (fieldName) =>
+                      await executeValidation(fieldName, null),
+                  ),
+              )
+            ).every(Boolean);
       }
 
       formStateSubjectRef.current.next({
