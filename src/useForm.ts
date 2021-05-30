@@ -1104,7 +1104,9 @@ export function useForm<
         isSubmitSuccessful: false,
       });
 
-      !keepIsValid && updateIsValid(values);
+      if (!keepIsValid) {
+        isMountedRef.current = false;
+      }
     },
     [],
   );
@@ -1214,8 +1216,6 @@ export function useForm<
       },
     });
 
-    readFormStateRef.current.isValid && updateIsValid();
-
     return () => {
       watchSubjectRef.current.unsubscribe();
       formStateSubscription.unsubscribe();
@@ -1227,7 +1227,10 @@ export function useForm<
     const isLiveInDom = (ref: Ref) =>
       !isHTMLElement(ref) || !document.contains(ref);
 
-    isMountedRef.current = true;
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      readFormStateRef.current.isValid && updateIsValid();
+    }
 
     for (const name of unregisterFieldsNamesRef.current) {
       const field = get(fieldsRef.current, name) as Field;
