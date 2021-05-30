@@ -508,7 +508,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
       isReset?: boolean;
     }>
   >;
-  updateIsValid: any;
+  updateIsValid: <T extends FieldValues>(payload: T) => void;
   fieldsRef: React.MutableRefObject<FieldRefs>;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
