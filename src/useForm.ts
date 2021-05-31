@@ -168,7 +168,7 @@ export function useForm<
     async (
       name: InternalFieldName,
       error?: FieldError,
-      shouldRender: boolean | null = false,
+      shouldRender: boolean,
       state: {
         dirty?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
@@ -182,7 +182,7 @@ export function useForm<
         ? resolverRef.current
           ? isValidFromResolver
           : await validateForm(fieldsRef.current, true)
-        : null;
+        : false;
 
       error
         ? set(formStateRef.current.errors, name, error)
@@ -193,8 +193,7 @@ export function useForm<
           isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
           !isEmptyObject(state) ||
-          (!isNullOrUndefined(isValid) &&
-            formStateRef.current.isValid !== isValid)) &&
+          formStateRef.current.isValid !== isValid) &&
         !isNullOrUndefined(shouldRender)
       ) {
         const updatedFormState = {
@@ -357,7 +356,7 @@ export function useForm<
   const executeValidation = React.useCallback(
     async (
       name: InternalFieldName,
-      skipReRender?: boolean | null,
+      skipReRender?: boolean,
     ): Promise<boolean> => {
       const error = (
         await validateField(
