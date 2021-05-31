@@ -444,8 +444,8 @@ export function useForm<
   };
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
-    async (name) => {
-      const fields = isUndefined(name)
+    async (name, options = {}) => {
+      const fieldNames = isUndefined(name)
         ? Object.keys(fieldsRef.current)
         : (convertToArrayPayload(name) as InternalFieldName[]);
       let isValid;
@@ -457,10 +457,12 @@ export function useForm<
 
       if (resolverRef.current) {
         schemaResult = await executeSchemaOrResolverValidation(
-          fields,
-          isUndefined(name) ? undefined : (fields as FieldName<TFieldValues>[]),
+          fieldNames,
+          isUndefined(name)
+            ? undefined
+            : (fieldNames as FieldName<TFieldValues>[]),
         );
-        isValid = fields.every((name) => !get(schemaResult, name));
+        isValid = fieldNames.every((name) => !get(schemaResult, name));
       } else {
         if (isUndefined(name)) {
           await validateForm(fieldsRef.current);
@@ -468,7 +470,7 @@ export function useForm<
         } else {
           isValid = (
             await Promise.all(
-              fields
+              fieldNames
                 .filter((fieldName) => get(fieldsRef.current, fieldName))
                 .map(
                   async (fieldName) => await executeValidation(fieldName, null),
@@ -486,6 +488,14 @@ export function useForm<
           ? isEmptyObject(schemaResult)
           : getIsValid(),
       });
+
+      if (!isValid && options.shouldFocus) {
+        focusFieldBy(
+          fieldsRef.current,
+          (key) => get(formStateRef.current.errors, key),
+          fieldNames,
+        );
+      }
 
       return isValid;
     },
@@ -963,17 +973,12 @@ export function useForm<
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
-    (name, options) => {
-      const isInitialRegister = !get(fieldsRef.current, name);
+    (name, options = {}) => {
+      const field = get(fieldsRef.current, name);
 
       set(fieldsRef.current, name, {
         _f: {
-          ...(isInitialRegister
-            ? { ref: { name } }
-            : {
-                ref: (get(fieldsRef.current, name)._f || {}).ref || {},
-                ...get(fieldsRef.current, name)._f,
-              }),
+          ...(field && field._f ? field._f : { ref: { name } }),
           name,
           mount: true,
           ...options,
@@ -982,7 +987,7 @@ export function useForm<
       hasValidation(options, true) &&
         set(fieldsWithValidationRef.current, name, true);
       fieldsNamesRef.current.add(name);
-      isInitialRegister && updateValidAndValue(name, options);
+      !field && updateValidAndValue(name, options);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
@@ -994,11 +999,11 @@ export function useForm<
               if (ref) {
                 registerFieldRef(name, ref, options);
               } else {
-                const field = get(fieldsRef.current, name) as Field;
+                const field = get(fieldsRef.current, name, {}) as Field;
                 const shouldUnmount =
-                  shouldUnregister || (options && options.shouldUnregister);
+                  shouldUnregister || options.shouldUnregister;
 
-                if (field && field._f) {
+                if (field._f) {
                   field._f.mount = false;
                   // If initial state of field element is disabled,
                   // value is not set on first "register"
@@ -1009,10 +1014,9 @@ export function useForm<
                 }
 
                 if (
-                  isWeb &&
-                  (isNameInFieldArray(fieldArrayNamesRef.current, name)
+                  isNameInFieldArray(fieldArrayNamesRef.current, name)
                     ? shouldUnmount && !inFieldArrayActionRef.current
-                    : shouldUnmount)
+                    : shouldUnmount
                 ) {
                   unregisterFieldsNamesRef.current.add(name);
                 }
@@ -1020,7 +1024,7 @@ export function useForm<
             },
           };
     },
-    [defaultValuesRef.current],
+    [],
   );
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
@@ -1068,7 +1072,7 @@ export function useForm<
           shouldFocusError &&
             focusFieldBy(
               fieldsRef.current,
-              (key: string) => get(formStateRef.current.errors, key),
+              (key) => get(formStateRef.current.errors, key),
               fieldsNamesRef.current,
             );
         }
@@ -1205,6 +1209,7 @@ export function useForm<
     }
 
     !keepStateOptions.keepDefaultValues &&
+      !shouldUnregister &&
       registerAbsentFields({ ...updatedValues });
 
     resetFromState(keepStateOptions, values);
@@ -1214,7 +1219,8 @@ export function useForm<
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
-    registerAbsentFields(defaultValuesRef.current);
+    !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
+
     const formStateSubscription = formStateSubjectRef.current.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {

@@ -239,7 +239,7 @@ describe('formState', () => {
         .mockRejectedValue(new Error('this is an error'));
 
       return (
-        <form onSubmit={() => handleSubmit(rejectPromiseFn)().catch(() => {})}>
+        <form>
           <input {...register('test')} />
           <p>{isSubmitted ? 'isSubmitted' : 'no'}</p>
           <p>
@@ -247,7 +247,12 @@ describe('formState', () => {
               ? 'isSubmitSuccessful'
               : 'isNotSubmitSuccessful'}
           </p>
-          <button>Submit</button>
+          <button
+            type={'button'}
+            onClick={() => handleSubmit(rejectPromiseFn)().catch(() => {})}
+          >
+            Submit
+          </button>
         </form>
       );
     };
