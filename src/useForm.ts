@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
-import getFields from './logic/getFields';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import getFieldValueAs from './logic/getFieldValueAs';
 import getNodeParentName from './logic/getNodeParentName';
 import getProxyFormState from './logic/getProxyFormState';
+import getResolverOptions from './logic/getResolverOptions';
 import hasValidation from './logic/hasValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
@@ -376,7 +376,7 @@ export function useForm<
         contextRef.current,
         {
           criteriaMode,
-          ...getFields(fieldsNamesRef.current, fieldsRef.current),
+          ...getResolverOptions(fieldsNamesRef.current, fieldsRef.current),
         },
       );
 
@@ -666,7 +666,7 @@ export function useForm<
             contextRef.current,
             {
               criteriaMode,
-              ...getFields([name], fieldsRef.current),
+              ...getResolverOptions([name], fieldsRef.current),
             },
           );
           error = get(errors, name);
@@ -740,7 +740,10 @@ export function useForm<
                 contextRef.current,
                 {
                   criteriaMode,
-                  ...getFields(fieldsNamesRef.current, fieldsRef.current),
+                  ...getResolverOptions(
+                    fieldsNamesRef.current,
+                    fieldsRef.current,
+                  ),
                 },
               )
             ).errors,
@@ -1000,7 +1003,7 @@ export function useForm<
             contextRef.current,
             {
               criteriaMode,
-              ...getFields(fieldsNamesRef.current, fieldsRef.current),
+              ...getResolverOptions(fieldsNamesRef.current, fieldsRef.current),
             },
           );
           formStateRef.current.errors = errors;

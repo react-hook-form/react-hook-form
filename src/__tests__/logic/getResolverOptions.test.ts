@@ -1,5 +1,5 @@
 import { InternalFieldName } from '../..';
-import getFields from '../../logic/getFields';
+import getResolverOptions from '../../logic/getResolverOptions';
 
 describe('getFielfs', () => {
   it('should return fields from `fieldsNames` and `fieldsRef`', () => {
@@ -23,7 +23,7 @@ describe('getFielfs', () => {
       },
     };
 
-    expect(getFields(fieldNames, fieldsRef)).toMatchInlineSnapshot(`
+    expect(getResolverOptions(fieldNames, fieldsRef)).toMatchInlineSnapshot(`
       Object {
         "fields": Object {
           "test": Object {
