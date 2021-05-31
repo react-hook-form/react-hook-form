@@ -146,7 +146,7 @@ export function useForm<
     touchedFields: {},
     isSubmitting: false,
     isSubmitSuccessful: false,
-    isValid: !validationMode.isOnSubmit,
+    isValid: false,
     errors: {},
   });
   const readFormStateRef = React.useRef<ReadFormState>({

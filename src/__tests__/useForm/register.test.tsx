@@ -313,9 +313,7 @@ describe('register', () => {
 
     render(<Component />);
 
-    await waitFor(() => {
-      screen.getByText('true');
-    });
+    screen.getByText('false');
 
     await actComponent(async () => {
       fireEvent.input(screen.getByPlaceholderText('inputA'), {

@@ -892,7 +892,7 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    screen.getByText('true');
+    screen.getByText('false');
 
     act(() => {
       fireEvent.change(screen.getAllByRole('textbox')[0], {

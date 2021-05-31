@@ -61,36 +61,58 @@ describe('formState', () => {
     });
   });
 
-  it('should return true for onBlur mode by default', () => {
-    const { result } = renderHook(() =>
-      useForm<{ input: string }>({
+  it('should return true for onBlur mode by default', async () => {
+    const App = () => {
+      const {
+        formState: { isValid },
+      } = useForm<{ test: string }>({
         mode: VALIDATION_MODE.onBlur,
-      }),
-    );
+      });
 
-    expect(result.current.formState.isValid).toBeTruthy();
+      return <p>{isValid ? 'valid' : 'invalid'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
-  it('should return true for onChange mode by default', () => {
-    const { result } = renderHook(() =>
-      useForm<{ input: string }>({
+  it('should return true for onChange mode by default', async () => {
+    const App = () => {
+      const {
+        formState: { isValid },
+      } = useForm<{ test: string }>({
         mode: VALIDATION_MODE.onChange,
-      }),
-    );
+      });
 
-    expect(result.current.formState.isValid).toBeTruthy();
+      return <p>{isValid ? 'valid' : 'invalid'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
-  it('should return true when no validation is registered', () => {
-    const { result } = renderHook(() =>
-      useForm<{ test: string }>({
-        mode: VALIDATION_MODE.onBlur,
-      }),
-    );
+  it('should return true for all mode by default', async () => {
+    const App = () => {
+      const {
+        formState: { isValid },
+      } = useForm<{ test: string }>({
+        mode: VALIDATION_MODE.all,
+      });
 
-    result.current.register('test');
+      return <p>{isValid ? 'valid' : 'invalid'}</p>;
+    };
 
-    expect(result.current.formState.isValid).toBeTruthy();
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
   it('should return false when default value is not valid value', async () => {
@@ -419,7 +441,7 @@ describe('formState', () => {
     });
   });
 
-  it('should update isValid to true for validation with inline defaultValue', () => {
+  it('should update isValid to true for validation with inline defaultValue', async () => {
     function App() {
       const {
         register,
@@ -444,6 +466,8 @@ describe('formState', () => {
 
     render(<App />);
 
-    screen.getByText('isValid = true');
+    await waitFor(async () => {
+      screen.getByText('isValid = true');
+    });
   });
 });
