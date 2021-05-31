@@ -6,7 +6,6 @@ import {
   InternalFieldName,
 } from '../types';
 import { get } from '../utils';
-import isKey from '../utils/isKey';
 import set from '../utils/set';
 
 export default <TFieldValues>(
@@ -19,11 +18,7 @@ export default <TFieldValues>(
   for (const name of fieldsNames) {
     const field = get(fieldsRefs, name) as Field;
 
-    if (field) {
-      !isKey(name)
-        ? set(currentFields, name, field._f)
-        : (currentFields[name] = field._f);
-    }
+    field && set(currentFields, name, field._f);
   }
 
   return {
