@@ -178,11 +178,11 @@ export function useForm<
       isWatched?: boolean,
     ): Promise<void> => {
       const previousError = get(formStateRef.current.errors, name);
-      const isValid = readFormStateRef.current.isValid
+      const isValid = !!(readFormStateRef.current.isValid
         ? resolverRef.current
           ? isValidFromResolver
           : await validateForm(fieldsRef.current, true)
-        : false;
+        : false);
 
       error
         ? set(formStateRef.current.errors, name, error)
@@ -197,7 +197,7 @@ export function useForm<
       ) {
         const updatedFormState = {
           ...state,
-          isValid: !!isValid,
+          isValid,
           errors: formStateRef.current.errors,
           name,
         };
