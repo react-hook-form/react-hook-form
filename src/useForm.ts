@@ -374,10 +374,11 @@ export function useForm<
       const { errors } = await resolverRef.current!(
         getFieldsValues(fieldsRef),
         contextRef.current,
-        {
+        getResolverOptions(
+          fieldsNamesRef.current,
+          fieldsRef.current,
           criteriaMode,
-          ...getResolverOptions(fieldsNamesRef.current, fieldsRef.current),
-        },
+        ),
       );
 
       if (names) {
@@ -664,10 +665,7 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getFieldsValues(fieldsRef),
             contextRef.current,
-            {
-              criteriaMode,
-              ...getResolverOptions([name], fieldsRef.current),
-            },
+            getResolverOptions([name], fieldsRef.current, criteriaMode),
           );
           error = get(errors, name);
 
@@ -738,13 +736,11 @@ export function useForm<
                   ...values,
                 },
                 contextRef.current,
-                {
+                getResolverOptions(
+                  fieldsNamesRef.current,
+                  fieldsRef.current,
                   criteriaMode,
-                  ...getResolverOptions(
-                    fieldsNamesRef.current,
-                    fieldsRef.current,
-                  ),
-                },
+                ),
               )
             ).errors,
           )
@@ -1001,10 +997,11 @@ export function useForm<
           const { errors, values } = await resolverRef.current(
             fieldValues,
             contextRef.current,
-            {
+            getResolverOptions(
+              fieldsNamesRef.current,
+              fieldsRef.current,
               criteriaMode,
-              ...getResolverOptions(fieldsNamesRef.current, fieldsRef.current),
-            },
+            ),
           );
           formStateRef.current.errors = errors;
           fieldValues = values;

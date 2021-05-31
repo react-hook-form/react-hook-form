@@ -1,4 +1,10 @@
-import { Field, FieldName, FieldRefs, InternalFieldName } from '../types';
+import {
+  CriteriaMode,
+  Field,
+  FieldName,
+  FieldRefs,
+  InternalFieldName,
+} from '../types';
 import { get } from '../utils';
 import isKey from '../utils/isKey';
 import set from '../utils/set';
@@ -6,6 +12,7 @@ import set from '../utils/set';
 export default <TFieldValues>(
   fieldsNames: Set<InternalFieldName> | InternalFieldName[],
   fieldsRefs: FieldRefs,
+  criteriaMode?: CriteriaMode,
 ) => {
   const currentFields: Record<InternalFieldName, Field['_f']> = {};
 
@@ -20,6 +27,7 @@ export default <TFieldValues>(
   }
 
   return {
+    criteriaMode,
     names: [...fieldsNames] as FieldName<TFieldValues>[],
     fields: currentFields,
   };
