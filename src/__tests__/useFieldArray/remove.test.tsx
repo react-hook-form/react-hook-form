@@ -965,7 +965,7 @@ describe('remove', () => {
           test: [],
         },
         undefined,
-        { criteriaMode: undefined, fields: {} },
+        { criteriaMode: undefined, fields: {}, names: [] },
       );
     });
 

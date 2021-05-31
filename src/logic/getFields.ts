@@ -3,14 +3,14 @@ import { get } from '../utils';
 import isKey from '../utils/isKey';
 import set from '../utils/set';
 
-export default function getFields(
+export default (
   fieldsNames: Set<InternalFieldName> | InternalFieldName[],
   fieldsRefs: FieldRefs,
-) {
+) => {
   const currentFields: Record<InternalFieldName, Field['_f']> = {};
 
   for (const name of fieldsNames) {
-    const field = get(fieldsRefs, name) as Field | undefined;
+    const field = get(fieldsRefs, name) as Field;
 
     if (field) {
       !isKey(name)
@@ -19,5 +19,8 @@ export default function getFields(
     }
   }
 
-  return currentFields;
-}
+  return {
+    names: [...fieldsNames],
+    fields: currentFields,
+  };
+};

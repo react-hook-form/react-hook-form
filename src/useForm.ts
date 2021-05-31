@@ -380,7 +380,7 @@ export function useForm<
           names: (names as FieldName<TFieldValues>[]) || [
             ...fieldsNamesRef.current,
           ],
-          fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+          ...getFields(fieldsNamesRef.current, fieldsRef.current),
         },
       );
 
@@ -643,7 +643,7 @@ export function useForm<
             (inputState.touchedFields = formStateRef.current.touchedFields);
         }
 
-        let shouldRender = !isEmptyObject(inputState) || isWatched;
+        const shouldRender = !isEmptyObject(inputState) || isWatched;
 
         if (shouldSkipValidation) {
           !isBlurEvent &&
@@ -670,11 +670,9 @@ export function useForm<
             contextRef.current,
             {
               criteriaMode,
-              fields: getFields([name], fieldsRef.current),
-              names: [name as FieldName<TFieldValues>],
+              ...getFields([name], fieldsRef.current),
             },
           );
-          const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);
 
           if (isCheckBoxInput(target as Ref) && !error) {
@@ -691,8 +689,6 @@ export function useForm<
           }
 
           isValid = isEmptyObject(errors);
-
-          previousFormIsValid !== isValid && (shouldRender = true);
         } else {
           error = (await validateField(field, isValidateAllFieldCriteria))[
             name
@@ -748,7 +744,7 @@ export function useForm<
                 contextRef.current,
                 {
                   criteriaMode,
-                  fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+                  ...getFields(fieldsNamesRef.current, fieldsRef.current),
                 },
               )
             ).errors,
@@ -1008,7 +1004,7 @@ export function useForm<
             contextRef.current,
             {
               criteriaMode,
-              fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+              ...getFields(fieldsNamesRef.current, fieldsRef.current),
             },
           );
           formStateRef.current.errors = errors;

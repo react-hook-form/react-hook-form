@@ -1100,7 +1100,7 @@ describe('useForm', () => {
         expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
           criteriaMode: undefined,
           fields,
-          names: ['test.sub'],
+          names: ['test.sub', 'test1'],
         });
 
         // `trigger` called to validate all fields

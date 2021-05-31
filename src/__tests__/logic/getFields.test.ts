@@ -25,24 +25,30 @@ describe('getFielfs', () => {
 
     expect(getFields(fieldNames, fieldsRef)).toMatchInlineSnapshot(`
       Object {
-        "test": Object {
-          "sub": Object {
-            "name": "test.sub",
-            "ref": Object {
+        "fields": Object {
+          "test": Object {
+            "sub": Object {
               "name": "test.sub",
+              "ref": Object {
+                "name": "test.sub",
+                "value": "test",
+              },
               "value": "test",
             },
-            "value": "test",
           },
-        },
-        "test1": Object {
-          "name": "test1",
-          "ref": Object {
+          "test1": Object {
             "name": "test1",
+            "ref": Object {
+              "name": "test1",
+              "value": "test1",
+            },
             "value": "test1",
           },
-          "value": "test1",
         },
+        "names": Array [
+          "test.sub",
+          "test1",
+        ],
       }
     `);
   });
