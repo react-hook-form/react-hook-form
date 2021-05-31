@@ -46,7 +46,6 @@ import {
   Field,
   FieldArrayDefaultValues,
   FieldError,
-  FieldName,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -377,9 +376,6 @@ export function useForm<
         contextRef.current,
         {
           criteriaMode,
-          names: (names as FieldName<TFieldValues>[]) || [
-            ...fieldsNamesRef.current,
-          ],
           ...getFields(fieldsNamesRef.current, fieldsRef.current),
         },
       );

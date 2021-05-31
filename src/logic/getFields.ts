@@ -1,9 +1,9 @@
-import { Field, FieldRefs, InternalFieldName } from '../types';
+import { Field, FieldName, FieldRefs, InternalFieldName } from '../types';
 import { get } from '../utils';
 import isKey from '../utils/isKey';
 import set from '../utils/set';
 
-export default (
+export default <TFieldValues>(
   fieldsNames: Set<InternalFieldName> | InternalFieldName[],
   fieldsRefs: FieldRefs,
 ) => {
@@ -20,7 +20,7 @@ export default (
   }
 
   return {
-    names: [...fieldsNames],
+    names: [...fieldsNames] as FieldName<TFieldValues>[],
     fields: currentFields,
   };
 };
