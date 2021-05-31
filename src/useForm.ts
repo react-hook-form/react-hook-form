@@ -635,15 +635,15 @@ export function useForm<
           field._f.value = inputValue;
         }
 
-        const state = updateAndGetDirtyState(name, field._f.value, false);
+        const inputState = updateAndGetDirtyState(name, field._f.value, false);
 
         if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
           set(formStateRef.current.touchedFields, name, true);
           readFormStateRef.current.touchedFields &&
-            (state.touchedFields = formStateRef.current.touchedFields);
+            (inputState.touchedFields = formStateRef.current.touchedFields);
         }
 
-        let shouldRender = !isEmptyObject(state) || isWatched;
+        let shouldRender = !isEmptyObject(inputState) || isWatched;
 
         if (shouldSkipValidation) {
           !isBlurEvent &&
@@ -655,7 +655,7 @@ export function useForm<
           return (
             shouldRender &&
             formStateSubjectRef.current.next(
-              isWatched ? { name } : { ...state, name },
+              isWatched ? { name } : { ...inputState, name },
             )
           );
         }
@@ -705,7 +705,14 @@ export function useForm<
             type,
             formValues: getValues(),
           });
-        shouldRenderBaseOnError(false, name, error, state, isValid, isWatched);
+        shouldRenderBaseOnError(
+          false,
+          name,
+          error,
+          inputState,
+          isValid,
+          isWatched,
+        );
       }
     },
     [],
