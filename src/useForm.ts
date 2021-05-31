@@ -46,7 +46,6 @@ import {
   Field,
   FieldArrayDefaultValues,
   FieldError,
-  FieldErrors,
   FieldName,
   FieldNamesMarkedBoolean,
   FieldPath,
@@ -352,7 +351,7 @@ export function useForm<
     [],
   );
 
-  const executeValidation = React.useCallback(
+  const executeInlineValidation = React.useCallback(
     async (
       name: InternalFieldName,
       skipReRender: boolean,
@@ -371,26 +370,29 @@ export function useForm<
     [isValidateAllFieldCriteria],
   );
 
-  const executeSchemaOrResolverValidation = React.useCallback(
-    async (
-      names: InternalFieldName[],
-      currentNames: FieldName<TFieldValues>[] = [],
-    ) => {
+  const executeResolverValidation = React.useCallback(
+    async (names?: InternalFieldName[]) => {
       const { errors } = await resolverRef.current!(
         getFieldsValues(fieldsRef),
         contextRef.current,
         {
           criteriaMode,
-          names: currentNames,
+          names: (names as FieldName<TFieldValues>[]) || [
+            ...fieldsNamesRef.current,
+          ],
           fields: getFields(fieldsNamesRef.current, fieldsRef.current),
         },
       );
 
-      for (const name of names) {
-        const error = get(errors, name);
-        error
-          ? set(formStateRef.current.errors, name, error)
-          : unset(formStateRef.current.errors, name);
+      if (names) {
+        for (const name of names) {
+          const error = get(errors, name);
+          error
+            ? set(formStateRef.current.errors, name, error)
+            : unset(formStateRef.current.errors, name);
+        }
+      } else {
+        formStateRef.current.errors = errors;
       }
 
       return errors;
@@ -439,22 +441,20 @@ export function useForm<
 
   const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
     async (name, options = {}) => {
-      const fieldNames = isUndefined(name)
-        ? Object.keys(fieldsRef.current)
-        : (convertToArrayPayload(name) as InternalFieldName[]);
+      const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
       let isValid;
-      let schemaResult: FieldErrors<TFieldValues> | {} = {};
 
       formStateSubjectRef.current.next({
         isValidating: true,
       });
 
       if (resolverRef.current) {
-        schemaResult = await executeSchemaOrResolverValidation(
-          fieldNames,
-          name ? (fieldNames as FieldName<TFieldValues>[]) : undefined,
+        const schemaResult = await executeResolverValidation(
+          isUndefined(name) ? name : fieldNames,
         );
-        isValid = fieldNames.every((name) => !get(schemaResult, name));
+        isValid = name
+          ? fieldNames.every((name) => !get(schemaResult, name))
+          : isEmptyObject(schemaResult);
       } else {
         isValid = name
           ? (
@@ -463,7 +463,7 @@ export function useForm<
                   .filter((fieldName) => get(fieldsRef.current, fieldName))
                   .map(
                     async (fieldName) =>
-                      await executeValidation(fieldName, true),
+                      await executeInlineValidation(fieldName, true),
                   ),
               )
             ).every(Boolean)
@@ -476,9 +476,7 @@ export function useForm<
         isValidating: false,
       });
 
-      readFormStateRef.current.isValid && updateIsValid();
-
-      if (!isValid && options.shouldFocus) {
+      if (options.shouldFocus && !isValid) {
         focusFieldBy(
           fieldsRef.current,
           (key) => get(formStateRef.current.errors, key),
@@ -486,9 +484,11 @@ export function useForm<
         );
       }
 
+      readFormStateRef.current.isValid && updateIsValid();
+
       return isValid;
     },
-    [executeSchemaOrResolverValidation, executeValidation],
+    [executeResolverValidation, executeInlineValidation],
   );
 
   const setInternalValues = React.useCallback(

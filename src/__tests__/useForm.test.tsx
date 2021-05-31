@@ -1111,7 +1111,7 @@ describe('useForm', () => {
         expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
           criteriaMode: undefined,
           fields,
-          names: [],
+          names: ['test.sub', 'test1'],
         });
 
         // `trigger` called to validate fields
@@ -1181,7 +1181,7 @@ describe('useForm', () => {
               value: 'default',
             },
           },
-          names: [],
+          names: ['test'],
         },
       );
     });
@@ -1220,7 +1220,7 @@ describe('useForm', () => {
             value: 'value',
           },
         },
-        names: [],
+        names: ['test'],
       });
     });
   });
