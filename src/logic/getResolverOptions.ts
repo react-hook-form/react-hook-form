@@ -13,17 +13,17 @@ export default <TFieldValues>(
   fieldsRefs: FieldRefs,
   criteriaMode?: CriteriaMode,
 ) => {
-  const currentFields: Record<InternalFieldName, Field['_f']> = {};
+  const fields: Record<InternalFieldName, Field['_f']> = {};
 
   for (const name of fieldsNames) {
     const field = get(fieldsRefs, name) as Field;
 
-    field && set(currentFields, name, field._f);
+    field && set(fields, name, field._f);
   }
 
   return {
     criteriaMode,
     names: [...fieldsNames] as FieldName<TFieldValues>[],
-    fields: currentFields,
+    fields,
   };
 };
