@@ -169,11 +169,11 @@ export function useForm<
       shouldSkipRender: boolean,
       name: InternalFieldName,
       error?: FieldError,
-      state: {
+      inputState?: {
         dirty?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
-      } = {},
+      },
       isValidFromResolver?: boolean,
       isWatched?: boolean,
     ): Promise<void> => {
@@ -191,12 +191,12 @@ export function useForm<
       if (
         (isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
-          !isEmptyObject(state) ||
+          !isEmptyObject(inputState) ||
           formStateRef.current.isValid !== isValid) &&
         !shouldSkipRender
       ) {
         const updatedFormState = {
-          ...state,
+          ...inputState,
           isValid: !!isValid,
           errors: formStateRef.current.errors,
           name,
