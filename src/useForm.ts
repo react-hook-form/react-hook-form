@@ -166,9 +166,9 @@ export function useForm<
 
   const shouldRenderBaseOnError = React.useCallback(
     async (
+      shouldSkipRender: boolean,
       name: InternalFieldName,
       error?: FieldError,
-      shouldRender: boolean,
       state: {
         dirty?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
@@ -189,12 +189,11 @@ export function useForm<
         : unset(formStateRef.current.errors, name);
 
       if (
-        (shouldRender ||
-          isWatched ||
+        (isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
           !isEmptyObject(state) ||
           formStateRef.current.isValid !== isValid) &&
-        !isNullOrUndefined(shouldRender)
+        !shouldSkipRender
       ) {
         const updatedFormState = {
           ...state,
@@ -356,7 +355,7 @@ export function useForm<
   const executeValidation = React.useCallback(
     async (
       name: InternalFieldName,
-      skipReRender?: boolean,
+      skipReRender: boolean,
     ): Promise<boolean> => {
       const error = (
         await validateField(
@@ -365,7 +364,7 @@ export function useForm<
         )
       )[name];
 
-      shouldRenderBaseOnError(name, error, skipReRender);
+      shouldRenderBaseOnError(skipReRender, name, error);
 
       return isUndefined(error);
     },
@@ -464,7 +463,7 @@ export function useForm<
                   .filter((fieldName) => get(fieldsRef.current, fieldName))
                   .map(
                     async (fieldName) =>
-                      await executeValidation(fieldName, null),
+                      await executeValidation(fieldName, true),
                   ),
               )
             ).every(Boolean)
@@ -706,14 +705,7 @@ export function useForm<
             type,
             formValues: getValues(),
           });
-        shouldRenderBaseOnError(
-          name,
-          error,
-          shouldRender,
-          state,
-          isValid,
-          isWatched,
-        );
+        shouldRenderBaseOnError(false, name, error, state, isValid, isWatched);
       }
     },
     [],
