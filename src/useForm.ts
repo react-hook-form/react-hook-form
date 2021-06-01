@@ -1078,9 +1078,7 @@ export function useForm<
         isSubmitSuccessful: false,
       });
 
-      if (!keepIsValid) {
-        isMountedRef.current = false;
-      }
+      isMountedRef.current = !keepIsValid;
     },
     [],
   );
