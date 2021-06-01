@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`useWatch fieldArray should return shallow merged watch values 1`] = `
+Array [
+  Object {
+    "arr": Array [],
+    "name": "foo",
+  },
+  Object {
+    "arr": Array [],
+    "name": "foo",
+  },
+]
+`;
+
 exports[`useWatch fieldArray with shouldUnregister true should watch correct input update with single field array input 1`] = `
 Array [
   Array [

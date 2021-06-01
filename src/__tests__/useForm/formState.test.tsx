@@ -10,6 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 describe('formState', () => {
@@ -60,36 +61,58 @@ describe('formState', () => {
     });
   });
 
-  it('should return true for onBlur mode by default', () => {
-    const { result } = renderHook(() =>
-      useForm<{ input: string }>({
+  it('should return true for onBlur mode by default', async () => {
+    const App = () => {
+      const {
+        formState: { isValid },
+      } = useForm<{ test: string }>({
         mode: VALIDATION_MODE.onBlur,
-      }),
-    );
+      });
 
-    expect(result.current.formState.isValid).toBeTruthy();
+      return <p>{isValid ? 'valid' : 'invalid'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
-  it('should return true for onChange mode by default', () => {
-    const { result } = renderHook(() =>
-      useForm<{ input: string }>({
+  it('should return true for onChange mode by default', async () => {
+    const App = () => {
+      const {
+        formState: { isValid },
+      } = useForm<{ test: string }>({
         mode: VALIDATION_MODE.onChange,
-      }),
-    );
+      });
 
-    expect(result.current.formState.isValid).toBeTruthy();
+      return <p>{isValid ? 'valid' : 'invalid'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
-  it('should return true when no validation is registered', () => {
-    const { result } = renderHook(() =>
-      useForm<{ test: string }>({
-        mode: VALIDATION_MODE.onBlur,
-      }),
-    );
+  it('should return true for all mode by default', async () => {
+    const App = () => {
+      const {
+        formState: { isValid },
+      } = useForm<{ test: string }>({
+        mode: VALIDATION_MODE.all,
+      });
 
-    result.current.register('test');
+      return <p>{isValid ? 'valid' : 'invalid'}</p>;
+    };
 
-    expect(result.current.formState.isValid).toBeTruthy();
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
   });
 
   it('should return false when default value is not valid value', async () => {
@@ -111,7 +134,7 @@ describe('formState', () => {
     expect(result.current.formState.isValid).toBeFalsy();
   });
 
-  it('should return true when default value meet the validation criteria', async () => {
+  it('should return false when custom register with validation', async () => {
     const { result } = renderHook(() =>
       useForm<{ input: string; issue: string }>({
         mode: VALIDATION_MODE.onChange,
@@ -124,7 +147,7 @@ describe('formState', () => {
       result.current.register('issue', { required: true });
     });
 
-    expect(result.current.formState.isValid).toBeTruthy();
+    expect(result.current.formState.isValid).toBeFalsy();
   });
 
   it('should be a proxy object that returns undefined for unknown properties', () => {
@@ -225,7 +248,7 @@ describe('formState', () => {
     });
   });
 
-  it('should only set isSubmitSuccessful to false when there is a promise reject', async () => {
+  it('should set isSubmitSuccessful to false when there is a promise reject', async () => {
     const App = () => {
       const {
         register,
@@ -233,12 +256,12 @@ describe('formState', () => {
         formState: { isSubmitSuccessful, isSubmitted },
       } = useForm();
 
+      const rejectPromiseFn = jest
+        .fn()
+        .mockRejectedValue(new Error('this is an error'));
+
       return (
-        <form
-          onSubmit={handleSubmit(async () => {
-            throw new Error('something is wrong');
-          })}
-        >
+        <form>
           <input {...register('test')} />
           <p>{isSubmitted ? 'isSubmitted' : 'no'}</p>
           <p>
@@ -246,7 +269,12 @@ describe('formState', () => {
               ? 'isSubmitSuccessful'
               : 'isNotSubmitSuccessful'}
           </p>
-          <button>Submit</button>
+          <button
+            type={'button'}
+            onClick={() => handleSubmit(rejectPromiseFn)().catch(() => {})}
+          >
+            Submit
+          </button>
         </form>
       );
     };
@@ -259,5 +287,187 @@ describe('formState', () => {
 
     screen.getByText('isSubmitted');
     screen.getByText('isNotSubmitSuccessful');
+  });
+
+  it('should update correct isValid formState with dynamic fields', async () => {
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { isValid },
+      } = useForm<{
+        list: {
+          firstName: string;
+          lastName: string;
+        }[];
+        test: string;
+        test1: string;
+        test2: string;
+        test3: string;
+      }>({
+        mode: 'onChange',
+      });
+      const { append, fields } = useFieldArray({
+        control,
+        name: 'list',
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field }) => (
+              <input {...field} placeholder={field.name} />
+            )}
+            name={'test'}
+            rules={{ required: true }}
+            control={control}
+            defaultValue={''}
+          />
+          <input
+            {...register('test1', { required: true })}
+            placeholder={'test1'}
+          />
+          <input {...register('test2')} placeholder={'test2'} />
+          <Controller
+            render={({ field }) => (
+              <input {...field} placeholder={field.name} />
+            )}
+            name={'test3'}
+            control={control}
+            defaultValue={''}
+          />
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <Controller
+                  render={({ field }) => (
+                    <input {...field} placeholder={field.name} />
+                  )}
+                  name={`list.${index}.firstName` as const}
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={field.firstName}
+                />
+                <input
+                  {...register(`list.${index}.lastName` as const, {
+                    required: true,
+                  })}
+                  placeholder={`list.${index}.lastName`}
+                  defaultValue={field.lastName}
+                />
+              </div>
+            );
+          })}
+          <button
+            type={'button'}
+            onClick={() =>
+              append({
+                firstName: '',
+                lastName: '',
+              })
+            }
+          >
+            append
+          </button>
+          <p>{isValid ? 'valid' : 'inValid'}</p>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await waitFor(() => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: '1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('test1'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(async () => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+      target: { value: '1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+      target: { value: '' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+      target: { value: '' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('inValid');
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+      target: { value: '1' },
+    });
+
+    await waitFor(async () => {
+      screen.getByText('valid');
+    });
+  });
+
+  it('should update isValid to true for validation with inline defaultValue', async () => {
+    function App() {
+      const {
+        register,
+        formState: { isValid },
+      } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <form>
+          <input
+            type="text"
+            placeholder="Any value"
+            autoComplete="on"
+            {...register('value', { required: true })}
+            defaultValue="Any default value!"
+          />
+          <p>isValid = {isValid ? 'true' : 'false'}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('isValid = true');
+    });
   });
 });

@@ -9,6 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
+import { ControllerRenderProps } from '../../types';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
@@ -277,7 +279,7 @@ describe('register', () => {
         setValue,
         formState: { isValid },
       } = useForm({
-        defaultValues: { a: 'default', b: 'default' },
+        defaultValues: { a: 'default', b: '' },
         mode: 'onChange',
       });
 
@@ -311,7 +313,7 @@ describe('register', () => {
 
     render(<Component />);
 
-    screen.getByText('true');
+    screen.getByText('false');
 
     await actComponent(async () => {
       fireEvent.input(screen.getByPlaceholderText('inputA'), {
@@ -319,7 +321,9 @@ describe('register', () => {
       });
     });
 
-    screen.getByText('false');
+    await waitFor(() => {
+      screen.getByText('false');
+    });
 
     await actComponent(async () => {
       fireEvent.input(screen.getByPlaceholderText('inputB'), {
@@ -406,6 +410,46 @@ describe('register', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValue).toMatchSnapshot();
+  });
+
+  it('should skip register absent fields which are checkbox/radio inputs', async () => {
+    let data: unknown;
+
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        defaultValues: {
+          test: ['1', '2', '3'],
+        },
+      });
+      return (
+        <form onSubmit={handleSubmit((d) => (data = d))}>
+          <input type="checkbox" {...register('test')} value={'1'} />
+          <input type="checkbox" {...register('test')} value={'2'} />
+          <input type="checkbox" {...register('test')} value={'3'} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(data).toEqual({
+      test: ['1', '2', '3'],
+    });
+
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(data).toEqual({
+      test: ['2', '3'],
+    });
   });
 
   describe('register valueAs', () => {
@@ -799,5 +843,124 @@ describe('register', () => {
 
       expect(screen.queryByText('Empty')).toBeNull();
     });
+  });
+
+  it('should not register nested input', () => {
+    const watchedValue: unknown[] = [];
+    let inputs: unknown;
+
+    const Checkboxes = ({
+      value,
+      onChange,
+    }: {
+      value: boolean[];
+      onChange: ControllerRenderProps['onChange'];
+    }) => {
+      const [checkboxValue, setCheckboxValue] = React.useState(value);
+
+      return (
+        <div>
+          {value.map((_, index) => (
+            <input
+              key={index}
+              onChange={(e) => {
+                const updatedValue = checkboxValue.map((item, i) => {
+                  if (index === i) {
+                    return e.target.checked;
+                  }
+                  return item;
+                });
+
+                setCheckboxValue(updatedValue);
+                onChange(updatedValue);
+              }}
+              type="checkbox"
+              checked={checkboxValue[index]}
+            />
+          ))}
+        </div>
+      );
+    };
+
+    function App() {
+      const { control, watch } = useForm({
+        defaultValues: {
+          test: [true, false, false],
+        },
+      });
+      inputs = control.fieldsRef;
+      watchedValue.push(watch());
+
+      return (
+        <form>
+          <Controller
+            name="test"
+            control={control}
+            render={({ field }) => (
+              <Checkboxes onChange={field.onChange} value={field.value} />
+            )}
+          />
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+
+    expect(watchedValue).toEqual([
+      { test: [true, false, false] },
+      { test: [false, false, false] },
+    ]);
+
+    expect(inputs).toMatchSnapshot();
+  });
+
+  it('should validate value after toggling enabled/disabled on input', async () => {
+    const defaultValue = 'Test';
+    const validate = jest.fn();
+    const submit = jest.fn();
+    const onSubmit = (values: unknown) => {
+      submit(values);
+    };
+
+    const App = () => {
+      const [editable, setEditable] = React.useState(false);
+      const { register, handleSubmit } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input
+            disabled={!editable}
+            defaultValue={defaultValue}
+            {...register('test', { validate })}
+          />
+          <button type="button" onClick={() => setEditable(!editable)}>
+            Toggle Edit
+          </button>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(validate).toBeCalledTimes(0);
+
+    fireEvent.click(screen.getByText('Toggle Edit'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByText('Submit'));
+    });
+
+    expect(validate).toBeCalledWith(defaultValue);
+    expect(submit).toBeCalledWith({ test: defaultValue });
+
+    fireEvent.click(screen.getByText('Toggle Edit'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByText('Submit'));
+    });
+
+    expect(submit).toBeCalledWith({ test: undefined });
   });
 });

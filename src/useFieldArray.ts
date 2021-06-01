@@ -27,6 +27,7 @@ import {
   FieldArrayPath,
   FieldArrayWithId,
   FieldErrors,
+  FieldPath,
   FieldValues,
   UseFieldArrayProps,
   UseFieldArrayReturn,
@@ -49,6 +50,7 @@ export const useFieldArray = <
 >): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const focusNameRef = React.useRef('');
+  const isMountedRef = React.useRef(false);
   const {
     isWatchAllRef,
     watchFieldsRef,
@@ -61,8 +63,7 @@ export const useFieldArray = <
     formStateRef,
     formStateSubjectRef,
     readFormStateRef,
-    validFieldsRef,
-    fieldsWithValidationRef,
+    updateIsValid,
     fieldArrayDefaultValuesRef,
     unregister,
     shouldUnmount,
@@ -73,7 +74,7 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      get(fieldsRef.current, name)
+      get(fieldsRef.current, name) && isMountedRef.current
         ? get(getFieldsValues(fieldsRef), name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name, [])
@@ -213,22 +214,6 @@ export const useFieldArray = <
       );
       updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
       cleanup(formStateRef.current.dirtyFields);
-    }
-
-    if (readFormStateRef.current.isValid) {
-      set(
-        validFieldsRef.current,
-        name,
-        method(get(validFieldsRef.current, name, []), args.argA),
-      );
-      cleanup(validFieldsRef.current);
-
-      set(
-        fieldsWithValidationRef.current,
-        name,
-        method(get(fieldsWithValidationRef.current, name, []), args.argA),
-      );
-      cleanup(fieldsWithValidationRef.current);
     }
 
     formStateSubjectRef.current.next({
@@ -436,6 +421,8 @@ export const useFieldArray = <
       name,
       fields: omitKey([...fields]),
     });
+
+    readFormStateRef.current.isValid && updateIsValid();
   }, [fields, name]);
 
   React.useEffect(() => {
@@ -457,10 +444,12 @@ export const useFieldArray = <
       },
     });
     !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
+    isMountedRef.current = true;
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      (shouldUnmount || shouldUnregister) && unregister(name);
+      (shouldUnmount || shouldUnregister) &&
+        unregister(name as FieldPath<TFieldValues>);
     };
   }, []);
 

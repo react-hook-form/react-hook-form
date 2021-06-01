@@ -1,5 +1,3 @@
-import { UNDEFINED } from '../constants';
-
-export default typeof window !== UNDEFINED &&
-  typeof window.HTMLElement !== UNDEFINED &&
-  typeof document !== UNDEFINED;
+export default typeof window !== 'undefined' &&
+  typeof window.HTMLElement !== 'undefined' &&
+  typeof document !== 'undefined';

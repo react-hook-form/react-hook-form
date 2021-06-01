@@ -892,7 +892,7 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    screen.getByText('true');
+    screen.getByText('false');
 
     act(() => {
       fireEvent.change(screen.getAllByRole('textbox')[0], {
@@ -996,7 +996,7 @@ describe('Controller', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
-  it('should set ref to empty object when ref is not defined', () => {
+  it('should set ref to empty object when ref is not defined', async () => {
     const App = () => {
       const [show, setShow] = React.useState(false);
       const { control } = useForm({
@@ -1028,10 +1028,14 @@ describe('Controller', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    act(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'test' },
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
     });
   });
 });

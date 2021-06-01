@@ -905,4 +905,118 @@ describe('setValue', () => {
 
     expect(screen.getByTestId(inputId)).toHaveValue('updated value');
   });
+
+  it('should register deeply nested inputs correctly', () => {
+    let fields: unknown;
+    const App = () => {
+      const { setValue, control } = useForm();
+      useFieldArray({
+        control,
+        name: 'test',
+      });
+      const [, setShow] = React.useState(false);
+      fields = control.fieldsRef.current;
+
+      return (
+        <button
+          onClick={() => {
+            setValue('test', [
+              {
+                name: 'append',
+                nestedArray: [{ field1: 'append', field2: 'append' }],
+              },
+            ]);
+            setShow(true);
+          }}
+        >
+          setValue
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(fields).toMatchSnapshot();
+  });
+
+  describe('when set field to null', () => {
+    it('should be able to set correctly with register', () => {
+      let result: unknown;
+
+      type FormData = {
+        user: { name: string } | null;
+      };
+
+      function App() {
+        const { setValue, watch, register } = useForm<FormData>({
+          defaultValues: {
+            user: {
+              name: 'John Doe',
+            },
+          },
+        });
+
+        result = watch();
+
+        register('user');
+
+        return (
+          <div>
+            <button onClick={() => setValue('user', null)}>
+              Set user to null
+            </button>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(result).toEqual({
+        user: null,
+      });
+    });
+
+    it('should be able to set correctly without register', () => {
+      let result: unknown;
+
+      type FormData = {
+        user: { name: string } | null;
+      };
+
+      function App() {
+        const { setValue, watch } = useForm<FormData>({
+          defaultValues: {
+            user: {
+              name: 'John Doe',
+            },
+          },
+        });
+
+        result = watch();
+
+        return (
+          <div>
+            <button onClick={() => setValue('user', null)}>
+              Set user to null
+            </button>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(result).toEqual({
+        user: null,
+      });
+    });
+  });
 });

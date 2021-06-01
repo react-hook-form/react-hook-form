@@ -37,7 +37,7 @@ export type DeepMap<T, TValue> = {
     ? any
     : NonUndefined<T[K]> extends NestedValue | Date | FileList
     ? TValue
-    : NonUndefined<T[K]> extends object
+    : NonUndefined<T[K]> extends object | null
     ? DeepMap<T[K], TValue>
     : NonUndefined<T[K]> extends Array<infer U>
     ? IsAny<U> extends true
@@ -131,7 +131,7 @@ export type FieldArrayPathValue<
 
 export type FieldPathValues<
   TFieldValues extends FieldValues,
-  TPath extends FieldPath<TFieldValues>[],
+  TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[],
 > = {} & {
   [K in keyof TPath]: FieldPathValue<
     TFieldValues,
