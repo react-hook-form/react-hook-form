@@ -464,7 +464,9 @@ describe('formState', () => {
 
       render(<App />);
 
-      screen.getByText('isValid = true');
+      await waitFor(async () => {
+        screen.getByText('isValid = true');
+      });
     });
 
     it('should update isValid to true for Controller validation', async () => {
