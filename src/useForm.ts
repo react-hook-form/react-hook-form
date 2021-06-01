@@ -159,9 +159,6 @@ export function useForm<
   });
   const formStateRef = React.useRef(formState);
 
-  contextRef.current = context;
-  resolverRef.current = resolver;
-
   const shouldRenderBaseOnError = React.useCallback(
     async (
       shouldSkipRender: boolean,
