@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -278,12 +279,6 @@ describe('reset', () => {
         message: 'something wrong',
       },
     };
-    result.current.control.validFieldsRef.current = {
-      test: true,
-    };
-    result.current.control.fieldsWithValidationRef.current = {
-      test: true,
-    };
 
     result.current.formState.touchedFields = { test: true };
     result.current.formState.isDirty = true;
@@ -312,14 +307,53 @@ describe('reset', () => {
     expect(result.current.formState.touchedFields).toEqual({
       test: true,
     });
-    expect(result.current.control.validFieldsRef.current).toEqual({
-      test: true,
-    });
-    expect(result.current.control.fieldsWithValidationRef.current).toEqual({
-      test: true,
-    });
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.isSubmitted).toBeTruthy();
+  });
+
+  it('should keep isValid state when keep option is presented', async () => {
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { isValid },
+      } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <>
+          <input {...register('test', { required: true })} />
+          {isValid ? 'valid' : 'invalid'}
+          <button
+            onClick={() => {
+              reset(
+                {
+                  test: 'test',
+                },
+                {
+                  keepIsValid: true,
+                },
+              );
+            }}
+          >
+            reset
+          </button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('invalid');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      screen.getByText('invalid');
+    });
   });
 
   it('should reset field array fine with empty value', async () => {
