@@ -467,7 +467,7 @@ describe('formState', () => {
       screen.getByText('isValid = true');
     });
 
-    it('should update isValid to true for Controller validation', () => {
+    it('should update isValid to true for Controller validation', async () => {
       function App() {
         const {
           control,
