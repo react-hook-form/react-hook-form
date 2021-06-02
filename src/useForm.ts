@@ -133,7 +133,6 @@ export function useForm<
     React.useRef<DefaultValues<TFieldValues>>(defaultValues);
   const isWatchAllRef = React.useRef(false);
   const contextRef = React.useRef(context);
-  const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<InternalNameSet>(new Set());
   const validationMode = getValidationModes(mode);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
@@ -159,6 +158,8 @@ export function useForm<
   });
   const formStateRef = React.useRef(formState);
 
+  contextRef.current = context;
+
   const shouldRenderBaseOnError = React.useCallback(
     async (
       shouldSkipRender: boolean,
@@ -174,7 +175,7 @@ export function useForm<
     ): Promise<void> => {
       const previousError = get(formStateRef.current.errors, name);
       const isValid = readFormStateRef.current.isValid
-        ? resolverRef.current
+        ? resolver
           ? isValidFromResolver
           : await validateForm(fieldsRef.current, true)
         : false;
@@ -368,7 +369,7 @@ export function useForm<
 
   const executeResolverValidation = React.useCallback(
     async (names?: InternalFieldName[]) => {
-      const { errors } = await resolverRef.current!(
+      const { errors } = await resolver!(
         getFieldsValues(fieldsRef),
         contextRef.current,
         getResolverOptions(
@@ -442,7 +443,7 @@ export function useForm<
         isValidating: true,
       });
 
-      if (resolverRef.current) {
+      if (resolver) {
         const schemaResult = await executeResolverValidation(
           isUndefined(name) ? name : fieldNames,
         );
@@ -612,7 +613,7 @@ export function useForm<
 
         const shouldSkipValidation =
           (!hasValidation(field._f, field._f.mount) &&
-            !resolverRef.current &&
+            !resolver &&
             !get(formStateRef.current.errors, name)) ||
           skipValidation({
             isBlurEvent,
@@ -658,8 +659,8 @@ export function useForm<
           isValidating: true,
         });
 
-        if (resolverRef.current) {
-          const { errors } = await resolverRef.current(
+        if (resolver) {
+          const { errors } = await resolver(
             getFieldsValues(fieldsRef),
             contextRef.current,
             getResolverOptions([name], fieldsRef.current, criteriaMode),
@@ -724,10 +725,10 @@ export function useForm<
 
   const updateIsValid = React.useCallback(
     async (values = {}) => {
-      const isValid = resolverRef.current
+      const isValid = resolver
         ? isEmptyObject(
             (
-              await resolverRef.current(
+              await resolver(
                 {
                   ...getFieldsValues(fieldsRef),
                   ...values,
@@ -989,8 +990,8 @@ export function useForm<
       });
 
       try {
-        if (resolverRef.current) {
-          const { errors, values } = await resolverRef.current(
+        if (resolver) {
+          const { errors, values } = await resolver(
             fieldValues,
             contextRef.current,
             getResolverOptions(
