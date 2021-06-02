@@ -109,15 +109,6 @@ export function useForm<
     isValid: false,
     errors: {},
   });
-  const formStateRef = React.useRef(formState);
-  const fieldsRef = React.useRef<FieldRefs>({});
-  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
-  const inFieldArrayActionRef = React.useRef(false);
-  const defaultValuesRef =
-    React.useRef<DefaultValues<TFieldValues>>(defaultValues);
-  const contextRef = React.useRef(context);
-  const isMountedRef = React.useRef(false);
-  const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -126,6 +117,14 @@ export function useForm<
     isValid: !isProxyEnabled,
     errors: !isProxyEnabled,
   });
+  const formStateRef = React.useRef(formState);
+  const fieldsRef = React.useRef<FieldRefs>({});
+  const defaultValuesRef =
+    React.useRef<DefaultValues<TFieldValues>>(defaultValues);
+  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
+  const contextRef = React.useRef(context);
+  const inFieldArrayActionRef = React.useRef(false);
+  const isMountedRef = React.useRef(false);
 
   const watchSubjectRef = React.useRef(
     new Subject<{
@@ -166,7 +165,13 @@ export function useForm<
   });
 
   const validationMode = getValidationModes(mode);
+  const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   contextRef.current = context;
+
+  const isFieldWatched = (name: FieldPath<TFieldValues>) =>
+    namesRef.current.watchAll ||
+    namesRef.current.watch.has(name) ||
+    namesRef.current.watch.has((name.match(/\w+/) || [])[0]);
 
   const shouldRenderBaseOnError = React.useCallback(
     async (
@@ -494,6 +499,58 @@ export function useForm<
     [executeResolverValidation, executeInlineValidation],
   );
 
+  const updateValidAndValue = (name: InternalFieldName, ref?: Ref) => {
+    const field = get(fieldsRef.current, name) as Field;
+    const defaultValue = isUndefined(field._f.value)
+      ? get(defaultValuesRef.current, name)
+      : field._f.value;
+
+    if (field && !isUndefined(defaultValue)) {
+      if (ref && (ref as HTMLInputElement).defaultChecked) {
+        field._f.value = getFieldValue(field);
+      } else if (!isNameInFieldArray(namesRef.current.array, name)) {
+        setFieldValue(name, defaultValue);
+      } else {
+        field._f.value = defaultValue;
+      }
+    } else {
+      field._f.value = getFieldValue(field);
+    }
+
+    isMountedRef.current && readFormStateRef.current.isValid && updateIsValid();
+
+    return defaultValue;
+  };
+
+  const updateIsValid = React.useCallback(
+    async (values = {}) => {
+      const isValid = resolver
+        ? isEmptyObject(
+            (
+              await resolver(
+                {
+                  ...getFieldsValues(fieldsRef),
+                  ...values,
+                },
+                contextRef.current,
+                getResolverOptions(
+                  namesRef.current.mount,
+                  fieldsRef.current,
+                  criteriaMode,
+                ),
+              )
+            ).errors,
+          )
+        : await validateForm(fieldsRef.current, true);
+
+      isValid !== formStateRef.current.isValid &&
+        formStateSubjectRef.current.next({
+          isValid,
+        });
+    },
+    [criteriaMode],
+  );
+
   const setInternalValues = React.useCallback(
     (
       name: FieldPath<TFieldValues>,
@@ -523,34 +580,6 @@ export function useForm<
       }),
     [trigger],
   );
-
-  const isFieldWatched = (name: FieldPath<TFieldValues>) =>
-    namesRef.current.watchAll ||
-    namesRef.current.watch.has(name) ||
-    namesRef.current.watch.has((name.match(/\w+/) || [])[0]);
-
-  const updateValidAndValue = (name: InternalFieldName, ref?: Ref) => {
-    const field = get(fieldsRef.current, name) as Field;
-    const defaultValue = isUndefined(field._f.value)
-      ? get(defaultValuesRef.current, name)
-      : field._f.value;
-
-    if (field && !isUndefined(defaultValue)) {
-      if (ref && (ref as HTMLInputElement).defaultChecked) {
-        field._f.value = getFieldValue(field);
-      } else if (!isNameInFieldArray(namesRef.current.array, name)) {
-        setFieldValue(name, defaultValue);
-      } else {
-        field._f.value = defaultValue;
-      }
-    } else {
-      field._f.value = getFieldValue(field);
-    }
-
-    isMountedRef.current && readFormStateRef.current.isValid && updateIsValid();
-
-    return defaultValue;
-  };
 
   const setValue: UseFormSetValue<TFieldValues> = (
     name,
@@ -730,35 +759,6 @@ export function useForm<
       ? get(values, fieldNames as InternalFieldName)
       : fieldNames.map((name) => get(values, name as InternalFieldName));
   };
-
-  const updateIsValid = React.useCallback(
-    async (values = {}) => {
-      const isValid = resolver
-        ? isEmptyObject(
-            (
-              await resolver(
-                {
-                  ...getFieldsValues(fieldsRef),
-                  ...values,
-                },
-                contextRef.current,
-                getResolverOptions(
-                  namesRef.current.mount,
-                  fieldsRef.current,
-                  criteriaMode,
-                ),
-              )
-            ).errors,
-          )
-        : await validateForm(fieldsRef.current, true);
-
-      isValid !== formStateRef.current.isValid &&
-        formStateSubjectRef.current.next({
-          isValid,
-        });
-    },
-    [criteriaMode],
-  );
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     name
