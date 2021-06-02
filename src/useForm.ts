@@ -109,7 +109,7 @@ export function useForm<
     new Subject<{
       name?: InternalFieldName;
       type?: EventType;
-      formValues: unknown;
+      formValues: FieldValues;
     }>(),
   );
   const controllerSubjectRef = React.useRef(
@@ -121,7 +121,7 @@ export function useForm<
   const fieldArraySubjectRef = React.useRef(
     new Subject<{
       name?: InternalFieldName;
-      fields: any;
+      fields: FieldValues;
       isReset?: boolean;
     }>(),
   );
