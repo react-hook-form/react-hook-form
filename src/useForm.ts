@@ -934,46 +934,53 @@ export function useForm<
     });
     namesRef.current.mount.add(name);
 
+    const ref = (ref: HTMLInputElement | null): void => {
+      if (ref) {
+        registerFieldRef(name, ref, options);
+      } else {
+        if (isWeb) {
+          if (options.shouldListen) {
+            removeAllEventListeners(
+              get(fieldsRef.current, name)._f.ref,
+              handleChangeRef.current,
+            );
+          }
+
+          const field = get(fieldsRef.current, name) as Field;
+          const shouldUnmount = shouldUnregister || options.shouldUnregister;
+
+          if (field && field._f) {
+            field._f.mount = false;
+            // If initial state of field element is disabled,
+            // value is not set on first "register"
+            // re-sync the value in when it switched to enabled
+            if (isUndefined(field._f.value)) {
+              field._f.value = field._f.ref.value;
+            }
+          }
+
+          if (
+            isNameInFieldArray(namesRef.current.array, name)
+              ? shouldUnmount && !inFieldArrayActionRef.current
+              : shouldUnmount
+          ) {
+            namesRef.current.unMount.add(name);
+          }
+        }
+      }
+    };
+
     return isWindowUndefined
-      ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
+      ? !options.shouldListen
+        ? null
+        : ({ name: name as InternalFieldName } as UseFormRegisterReturn)
+      : options.shouldListen
+      ? ref
       : {
           name,
           onChange: handleChangeRef.current,
           onBlur: handleChangeRef.current,
-          ref: (ref: HTMLInputElement | null): void => {
-            if (ref) {
-              registerFieldRef(name, ref, options);
-            } else {
-              if (options.shouldListen) {
-                removeAllEventListeners(
-                  get(fieldsRef.current, name)._f.ref,
-                  handleChangeRef.current,
-                );
-              }
-
-              const field = get(fieldsRef.current, name, {}) as Field;
-              const shouldUnmount =
-                shouldUnregister || options.shouldUnregister;
-
-              if (field._f) {
-                field._f.mount = false;
-                // If initial state of field element is disabled,
-                // value is not set on first "register"
-                // re-sync the value in when it switched to enabled
-                if (isUndefined(field._f.value)) {
-                  field._f.value = field._f.ref.value;
-                }
-              }
-
-              if (
-                isNameInFieldArray(namesRef.current.array, name)
-                  ? shouldUnmount && !inFieldArrayActionRef.current
-                  : shouldUnmount
-              ) {
-                namesRef.current.unMount.add(name);
-              }
-            }
-          },
+          ref,
         };
   };
 
