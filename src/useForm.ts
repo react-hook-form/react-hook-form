@@ -116,7 +116,6 @@ export function useForm<
   const defaultValuesRef =
     React.useRef<DefaultValues<TFieldValues>>(defaultValues);
   const contextRef = React.useRef(context);
-  const validationMode = getValidationModes(mode);
   const isMountedRef = React.useRef(false);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
@@ -166,6 +165,7 @@ export function useForm<
     watchAll: false,
   });
 
+  const validationMode = getValidationModes(mode);
   contextRef.current = context;
 
   const shouldRenderBaseOnError = React.useCallback(
