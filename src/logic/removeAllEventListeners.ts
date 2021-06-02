@@ -4,7 +4,7 @@ import isHTMLElement from '../utils/isHTMLElement';
 
 export default (
   ref: Ref,
-  validateWithStateUpdate: EventListenerOrEventListenerObject,
+  validateWithStateUpdate?: EventListenerOrEventListenerObject,
 ): void => {
   if (isHTMLElement(ref) && ref.removeEventListener) {
     ref.removeEventListener(EVENTS.INPUT, validateWithStateUpdate);

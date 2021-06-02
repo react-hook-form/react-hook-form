@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import attachEventListeners from './logic/attachEventListeners';
 import focusFieldBy from './logic/focusFieldBy';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
@@ -9,6 +10,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import getResolverOptions from './logic/getResolverOptions';
 import hasValidation from './logic/hasValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import removeAllEventListeners from './logic/removeAllEventListeners';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import skipValidation from './logic/skipValidation';
@@ -30,6 +32,7 @@ import isPrimitive from './utils/isPrimitive';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isRadioInput from './utils/isRadioInput';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
+import isSelectInput from './utils/isSelectInput';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import isWeb from './utils/isWeb';
@@ -117,6 +120,7 @@ export function useForm<
     errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
+  const handleChangeRef = React.useRef<ChangeHandler | undefined>();
   const fieldsRef = React.useRef<FieldRefs>({});
   const defaultValuesRef =
     React.useRef<DefaultValues<TFieldValues>>(defaultValues);
@@ -603,117 +607,122 @@ export function useForm<
     subjectsRef.current.watch.next({ name, values: getValues() });
   };
 
-  const handleChange: ChangeHandler = React.useCallback(
-    async ({ type, target, target: { value, type: inputType } }) => {
-      let name = (target as Ref)!.name;
-      let error;
-      let isValid;
-      const field = get(fieldsRef.current, name) as Field;
+  handleChangeRef.current = handleChangeRef.current
+    ? handleChangeRef.current
+    : async ({ type, target, target: { value, type: inputType } }) => {
+        let name = (target as Ref)!.name;
+        let error;
+        let isValid;
+        const field = get(fieldsRef.current, name) as Field;
 
-      if (field) {
-        let inputValue = inputType ? getFieldValue(field) : undefined;
-        inputValue = isUndefined(inputValue) ? value : inputValue;
+        if (field) {
+          let inputValue = inputType ? getFieldValue(field) : undefined;
+          inputValue = isUndefined(inputValue) ? value : inputValue;
 
-        const isBlurEvent = type === EVENTS.BLUR;
-        const {
-          isOnBlur: isReValidateOnBlur,
-          isOnChange: isReValidateOnChange,
-        } = getValidationModes(reValidateMode);
+          const isBlurEvent = type === EVENTS.BLUR;
+          const {
+            isOnBlur: isReValidateOnBlur,
+            isOnChange: isReValidateOnChange,
+          } = getValidationModes(reValidateMode);
 
-        const shouldSkipValidation =
-          (!hasValidation(field._f, field._f.mount) &&
-            !resolver &&
-            !get(formStateRef.current.errors, name)) ||
-          skipValidation({
-            isBlurEvent,
-            isTouched: !!get(formStateRef.current.touchedFields, name),
-            isSubmitted: formStateRef.current.isSubmitted,
-            isReValidateOnBlur,
-            isReValidateOnChange,
-            ...validationMode,
+          const shouldSkipValidation =
+            (!hasValidation(field._f, field._f.mount) &&
+              !resolver &&
+              !get(formStateRef.current.errors, name)) ||
+            skipValidation({
+              isBlurEvent,
+              isTouched: !!get(formStateRef.current.touchedFields, name),
+              isSubmitted: formStateRef.current.isSubmitted,
+              isReValidateOnBlur,
+              isReValidateOnChange,
+              ...validationMode,
+            });
+          const isWatched =
+            !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
+
+          if (!isUndefined(inputValue)) {
+            field._f.value = inputValue;
+          }
+
+          const inputState = updateAndGetDirtyState(
+            name,
+            field._f.value,
+            false,
+          );
+
+          if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
+            set(formStateRef.current.touchedFields, name, true);
+            readFormStateRef.current.touchedFields &&
+              (inputState.touchedFields = formStateRef.current.touchedFields);
+          }
+
+          const shouldRender = !isEmptyObject(inputState) || isWatched;
+
+          if (shouldSkipValidation) {
+            !isBlurEvent &&
+              subjectsRef.current.watch.next({
+                name,
+                type,
+                values: getValues(),
+              });
+            return (
+              shouldRender &&
+              subjectsRef.current.state.next(
+                isWatched ? { name } : { ...inputState, name },
+              )
+            );
+          }
+
+          subjectsRef.current.state.next({
+            isValidating: true,
           });
-        const isWatched =
-          !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
-        if (!isUndefined(inputValue)) {
-          field._f.value = inputValue;
-        }
+          if (resolver) {
+            const { errors } = await resolver(
+              getFieldsValues(fieldsRef),
+              contextRef.current,
+              getResolverOptions([name], fieldsRef.current, criteriaMode),
+            );
+            error = get(errors, name);
 
-        const inputState = updateAndGetDirtyState(name, field._f.value, false);
+            if (isCheckBoxInput(target as Ref) && !error) {
+              const parentNodeName = getNodeParentName(name);
+              const currentError = get(errors, parentNodeName, {});
+              currentError.type &&
+                currentError.message &&
+                (error = currentError);
 
-        if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
-          set(formStateRef.current.touchedFields, name, true);
-          readFormStateRef.current.touchedFields &&
-            (inputState.touchedFields = formStateRef.current.touchedFields);
-        }
+              if (
+                currentError ||
+                get(formStateRef.current.errors, parentNodeName)
+              ) {
+                name = parentNodeName;
+              }
+            }
 
-        const shouldRender = !isEmptyObject(inputState) || isWatched;
+            isValid = isEmptyObject(errors);
+          } else {
+            error = (await validateField(field, isValidateAllFieldCriteria))[
+              name
+            ];
+          }
 
-        if (shouldSkipValidation) {
           !isBlurEvent &&
             subjectsRef.current.watch.next({
               name,
               type,
               values: getValues(),
             });
-          return (
-            shouldRender &&
-            subjectsRef.current.state.next(
-              isWatched ? { name } : { ...inputState, name },
-            )
-          );
-        }
-
-        subjectsRef.current.state.next({
-          isValidating: true,
-        });
-
-        if (resolver) {
-          const { errors } = await resolver(
-            getFieldsValues(fieldsRef),
-            contextRef.current,
-            getResolverOptions([name], fieldsRef.current, criteriaMode),
-          );
-          error = get(errors, name);
-
-          if (isCheckBoxInput(target as Ref) && !error) {
-            const parentNodeName = getNodeParentName(name);
-            const currentError = get(errors, parentNodeName, {});
-            currentError.type && currentError.message && (error = currentError);
-
-            if (
-              currentError ||
-              get(formStateRef.current.errors, parentNodeName)
-            ) {
-              name = parentNodeName;
-            }
-          }
-
-          isValid = isEmptyObject(errors);
-        } else {
-          error = (await validateField(field, isValidateAllFieldCriteria))[
-            name
-          ];
-        }
-
-        !isBlurEvent &&
-          subjectsRef.current.watch.next({
+          shouldRenderBaseOnError(
+            false,
             name,
-            type,
-            values: getValues(),
-          });
-        shouldRenderBaseOnError(
-          false,
-          name,
-          error,
-          inputState,
-          isValid,
-          isWatched,
-        );
-      }
-    },
-    [],
-  );
+            error,
+            inputState,
+            isValid,
+            isWatched,
+          );
+        }
+      };
 
   const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?:
@@ -854,7 +863,7 @@ export function useForm<
   const registerFieldRef = (
     name: InternalFieldName,
     ref: HTMLInputElement,
-    options?: RegisterOptions,
+    options?: RegisterOptions & { shouldListen: boolean },
   ): ((name: InternalFieldName) => void) | void => {
     register(name as FieldPath<TFieldValues>, options);
     let field = get(fieldsRef.current, name) as Field;
@@ -902,59 +911,85 @@ export function useForm<
         get(fieldsRef.current, name),
       );
     }
+
+    options &&
+      options.shouldListen &&
+      attachEventListeners(
+        field._f,
+        isRadioOrCheckbox || isSelectInput(ref),
+        handleChangeRef.current,
+      );
+  };
+
+  const registerInternal = (name: any, options: any = {}) => {
+    const field = get(fieldsRef.current, name);
+
+    set(fieldsRef.current, name, {
+      _f: {
+        ...(field && field._f ? field._f : { ref: { name } }),
+        name,
+        mount: true,
+        ...options,
+      },
+    });
+    namesRef.current.mount.add(name);
+
+    return isWindowUndefined
+      ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
+      : {
+          name,
+          onChange: handleChangeRef.current,
+          onBlur: handleChangeRef.current,
+          ref: (ref: HTMLInputElement | null): void => {
+            if (ref) {
+              registerFieldRef(name, ref, options);
+            } else {
+              if (options.shouldListen) {
+                removeAllEventListeners(
+                  get(fieldsRef.current, name)._f.ref,
+                  handleChangeRef.current,
+                );
+              }
+
+              const field = get(fieldsRef.current, name, {}) as Field;
+              const shouldUnmount =
+                shouldUnregister || options.shouldUnregister;
+
+              if (field._f) {
+                field._f.mount = false;
+                // If initial state of field element is disabled,
+                // value is not set on first "register"
+                // re-sync the value in when it switched to enabled
+                if (isUndefined(field._f.value)) {
+                  field._f.value = field._f.ref.value;
+                }
+              }
+
+              if (
+                isNameInFieldArray(namesRef.current.array, name)
+                  ? shouldUnmount && !inFieldArrayActionRef.current
+                  : shouldUnmount
+              ) {
+                namesRef.current.unMount.add(name);
+              }
+            }
+          },
+        };
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options = {}) => {
-      const field = get(fieldsRef.current, name);
-
-      set(fieldsRef.current, name, {
-        _f: {
-          ...(field && field._f ? field._f : { ref: { name } }),
-          name,
-          mount: true,
-          ...options,
-        },
-      });
-      namesRef.current.mount.add(name);
-
-      return isWindowUndefined
-        ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
-        : {
-            name,
-            onChange: handleChange,
-            onBlur: handleChange,
-            ref: (ref: HTMLInputElement | null): void => {
-              if (ref) {
-                registerFieldRef(name, ref, options);
-              } else {
-                const field = get(fieldsRef.current, name, {}) as Field;
-                const shouldUnmount =
-                  shouldUnregister || options.shouldUnregister;
-
-                if (field._f) {
-                  field._f.mount = false;
-                  // If initial state of field element is disabled,
-                  // value is not set on first "register"
-                  // re-sync the value in when it switched to enabled
-                  if (isUndefined(field._f.value)) {
-                    field._f.value = field._f.ref.value;
-                  }
-                }
-
-                if (
-                  isNameInFieldArray(namesRef.current.array, name)
-                    ? shouldUnmount && !inFieldArrayActionRef.current
-                    : shouldUnmount
-                ) {
-                  namesRef.current.unMount.add(name);
-                }
-              }
-            },
-          };
+      registerInternal(name, options);
     },
     [],
   );
+
+  const listen = React.useCallback((name, options = {}) => {
+    registerInternal(name, {
+      ...options,
+      shouldListen: true,
+    });
+  }, []);
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
@@ -1227,6 +1262,7 @@ export function useForm<
     ),
     trigger,
     register,
+    listen,
     handleSubmit,
     watch: React.useCallback(watch, []),
     setValue: React.useCallback(setValue, [setInternalValues]),

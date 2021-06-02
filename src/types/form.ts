@@ -546,6 +546,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
+  listen: any;
 };
 
 export type UseFormStateProps<TFieldValues> = Partial<{
