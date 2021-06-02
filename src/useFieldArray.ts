@@ -53,13 +53,11 @@ export const useFieldArray = <
   const isMountedRef = React.useRef(false);
   const {
     getIsDirty,
-    watchSubjectRef,
-    fieldArraySubjectRef,
     namesRef,
     fieldsRef,
     defaultValuesRef,
     formStateRef,
-    formStateSubjectRef,
+    subjectsRef,
     readFormStateRef,
     updateIsValid,
     fieldArrayDefaultValuesRef,
@@ -214,7 +212,7 @@ export const useFieldArray = <
       cleanup(formStateRef.current.dirtyFields);
     }
 
-    formStateSubjectRef.current.next({
+    subjectsRef.current.state.next({
       isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
@@ -392,17 +390,17 @@ export const useFieldArray = <
     inFieldArrayActionRef.current = false;
 
     if (namesRef.current.watchAll) {
-      formStateSubjectRef.current.next({});
+      subjectsRef.current.state.next({});
     } else {
       for (const watchField of namesRef.current.watch) {
         if (name.startsWith(watchField)) {
-          formStateSubjectRef.current.next({});
+          subjectsRef.current.state.next({});
           break;
         }
       }
     }
 
-    watchSubjectRef.current.next({
+    subjectsRef.current.watch.next({
       name,
       values: getFieldsValues(fieldsRef),
     });
@@ -415,7 +413,7 @@ export const useFieldArray = <
 
     focusNameRef.current = '';
 
-    fieldArraySubjectRef.current.next({
+    subjectsRef.current.array.next({
       name,
       values: omitKey([...fields]),
     });
@@ -424,7 +422,7 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
+    const fieldArraySubscription = subjectsRef.current.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);

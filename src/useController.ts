@@ -35,7 +35,7 @@ export function useController<
     fieldsRef,
     unregister,
     namesRef,
-    controllerSubjectRef,
+    subjectsRef,
     shouldUnmount,
     inFieldArrayActionRef,
   } = control || methods.control;
@@ -57,7 +57,7 @@ export function useController<
   field._f.value = value;
 
   React.useEffect(() => {
-    const controllerSubscription = controllerSubjectRef.current.subscribe({
+    const controllerSubscription = subjectsRef.current.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),

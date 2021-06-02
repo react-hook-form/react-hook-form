@@ -42,7 +42,6 @@ import {
   ChangeHandler,
   DeepPartial,
   DefaultValues,
-  EventType,
   Field,
   FieldArrayDefaultValues,
   FieldError,
@@ -51,7 +50,6 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
-  FormStateSubjectRef,
   GetIsDirty,
   InternalFieldName,
   InternalNameSet,
@@ -63,6 +61,7 @@ import {
   RegisterOptions,
   SetFieldValue,
   SetValueConfig,
+  Subjects,
   UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetValues,
@@ -125,30 +124,12 @@ export function useForm<
   const contextRef = React.useRef(context);
   const inFieldArrayActionRef = React.useRef(false);
   const isMountedRef = React.useRef(false);
-
-  const watchSubjectRef = React.useRef(
-    new Subject<{
-      name?: InternalFieldName;
-      type?: EventType;
-      values: FieldValues;
-    }>(),
-  );
-  const controllerSubjectRef = React.useRef(
-    new Subject<{
-      name?: InternalFieldName;
-      values: DefaultValues<TFieldValues>;
-    }>(),
-  );
-  const fieldArraySubjectRef = React.useRef(
-    new Subject<{
-      name?: InternalFieldName;
-      values: FieldValues;
-      isReset?: boolean;
-    }>(),
-  );
-  const formStateSubjectRef = React.useRef<FormStateSubjectRef<TFieldValues>>(
-    new Subject(),
-  );
+  const subjectsRef: Subjects<TFieldValues> = React.useRef({
+    watch: new Subject(),
+    control: new Subject(),
+    array: new Subject(),
+    state: new Subject(),
+  });
 
   const namesRef = React.useRef<{
     mount: InternalNameSet;
@@ -216,12 +197,10 @@ export function useForm<
           ...updatedFormState,
         };
 
-        formStateSubjectRef.current.next(
-          isWatched ? { name } : updatedFormState,
-        );
+        subjectsRef.current.state.next(isWatched ? { name } : updatedFormState);
       }
 
-      formStateSubjectRef.current.next({
+      subjectsRef.current.state.next({
         isValidating: false,
       });
     },
@@ -281,7 +260,7 @@ export function useForm<
           if (shouldRender) {
             const values = getFieldsValues(fieldsRef);
             set(values, name, rawValue);
-            controllerSubjectRef.current.next({
+            subjectsRef.current.control.next({
               values: {
                 ...defaultValuesRef.current,
                 ...values,
@@ -351,7 +330,7 @@ export function useForm<
           (readFormStateRef.current.dirtyFields &&
             isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
-        isChanged && shouldRender && formStateSubjectRef.current.next(state);
+        isChanged && shouldRender && subjectsRef.current.state.next(state);
 
         return isChanged ? state : {};
       }
@@ -452,7 +431,7 @@ export function useForm<
       const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
       let isValid;
 
-      formStateSubjectRef.current.next({
+      subjectsRef.current.state.next({
         isValidating: true,
       });
 
@@ -478,7 +457,7 @@ export function useForm<
           : await validateForm(fieldsRef.current);
       }
 
-      formStateSubjectRef.current.next({
+      subjectsRef.current.state.next({
         ...(isString(name) ? { name } : {}),
         errors: formStateRef.current.errors,
         isValidating: false,
@@ -544,7 +523,7 @@ export function useForm<
         : await validateForm(fieldsRef.current, true);
 
       isValid !== formStateRef.current.isValid &&
-        formStateSubjectRef.current.next({
+        subjectsRef.current.state.next({
           isValid,
         });
     },
@@ -590,7 +569,7 @@ export function useForm<
     const isFieldArray = namesRef.current.array.has(name);
 
     if (isFieldArray) {
-      fieldArraySubjectRef.current.next({
+      subjectsRef.current.array.next({
         values: value,
         name,
         isReset: true,
@@ -611,7 +590,7 @@ export function useForm<
           ),
         );
 
-        formStateSubjectRef.current.next({
+        subjectsRef.current.state.next({
           name,
           dirtyFields: formStateRef.current.dirtyFields,
           isDirty: getIsDirty(name, value),
@@ -627,8 +606,8 @@ export function useForm<
       ? setInternalValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
-    isFieldWatched(name) && formStateSubjectRef.current.next({});
-    watchSubjectRef.current.next({ name, values: getValues() });
+    isFieldWatched(name) && subjectsRef.current.state.next({});
+    subjectsRef.current.watch.next({ name, values: getValues() });
   };
 
   const handleChange: ChangeHandler = React.useCallback(
@@ -679,20 +658,20 @@ export function useForm<
 
         if (shouldSkipValidation) {
           !isBlurEvent &&
-            watchSubjectRef.current.next({
+            subjectsRef.current.watch.next({
               name,
               type,
               values: getValues(),
             });
           return (
             shouldRender &&
-            formStateSubjectRef.current.next(
+            subjectsRef.current.state.next(
               isWatched ? { name } : { ...inputState, name },
             )
           );
         }
 
-        formStateSubjectRef.current.next({
+        subjectsRef.current.state.next({
           isValidating: true,
         });
 
@@ -725,7 +704,7 @@ export function useForm<
         }
 
         !isBlurEvent &&
-          watchSubjectRef.current.next({
+          subjectsRef.current.watch.next({
             name,
             type,
             values: getValues(),
@@ -767,7 +746,7 @@ export function useForm<
         )
       : (formStateRef.current.errors = {});
 
-    formStateSubjectRef.current.next({
+    subjectsRef.current.state.next({
       errors: formStateRef.current.errors,
     });
   };
@@ -782,7 +761,7 @@ export function useForm<
       ref,
     });
 
-    formStateSubjectRef.current.next({
+    subjectsRef.current.state.next({
       name,
       errors: formStateRef.current.errors,
       isValid: false,
@@ -831,7 +810,7 @@ export function useForm<
     defaultValue?: unknown,
   ) =>
     isFunction(fieldName)
-      ? watchSubjectRef.current.subscribe({
+      ? subjectsRef.current.watch.subscribe({
           next: (info) =>
             fieldName(
               watchInternal(
@@ -865,14 +844,14 @@ export function useForm<
           !options.keepDefaultValue &&
           unset(defaultValuesRef.current, inputName);
 
-        watchSubjectRef.current.next({
+        subjectsRef.current.watch.next({
           name: inputName,
           values: getValues(),
         });
       }
     }
 
-    formStateSubjectRef.current.next({
+    subjectsRef.current.state.next({
       ...formStateRef.current,
       ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
     });
@@ -993,7 +972,7 @@ export function useForm<
       let hasNoPromiseError = true;
       let fieldValues = getFieldsValues(fieldsRef);
 
-      formStateSubjectRef.current.next({
+      subjectsRef.current.state.next({
         isSubmitting: true,
       });
 
@@ -1020,7 +999,7 @@ export function useForm<
             get(fieldValues, name),
           )
         ) {
-          formStateSubjectRef.current.next({
+          subjectsRef.current.state.next({
             errors: {},
             isSubmitting: true,
           });
@@ -1039,7 +1018,7 @@ export function useForm<
         throw err;
       } finally {
         formStateRef.current.isSubmitted = true;
-        formStateSubjectRef.current.next({
+        subjectsRef.current.state.next({
           isSubmitted: true,
           isSubmitting: false,
           isSubmitSuccessful:
@@ -1073,7 +1052,7 @@ export function useForm<
         watchAll: false,
       };
 
-      formStateSubjectRef.current.next({
+      subjectsRef.current.state.next({
         submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
         isDirty: keepDirty
           ? formStateRef.current.isDirty
@@ -1151,15 +1130,15 @@ export function useForm<
     if (!keepStateOptions.keepValues) {
       fieldsRef.current = {};
 
-      controllerSubjectRef.current.next({
+      subjectsRef.current.control.next({
         values: { ...updatedValues },
       });
 
-      watchSubjectRef.current.next({
+      subjectsRef.current.watch.next({
         values: { ...updatedValues },
       });
 
-      fieldArraySubjectRef.current.next({
+      subjectsRef.current.array.next({
         values: { ...updatedValues },
         isReset: true,
       });
@@ -1178,7 +1157,7 @@ export function useForm<
   React.useEffect(() => {
     !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
 
-    const formStateSubscription = formStateSubjectRef.current.subscribe({
+    const formStateSubscription = subjectsRef.current.state.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
@@ -1190,7 +1169,7 @@ export function useForm<
       },
     });
 
-    const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
+    const useFieldArraySubscription = subjectsRef.current.array.subscribe({
       next(state) {
         if (state.values && state.name && readFormStateRef.current.isValid) {
           const values = getFieldsValues(fieldsRef);
@@ -1201,7 +1180,6 @@ export function useForm<
     });
 
     return () => {
-      watchSubjectRef.current.unsubscribe();
       formStateSubscription.unsubscribe();
       useFieldArraySubscription.unsubscribe();
     };
@@ -1235,10 +1213,7 @@ export function useForm<
         register,
         inFieldArrayActionRef,
         getIsDirty,
-        formStateSubjectRef,
-        fieldArraySubjectRef,
-        controllerSubjectRef,
-        watchSubjectRef,
+        subjectsRef,
         watchInternal,
         fieldsRef,
         updateIsValid,
