@@ -34,14 +34,14 @@ export function useController<
     register,
     fieldsRef,
     unregister,
-    fieldArrayNamesRef,
+    namesRef,
     controllerSubjectRef,
     shouldUnmount,
     inFieldArrayActionRef,
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
-  const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+  const isFieldArray = isNameInFieldArray(namesRef.current.array, name);
   const [value, setInputStateValue] = React.useState(
     isUndefined(get(fieldsRef.current, name)._f.value) || isFieldArray
       ? isUndefined(defaultValue)

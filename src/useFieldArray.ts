@@ -52,12 +52,10 @@ export const useFieldArray = <
   const focusNameRef = React.useRef('');
   const isMountedRef = React.useRef(false);
   const {
-    isWatchAllRef,
-    watchFieldsRef,
     getIsDirty,
     watchSubjectRef,
     fieldArraySubjectRef,
-    fieldArrayNamesRef,
+    namesRef,
     fieldsRef,
     defaultValuesRef,
     formStateRef,
@@ -84,7 +82,7 @@ export const useFieldArray = <
   );
 
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
-  fieldArrayNamesRef.current.add(name);
+  namesRef.current.array.add(name);
 
   const omitKey = <
     T extends Partial<
@@ -393,10 +391,10 @@ export const useFieldArray = <
   React.useEffect(() => {
     inFieldArrayActionRef.current = false;
 
-    if (isWatchAllRef.current) {
+    if (namesRef.current.watchAll) {
       formStateSubjectRef.current.next({});
     } else {
-      for (const watchField of watchFieldsRef.current) {
+      for (const watchField of namesRef.current.watch) {
         if (name.startsWith(watchField)) {
           formStateSubjectRef.current.next({});
           break;

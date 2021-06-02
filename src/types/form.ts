@@ -479,9 +479,14 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmount?: boolean;
-  isWatchAllRef: React.MutableRefObject<boolean>;
+  namesRef: React.MutableRefObject<{
+    mount: InternalNameSet;
+    unMount: InternalNameSet;
+    array: InternalNameSet;
+    watch: InternalNameSet;
+    watchAll: boolean;
+  }>;
   inFieldArrayActionRef: React.MutableRefObject<boolean>;
-  watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
@@ -510,7 +515,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   >;
   updateIsValid: <T extends FieldValues>(payload?: T) => void;
   fieldsRef: React.MutableRefObject<FieldRefs>;
-  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
