@@ -978,18 +978,18 @@ export function useForm<
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
-    (name, options = {}) => {
-      registerInternal(name, options);
-    },
+    (name, options = {}) => registerInternal(name, options),
     [],
   );
 
-  const listen = React.useCallback((name, options = {}) => {
-    registerInternal(name, {
-      ...options,
-      shouldListen: true,
-    });
-  }, []);
+  const listen = React.useCallback(
+    (name, options = {}) =>
+      registerInternal(name, {
+        ...options,
+        shouldListen: true,
+      }),
+    [],
+  );
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
     (onValid, onInvalid) => async (e) => {
