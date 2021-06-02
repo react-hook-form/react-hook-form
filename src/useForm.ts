@@ -54,6 +54,7 @@ import {
   InternalFieldName,
   InternalNameSet,
   KeepStateOptions,
+  Names,
   Path,
   PathValue,
   ReadFormState,
@@ -130,14 +131,7 @@ export function useForm<
     array: new Subject(),
     state: new Subject(),
   });
-
-  const namesRef = React.useRef<{
-    mount: InternalNameSet;
-    unMount: InternalNameSet;
-    array: InternalNameSet;
-    watch: InternalNameSet;
-    watchAll: boolean;
-  }>({
+  const namesRef = React.useRef<Names>({
     mount: new Set(),
     unMount: new Set(),
     array: new Set(),

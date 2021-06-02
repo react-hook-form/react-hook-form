@@ -496,16 +496,18 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> =
     state: FormStateSubjectRef<TFieldValues>;
   }>;
 
+export type Names = {
+  mount: InternalNameSet;
+  unMount: InternalNameSet;
+  array: InternalNameSet;
+  watch: InternalNameSet;
+  watchAll: boolean;
+};
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmount?: boolean;
   subjectsRef: Subjects<TFieldValues>;
-  namesRef: React.MutableRefObject<{
-    mount: InternalNameSet;
-    unMount: InternalNameSet;
-    array: InternalNameSet;
-    watch: InternalNameSet;
-    watchAll: boolean;
-  }>;
+  namesRef: React.MutableRefObject<Names>;
   inFieldArrayActionRef: React.MutableRefObject<boolean>;
   getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
