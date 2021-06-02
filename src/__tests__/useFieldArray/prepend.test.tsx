@@ -421,7 +421,7 @@ describe('prepend', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        { criteriaMode: undefined, fields: {} },
+        { criteriaMode: undefined, fields: {}, names: [] },
       );
     });
 

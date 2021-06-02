@@ -302,6 +302,36 @@ describe('useForm', () => {
       });
     });
 
+    it('should not register or shallow defaultValues into submission data', () => {
+      let data = {};
+
+      const App = () => {
+        const { handleSubmit } = useForm({
+          defaultValues: {
+            test: 'test',
+          },
+        });
+
+        return (
+          <button
+            onClick={handleSubmit((d) => {
+              data = d;
+            })}
+          >
+            sumbit
+          </button>
+        );
+      };
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(data).toEqual({});
+    });
+
     it('should keep validation during unmount', async () => {
       function Component() {
         const {
@@ -492,7 +522,7 @@ describe('useForm', () => {
         const {
           register,
           handleSubmit,
-          formState: { errors },
+          formState: { errors, isValid },
         } = internationalMethods;
         methods = internationalMethods;
 
@@ -506,6 +536,7 @@ describe('useForm', () => {
               {errors?.test?.message && errors.test.message}
             </span>
             <button onClick={handleSubmit(() => {})}>button</button>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
           </div>
         );
       };
@@ -632,7 +663,7 @@ describe('useForm', () => {
         );
         expect(screen.getByRole('alert').textContent).toBe('');
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(4),
+          expect(renderCount.current.Component).toBeRenderedTimes(5),
         );
       });
 
@@ -914,7 +945,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
+          expect(renderCount.current.Component).toBeRenderedTimes(3),
         );
       });
 
@@ -952,9 +983,13 @@ describe('useForm', () => {
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
-        expect(methods.formState.isValid).toBeFalsy();
+
+        await waitFor(() => {
+          screen.getByText('invalid');
+        });
+
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
+          expect(renderCount.current.Component).toBeRenderedTimes(3),
         );
       });
 
@@ -994,7 +1029,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
+          expect(renderCount.current.Component).toBeRenderedTimes(3),
         );
       });
 
@@ -1002,7 +1037,7 @@ describe('useForm', () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
 
         render(<Component resolver={resolver} mode="onChange" />);
-        expect(resolver).not.toHaveBeenCalled();
+        expect(resolver).toHaveBeenCalled();
 
         await actComponent(async () => {
           await fireEvent.input(screen.getByRole('textbox'), {
@@ -1065,7 +1100,7 @@ describe('useForm', () => {
         expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
           criteriaMode: undefined,
           fields,
-          names: ['test.sub'],
+          names: ['test.sub', 'test1'],
         });
 
         // `trigger` called to validate all fields
@@ -1076,7 +1111,7 @@ describe('useForm', () => {
         expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
           criteriaMode: undefined,
           fields,
-          names: [],
+          names: ['test.sub', 'test1'],
         });
 
         // `trigger` called to validate fields
@@ -1146,7 +1181,7 @@ describe('useForm', () => {
               value: 'default',
             },
           },
-          names: [],
+          names: ['test'],
         },
       );
     });
@@ -1185,7 +1220,7 @@ describe('useForm', () => {
             value: 'value',
           },
         },
-        names: [],
+        names: ['test'],
       });
     });
   });

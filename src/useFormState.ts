@@ -18,7 +18,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 ): UseFormStateReturn<TFieldValues> {
   const { control, name } = props || {};
   const methods = useFormContext();
-  const { formStateRef, formStateSubjectRef, readFormStateRef } =
+  const { formStateRef, subjectsRef, readFormStateRef } =
     control || methods.control;
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
   nameRef.current = name as InternalFieldName;
@@ -34,7 +34,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   });
 
   React.useEffect(() => {
-    const formStateSubscription = formStateSubjectRef.current.subscribe({
+    const formStateSubscription = subjectsRef.current.state.subscribe({
       next: (formState) =>
         (!nameRef.current ||
           !formState.name ||
