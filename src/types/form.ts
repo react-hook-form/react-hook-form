@@ -496,7 +496,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
       name?: InternalFieldName;
-      formValues: FieldValues;
+      values: FieldValues;
       type?: EventType;
     }>
   >;
@@ -509,7 +509,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   fieldArraySubjectRef: React.MutableRefObject<
     SubjectType<{
       name?: InternalFieldName;
-      fields: FieldValues;
+      values: FieldValues;
       isReset?: boolean;
     }>
   >;

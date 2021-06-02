@@ -404,7 +404,7 @@ export const useFieldArray = <
 
     watchSubjectRef.current.next({
       name,
-      formValues: getFieldsValues(fieldsRef),
+      values: getFieldsValues(fieldsRef),
     });
 
     focusNameRef.current &&
@@ -417,7 +417,7 @@ export const useFieldArray = <
 
     fieldArraySubjectRef.current.next({
       name,
-      fields: omitKey([...fields]),
+      values: omitKey([...fields]),
     });
 
     readFormStateRef.current.isValid && updateIsValid();
@@ -425,7 +425,7 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next({ name: inputFieldArrayName, fields, isReset }) {
+      next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
 
@@ -433,9 +433,9 @@ export const useFieldArray = <
             ? set(
                 fieldArrayDefaultValuesRef.current,
                 inputFieldArrayName,
-                fields,
+                values,
               )
-            : (fieldArrayDefaultValuesRef.current = fields);
+            : (fieldArrayDefaultValuesRef.current = values);
 
           setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
         }

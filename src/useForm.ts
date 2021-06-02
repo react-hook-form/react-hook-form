@@ -130,7 +130,7 @@ export function useForm<
     new Subject<{
       name?: InternalFieldName;
       type?: EventType;
-      formValues: FieldValues;
+      values: FieldValues;
     }>(),
   );
   const controllerSubjectRef = React.useRef(
@@ -142,7 +142,7 @@ export function useForm<
   const fieldArraySubjectRef = React.useRef(
     new Subject<{
       name?: InternalFieldName;
-      fields: FieldValues;
+      values: FieldValues;
       isReset?: boolean;
     }>(),
   );
@@ -591,7 +591,7 @@ export function useForm<
 
     if (isFieldArray) {
       fieldArraySubjectRef.current.next({
-        fields: value,
+        values: value,
         name,
         isReset: true,
       });
@@ -628,7 +628,7 @@ export function useForm<
       : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && formStateSubjectRef.current.next({});
-    watchSubjectRef.current.next({ name, formValues: getValues() });
+    watchSubjectRef.current.next({ name, values: getValues() });
   };
 
   const handleChange: ChangeHandler = React.useCallback(
@@ -682,7 +682,7 @@ export function useForm<
             watchSubjectRef.current.next({
               name,
               type,
-              formValues: getValues(),
+              values: getValues(),
             });
           return (
             shouldRender &&
@@ -728,7 +728,7 @@ export function useForm<
           watchSubjectRef.current.next({
             name,
             type,
-            formValues: getValues(),
+            values: getValues(),
           });
         shouldRenderBaseOnError(
           false,
@@ -867,7 +867,7 @@ export function useForm<
 
         watchSubjectRef.current.next({
           name: inputName,
-          formValues: getValues(),
+          values: getValues(),
         });
       }
     }
@@ -1156,11 +1156,11 @@ export function useForm<
       });
 
       watchSubjectRef.current.next({
-        formValues: { ...updatedValues },
+        values: { ...updatedValues },
       });
 
       fieldArraySubjectRef.current.next({
-        fields: { ...updatedValues },
+        values: { ...updatedValues },
         isReset: true,
       });
     }
@@ -1192,9 +1192,9 @@ export function useForm<
 
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
-        if (state.fields && state.name && readFormStateRef.current.isValid) {
+        if (state.values && state.name && readFormStateRef.current.isValid) {
           const values = getFieldsValues(fieldsRef);
-          set(values, state.name, state.fields);
+          set(values, state.name, state.values);
           updateIsValid(values);
         }
       },
