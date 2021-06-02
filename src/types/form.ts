@@ -477,40 +477,43 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
   Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
 >;
 
+export type Subjects<TFieldValues extends FieldValues = FieldValues> =
+  React.MutableRefObject<{
+    watch: SubjectType<{
+      name?: InternalFieldName;
+      type?: EventType;
+      values?: FieldValues;
+    }>;
+    control: SubjectType<{
+      name?: InternalFieldName;
+      values?: FieldValues;
+    }>;
+    array: SubjectType<{
+      name?: InternalFieldName;
+      values?: FieldValues;
+      isReset?: boolean;
+    }>;
+    state: FormStateSubjectRef<TFieldValues>;
+  }>;
+
+export type Names = {
+  mount: InternalNameSet;
+  unMount: InternalNameSet;
+  array: InternalNameSet;
+  watch: InternalNameSet;
+  watchAll: boolean;
+};
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmount?: boolean;
-  isWatchAllRef: React.MutableRefObject<boolean>;
+  subjectsRef: Subjects<TFieldValues>;
+  namesRef: React.MutableRefObject<Names>;
   inFieldArrayActionRef: React.MutableRefObject<boolean>;
-  watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
-  formStateSubjectRef: React.MutableRefObject<
-    FormStateSubjectRef<TFieldValues>
-  >;
-  watchSubjectRef: React.MutableRefObject<
-    SubjectType<{
-      name?: InternalFieldName;
-      formValues: unknown;
-      type?: EventType;
-    }>
-  >;
-  controllerSubjectRef: React.MutableRefObject<
-    SubjectType<{
-      values: DefaultValues<TFieldValues>;
-      name?: InternalFieldName;
-    }>
-  >;
-  fieldArraySubjectRef: React.MutableRefObject<
-    SubjectType<{
-      name?: string;
-      fields: unknown;
-      isReset?: boolean;
-    }>
-  >;
   updateIsValid: <T extends FieldValues>(payload?: T) => void;
   fieldsRef: React.MutableRefObject<FieldRefs>;
-  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
