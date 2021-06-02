@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import AutoUnregister from './autoUnregister';
 import Basic from './basic';
-import BasicLegacy from './basicLegacy';
+import Listen from './basicLegacy';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
 import SetError from './setError';
@@ -39,7 +39,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Route path="/basic/:mode" exact component={Basic} />
-      <Route path="/basic-legacy/:mode" exact component={BasicLegacy} />
+      <Route path="/basic-legacy/:mode" exact component={Listen} />
       <Route
         path="/validate-field-criteria"
         exact

@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 
 let renderCounter = 0;
 
-const BasicLegacy: React.FC = (props: any) => {
+const Listen: React.FC = (props: any) => {
   const {
-    register,
+    listen,
     handleSubmit,
     formState: { errors },
     reset,
@@ -43,13 +43,13 @@ const BasicLegacy: React.FC = (props: any) => {
       <input
         name="nestItem.nest1"
         placeholder="nest.nest1"
-        ref={register('nestItem.nest1', { shouldListen: true, required: true })}
+        ref={listen('nestItem.nest1', { required: true })}
       />
       {errors.nestItem?.nest1 && <p>nest 1 error</p>}
       <input
         name="arrayItem.0.test1"
         placeholder="arrayItem[0].test1"
-        ref={register('arrayItem.0.test1', {
+        ref={listen('arrayItem.0.test1', {
           shouldListen: true,
           required: true,
         })}
@@ -57,13 +57,13 @@ const BasicLegacy: React.FC = (props: any) => {
       {errors.arrayItem?.[0]?.test1 && <p>array item 1 error</p>}
       <input
         name="firstName"
-        ref={register('firstName', { shouldListen: true, required: true })}
+        ref={listen('firstName', { required: true })}
         placeholder="firstName"
       />
       {errors.firstName && <p>firstName error</p>}
       <input
         name="lastName"
-        ref={register('lastName', {
+        ref={listen('lastName', {
           shouldListen: true,
           required: true,
           maxLength: 5,
@@ -74,21 +74,21 @@ const BasicLegacy: React.FC = (props: any) => {
       <input
         type="number"
         name="min"
-        ref={register('min', { shouldListen: true, min: 10, required: true })}
+        ref={listen('min', { min: 10, required: true })}
         placeholder="min"
       />
       {errors.min && <p>min error</p>}
       <input
         type="number"
         name="max"
-        ref={register('max', { shouldListen: true, max: 20, required: true })}
+        ref={listen('max', { max: 20, required: true })}
         placeholder="max"
       />
       {errors.max && <p>max error</p>}
       <input
         type="date"
         name="minDate"
-        ref={register('minDate', {
+        ref={listen('minDate', {
           shouldListen: true,
           min: '2019-08-01',
           required: true,
@@ -99,7 +99,7 @@ const BasicLegacy: React.FC = (props: any) => {
       <input
         type="date"
         name="maxDate"
-        ref={register('maxDate', {
+        ref={listen('maxDate', {
           shouldListen: true,
           max: '2019-08-01',
           required: true,
@@ -109,7 +109,7 @@ const BasicLegacy: React.FC = (props: any) => {
       {errors.maxDate && <p>maxDate error</p>}
       <input
         name="minLength"
-        ref={register('minLength', {
+        ref={listen('minLength', {
           shouldListen: true,
           minLength: 2,
           required: true,
@@ -119,7 +119,7 @@ const BasicLegacy: React.FC = (props: any) => {
       {errors.minLength && <p>minLength error</p>}
       <input
         name="minRequiredLength"
-        ref={register('minRequiredLength', {
+        ref={listen('minRequiredLength', {
           shouldListen: true,
           minLength: 2,
           required: true,
@@ -129,7 +129,7 @@ const BasicLegacy: React.FC = (props: any) => {
       {errors.minRequiredLength && <p>minRequiredLength error</p>}
       <select
         name="selectNumber"
-        ref={register('selectNumber', { shouldListen: true, required: true })}
+        ref={listen('selectNumber', { required: true })}
       >
         <option value="">Select</option>
         <option value={1}>1</option>
@@ -138,7 +138,7 @@ const BasicLegacy: React.FC = (props: any) => {
       {errors.selectNumber && <p>selectNumber error</p>}
       <input
         name="pattern"
-        ref={register('pattern', {
+        ref={listen('pattern', {
           shouldListen: true,
           pattern: /\d+/,
           required: true,
@@ -150,53 +150,53 @@ const BasicLegacy: React.FC = (props: any) => {
       <input
         type="radio"
         name="radio"
-        ref={register('radio', { shouldListen: true, required: true })}
+        ref={listen('radio', { required: true })}
         value="1"
       />
       Radio2
       <input
         type="radio"
         name="radio"
-        ref={register('radio', { shouldListen: true, required: true })}
+        ref={listen('radio', { required: true })}
         value="2"
       />
       Radio3
       <input
         type="radio"
         name="radio"
-        ref={register('radio', { shouldListen: true, required: true })}
+        ref={listen('radio', { required: true })}
         value="3"
       />
       {errors.radio && <p>radio error</p>}
       <input
         type="checkbox"
         name="checkbox"
-        ref={register('checkbox', { shouldListen: true, required: true })}
+        ref={listen('checkbox', { required: true })}
       />
       {errors.checkbox && <p>checkbox error</p>}
       <input
         type="checkbox"
         name="checkboxArray"
         value="1"
-        ref={register('checkboxArray', { shouldListen: true, required: true })}
+        ref={listen('checkboxArray', { required: true })}
       />
       <input
         type="checkbox"
         name="checkboxArray"
         value="2"
-        ref={register('checkboxArray', { shouldListen: true, required: true })}
+        ref={listen('checkboxArray', { required: true })}
       />
       <input
         type="checkbox"
         name="checkboxArray"
         value="3"
-        ref={register('checkboxArray', { shouldListen: true, required: true })}
+        ref={listen('checkboxArray', { required: true })}
       />
       {errors.checkboxArray && <p>checkboxArray error</p>}
       <select
         name="multiple"
         multiple
-        ref={register('multiple', { shouldListen: true, required: true })}
+        ref={listen('multiple', { required: true })}
       >
         <option value="optionA">optionA</option>
         <option value="optionB">optionB</option>
@@ -206,7 +206,7 @@ const BasicLegacy: React.FC = (props: any) => {
         name="validate"
         type="validate"
         placeholder="validate"
-        ref={register('validate', {
+        ref={listen('validate', {
           shouldListen: true,
           validate: (value) => value === 'test',
         })}
@@ -224,4 +224,4 @@ const BasicLegacy: React.FC = (props: any) => {
   );
 };
 
-export default BasicLegacy;
+export default Listen;
