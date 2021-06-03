@@ -1065,13 +1065,7 @@ export function useForm<
         (isPrimitive(value) ||
           (isWeb && (value instanceof FileList || value instanceof Date)))
       ) {
-        set(fieldsRef.current, name, {
-          _f: {
-            ref: { name, value },
-            value,
-            name,
-          },
-        });
+        register(name as Path<TFieldValues>, { value } as RegisterOptions);
       }
 
       if (Array.isArray(value) || isObject(value)) {

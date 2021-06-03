@@ -13,7 +13,6 @@ import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
 import isString from './utils/isString';
-import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
 import prependAt from './utils/prepend';
@@ -29,8 +28,10 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  Path,
   UseFieldArrayProps,
   UseFieldArrayReturn,
+  UseFormRegister,
 } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -64,6 +65,7 @@ export const useFieldArray = <
     unregister,
     shouldUnmount,
     inFieldArrayActionRef,
+    register,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -89,9 +91,7 @@ export const useFieldArray = <
   >(
     fields: T,
   ) =>
-    fields.map((field) =>
-      omit((field || {}) as Record<TKeyName, any>, keyName),
-    );
+    fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
     const values = get(getFieldsValues(fieldsRef), name, []);
@@ -114,15 +114,6 @@ export const useFieldArray = <
     options && !options.shouldFocus
       ? options.focusName || `${name}.${options.focusIndex}`
       : `${name}.${index}`;
-
-  const resetFields = <T>(index?: T) =>
-    convertToArrayPayload(index).forEach((currentIndex) =>
-      set(
-        fieldsRef.current,
-        `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
-        isUndefined(currentIndex) ? [] : undefined,
-      ),
-    );
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
@@ -219,15 +210,10 @@ export const useFieldArray = <
 
           Array.isArray(value)
             ? registerFieldArray(value, valueIndex, inputName)
-            : set(fieldsRef.current, inputName, {
-                _f: {
-                  ref: {
-                    name: inputName,
-                  },
-                  name: inputName,
-                  value: isPrimitive(value) ? value : { ...value },
-                },
-              });
+            : (register as UseFormRegister<TFieldValues>)(
+                inputName as Path<TFieldValues>,
+                { value },
+              );
         }),
     );
 
@@ -297,8 +283,9 @@ export const useFieldArray = <
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getCurrentFieldsValues(), index);
-    resetFields(index);
+
     setFieldsAndNotify(updatedFieldArrayValues);
+
     batchStateUpdate(
       removeArrayAt,
       {

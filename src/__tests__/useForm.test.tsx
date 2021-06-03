@@ -1082,7 +1082,7 @@ describe('useForm', () => {
             sub: {
               mount: true,
               name: 'test.sub',
-              ref: { name: 'test.sub', value: 'test' },
+              ref: { name: 'test.sub' },
               value: 'test',
             },
           },
@@ -1091,7 +1091,6 @@ describe('useForm', () => {
             name: 'test1',
             ref: {
               name: 'test1',
-              value: 'test1',
             },
             value: 'test1',
           },
