@@ -89,9 +89,7 @@ export const useFieldArray = <
   >(
     fields: T,
   ) =>
-    fields.map((field) =>
-      omit((field || {}) as Record<TKeyName, any>, keyName),
-    );
+    fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
     const values = get(getFieldsValues(fieldsRef), name, []);
@@ -114,15 +112,6 @@ export const useFieldArray = <
     options && !options.shouldFocus
       ? options.focusName || `${name}.${options.focusIndex}`
       : `${name}.${index}`;
-
-  const resetFields = <T>(index?: T) =>
-    convertToArrayPayload(index).forEach((currentIndex) =>
-      set(
-        fieldsRef.current,
-        `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
-        isUndefined(currentIndex) ? [] : undefined,
-      ),
-    );
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
@@ -297,8 +286,17 @@ export const useFieldArray = <
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getCurrentFieldsValues(), index);
-    resetFields(index);
+
+    convertToArrayPayload(index).forEach((currentIndex) =>
+      set(
+        fieldsRef.current,
+        `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
+        isUndefined(currentIndex) ? [] : undefined,
+      ),
+    );
+
     setFieldsAndNotify(updatedFieldArrayValues);
+
     batchStateUpdate(
       removeArrayAt,
       {
