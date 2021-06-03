@@ -107,7 +107,7 @@ export const useFieldArray = <
     );
   };
 
-  const getFocusDetail = (
+  const getFocusFieldName = (
     index: number,
     options?: FieldArrayMethodProps,
   ): string =>
@@ -130,24 +130,6 @@ export const useFieldArray = <
 
   const cleanup = <T>(ref: T) =>
     !compact(get(ref, name, [])).length && unset(ref, name);
-
-  const updateDirtyFieldsWithDefaultValues = <
-    T extends Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
-  >(
-    updatedFieldArrayValues?: T,
-  ) =>
-    updatedFieldArrayValues &&
-    set(
-      formStateRef.current.dirtyFields,
-      name,
-      setFieldArrayDirtyFields(
-        omitKey(updatedFieldArrayValues),
-        get(defaultValuesRef.current, name, []),
-        get(formStateRef.current.dirtyFields, name, []),
-      ),
-    );
 
   const batchStateUpdate = <T extends Function>(
     method: T,
@@ -202,7 +184,16 @@ export const useFieldArray = <
           get(formStateRef.current.dirtyFields, name, []),
         ),
       );
-      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
+      updatedFieldArrayValues &&
+        set(
+          formStateRef.current.dirtyFields,
+          name,
+          setFieldArrayDirtyFields(
+            omitKey(updatedFieldArrayValues),
+            get(defaultValuesRef.current, name, []),
+            get(formStateRef.current.dirtyFields, name, []),
+          ),
+        );
       cleanup(formStateRef.current.dirtyFields);
     }
 
@@ -269,7 +260,7 @@ export const useFieldArray = <
     );
     registerFieldArray(appendValue, currentIndex);
 
-    focusNameRef.current = getFocusDetail(currentIndex, options);
+    focusNameRef.current = getFocusFieldName(currentIndex, options);
   };
 
   const prepend = (
@@ -299,7 +290,7 @@ export const useFieldArray = <
     );
     registerFieldArray(prependValue);
 
-    focusNameRef.current = getFocusDetail(0, options);
+    focusNameRef.current = getFocusFieldName(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -347,7 +338,7 @@ export const useFieldArray = <
     );
     registerFieldArray(insertValue, index);
 
-    focusNameRef.current = getFocusDetail(index, options);
+    focusNameRef.current = getFocusFieldName(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
