@@ -107,7 +107,7 @@ export const useFieldArray = <
     );
   };
 
-  const getFocusDetail = (
+  const getFocusFieldName = (
     index: number,
     options?: FieldArrayMethodProps,
   ): string =>
@@ -260,7 +260,7 @@ export const useFieldArray = <
     );
     registerFieldArray(appendValue, currentIndex);
 
-    focusNameRef.current = getFocusDetail(currentIndex, options);
+    focusNameRef.current = getFocusFieldName(currentIndex, options);
   };
 
   const prepend = (
@@ -290,7 +290,7 @@ export const useFieldArray = <
     );
     registerFieldArray(prependValue);
 
-    focusNameRef.current = getFocusDetail(0, options);
+    focusNameRef.current = getFocusFieldName(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -338,7 +338,7 @@ export const useFieldArray = <
     );
     registerFieldArray(insertValue, index);
 
-    focusNameRef.current = getFocusDetail(index, options);
+    focusNameRef.current = getFocusFieldName(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
