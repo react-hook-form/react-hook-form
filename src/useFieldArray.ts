@@ -111,14 +111,8 @@ export const useFieldArray = <
     index: number,
     options?: FieldArrayMethodProps,
   ): string =>
-    options
-      ? !isUndefined(options.focusIndex)
-        ? `${name}.${options.focusIndex}`
-        : options.focusName
-        ? options.focusName
-        : !options.shouldFocus
-        ? ''
-        : `${name}.${index}`
+    options && !options.shouldFocus
+      ? options.focusName || `${name}.${options.focusIndex}`
       : `${name}.${index}`;
 
   const resetFields = <T>(index?: T) =>
