@@ -34,13 +34,13 @@ export function useController<
     register,
     fieldsRef,
     unregister,
-    fieldArrayNamesRef,
-    controllerSubjectRef,
+    namesRef,
+    subjectsRef,
     shouldUnmount,
     inFieldArrayActionRef,
   } = control || methods.control;
 
-  const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+  const isFieldArray = isNameInFieldArray(namesRef.current.array, name);
   const field = get(fieldsRef.current, name);
   const [value, setInputStateValue] = React.useState(
     isFieldArray || !field || !field._f
@@ -59,7 +59,7 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = controllerSubjectRef.current.subscribe({
+    const controllerSubscription = subjectsRef.current.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),

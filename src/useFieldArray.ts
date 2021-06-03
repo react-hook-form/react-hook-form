@@ -52,16 +52,12 @@ export const useFieldArray = <
   const focusNameRef = React.useRef('');
   const isMountedRef = React.useRef(false);
   const {
-    isWatchAllRef,
-    watchFieldsRef,
     getIsDirty,
-    watchSubjectRef,
-    fieldArraySubjectRef,
-    fieldArrayNamesRef,
+    namesRef,
     fieldsRef,
     defaultValuesRef,
     formStateRef,
-    formStateSubjectRef,
+    subjectsRef,
     readFormStateRef,
     updateIsValid,
     fieldArrayDefaultValuesRef,
@@ -84,7 +80,7 @@ export const useFieldArray = <
   );
 
   set(fieldArrayDefaultValuesRef.current, name, [...fields]);
-  fieldArrayNamesRef.current.add(name);
+  namesRef.current.array.add(name);
 
   const omitKey = <
     T extends Partial<
@@ -111,18 +107,12 @@ export const useFieldArray = <
     );
   };
 
-  const getFocusDetail = (
+  const getFocusFieldName = (
     index: number,
     options?: FieldArrayMethodProps,
   ): string =>
-    options
-      ? !isUndefined(options.focusIndex)
-        ? `${name}.${options.focusIndex}`
-        : options.focusName
-        ? options.focusName
-        : !options.shouldFocus
-        ? ''
-        : `${name}.${index}`
+    options && !options.shouldFocus
+      ? options.focusName || `${name}.${options.focusIndex}`
       : `${name}.${index}`;
 
   const resetFields = <T>(index?: T) =>
@@ -140,24 +130,6 @@ export const useFieldArray = <
 
   const cleanup = <T>(ref: T) =>
     !compact(get(ref, name, [])).length && unset(ref, name);
-
-  const updateDirtyFieldsWithDefaultValues = <
-    T extends Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
-  >(
-    updatedFieldArrayValues?: T,
-  ) =>
-    updatedFieldArrayValues &&
-    set(
-      formStateRef.current.dirtyFields,
-      name,
-      setFieldArrayDirtyFields(
-        omitKey(updatedFieldArrayValues),
-        get(defaultValuesRef.current, name, []),
-        get(formStateRef.current.dirtyFields, name, []),
-      ),
-    );
 
   const batchStateUpdate = <T extends Function>(
     method: T,
@@ -212,11 +184,20 @@ export const useFieldArray = <
           get(formStateRef.current.dirtyFields, name, []),
         ),
       );
-      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
+      updatedFieldArrayValues &&
+        set(
+          formStateRef.current.dirtyFields,
+          name,
+          setFieldArrayDirtyFields(
+            omitKey(updatedFieldArrayValues),
+            get(defaultValuesRef.current, name, []),
+            get(formStateRef.current.dirtyFields, name, []),
+          ),
+        );
       cleanup(formStateRef.current.dirtyFields);
     }
 
-    formStateSubjectRef.current.next({
+    subjectsRef.current.state.next({
       isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
@@ -279,7 +260,7 @@ export const useFieldArray = <
     );
     registerFieldArray(appendValue, currentIndex);
 
-    focusNameRef.current = getFocusDetail(currentIndex, options);
+    focusNameRef.current = getFocusFieldName(currentIndex, options);
   };
 
   const prepend = (
@@ -309,7 +290,7 @@ export const useFieldArray = <
     );
     registerFieldArray(prependValue);
 
-    focusNameRef.current = getFocusDetail(0, options);
+    focusNameRef.current = getFocusFieldName(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -357,7 +338,7 @@ export const useFieldArray = <
     );
     registerFieldArray(insertValue, index);
 
-    focusNameRef.current = getFocusDetail(index, options);
+    focusNameRef.current = getFocusFieldName(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -393,20 +374,20 @@ export const useFieldArray = <
   React.useEffect(() => {
     inFieldArrayActionRef.current = false;
 
-    if (isWatchAllRef.current) {
-      formStateSubjectRef.current.next({});
+    if (namesRef.current.watchAll) {
+      subjectsRef.current.state.next({});
     } else {
-      for (const watchField of watchFieldsRef.current) {
+      for (const watchField of namesRef.current.watch) {
         if (name.startsWith(watchField)) {
-          formStateSubjectRef.current.next({});
+          subjectsRef.current.state.next({});
           break;
         }
       }
     }
 
-    watchSubjectRef.current.next({
+    subjectsRef.current.watch.next({
       name,
-      formValues: getFieldsValues(fieldsRef),
+      values: getFieldsValues(fieldsRef),
     });
 
     focusNameRef.current &&
@@ -417,17 +398,17 @@ export const useFieldArray = <
 
     focusNameRef.current = '';
 
-    fieldArraySubjectRef.current.next({
+    subjectsRef.current.array.next({
       name,
-      fields: omitKey([...fields]),
+      values: omitKey([...fields]),
     });
 
     readFormStateRef.current.isValid && updateIsValid();
   }, [fields, name]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next({ name: inputFieldArrayName, fields, isReset }) {
+    const fieldArraySubscription = subjectsRef.current.array.subscribe({
+      next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
 
@@ -435,9 +416,9 @@ export const useFieldArray = <
             ? set(
                 fieldArrayDefaultValuesRef.current,
                 inputFieldArrayName,
-                fields,
+                values,
               )
-            : (fieldArrayDefaultValuesRef.current = fields);
+            : (fieldArrayDefaultValuesRef.current = values);
 
           setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
         }
