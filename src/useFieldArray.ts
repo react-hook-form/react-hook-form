@@ -13,7 +13,6 @@ import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
 import isString from './utils/isString';
-import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
 import prependAt from './utils/prepend';
@@ -286,14 +285,6 @@ export const useFieldArray = <
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getCurrentFieldsValues(), index);
-
-    convertToArrayPayload(index).forEach((currentIndex) =>
-      set(
-        fieldsRef.current,
-        `${name}${isUndefined(currentIndex) ? '' : `.${currentIndex}`}`,
-        isUndefined(currentIndex) ? [] : undefined,
-      ),
-    );
 
     setFieldsAndNotify(updatedFieldArrayValues);
 
