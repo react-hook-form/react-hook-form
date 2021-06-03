@@ -131,24 +131,6 @@ export const useFieldArray = <
   const cleanup = <T>(ref: T) =>
     !compact(get(ref, name, [])).length && unset(ref, name);
 
-  const updateDirtyFieldsWithDefaultValues = <
-    T extends Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
-  >(
-    updatedFieldArrayValues?: T,
-  ) =>
-    updatedFieldArrayValues &&
-    set(
-      formStateRef.current.dirtyFields,
-      name,
-      setFieldArrayDirtyFields(
-        omitKey(updatedFieldArrayValues),
-        get(defaultValuesRef.current, name, []),
-        get(formStateRef.current.dirtyFields, name, []),
-      ),
-    );
-
   const batchStateUpdate = <T extends Function>(
     method: T,
     args: {
@@ -202,7 +184,16 @@ export const useFieldArray = <
           get(formStateRef.current.dirtyFields, name, []),
         ),
       );
-      updateDirtyFieldsWithDefaultValues(updatedFieldArrayValues);
+      updatedFieldArrayValues &&
+        set(
+          formStateRef.current.dirtyFields,
+          name,
+          setFieldArrayDirtyFields(
+            omitKey(updatedFieldArrayValues),
+            get(defaultValuesRef.current, name, []),
+            get(formStateRef.current.dirtyFields, name, []),
+          ),
+        );
       cleanup(formStateRef.current.dirtyFields);
     }
 
