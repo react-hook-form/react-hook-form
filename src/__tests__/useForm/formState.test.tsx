@@ -441,33 +441,62 @@ describe('formState', () => {
     });
   });
 
-  it('should update isValid to true for validation with inline defaultValue', async () => {
-    function App() {
-      const {
-        register,
-        formState: { isValid },
-      } = useForm({
-        mode: 'onChange',
+  describe('when defaultValue supplied', () => {
+    it('should update isValid to true for validation with inline defaultValue', async () => {
+      function App() {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm({
+          mode: 'onChange',
+        });
+
+        return (
+          <form>
+            <input
+              {...register('value', { required: true })}
+              defaultValue="Any default value!"
+            />
+            <p>isValid = {isValid ? 'true' : 'false'}</p>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(async () => {
+        screen.getByText('isValid = true');
       });
+    });
 
-      return (
-        <form>
-          <input
-            type="text"
-            placeholder="Any value"
-            autoComplete="on"
-            {...register('value', { required: true })}
-            defaultValue="Any default value!"
-          />
-          <p>isValid = {isValid ? 'true' : 'false'}</p>
-        </form>
-      );
-    }
+    it('should update isValid to true for Controller validation', async () => {
+      function App() {
+        const {
+          control,
+          formState: { isValid },
+        } = useForm({
+          mode: 'onChange',
+        });
 
-    render(<App />);
+        return (
+          <form>
+            <Controller
+              control={control}
+              render={({ field }) => <input {...field} />}
+              name={'test'}
+              defaultValue="Any default value!"
+            />
+            <p>isValid = {isValid ? 'true' : 'false'}</p>
+            <button>Submit</button>
+          </form>
+        );
+      }
 
-    await waitFor(async () => {
-      screen.getByText('isValid = true');
+      render(<App />);
+
+      await waitFor(async () => {
+        screen.getByText('isValid = true');
+      });
     });
   });
 });
