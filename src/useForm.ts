@@ -814,7 +814,7 @@ export function useForm<
             ),
         })
       : watchInternal(
-          fieldName as string | string[],
+          fieldName as InternalFieldName | InternalFieldName[],
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           true,
         );
@@ -822,7 +822,7 @@ export function useForm<
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name
       ? convertToArrayPayload(name)
-      : Object.keys(namesRef.current.mount)) {
+      : namesRef.current.mount) {
       namesRef.current.mount.delete(inputName);
       namesRef.current.array.delete(inputName);
 
@@ -863,10 +863,8 @@ export function useForm<
 
     if (
       ref === field._f.ref ||
-      (isWeb && isHTMLElement(field._f.ref) && !isHTMLElement(ref)) ||
       (isRadioOrCheckbox &&
-        Array.isArray(field._f.refs) &&
-        compact(field._f.refs).find((option) => option === ref))
+        compact(field._f.refs || []).find((option) => option === ref))
     ) {
       return;
     }
@@ -891,17 +889,7 @@ export function useForm<
 
     set(fieldsRef.current, name, field);
 
-    const defaultValue = updateValidAndValue(name, ref);
-
-    if (
-      isRadioOrCheckbox && Array.isArray(defaultValue)
-        ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
-        : isUndefined(get(fieldsRef.current, name)._f.value)
-    ) {
-      get(fieldsRef.current, name)._f.value = getFieldValue(
-        get(fieldsRef.current, name),
-      );
-    }
+    updateValidAndValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
