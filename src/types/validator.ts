@@ -36,6 +36,7 @@ export type RegisterOptions<
     | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>;
   valueAsNumber: boolean;
   valueAsDate: boolean;
+  value: FieldPathValue<TFieldValues, TFieldName>;
   setValueAs: (value: any) => any;
   shouldUnregister?: boolean;
 }>;
