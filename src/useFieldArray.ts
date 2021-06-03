@@ -28,8 +28,10 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  Path,
   UseFieldArrayProps,
   UseFieldArrayReturn,
+  UseFormRegister,
 } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -63,6 +65,7 @@ export const useFieldArray = <
     unregister,
     shouldUnmount,
     inFieldArrayActionRef,
+    register,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -207,15 +210,10 @@ export const useFieldArray = <
 
           Array.isArray(value)
             ? registerFieldArray(value, valueIndex, inputName)
-            : set(fieldsRef.current, inputName, {
-                _f: {
-                  ref: {
-                    name: inputName,
-                  },
-                  name: inputName,
-                  value: isPrimitive(value) ? value : { ...value },
-                },
-              });
+            : (register as UseFormRegister<TFieldValues>)(
+                inputName as Path<TFieldValues>,
+                { value },
+              );
         }),
     );
 
