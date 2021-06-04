@@ -943,13 +943,12 @@ export function useForm<
                   }
                 }
 
-                if (
-                  isNameInFieldArray(namesRef.current.array, name)
-                    ? shouldUnmount && !inFieldArrayActionRef.current
-                    : shouldUnmount
-                ) {
+                shouldUnmount &&
+                  !(
+                    isNameInFieldArray(namesRef.current.array, name) &&
+                    inFieldArrayActionRef.current
+                  ) &&
                   namesRef.current.unMount.add(name);
-                }
               }
             },
           };
