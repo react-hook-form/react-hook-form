@@ -262,9 +262,8 @@ export function useForm<
             });
           }
 
-          options.shouldDirty && updateAndGetDirtyState(name, value);
-          options.shouldTouch &&
-            set(formStateRef.current.touchedFields, name, true);
+          (options.shouldDirty || options.shouldTouch) &&
+            updateTouchAndDirtyState(name, value, options.shouldTouch);
           options.shouldValidate && trigger(name as Path<TFieldValues>);
         } else {
           field._f = {
@@ -288,49 +287,62 @@ export function useForm<
     return !deepEqual(formValues, defaultValuesRef.current);
   }, []);
 
-  const updateAndGetDirtyState = React.useCallback(
+  const updateTouchAndDirtyState = React.useCallback(
     (
       name: InternalFieldName,
       inputValue: unknown,
+      isCurrentTouched?: boolean,
       shouldRender = true,
     ): Partial<
       Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
     > => {
-      if (
-        readFormStateRef.current.isDirty ||
-        readFormStateRef.current.dirtyFields
-      ) {
-        const isFieldDirty = !deepEqual(
+      const state: Partial<FormState<TFieldValues>> & { name: string } = {
+        name,
+      };
+      let isChanged = false;
+
+      if (readFormStateRef.current.isDirty) {
+        const previousIsDirty = formStateRef.current.isDirty;
+        formStateRef.current.isDirty = getIsDirty();
+        state.isDirty = formStateRef.current.isDirty;
+        isChanged = previousIsDirty !== state.isDirty;
+      }
+
+      if (readFormStateRef.current.dirtyFields) {
+        const isPreviousFieldDirty = get(
+          formStateRef.current.dirtyFields,
+          name,
+        );
+        const isCurrentFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
           inputValue,
         );
-        const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
-        const previousIsDirty = formStateRef.current.isDirty;
-
-        isFieldDirty
+        isCurrentFieldDirty
           ? set(formStateRef.current.dirtyFields, name, true)
           : unset(formStateRef.current.dirtyFields, name);
-
-        formStateRef.current.isDirty = getIsDirty();
-
-        const state = {
-          isDirty: formStateRef.current.isDirty,
-          dirtyFields: formStateRef.current.dirtyFields,
-          name,
-        };
-
-        const isChanged =
-          (readFormStateRef.current.isDirty &&
-            previousIsDirty !== state.isDirty) ||
-          (readFormStateRef.current.dirtyFields &&
-            isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
-
-        isChanged && shouldRender && subjectsRef.current.state.next(state);
-
-        return isChanged ? state : {};
+        state.dirtyFields = formStateRef.current.dirtyFields;
+        isChanged =
+          isChanged ||
+          isPreviousFieldDirty !== get(formStateRef.current.dirtyFields, name);
       }
 
-      return {};
+      const isPreviousFieldTouched = get(
+        formStateRef.current.touchedFields,
+        name,
+      );
+
+      if (isCurrentTouched && !isPreviousFieldTouched) {
+        set(formStateRef.current.touchedFields, name, isCurrentTouched);
+        state.touchedFields = formStateRef.current.touchedFields;
+        isChanged =
+          isChanged ||
+          (readFormStateRef.current.touchedFields &&
+            isPreviousFieldTouched !== isCurrentTouched);
+      }
+
+      isChanged && shouldRender && subjectsRef.current.state.next(state);
+
+      return isChanged ? state : {};
     },
     [],
   );
@@ -641,13 +653,12 @@ export function useForm<
           field._f.value = inputValue;
         }
 
-        const inputState = updateAndGetDirtyState(name, field._f.value, false);
-
-        if (isBlurEvent && !get(formStateRef.current.touchedFields, name)) {
-          set(formStateRef.current.touchedFields, name, true);
-          readFormStateRef.current.touchedFields &&
-            (inputState.touchedFields = formStateRef.current.touchedFields);
-        }
+        const inputState = updateTouchAndDirtyState(
+          name,
+          field._f.value,
+          isBlurEvent,
+          false,
+        );
 
         const shouldRender = !isEmptyObject(inputState) || isWatched;
 

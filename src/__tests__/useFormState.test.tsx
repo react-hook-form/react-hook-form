@@ -190,7 +190,7 @@ describe('useFormState', () => {
     screen.getByText('isTouched');
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
+    expect(testCount).toEqual(3);
     expect(test1Count).toEqual(2);
 
     await act(async () => {
@@ -202,7 +202,7 @@ describe('useFormState', () => {
     });
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
+    expect(testCount).toEqual(3);
     expect(test1Count).toEqual(2);
   });
 
