@@ -70,6 +70,7 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
 export type SetValueConfig = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
+  shouldTouch: boolean;
 }>;
 
 export type TriggerConfig = Partial<{
