@@ -68,6 +68,7 @@ export function useController<
     return () => {
       controllerSubscription.unsubscribe();
       const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const field = get(fieldsRef.current, name);
 
       if (
         isFieldArray
@@ -75,8 +76,8 @@ export function useController<
           : shouldUnmountField
       ) {
         unregister(name);
-      } else if (get(fieldsRef.current, name)) {
-        get(fieldsRef.current, name)._f.mount = false;
+      } else if (field && field._f) {
+        field._f.mount = false;
       }
     };
   }, [name]);
