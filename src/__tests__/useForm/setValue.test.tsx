@@ -628,6 +628,7 @@ describe('setValue', () => {
 
         result.current.formState[property as 'dirtyFields' | 'isDirty'];
         result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         result.current.register('test');
 
@@ -660,6 +661,7 @@ describe('setValue', () => {
 
         result.current.formState[property as 'isDirty' | 'dirtyFields'];
         result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         result.current.register('test.0');
         result.current.register('test.1');
@@ -710,6 +712,7 @@ describe('setValue', () => {
         );
         result.current.formState[property as 'dirtyFields' | 'isDirty'];
         result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         result.current.register('test');
 
@@ -730,6 +733,7 @@ describe('setValue', () => {
         );
         result.current.formState[property as 'isDirty' | 'dirtyFields'];
         result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         result.current.register('test');
 
@@ -746,6 +750,37 @@ describe('setValue', () => {
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       },
     );
+  });
+
+  describe('with touched', () => {
+    it('should update touched with shouldTouched config', () => {
+      const App = () => {
+        const {
+          setValue,
+          register,
+          formState: { touchedFields },
+        } = useForm();
+
+        return (
+          <>
+            <p>{Object.keys(touchedFields).map((field: string) => field)}</p>
+            <input {...register('test')} />
+            <button
+              onClick={() => {
+                setValue('test', 'data', { shouldTouch: true });
+              }}
+            >
+              Test
+            </button>
+          </>
+        );
+      };
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      screen.getByText('test');
+    });
   });
 
   it('should set hidden input value correctly and reflect on the submission data', async () => {

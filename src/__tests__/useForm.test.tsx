@@ -141,6 +141,7 @@ describe('useForm', () => {
         formState = tempFormState;
 
         formState.isDirty;
+        formState.dirtyFields;
 
         return <input {...register('test', { required: true })} />;
       };
