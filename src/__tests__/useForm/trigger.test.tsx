@@ -419,10 +419,9 @@ describe('trigger', () => {
 
   it('should focus on errored input with build in validation', async () => {
     const Component = () => {
-      const { register, trigger } =
-        useForm<{
-          test: string;
-        }>();
+      const { register, trigger } = useForm<{
+        test: string;
+      }>();
 
       return (
         <>

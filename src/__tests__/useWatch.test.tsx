@@ -181,11 +181,10 @@ describe('useWatch', () => {
         );
       };
 
-      const { renderCount } =
-        perf<{
-          Parent: unknown;
-          Child: unknown;
-        }>(React);
+      const { renderCount } = perf<{
+        Parent: unknown;
+        Child: unknown;
+      }>(React);
 
       render(<Parent />);
 
@@ -323,11 +322,10 @@ describe('useWatch', () => {
     it('should not throw error when null or undefined is set', () => {
       const watchedValue: Record<string, any> = {};
       const Component = () => {
-        const { register, control } =
-          useForm<{
-            test: string;
-            test1: string;
-          }>();
+        const { register, control } = useForm<{
+          test: string;
+          test1: string;
+        }>();
 
         register('test');
         register('test1');
@@ -702,10 +700,9 @@ describe('useWatch', () => {
 
     it('should return default value of reset method', async () => {
       const Component = () => {
-        const { register, reset, control } =
-          useForm<{
-            test: string;
-          }>();
+        const { register, reset, control } = useForm<{
+          test: string;
+        }>();
         const test = useWatch<{
           test: string;
         }>({ name: 'test', control });
@@ -900,10 +897,9 @@ describe('useWatch', () => {
     describe('with custom register', () => {
       it('should return default value of reset method when value is not empty', async () => {
         const Component = () => {
-          const { register, reset, control } =
-            useForm<{
-              test: string;
-            }>();
+          const { register, reset, control } = useForm<{
+            test: string;
+          }>();
           const test = useWatch<{
             test: string;
           }>({
@@ -936,10 +932,9 @@ describe('useWatch', () => {
 
       it('should return default value of reset method', async () => {
         const Component = () => {
-          const { register, reset, control } =
-            useForm<{
-              test: string;
-            }>();
+          const { register, reset, control } = useForm<{
+            test: string;
+          }>();
           const test = useWatch<{
             test: string;
           }>({ name: 'test', control });

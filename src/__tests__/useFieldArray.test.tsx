@@ -77,12 +77,11 @@ describe('useFieldArray', () => {
   describe('with should unregister false', () => {
     it('should still remain input value with toggle', () => {
       const Component = () => {
-        const { register, control } =
-          useForm<{
-            test: {
-              value: string;
-            }[];
-          }>();
+        const { register, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const [show, setShow] = React.useState(true);
         const { fields, append } = useFieldArray({
           control,
