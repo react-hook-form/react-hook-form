@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
+import { Controller } from '../controller';
 import { Control } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
@@ -292,5 +293,32 @@ describe('useController', () => {
 
     screen.getByText('dirty');
     screen.getByText('touched');
+  });
+
+  it('should not overwrite defaultValues with defaultValue', () => {
+    const App = () => {
+      const { control } = useForm({
+        defaultValues: {
+          test: 'bill',
+        },
+      });
+
+      return (
+        <Controller
+          render={({ field }) => {
+            return <input {...field} />;
+          }}
+          control={control}
+          name={'test'}
+          defaultValue={'luo'}
+        />
+      );
+    };
+
+    render(<App />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe(
+      'bill',
+    );
   });
 });
