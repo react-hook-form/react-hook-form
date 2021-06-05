@@ -44,7 +44,7 @@ export function useController<
   const field = get(fieldsRef.current, name);
   const [value, setInputStateValue] = React.useState(
     isFieldArray || !field || !field._f
-      ? isUndefined(get(defaultValuesRef.current, name))
+      ? isUndefined(get(defaultValuesRef.current, name)) || isFieldArray
         ? defaultValue
         : get(defaultValuesRef.current, name)
       : get(fieldsRef.current, name)._f.value,
@@ -68,6 +68,7 @@ export function useController<
     return () => {
       controllerSubscription.unsubscribe();
       const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const field = get(fieldsRef.current, name);
 
       if (
         isFieldArray
