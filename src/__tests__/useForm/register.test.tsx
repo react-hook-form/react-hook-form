@@ -90,10 +90,9 @@ describe('register', () => {
     async (type) => {
       const callback = jest.fn();
       const Component = () => {
-        const { register, handleSubmit } =
-          useForm<{
-            test: string;
-          }>();
+        const { register, handleSubmit } = useForm<{
+          test: string;
+        }>();
         return (
           <div>
             <input type={type} {...register('test')} />
@@ -205,14 +204,13 @@ describe('register', () => {
     const watchedData: object[] = [];
 
     const Component = () => {
-      const { register, handleSubmit, watch } =
-        useForm<{
-          test?: string;
-          test1?: string;
-          test2?: string;
-          test3?: string;
-          test4: string;
-        }>();
+      const { register, handleSubmit, watch } = useForm<{
+        test?: string;
+        test1?: string;
+        test2?: string;
+        test3?: string;
+        test4: string;
+      }>();
 
       watchedData.push(watch());
 
@@ -511,11 +509,10 @@ describe('register', () => {
     it('should return number value with valueAsNumber', async () => {
       let output = {};
       const Component = () => {
-        const { register, handleSubmit } =
-          useForm<{
-            test: number;
-            test1: boolean;
-          }>();
+        const { register, handleSubmit } = useForm<{
+          test: number;
+          test1: boolean;
+        }>();
 
         return (
           <form onSubmit={handleSubmit((data) => (output = data))}>
@@ -554,10 +551,9 @@ describe('register', () => {
     it('should return NaN when value is valid', async () => {
       let output = {};
       const Component = () => {
-        const { register, handleSubmit } =
-          useForm<{
-            test: number;
-          }>();
+        const { register, handleSubmit } = useForm<{
+          test: number;
+        }>();
 
         return (
           <form onSubmit={handleSubmit((data) => (output = data))}>

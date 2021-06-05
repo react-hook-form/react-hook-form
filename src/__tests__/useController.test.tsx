@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
+import { Controller } from '../controller';
 import { Control } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
@@ -8,11 +9,10 @@ import { useForm } from '../useForm';
 describe('useController', () => {
   it('should render input correctly', () => {
     const Component = () => {
-      const { control } =
-        useForm<{
-          test: string;
-          test1: { test: string }[];
-        }>();
+      const { control } = useForm<{
+        test: string;
+        test1: { test: string }[];
+      }>();
 
       useController({
         name: 'test',
@@ -121,10 +121,9 @@ describe('useController', () => {
     it('should work for checkbox by spread the field object', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
-        const { control, watch } =
-          useForm<{
-            test: string;
-          }>();
+        const { control, watch } = useForm<{
+          test: string;
+        }>();
 
         watchResult.push(watch());
 
@@ -157,10 +156,9 @@ describe('useController', () => {
     it('should work for checkbox by assign checked', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
-        const { control, watch } =
-          useForm<{
-            test: string;
-          }>();
+        const { control, watch } = useForm<{
+          test: string;
+        }>();
 
         watchResult.push(watch());
 
@@ -199,10 +197,9 @@ describe('useController', () => {
     it('should work for checkbox by assign value manually', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
-        const { control, watch } =
-          useForm<{
-            test: string;
-          }>();
+        const { control, watch } = useForm<{
+          test: string;
+        }>();
 
         watchResult.push(watch());
 
@@ -292,5 +289,32 @@ describe('useController', () => {
 
     screen.getByText('dirty');
     screen.getByText('touched');
+  });
+
+  it('should not overwrite defaultValues with defaultValue', () => {
+    const App = () => {
+      const { control } = useForm({
+        defaultValues: {
+          test: 'bill',
+        },
+      });
+
+      return (
+        <Controller
+          render={({ field }) => {
+            return <input {...field} />;
+          }}
+          control={control}
+          name={'test'}
+          defaultValue={'luo'}
+        />
+      );
+    };
+
+    render(<App />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe(
+      'bill',
+    );
   });
 });

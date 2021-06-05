@@ -787,10 +787,9 @@ describe('setValue', () => {
     let submitData = undefined;
 
     const Component = () => {
-      const { register, handleSubmit, setValue } =
-        useForm<{
-          test: string;
-        }>();
+      const { register, handleSubmit, setValue } = useForm<{
+        test: string;
+      }>();
 
       return (
         <div>
@@ -901,10 +900,9 @@ describe('setValue', () => {
     const inputId = 'name';
 
     const App = () => {
-      const { control, setValue } =
-        useForm<{
-          names: { name: string; id?: string }[];
-        }>();
+      const { control, setValue } = useForm<{
+        names: { name: string; id?: string }[];
+      }>();
 
       const { fields } = useFieldArray({ control, name: 'names' });
 

@@ -9,10 +9,9 @@ describe('useForm with React Native', () => {
   it('should register field', () => {
     let control: any;
     const Component = () => {
-      const { register, control: tempControl } =
-        useForm<{
-          test: string;
-        }>();
+      const { register, control: tempControl } = useForm<{
+        test: string;
+      }>();
       control = tempControl;
       return (
         <View>
