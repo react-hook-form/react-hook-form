@@ -1,8 +1,28 @@
 # Changelog
 
+## [7.8.0] - 2021-06-5
+
+### Added
+
+- `setValue` support `shouldTouch` to update formState touchFields
+
+```tsx
+setValue('firstName', 'value', { shouldTouch: true });
+```
+
+- `register` now accept `value` as option
+
+```tsx
+register('firstName', { value: 'value' });
+```
+
+## Changed
+
+- `isValid` will initialise as `false`
+
 ## [7.7.1] - 2021-05-30
 
-### Fxied
+### Fixed
 
 - `shouldUnregister: false` should not shallow merge or register absent input fields from `defaultValues`
 
