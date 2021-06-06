@@ -43,12 +43,17 @@ export default async (
     return {};
   }
   const inputRef = refs ? refs[0] : ref;
-  const setCustomValidty = (message?: string | boolean) =>
-    shouldUseCustomValidity &&
-    (inputRef as HTMLInputElement).setCustomValidity &&
-    (inputRef as HTMLInputElement).setCustomValidity(
-      isBoolean(message) ? '' : message || ' ',
-    );
+  const setCustomValidty = (message?: string | boolean) => {
+    if (
+      shouldUseCustomValidity &&
+      (inputRef as HTMLInputElement).setCustomValidity
+    ) {
+      (inputRef as HTMLInputElement).setCustomValidity(
+        isBoolean(message) ? '' : message || ' ',
+      );
+      (inputRef as HTMLInputElement).reportValidity();
+    }
+  };
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
