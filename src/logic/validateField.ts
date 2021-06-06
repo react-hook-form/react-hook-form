@@ -18,15 +18,6 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
-const getCustomValidtyFunction = (
-  inputRef: HTMLInputElement,
-  shouldUseCustomValidity?: boolean,
-) =>
-  shouldUseCustomValidity && (inputRef as HTMLInputElement).setCustomValidity
-    ? (message?: string, reset?: boolean) =>
-        inputRef.setCustomValidity(reset ? '' : message || ' ')
-    : () => {};
-
 export default async (
   {
     _f: {
@@ -52,10 +43,12 @@ export default async (
     return {};
   }
   const inputRef = refs ? refs[0] : ref;
-  const setCustomValidty = getCustomValidtyFunction(
-    inputRef as HTMLInputElement,
-    shouldUseCustomValidity,
-  );
+  const setCustomValidty = (message?: string | boolean) =>
+    shouldUseCustomValidity &&
+    (inputRef as HTMLInputElement).setCustomValidity &&
+    (inputRef as HTMLInputElement).setCustomValidity(
+      isBoolean(message) ? '' : message || ' ',
+    );
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
@@ -257,6 +250,6 @@ export default async (
     }
   }
 
-  setCustomValidty('', true);
+  setCustomValidty(true);
   return error;
 };
