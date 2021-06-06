@@ -42,16 +42,11 @@ export default async (
   if (!mount) {
     return {};
   }
-  const inputRef = refs ? refs[0] : ref;
+  const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
   const setCustomValidty = (message?: string | boolean) => {
-    if (
-      shouldUseCustomValidity &&
-      (inputRef as HTMLInputElement).setCustomValidity
-    ) {
-      (inputRef as HTMLInputElement).setCustomValidity(
-        isBoolean(message) ? '' : message || ' ',
-      );
-      (inputRef as HTMLInputElement).reportValidity();
+    if (shouldUseCustomValidity && inputRef.setCustomValidity) {
+      inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
+      inputRef.reportValidity();
     }
   };
   const error: InternalFieldErrors = {};
