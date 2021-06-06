@@ -44,7 +44,7 @@ export default async (
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
   const setCustomValidty = (message?: string | boolean) => {
-    if (shouldUseCustomValidity && inputRef.setCustomValidity) {
+    if (shouldUseCustomValidity && inputRef.reportValidity) {
       inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
       inputRef.reportValidity();
     }
