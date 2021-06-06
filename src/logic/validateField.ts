@@ -229,8 +229,9 @@ export default async (
             ...appendErrorsCurry(key, validateError.message),
           };
 
+          setCustomValidty(validateError.message);
+
           if (validateAllFieldCriteria) {
-            setCustomValidty(validateError.message);
             error[name] = validationResult;
           }
         }
