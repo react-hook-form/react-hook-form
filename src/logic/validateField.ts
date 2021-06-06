@@ -23,7 +23,8 @@ const getCustomValidtyFunction = (
   shouldUseCustomValidity?: boolean,
 ) =>
   shouldUseCustomValidity && (inputRef as HTMLInputElement).setCustomValidity
-    ? (message = '') => inputRef.setCustomValidity(message)
+    ? (message?: string, reset?: boolean) =>
+        inputRef.setCustomValidity(reset ? '' : message || ' ')
     : () => {};
 
 export default async (
@@ -256,6 +257,6 @@ export default async (
     }
   }
 
-  setCustomValidty('');
+  setCustomValidty('', true);
   return error;
 };
