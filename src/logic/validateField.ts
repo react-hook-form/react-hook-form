@@ -18,6 +18,14 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
+const getCustomValidtyFunction = (
+  inputRef: HTMLInputElement,
+  shouldUseCustomValidity: boolean,
+) =>
+  shouldUseCustomValidity && (inputRef as HTMLInputElement).setCustomValidity
+    ? (message = '') => inputRef.setCustomValidity(message)
+    : () => {};
+
 export default async (
   {
     _f: {
@@ -37,10 +45,16 @@ export default async (
     },
   }: Field,
   validateAllFieldCriteria: boolean,
+  shouldUseCustomValidity: boolean,
 ): Promise<InternalFieldErrors> => {
   if (!mount) {
     return {};
   }
+  const inputRef = refs ? refs[0] : ref;
+  const setCustomValidty = getCustomValidtyFunction(
+    inputRef as HTMLInputElement,
+    shouldUseCustomValidity,
+  );
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
@@ -90,6 +104,7 @@ export default async (
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
+        setCustomValidty(message);
         return error;
       }
     }
@@ -133,6 +148,7 @@ export default async (
         INPUT_VALIDATION_RULES.min,
       );
       if (!validateAllFieldCriteria) {
+        setCustomValidty(error[name]!.message);
         return error;
       }
     }
@@ -155,6 +171,7 @@ export default async (
         minLengthOutput.message,
       );
       if (!validateAllFieldCriteria) {
+        setCustomValidty(error[name]!.message);
         return error;
       }
     }
@@ -171,6 +188,7 @@ export default async (
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {
+        setCustomValidty(message);
         return error;
       }
     }
@@ -192,6 +210,7 @@ export default async (
           ),
         };
         if (!validateAllFieldCriteria) {
+          setCustomValidty(validateError.message);
           return error;
         }
       }

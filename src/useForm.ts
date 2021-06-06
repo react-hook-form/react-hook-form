@@ -93,6 +93,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
+  shouldUseCustomValidity = false,
   shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
@@ -356,6 +357,7 @@ export function useForm<
         await validateField(
           get(fieldsRef.current, name) as Field,
           isValidateAllFieldCriteria,
+          shouldUseCustomValidity,
         )
       )[name];
 
@@ -412,6 +414,7 @@ export function useForm<
           const fieldError = await validateField(
             field,
             isValidateAllFieldCriteria,
+            shouldUseCustomValidity,
           );
 
           if (shouldCheckValid) {
@@ -704,9 +707,13 @@ export function useForm<
 
           isValid = isEmptyObject(errors);
         } else {
-          error = (await validateField(field, isValidateAllFieldCriteria))[
-            name
-          ];
+          error = (
+            await validateField(
+              field,
+              isValidateAllFieldCriteria,
+              shouldUseCustomValidity,
+            )
+          )[name];
         }
 
         !isBlurEvent &&
