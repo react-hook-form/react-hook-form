@@ -210,7 +210,7 @@ export default async (
       }
     } else if (isObject(validate)) {
       let validationResult = {} as FieldError;
-      let message;
+
       for (const [key, validateFunction] of Object.entries(validate)) {
         if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
           break;
@@ -229,9 +229,8 @@ export default async (
             ...appendErrorsCurry(key, validateError.message),
           };
 
-          message = validateError.message;
-
           if (validateAllFieldCriteria) {
+            setCustomValidty(validateError.message);
             error[name] = validationResult;
           }
         }
@@ -243,7 +242,6 @@ export default async (
           ...validationResult,
         };
         if (!validateAllFieldCriteria) {
-          setCustomValidty(message);
           return error;
         }
       }
