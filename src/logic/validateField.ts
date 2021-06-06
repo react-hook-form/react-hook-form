@@ -20,7 +20,7 @@ import getValueAndMessage from './getValueAndMessage';
 
 const getCustomValidtyFunction = (
   inputRef: HTMLInputElement,
-  shouldUseCustomValidity: boolean,
+  shouldUseCustomValidity?: boolean,
 ) =>
   shouldUseCustomValidity && (inputRef as HTMLInputElement).setCustomValidity
     ? (message = '') => inputRef.setCustomValidity(message)
@@ -45,7 +45,7 @@ export default async (
     },
   }: Field,
   validateAllFieldCriteria: boolean,
-  shouldUseCustomValidity: boolean,
+  shouldUseCustomValidity?: boolean,
 ): Promise<InternalFieldErrors> => {
   if (!mount) {
     return {};
@@ -216,6 +216,7 @@ export default async (
       }
     } else if (isObject(validate)) {
       let validationResult = {} as FieldError;
+      let message;
       for (const [key, validateFunction] of Object.entries(validate)) {
         if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
           break;
@@ -234,6 +235,8 @@ export default async (
             ...appendErrorsCurry(key, validateError.message),
           };
 
+          message = validateError.message;
+
           if (validateAllFieldCriteria) {
             error[name] = validationResult;
           }
@@ -246,11 +249,13 @@ export default async (
           ...validationResult,
         };
         if (!validateAllFieldCriteria) {
+          setCustomValidty(message);
           return error;
         }
       }
     }
   }
 
+  setCustomValidty('');
   return error;
 };
