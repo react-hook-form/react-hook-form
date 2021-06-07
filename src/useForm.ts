@@ -487,25 +487,27 @@ export function useForm<
 
   const updateValidAndValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(fieldsRef.current, name) as Field;
-    const defaultValue = isUndefined(field._f.value)
-      ? get(defaultValuesRef.current, name)
-      : field._f.value;
 
-    if (field && !isUndefined(defaultValue)) {
-      if (ref && (ref as HTMLInputElement).defaultChecked) {
+    if (field) {
+      const isValueUndefined = isUndefined(field._f.value);
+      const defaultValue = isValueUndefined
+        ? get(defaultValuesRef.current, name)
+        : field._f.value;
+
+      if (!isUndefined(defaultValue)) {
+        if (ref && (ref as HTMLInputElement).defaultChecked) {
+          field._f.value = getFieldValue(field);
+        } else if (isNameInFieldArray(namesRef.current.array, name)) {
+          field._f.value = defaultValue;
+        } else {
+          setFieldValue(name, defaultValue);
+        }
+      } else if (isValueUndefined) {
         field._f.value = getFieldValue(field);
-      } else if (!isNameInFieldArray(namesRef.current.array, name)) {
-        setFieldValue(name, defaultValue);
-      } else {
-        field._f.value = defaultValue;
       }
-    } else {
-      field._f.value = getFieldValue(field);
     }
 
     isMountedRef.current && readFormStateRef.current.isValid && updateIsValid();
-
-    return defaultValue;
   };
 
   const updateIsValid = React.useCallback(
