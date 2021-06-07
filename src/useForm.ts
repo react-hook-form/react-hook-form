@@ -485,7 +485,7 @@ export function useForm<
     [executeResolverValidation, executeInlineValidation],
   );
 
-  const updateValidAndValue = (name: InternalFieldName, ref?: Ref) => {
+  const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(fieldsRef.current, name) as Field;
 
     if (field) {
@@ -904,7 +904,7 @@ export function useForm<
 
     set(fieldsRef.current, name, field);
 
-    updateValidAndValue(name, ref);
+    updateIsValidAndInputValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
@@ -920,7 +920,7 @@ export function useForm<
         },
       });
       namesRef.current.mount.add(name);
-      !field && updateValidAndValue(name);
+      !field && updateIsValidAndInputValue(name);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
