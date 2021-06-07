@@ -918,6 +918,7 @@ export function useForm<
         },
       });
       namesRef.current.mount.add(name);
+      !field && updateValidAndValue(name);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)

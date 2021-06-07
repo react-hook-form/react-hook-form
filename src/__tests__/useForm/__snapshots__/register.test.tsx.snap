@@ -9,6 +9,11 @@ Object {
         "name": "test",
         "ref": Object {
           "name": "test",
+          "value": Array [
+            true,
+            false,
+            false,
+          ],
         },
         "value": Array [
           false,
