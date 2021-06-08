@@ -169,23 +169,17 @@ export default async (
   }
 
   if (pattern && !isEmpty && isString(inputValue)) {
-    const patternOutput = getValueAndMessage(pattern);
+    const { value: patternValue, message } = getValueAndMessage(pattern);
 
-    if (
-      isRegex(patternOutput.value) &&
-      !inputValue.match(patternOutput.value)
-    ) {
+    if (isRegex(patternValue) && !inputValue.match(patternValue)) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
-        message: patternOutput.message,
+        message,
         ref,
-        ...appendErrorsCurry(
-          INPUT_VALIDATION_RULES.pattern,
-          patternOutput.message,
-        ),
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {
-        setCustomValidty(patternOutput.message);
+        setCustomValidty(message);
         return error;
       }
     }
