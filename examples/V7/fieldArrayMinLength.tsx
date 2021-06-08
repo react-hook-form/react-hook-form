@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { object, array, string } from 'yup';
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const validationSchema = object().shape({
   questions: array()
