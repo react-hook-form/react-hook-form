@@ -52,7 +52,6 @@ import {
   FormState,
   GetIsDirty,
   InternalFieldName,
-  KeepStateOptions,
   Names,
   Path,
   PathValue,
@@ -1027,44 +1026,6 @@ export function useForm<
     [shouldFocusError, isValidateAllFieldCriteria, criteriaMode],
   );
 
-  const resetFromState = React.useCallback(
-    (
-      {
-        keepErrors,
-        keepDirty,
-        keepIsSubmitted,
-        keepTouched,
-        keepDefaultValues,
-        keepSubmitCount,
-      }: KeepStateOptions,
-      values?: DefaultValues<TFieldValues>,
-    ) => {
-      namesRef.current = {
-        mount: new Set(),
-        unMount: new Set(),
-        array: new Set(),
-        watch: new Set(),
-        watchAll: false,
-      };
-
-      subjectsRef.current.state.next({
-        submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
-        isDirty: keepDirty
-          ? formStateRef.current.isDirty
-          : keepDefaultValues
-          ? deepEqual(values, defaultValuesRef.current)
-          : false,
-        isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
-        dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
-        touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
-        errors: keepErrors ? formStateRef.current.errors : {},
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-      });
-    },
-    [],
-  );
-
   const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
     value: T,
     name = '',
@@ -1135,7 +1096,36 @@ export function useForm<
       !shouldUnregister &&
       registerAbsentFields({ ...updatedValues });
 
-    resetFromState(keepStateOptions, values);
+    namesRef.current = {
+      mount: new Set(),
+      unMount: new Set(),
+      array: new Set(),
+      watch: new Set(),
+      watchAll: false,
+    };
+
+    subjectsRef.current.state.next({
+      submitCount: keepStateOptions.keepSubmitCount
+        ? formStateRef.current.submitCount
+        : 0,
+      isDirty: keepStateOptions.keepDirty
+        ? formStateRef.current.isDirty
+        : keepStateOptions.keepDefaultValues
+        ? deepEqual(values, defaultValuesRef.current)
+        : false,
+      isSubmitted: keepStateOptions.keepIsSubmitted
+        ? formStateRef.current.isSubmitted
+        : false,
+      dirtyFields: keepStateOptions.keepDirty
+        ? formStateRef.current.dirtyFields
+        : {},
+      touchedFields: keepStateOptions.keepTouched
+        ? formStateRef.current.touchedFields
+        : {},
+      errors: keepStateOptions.keepErrors ? formStateRef.current.errors : {},
+      isSubmitting: false,
+      isSubmitSuccessful: false,
+    });
 
     isMountedRef.current = !!keepStateOptions.keepIsValid;
   };
