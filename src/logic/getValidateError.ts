@@ -2,11 +2,11 @@ import { FieldError, Ref, ValidateResult } from '../types';
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 
-export default function getValidateError(
+export default (
   result: ValidateResult,
   ref: Ref,
   type = 'validate',
-): FieldError | void {
+): FieldError | void => {
   if (
     isMessage(result) ||
     (Array.isArray(result) && result.every(isMessage)) ||
@@ -18,4 +18,4 @@ export default function getValidateError(
       ref,
     };
   }
-}
+};
