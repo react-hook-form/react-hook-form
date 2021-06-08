@@ -206,12 +206,12 @@ export default async (
     } else if (isObject(validate)) {
       let validationResult = {} as FieldError;
 
-      for (const [key, validateFunction] of Object.entries(validate)) {
+      for (const key in validate) {
         if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
           break;
         }
 
-        const validateResult = await validateFunction(inputValue);
+        const validateResult = await validate[key](inputValue);
         const validateError = getValidateError(validateResult, inputRef, key);
 
         if (validateError) {
