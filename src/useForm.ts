@@ -1035,7 +1035,6 @@ export function useForm<
         keepIsSubmitted,
         keepTouched,
         keepDefaultValues,
-        keepIsValid,
         keepSubmitCount,
       }: KeepStateOptions,
       values?: DefaultValues<TFieldValues>,
@@ -1062,8 +1061,6 @@ export function useForm<
         isSubmitting: false,
         isSubmitSuccessful: false,
       });
-
-      isMountedRef.current = !keepIsValid;
     },
     [],
   );
@@ -1139,6 +1136,8 @@ export function useForm<
       registerAbsentFields({ ...updatedValues });
 
     resetFromState(keepStateOptions, values);
+
+    isMountedRef.current = !!keepStateOptions.keepIsValid;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
