@@ -155,7 +155,7 @@ describe('validateField', () => {
       test: {
         message: '',
         type: 'required',
-        ref: {},
+        ref: { type: 'radio', name: 'test' },
       },
     });
 
@@ -195,7 +195,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: {},
+        ref: { type: 'radio', name: 'test', value: '' },
       },
     });
 
@@ -215,7 +215,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: {},
+        ref: { type: 'checkbox', name: 'test' },
       },
     });
 

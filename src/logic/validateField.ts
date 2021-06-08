@@ -94,7 +94,7 @@ export default async (
       error[name] = {
         type: INPUT_VALIDATION_RULES.required,
         message,
-        ref: isRadioOrCheckbox ? (refs || [])[0] || {} : ref,
+        ref: inputRef,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
@@ -189,11 +189,9 @@ export default async (
   }
 
   if (validate) {
-    const validateRef = isRadioOrCheckbox && refs ? refs[0] : ref;
-
     if (isFunction(validate)) {
       const result = await validate(inputValue);
-      const validateError = getValidateError(result, validateRef);
+      const validateError = getValidateError(result, inputRef);
 
       if (validateError) {
         error[name] = {
@@ -217,11 +215,7 @@ export default async (
         }
 
         const validateResult = await validateFunction(inputValue);
-        const validateError = getValidateError(
-          validateResult,
-          validateRef,
-          key,
-        );
+        const validateError = getValidateError(validateResult, inputRef, key);
 
         if (validateError) {
           validationResult = {
@@ -239,7 +233,7 @@ export default async (
 
       if (!isEmptyObject(validationResult)) {
         error[name] = {
-          ref: validateRef,
+          ref: inputRef,
           ...validationResult,
         };
         if (!validateAllFieldCriteria) {
