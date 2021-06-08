@@ -120,7 +120,7 @@ export const useFieldArray = <
   const [fields, setFields] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
-  set(fieldArrayValuesRef.current, name, fields);
+  set(fieldArrayValuesRef.current, name, compact(fields));
 
   const omitKey = <T extends (Partial<TFieldArrayValues> | undefined)[]>(
     fields: T,
