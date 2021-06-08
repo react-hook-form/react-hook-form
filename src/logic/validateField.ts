@@ -81,7 +81,7 @@ export default async (
 
   if (
     required &&
-    ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(inputValue))) ||
+    ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
       (isBoolean(inputValue) && !inputValue) ||
       (isCheckBox && !getCheckboxValue(refs).isValid) ||
       (isRadio && !getRadioValue(refs).isValid))
