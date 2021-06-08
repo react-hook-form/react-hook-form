@@ -625,6 +625,9 @@ export function useForm<
       let isValid;
       const field = get(fieldsRef.current, name) as Field;
 
+      // eslint-disable-next-line
+      console.log('blur event');
+
       if (field) {
         let inputValue = inputType ? getFieldValue(field) : undefined;
         inputValue = isUndefined(inputValue) ? value : inputValue;
@@ -1134,6 +1137,8 @@ export function useForm<
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
+    // eslint-disable-next-line
+    console.log('useEffect');
     !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
 
     const formStateSubscription = subjectsRef.current.state.subscribe({
