@@ -52,7 +52,6 @@ import {
   FormState,
   GetIsDirty,
   InternalFieldName,
-  KeepStateOptions,
   Names,
   Path,
   PathValue,
@@ -488,27 +487,29 @@ export function useForm<
     [executeResolverValidation, executeInlineValidation],
   );
 
-  const updateValidAndValue = (name: InternalFieldName, ref?: Ref) => {
+  const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(fieldsRef.current, name) as Field;
-    const defaultValue = isUndefined(field._f.value)
-      ? get(defaultValuesRef.current, name)
-      : field._f.value;
 
-    if (field && !isUndefined(defaultValue)) {
-      if (ref && (ref as HTMLInputElement).defaultChecked) {
+    if (field) {
+      const isValueUndefined = isUndefined(field._f.value);
+      const defaultValue = isValueUndefined
+        ? get(defaultValuesRef.current, name)
+        : field._f.value;
+
+      if (!isUndefined(defaultValue)) {
+        if (ref && (ref as HTMLInputElement).defaultChecked) {
+          field._f.value = getFieldValue(field);
+        } else if (isNameInFieldArray(namesRef.current.array, name)) {
+          field._f.value = defaultValue;
+        } else {
+          setFieldValue(name, defaultValue);
+        }
+      } else if (isValueUndefined) {
         field._f.value = getFieldValue(field);
-      } else if (!isNameInFieldArray(namesRef.current.array, name)) {
-        setFieldValue(name, defaultValue);
-      } else {
-        field._f.value = defaultValue;
       }
-    } else {
-      field._f.value = getFieldValue(field);
     }
 
     isMountedRef.current && readFormStateRef.current.isValid && updateIsValid();
-
-    return defaultValue;
   };
 
   const updateIsValid = React.useCallback(
@@ -909,7 +910,7 @@ export function useForm<
 
     set(fieldsRef.current, name, field);
 
-    updateValidAndValue(name, ref);
+    updateIsValidAndInputValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
@@ -925,6 +926,7 @@ export function useForm<
         },
       });
       namesRef.current.mount.add(name);
+      !field && updateIsValidAndInputValue(name);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
@@ -1031,47 +1033,6 @@ export function useForm<
     [shouldFocusError, isValidateAllFieldCriteria, criteriaMode],
   );
 
-  const resetFromState = React.useCallback(
-    (
-      {
-        keepErrors,
-        keepDirty,
-        keepIsSubmitted,
-        keepTouched,
-        keepDefaultValues,
-        keepIsValid,
-        keepSubmitCount,
-      }: KeepStateOptions,
-      values?: DefaultValues<TFieldValues>,
-    ) => {
-      namesRef.current = {
-        mount: new Set(),
-        unMount: new Set(),
-        array: new Set(),
-        watch: new Set(),
-        watchAll: false,
-      };
-
-      subjectsRef.current.state.next({
-        submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
-        isDirty: keepDirty
-          ? formStateRef.current.isDirty
-          : keepDefaultValues
-          ? deepEqual(values, defaultValuesRef.current)
-          : false,
-        isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
-        dirtyFields: keepDirty ? formStateRef.current.dirtyFields : {},
-        touchedFields: keepTouched ? formStateRef.current.touchedFields : {},
-        errors: keepErrors ? formStateRef.current.errors : {},
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-      });
-
-      isMountedRef.current = !keepIsValid;
-    },
-    [],
-  );
-
   const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
     value: T,
     name = '',
@@ -1142,7 +1103,38 @@ export function useForm<
       !shouldUnregister &&
       registerAbsentFields({ ...updatedValues });
 
-    resetFromState(keepStateOptions, values);
+    namesRef.current = {
+      mount: new Set(),
+      unMount: new Set(),
+      array: new Set(),
+      watch: new Set(),
+      watchAll: false,
+    };
+
+    subjectsRef.current.state.next({
+      submitCount: keepStateOptions.keepSubmitCount
+        ? formStateRef.current.submitCount
+        : 0,
+      isDirty: keepStateOptions.keepDirty
+        ? formStateRef.current.isDirty
+        : keepStateOptions.keepDefaultValues
+        ? deepEqual(values, defaultValuesRef.current)
+        : false,
+      isSubmitted: keepStateOptions.keepIsSubmitted
+        ? formStateRef.current.isSubmitted
+        : false,
+      dirtyFields: keepStateOptions.keepDirty
+        ? formStateRef.current.dirtyFields
+        : {},
+      touchedFields: keepStateOptions.keepTouched
+        ? formStateRef.current.touchedFields
+        : {},
+      errors: keepStateOptions.keepErrors ? formStateRef.current.errors : {},
+      isSubmitting: false,
+      isSubmitSuccessful: false,
+    });
+
+    isMountedRef.current = !!keepStateOptions.keepIsValid;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
