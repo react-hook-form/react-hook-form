@@ -211,8 +211,11 @@ export default async (
           break;
         }
 
-        const validateResult = await validate[key](inputValue);
-        const validateError = getValidateError(validateResult, inputRef, key);
+        const validateError = getValidateError(
+          await validate[key](inputValue),
+          inputRef,
+          key,
+        );
 
         if (validateError) {
           validationResult = {
