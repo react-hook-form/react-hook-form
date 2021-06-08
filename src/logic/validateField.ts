@@ -104,10 +104,7 @@ export default async (
     }
   }
 
-  if (
-    (!isNullOrUndefined(min) || !isNullOrUndefined(max)) &&
-    inputValue !== ''
-  ) {
+  if (!isEmpty && (!isNullOrUndefined(min) || !isNullOrUndefined(max))) {
     let exceedMax;
     let exceedMin;
     const maxOutput = getValueAndMessage(max);
@@ -148,7 +145,7 @@ export default async (
     }
   }
 
-  if (isString(inputValue) && !isEmpty && (maxLength || minLength)) {
+  if ((maxLength || minLength) && !isEmpty && isString(inputValue)) {
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =
@@ -171,7 +168,7 @@ export default async (
     }
   }
 
-  if (isString(inputValue) && pattern && !isEmpty) {
+  if (pattern && !isEmpty && isString(inputValue)) {
     const patternOutput = getValueAndMessage(pattern);
 
     if (
