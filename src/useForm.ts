@@ -140,6 +140,7 @@ export function useForm<
 
   const validationMode = getValidationModes(mode);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
+  resolverRef.current = resolver;
   contextRef.current = context;
 
   const isFieldWatched = (name: FieldPath<TFieldValues>) =>
