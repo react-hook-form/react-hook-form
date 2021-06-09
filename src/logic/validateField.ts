@@ -37,14 +37,14 @@ export default async (
     },
   }: Field,
   validateAllFieldCriteria: boolean,
-  shouldUseCustomValidity?: boolean,
+  shouldUseNativeValidation?: boolean,
 ): Promise<InternalFieldErrors> => {
   if (!mount) {
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
   const setCustomValidty = (message?: string | boolean) => {
-    if (shouldUseCustomValidity && inputRef.reportValidity) {
+    if (shouldUseNativeValidation && inputRef.reportValidity) {
       inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
       inputRef.reportValidity();
     }

@@ -358,7 +358,7 @@ export function useForm<
         await validateField(
           get(fieldsRef.current, name) as Field,
           isValidateAllFieldCriteria,
-          shouldUseCustomValidity,
+          shouldUseNativeValidation,
         )
       )[name];
 
@@ -415,7 +415,7 @@ export function useForm<
           const fieldError = await validateField(
             field,
             isValidateAllFieldCriteria,
-            shouldUseCustomValidity,
+            shouldUseNativeValidation,
           );
 
           if (shouldCheckValid) {
@@ -714,7 +714,7 @@ export function useForm<
             await validateField(
               field,
               isValidateAllFieldCriteria,
-              shouldUseCustomValidity,
+              shouldUseNativeValidation,
             )
           )[name];
         }
