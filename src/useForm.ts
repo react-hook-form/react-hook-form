@@ -92,7 +92,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  shouldUseNativeValidation = false,
+  shouldUseNativeValidation,
   shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
