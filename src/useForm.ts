@@ -115,6 +115,7 @@ export function useForm<
     isValid: !isProxyEnabled,
     errors: !isProxyEnabled,
   });
+  const resolverRef = React.useRef(resolver);
   const formStateRef = React.useRef(formState);
   const fieldsRef = React.useRef<FieldRefs>({});
   const defaultValuesRef =
@@ -139,6 +140,7 @@ export function useForm<
 
   const validationMode = getValidationModes(mode);
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
+  resolverRef.current = resolver;
   contextRef.current = context;
 
   const isFieldWatched = (name: FieldPath<TFieldValues>) =>
@@ -367,7 +369,7 @@ export function useForm<
 
   const executeResolverValidation = React.useCallback(
     async (names?: InternalFieldName[]) => {
-      const { errors } = await resolver!(
+      const { errors } = await resolverRef.current!(
         getFieldsValues(fieldsRef),
         contextRef.current,
         getResolverOptions(
@@ -514,7 +516,7 @@ export function useForm<
       const isValid = resolver
         ? isEmptyObject(
             (
-              await resolver(
+              await resolverRef.current!(
                 {
                   ...getFieldsValues(fieldsRef),
                   ...values,
@@ -683,7 +685,7 @@ export function useForm<
         });
 
         if (resolver) {
-          const { errors } = await resolver(
+          const { errors } = await resolverRef.current!(
             getFieldsValues(fieldsRef),
             contextRef.current,
             getResolverOptions([name], fieldsRef.current, criteriaMode),
@@ -973,7 +975,7 @@ export function useForm<
 
       try {
         if (resolver) {
-          const { errors, values } = await resolver(
+          const { errors, values } = await resolverRef.current!(
             fieldValues,
             contextRef.current,
             getResolverOptions(
