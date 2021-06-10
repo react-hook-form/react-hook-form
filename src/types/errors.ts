@@ -17,16 +17,11 @@ export type FieldError = {
   message?: Message;
 };
 
-export type ErrorOption =
-  | {
-      types: MultipleFieldErrors;
-      shouldFocus?: boolean;
-    }
-  | {
-      message?: Message;
-      type?: LiteralUnion<keyof RegisterOptions, string>;
-      shouldFocus?: boolean;
-    };
+export type ErrorOption = {
+  message?: Message;
+  type?: LiteralUnion<keyof RegisterOptions, string>;
+  types?: MultipleFieldErrors;
+};
 
 export type FieldErrors<TFieldValues extends FieldValues = FieldValues> =
   DeepMap<TFieldValues, FieldError>;
