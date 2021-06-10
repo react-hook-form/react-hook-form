@@ -112,8 +112,8 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ): string =>
     options && !options.shouldFocus
-      ? options.focusName || name + options.focusIndex
-      : name + index;
+      ? options.focusName || `${name}.${options.focusIndex}`
+      : `${name}.${index}`;
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
@@ -204,11 +204,9 @@ export const useFieldArray = <
       (appendValueItem, valueIndex) =>
         !isPrimitive(appendValueItem) &&
         Object.entries(appendValueItem).forEach(([key, value]) => {
-          const inputName =
-            (parentName || name) +
-            '.' +
-            (parentName ? valueIndex : index + valueIndex) +
-            key;
+          const inputName = `${parentName || name}.${
+            parentName ? valueIndex : index + valueIndex
+          }.${key}`;
 
           Array.isArray(value)
             ? registerFieldArray(value, valueIndex, inputName)

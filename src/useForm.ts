@@ -554,7 +554,7 @@ export function useForm<
       options: SetValueConfig,
     ) =>
       Object.entries(value).forEach(([inputKey, inputValue]) => {
-        const fieldName = (name + inputKey) as Path<TFieldValues>;
+        const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
         const isFieldArray = namesRef.current.array.has(name);
 
@@ -1064,8 +1064,8 @@ export function useForm<
       }
 
       if (Array.isArray(value) || isObject(value)) {
-        if (name && !field) {
-          set(fieldsRef.current, name, isObject(value) ? {} : []);
+        if (name && !get(fieldsRef.current, name)) {
+          set(fieldsRef.current, name, Array.isArray(value) ? [] : {});
         }
 
         for (const key in value) {
