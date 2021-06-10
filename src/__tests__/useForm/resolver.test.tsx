@@ -124,4 +124,33 @@ describe('resolver', () => {
       screen.getByText('Submitted');
     });
   });
+
+  it('should be called with the shouldUseNativeValidation option to true', async () => {
+    const resolver = jest.fn();
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        resolver,
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input {...register('test')} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    });
+
+    expect(resolver.mock.calls[0][2]).toEqual(
+      expect.objectContaining({ shouldUseNativeValidation: true }),
+    );
+  });
 });
