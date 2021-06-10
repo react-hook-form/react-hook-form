@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -1050,6 +1051,59 @@ describe('setValue', () => {
       expect(result).toEqual({
         user: null,
       });
+    });
+  });
+
+  it('should only be able to update value of array which is not registered', async () => {
+    const App = () => {
+      const { setValue, watch } = useForm({
+        defaultValues: {
+          test: ['1', '2', '3'],
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', ['2', '2']);
+      }, [setValue]);
+
+      const result = watch('test');
+
+      return <p>{JSON.stringify(result)}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('["2","2","3"]');
+    });
+  });
+
+  it('should only be able to update value of object which is not registered', async () => {
+    const App = () => {
+      const { setValue, watch } = useForm({
+        defaultValues: {
+          test: {
+            data: '1',
+            data1: '2',
+          },
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', {
+          data: '2',
+        } as any);
+      }, [setValue]);
+
+      const result = watch('test');
+
+      return <p>{JSON.stringify(result)}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('{"data":"2","data1":"2"}');
     });
   });
 });
