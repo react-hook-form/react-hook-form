@@ -200,6 +200,8 @@ describe('getValues', () => {
           test: {
             firstName: 'test',
             lastName: 'test',
+            time: new Date('1999-09-09'),
+            file: new File([''], 'filename'),
           },
         },
       });
@@ -228,6 +230,8 @@ describe('getValues', () => {
       test: {
         firstName: 'test',
         lastName: 'test',
+        time: new Date('1999-09-09'),
+        file: new File([''], 'filename'),
       },
     });
 
@@ -241,7 +245,7 @@ describe('getValues', () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    expect(data).toEqual({
+    expect(data).toMatchObject({
       test: {
         firstName: '1234',
         lastName: 'test',
