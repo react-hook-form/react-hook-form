@@ -1029,19 +1029,19 @@ export function useForm<
   );
 
   const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
-    value: T,
+    defaultValues: T,
     name = '',
   ): void => {
-    for (const key in value) {
-      const fieldValue = value[key];
+    for (const key in defaultValues) {
+      const value = defaultValues[key];
       const fieldName = name + (name ? '.' : '') + key;
       const field = get(fieldsRef.current, fieldName);
 
       if (!field || !field._f) {
-        if (isObject(fieldValue) || Array.isArray(fieldValue)) {
-          registerAbsentFields(fieldValue, fieldName);
+        if (isObject(value) || Array.isArray(value)) {
+          registerAbsentFields(value, fieldName);
         } else if (!field) {
-          register(fieldName as any, { value: fieldValue });
+          register(fieldName as Path<TFieldValues>, { value });
         }
       }
     }
