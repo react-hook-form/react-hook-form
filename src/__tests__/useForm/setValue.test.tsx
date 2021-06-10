@@ -1054,7 +1054,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should only be able to update value of array of inputs which is not registered', async () => {
+  it('should only be able to update value of array which is not registered', async () => {
     const App = () => {
       const { setValue, watch } = useForm({
         defaultValues: {
@@ -1075,6 +1075,35 @@ describe('setValue', () => {
 
     await waitFor(async () => {
       screen.getByText('["2","2","3"]');
+    });
+  });
+
+  it('should only be able to update value of object which is not registered', async () => {
+    const App = () => {
+      const { setValue, watch } = useForm({
+        defaultValues: {
+          test: {
+            data: '1',
+            data1: '2',
+          },
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', {
+          data: '2',
+        } as any);
+      }, [setValue]);
+
+      const result = watch('test');
+
+      return <p>{JSON.stringify(result)}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('{"data":"2","data1":"2"}');
     });
   });
 });
