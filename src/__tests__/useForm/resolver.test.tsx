@@ -126,17 +126,24 @@ describe('resolver', () => {
   });
 
   it('should be called with the shouldUseNativeValidation option to true', async () => {
-    const resolver = jest.fn();
-    const onSubmit = jest.fn();
+    const test = jest.fn();
+    const resolver = (a: any, b: any, c: any) => {
+      test(a, b, c);
+      return {
+        errors: {},
+        values: {},
+      };
+    };
 
     const App = () => {
       const { register, handleSubmit } = useForm({
-        resolver,
+        resolver: async (data, context, options) =>
+          resolver(data, context, options),
         shouldUseNativeValidation: true,
       });
 
       return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(() => {})}>
           <input {...register('test')} />
           <button>Submit</button>
         </form>
@@ -146,10 +153,10 @@ describe('resolver', () => {
     render(<App />);
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      fireEvent.click(screen.getByRole('button'));
     });
 
-    expect(resolver.mock.calls[0][2]).toEqual(
+    expect(test.mock.calls[0][2]).toEqual(
       expect.objectContaining({ shouldUseNativeValidation: true }),
     );
   });
