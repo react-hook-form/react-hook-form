@@ -1033,15 +1033,15 @@ export function useForm<
     name = '',
   ): void => {
     for (const key in value) {
-      const data = value[key];
+      const fieldValue = value[key];
       const fieldName = name + (name ? '.' : '') + key;
       const field = get(fieldsRef.current, fieldName);
 
       if (!field || !field._f) {
-        if (isObject(data) || Array.isArray(data)) {
-          registerAbsentFields(data, fieldName);
+        if (isObject(fieldValue) || Array.isArray(fieldValue)) {
+          registerAbsentFields(fieldValue, fieldName);
         } else if (!field) {
-          register(fieldName as any, { value: data });
+          register(fieldName as any, { value: fieldValue });
         }
       }
     }
