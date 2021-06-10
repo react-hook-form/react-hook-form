@@ -1032,24 +1032,16 @@ export function useForm<
     value: T,
     name = '',
   ): void => {
-    const field = get(fieldsRef.current, name);
+    for (const key in value) {
+      const data = value[key];
+      const fieldName = name + (name ? '.' : '') + key;
+      const field = get(fieldsRef.current, fieldName);
 
-    if (!field || (field && !field._f)) {
-      if (
-        !field &&
-        (isPrimitive(value) ||
-          (isWeb && (value instanceof FileList || value instanceof Date)))
-      ) {
-        register(name as Path<TFieldValues>, { value } as RegisterOptions);
-      }
-
-      if (Array.isArray(value) || isObject(value)) {
-        if (name && !get(fieldsRef.current, name)) {
-          set(fieldsRef.current, name, Array.isArray(value) ? [] : {});
-        }
-
-        for (const key in value) {
-          registerAbsentFields(value[key], name + (name ? '.' : '') + key);
+      if (!field || !field._f) {
+        if (isObject(data) || Array.isArray(data)) {
+          registerAbsentFields(data, fieldName);
+        } else if (!field) {
+          register(fieldName as any, { value: data });
         }
       }
     }
