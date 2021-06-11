@@ -509,7 +509,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe('unregister', () => {
+  describe('with should unregister true', () => {
     it('should not unregister field if unregister method is triggered', () => {
       let getValues: any;
       const Component = () => {
@@ -551,6 +551,60 @@ describe('useFieldArray', () => {
       expect(getValues()).toEqual({
         test: [{ value: '' }, { value: '' }, { value: '' }],
       });
+    });
+
+    it('should remove field array after useFieldArray is unmounted', () => {
+      type FormValues = {
+        test: { name: string }[];
+      };
+
+      const FieldArray = ({ control }: { control: Control<FormValues> }) => {
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <div>
+            {fields.map((item, index) => {
+              return (
+                <input
+                  key={item.id}
+                  defaultValue={item.name}
+                  name={`test.${index}.name` as const}
+                />
+              );
+            })}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        const { control } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            test: [{ name: 'test' }],
+          },
+        });
+
+        return (
+          <div>
+            {show && <FieldArray control={control} />}
+            <button type={'button'} onClick={() => setShow(!show)}>
+              toggle
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      screen.getByRole('textbox');
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(screen.queryByRole('textbox')).toBeNull();
     });
   });
 

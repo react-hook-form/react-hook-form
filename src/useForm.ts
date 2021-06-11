@@ -849,9 +849,7 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        !shouldUnregister &&
-          !options.keepDefaultValue &&
-          unset(defaultValuesRef.current, inputName);
+        !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
 
         subjectsRef.current.watch.next({
           name: inputName,

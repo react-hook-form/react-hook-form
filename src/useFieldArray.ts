@@ -414,8 +414,10 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      (shouldUnmount || shouldUnregister) &&
+      if (shouldUnmount || shouldUnregister) {
         unregister(name as FieldPath<TFieldValues>);
+        unset(fieldArrayDefaultValuesRef.current, name);
+      }
     };
   }, []);
 
