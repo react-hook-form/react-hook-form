@@ -105,7 +105,11 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) => elm && ref(elm),
+      ref: (elm) =>
+        elm &&
+        ref({
+          focus: () => elm.focus(),
+        }),
     },
     formState,
     fieldState: {
