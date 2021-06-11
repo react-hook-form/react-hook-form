@@ -12,7 +12,6 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
-import isString from './utils/isString';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
 import prependAt from './utils/prepend';
@@ -112,8 +111,8 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ): string =>
     options && !options.shouldFocus
-      ? options.focusName || `${name}.${options.focusIndex}`
-      : `${name}.${index}`;
+      ? options.focusName || `${name}.${options.focusIndex}.`
+      : `${name}.${index}.`;
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
@@ -212,7 +211,7 @@ export const useFieldArray = <
             ? registerFieldArray(value, valueIndex, inputName)
             : (register as UseFormRegister<TFieldValues>)(
                 inputName as Path<TFieldValues>,
-                { value },
+                { value: isPrimitive(value) ? value : { ...value } },
               );
         }),
     );
@@ -378,9 +377,8 @@ export const useFieldArray = <
     });
 
     focusNameRef.current &&
-      focusFieldBy(
-        fieldsRef.current,
-        (key: string) => isString(key) && key.startsWith(focusNameRef.current),
+      focusFieldBy(fieldsRef.current, (key: string) =>
+        key.startsWith(focusNameRef.current),
       );
 
     focusNameRef.current = '';
@@ -416,8 +414,10 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      (shouldUnmount || shouldUnregister) &&
+      if (shouldUnmount || shouldUnregister) {
         unregister(name as FieldPath<TFieldValues>);
+        unset(fieldArrayDefaultValuesRef.current, name);
+      }
     };
   }, []);
 

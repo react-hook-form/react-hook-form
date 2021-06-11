@@ -509,7 +509,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe('unregister', () => {
+  describe('with should unregister true', () => {
     it('should not unregister field if unregister method is triggered', () => {
       let getValues: any;
       const Component = () => {
@@ -551,6 +551,60 @@ describe('useFieldArray', () => {
       expect(getValues()).toEqual({
         test: [{ value: '' }, { value: '' }, { value: '' }],
       });
+    });
+
+    it('should remove field array after useFieldArray is unmounted', () => {
+      type FormValues = {
+        test: { name: string }[];
+      };
+
+      const FieldArray = ({ control }: { control: Control<FormValues> }) => {
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <div>
+            {fields.map((item, index) => {
+              return (
+                <input
+                  key={item.id}
+                  defaultValue={item.name}
+                  name={`test.${index}.name` as const}
+                />
+              );
+            })}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        const { control } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            test: [{ name: 'test' }],
+          },
+        });
+
+        return (
+          <div>
+            {show && <FieldArray control={control} />}
+            <button type={'button'} onClick={() => setShow(!show)}>
+              toggle
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      screen.getByRole('textbox');
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(screen.queryByRole('textbox')).toBeNull();
     });
   });
 
@@ -2044,5 +2098,70 @@ describe('useFieldArray', () => {
     });
 
     expect(screen.getAllByRole('textbox').length).toEqual(2);
+  });
+
+  it('should append deep nested field array correctly with strict mode', async () => {
+    function App() {
+      const { control, register, handleSubmit } = useForm<{
+        test: {
+          yourDetail: {
+            firstName: string;
+            lastName: string;
+          };
+        }[];
+      }>();
+      const { fields, append } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      return (
+        <React.StrictMode>
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.yourDetail.firstName`)}
+                    defaultValue={field.yourDetail.firstName}
+                  />
+                  <input
+                    {...register(`test.${index}.yourDetail.lastName`)}
+                    defaultValue={field.yourDetail.lastName}
+                  />
+                </div>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() =>
+                append({
+                  yourDetail: {
+                    firstName: 'bill',
+                    lastName: 'luo',
+                  },
+                })
+              }
+            >
+              Append
+            </button>
+            <input type="submit" />
+          </form>
+        </React.StrictMode>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Append' }));
+    });
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('bill');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('luo');
   });
 });
