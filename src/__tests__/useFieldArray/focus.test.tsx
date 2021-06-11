@@ -137,7 +137,7 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
   });
 
-  it('should focus correct field array by focus index', () => {
+  it('should focus correct field array by focus name', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
