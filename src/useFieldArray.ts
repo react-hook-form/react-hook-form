@@ -71,11 +71,11 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      get(fieldsRef.current, name) && isMountedRef.current
+      (get(fieldsRef.current, name) && isMountedRef.current
         ? get(getFieldsValues(fieldsRef), name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
-        ? get(fieldArrayDefaultValuesRef.current, name, [])
-        : get(defaultValuesRef.current, name, []),
+        ? get(fieldArrayDefaultValuesRef.current, name)
+        : get(defaultValuesRef.current, name)) || [],
       keyName,
     ),
   );
@@ -417,6 +417,10 @@ export const useFieldArray = <
       if (shouldUnmount || shouldUnregister) {
         unregister(name as FieldPath<TFieldValues>);
         unset(fieldArrayDefaultValuesRef.current, name);
+      } else {
+        const fieldArrayValues = get(getFieldsValues(fieldsRef), name);
+        fieldArrayValues &&
+          set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
       }
     };
   }, []);
