@@ -164,6 +164,77 @@ describe('useFieldArray', () => {
       await waitFor(() => screen.getAllByRole('textbox'));
       await waitFor(() => screen.getByText('not valid'));
     });
+
+    it('should retain input values during unmount', async () => {
+      type FormValues = {
+        test: { name: string }[];
+      };
+
+      const FieldArray = ({
+        control,
+        register,
+      }: {
+        control: Control<FormValues>;
+        register: UseFormRegister<FormValues>;
+      }) => {
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <div>
+            {fields.map((item, index) => {
+              return (
+                <div key={item.id}>
+                  <input
+                    {...register(`test.${index}.name`)}
+                    defaultValue={item.name}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        const { control, register } = useForm({
+          shouldUnregister: false,
+          defaultValues: {
+            test: [{ name: 'test' }],
+          },
+        });
+
+        return (
+          <div>
+            {show && <FieldArray control={control} register={register} />}
+            <button type={'button'} onClick={() => setShow(!show)}>
+              toggle
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12345' },
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '12345',
+      );
+    });
   });
 
   describe('with resolver', () => {
