@@ -11,15 +11,15 @@ import {
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControl } from './useFormContext';
 
 function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
   const { control, name } = props || {};
-  const methods = useFormContext();
+  const controlContext = useFormControl<TFieldValues>();
   const { formStateRef, subjectsRef, readFormStateRef } =
-    control || methods.control;
+    control || controlContext;
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
   nameRef.current = name as InternalFieldName;
 

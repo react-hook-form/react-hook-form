@@ -12,7 +12,7 @@ import {
   UseControllerProps,
   UseControllerReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControl } from './useFormContext';
 import { useFormState } from './useFormState';
 
 export function useController<
@@ -28,7 +28,7 @@ export function useController<
   TFieldValues,
   TName
 > {
-  const methods = useFormContext<TFieldValues>();
+  const controlContext = useFormControl<TFieldValues>();
   const {
     defaultValuesRef,
     register,
@@ -38,7 +38,7 @@ export function useController<
     subjectsRef,
     shouldUnmount,
     inFieldArrayActionRef,
-  } = control || methods.control;
+  } = control || controlContext;
 
   const isFieldArray = isNameInFieldArray(namesRef.current.array, name);
   const field = get(fieldsRef.current, name);
@@ -54,7 +54,7 @@ export function useController<
     value,
   });
   const formState = useFormState({
-    control: control || methods.control,
+    control: control || controlContext,
     name,
   });
 

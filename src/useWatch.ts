@@ -13,7 +13,7 @@ import {
   UnpackNestedValue,
   UseWatchProps,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControl } from './useFormContext';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -39,11 +39,11 @@ export function useWatch<
 }): FieldPathValues<TFieldValues, TName>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const { control, name, defaultValue } = props || {};
-  const methods = useFormContext();
+  const controlContext = useFormControl<TFieldValues>();
   const nameRef = React.useRef(name);
   nameRef.current = name;
 
-  const { watchInternal, subjectsRef } = control || methods.control;
+  const { watchInternal, subjectsRef } = control || controlContext;
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
       ? watchInternal(name as InternalFieldName)

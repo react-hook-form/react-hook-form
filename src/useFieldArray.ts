@@ -32,7 +32,7 @@ import {
   UseFieldArrayReturn,
   UseFormRegister,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControl } from './useFormContext';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
@@ -48,7 +48,7 @@ export const useFieldArray = <
   TFieldArrayName,
   TKeyName
 >): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
-  const methods = useFormContext();
+  const controlContext = useFormControl<TFieldValues>();
   const focusNameRef = React.useRef('');
   const isMountedRef = React.useRef(false);
   const {
@@ -65,7 +65,7 @@ export const useFieldArray = <
     shouldUnmount,
     inFieldArrayActionRef,
     register,
-  } = control || methods.control;
+  } = control || controlContext;
 
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]

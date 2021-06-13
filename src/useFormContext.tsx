@@ -1,7 +1,21 @@
 import * as React from 'react';
 
 import omit from './utils/omit';
-import { FieldValues, FormProviderProps, UseFormReturn } from './types';
+import {
+  Control,
+  FieldValues,
+  FormProviderProps,
+  UseFormReturn,
+} from './types';
+
+const FormControlContext = React.createContext<Control | null>(null);
+
+FormControlContext.displayName = 'RHFControlContext';
+
+export const useFormControl = <
+  TFieldValues extends FieldValues,
+>(): Control<TFieldValues> =>
+  React.useContext(FormControlContext) as unknown as Control<TFieldValues>;
 
 const FormContext = React.createContext<UseFormReturn | null>(null);
 
@@ -14,10 +28,14 @@ export const useFormContext = <
 
 export const FormProvider = <TFieldValues extends FieldValues>(
   props: FormProviderProps<TFieldValues>,
-) => (
-  <FormContext.Provider
-    value={omit(props, 'children') as unknown as UseFormReturn}
-  >
-    {props.children}
-  </FormContext.Provider>
-);
+) => {
+  return (
+    <FormContext.Provider
+      value={omit(props, 'children') as unknown as UseFormReturn}
+    >
+      <FormControlContext.Provider value={props.control as unknown as Control}>
+        {props.children}
+      </FormControlContext.Provider>
+    </FormContext.Provider>
+  );
+};
