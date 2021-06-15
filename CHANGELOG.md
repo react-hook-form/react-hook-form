@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.8.5] - 2021-06-15
+
+### Change
+
+- `useController` no longer access input `ref` except `focus` event for focus management
+
 ## [7.8.0] - 2021-06-5
 
 ### Added
