@@ -35,9 +35,9 @@ describe('useFormState', () => {
           'minLength',
         ],
         dirty: [
-          'nestItem',
           'firstName',
           'arrayItem',
+          'nestItem',
           'lastName',
           'selectNumber',
           'pattern',
@@ -80,9 +80,9 @@ describe('useFormState', () => {
           'minRequiredLength',
         ],
         dirty: [
-          'nestItem',
           'firstName',
           'arrayItem',
+          'nestItem',
           'lastName',
           'selectNumber',
           'pattern',
@@ -120,9 +120,9 @@ describe('useFormState', () => {
           'minRequiredLength',
         ],
         dirty: [
-          'nestItem',
           'firstName',
           'arrayItem',
+          'nestItem',
           'lastName',
           'selectNumber',
           'pattern',

@@ -499,4 +499,35 @@ describe('formState', () => {
       });
     });
   });
+
+  it('should not update dirty fields during blur event', async () => {
+    let dirtyFieldsState = {};
+
+    const App = () => {
+      const {
+        handleSubmit,
+        register,
+        formState: { dirtyFields },
+      } = useForm();
+
+      dirtyFieldsState = dirtyFields;
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input
+            {...register('test', { setValueAs: (value) => value + '1' })}
+          />
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.blur(screen.getByRole('textbox'));
+    });
+
+    expect(dirtyFieldsState).toEqual({});
+  });
 });
