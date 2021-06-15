@@ -928,8 +928,22 @@ export function useForm<
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
         : {
             name,
-            onChange: handleChange,
-            onBlur: handleChange,
+            onChange: options.onChange
+              ? (event: any) => {
+                  const result = handleChange(event);
+                  options.onChange && options.onChange(event);
+
+                  return result;
+                }
+              : handleChange,
+            onBlur: options.onBlur
+              ? (event: any) => {
+                  const result = handleChange(event);
+                  options.onBlur && options.onBlur(event);
+
+                  return result;
+                }
+              : handleChange,
             ref: (ref: HTMLInputElement | null): void => {
               if (ref) {
                 registerFieldRef(name, ref, options);
