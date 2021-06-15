@@ -28,6 +28,7 @@ import {
   FieldPath,
   FieldValues,
   Path,
+  PathValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
   UseFormRegister,
@@ -199,22 +200,31 @@ export const useFieldArray = <
     index = 0,
     parentName = '',
   ) =>
-    values.forEach(
-      (appendValueItem, valueIndex) =>
-        !isPrimitive(appendValueItem) &&
-        Object.entries(appendValueItem).forEach(([key, value]) => {
-          const inputName = `${parentName || name}.${
-            parentName ? valueIndex : index + valueIndex
-          }.${key}`;
+    values.forEach((appendValueItem, valueIndex) => {
+      const rootName = `${parentName || name}.${
+        parentName ? valueIndex : index + valueIndex
+      }`;
+      isPrimitive(appendValueItem)
+        ? (register as UseFormRegister<TFieldValues>)(
+            rootName as Path<TFieldValues>,
+            {
+              value: appendValueItem as PathValue<
+                TFieldValues,
+                Path<TFieldValues>
+              >,
+            },
+          )
+        : Object.entries(appendValueItem).forEach(([key, value]) => {
+            const inputName = rootName + '.' + key;
 
-          Array.isArray(value)
-            ? registerFieldArray(value, valueIndex, inputName)
-            : (register as UseFormRegister<TFieldValues>)(
-                inputName as Path<TFieldValues>,
-                { value: isPrimitive(value) ? value : { ...value } },
-              );
-        }),
-    );
+            Array.isArray(value)
+              ? registerFieldArray(value, valueIndex, inputName)
+              : (register as UseFormRegister<TFieldValues>)(
+                  inputName as Path<TFieldValues>,
+                  { value: isPrimitive(value) ? value : { ...value } },
+                );
+          });
+    });
 
   const append = (
     value:
