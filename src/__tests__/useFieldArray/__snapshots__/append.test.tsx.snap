@@ -1,5 +1,62 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": Array [],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+]
+`;
+
 exports[`useFieldArray array of array fields should populate all array fields correctly with setValue 1`] = `
 <DocumentFragment>
   <div>
