@@ -309,7 +309,7 @@ export function useForm<
         isChanged = previousIsDirty !== state.isDirty;
       }
 
-      if (readFormStateRef.current.dirtyFields) {
+      if (readFormStateRef.current.dirtyFields && !isCurrentTouched) {
         const isPreviousFieldDirty = get(
           formStateRef.current.dirtyFields,
           name,
