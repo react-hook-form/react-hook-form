@@ -1728,6 +1728,73 @@ describe('useFieldArray', () => {
 
       expect(asFragment()).toMatchSnapshot();
     });
+
+    it('should allow append with deeply nested field array even with flat structure', async () => {
+      const watchValue: unknown[] = [];
+
+      const App = () => {
+        const [data, setData] = React.useState({});
+        const { control, handleSubmit, watch } = useForm<{
+          test: {
+            yourDetails: {
+              firstName: string[];
+              lastName: string[];
+            };
+          }[];
+        }>();
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        watchValue.push(watch());
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              setData(data);
+            })}
+          >
+            {fields.map((field) => {
+              return <div key={field.id} />;
+            })}
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  yourDetails: {
+                    firstName: ['test', 'test1'],
+                    lastName: ['test', 'test1'],
+                  },
+                });
+              }}
+            >
+              append
+            </button>
+            <button>submit</button>
+            <p>{JSON.stringify(data)}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(watchValue).toMatchSnapshot();
+
+      actComponent(() => {
+        screen.getByText(
+          '{"test":[{"yourDetails":{"firstName":["test","test1"],"lastName":["test","test1"]}}]}',
+        );
+      });
+    });
   });
 
   describe('submit form', () => {
