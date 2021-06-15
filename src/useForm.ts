@@ -451,18 +451,21 @@ export function useForm<
           ? fieldNames.every((name) => !get(schemaResult, name))
           : isEmptyObject(schemaResult);
       } else {
-        isValid = name
-          ? (
-              await Promise.all(
-                fieldNames
-                  .filter((fieldName) => get(fieldsRef.current, fieldName))
-                  .map(
-                    async (fieldName) =>
-                      await executeInlineValidation(fieldName, true),
-                  ),
-              )
-            ).every(Boolean)
-          : await validateForm(fieldsRef.current);
+        if (name) {
+          isValid = (
+            await Promise.all(
+              fieldNames
+                .filter((fieldName) => get(fieldsRef.current, fieldName))
+                .map(
+                  async (fieldName) =>
+                    await executeInlineValidation(fieldName, true),
+                ),
+            )
+          ).every(Boolean);
+        } else {
+          await validateForm(fieldsRef.current);
+          isValid = isEmptyObject(formStateRef.current.errors);
+        }
       }
 
       subjectsRef.current.state.next({
