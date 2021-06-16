@@ -40,7 +40,6 @@ export function useController<
     inFieldArrayActionRef,
   } = control || methods.control;
 
-  const isFieldArray = isNameInFieldArray(namesRef.current.array, name);
   const field = get(fieldsRef.current, name);
   const [value, setInputStateValue] = React.useState(
     field && field._f && !isUndefined(field._f.value)
@@ -70,7 +69,7 @@ export function useController<
       const shouldUnmountField = shouldUnmount || shouldUnregister;
 
       if (
-        isFieldArray
+        isNameInFieldArray(namesRef.current.array, name)
           ? shouldUnmountField && !inFieldArrayActionRef.current
           : shouldUnmountField
       ) {
