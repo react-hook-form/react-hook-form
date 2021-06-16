@@ -543,6 +543,7 @@ describe('insert', () => {
                   name: 'test.0.value',
                   ref: {
                     name: 'test.0.value',
+                    value: '1',
                   },
                   value: '1',
                 },
