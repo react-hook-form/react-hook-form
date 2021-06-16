@@ -461,6 +461,55 @@ describe('Controller', () => {
     expect(screen.getByRole('textbox')).toHaveValue('test');
   });
 
+  it('should skip validation when Controller is unmounted', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { control, handleSubmit } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          {show && (
+            <Controller
+              render={({ field }) => <input {...field} />}
+              name={'test'}
+              rules={{
+                required: true,
+              }}
+              control={control}
+            />
+          )}
+          <button type={'button'} onClick={() => setShow(false)}>
+            toggle
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(onValid).toBeCalledTimes(0);
+    expect(onInvalid).toBeCalledTimes(1);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(onInvalid).toBeCalledTimes(1);
+    expect(onValid).toBeCalledTimes(1);
+  });
+
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
       const { control } = useForm<{
