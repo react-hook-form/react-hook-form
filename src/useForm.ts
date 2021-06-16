@@ -1107,10 +1107,6 @@ export function useForm<
       });
     }
 
-    !keepStateOptions.keepDefaultValues &&
-      !shouldUnregister &&
-      registerAbsentFields({ ...updatedValues });
-
     namesRef.current = {
       mount: new Set(),
       unMount: new Set(),
@@ -1149,8 +1145,6 @@ export function useForm<
     get(fieldsRef.current, name)._f.ref.focus();
 
   React.useEffect(() => {
-    !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
-
     const formStateSubscription = subjectsRef.current.state.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
@@ -1186,6 +1180,7 @@ export function useForm<
     if (!isMountedRef.current) {
       isMountedRef.current = true;
       readFormStateRef.current.isValid && updateIsValid();
+      !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
     }
 
     for (const name of namesRef.current.unMount) {
