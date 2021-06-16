@@ -75,8 +75,12 @@ export function useController<
           : shouldUnmountField
       ) {
         unregister(name);
-      } else if (field && field._f) {
-        field._f.mount = false;
+      } else {
+        const field = get(fieldsRef.current, name);
+
+        if (field && field._f) {
+          field._f.mount = false;
+        }
       }
     };
   }, [name]);
