@@ -455,7 +455,7 @@ export function useForm<
           isValid = (
             await Promise.all(
               fieldNames
-                .filter((fieldName) => get(fieldsRef.current, fieldName))
+                .filter((fieldName) => get(fieldsRef.current, fieldName, {})._f)
                 .map(
                   async (fieldName) =>
                     await executeInlineValidation(fieldName, true),
