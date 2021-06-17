@@ -473,9 +473,7 @@ describe('useFieldArray', () => {
         { id: '0', value: 'default' },
         { id: '1', value: 'test' },
       ]);
-      expect(result.current.control.namesRef.current.array).toEqual(
-        new Set(['test']),
-      );
+      expect(result.current.control.namesRef.array).toEqual(new Set(['test']));
     });
 
     it('should unset field array values correctly on DOM removing', async () => {

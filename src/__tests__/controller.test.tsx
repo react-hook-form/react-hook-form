@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps } from '../types';
+import { Control, ControllerRenderProps } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 
@@ -414,10 +414,9 @@ describe('Controller', () => {
   });
 
   it('should update rules when rules gets updated', () => {
-    let fieldsRef: any;
+    let control: Control;
     const Component = ({ required = true }: { required?: boolean }) => {
-      const { control } = useForm();
-      fieldsRef = control.fieldsRef;
+      ({ control } = useForm());
       return (
         <Controller
           defaultValue=""
@@ -432,7 +431,7 @@ describe('Controller', () => {
 
     rerender(<Component required={false} />);
 
-    expect(fieldsRef.current.test.required).toBeFalsy();
+    expect(control!.fieldsRef.test!._f.required).toBeFalsy();
   });
 
   it('should set initial state from unmount state', () => {

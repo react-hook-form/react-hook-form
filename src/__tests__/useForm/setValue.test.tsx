@@ -10,7 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { NestedValue } from '../../types';
+import { Control, NestedValue } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
@@ -262,7 +262,7 @@ describe('setValue', () => {
       ]);
     });
 
-    expect(result.current.control.fieldsRef.current['test1']).toEqual({
+    expect(result.current.control.fieldsRef['test1']).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test1', value: ['1', '2', '3'] },
@@ -270,7 +270,7 @@ describe('setValue', () => {
         value: ['1', '2', '3'],
       },
     });
-    expect(result.current.control.fieldsRef.current['test2']).toEqual({
+    expect(result.current.control.fieldsRef['test2']).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
@@ -278,7 +278,7 @@ describe('setValue', () => {
         value: { key1: '1', key2: 2 },
       },
     });
-    expect(result.current.control.fieldsRef.current['test3']).toEqual({
+    expect(result.current.control.fieldsRef['test3']).toEqual({
       _f: {
         mount: true,
         ref: {
@@ -314,7 +314,7 @@ describe('setValue', () => {
 
     act(() => result.current.setValue('test', ['1', '2', '3']));
 
-    expect(get(result.current.control.fieldsRef.current, 'test.0')).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.0')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.0', value: '1' },
@@ -322,7 +322,7 @@ describe('setValue', () => {
         value: '1',
       },
     });
-    expect(get(result.current.control.fieldsRef.current, 'test.1')).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.1')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.1', value: '2' },
@@ -330,7 +330,7 @@ describe('setValue', () => {
         value: '2',
       },
     });
-    expect(get(result.current.control.fieldsRef.current, 'test.2')).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.2')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.2', value: '3' },
@@ -361,9 +361,7 @@ describe('setValue', () => {
       ]),
     );
 
-    expect(
-      get(result.current.control.fieldsRef.current, 'test.0.test'),
-    ).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.0.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.0.test', value: '1' },
@@ -371,9 +369,7 @@ describe('setValue', () => {
         value: '1',
       },
     });
-    expect(
-      get(result.current.control.fieldsRef.current, 'test.1.test'),
-    ).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.1.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.1.test', value: '2' },
@@ -381,9 +377,7 @@ describe('setValue', () => {
         value: '2',
       },
     });
-    expect(
-      get(result.current.control.fieldsRef.current, 'test.2.test'),
-    ).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.2.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.2.test', value: '3' },
@@ -415,7 +409,7 @@ describe('setValue', () => {
     act(() =>
       result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
     );
-    expect(get(result.current.control.fieldsRef.current, 'test.bill')).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.bill')).toEqual({
       _f: {
         ref: { name: 'test.bill', value: '1' },
         mount: true,
@@ -423,7 +417,7 @@ describe('setValue', () => {
         value: '1',
       },
     });
-    expect(get(result.current.control.fieldsRef.current, 'test.luo')).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.luo')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.luo', value: '2' },
@@ -431,7 +425,7 @@ describe('setValue', () => {
         value: '2',
       },
     });
-    expect(get(result.current.control.fieldsRef.current, 'test.test')).toEqual({
+    expect(get(result.current.control.fieldsRef, 'test.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.test', value: '3' },
@@ -448,7 +442,7 @@ describe('setValue', () => {
       result.current.setValue('test', '1');
     });
 
-    expect(result.current.control.fieldsRef.current['test']).toEqual({
+    expect(result.current.control.fieldsRef['test']).toEqual({
       _f: {
         name: 'test',
         mount: true,
@@ -472,7 +466,7 @@ describe('setValue', () => {
       });
     });
 
-    expect(result.current.control.fieldsRef.current['test']).toEqual({
+    expect(result.current.control.fieldsRef['test']).toEqual({
       test: {
         _f: {
           mount: true,
@@ -941,20 +935,20 @@ describe('setValue', () => {
   });
 
   it('should register deeply nested inputs correctly', () => {
-    let fields: unknown;
+    let control: Control<any>;
     const App = () => {
-      const { setValue, control } = useForm();
+      const methods = useForm();
+      control = methods.control;
       useFieldArray({
         control,
         name: 'test',
       });
       const [, setShow] = React.useState(false);
-      fields = control.fieldsRef.current;
 
       return (
         <button
           onClick={() => {
-            setValue('test', [
+            methods.setValue('test', [
               {
                 name: 'append',
                 nestedArray: [{ field1: 'append', field2: 'append' }],
@@ -971,7 +965,7 @@ describe('setValue', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(fields).toMatchSnapshot();
+    expect(control!.fieldsRef).toMatchSnapshot();
   });
 
   describe('when set field to null', () => {

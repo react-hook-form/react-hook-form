@@ -507,16 +507,16 @@ export type Names = {
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmount?: boolean;
-  subjectsRef: React.MutableRefObject<Subjects<TFieldValues>>;
-  namesRef: React.MutableRefObject<Names>;
-  inFieldArrayActionRef: React.MutableRefObject<boolean>;
+  subjectsRef: Subjects<TFieldValues>;
+  namesRef: Names;
+  inFieldArrayActionRef: boolean;
   getIsDirty: GetIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
-  formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
+  formStateRef: FormState<TFieldValues>;
   updateIsValid: <T extends FieldValues>(payload?: T) => void;
-  fieldsRef: React.MutableRefObject<FieldRefs>;
-  readFormStateRef: React.MutableRefObject<ReadFormState>;
-  defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
+  fieldsRef: FieldRefs;
+  readFormStateRef: ReadFormState;
+  defaultValuesRef: DefaultValues<TFieldValues>;
   watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
@@ -524,7 +524,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     defaultValues: T,
     name?: string,
   ) => void;
-  isMountedRef: React.MutableRefObject<boolean>;
+  isMountedRef: boolean;
 };
 
 export type WatchObserver<TFieldValues> = (

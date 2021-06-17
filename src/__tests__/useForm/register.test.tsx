@@ -10,7 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { ControllerRenderProps } from '../../types';
+import { Control, ControllerRenderProps } from '../../types';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
@@ -898,7 +898,7 @@ describe('register', () => {
 
   it('should not register nested input', () => {
     const watchedValue: unknown[] = [];
-    let inputs: unknown;
+    let control: Control<any>;
 
     const Checkboxes = ({
       value,
@@ -934,13 +934,13 @@ describe('register', () => {
     };
 
     function App() {
-      const { control, watch } = useForm({
+      const methods = useForm({
         defaultValues: {
           test: [true, false, false],
         },
       });
-      inputs = control.fieldsRef;
-      watchedValue.push(watch());
+      control = methods.control;
+      watchedValue.push(methods.watch());
 
       return (
         <form>
@@ -965,7 +965,7 @@ describe('register', () => {
       { test: [false, false, false] },
     ]);
 
-    expect(inputs).toMatchSnapshot();
+    expect({ current: control!.fieldsRef }).toMatchSnapshot();
   });
 
   it('should validate value after toggling enabled/disabled on input', async () => {

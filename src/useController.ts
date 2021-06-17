@@ -18,38 +18,28 @@ import { useFormState } from './useFormState';
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  name,
-  rules,
-  defaultValue,
-  control,
-  shouldUnregister,
-}: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
-  TFieldValues,
-  TName
-> {
+>(
+  props: UseControllerProps<TFieldValues, TName>,
+): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
   const {
-    defaultValuesRef,
-    register,
-    fieldsRef,
-    unregister,
-    namesRef,
-    subjectsRef,
-    shouldUnmount,
-    inFieldArrayActionRef,
-  } = control || methods.control;
+    name,
+    rules,
+    defaultValue,
+    control = methods.control,
+    shouldUnregister,
+  } = props;
 
-  const isFieldArray = isNameInFieldArray(namesRef.current.array, name);
-  const field = get(fieldsRef.current, name);
+  const isFieldArray = isNameInFieldArray(control.namesRef.array, name);
+  const field = get(control.fieldsRef, name);
   const [value, setInputStateValue] = React.useState(
     isFieldArray || !field || !field._f
-      ? isFieldArray || isUndefined(get(defaultValuesRef.current, name))
+      ? isFieldArray || isUndefined(get(control.defaultValuesRef, name))
         ? defaultValue
-        : get(defaultValuesRef.current, name)
+        : get(control.defaultValuesRef, name)
       : field._f.value,
   );
-  const { onChange, onBlur, ref } = register(name, {
+  const { onChange, onBlur, ref } = control.register(name, {
     ...rules,
     value,
   });
@@ -59,7 +49,7 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = subjectsRef.current.control.subscribe({
+    const controllerSubscription = control.subjectsRef.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
@@ -67,16 +57,16 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const shouldUnmountField = control.shouldUnmount || shouldUnregister;
 
       if (
         isFieldArray
-          ? shouldUnmountField && !inFieldArrayActionRef.current
+          ? shouldUnmountField && !control.inFieldArrayActionRef
           : shouldUnmountField
       ) {
-        unregister(name);
+        control.unregister(name);
       } else {
-        const field = get(fieldsRef.current, name);
+        const field = get(control.fieldsRef, name);
 
         if (field && field._f) {
           field._f.mount = false;

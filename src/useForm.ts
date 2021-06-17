@@ -1095,84 +1095,70 @@ export function createForm<
     },
   };
 
-  const formControl = {
+  const formControl: UseFormReturn<TFieldValues> = {
     control: {
       register,
-      inFieldArrayActionRef: {
-        get current() {
-          return inFieldArrayActionRef;
-        },
-        set current(v) {
-          inFieldArrayActionRef = v;
-        },
+      get inFieldArrayActionRef() {
+        return inFieldArrayActionRef;
+      },
+      set inFieldArrayActionRef(v) {
+        inFieldArrayActionRef = v;
       },
       getIsDirty,
-      subjectsRef: {
-        get current() {
-          return subjectsRef;
-        },
-        set current(v) {
-          subjectsRef = v;
-        },
+      get subjectsRef() {
+        return subjectsRef;
+      },
+      set subjectsRef(v) {
+        subjectsRef = v;
       },
       watchInternal,
-      fieldsRef: {
-        get current() {
-          return fieldsRef;
-        },
-        set current(v) {
-          fieldsRef = v;
-        },
+      get fieldsRef() {
+        return fieldsRef;
+      },
+      set fieldsRef(v) {
+        fieldsRef = v;
       },
       updateIsValid,
-      namesRef: {
-        get current() {
-          return namesRef;
-        },
-        set current(v) {
-          namesRef = v;
-        },
+      get namesRef() {
+        return namesRef;
       },
-      readFormStateRef: readFormStateRefControl,
-      formStateRef: {
-        get current() {
-          return formStateRef;
-        },
-        set current(v) {
-          formStateRef = v;
-          formControl.formState = getProxyFormState<TFieldValues>(
-            isProxyEnabled,
-            formStateRef,
-            readFormStateRefControl,
-          );
-        },
+      set namesRef(v) {
+        namesRef = v;
       },
-      defaultValuesRef: {
-        get current() {
-          return defaultValues;
-        },
-        set current(v) {
-          defaultValues = v;
-        },
+      get readFormStateRef() {
+        return readFormStateRef;
       },
-      fieldArrayDefaultValuesRef: {
-        get current() {
-          return fieldArrayDefaultValuesRef;
-        },
-        set current(v) {
-          fieldArrayDefaultValuesRef = v;
-        },
+      get formStateRef() {
+        return formStateRef;
+      },
+      set formStateRef(v) {
+        formStateRef = v;
+        formControl.formState = getProxyFormState<TFieldValues>(
+          isProxyEnabled,
+          formStateRef,
+          readFormStateRefControl,
+        );
+      },
+      get defaultValuesRef() {
+        return defaultValues;
+      },
+      set defaultValuesRef(v) {
+        defaultValues = v;
+      },
+      get fieldArrayDefaultValuesRef() {
+        return fieldArrayDefaultValuesRef;
+      },
+      set fieldArrayDefaultValuesRef(v) {
+        fieldArrayDefaultValuesRef = v;
       },
       unregister,
       shouldUnmount: formOptions.shouldUnregister,
       registerAbsentFields,
-      isMountedRef: {
-        get current() {
-          return isMountedRef;
-        },
-        set current(v) {
-          isMountedRef = v;
-        },
+      get isMountedRef() {
+        return isMountedRef;
+      },
+      set isMountedRef(v) {
+        isMountedRef = v;
       },
     },
     formState: getProxyFormState<TFieldValues>(
@@ -1216,17 +1202,11 @@ export function useForm<
   const control = formControlRef.current!.control;
 
   useEffect(() => {
-    const formStateSubscription = control.subjectsRef.current.state.subscribe({
+    const formStateSubscription = control.subjectsRef.state.subscribe({
       next(formState) {
-        if (
-          shouldRenderFormState(
-            formState,
-            control.readFormStateRef.current,
-            true,
-          )
-        ) {
-          control.formStateRef.current = {
-            ...control.formStateRef.current,
+        if (shouldRenderFormState(formState, control.readFormStateRef, true)) {
+          control.formStateRef = {
+            ...control.formStateRef,
             ...formState,
           };
           forceUpdate({});
@@ -1234,20 +1214,15 @@ export function useForm<
       },
     });
 
-    const useFieldArraySubscription =
-      control.subjectsRef.current.array.subscribe({
-        next(state) {
-          if (
-            state.values &&
-            state.name &&
-            control.readFormStateRef.current.isValid
-          ) {
-            const values = getFieldsValues(control.fieldsRef.current);
-            set(values, state.name, state.values);
-            control.updateIsValid(values);
-          }
-        },
-      });
+    const useFieldArraySubscription = control.subjectsRef.array.subscribe({
+      next(state) {
+        if (state.values && state.name && control.readFormStateRef.isValid) {
+          const values = getFieldsValues(control.fieldsRef);
+          set(values, state.name, state.values);
+          control.updateIsValid(values);
+        }
+      },
+    });
 
     return () => {
       formStateSubscription.unsubscribe();
@@ -1259,15 +1234,15 @@ export function useForm<
     const isLiveInDom = (ref: Ref) =>
       !isHTMLElement(ref) || !document.contains(ref);
 
-    if (!control.isMountedRef.current) {
-      control.isMountedRef.current = true;
-      control.readFormStateRef.current.isValid && control.updateIsValid();
+    if (!control.isMountedRef) {
+      control.isMountedRef = true;
+      control.readFormStateRef.isValid && control.updateIsValid();
       !control.shouldUnmount &&
-        control.registerAbsentFields(control.defaultValuesRef.current);
+        control.registerAbsentFields(control.defaultValuesRef);
     }
 
-    for (const name of control.namesRef.current.unMount) {
-      const field = get(control.fieldsRef.current, name) as Field;
+    for (const name of control.namesRef.unMount) {
+      const field = get(control.fieldsRef, name) as Field;
 
       field &&
         (field._f.refs
@@ -1276,7 +1251,7 @@ export function useForm<
         control.unregister(name as FieldPath<TFieldValues>);
     }
 
-    control.namesRef.current.unMount = new Set();
+    control.namesRef.unMount = new Set();
   });
 
   return formControlRef.current!;
