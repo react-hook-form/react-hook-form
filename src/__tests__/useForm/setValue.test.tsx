@@ -922,7 +922,6 @@ describe('setValue', () => {
               key={item.id}
               control={control}
               name={`names.${index}.name` as const}
-              defaultValue={item.name}
               render={({ field }) => <input data-testid={inputId} {...field} />}
             />
           ))}

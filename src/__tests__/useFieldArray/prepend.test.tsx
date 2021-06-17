@@ -38,10 +38,7 @@ describe('prepend', () => {
         <form>
           {fields.map((field, index) => (
             <div key={field.id}>
-              <input
-                {...register(`test.${index}.test` as const)}
-                defaultValue={field.test}
-              />
+              <input {...register(`test.${index}.test` as const)} />
             </div>
           ))}
           <button type={'button'} onClick={() => prepend({ test: 'test' })}>
@@ -190,7 +187,6 @@ describe('prepend', () => {
             <input
               key={field.id}
               {...register(`test.${i}.value` as const, { required: true })}
-              defaultValue={field.value}
             />
           ))}
           <button type="button" onClick={() => prepend({ value: '' })}>
@@ -231,11 +227,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => prepend({ value: '' })}>
             prepend
@@ -277,10 +269,7 @@ describe('prepend', () => {
         <div>
           {fields.map((field, i) => (
             <div key={`${field.id}`}>
-              <input
-                defaultValue={field.value}
-                {...register(`test.${i}.value` as const)}
-              />
+              <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
           <button onClick={() => append({ value: '' })}>append</button>
@@ -334,11 +323,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => prepend({ value: '' })}>
             prepend
@@ -369,11 +354,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"

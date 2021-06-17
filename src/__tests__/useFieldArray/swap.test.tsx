@@ -129,7 +129,6 @@ describe('swap', () => {
             <input
               key={field.id}
               {...register(`test.${i}.value` as const, { required: true })}
-              defaultValue={field.value}
             />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
@@ -176,11 +175,7 @@ describe('swap', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -223,11 +218,7 @@ describe('swap', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              defaultValue={field.value}
-              {...register(`test.${i}.value` as const)}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => swap(0, 1)}>
             swap
@@ -269,10 +260,7 @@ describe('swap', () => {
         <div>
           {fields.map((field, i) => (
             <div key={`${field.id}`}>
-              <input
-                defaultValue={field.value}
-                {...register(`test.${i}.value` as const)}
-              />
+              <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
           <button onClick={() => append({ value: '' })}>append</button>
