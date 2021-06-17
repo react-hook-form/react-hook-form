@@ -4,20 +4,18 @@ describe('getFieldsValues', () => {
   it('should return all fields value', () => {
     expect(
       getFieldsValues({
-        current: {
-          test: {
-            _f: {
-              name: 'test',
-              ref: { name: 'test' },
-              value: 'test',
-            },
+        test: {
+          _f: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
-          test1: {
-            _f: {
-              name: 'test1',
-              ref: { name: 'test1' },
-              value: 'test',
-            },
+        },
+        test1: {
+          _f: {
+            name: 'test1',
+            ref: { name: 'test1' },
+            value: 'test',
           },
         },
       }),
@@ -30,27 +28,25 @@ describe('getFieldsValues', () => {
   it('should return searched string with fields value', () => {
     expect(
       getFieldsValues({
-        current: {
-          test: {
-            _f: {
-              name: 'test',
-              ref: { name: 'test' },
-              value: 'test',
-            },
+        test: {
+          _f: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
-          tex: {
-            _f: {
-              name: 'test1',
-              ref: { name: 'test1' },
-              value: 'test',
-            },
+        },
+        tex: {
+          _f: {
+            name: 'test1',
+            ref: { name: 'test1' },
+            value: 'test',
           },
-          tex123: {
-            _f: {
-              name: 'test123',
-              ref: { name: 'test123' },
-              value: 'test',
-            },
+        },
+        tex123: {
+          _f: {
+            name: 'test123',
+            ref: { name: 'test123' },
+            value: 'test',
           },
         },
       }),
@@ -64,34 +60,32 @@ describe('getFieldsValues', () => {
   it('should return searched array string with fields value', () => {
     expect(
       getFieldsValues({
-        current: {
-          test: {
-            _f: {
-              name: 'test',
-              ref: { name: 'test' },
-              value: 'test',
-            },
+        test: {
+          _f: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
-          tex: {
-            _f: {
-              name: 'tex',
-              ref: { name: 'tex' },
-              value: 'test',
-            },
+        },
+        tex: {
+          _f: {
+            name: 'tex',
+            ref: { name: 'tex' },
+            value: 'test',
           },
-          whattest123: {
-            _f: {
-              name: 'whattest123',
-              ref: { name: 'test123' },
-              value: 'test',
-            },
+        },
+        whattest123: {
+          _f: {
+            name: 'whattest123',
+            ref: { name: 'test123' },
+            value: 'test',
           },
-          156: {
-            _f: {
-              name: '156',
-              ref: { name: 'test1456s' },
-              value: 'test',
-            },
+        },
+        156: {
+          _f: {
+            name: '156',
+            ref: { name: 'test1456s' },
+            value: 'test',
           },
         },
       }),
@@ -106,22 +100,20 @@ describe('getFieldsValues', () => {
   it('should return unmounted values', () => {
     expect(
       getFieldsValues({
-        current: {
-          test: {
-            _f: {
-              name: 'test',
-              ref: { name: 'test' },
-              value: 'test',
-            },
+        test: {
+          _f: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
-          test1: {
-            _f: {
+        },
+        test1: {
+          _f: {
+            name: 'test1',
+            ref: {
               name: 'test1',
-              ref: {
-                name: 'test1',
-              },
-              value: 'test',
             },
+            value: 'test',
           },
         },
       }),
@@ -134,20 +126,18 @@ describe('getFieldsValues', () => {
   it('should return nested value', () => {
     expect(
       getFieldsValues({
-        current: {
-          ['test.test']: {
-            _f: {
-              name: 'test',
-              ref: { name: 'test' },
-              value: 'test',
-            },
+        ['test.test']: {
+          _f: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
-          ['test.test1']: {
-            _f: {
-              name: 'test',
-              ref: { name: 'test' },
-              value: 'test',
-            },
+        },
+        ['test.test1']: {
+          _f: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
         },
       }),
@@ -160,32 +150,30 @@ describe('getFieldsValues', () => {
 
     expect(
       getFieldsValues({
-        current: {
-          users: [
-            {
-              name: {
-                _f: {
-                  ref: {
-                    name: 'users.0.name',
-                  },
+        users: [
+          {
+            name: {
+              _f: {
+                ref: {
                   name: 'users.0.name',
-                  value: '1',
                 },
+                name: 'users.0.name',
+                value: '1',
               },
-              company: {
-                _f: {
-                  ref: {
-                    name: 'users.0.company',
-                  },
+            },
+            company: {
+              _f: {
+                ref: {
                   name: 'users.0.company',
-                  value: {
-                    name: '2',
-                  },
+                },
+                name: 'users.0.company',
+                value: {
+                  name: '2',
                 },
               },
             },
-          ] as any,
-        },
+          },
+        ] as any,
       }),
     ).toEqual({
       users: [
@@ -203,22 +191,20 @@ describe('getFieldsValues', () => {
     expect(
       getFieldsValues(
         {
-          current: {
-            test2: {
-              // @ts-ignore
-              test: {
-                _f: {
-                  name: 'test.test',
-                  ref: { name: 'test.test' },
-                  value: 'test',
-                },
+          test2: {
+            // @ts-ignore
+            test: {
+              _f: {
+                name: 'test.test',
+                ref: { name: 'test.test' },
+                value: 'test',
               },
-              test1: {
-                _f: {
-                  name: 'test.test1',
-                  ref: { name: 'test.test1' },
-                  value: 'test',
-                },
+            },
+            test1: {
+              _f: {
+                name: 'test.test1',
+                ref: { name: 'test.test1' },
+                value: 'test',
               },
             },
           },
@@ -237,25 +223,23 @@ describe('getFieldsValues', () => {
     expect(
       getFieldsValues(
         {
-          current: {
-            // @ts-ignore
-            test2: [
-              {
-                _f: {
-                  name: 'test.test',
-                  ref: { name: 'test.test' },
-                  value: 'test',
-                },
+          // @ts-ignore
+          test2: [
+            {
+              _f: {
+                name: 'test.test',
+                ref: { name: 'test.test' },
+                value: 'test',
               },
-              {
-                _f: {
-                  name: 'test.test1',
-                  ref: { name: 'test.test1' },
-                  value: 'test',
-                },
+            },
+            {
+              _f: {
+                name: 'test.test1',
+                ref: { name: 'test.test1' },
+                value: 'test',
               },
-            ],
-          },
+            },
+          ],
         },
         {},
       ),
@@ -267,13 +251,11 @@ describe('getFieldsValues', () => {
   it('should return undefined for disabled input', () => {
     expect(
       getFieldsValues({
-        current: {
-          test1: {
-            _f: {
-              name: 'test.test',
-              ref: { name: 'test.test', disabled: true },
-              value: 'test',
-            },
+        test1: {
+          _f: {
+            name: 'test.test',
+            ref: { name: 'test.test', disabled: true },
+            value: 'test',
           },
         },
       }),

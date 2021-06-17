@@ -73,7 +73,7 @@ export const useFieldArray = <
   >(
     mapIds(
       (get(fieldsRef.current, name) && isMountedRef.current
-        ? get(getFieldsValues(fieldsRef), name)
+        ? get(getFieldsValues(fieldsRef.current), name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name)
         : get(defaultValuesRef.current, name)) || [],
@@ -94,7 +94,7 @@ export const useFieldArray = <
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
-    const values = get(getFieldsValues(fieldsRef), name, []);
+    const values = get(getFieldsValues(fieldsRef.current), name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayDefaultValuesRef.current, name, []).map(
@@ -383,7 +383,7 @@ export const useFieldArray = <
 
     subjectsRef.current.watch.next({
       name,
-      values: getFieldsValues(fieldsRef),
+      values: getFieldsValues(fieldsRef.current),
     });
 
     focusNameRef.current &&
@@ -428,7 +428,7 @@ export const useFieldArray = <
         unregister(name as FieldPath<TFieldValues>);
         unset(fieldArrayDefaultValuesRef.current, name);
       } else {
-        const fieldArrayValues = get(getFieldsValues(fieldsRef), name);
+        const fieldArrayValues = get(getFieldsValues(fieldsRef.current), name);
         fieldArrayValues &&
           set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
       }

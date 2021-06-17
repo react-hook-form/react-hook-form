@@ -1,16 +1,14 @@
-import * as React from 'react';
-
 import { FieldRefs, FieldValues } from '../types';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import omit from '../utils/omit';
 import set from '../utils/set';
 
 const getFieldsValues = (
-  fieldsRef: React.MutableRefObject<FieldRefs>,
+  fieldsRef: FieldRefs,
   output: FieldValues = {},
 ): any => {
-  for (const name in fieldsRef.current) {
-    const field = fieldsRef.current[name];
+  for (const name in fieldsRef) {
+    const field = fieldsRef[name];
 
     if (field && !isNullOrUndefined(output)) {
       const _f = field._f;
@@ -28,13 +26,7 @@ const getFieldsValues = (
           : {},
       );
 
-      current &&
-        getFieldsValues(
-          {
-            current,
-          },
-          output[name],
-        );
+      current && getFieldsValues(current, output[name]);
     }
   }
 
