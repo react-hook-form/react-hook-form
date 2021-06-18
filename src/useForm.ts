@@ -92,6 +92,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
+  shouldUseNativeValidation,
   shouldUnregister,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
@@ -357,6 +358,7 @@ export function useForm<
         await validateField(
           get(fieldsRef.current, name) as Field,
           isValidateAllFieldCriteria,
+          shouldUseNativeValidation,
         )
       )[name];
 
@@ -376,6 +378,7 @@ export function useForm<
           namesRef.current.mount,
           fieldsRef.current,
           criteriaMode,
+          shouldUseNativeValidation,
         ),
       );
 
@@ -392,7 +395,7 @@ export function useForm<
 
       return errors;
     },
-    [criteriaMode],
+    [criteriaMode, shouldUseNativeValidation],
   );
 
   const validateForm = async (
@@ -413,6 +416,7 @@ export function useForm<
           const fieldError = await validateField(
             field,
             isValidateAllFieldCriteria,
+            shouldUseNativeValidation,
           );
 
           if (shouldCheckValid) {
@@ -529,6 +533,7 @@ export function useForm<
                   namesRef.current.mount,
                   fieldsRef.current,
                   criteriaMode,
+                  shouldUseNativeValidation,
                 ),
               )
             ).errors,
@@ -540,7 +545,7 @@ export function useForm<
           isValid,
         });
     },
-    [criteriaMode],
+    [criteriaMode, shouldUseNativeValidation],
   );
 
   const setInternalValues = React.useCallback(
@@ -691,7 +696,12 @@ export function useForm<
           const { errors } = await resolverRef.current!(
             getFieldsValues(fieldsRef),
             contextRef.current,
-            getResolverOptions([name], fieldsRef.current, criteriaMode),
+            getResolverOptions(
+              [name],
+              fieldsRef.current,
+              criteriaMode,
+              shouldUseNativeValidation,
+            ),
           );
           error = get(errors, name);
 
@@ -710,9 +720,13 @@ export function useForm<
 
           isValid = isEmptyObject(errors);
         } else {
-          error = (await validateField(field, isValidateAllFieldCriteria))[
-            name
-          ];
+          error = (
+            await validateField(
+              field,
+              isValidateAllFieldCriteria,
+              shouldUseNativeValidation,
+            )
+          )[name];
         }
 
         !isBlurEvent &&
@@ -983,6 +997,7 @@ export function useForm<
               namesRef.current.mount,
               fieldsRef.current,
               criteriaMode,
+              shouldUseNativeValidation,
             ),
           );
           formStateRef.current.errors = errors;
@@ -1026,7 +1041,12 @@ export function useForm<
         });
       }
     },
-    [shouldFocusError, isValidateAllFieldCriteria, criteriaMode],
+    [
+      shouldFocusError,
+      isValidateAllFieldCriteria,
+      criteriaMode,
+      shouldUseNativeValidation,
+    ],
   );
 
   const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(

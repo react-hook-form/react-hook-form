@@ -12,6 +12,7 @@ export default <TFieldValues>(
   fieldsNames: Set<InternalFieldName> | InternalFieldName[],
   fieldsRefs: FieldRefs,
   criteriaMode?: CriteriaMode,
+  shouldUseNativeValidation?: boolean | undefined,
 ) => {
   const fields: Record<InternalFieldName, Field['_f']> = {};
 
@@ -25,5 +26,6 @@ export default <TFieldValues>(
     criteriaMode,
     names: [...fieldsNames] as FieldName<TFieldValues>[],
     fields,
+    shouldUseNativeValidation,
   };
 };

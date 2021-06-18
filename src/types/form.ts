@@ -90,6 +90,7 @@ export type UseFormProps<
   context: TContext;
   shouldFocusError: boolean;
   shouldUnregister: boolean;
+  shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
 }>;
 
