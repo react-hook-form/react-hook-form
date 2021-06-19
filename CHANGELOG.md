@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.8.5] - 2021-06-19
+
+## Add
+
+- new config at `useForm` to enabled native browser validation
+
+```tsx
+const { register, handleSubmit } = useForm({
+  shouldUseNativeValidation: true,
+});
+```
+
 ## [7.8.5] - 2021-06-15
 
 ### Change
