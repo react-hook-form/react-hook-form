@@ -1094,7 +1094,9 @@ export function useForm<
       fieldsRef.current = {};
 
       subjectsRef.current.control.next({
-        values: { ...updatedValues },
+        values: keepStateOptions.keepDefaultValues
+          ? defaultValuesRef.current
+          : { ...updatedValues },
       });
 
       subjectsRef.current.watch.next({
