@@ -482,7 +482,7 @@ export function useForm<
         focusFieldBy(
           fieldsRef.current,
           (key) => get(formStateRef.current.errors, key),
-          fieldNames,
+          name ? fieldNames : namesRef.current.mount,
         );
       }
 
