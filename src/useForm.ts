@@ -1175,6 +1175,7 @@ export function useForm<
   }, []);
 
   React.useEffect(() => {
+    const unregisterFieldNames = [];
     const isLiveInDom = (ref: Ref) =>
       !isHTMLElement(ref) || !document.contains(ref);
 
@@ -1191,8 +1192,11 @@ export function useForm<
         (field._f.refs
           ? field._f.refs.every(isLiveInDom)
           : isLiveInDom(field._f.ref)) &&
-        unregister(name as FieldPath<TFieldValues>);
+        unregisterFieldNames.push(name);
     }
+
+    unregisterFieldNames.length &&
+      unregister(unregisterFieldNames as FieldPath<TFieldValues>[]);
 
     namesRef.current.unMount = new Set();
   });
