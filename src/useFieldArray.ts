@@ -221,7 +221,7 @@ export const useFieldArray = <
               ? registerFieldArray(value, valueIndex, inputName)
               : (register as UseFormRegister<TFieldValues>)(
                   inputName as Path<TFieldValues>,
-                  { value: isPrimitive(value) ? value : { ...value } },
+                  { value },
                 );
           });
     });
