@@ -65,6 +65,12 @@ export function useController<
         setInputStateValue(get(data.values, name)),
     });
 
+    const filed = get(fieldsRef.current, name);
+
+    if (field && field._f) {
+      filed._f._c = true;
+    }
+
     return () => {
       controllerSubscription.unsubscribe();
       const shouldUnmountField = shouldUnmount || shouldUnregister;
@@ -109,14 +115,7 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) =>
-        elm &&
-        ref({
-          focus: () => elm.focus && elm.focus(),
-          reportValidity: () => elm.reportValidity && elm.reportValidity(),
-          setCustomValidity: () =>
-            elm.setCustomValidity && elm.setCustomValidity(),
-        }),
+      ref: (elm) => elm && ref(elm),
     },
     formState,
     fieldState: {

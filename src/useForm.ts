@@ -223,12 +223,12 @@ export function useForm<
               : rawValue;
           _f.value = getFieldValueAs(rawValue, _f);
 
-          if (isRadioInput(_f.ref)) {
+          if (isRadioInput(_f.ref) && !_f._c) {
             (_f.refs || []).forEach(
               (radioRef: HTMLInputElement) =>
                 (radioRef.checked = radioRef.value === value),
             );
-          } else if (isFileInput(_f.ref) && !isString(value)) {
+          } else if (isFileInput(_f.ref) && !isString(value) && !_f._c) {
             _f.ref.files = value as FileList;
           } else if (isMultipleSelect(_f.ref)) {
             [..._f.ref.options].forEach(
@@ -237,7 +237,7 @@ export function useForm<
                   selectRef.value,
                 )),
             );
-          } else if (isCheckBoxInput(_f.ref) && _f.refs) {
+          } else if (isCheckBoxInput(_f.ref) && _f.refs && !_f._c) {
             _f.refs.length > 1
               ? _f.refs.forEach(
                   (checkboxRef) =>
