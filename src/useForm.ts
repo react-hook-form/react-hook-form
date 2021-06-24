@@ -252,7 +252,7 @@ export function useForm<
             _f.ref.value = value;
           }
 
-          if (shouldRender) {
+          if (shouldRender && _f._c) {
             const values = getFieldsValues(fieldsRef);
             set(values, name, rawValue);
             subjectsRef.current.control.next({
