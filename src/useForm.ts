@@ -19,6 +19,7 @@ import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
 import isCheckBoxInput from './utils/isCheckBoxInput';
+import isDateObject from './utils/isDateObject';
 import isEmptyObject from './utils/isEmptyObject';
 import isFileInput from './utils/isFileInput';
 import isFunction from './utils/isFunction';
@@ -556,20 +557,21 @@ export function useForm<
       >,
       options: SetValueConfig,
     ) =>
-      Object.entries(value).forEach(([inputKey, inputValue]) => {
-        const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
+      Object.entries(value).forEach(([fieldKey, fieldValue]) => {
+        const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
         const isFieldArray = namesRef.current.array.has(name);
 
-        isFieldArray || !isPrimitive(inputValue) || (field && !field._f)
+        (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
+        !isDateObject(fieldValue)
           ? setInternalValues(
               fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
+              fieldValue as SetFieldValue<TFieldValues>,
               options,
             )
           : setFieldValue(
               fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
+              fieldValue as SetFieldValue<TFieldValues>,
               options,
               true,
               !field,
