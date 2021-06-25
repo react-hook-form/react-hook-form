@@ -1106,4 +1106,47 @@ describe('setValue', () => {
       screen.getByText('{"data":"2","data1":"2"}');
     });
   });
+
+  it('should update nested object which contain date object without register', async () => {
+    const watchedValue: unknown[] = [];
+    const defaultValues = {
+      userData: {
+        userId: 'abc',
+        date: new Date('2021-06-15'),
+      },
+    };
+
+    function App() {
+      const { setValue, watch } = useForm({
+        defaultValues,
+      });
+
+      const setUserData = () => {
+        setValue('userData', {
+          userId: '1234',
+          date: new Date('2021-12-17'),
+        });
+      };
+
+      watchedValue.push(watch('userData'));
+
+      return (
+        <div>
+          <form>
+            <button type="button" onClick={() => setUserData()}>
+              Update
+            </button>
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(watchedValue).toMatchSnapshot();
+  });
 });
