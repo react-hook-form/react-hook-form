@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import isObject from '../utils/isObject';
 
-import isDateObject from './isDateObject';
 import isPrimitive from './isPrimitive';
 
 export default function deepEqual(
@@ -13,8 +12,8 @@ export default function deepEqual(
   if (
     isPrimitive(object1) ||
     isPrimitive(object2) ||
-    isDateObject(object1) ||
-    isDateObject(object2)
+    object1 instanceof Date ||
+    object2 instanceof Date
   ) {
     return object1 === object2;
   }

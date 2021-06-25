@@ -19,7 +19,6 @@ import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
 import isCheckBoxInput from './utils/isCheckBoxInput';
-import isDateObject from './utils/isDateObject';
 import isEmptyObject from './utils/isEmptyObject';
 import isFileInput from './utils/isFileInput';
 import isFunction from './utils/isFunction';
@@ -563,7 +562,7 @@ export function useForm<
         const isFieldArray = namesRef.current.array.has(name);
 
         (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
-        !isDateObject(fieldValue)
+        !(fieldValue instanceof Date)
           ? setInternalValues(
               fieldName,
               fieldValue as SetFieldValue<TFieldValues>,
