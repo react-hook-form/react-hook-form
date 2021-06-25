@@ -19,6 +19,7 @@ import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
 import isCheckBoxInput from './utils/isCheckBoxInput';
+import isDateObject from './utils/isDateObject';
 import isEmptyObject from './utils/isEmptyObject';
 import isFileInput from './utils/isFileInput';
 import isFunction from './utils/isFunction';
@@ -223,12 +224,12 @@ export function useForm<
               : rawValue;
           _f.value = getFieldValueAs(rawValue, _f);
 
-          if (isRadioInput(_f.ref)) {
+          if (isRadioInput(_f.ref) && !_f._c) {
             (_f.refs || []).forEach(
               (radioRef: HTMLInputElement) =>
                 (radioRef.checked = radioRef.value === value),
             );
-          } else if (isFileInput(_f.ref) && !isString(value)) {
+          } else if (isFileInput(_f.ref) && !isString(value) && !_f._c) {
             _f.ref.files = value as FileList;
           } else if (isMultipleSelect(_f.ref)) {
             [..._f.ref.options].forEach(
@@ -237,7 +238,7 @@ export function useForm<
                   selectRef.value,
                 )),
             );
-          } else if (isCheckBoxInput(_f.ref) && _f.refs) {
+          } else if (isCheckBoxInput(_f.ref) && _f.refs && !_f._c) {
             _f.refs.length > 1
               ? _f.refs.forEach(
                   (checkboxRef) =>
@@ -252,7 +253,7 @@ export function useForm<
             _f.ref.value = value;
           }
 
-          if (shouldRender) {
+          if (shouldRender && _f._c) {
             const values = getFieldsValues(fieldsRef);
             set(values, name, rawValue);
             subjectsRef.current.control.next({
@@ -482,7 +483,7 @@ export function useForm<
         focusFieldBy(
           fieldsRef.current,
           (key) => get(formStateRef.current.errors, key),
-          fieldNames,
+          name ? fieldNames : namesRef.current.mount,
         );
       }
 
@@ -556,20 +557,21 @@ export function useForm<
       >,
       options: SetValueConfig,
     ) =>
-      Object.entries(value).forEach(([inputKey, inputValue]) => {
-        const fieldName = `${name}.${inputKey}` as Path<TFieldValues>;
+      Object.entries(value).forEach(([fieldKey, fieldValue]) => {
+        const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
         const field = get(fieldsRef.current, fieldName);
         const isFieldArray = namesRef.current.array.has(name);
 
-        isFieldArray || !isPrimitive(inputValue) || (field && !field._f)
+        (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
+        !isDateObject(fieldValue)
           ? setInternalValues(
               fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
+              fieldValue as SetFieldValue<TFieldValues>,
               options,
             )
           : setFieldValue(
               fieldName,
-              inputValue as SetFieldValue<TFieldValues>,
+              fieldValue as SetFieldValue<TFieldValues>,
               options,
               true,
               !field,
@@ -867,13 +869,12 @@ export function useForm<
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
         !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
-
-        subjectsRef.current.watch.next({
-          name: inputName,
-          values: getValues(),
-        });
       }
     }
+
+    subjectsRef.current.watch.next({
+      values: getValues(),
+    });
 
     subjectsRef.current.state.next({
       ...formStateRef.current,
@@ -1176,6 +1177,7 @@ export function useForm<
   }, []);
 
   React.useEffect(() => {
+    const unregisterFieldNames = [];
     const isLiveInDom = (ref: Ref) =>
       !isHTMLElement(ref) || !document.contains(ref);
 
@@ -1192,8 +1194,11 @@ export function useForm<
         (field._f.refs
           ? field._f.refs.every(isLiveInDom)
           : isLiveInDom(field._f.ref)) &&
-        unregister(name as FieldPath<TFieldValues>);
+        unregisterFieldNames.push(name);
     }
+
+    unregisterFieldNames.length &&
+      unregister(unregisterFieldNames as FieldPath<TFieldValues>[]);
 
     namesRef.current.unMount = new Set();
   });
