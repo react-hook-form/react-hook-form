@@ -500,14 +500,14 @@ export function useForm<
     if (field) {
       const isValueUndefined = isUndefined(field._f.value);
       const defaultValue = isValueUndefined
-        ? get(defaultValuesRef.current, name)
+        ? isUndefined(get(fieldArrayDefaultValuesRef.current, name))
+          ? get(defaultValuesRef.current, name)
+          : get(fieldArrayDefaultValuesRef.current, name)
         : field._f.value;
 
       if (!isUndefined(defaultValue)) {
         if (ref && (ref as HTMLInputElement).defaultChecked) {
           field._f.value = getFieldValue(field);
-        } else if (isNameInFieldArray(namesRef.current.array, name)) {
-          field._f.value = defaultValue;
         } else {
           setFieldValue(name, defaultValue);
         }

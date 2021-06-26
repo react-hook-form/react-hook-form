@@ -35,7 +35,6 @@ function NestedArray({
             render={({ field }) => <input {...field} aria-label={'name'} />}
             name={`test.${index}.keyValue.${i}.name`}
             control={control}
-            defaultValue={item.name}
           />
         ))}
       </ul>
@@ -132,7 +131,6 @@ export default () => {
           <div key={item.id}>
             <input
               aria-label={`test.${index}.firstName`}
-              defaultValue={`${item.firstName}`}
               {...register(`test.${index}.firstName` as const)}
             />
             <NestedArray control={control} index={index} />

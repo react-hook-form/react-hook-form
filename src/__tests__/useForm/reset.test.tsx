@@ -377,15 +377,11 @@ describe('reset', () => {
         >
           {fields.map((field, index) => (
             <div key={field.id}>
-              <input
-                {...register(`test.${index}.firstName` as const)}
-                defaultValue={field.firstName}
-              />
+              <input {...register(`test.${index}.firstName` as const)} />
               <Controller
                 control={control}
                 name={`test.${index}.lastName` as const}
                 render={({ field }) => <input {...field} />}
-                defaultValue={field.lastName}
               />
             </div>
           ))}

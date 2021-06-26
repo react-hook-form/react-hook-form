@@ -75,7 +75,6 @@ describe('swap', () => {
             <input
               key={field.id}
               {...register(`test.${i}.value` as const, { required: true })}
-              defaultValue={field.value}
             />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
@@ -122,11 +121,7 @@ describe('swap', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -169,11 +164,7 @@ describe('swap', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              defaultValue={field.value}
-              {...register(`test.${i}.value` as const)}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => move(0, 1)}>
             move
@@ -215,11 +206,7 @@ describe('swap', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
         </form>
       );
@@ -252,10 +239,7 @@ describe('swap', () => {
         <div>
           {fields.map((field, i) => (
             <div key={`${field.id}`}>
-              <input
-                defaultValue={field.value}
-                {...register(`test.${i}.value` as const)}
-              />
+              <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
           <button onClick={() => append({ value: '' })}>append</button>
@@ -332,6 +316,7 @@ describe('swap', () => {
                   name: 'test.1.value',
                   ref: {
                     name: 'test.1.value',
+                    value: '2',
                   },
                   value: '2',
                 },
@@ -342,6 +327,7 @@ describe('swap', () => {
                   name: 'test.0.value',
                   ref: {
                     name: 'test.0.value',
+                    value: '1',
                   },
                   value: '1',
                 },

@@ -346,14 +346,12 @@ describe('formState', () => {
                   name={`list.${index}.firstName` as const}
                   control={control}
                   rules={{ required: true }}
-                  defaultValue={field.firstName}
                 />
                 <input
                   {...register(`list.${index}.lastName` as const, {
                     required: true,
                   })}
                   placeholder={`list.${index}.lastName`}
-                  defaultValue={field.lastName}
                 />
               </div>
             );

@@ -43,11 +43,8 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={i.toString()}>
-              <input
-                {...register(`test.${i}.name` as const)}
-                defaultValue={field.name}
-              />
+            <div key={field.id}>
+              <input {...register(`test.${i}.name` as const)} />
               <button type={'button'} onClick={() => remove(i)}>
                 remove
               </button>
@@ -106,10 +103,9 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={i.toString()}>
+            <div key={field.id}>
               <input
                 {...register(`test.${i}.name` as const, { required: true })}
-                defaultValue={field.name}
               />
               <button type={'button'} onClick={() => remove(i)}>
                 remove
@@ -660,11 +656,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              defaultValue={field.value}
-              {...register(`test.${i}.value` as const)}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -714,10 +706,7 @@ describe('remove', () => {
         <div>
           {fields.map((field, i) => (
             <div key={`${field.id}`}>
-              <input
-                {...register(`test.${i}.value` as const)}
-                defaultValue={field.value}
-              />
+              <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
           <button onClick={() => append({ value: '' })}>append</button>
@@ -824,7 +813,6 @@ describe('remove', () => {
                     render={({ field }) => <input {...field} />}
                     name={`test.${index}.firstName` as const}
                     control={control}
-                    defaultValue={item.firstName}
                   />
                   <button type="button" onClick={() => remove(index)}>
                     delete
@@ -899,7 +887,6 @@ describe('remove', () => {
                   <Controller
                     name={`test.${index}.lastName` as const}
                     control={control}
-                    defaultValue={item.lastName}
                     render={({ field }) => <input {...field} />}
                   />
                   <button type="button" onClick={() => remove(index)}>
@@ -1026,15 +1013,11 @@ describe('remove', () => {
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
-                  <input
-                    {...register(`test.${index}.firstName` as const)}
-                    defaultValue={field.firstName}
-                  />
+                  <input {...register(`test.${index}.firstName` as const)} />
                   <Controller
                     name={`test.${index}.lastName` as const}
                     control={control}
                     render={() => <div />}
-                    defaultValue={field.lastName}
                   />
                   <button
                     type={'button'}
