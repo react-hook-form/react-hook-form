@@ -23,7 +23,8 @@ describe('getFielfs', () => {
       },
     };
 
-    expect(getResolverOptions(fieldNames, fieldsRef)).toMatchInlineSnapshot(`
+    expect(getResolverOptions(fieldNames, fieldsRef, undefined, true))
+      .toMatchInlineSnapshot(`
       Object {
         "criteriaMode": undefined,
         "fields": Object {
@@ -50,6 +51,7 @@ describe('getFielfs', () => {
           "test.sub",
           "test1",
         ],
+        "shouldUseNativeValidation": true,
       }
     `);
   });

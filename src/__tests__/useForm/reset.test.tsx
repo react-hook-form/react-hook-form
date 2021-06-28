@@ -9,7 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { NestedValue, UseFormReturn } from '../../types';
+import { Control, NestedValue, UseFormReturn } from '../../types';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
@@ -376,15 +377,11 @@ describe('reset', () => {
         >
           {fields.map((field, index) => (
             <div key={field.id}>
-              <input
-                {...register(`test.${index}.firstName` as const)}
-                defaultValue={field.firstName}
-              />
+              <input {...register(`test.${index}.firstName` as const)} />
               <Controller
                 control={control}
                 name={`test.${index}.lastName` as const}
                 render={({ field }) => <input {...field} />}
-                defaultValue={field.lastName}
               />
             </div>
           ))}
@@ -463,5 +460,55 @@ describe('reset', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(getValuesResult).toMatchSnapshot();
+  });
+
+  it('should keep defaultValues after reset with shouldKeepDefaultValues', async () => {
+    type FormValues = { test: string; test1: string };
+    const ControlledInput = ({ control }: { control: Control<FormValues> }) => {
+      const { field } = useController({
+        name: 'test',
+        control,
+      });
+
+      return <input {...field} />;
+    };
+
+    function App() {
+      const { control, register, reset } = useForm<FormValues>({
+        defaultValues: { test: 'test', test1: 'test1' },
+      });
+      const resetData = () => {
+        reset({}, { keepDefaultValues: true });
+      };
+
+      return (
+        <form>
+          <ControlledInput control={control} />
+          <input {...register('test1')} />
+          <input type="button" onClick={resetData} value="Reset" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'data' },
+    });
+
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'data' },
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('test');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('test1');
   });
 });

@@ -346,14 +346,12 @@ describe('formState', () => {
                   name={`list.${index}.firstName` as const}
                   control={control}
                   rules={{ required: true }}
-                  defaultValue={field.firstName}
                 />
                 <input
                   {...register(`list.${index}.lastName` as const, {
                     required: true,
                   })}
                   placeholder={`list.${index}.lastName`}
-                  defaultValue={field.lastName}
                 />
               </div>
             );
@@ -498,5 +496,36 @@ describe('formState', () => {
         screen.getByText('isValid = true');
       });
     });
+  });
+
+  it('should not update dirty fields during blur event', async () => {
+    let dirtyFieldsState = {};
+
+    const App = () => {
+      const {
+        handleSubmit,
+        register,
+        formState: { dirtyFields },
+      } = useForm();
+
+      dirtyFieldsState = dirtyFields;
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input
+            {...register('test', { setValueAs: (value) => value + '1' })}
+          />
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.blur(screen.getByRole('textbox'));
+    });
+
+    expect(dirtyFieldsState).toEqual({});
   });
 });

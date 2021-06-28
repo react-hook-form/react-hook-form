@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -921,7 +922,6 @@ describe('setValue', () => {
               key={item.id}
               control={control}
               name={`names.${index}.name` as const}
-              defaultValue={item.name}
               render={({ field }) => <input data-testid={inputId} {...field} />}
             />
           ))}
@@ -1051,5 +1051,101 @@ describe('setValue', () => {
         user: null,
       });
     });
+  });
+
+  it('should only be able to update value of array which is not registered', async () => {
+    const App = () => {
+      const { setValue, watch } = useForm({
+        defaultValues: {
+          test: ['1', '2', '3'],
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', ['2', '2']);
+      }, [setValue]);
+
+      const result = watch('test');
+
+      return <p>{JSON.stringify(result)}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('["2","2","3"]');
+    });
+  });
+
+  it('should only be able to update value of object which is not registered', async () => {
+    const App = () => {
+      const { setValue, watch } = useForm({
+        defaultValues: {
+          test: {
+            data: '1',
+            data1: '2',
+          },
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', {
+          data: '2',
+        } as any);
+      }, [setValue]);
+
+      const result = watch('test');
+
+      return <p>{JSON.stringify(result)}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('{"data":"2","data1":"2"}');
+    });
+  });
+
+  it('should update nested object which contain date object without register', async () => {
+    const watchedValue: unknown[] = [];
+    const defaultValues = {
+      userData: {
+        userId: 'abc',
+        date: new Date('2021-06-15'),
+      },
+    };
+
+    function App() {
+      const { setValue, watch } = useForm({
+        defaultValues,
+      });
+
+      const setUserData = () => {
+        setValue('userData', {
+          userId: '1234',
+          date: new Date('2021-12-17'),
+        });
+      };
+
+      watchedValue.push(watch('userData'));
+
+      return (
+        <div>
+          <form>
+            <button type="button" onClick={() => setUserData()}>
+              Update
+            </button>
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(watchedValue).toMatchSnapshot();
   });
 });

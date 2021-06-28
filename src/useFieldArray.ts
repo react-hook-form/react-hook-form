@@ -12,7 +12,6 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
-import isString from './utils/isString';
 import moveArrayAt from './utils/move';
 import omit from './utils/omit';
 import prependAt from './utils/prepend';
@@ -29,6 +28,7 @@ import {
   FieldPath,
   FieldValues,
   Path,
+  PathValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
   UseFormRegister,
@@ -72,11 +72,11 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      get(fieldsRef.current, name) && isMountedRef.current
+      (get(fieldsRef.current, name) && isMountedRef.current
         ? get(getFieldsValues(fieldsRef), name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
-        ? get(fieldArrayDefaultValuesRef.current, name, [])
-        : get(defaultValuesRef.current, name, []),
+        ? get(fieldArrayDefaultValuesRef.current, name)
+        : get(defaultValuesRef.current, name)) || [],
       keyName,
     ),
   );
@@ -112,8 +112,8 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ): string =>
     options && !options.shouldFocus
-      ? options.focusName || `${name}.${options.focusIndex}`
-      : `${name}.${index}`;
+      ? options.focusName || `${name}.${options.focusIndex}.`
+      : `${name}.${index}.`;
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
@@ -200,22 +200,31 @@ export const useFieldArray = <
     index = 0,
     parentName = '',
   ) =>
-    values.forEach(
-      (appendValueItem, valueIndex) =>
-        !isPrimitive(appendValueItem) &&
-        Object.entries(appendValueItem).forEach(([key, value]) => {
-          const inputName = `${parentName || name}.${
-            parentName ? valueIndex : index + valueIndex
-          }.${key}`;
+    values.forEach((appendValueItem, valueIndex) => {
+      const rootName = `${parentName || name}.${
+        parentName ? valueIndex : index + valueIndex
+      }`;
+      isPrimitive(appendValueItem)
+        ? (register as UseFormRegister<TFieldValues>)(
+            rootName as Path<TFieldValues>,
+            {
+              value: appendValueItem as PathValue<
+                TFieldValues,
+                Path<TFieldValues>
+              >,
+            },
+          )
+        : Object.entries(appendValueItem).forEach(([key, value]) => {
+            const inputName = rootName + '.' + key;
 
-          Array.isArray(value)
-            ? registerFieldArray(value, valueIndex, inputName)
-            : (register as UseFormRegister<TFieldValues>)(
-                inputName as Path<TFieldValues>,
-                { value },
-              );
-        }),
-    );
+            Array.isArray(value)
+              ? registerFieldArray(value, valueIndex, inputName)
+              : (register as UseFormRegister<TFieldValues>)(
+                  inputName as Path<TFieldValues>,
+                  { value },
+                );
+          });
+    });
 
   const append = (
     value:
@@ -378,9 +387,8 @@ export const useFieldArray = <
     });
 
     focusNameRef.current &&
-      focusFieldBy(
-        fieldsRef.current,
-        (key: string) => isString(key) && key.startsWith(focusNameRef.current),
+      focusFieldBy(fieldsRef.current, (key: string) =>
+        key.startsWith(focusNameRef.current),
       );
 
     focusNameRef.current = '';
@@ -416,8 +424,14 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      (shouldUnmount || shouldUnregister) &&
+      if (shouldUnmount || shouldUnregister) {
         unregister(name as FieldPath<TFieldValues>);
+        unset(fieldArrayDefaultValuesRef.current, name);
+      } else {
+        const fieldArrayValues = get(getFieldsValues(fieldsRef), name);
+        fieldArrayValues &&
+          set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
+      }
     };
   }, []);
 

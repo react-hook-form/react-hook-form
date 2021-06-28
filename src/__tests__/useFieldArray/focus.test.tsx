@@ -22,11 +22,7 @@ describe('useFieldArray focus', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -67,6 +63,52 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(document.body);
   });
 
+  it('should focus on the precise input index', () => {
+    function App() {
+      const { register, handleSubmit, control } = useForm({
+        defaultValues: {
+          test: [
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+            { value: '0' },
+          ],
+        },
+      });
+      const { fields, insert } = useFieldArray({ control, name: 'test' });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <input
+                {...register(`test.${index}.value`)}
+                defaultValue={field.value}
+              />
+              <button onClick={() => insert(1, { value: '' })}>insert</button>
+            </div>
+          ))}
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    act(() => {
+      fireEvent.click(screen.getAllByRole('button', { name: /insert/i })[0]);
+    });
+
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1]);
+  });
+
   it('should focus correct field array by focus index', () => {
     const Component = () => {
       const { register, control } = useForm<{
@@ -84,11 +126,7 @@ describe('useFieldArray focus', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -137,7 +175,7 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
   });
 
-  it('should focus correct field array by focus index', () => {
+  it('should focus correct field array by focus name', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -154,11 +192,7 @@ describe('useFieldArray focus', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"

@@ -240,7 +240,6 @@ describe('useForm', () => {
               <input
                 key={field.id}
                 {...register(`test2.${i}.value` as const)}
-                defaultValue={field.value}
               />
             ))}
           </>

@@ -32,8 +32,6 @@ const ChildComponent = ({
           {...control.register(
             `nest.test.${index}.nestedArray.${i}.value` as const,
           )}
-          // @ts-ignore
-          defaultValue={item.value}
         />
       ))}
     </div>
@@ -60,10 +58,7 @@ const Component = () => {
     <div>
       {fields.map((item, i) => (
         <div key={item.id}>
-          <input
-            {...register(`nest.test.${i}.value` as const)}
-            defaultValue={item.value}
-          />
+          <input {...register(`nest.test.${i}.value` as const)} />
 
           <ChildComponent control={control} index={i} />
 

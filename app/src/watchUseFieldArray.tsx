@@ -48,7 +48,6 @@ const WatchUseFieldArray: React.FC = (props: any) => {
           <li key={data.id}>
             <input
               id={`field${index}`}
-              defaultValue={data.name}
               data-order={index}
               {...register(`data.${index}.name` as const)}
             />

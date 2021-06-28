@@ -23,6 +23,7 @@ Array [
       "names": Array [
         "test",
       ],
+      "shouldUseNativeValidation": undefined,
     },
   ],
   Array [
@@ -46,6 +47,7 @@ Array [
       "names": Array [
         "test",
       ],
+      "shouldUseNativeValidation": undefined,
     },
   ],
 ]
@@ -73,6 +75,7 @@ Array [
     "names": Array [
       "test",
     ],
+    "shouldUseNativeValidation": undefined,
   },
 ]
 `;

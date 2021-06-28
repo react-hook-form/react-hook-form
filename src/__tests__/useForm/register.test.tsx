@@ -1014,4 +1014,55 @@ describe('register', () => {
 
     expect(submit).toBeCalledWith({ test: undefined });
   });
+
+  describe('when setValueAs is presented with inputs', () => {
+    it('should update inputs correctly with useForm defaultValues', () => {
+      const App = () => {
+        const { register } = useForm({
+          defaultValues: {
+            test: '1234',
+          },
+        });
+        return (
+          <form>
+            <input
+              {...register('test', { setValueAs: (value) => value + '5' })}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '12345',
+      );
+    });
+
+    it('should update inputs correctly with reset', () => {
+      const App = () => {
+        const { register, reset } = useForm();
+
+        React.useEffect(() => {
+          reset({
+            test: '1234',
+          });
+        }, []);
+
+        return (
+          <form>
+            <input
+              {...register('test', { setValueAs: (value) => value + '5' })}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '12345',
+      );
+    });
+  });
 });
