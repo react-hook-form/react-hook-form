@@ -4,16 +4,8 @@ const jestDefaultConfig = {
   restoreMocks: true,
   rootDir: '.',
   roots: ['<rootDir>/src'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-  },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-    },
-  },
+  preset: 'ts-jest',
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-  moduleFileExtensions: ['ts', 'tsx', 'js'],
 };
 
 const web = {
@@ -49,14 +41,8 @@ const native = {
     '^.+\\.tsx?$': 'ts-jest',
     '^.+\\.jsx?$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
   },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-      babelConfig: true,
-    },
-  },
   transformIgnorePatterns: [
-    '[/\\\\]node_modules[/\\\\](?!react-native)[/\\\\].+',
+    '[/\\\\]node_modules[/\\\\](?!(@react-native|react-native)[/\\\\])',
   ],
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.native.ts'],
 };
