@@ -69,7 +69,7 @@
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@testing-library/jest-dom": "^5.12.0",
-    "@testing-library/react": "^11.2.5",
+    "@testing-library/react": "^12.0.0",
     "@testing-library/react-hooks": "^5.1.2",
     "@testing-library/react-native": "^5.0.3",
     "@types/jest": "^26.0.23",
