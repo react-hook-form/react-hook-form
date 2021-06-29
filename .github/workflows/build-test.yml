@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run install
         run: |
-          npm install
+          npm ci
           npm run lint
           npm run lint:types
           npm run test
