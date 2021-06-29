@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
-import { fireEvent, render, wait } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as focusOnErrorField from './logic/focusFieldBy';
 import { Controller } from './controller';
@@ -31,7 +31,7 @@ describe('Controller with React Native', () => {
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 testID={'input'}
-                onChange={onChange}
+                onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
               />
@@ -48,11 +48,11 @@ describe('Controller with React Native', () => {
 
     const input = getByTestId('input');
 
-    fireEvent.change(input, 'test');
+    fireEvent.changeText(input, 'test');
 
     fireEvent.press(getByText('submit'));
 
-    await wait(() => expect(mockFocus).toHaveBeenCalled());
+    await waitFor(() => expect(mockFocus).toHaveBeenCalled());
 
     expect(callback).not.toHaveBeenCalled();
     expect(input.props.value).toBe('test');
