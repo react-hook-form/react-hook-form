@@ -465,6 +465,43 @@ describe('register', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
+  it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {
+    type FormValue = {
+      test: string;
+    };
+
+    const Component = () => {
+      const { register } = useForm<FormValue>({
+        defaultValues: {
+          test: 'bill',
+        },
+        shouldUnregister: true,
+      });
+      const [show, setShow] = React.useState(true);
+
+      return (
+        <>
+          {show && <input {...register('test', { shouldUnregister: true })} />}
+          <button onClick={() => setShow(!show)}>hide</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'bill',
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'bill',
+    );
+  });
+
   it('should skip register absent fields which are checkbox/radio inputs', async () => {
     let data: unknown;
 

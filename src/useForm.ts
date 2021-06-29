@@ -868,7 +868,9 @@ export function useForm<
           unset(formStateRef.current.dirtyFields, inputName);
         !options.keepTouched &&
           unset(formStateRef.current.touchedFields, inputName);
-        !options.keepDefaultValue && unset(defaultValuesRef.current, inputName);
+        !shouldUnregister &&
+          !options.keepDefaultValue &&
+          unset(defaultValuesRef.current, inputName);
       }
     }
 
