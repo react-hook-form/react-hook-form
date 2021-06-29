@@ -1,7 +1,6 @@
 import 'jest-performance-testing';
 
 import * as React from 'react';
-import { perf, wait } from 'react-performance-testing';
 import {
   act as actComponent,
   fireEvent,
@@ -181,11 +180,6 @@ describe('useWatch', () => {
         );
       };
 
-      const { renderCount } = perf<{
-        Parent: unknown;
-        Child: unknown;
-      }>(React);
-
       render(<Parent />);
 
       const childInput = screen.getAllByRole('textbox')[1];
@@ -194,33 +188,12 @@ describe('useWatch', () => {
         target: { value: 'test' },
       });
 
-      await wait(() => {
-        expect(renderCount.current.Parent).toBeRenderedTimes(1);
-        expect(renderCount.current.Child).toBeRenderedTimes(2);
-      });
-
-      renderCount.current.Parent!.value = 0;
-      renderCount.current.Child!.value = 0;
-
       await actComponent(async () => {
         await fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
       });
 
-      await wait(() => {
-        expect(renderCount.current.Parent).toBeRenderedTimes(2);
-        expect(renderCount.current.Child).toBeRenderedTimes(2);
-      });
-
-      renderCount.current.Parent!.value = 0;
-      renderCount.current.Child!.value = 0;
-
       await actComponent(async () => {
         await fireEvent.input(childInput, { target: { value: 'test1' } });
-      });
-
-      await wait(() => {
-        expect(renderCount.current.Parent).toBeRenderedTimes(0);
-        expect(renderCount.current.Child).toBeRenderedTimes(1);
       });
     });
 
@@ -305,8 +278,6 @@ describe('useWatch', () => {
         );
       };
 
-      const { renderCount } = perf<{ Parent: unknown; Child: unknown }>(React);
-
       render(<Parent />);
 
       fireEvent.input(screen.getAllByRole('textbox')[1], {
@@ -315,8 +286,6 @@ describe('useWatch', () => {
           value: 'value',
         },
       });
-
-      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(1));
     });
 
     it('should not throw error when null or undefined is set', () => {
