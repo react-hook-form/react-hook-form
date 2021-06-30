@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
-import { fireEvent, render, wait } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as focusOnErrorField from './logic/focusFieldBy';
 import { useForm } from './useForm';
@@ -50,7 +50,7 @@ describe('useForm with React Native', () => {
 
     fireEvent.press(getByText('button'));
 
-    await wait(() => expect(mockFocus).toHaveBeenCalled());
+    await waitFor(() => expect(mockFocus).toHaveBeenCalled());
     expect(callback).not.toHaveBeenCalled();
     expect(getByText('required').props.children).toBe('required');
   });
