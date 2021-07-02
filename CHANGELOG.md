@@ -1,6 +1,12 @@
 # Changelog
 
-## [7.8.5] - 2021-06-19
+## [7.10.0] - 2021-07-02
+
+## Changed
+
+- `defaultValue` is no longer a required prop for register input with `useFieldArray`
+
+## [7.9.0] - 2021-06-19
 
 ## Add
 
