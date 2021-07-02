@@ -64,10 +64,10 @@ export function useController<
         setInputStateValue(get(data.values, name)),
     });
 
-    const filed = get(fieldsRef.current, name);
+    const field = get(fieldsRef.current, name);
 
     if (field && field._f) {
-      filed._f._c = true;
+      field._f._c = true;
     }
 
     return () => {
