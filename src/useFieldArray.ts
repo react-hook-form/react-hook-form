@@ -19,6 +19,7 @@ import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
+import updateAt from './utils/update';
 import {
   FieldArray,
   FieldArrayMethodProps,
@@ -367,6 +368,28 @@ export const useFieldArray = <
     );
   };
 
+  const update = (
+    index: number | FieldArray<TFieldValues, TFieldArrayName>[],
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+  ) => {
+    let fieldValues = getCurrentFieldsValues();
+
+    fieldValues = Number.isNaN(index)
+      ? value
+      : updateAt(fieldValues, value, index as number);
+
+    batchStateUpdate(
+      updateAt,
+      {
+        argA: value,
+        argB: index,
+      },
+      fieldValues,
+    );
+  };
+
   React.useEffect(() => {
     inFieldArrayActionRef.current = false;
 
@@ -442,6 +465,7 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
+    update: React.useCallback(update, [name]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,
