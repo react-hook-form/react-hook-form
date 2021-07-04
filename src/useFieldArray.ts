@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
@@ -133,9 +134,10 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = [],
     shouldSet = true,
+    skipSet = false,
   ) => {
     inFieldArrayActionRef.current = true;
-    if (get(fieldsRef.current, name)) {
+    if (get(fieldsRef.current, name) && !skipSet) {
       const output = method(get(fieldsRef.current, name), args.argA, args.argB);
       shouldSet && set(fieldsRef.current, name, output);
     }
@@ -380,6 +382,8 @@ export const useFieldArray = <
       ? value
       : updateAt(fieldValues, value, index as number);
 
+    setFieldsAndNotify(fieldValues);
+
     batchStateUpdate(
       updateAt,
       {
@@ -387,6 +391,8 @@ export const useFieldArray = <
         argB: index,
       },
       fieldValues,
+      false,
+      true,
     );
   };
 
