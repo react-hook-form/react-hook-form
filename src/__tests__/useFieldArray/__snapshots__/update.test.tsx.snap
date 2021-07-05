@@ -38,6 +38,29 @@ Array [
 ]
 `;
 
+exports[`update should update group input correctly 1`] = `
+Array [
+  Array [
+    Object {
+      "id": "0",
+      "value": Object {
+        "firstName": "firstName",
+        "lastName": "lastName",
+      },
+    },
+  ],
+  Array [
+    Object {
+      "id": "1",
+      "value": Object {
+        "firstName": "firstName",
+        "lastName": "lastName",
+      },
+    },
+  ],
+]
+`;
+
 exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
 Array [
   Object {},

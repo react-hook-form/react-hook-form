@@ -3,6 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Control } from '../../types';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
@@ -185,6 +187,108 @@ describe('update', () => {
         [{ value: 'test' }],
       ]),
     );
+  });
+
+  it('should update group input correctly', () => {
+    type FormValues = {
+      test: {
+        value: {
+          firstName: string;
+          lastName: string;
+        };
+      }[];
+    };
+
+    const fieldArrayValues: unknown[] = [];
+
+    const GroupInput = ({
+      control,
+      index,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+    }) => {
+      const { field } = useController({
+        control,
+        name: `test.${index}.value` as const,
+      });
+
+      return (
+        <div>
+          <input
+            value={field.value.firstName}
+            onChange={(e) => {
+              field.onChange({
+                ...field.value,
+                firstName: e.target.name,
+              });
+            }}
+          />
+          <input
+            value={field.value.lastName}
+            onChange={(e) => {
+              field.onChange({
+                ...field.value,
+                lastName: e.target.name,
+              });
+            }}
+          />
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: [
+            {
+              value: {
+                firstName: 'bill',
+                lastName: 'luo',
+              },
+            },
+          ],
+        },
+      });
+      const { fields, update } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      fieldArrayValues.push(fields);
+
+      return (
+        <div>
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <GroupInput control={control} index={i} />
+            </div>
+          ))}
+          <button
+            onClick={() =>
+              update(0, {
+                value: { firstName: 'firstName', lastName: 'lastName' },
+              })
+            }
+          >
+            update
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('firstName');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('lastName');
+
+    expect(fieldArrayValues).toMatchSnapshot();
   });
 
   it('should update field array with single value', () => {
