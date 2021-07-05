@@ -22,13 +22,11 @@ function NestedArray({
   control: Control<FormValues>;
   index: number;
 }) {
-  const { fields, append, prepend, swap, move, remove, insert } = useFieldArray<
-    FormValues,
-    'test.0.keyValue'
-  >({
-    name: `test.${index}.keyValue` as 'test.0.keyValue',
-    control,
-  });
+  const { fields, append, prepend, swap, move, remove, insert, update } =
+    useFieldArray<FormValues, 'test.0.keyValue'>({
+      name: `test.${index}.keyValue` as 'test.0.keyValue',
+      control,
+    });
   const { touchedFields, dirtyFields } = useFormState({
     control,
   });
@@ -89,6 +87,14 @@ function NestedArray({
         onClick={() => insert(1, { name: 'insert' })}
       >
         insert
+      </button>
+
+      <button
+        id={`nest-update-${index}`}
+        type="button"
+        onClick={() => update(0, { name: 'update' })}
+      >
+        update
       </button>
 
       <button
@@ -194,9 +200,11 @@ export default () => {
         id="update"
         onClick={() =>
           update(0, {
-            firstName: 'firstName',
-            lastName: 'lastName',
-            keyValue: [{ name: 'name1' }, { name: 'name2' }],
+            firstName: 'updateFirstName',
+            keyValue: [
+              { name: 'updateFirstName1' },
+              { name: 'updateFirstName2' },
+            ],
           })
         }
         type="button"
