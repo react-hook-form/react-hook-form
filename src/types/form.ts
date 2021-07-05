@@ -18,6 +18,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  PathValue,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -520,6 +521,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
+  setValues: (
+    name: FieldPath<TFieldValues>,
+    value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
+    options: SetValueConfig,
+  ) => void;
   unregister: UseFormUnregister<TFieldValues>;
 };
 

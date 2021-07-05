@@ -66,10 +66,8 @@ export type UseFieldArrayReturn<
     options?: FieldArrayMethodProps,
   ) => void;
   update: (
-    index: number | FieldArray<TFieldValues, TFieldArrayName>[],
-    value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    index: number,
+    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => void;
   fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };

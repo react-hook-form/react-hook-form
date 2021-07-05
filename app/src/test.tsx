@@ -39,7 +39,7 @@ const ChildComponent = ({
 };
 
 const Component = () => {
-  const { register, control } = useForm({
+  const { register, control, formState } = useForm({
     defaultValues: {
       nest: {
         test: [
@@ -49,7 +49,7 @@ const Component = () => {
       },
     },
   });
-  const { fields, remove, append } = useFieldArray({
+  const { fields, remove, append, update } = useFieldArray({
     name: 'nest.test',
     control,
   });
@@ -74,6 +74,17 @@ const Component = () => {
 
       <button type={'button'} onClick={() => append({ value: 'test' })}>
         append
+      </button>
+      <button
+        type={'button'}
+        onClick={() =>
+          update(0, {
+            value: 'test1234',
+            nestedArray: [{ value: 'test12345' }],
+          })
+        }
+      >
+        update
       </button>
     </div>
   );

@@ -549,7 +549,7 @@ export function useForm<
     [criteriaMode, shouldUseNativeValidation],
   );
 
-  const setInternalValues = React.useCallback(
+  const setValues = React.useCallback(
     (
       name: FieldPath<TFieldValues>,
       value: UnpackNestedValue<
@@ -564,7 +564,7 @@ export function useForm<
 
         (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
         !isDateObject(fieldValue)
-          ? setInternalValues(
+          ? setValues(
               fieldName,
               fieldValue as SetFieldValue<TFieldValues>,
               options,
@@ -623,7 +623,7 @@ export function useForm<
     }
 
     ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
-      ? setInternalValues(name, value, isFieldArray ? {} : options)
+      ? setValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && subjectsRef.current.state.next({});
@@ -1220,6 +1220,7 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
+        setValues,
         unregister,
         shouldUnmount: shouldUnregister,
       }),
@@ -1234,7 +1235,7 @@ export function useForm<
     register,
     handleSubmit,
     watch: React.useCallback(watch, []),
-    setValue: React.useCallback(setValue, [setInternalValues]),
+    setValue: React.useCallback(setValue, [setValues]),
     getValues: React.useCallback(getValues, []),
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),

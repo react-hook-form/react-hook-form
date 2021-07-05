@@ -42,7 +42,7 @@ describe('update', () => {
           {fields.map((field, i) => (
             <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
-          <button type="button" onClick={() => update(0, { value: 'chnaged' })}>
+          <button type="button" onClick={() => update(0, { value: 'changed' })}>
             update
           </button>
           {dirtyFields.test?.length && 'dirty'}
@@ -111,17 +111,9 @@ describe('update', () => {
         fireEvent.click(screen.getByRole('button', { name: 'update' }));
       });
 
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'update' }));
-      });
-
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'update' }));
-      });
-
       expect(isDirtyValue).toBeTruthy();
       expect(dirtyValue).toEqual({
-        test: [{ test: true }, { test: true }, { test: true }],
+        test: [undefined, undefined, { test: true }],
       });
     },
   );
@@ -186,7 +178,12 @@ describe('update', () => {
     fireEvent.click(screen.getByRole('button', { name: /update/i }));
 
     await waitFor(() =>
-      expect(renderedItems).toEqual([undefined, [], [], [{ value: 'test' }]]),
+      expect(renderedItems).toEqual([
+        undefined,
+        [],
+        [{ value: 'test' }],
+        [{ value: 'test' }],
+      ]),
     );
   });
 

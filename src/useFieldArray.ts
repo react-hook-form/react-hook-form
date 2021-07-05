@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
@@ -20,7 +19,6 @@ import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
-import updateAt from './utils/update';
 import {
   FieldArray,
   FieldArrayMethodProps,
@@ -31,6 +29,7 @@ import {
   FieldValues,
   Path,
   PathValue,
+  UnpackNestedValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
   UseFormRegister,
@@ -67,6 +66,7 @@ export const useFieldArray = <
     unregister,
     shouldUnmount,
     inFieldArrayActionRef,
+    setValues,
     register,
   } = control || methods.control;
 
@@ -134,10 +134,9 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = [],
     shouldSet = true,
-    skipSet = false,
   ) => {
     inFieldArrayActionRef.current = true;
-    if (get(fieldsRef.current, name) && !skipSet) {
+    if (get(fieldsRef.current, name)) {
       const output = method(get(fieldsRef.current, name), args.argA, args.argB);
       shouldSet && set(fieldsRef.current, name, output);
     }
@@ -371,29 +370,27 @@ export const useFieldArray = <
   };
 
   const update = (
-    index: number | FieldArray<TFieldValues, TFieldArrayName>[],
-    value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    index: number,
+    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    let fieldValues = getCurrentFieldsValues();
+    setValues(
+      (name + '.' + index) as FieldPath<TFieldValues>,
+      value as UnpackNestedValue<
+        PathValue<TFieldValues, FieldPath<TFieldValues>>
+      >,
+      {
+        shouldValidate: !!readFormStateRef.current.isValid,
+        shouldDirty: !!(
+          readFormStateRef.current.dirtyFields ||
+          readFormStateRef.current.isDirty
+        ),
+      },
+    );
 
-    fieldValues = Number.isNaN(index)
-      ? value
-      : updateAt(fieldValues, value, index as number);
+    const fieldValues = getCurrentFieldsValues();
+    fieldValues[index] = value;
 
     setFieldsAndNotify(fieldValues);
-
-    batchStateUpdate(
-      updateAt,
-      {
-        argA: value,
-        argB: index,
-      },
-      fieldValues,
-      false,
-      true,
-    );
   };
 
   React.useEffect(() => {

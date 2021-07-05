@@ -7,7 +7,11 @@ Array [
     "test": Array [],
   },
   Object {
-    "test": Array [],
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
   },
   Object {
     "test": Array [
