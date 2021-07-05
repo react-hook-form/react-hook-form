@@ -317,4 +317,35 @@ describe('useController', () => {
       'bill',
     );
   });
+
+  it('should be able to update input value without ref', () => {
+    const App = () => {
+      const { control, setValue } = useForm();
+      const { field } = useController({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <div>
+          <input value={field.value} onChange={field.onChange} />
+          <button
+            onClick={() => {
+              setValue('test', 'data');
+            }}
+          >
+            setValue
+          </button>
+        </div>
+      );
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'data',
+      );
+    };
+  });
 });
