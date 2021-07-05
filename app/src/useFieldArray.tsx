@@ -133,6 +133,18 @@ const UseFieldArray: React.FC = (props: any) => {
       </button>
 
       <button
+        id="updateRevert"
+        onClick={() =>
+          update(0, {
+            name: 'test',
+          })
+        }
+        type="button"
+      >
+        update revert
+      </button>
+
+      <button
         id="insert"
         type="button"
         onClick={() =>
