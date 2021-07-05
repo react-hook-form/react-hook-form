@@ -77,12 +77,16 @@ const Component = () => {
       </button>
       <button
         type={'button'}
-        onClick={() =>
+        onClick={() => {
           update(0, {
             value: 'test1234',
             nestedArray: [{ value: 'test12345' }],
-          })
-        }
+          });
+          update(1, {
+            value: 'test1234',
+            nestedArray: [{ value: 'test12345' }],
+          });
+        }}
       >
         update
       </button>

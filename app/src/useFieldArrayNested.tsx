@@ -125,12 +125,11 @@ export default () => {
         ],
       },
     });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
+  const { fields, append, prepend, swap, move, insert, remove, update } =
+    useFieldArray({
       control,
       name: 'test',
-    },
-  );
+    });
   const renderCountRef = React.useRef(0);
   const [result, setResult] = React.useState({});
   renderCountRef.current++;
@@ -192,20 +191,51 @@ export default () => {
       </button>
 
       <button
+        id="update"
+        onClick={() =>
+          update(0, {
+            firstName: 'firstName',
+            lastName: 'lastName',
+            keyValue: [{ name: 'name1' }, { name: 'name2' }],
+          })
+        }
+        type="button"
+      >
+        update
+      </button>
+
+      <button
         id="setValue"
         type={'button'}
         onClick={() =>
           setValue('test', [
-            { firstName: 'test' },
             {
-              firstName: 'test1',
+              firstName: 'test',
+              lastName: 'test',
               keyValue: [
                 {
                   name: 'test',
                 },
               ],
             },
-            { firstName: 'test2' },
+            {
+              firstName: 'test1',
+              lastName: 'test1',
+              keyValue: [
+                {
+                  name: 'test1',
+                },
+              ],
+            },
+            {
+              firstName: 'test2',
+              lastName: 'test3',
+              keyValue: [
+                {
+                  name: 'test3',
+                },
+              ],
+            },
           ])
         }
       >
