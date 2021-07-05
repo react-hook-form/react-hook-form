@@ -23,6 +23,21 @@ Array [
 ]
 `;
 
+exports[`update should update field array with multiple values 1`] = `
+Array [
+  Object {
+    "firstName": "test1",
+    "id": "0",
+    "lastName": "test2",
+  },
+  Object {
+    "firstName": "test3",
+    "id": "3",
+    "lastName": "test4",
+  },
+]
+`;
+
 exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
 Array [
   Object {},

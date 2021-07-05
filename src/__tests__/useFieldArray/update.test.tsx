@@ -187,6 +187,117 @@ describe('update', () => {
     );
   });
 
+  it('should update field array with single value', () => {
+    let fieldArrayValues: { value: string }[] | [] = [];
+    const App = () => {
+      const { register, control } = useForm<{
+        test: { value: string }[];
+      }>({
+        defaultValues: {
+          test: [
+            {
+              value: 'bill',
+            },
+          ],
+        },
+      });
+      const { fields, update } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      fieldArrayValues = fields;
+
+      return (
+        <div>
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <input {...register(`test.${i}.value` as const)} />
+            </div>
+          ))}
+          <button onClick={() => update(0, { value: 'test' })}>update</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'test',
+    );
+
+    expect(fieldArrayValues[0].value).toEqual('test');
+  });
+
+  it('should update field array with multiple values', () => {
+    let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
+
+    const App = () => {
+      const { register, control } = useForm<{
+        test: { firstName: string; lastName: string }[];
+      }>({
+        defaultValues: {
+          test: [
+            {
+              firstName: 'bill',
+              lastName: 'luo',
+            },
+            {
+              firstName: 'bill1',
+              lastName: 'luo1',
+            },
+          ],
+        },
+      });
+      const { fields, update } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      fieldArrayValues = fields;
+
+      return (
+        <div>
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <input {...register(`test.${i}.firstName` as const)} />
+              <input {...register(`test.${i}.lastName` as const)} />
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              update(0, { firstName: 'test1', lastName: 'test2' });
+              update(1, { firstName: 'test3', lastName: 'test4' });
+            }}
+          >
+            update
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('test1');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('test2');
+    expect(
+      (screen.getAllByRole('textbox')[2] as HTMLInputElement).value,
+    ).toEqual('test3');
+    expect(
+      (screen.getAllByRole('textbox')[3] as HTMLInputElement).value,
+    ).toEqual('test4');
+
+    expect(fieldArrayValues).toMatchSnapshot();
+  });
+
   describe('with resolver', () => {
     it('should invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
