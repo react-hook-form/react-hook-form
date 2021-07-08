@@ -76,7 +76,7 @@ const WatchUseFieldArray: React.FC = (props: any) => {
       <button
         id="update"
         type="button"
-        onClick={() => update(1, { name: renderCount.toString() })}
+        onClick={() => update(3, { name: 'updated value' })}
       >
         append
       </button>
