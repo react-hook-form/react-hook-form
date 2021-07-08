@@ -94,7 +94,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  userErrorTimer,
+  delayError,
   shouldUseNativeValidation,
   shouldUnregister,
   criteriaMode,
@@ -208,7 +208,7 @@ export function useForm<
               // @ts-ignore
               () => updateErrorState(inputState, isWatched, isValid, name),
               // @ts-ignore
-              error ? userErrorTimer.show : userErrorTimer.hide,
+              delayError,
             )(inputState, isWatched, isValid, name);
       }
 
