@@ -94,7 +94,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  validateWait,
+  userErrorTimer,
   shouldUseNativeValidation,
   shouldUnregister,
   criteriaMode,
@@ -128,6 +128,7 @@ export function useForm<
   const contextRef = React.useRef(context);
   const inFieldArrayActionRef = React.useRef(false);
   const isMountedRef = React.useRef(false);
+  const debounceRef = React.useRef<any>();
   const subjectsRef: Subjects<TFieldValues> = React.useRef({
     watch: new Subject(),
     control: new Subject(),
@@ -151,6 +152,23 @@ export function useForm<
     namesRef.current.watchAll ||
     namesRef.current.watch.has(name) ||
     namesRef.current.watch.has((name.match(/\w+/) || [])[0]);
+
+  // @ts-ignore
+  const updateErrorState = (inputState, isWatched, isValid, name) => {
+    const updatedFormState = {
+      ...inputState,
+      isValid: !!isValid,
+      errors: formStateRef.current.errors,
+      name,
+    };
+
+    formStateRef.current = {
+      ...formStateRef.current,
+      ...updatedFormState,
+    };
+
+    subjectsRef.current.state.next(isWatched ? { name } : updatedFormState);
+  };
 
   const shouldRenderBaseOnError = React.useCallback(
     async (
@@ -176,6 +194,7 @@ export function useForm<
         ? set(formStateRef.current.errors, name, error)
         : unset(formStateRef.current.errors, name);
 
+      // https://codesandbox.io/s/wonderful-currying-l9tqy?file=/src/App.js
       if (
         (isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
@@ -183,19 +202,14 @@ export function useForm<
           formStateRef.current.isValid !== isValid) &&
         !shouldSkipRender
       ) {
-        const updatedFormState = {
-          ...inputState,
-          isValid: !!isValid,
-          errors: formStateRef.current.errors,
-          name,
-        };
-
-        formStateRef.current = {
-          ...formStateRef.current,
-          ...updatedFormState,
-        };
-
-        subjectsRef.current.state.next(isWatched ? { name } : updatedFormState);
+        debounceRef.current = debounceRef.current
+          ? debounceRef.current(inputState, isWatched, isValid, name)
+          : debounce(
+              // @ts-ignore
+              () => updateErrorState(inputState, isWatched, isValid, name),
+              // @ts-ignore
+              error ? userErrorTimer.show : userErrorTimer.hide,
+            )(inputState, isWatched, isValid, name);
       }
 
       subjectsRef.current.state.next({
@@ -632,7 +646,7 @@ export function useForm<
     subjectsRef.current.watch.next({ name, values: getValues() });
   };
 
-  const handleChangeInternal: ChangeHandler = React.useCallback(
+  const handleChange: ChangeHandler = React.useCallback(
     async ({ type, target, target: { value, type: inputType } }) => {
       let name = (target as Ref)!.name;
       let error;
@@ -749,13 +763,6 @@ export function useForm<
         );
       }
     },
-    [],
-  );
-
-  // @ts-ignore
-  const handleChange: ChangeHandler = React.useCallback(
-    // @ts-ignore
-    debounce(handleChangeInternal, validateWait),
     [],
   );
 
