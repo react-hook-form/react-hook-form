@@ -363,7 +363,7 @@ export function useForm<
         )
       )[name];
 
-      shouldRenderBaseOnError(skipReRender, name, error);
+      await shouldRenderBaseOnError(skipReRender, name, error);
 
       return isUndefined(error);
     },
