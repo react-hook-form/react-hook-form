@@ -631,8 +631,7 @@ export function useForm<
   };
 
   const handleChange: ChangeHandler = React.useCallback(
-    async ({ type, target, target: { value, type: inputType } }) => {
-      let name = (target as Ref)!.name;
+    async ({ type, target, target: { value, name, type: inputType } }) => {
       let error;
       let isValid;
       const field = get(fieldsRef.current, name) as Field;
