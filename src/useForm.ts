@@ -15,6 +15,7 @@ import skipValidation from './logic/skipValidation';
 import validateField from './logic/validateField';
 import compact from './utils/compact';
 import convertToArrayPayload from './utils/convertToArrayPayload';
+import debounce from './utils/debounce';
 import deepEqual from './utils/deepEqual';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
@@ -93,6 +94,7 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
+  validateWait,
   shouldUseNativeValidation,
   shouldUnregister,
   criteriaMode,
@@ -630,7 +632,7 @@ export function useForm<
     subjectsRef.current.watch.next({ name, values: getValues() });
   };
 
-  const handleChange: ChangeHandler = React.useCallback(
+  const handleChangeInternal: ChangeHandler = React.useCallback(
     async ({ type, target, target: { value, type: inputType } }) => {
       let name = (target as Ref)!.name;
       let error;
@@ -749,6 +751,14 @@ export function useForm<
     },
     [],
   );
+
+  const handleChange: ChangeHandler = React.useCallback(async <T>(e: T) => {
+    if (validateWait) {
+      debounce((e: T) => handleChangeInternal(e), validateWait);
+    } else {
+      handleChangeInternal(e);
+    }
+  }, []);
 
   const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?:
