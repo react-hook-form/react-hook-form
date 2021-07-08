@@ -752,13 +752,12 @@ export function useForm<
     [],
   );
 
-  const handleChange: ChangeHandler = React.useCallback(async <T>(e: T) => {
-    if (validateWait) {
-      debounce((e: T) => handleChangeInternal(e), validateWait);
-    } else {
-      handleChangeInternal(e);
-    }
-  }, []);
+  // @ts-ignore
+  const handleChange: ChangeHandler = React.useCallback(
+    // @ts-ignore
+    debounce(handleChangeInternal, validateWait),
+    [],
+  );
 
   const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?:
