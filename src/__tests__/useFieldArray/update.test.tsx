@@ -63,62 +63,56 @@ describe('update', () => {
     });
   });
 
-  it.each(['isDirty', 'dirtyFields'])(
-    'should be dirtyFields when value is appended with %s',
-    () => {
-      let isDirtyValue;
-      let dirtyValue;
+  it.each(['isDirty', 'dirtyFields'])('should update state with %s', () => {
+    let isDirtyValue;
+    let dirtyValue;
 
-      const Component = () => {
-        const {
-          register,
-          control,
-          formState: { isDirty, dirtyFields },
-        } = useForm<{
-          test: { test: string }[];
-        }>({
-          defaultValues: {},
-        });
-        const { fields, update } = useFieldArray({
-          control,
-          name: 'test',
-        });
-
-        isDirtyValue = isDirty;
-        dirtyValue = dirtyFields;
-
-        return (
-          <form>
-            {fields.map((field, index) => {
-              return (
-                <input
-                  key={field.id}
-                  {...register(`test.${index}.test` as const)}
-                />
-              );
-            })}
-            <button
-              type={'button'}
-              onClick={() => update(2, { test: 'test1' })}
-            >
-              update
-            </button>
-          </form>
-        );
-      };
-
-      render(<Component />);
-
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'update' }));
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { isDirty, dirtyFields },
+      } = useForm<{
+        test: { test: string }[];
+      }>({
+        defaultValues: {},
+      });
+      const { fields, update } = useFieldArray({
+        control,
+        name: 'test',
       });
 
-      expect(isDirtyValue).toBeTruthy();
-      expect(dirtyValue).toEqual({
-        test: [undefined, undefined, { test: true }],
-      });
-    },
-  );
+      isDirtyValue = isDirty;
+      dirtyValue = dirtyFields;
+
+      return (
+        <form>
+          {fields.map((field, index) => {
+            return (
+              <input
+                key={field.id}
+                {...register(`test.${index}.test` as const)}
+              />
+            );
+          })}
+          <button type={'button'} onClick={() => update(2, { test: 'test1' })}>
+            update
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'update' }));
+    });
+
+    expect(isDirtyValue).toBeTruthy();
+    expect(dirtyValue).toEqual({
+      test: [undefined, undefined, { test: true }],
+    });
+  });
 
   it('should trigger reRender when user update input and is watching the all field array', () => {
     const watched: any[] = [];
