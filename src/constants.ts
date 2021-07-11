@@ -1,17 +1,15 @@
-import { ValidationMode } from './types';
-
 export const EVENTS = {
   BLUR: 'blur',
   CHANGE: 'change',
 };
 
-export const VALIDATION_MODE: ValidationMode = {
-  onBlur: 'onBlur',
-  onChange: 'onChange',
-  onSubmit: 'onSubmit',
-  onTouched: 'onTouched',
-  all: 'all',
-};
+export enum VALIDATION_MODE {
+  onBlur = 'onBlur',
+  onChange = 'onChange',
+  onSubmit = 'onSubmit',
+  onTouched = 'onTouched',
+  all = 'all',
+}
 
 export const INPUT_VALIDATION_RULES = {
   max: 'max',
