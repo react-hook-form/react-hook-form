@@ -20,12 +20,11 @@ const WatchUseFieldArray: React.FC = (props: any) => {
       mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
     },
   );
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
+  const { fields, append, prepend, swap, move, insert, remove, update } =
+    useFieldArray({
       control,
       name: 'data',
-    },
-  );
+    });
   const onSubmit = () => {};
   const watchAll = watch('data') || [];
 
@@ -72,6 +71,14 @@ const WatchUseFieldArray: React.FC = (props: any) => {
         onClick={() => prepend({ name: renderCount.toString() })}
       >
         prepend
+      </button>
+
+      <button
+        id="update"
+        type="button"
+        onClick={() => update(3, { name: 'updated value' })}
+      >
+        append
       </button>
 
       <button id="swap" onClick={() => swap(1, 2)} type="button">
