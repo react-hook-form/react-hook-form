@@ -22,13 +22,11 @@ function NestedArray({
   control: Control<FormValues>;
   index: number;
 }) {
-  const { fields, append, prepend, swap, move, remove, insert } = useFieldArray<
-    FormValues,
-    'test.0.keyValue'
-  >({
-    name: `test.${index}.keyValue` as 'test.0.keyValue',
-    control,
-  });
+  const { fields, append, prepend, swap, move, remove, insert, update } =
+    useFieldArray<FormValues, 'test.0.keyValue'>({
+      name: `test.${index}.keyValue` as 'test.0.keyValue',
+      control,
+    });
   const value = useWatch({
     name: 'test',
     control,
@@ -38,17 +36,16 @@ function NestedArray({
 
   return (
     <div>
-      <ul>
+      <div>
         {fields.map((item, i) => (
           <Controller
             key={item.id}
             render={({ field }) => <input {...field} aria-label={'name'} />}
             name={`test.${index}.keyValue.${i}.name`}
             control={control}
-            defaultValue={item.name}
           />
         ))}
-      </ul>
+      </div>
 
       <button
         id={`nest-append-${index}`}
@@ -91,6 +88,14 @@ function NestedArray({
       </button>
 
       <button
+        id={`nest-update-${index}`}
+        type="button"
+        onClick={() => update(2, { name: 'update' })}
+      >
+        update
+      </button>
+
+      <button
         id={`nest-remove-${index}`}
         type="button"
         onClick={() => remove(1)}
@@ -126,12 +131,11 @@ export default () => {
         ],
       },
     });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
+  const { fields, append, prepend, swap, move, insert, remove, update } =
+    useFieldArray({
       control,
       name: 'test',
-    },
-  );
+    });
   const renderCountRef = React.useRef(0);
   renderCountRef.current++;
 
@@ -142,7 +146,6 @@ export default () => {
           <div key={item.id}>
             <input
               aria-label={`test.${index}.firstName`}
-              defaultValue={`${item.firstName}`}
               {...register(`test.${index}.firstName` as const)}
             />
             <NestedArray control={control} index={index} />
@@ -166,6 +169,14 @@ export default () => {
         onClick={() => prepend({ firstName: 'prepend' })}
       >
         prepend
+      </button>
+
+      <button
+        id="update"
+        type="button"
+        onClick={() => update(1, { firstName: 'update' })}
+      >
+        update
       </button>
 
       <button id="swap" onClick={() => swap(1, 2)} type="button">
@@ -197,16 +208,33 @@ export default () => {
         type={'button'}
         onClick={() =>
           setValue('test', [
-            { firstName: 'test' },
             {
-              firstName: 'test1',
+              firstName: 'test',
+              lastName: 'test',
               keyValue: [
                 {
                   name: 'test',
                 },
               ],
             },
-            { firstName: 'test2' },
+            {
+              firstName: 'test1',
+              lastName: 'test1',
+              keyValue: [
+                {
+                  name: 'test1',
+                },
+              ],
+            },
+            {
+              firstName: 'test2',
+              lastName: 'test3',
+              keyValue: [
+                {
+                  name: 'test3',
+                },
+              ],
+            },
           ])
         }
       >

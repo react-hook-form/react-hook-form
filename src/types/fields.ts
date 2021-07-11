@@ -34,6 +34,7 @@ export type Ref = FieldElement;
 
 export type Field = {
   _f: {
+    _c?: boolean; // mark as controller ref
     ref: Ref;
     name: InternalFieldName;
     value?: any;

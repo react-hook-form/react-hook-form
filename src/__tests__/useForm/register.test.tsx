@@ -465,6 +465,43 @@ describe('register', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
+  it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {
+    type FormValue = {
+      test: string;
+    };
+
+    const Component = () => {
+      const { register } = useForm<FormValue>({
+        defaultValues: {
+          test: 'bill',
+        },
+        shouldUnregister: true,
+      });
+      const [show, setShow] = React.useState(true);
+
+      return (
+        <>
+          {show && <input {...register('test', { shouldUnregister: true })} />}
+          <button onClick={() => setShow(!show)}>hide</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'bill',
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'bill',
+    );
+  });
+
   it('should skip register absent fields which are checkbox/radio inputs', async () => {
     let data: unknown;
 
@@ -1013,5 +1050,56 @@ describe('register', () => {
     });
 
     expect(submit).toBeCalledWith({ test: undefined });
+  });
+
+  describe('when setValueAs is presented with inputs', () => {
+    it('should update inputs correctly with useForm defaultValues', () => {
+      const App = () => {
+        const { register } = useForm({
+          defaultValues: {
+            test: '1234',
+          },
+        });
+        return (
+          <form>
+            <input
+              {...register('test', { setValueAs: (value) => value + '5' })}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '12345',
+      );
+    });
+
+    it('should update inputs correctly with reset', () => {
+      const App = () => {
+        const { register, reset } = useForm();
+
+        React.useEffect(() => {
+          reset({
+            test: '1234',
+          });
+        }, []);
+
+        return (
+          <form>
+            <input
+              {...register('test', { setValueAs: (value) => value + '5' })}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '12345',
+      );
+    });
   });
 });

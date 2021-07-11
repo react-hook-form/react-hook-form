@@ -47,7 +47,6 @@ You can view the source code for most examples within their folder, or visit Cod
 
 | Type Name   | Link                                                                |
 | ----------- | ------------------------------------------------------------------- |
-| Basic (WIP) | https://snack.expo.io/@bluebill1049/react-hook-form---basic         |
 | Controller  | https://snack.expo.io/@bluebill1049/react-hook-form-v7---controller |
 
 ## Types

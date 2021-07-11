@@ -479,9 +479,42 @@ describe('trigger', () => {
     expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
   });
 
+  it('should focus on first errored input', async () => {
+    const Component = () => {
+      const { register, trigger } = useForm<{
+        test: string;
+        test2: string;
+      }>();
+
+      return (
+        <>
+          <input
+            {...register('test', { required: true })}
+            placeholder={'test'}
+          />
+          <input
+            {...register('test2', { required: true })}
+            placeholder={'test2'}
+          />
+          <button onClick={() => trigger(undefined, { shouldFocus: true })}>
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+  });
+
   it('should return isValid for the entire form', async () => {
     const App = () => {
-      const [isValid, setIsValid] = React.useState(false);
+      const [isValid, setIsValid] = React.useState(true);
       const { register, trigger } = useForm();
 
       return (
@@ -508,7 +541,13 @@ describe('trigger', () => {
 
     render(<App />);
 
-    screen.getByText('false');
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(async () => {
+      screen.getByText('false');
+    });
 
     fireEvent.change(screen.getByPlaceholderText('firstName'), {
       target: {

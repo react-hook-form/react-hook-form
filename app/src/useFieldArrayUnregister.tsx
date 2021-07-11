@@ -17,7 +17,6 @@ type FormInputs = {
 const ConditionField = <T extends any[]>({
   control,
   index,
-  fields,
   unregister,
 }: {
   control: Control<FormInputs>;
@@ -40,10 +39,7 @@ const ConditionField = <T extends any[]>({
   }, [unregister, index]);
 
   return output?.[index]?.name === 'bill' ? (
-    <input
-      {...control.register(`data.${index}.conditional`)}
-      defaultValue={fields[index].conditional}
-    />
+    <input {...control.register(`data.${index}.conditional`)} />
   ) : null;
 };
 
@@ -85,7 +81,6 @@ const UseFieldArrayUnregister: React.FC = () => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                defaultValue={data.name}
                 data-order={index}
                 {...register(`data.${index}.name`, {
                   required: 'This is required',
@@ -101,7 +96,6 @@ const UseFieldArrayUnregister: React.FC = () => {
                   required: 'This is required',
                 }}
                 name={`data.${index}.name`}
-                defaultValue={data.name}
                 data-order={index}
               />
             )}

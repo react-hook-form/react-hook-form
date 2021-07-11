@@ -24,12 +24,11 @@ const UseFieldArray: React.FC = (props: any) => {
       : {}),
     mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
+  const { fields, append, prepend, swap, move, insert, remove, update } =
+    useFieldArray({
       control,
       name: 'data',
-    },
-  );
+    });
   const [data, setData] = React.useState<FormValues>();
   const onSubmit = (data: FormValues) => {
     setData(data);
@@ -55,7 +54,6 @@ const UseFieldArray: React.FC = (props: any) => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                defaultValue={data.name}
                 data-order={index}
                 {...register(`data.${index}.name` as const, {
                   required: 'This is required',
@@ -71,7 +69,6 @@ const UseFieldArray: React.FC = (props: any) => {
                   required: 'This is required',
                 }}
                 name={`data.${index}.name`}
-                defaultValue={data.name}
                 data-order={index}
               />
             )}
@@ -121,6 +118,30 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <button id="move" onClick={() => move(2, 0)} type="button">
         move
+      </button>
+
+      <button
+        id="update"
+        onClick={() =>
+          update(0, {
+            name: 'changed',
+          })
+        }
+        type="button"
+      >
+        update
+      </button>
+
+      <button
+        id="updateRevert"
+        onClick={() =>
+          update(0, {
+            name: 'test',
+          })
+        }
+        type="button"
+      >
+        update revert
       </button>
 
       <button

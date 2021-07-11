@@ -155,7 +155,7 @@ describe('validateField', () => {
       test: {
         message: '',
         type: 'required',
-        ref: {},
+        ref: { type: 'radio', name: 'test' },
       },
     });
 
@@ -195,7 +195,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: {},
+        ref: { type: 'radio', name: 'test', value: '' },
       },
     });
 
@@ -215,7 +215,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: {},
+        ref: { type: 'checkbox', name: 'test' },
       },
     });
 
@@ -1628,5 +1628,88 @@ describe('validateField', () => {
         true,
       ),
     ).toMatchSnapshot();
+  });
+
+  describe('with Browser native validation', () => {
+    it('should invoke setCustomValidity for invalid input', () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: '',
+            },
+            value: '',
+            required: true,
+            mount: true,
+          },
+        },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toBeCalledWith(' ');
+      expect(reportValidity).toBeCalled();
+    });
+
+    it('should invoke setCustomValidity for invalid input with its message', () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: '',
+            },
+            value: '',
+            required: 'something is wrong',
+            mount: true,
+          },
+        },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toBeCalledWith('something is wrong');
+      expect(reportValidity).toBeCalled();
+    });
+
+    it('should invoke setCustomValidity with empty string for a valid input', () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: 'test',
+            },
+            value: 'test',
+            required: true,
+            mount: true,
+          },
+        },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toBeCalledWith('');
+      expect(reportValidity).toBeCalled();
+    });
   });
 });

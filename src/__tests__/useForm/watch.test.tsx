@@ -248,7 +248,7 @@ describe('watch', () => {
     const output: object[] = [];
 
     const Component = () => {
-      const { control, handleSubmit, getValues, watch } = useForm<FormValues>({
+      const { control, handleSubmit, watch } = useForm<FormValues>({
         defaultValues: {
           names: [],
         },
@@ -271,7 +271,6 @@ describe('watch', () => {
               <div key={item.id}>
                 <Controller
                   control={control}
-                  defaultValue={getValues().names[index].name}
                   name={`names.${index}.name` as const}
                   render={({ field }) => <input {...field} />}
                 />

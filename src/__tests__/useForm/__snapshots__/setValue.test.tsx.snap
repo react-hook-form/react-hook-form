@@ -45,3 +45,16 @@ Object {
   ],
 }
 `;
+
+exports[`setValue should update nested object which contain date object without register 1`] = `
+Array [
+  Object {
+    "date": 2021-06-15T00:00:00.000Z,
+    "userId": "abc",
+  },
+  Object {
+    "date": 2021-12-17T00:00:00.000Z,
+    "userId": "1234",
+  },
+]
+`;

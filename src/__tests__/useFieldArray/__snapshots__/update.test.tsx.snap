@@ -1,5 +1,66 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`update should trigger reRender when user update input and is watching the all field array 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": Array [],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
+  },
+]
+`;
+
+exports[`update should update field array with multiple values 1`] = `
+Array [
+  Object {
+    "firstName": "test1",
+    "id": "0",
+    "lastName": "test2",
+  },
+  Object {
+    "firstName": "test3",
+    "id": "3",
+    "lastName": "test4",
+  },
+]
+`;
+
+exports[`update should update group input correctly 1`] = `
+Array [
+  Array [
+    Object {
+      "id": "0",
+      "value": Object {
+        "firstName": "firstName",
+        "lastName": "lastName",
+      },
+    },
+  ],
+  Array [
+    Object {
+      "id": "1",
+      "value": Object {
+        "firstName": "firstName",
+        "lastName": "lastName",
+      },
+    },
+  ],
+]
+`;
+
 exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
 Array [
   Object {},
