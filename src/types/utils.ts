@@ -14,8 +14,6 @@ export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
 
-export type NonNullOrUndefined<T> = T extends undefined | null ? never : T;
-
 export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
