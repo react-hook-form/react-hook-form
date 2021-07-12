@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.11.0] - 2021-07-13
+
+## Add
+
+- `update` method to update an field array inputs
+
+```tsx
+const { update } = useFieldArray();
+
+update(0, data); // update an individual field array node
+```
+
 ## [7.10.0] - 2021-07-02
 
 ## Changed
