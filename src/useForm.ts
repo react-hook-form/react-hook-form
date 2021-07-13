@@ -78,6 +78,7 @@ import {
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
+  ValidateHandler,
   WatchInternal,
   WatchObserver,
 } from './types';
@@ -634,15 +635,15 @@ export function useForm<
     subjectsRef.current.watch.next({ name, values: getValues() });
   };
 
-  const handleValidate = async (
-    target: any,
-    field: any,
-    fieldState: any,
-    isWatched: any,
+  const handleValidate: ValidateHandler = async (
+    target,
+    fieldState,
+    isWatched,
   ) => {
     let error;
     let isValid;
     let name = target.name;
+    const field = get(fieldsRef.current, name) as Field;
     const isBlurEvent = target.type === EVENTS.BLUR;
 
     if (resolver) {
@@ -685,6 +686,7 @@ export function useForm<
         type: target.type,
         values: getValues(),
       });
+
     shouldRenderBaseOnError(false, name, error, fieldState, isValid, isWatched);
   };
 
@@ -750,17 +752,18 @@ export function useForm<
         });
 
         if (get(formStateRef.current.errors, name) || !delayError) {
-          handleValidate(target, field, fieldState, isWatched);
-        }
+          handleValidate(target, fieldState, isWatched);
+        } else {
+          debounceRef.current = debounceRef.current
+            ? debounceRef.current
+            : debounce(
+                () => handleValidate(target, fieldState, isWatched),
+                delayError,
+              );
 
-        debounceRef.current = debounceRef.current
-          ? debounceRef.current(target, field, fieldState, isWatched)
-          : debounce(
-              // @ts-ignore
-              () => handleValidate(target, field, fieldState, isWatched),
-              // @ts-ignore
-              delayError,
-            )(target, field, fieldState, isWatched);
+          debounceRef.current(target, fieldState, isWatched);
+          isWatched && subjectsRef.current.state.next({ name });
+        }
       }
     },
     [],
