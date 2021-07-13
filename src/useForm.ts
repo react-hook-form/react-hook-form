@@ -153,29 +153,12 @@ export function useForm<
     namesRef.current.watch.has(name) ||
     namesRef.current.watch.has((name.match(/\w+/) || [])[0]);
 
-  // @ts-ignore
-  const updateErrorState = (inputState, isWatched, isValid, name) => {
-    const updatedFormState = {
-      ...inputState,
-      isValid: !!isValid,
-      errors: formStateRef.current.errors,
-      name,
-    };
-
-    formStateRef.current = {
-      ...formStateRef.current,
-      ...updatedFormState,
-    };
-
-    subjectsRef.current.state.next(isWatched ? { name } : updatedFormState);
-  };
-
   const shouldRenderBaseOnError = React.useCallback(
     async (
       shouldSkipRender: boolean,
       name: InternalFieldName,
       error?: FieldError,
-      inputState?: {
+      fieldState?: {
         dirty?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
@@ -198,18 +181,23 @@ export function useForm<
       if (
         (isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
-          !isEmptyObject(inputState) ||
+          !isEmptyObject(fieldState) ||
           formStateRef.current.isValid !== isValid) &&
         !shouldSkipRender
       ) {
-        debounceRef.current = debounceRef.current
-          ? debounceRef.current(inputState, isWatched, isValid, name)
-          : debounce(
-              // @ts-ignore
-              () => updateErrorState(inputState, isWatched, isValid, name),
-              // @ts-ignore
-              delayError,
-            )(inputState, isWatched, isValid, name);
+        const updatedFormState = {
+          ...fieldState,
+          isValid: !!isValid,
+          errors: formStateRef.current.errors,
+          name,
+        };
+
+        formStateRef.current = {
+          ...formStateRef.current,
+          ...updatedFormState,
+        };
+
+        subjectsRef.current.state.next(isWatched ? { name } : updatedFormState);
       }
 
       subjectsRef.current.state.next({
@@ -646,10 +634,62 @@ export function useForm<
     subjectsRef.current.watch.next({ name, values: getValues() });
   };
 
+  const handleValidate = async (
+    target: any,
+    field: any,
+    fieldState: any,
+    isWatched: any,
+  ) => {
+    let error;
+    let isValid;
+    let name = target.name;
+    const isBlurEvent = target.type === EVENTS.BLUR;
+
+    if (resolver) {
+      const { errors } = await resolverRef.current!(
+        getFieldsValues(fieldsRef),
+        contextRef.current,
+        getResolverOptions(
+          [target.name],
+          fieldsRef.current,
+          criteriaMode,
+          shouldUseNativeValidation,
+        ),
+      );
+      error = get(errors, target.name);
+
+      if (isCheckBoxInput(target as Ref) && !error) {
+        const parentNodeName = getNodeParentName(target.name);
+        const currentError = get(errors, parentNodeName, {});
+        currentError.type && currentError.message && (error = currentError);
+
+        if (currentError || get(formStateRef.current.errors, parentNodeName)) {
+          name = parentNodeName;
+        }
+      }
+
+      isValid = isEmptyObject(errors);
+    } else {
+      error = (
+        await validateField(
+          field,
+          isValidateAllFieldCriteria,
+          shouldUseNativeValidation,
+        )
+      )[name];
+    }
+
+    !isBlurEvent &&
+      subjectsRef.current.watch.next({
+        name,
+        type: target.type,
+        values: getValues(),
+      });
+    shouldRenderBaseOnError(false, name, error, fieldState, isValid, isWatched);
+  };
+
   const handleChange: ChangeHandler = React.useCallback(
     async ({ type, target, target: { value, name, type: inputType } }) => {
-      let error;
-      let isValid;
       const field = get(fieldsRef.current, name) as Field;
 
       if (field) {
@@ -681,14 +721,14 @@ export function useForm<
           field._f.value = inputValue;
         }
 
-        const inputState = updateTouchAndDirtyState(
+        const fieldState = updateTouchAndDirtyState(
           name,
           field._f.value,
           isBlurEvent,
           false,
         );
 
-        const shouldRender = !isEmptyObject(inputState) || isWatched;
+        const shouldRender = !isEmptyObject(fieldState) || isWatched;
 
         if (shouldSkipValidation) {
           !isBlurEvent &&
@@ -700,7 +740,7 @@ export function useForm<
           return (
             shouldRender &&
             subjectsRef.current.state.next(
-              isWatched ? { name } : { ...inputState, name },
+              isWatched ? { name } : { ...fieldState, name },
             )
           );
         }
@@ -709,57 +749,18 @@ export function useForm<
           isValidating: true,
         });
 
-        if (resolver) {
-          const { errors } = await resolverRef.current!(
-            getFieldsValues(fieldsRef),
-            contextRef.current,
-            getResolverOptions(
-              [name],
-              fieldsRef.current,
-              criteriaMode,
-              shouldUseNativeValidation,
-            ),
-          );
-          error = get(errors, name);
-
-          if (isCheckBoxInput(target as Ref) && !error) {
-            const parentNodeName = getNodeParentName(name);
-            const currentError = get(errors, parentNodeName, {});
-            currentError.type && currentError.message && (error = currentError);
-
-            if (
-              currentError ||
-              get(formStateRef.current.errors, parentNodeName)
-            ) {
-              name = parentNodeName;
-            }
-          }
-
-          isValid = isEmptyObject(errors);
-        } else {
-          error = (
-            await validateField(
-              field,
-              isValidateAllFieldCriteria,
-              shouldUseNativeValidation,
-            )
-          )[name];
+        if (get(formStateRef.current.errors, name) || !delayError) {
+          handleValidate(target, field, fieldState, isWatched);
         }
 
-        !isBlurEvent &&
-          subjectsRef.current.watch.next({
-            name,
-            type,
-            values: getValues(),
-          });
-        shouldRenderBaseOnError(
-          false,
-          name,
-          error,
-          inputState,
-          isValid,
-          isWatched,
-        );
+        debounceRef.current = debounceRef.current
+          ? debounceRef.current(target, field, fieldState, isWatched)
+          : debounce(
+              // @ts-ignore
+              () => handleValidate(target, field, fieldState, isWatched),
+              // @ts-ignore
+              delayError,
+            )(target, field, fieldState, isWatched);
       }
     },
     [],
