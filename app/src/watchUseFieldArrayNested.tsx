@@ -16,13 +16,11 @@ function NestedArray({
   control: Control<FormValues>;
   index: number;
 }) {
-  const { fields, append, prepend, swap, move, remove, insert } = useFieldArray<
-    FormValues,
-    'test.0.keyValue'
-  >({
-    name: `test.${index}.keyValue` as 'test.0.keyValue',
-    control,
-  });
+  const { fields, append, prepend, swap, move, remove, insert, update } =
+    useFieldArray<FormValues, 'test.0.keyValue'>({
+      name: `test.${index}.keyValue` as 'test.0.keyValue',
+      control,
+    });
   const renderCountRef = React.useRef(0);
   renderCountRef.current++;
 
@@ -53,6 +51,14 @@ function NestedArray({
         onClick={() => prepend({ name: 'prepend' })}
       >
         prepend
+      </button>
+
+      <button
+        id={`nest-update-${index}`}
+        type="button"
+        onClick={() => update(0, { name: 'billUpdate' })}
+      >
+        update
       </button>
 
       <button
@@ -113,12 +119,11 @@ export default () => {
         ],
       },
     });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
+  const { fields, append, prepend, swap, move, insert, remove, update } =
+    useFieldArray({
       control,
       name: 'test',
-    },
-  );
+    });
   const renderCountRef = React.useRef(0);
   renderCountRef.current++;
 
@@ -156,6 +161,18 @@ export default () => {
         prepend
       </button>
 
+      <button
+        id="update"
+        onClick={() =>
+          update(0, {
+            firstName: 'BillUpdate',
+          })
+        }
+        type="button"
+      >
+        update
+      </button>
+
       <button id="swap" onClick={() => swap(1, 2)} type="button">
         swap
       </button>
@@ -185,16 +202,33 @@ export default () => {
         type={'button'}
         onClick={() =>
           setValue('test', [
-            { firstName: 'test' },
             {
-              firstName: 'test1',
+              firstName: 'test',
+              lastName: 'test',
               keyValue: [
                 {
                   name: 'test',
                 },
               ],
             },
-            { firstName: 'test2' },
+            {
+              firstName: 'test1',
+              lastName: 'test',
+              keyValue: [
+                {
+                  name: 'test',
+                },
+              ],
+            },
+            {
+              firstName: 'test2',
+              lastName: 'test',
+              keyValue: [
+                {
+                  name: 'test',
+                },
+              ],
+            },
           ])
         }
       >

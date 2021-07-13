@@ -92,6 +92,10 @@ describe('useFieldArray', () => {
       }),
     );
 
+    cy.get('#update').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'changed');
+
     cy.get('#removeAll').click();
     cy.get('ul > li').should('have.length', 0);
 
@@ -102,7 +106,7 @@ describe('useFieldArray', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('40');
+    cy.get('#renderCount').contains('42');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -416,6 +420,15 @@ describe('useFieldArray', () => {
   it('should display the correct dirty value with default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
     cy.get('#dirty').contains('no');
+    cy.get('#update').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }],
+      }),
+    );
+    cy.get('#dirty').contains('yes');
+    cy.get('#updateRevert').click();
+    cy.get('#dirty').contains('no');
     cy.get('#append').click();
     cy.get('#field1').type('test');
     cy.get('#prepend').click();
@@ -450,6 +463,7 @@ describe('useFieldArray', () => {
       }),
     );
     cy.get('#dirty').contains('yes');
+    cy.get('#renderCount').contains('17');
   });
 
   it('should display the correct dirty value without default value', () => {

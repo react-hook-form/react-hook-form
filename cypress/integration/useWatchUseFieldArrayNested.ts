@@ -43,11 +43,28 @@ describe('useWatchUseFieldArrayNested', () => {
       '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"1c"},{"name":"append"}],"lastName":"Luo"}]',
     );
 
+    cy.get('#nest-update-3').click();
+
+    cy.get('input[name="test.3.keyValue.2.name"]').should(
+      'have.value',
+      'update',
+    );
+
+    cy.get('#result').contains(
+      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"update"},{"name":"append"}],"lastName":"Luo"}]',
+    );
+
+    cy.get('#nest-update-0').click();
+
+    cy.get('#result').contains(
+      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"update"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"update"},{"name":"append"}],"lastName":"Luo"}]',
+    );
+
     cy.get('#nest-remove-3').click();
     cy.get('#nest-remove-3').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}],"lastName":"Luo"}]',
+      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"update"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}],"lastName":"Luo"}]',
     );
 
     cy.get('#nest-remove-all-3').click();

@@ -58,17 +58,19 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = subjectsRef.current.control.subscribe({
-      next: (data) =>
-        (!data.name || name === data.name) &&
-        setInputStateValue(get(data.values, name)),
-    });
-
     const field = get(fieldsRef.current, name);
 
     if (field && field._f) {
       field._f._c = true;
     }
+  });
+
+  React.useEffect(() => {
+    const controllerSubscription = subjectsRef.current.control.subscribe({
+      next: (data) =>
+        (!data.name || name === data.name) &&
+        setInputStateValue(get(data.values, name)),
+    });
 
     return () => {
       controllerSubscription.unsubscribe();

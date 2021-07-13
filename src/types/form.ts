@@ -18,6 +18,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  PathValue,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -434,22 +435,6 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
   > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
 ) => void;
 
-export type UseFormInternalUnregister<TFieldValues extends FieldValues> = (
-  name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[],
-  options?: Omit<
-    KeepStateOptions,
-    | 'keepIsSubmitted'
-    | 'keepSubmitCount'
-    | 'keepValues'
-    | 'keepDefaultValues'
-    | 'keepErrors'
-  > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
-  notify?: boolean,
-) => void;
-
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
   TSubmitFieldValues extends FieldValues = TFieldValues,
 >(
@@ -521,6 +506,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
+  setValues: (
+    name: FieldPath<TFieldValues>,
+    value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
+    options: SetValueConfig,
+  ) => void;
   unregister: UseFormUnregister<TFieldValues>;
 };
 

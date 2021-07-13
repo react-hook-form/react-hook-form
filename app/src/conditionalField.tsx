@@ -35,8 +35,6 @@ const ConditionalField: React.FC = () => {
 
   renderCounter++;
 
-  console.log(errors);
-
   return (
     <form
       onSubmit={handleSubmit((data) => {
