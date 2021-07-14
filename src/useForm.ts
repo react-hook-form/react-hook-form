@@ -254,12 +254,11 @@ export function useForm<
           }
 
           if (shouldRender) {
-            const values = valuesRef.current;
-            set(values, name, rawValue);
+            set(valuesRef.current, name, rawValue);
             subjectsRef.current.control.next({
               values: {
                 ...defaultValuesRef.current,
-                ...values,
+                ...valuesRef.current,
               } as DefaultValues<TFieldValues>,
               name,
             });
@@ -272,10 +271,9 @@ export function useForm<
           field._f = {
             ref: {
               name,
-              value: rawValue,
             },
-            value: rawValue,
           };
+          set(valuesRef.current, name, rawValue);
         }
       }
     },

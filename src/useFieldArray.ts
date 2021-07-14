@@ -141,6 +141,11 @@ export const useFieldArray = <
       shouldSet && set(fieldsRef.current, name, output);
     }
 
+    if (get(valuesRef.current, name)) {
+      const output = method(get(valuesRef.current, name), args.argA, args.argB);
+      shouldSet && set(valuesRef.current, name, output);
+    }
+
     if (Array.isArray(get(formStateRef.current.errors, name))) {
       const output = method(
         get(formStateRef.current.errors, name),
@@ -432,6 +437,7 @@ export const useFieldArray = <
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
+          unset(valuesRef.current, inputFieldArrayName || name);
 
           inputFieldArrayName
             ? set(
@@ -446,6 +452,7 @@ export const useFieldArray = <
       },
     });
     !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
+    !get(valuesRef.current, name) && set(valuesRef.current, name, []);
     isMountedRef.current = true;
 
     return () => {
