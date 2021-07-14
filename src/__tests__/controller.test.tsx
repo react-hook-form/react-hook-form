@@ -1083,4 +1083,43 @@ describe('Controller', () => {
       });
     });
   });
+
+  it('should transform input value instead update via ref', () => {
+    type FormValues = {
+      test: number;
+    };
+
+    const transform = {
+      input: (x: number) => x / 10,
+    };
+
+    function App() {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: 7200,
+        },
+      });
+
+      return (
+        <Controller
+          name="test"
+          control={control}
+          render={({ field }) => (
+            <input
+              type="number"
+              {...field}
+              value={transform.input(+field.value)}
+              placeholder="test"
+            />
+          )}
+        />
+      );
+    }
+
+    render(<App />);
+
+    expect(
+      (screen.getByPlaceholderText('test') as HTMLInputElement).value,
+    ).toEqual('720');
+  });
 });

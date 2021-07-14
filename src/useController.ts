@@ -52,17 +52,10 @@ export function useController<
     ...rules,
     value,
   });
+
   const formState = useFormState({
     control: control || methods.control,
     name,
-  });
-
-  React.useEffect(() => {
-    const field = get(fieldsRef.current, name);
-
-    if (field && field._f) {
-      field._f._c = true;
-    }
   });
 
   React.useEffect(() => {
@@ -116,7 +109,14 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) => elm && ref(elm),
+      ref: (elm) =>
+        elm &&
+        ref({
+          focus: () => elm.focus && elm.focus(),
+          setCustomValidity: (message: string) =>
+            elm.setCustomValidity(message),
+          reportValidity: () => elm.reportValidity(),
+        }),
     },
     formState,
     fieldState: {

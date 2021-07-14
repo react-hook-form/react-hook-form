@@ -395,4 +395,81 @@ describe('useController', () => {
     );
     expect(renderCount).toEqual(3);
   });
+
+  it('should invoke native validation with Controller', async () => {
+    const setCustomValidity = jest.fn();
+    const reportValidity = jest.fn();
+    const focus = jest.fn();
+    const message = 'This is required';
+
+    type FormValues = {
+      test: string;
+    };
+
+    function Input({ control }: { control: Control<FormValues> }) {
+      const { field } = useController({
+        control,
+        rules: { required: message },
+        name: 'test',
+      });
+
+      return (
+        <div>
+          <input
+            {...field}
+            ref={() => {
+              field.ref({
+                focus,
+                setCustomValidity,
+                reportValidity,
+              });
+            }}
+          />
+        </div>
+      );
+    }
+
+    function App() {
+      const { handleSubmit, control } = useForm<FormValues>({
+        defaultValues: {
+          test: '',
+        },
+        mode: 'onChange',
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Input control={control} />
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(setCustomValidity).toBeCalledWith(message);
+    expect(focus).toBeCalled();
+    expect(reportValidity).toBeCalled();
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'bill',
+        },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(setCustomValidity).toBeCalledTimes(3);
+    expect(reportValidity).toBeCalledTimes(3);
+    expect(focus).toBeCalledTimes(1);
+  });
 });
