@@ -7,11 +7,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Run install
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Lint
         run: |
-          npm install
-          npm run lint
-          npm run lint:types
-          npm run test
-          npm run build
+          yarn lint
+          yarn lint:types
+      - name: Test
+        run: yarn test --ci
+
+      - name: Build
+        run: yarn build

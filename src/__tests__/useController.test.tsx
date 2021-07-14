@@ -317,4 +317,82 @@ describe('useController', () => {
       'bill',
     );
   });
+
+  it('should be able to update input value without ref', () => {
+    const App = () => {
+      const { control, setValue } = useForm();
+      const { field } = useController({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <div>
+          <input value={field.value} onChange={field.onChange} />
+          <button
+            onClick={() => {
+              setValue('test', 'data');
+            }}
+          >
+            setValue
+          </button>
+        </div>
+      );
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'data',
+      );
+    };
+  });
+
+  it('should be able to setValue after reset', async () => {
+    let renderCount = 0;
+
+    type FormValues = {
+      name: string;
+    };
+
+    const Input = ({ control }: { control: Control<FormValues> }) => {
+      renderCount++;
+      const { field } = useController({
+        name: 'name',
+        control,
+        defaultValue: '',
+      });
+
+      return <input {...field} />;
+    };
+
+    function App() {
+      const { reset, control, setValue } = useForm<FormValues>();
+
+      React.useEffect(() => {
+        reset({ name: 'initial' });
+      }, [reset]);
+
+      return (
+        <div>
+          <Input control={control} />
+          <button type="button" onClick={() => setValue('name', 'test', {})}>
+            setValue
+          </button>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'test',
+    );
+    expect(renderCount).toEqual(3);
+  });
 });

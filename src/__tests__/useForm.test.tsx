@@ -1,7 +1,6 @@
 import 'jest-performance-testing';
 
 import * as React from 'react';
-import { perf, PerfTools, wait } from 'react-performance-testing';
 import {
   act as actComponent,
   fireEvent,
@@ -492,7 +491,6 @@ describe('useForm', () => {
   });
 
   describe('handleChangeRef', () => {
-    let renderCount: PerfTools<{ Component: unknown }>['renderCount'];
     let Component: React.FC<{
       name?: string;
       resolver?: any;
@@ -538,9 +536,6 @@ describe('useForm', () => {
           </div>
         );
       };
-
-      const tools = perf<{ Component: unknown }>(React);
-      renderCount = tools.renderCount;
     });
 
     describe('onSubmit mode', () => {
@@ -564,9 +559,6 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
-        );
       });
 
       it('should not contain error if name is invalid', async () => {
@@ -589,9 +581,6 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
-        );
       });
 
       it('should contain error if value is invalid with revalidateMode is onChange', async () => {
@@ -611,10 +600,6 @@ describe('useForm', () => {
 
         await waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
-        );
-
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(4),
         );
       });
 
@@ -636,9 +621,6 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('required');
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
-        );
       });
 
       it('should set name to formState.touchedFields when formState.touchedFields is defined', async () => {
@@ -660,9 +642,6 @@ describe('useForm', () => {
           }),
         );
         expect(screen.getByRole('alert').textContent).toBe('');
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(5),
-        );
       });
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
@@ -939,9 +918,6 @@ describe('useForm', () => {
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
-        );
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
@@ -982,10 +958,6 @@ describe('useForm', () => {
         await waitFor(() => {
           screen.getByText('invalid');
         });
-
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
-        );
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
@@ -1023,9 +995,6 @@ describe('useForm', () => {
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(3),
-        );
       });
 
       it("should call the resolver with the field being validated when an input's value change", async () => {

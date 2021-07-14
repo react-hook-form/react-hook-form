@@ -29,6 +29,7 @@ import {
   FieldValues,
   Path,
   PathValue,
+  UnpackNestedValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
   UseFormRegister,
@@ -65,6 +66,7 @@ export const useFieldArray = <
     unregister,
     shouldUnmount,
     inFieldArrayActionRef,
+    setValues,
     register,
   } = control || methods.control;
 
@@ -367,6 +369,30 @@ export const useFieldArray = <
     );
   };
 
+  const update = (
+    index: number,
+    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
+  ) => {
+    setValues(
+      (name + '.' + index) as FieldPath<TFieldValues>,
+      value as UnpackNestedValue<
+        PathValue<TFieldValues, FieldPath<TFieldValues>>
+      >,
+      {
+        shouldValidate: !!readFormStateRef.current.isValid,
+        shouldDirty: !!(
+          readFormStateRef.current.dirtyFields ||
+          readFormStateRef.current.isDirty
+        ),
+      },
+    );
+
+    const fieldValues = getCurrentFieldsValues();
+    fieldValues[index] = value;
+
+    setFieldsAndNotify(fieldValues);
+  };
+
   React.useEffect(() => {
     inFieldArrayActionRef.current = false;
 
@@ -442,6 +468,7 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
+    update: React.useCallback(update, [name]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,

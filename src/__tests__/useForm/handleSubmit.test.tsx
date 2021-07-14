@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { perf } from 'react-performance-testing';
 import {
   act as actComponent,
   fireEvent,
   render,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -86,39 +84,6 @@ describe('handleSubmit', () => {
         persist: () => {},
       } as React.SyntheticEvent);
     });
-  });
-
-  it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
-    const Component = () => {
-      const { register, handleSubmit, formState } = useForm<{
-        test: string;
-      }>();
-      return (
-        <div>
-          <input {...register('test')} />
-          <button onClick={handleSubmit(() => {})}></button>
-          <span role="alert">{formState.isSubmitting ? 'true' : 'false'}</span>
-        </div>
-      );
-    };
-
-    const { renderCount } = perf<{ Component: unknown }>(React);
-
-    render(<Component />);
-
-    fireEvent.click(screen.getByRole('button'));
-
-    const span = screen.getByRole('alert')!;
-    await waitFor(
-      () => {
-        if (renderCount.current.Component?.value === 2) {
-          expect(span.textContent).toBe('true');
-        } else {
-          expect(span.textContent).toBe('false');
-        }
-      },
-      { container: span },
-    );
   });
 
   it('should not invoke callback when there are errors', async () => {

@@ -1,6 +1,24 @@
 # Changelog
 
-## [7.8.5] - 2021-06-19
+## [7.11.0] - 2021-07-13
+
+## Add
+
+- `update` method to update an field array inputs
+
+```tsx
+const { update } = useFieldArray();
+
+update(0, data); // update an individual field array node
+```
+
+## [7.10.0] - 2021-07-02
+
+## Changed
+
+- `defaultValue` is no longer a required prop for register input with `useFieldArray`
+
+## [7.9.0] - 2021-06-19
 
 ## Add
 
