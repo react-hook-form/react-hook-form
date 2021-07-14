@@ -52,17 +52,14 @@ export function useController<
     ...rules,
     value,
   });
+  const registeredField = get(fieldsRef.current, name);
+  if (registeredField) {
+    registeredField._f._c = true;
+  }
+
   const formState = useFormState({
     control: control || methods.control,
     name,
-  });
-
-  React.useEffect(() => {
-    const field = get(fieldsRef.current, name);
-
-    if (field && field._f) {
-      field._f._c = true;
-    }
   });
 
   React.useEffect(() => {
