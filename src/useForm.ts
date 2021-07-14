@@ -178,7 +178,6 @@ export function useForm<
         ? set(formStateRef.current.errors, name, error)
         : unset(formStateRef.current.errors, name);
 
-      // https://codesandbox.io/s/wonderful-currying-l9tqy?file=/src/App.js
       if (
         (isWatched ||
           (error ? !deepEqual(previousError, error, true) : previousError) ||
@@ -639,28 +638,28 @@ export function useForm<
     target,
     fieldState,
     isWatched,
+    isBlurEvent,
   ) => {
     let error;
     let isValid;
     let name = target.name;
     const field = get(fieldsRef.current, name) as Field;
-    const isBlurEvent = target.type === EVENTS.BLUR;
 
     if (resolver) {
       const { errors } = await resolverRef.current!(
         getFieldsValues(fieldsRef),
         contextRef.current,
         getResolverOptions(
-          [target.name],
+          [name],
           fieldsRef.current,
           criteriaMode,
           shouldUseNativeValidation,
         ),
       );
-      error = get(errors, target.name);
+      error = get(errors, name);
 
       if (isCheckBoxInput(target as Ref) && !error) {
-        const parentNodeName = getNodeParentName(target.name);
+        const parentNodeName = getNodeParentName(name);
         const currentError = get(errors, parentNodeName, {});
         currentError.type && currentError.message && (error = currentError);
 
@@ -752,16 +751,17 @@ export function useForm<
         });
 
         if (get(formStateRef.current.errors, name) || !delayError) {
-          handleValidate(target, fieldState, isWatched);
+          handleValidate(target, fieldState, isWatched, isBlurEvent);
         } else {
           debounceRef.current = debounceRef.current
             ? debounceRef.current
             : debounce(
-                () => handleValidate(target, fieldState, isWatched),
+                () =>
+                  handleValidate(target, fieldState, isWatched, isBlurEvent),
                 delayError,
               );
 
-          debounceRef.current(target, fieldState, isWatched);
+          debounceRef.current(target, fieldState, isWatched, isBlurEvent);
           isWatched && subjectsRef.current.state.next({ name });
         }
       }

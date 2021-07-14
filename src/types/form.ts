@@ -85,7 +85,8 @@ export type ValidateHandler = <TFieldValues>(
   fieldState: Partial<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   >,
-  isWatched?: boolean,
+  isWatched: boolean,
+  isBlurEvent: boolean,
 ) => Promise<void | boolean>;
 
 export type UseFormProps<
