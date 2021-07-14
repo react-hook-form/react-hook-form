@@ -224,36 +224,36 @@ export function useForm<
               : rawValue;
           _f.value = getFieldValueAs(rawValue, _f);
 
-          if (!_f._c) {
-            if (isRadioInput(_f.ref)) {
-              (_f.refs || []).forEach(
-                (radioRef: HTMLInputElement) =>
-                  (radioRef.checked = radioRef.value === value),
-              );
-            } else if (isFileInput(_f.ref) && !isString(value)) {
-              _f.ref.files = value as FileList;
-            } else if (isMultipleSelect(_f.ref)) {
-              [..._f.ref.options].forEach(
-                (selectRef) =>
-                  (selectRef.selected = (value as string[]).includes(
-                    selectRef.value,
-                  )),
-              );
-            } else if (isCheckBoxInput(_f.ref) && _f.refs) {
-              _f.refs.length > 1
-                ? _f.refs.forEach(
-                    (checkboxRef) =>
-                      (checkboxRef.checked = Array.isArray(value)
-                        ? !!(value as []).find(
-                            (data: string) => data === checkboxRef.value,
-                          )
-                        : value === checkboxRef.value),
-                  )
-                : (_f.refs[0].checked = !!value);
-            } else {
-              _f.ref.value = value;
-            }
-          } else if (shouldRender) {
+          if (isRadioInput(_f.ref)) {
+            (_f.refs || []).forEach(
+              (radioRef: HTMLInputElement) =>
+                (radioRef.checked = radioRef.value === value),
+            );
+          } else if (isFileInput(_f.ref) && !isString(value)) {
+            _f.ref.files = value as FileList;
+          } else if (isMultipleSelect(_f.ref)) {
+            [..._f.ref.options].forEach(
+              (selectRef) =>
+                (selectRef.selected = (value as string[]).includes(
+                  selectRef.value,
+                )),
+            );
+          } else if (isCheckBoxInput(_f.ref) && _f.refs) {
+            _f.refs.length > 1
+              ? _f.refs.forEach(
+                  (checkboxRef) =>
+                    (checkboxRef.checked = Array.isArray(value)
+                      ? !!(value as []).find(
+                          (data: string) => data === checkboxRef.value,
+                        )
+                      : value === checkboxRef.value),
+                )
+              : (_f.refs[0].checked = !!value);
+          } else {
+            _f.ref.value = value;
+          }
+
+          if (shouldRender) {
             const values = getFieldsValues(fieldsRef);
             set(values, name, rawValue);
             subjectsRef.current.control.next({
