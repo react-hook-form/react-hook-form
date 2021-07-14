@@ -1,6 +1,7 @@
 import { get } from '../utils';
 import deepEqual from '../utils/deepEqual';
 import { deepMerge } from '../utils/deepMerge';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
 import set from '../utils/set';
 
 function setDirtyFields<
@@ -28,7 +29,7 @@ function setDirtyFields<
           dirtyFields[index],
           key,
         );
-      } else {
+      } else if (!isNullOrUndefined(defaultValues)) {
         deepEqual(get(defaultValues[index] || {}, key), values[index][key])
           ? set(dirtyFields[index] || {}, key)
           : (dirtyFields[index] = {
