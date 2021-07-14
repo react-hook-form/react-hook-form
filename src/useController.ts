@@ -113,8 +113,9 @@ export function useController<
         elm &&
         ref({
           focus: () => elm.focus && elm.focus(),
-          setCustomValidity: () => elm.setCustomValidity,
-          reportValidity: () => elm.reportValidity,
+          setCustomValidity: (message: string) =>
+            elm.setCustomValidity(message),
+          reportValidity: () => elm.reportValidity(),
         }),
     },
     formState,
