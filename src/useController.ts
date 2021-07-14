@@ -52,10 +52,6 @@ export function useController<
     ...rules,
     value,
   });
-  const registeredField = get(fieldsRef.current, name);
-  if (registeredField) {
-    registeredField._f._c = true;
-  }
 
   const formState = useFormState({
     control: control || methods.control,
