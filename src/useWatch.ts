@@ -23,20 +23,20 @@ export function useWatch<
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(props: {
-  name: TName;
-  defaultValue?: FieldPathValue<TFieldValues, TName>;
+  name: TFieldName;
+  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
-}): FieldPathValue<TFieldValues, TName>;
+}): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends readonly FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
 >(props: {
-  name: TName;
+  name: readonly [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
-}): FieldPathValues<TFieldValues, TName>;
+}): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const { control, name, defaultValue } = props || {};
   const methods = useFormContext();
