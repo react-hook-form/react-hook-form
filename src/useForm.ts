@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
-import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import getFieldValueAs from './logic/getFieldValueAs';
 import getNodeParentName from './logic/getNodeParentName';
@@ -120,6 +119,7 @@ export function useForm<
   const resolverRef = React.useRef(resolver);
   const formStateRef = React.useRef(formState);
   const fieldsRef = React.useRef<FieldRefs>({});
+  const valuesRef = React.useRef<any>({});
   const defaultValuesRef =
     React.useRef<DefaultValues<TFieldValues>>(defaultValues);
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
@@ -222,7 +222,7 @@ export function useForm<
             isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
               ? ''
               : rawValue;
-          _f.value = getFieldValueAs(rawValue, _f);
+          set(valuesRef.current, name, getFieldValueAs(rawValue, _f));
 
           if (isRadioInput(_f.ref)) {
             (_f.refs || []).forEach(
@@ -254,7 +254,7 @@ export function useForm<
           }
 
           if (shouldRender) {
-            const values = getFieldsValues(fieldsRef);
+            const values = valuesRef.current;
             set(values, name, rawValue);
             subjectsRef.current.control.next({
               values: {
@@ -283,7 +283,7 @@ export function useForm<
   );
 
   const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
-    const formValues = getFieldsValues(fieldsRef);
+    const formValues = valuesRef.current;
 
     name && data && set(formValues, name, data);
 
@@ -373,7 +373,8 @@ export function useForm<
   const executeResolverValidation = React.useCallback(
     async (names?: InternalFieldName[]) => {
       const { errors } = await resolverRef.current!(
-        getFieldsValues(fieldsRef),
+        // @ts-ignore
+        valuesRef.current,
         contextRef.current,
         getResolverOptions(
           namesRef.current.mount,
@@ -496,23 +497,24 @@ export function useForm<
 
   const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(fieldsRef.current, name) as Field;
+    const value = get(valuesRef.current, name) as Field;
 
     if (field) {
-      const isValueUndefined = isUndefined(field._f.value);
+      const isValueUndefined = isUndefined(value);
       const defaultValue = isValueUndefined
         ? isUndefined(get(fieldArrayDefaultValuesRef.current, name))
           ? get(defaultValuesRef.current, name)
           : get(fieldArrayDefaultValuesRef.current, name)
-        : field._f.value;
+        : value;
 
       if (!isUndefined(defaultValue)) {
         if (ref && (ref as HTMLInputElement).defaultChecked) {
-          field._f.value = getFieldValue(field);
+          set(valuesRef.current, name, getFieldValue(field));
         } else {
           setFieldValue(name, defaultValue);
         }
       } else if (isValueUndefined) {
-        field._f.value = getFieldValue(field);
+        set(valuesRef.current, name, getFieldValue(field));
       }
     }
 
@@ -526,7 +528,7 @@ export function useForm<
             (
               await resolverRef.current!(
                 {
-                  ...getFieldsValues(fieldsRef),
+                  ...valuesRef.current,
                   ...values,
                 },
                 contextRef.current,
@@ -662,12 +664,12 @@ export function useForm<
           !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
         if (!isUndefined(inputValue)) {
-          field._f.value = inputValue;
+          set(valuesRef.current, name, inputValue);
         }
 
         const inputState = updateTouchAndDirtyState(
           name,
-          field._f.value,
+          get(valuesRef, name),
           isBlurEvent,
           false,
         );
@@ -695,7 +697,7 @@ export function useForm<
 
         if (resolver) {
           const { errors } = await resolverRef.current!(
-            getFieldsValues(fieldsRef),
+            valuesRef.current,
             contextRef.current,
             getResolverOptions(
               [name],
@@ -756,7 +758,7 @@ export function useForm<
   ) => {
     const values = {
       ...defaultValuesRef.current,
-      ...getFieldsValues(fieldsRef),
+      ...valuesRef.current,
     };
 
     return isUndefined(fieldNames)
@@ -804,7 +806,7 @@ export function useForm<
         formValues || isMountedRef.current
           ? {
               ...defaultValuesRef.current,
-              ...(formValues || getFieldsValues(fieldsRef)),
+              ...(formValues || valuesRef.current),
             }
           : isUndefined(defaultValue)
           ? defaultValuesRef.current
@@ -959,8 +961,8 @@ export function useForm<
                   // If initial state of field element is disabled,
                   // value is not set on first "register"
                   // re-sync the value in when it switched to enabled
-                  if (isUndefined(field._f.value)) {
-                    field._f.value = field._f.ref.value;
+                  if (isUndefined(get(fieldsRef.current, name))) {
+                    set(valuesRef.current, name, field._f.ref.value);
                   }
                 }
 
@@ -984,7 +986,7 @@ export function useForm<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues = getFieldsValues(fieldsRef);
+      let fieldValues = valuesRef.current;
 
       subjectsRef.current.state.next({
         isSubmitting: true,
@@ -1164,7 +1166,7 @@ export function useForm<
     const useFieldArraySubscription = subjectsRef.current.array.subscribe({
       next(state) {
         if (state.values && state.name && readFormStateRef.current.isValid) {
-          const values = getFieldsValues(fieldsRef);
+          const values = valuesRef.current;
           set(values, state.name, state.values);
           updateIsValid(values);
         }
@@ -1218,6 +1220,7 @@ export function useForm<
         readFormStateRef,
         formStateRef,
         defaultValuesRef,
+        valuesRef,
         fieldArrayDefaultValuesRef,
         setValues,
         unregister,
