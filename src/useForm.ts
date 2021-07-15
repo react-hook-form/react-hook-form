@@ -963,7 +963,6 @@ export function useForm<
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
         : {
             name,
-            ...(options.disabled ? { disabled: true } : {}),
             onChange: handleChange,
             onBlur: handleChange,
             ref: (ref: HTMLInputElement | null): void => {
