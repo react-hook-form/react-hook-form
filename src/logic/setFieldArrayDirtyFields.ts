@@ -29,7 +29,8 @@ function setDirtyFields<
           dirtyFields[index],
           key,
         );
-      } else if (!isNullOrUndefined(defaultValues)) {
+      } else {
+        !isNullOrUndefined(defaultValues) &&
         deepEqual(get(defaultValues[index] || {}, key), values[index][key])
           ? set(dirtyFields[index] || {}, key)
           : (dirtyFields[index] = {
