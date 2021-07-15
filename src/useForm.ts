@@ -1091,7 +1091,7 @@ export function useForm<
 
     if (!keepStateOptions.keepDefaultValues) {
       defaultValuesRef.current = { ...updatedValues };
-      // fieldArrayDefaultValuesRef.current = { ...updatedValues };
+      fieldArrayDefaultValuesRef.current = { ...updatedValues };
     }
 
     if (!keepStateOptions.keepValues) {
