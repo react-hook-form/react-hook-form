@@ -36,7 +36,6 @@ export type Field = {
   _f: {
     ref: Ref;
     name: InternalFieldName;
-    value?: any;
     refs?: HTMLInputElement[];
     mount?: boolean;
   } & RegisterOptions;

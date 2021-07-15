@@ -254,13 +254,13 @@ export function useForm<
             _f.ref.value = value;
           }
 
+          set(_values.current, name, fieldValue);
+
           if (shouldRender) {
-            const values = _values.current;
-            set(values, name, rawValue);
             subjectsRef.current.control.next({
               values: {
                 ...defaultValuesRef.current,
-                ...values,
+                ...{ ..._values.current },
               } as DefaultValues<TFieldValues>,
               name,
             });
@@ -269,7 +269,6 @@ export function useForm<
           (options.shouldDirty || options.shouldTouch) &&
             updateTouchAndDirtyState(name, value, options.shouldTouch);
           options.shouldValidate && trigger(name as Path<TFieldValues>);
-          set(_values.current, name, fieldValue);
         } else {
           field._f = {
             ref: {
@@ -286,11 +285,9 @@ export function useForm<
   );
 
   const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
-    const formValues = _values.current;
+    name && data && set(_values.current, name, data);
 
-    name && data && set(formValues, name, data);
-
-    return !deepEqual(formValues, defaultValuesRef.current);
+    return !deepEqual({ ..._values.current }, defaultValuesRef.current);
   }, []);
 
   const updateTouchAndDirtyState = React.useCallback(
@@ -1183,9 +1180,8 @@ export function useForm<
     const useFieldArraySubscription = subjectsRef.current.array.subscribe({
       next(state) {
         if (state.values && state.name && readFormStateRef.current.isValid) {
-          const values = _values.current;
-          set(values, state.name, state.values);
-          updateIsValid(values);
+          set(_values.current, state.name, state.values);
+          updateIsValid({ ..._values.current });
         }
       },
     });

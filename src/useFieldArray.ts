@@ -452,7 +452,6 @@ export const useFieldArray = <
       },
     });
 
-    !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
     !get(_values.current, name) && set(_values.current, name, []);
     isMountedRef.current = true;
 
