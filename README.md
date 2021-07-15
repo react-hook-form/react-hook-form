@@ -284,6 +284,18 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/gpalrepo"
+    ><img
+            src="https://avatars.githubusercontent.com/u/41862257?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/pjsachdev"
+    ><img
+            src="https://avatars.githubusercontent.com/u/43356139?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ## Backers
