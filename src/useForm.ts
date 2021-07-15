@@ -948,8 +948,12 @@ export function useForm<
         },
       });
 
-      if (options.value) {
-        set(_values.current, name, options.value);
+      if (options.value || options.disabled) {
+        set(
+          _values.current,
+          name,
+          options.disabled ? undefined : options.value,
+        );
       }
 
       namesRef.current.mount.add(name);
@@ -971,12 +975,6 @@ export function useForm<
 
                 if (field._f) {
                   field._f.mount = false;
-                  if (
-                    isUndefined(get(_values.current, name)) &&
-                    !field._f.ref.disabled
-                  ) {
-                    set(_values.current, name, field._f.ref.value);
-                  }
                 }
 
                 shouldUnmount &&

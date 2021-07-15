@@ -1005,7 +1005,7 @@ describe('register', () => {
     expect(inputs).toMatchSnapshot();
   });
 
-  it.skip('should validate value after toggling enabled/disabled on input', async () => {
+  it('should validate value after toggling enabled/disabled on input', async () => {
     const defaultValue = 'Test';
     const validate = jest.fn();
     const submit = jest.fn();
@@ -1020,9 +1020,8 @@ describe('register', () => {
       return (
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
-            disabled={!editable}
             defaultValue={defaultValue}
-            {...register('test', { validate })}
+            {...register('test', { validate, disabled: !editable })}
           />
           <button type="button" onClick={() => setEditable(!editable)}>
             Toggle Edit
