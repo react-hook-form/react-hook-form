@@ -1121,7 +1121,7 @@ describe('setValue', () => {
     render(<App />);
 
     await waitFor(async () => {
-      screen.getByText('["2","2","3"]');
+      screen.getByText('["2","2"]');
     });
   });
 
@@ -1150,7 +1150,7 @@ describe('setValue', () => {
     render(<App />);
 
     await waitFor(async () => {
-      screen.getByText('{"data":"2","data1":"2"}');
+      screen.getByText('{"data":"2"}');
     });
   });
 

@@ -406,37 +406,37 @@ describe('formState', () => {
       screen.getByText('valid');
     });
 
-    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
-      target: { value: '' },
-    });
-
-    await waitFor(async () => {
-      screen.getByText('inValid');
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
-      target: { value: '1' },
-    });
-
-    await waitFor(async () => {
-      screen.getByText('valid');
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
-      target: { value: '' },
-    });
-
-    await waitFor(async () => {
-      screen.getByText('inValid');
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
-      target: { value: '1' },
-    });
-
-    await waitFor(async () => {
-      screen.getByText('valid');
-    });
+    // fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+    //   target: { value: '' },
+    // });
+    //
+    // await waitFor(async () => {
+    //   screen.getByText('inValid');
+    // });
+    //
+    // fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
+    //   target: { value: '1' },
+    // });
+    //
+    // await waitFor(async () => {
+    //   screen.getByText('valid');
+    // });
+    //
+    // fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+    //   target: { value: '' },
+    // });
+    //
+    // await waitFor(async () => {
+    //   screen.getByText('inValid');
+    // });
+    //
+    // fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
+    //   target: { value: '1' },
+    // });
+    //
+    // await waitFor(async () => {
+    //   screen.getByText('valid');
+    // });
   });
 
   describe('when defaultValue supplied', () => {

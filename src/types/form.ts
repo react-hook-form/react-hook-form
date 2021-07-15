@@ -298,6 +298,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateIsValid: <T extends FieldValues>(payload?: T) => void;
   fieldsRef: React.MutableRefObject<FieldRefs>;
+  _values: React.MutableRefObject<any>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: WatchInternal<TFieldValues>;

@@ -31,11 +31,11 @@ export default async (
       pattern,
       validate,
       name,
-      value: inputValue,
       valueAsNumber,
       mount,
     },
   }: Field,
+  inputValue: any,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
 ): Promise<InternalFieldErrors> => {

@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
-import getFieldsValues from './logic/getFieldsValues';
 import getFieldArrayParentName from './logic/getNodeParentName';
 import mapIds from './logic/mapId';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
@@ -68,6 +67,7 @@ export const useFieldArray = <
     inFieldArrayActionRef,
     setValues,
     register,
+    _values,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -75,7 +75,7 @@ export const useFieldArray = <
   >(
     mapIds(
       (get(fieldsRef.current, name) && isMountedRef.current
-        ? get(getFieldsValues(fieldsRef), name)
+        ? get(_values.current, name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name)
         : get(defaultValuesRef.current, name)) || [],
@@ -96,7 +96,7 @@ export const useFieldArray = <
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
-    const values = get(getFieldsValues(fieldsRef), name, []);
+    const values = get(_values.current, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayDefaultValuesRef.current, name, []).map(
@@ -139,6 +139,11 @@ export const useFieldArray = <
     if (get(fieldsRef.current, name)) {
       const output = method(get(fieldsRef.current, name), args.argA, args.argB);
       shouldSet && set(fieldsRef.current, name, output);
+    }
+
+    if (get(_values.current, name)) {
+      const output = method(get(_values.current, name), args.argA, args.argB);
+      shouldSet && set(_values.current, name, output);
     }
 
     if (Array.isArray(get(formStateRef.current.errors, name))) {
@@ -409,7 +414,7 @@ export const useFieldArray = <
 
     subjectsRef.current.watch.next({
       name,
-      values: getFieldsValues(fieldsRef),
+      values: _values.current,
     });
 
     focusNameRef.current &&
@@ -432,6 +437,7 @@ export const useFieldArray = <
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
+          unset(_values.current, inputFieldArrayName || name);
 
           inputFieldArrayName
             ? set(
@@ -445,7 +451,9 @@ export const useFieldArray = <
         }
       },
     });
+
     !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
+    !get(_values.current, name) && set(_values.current, name, []);
     isMountedRef.current = true;
 
     return () => {
@@ -454,7 +462,7 @@ export const useFieldArray = <
         unregister(name as FieldPath<TFieldValues>);
         unset(fieldArrayDefaultValuesRef.current, name);
       } else {
-        const fieldArrayValues = get(getFieldsValues(fieldsRef), name);
+        const fieldArrayValues = get(_values.current, name);
         fieldArrayValues &&
           set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
       }

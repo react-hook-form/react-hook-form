@@ -246,8 +246,7 @@ describe('useForm', () => {
       };
 
       it('should remove and unregister inputs when inputs gets unmounted', async () => {
-        let submittedData: FormValues[] = [];
-        submittedData = [];
+        const submittedData: FormValues[] = [];
 
         const Component = () => {
           const [show, setShow] = React.useState(true);

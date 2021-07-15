@@ -38,12 +38,13 @@ export function useController<
     subjectsRef,
     shouldUnmount,
     inFieldArrayActionRef,
+    _values,
   } = control || methods.control;
 
-  const field = get(fieldsRef.current, name);
+  const fieldValue = get(_values.current, name);
   const [value, setInputStateValue] = React.useState(
-    field && field._f && !isUndefined(field._f.value)
-      ? field._f.value
+    !isUndefined(fieldValue)
+      ? fieldValue
       : isUndefined(get(defaultValuesRef.current, name))
       ? defaultValue
       : get(defaultValuesRef.current, name),
