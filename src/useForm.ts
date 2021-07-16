@@ -260,7 +260,7 @@ export function useForm<
             subjectsRef.current.control.next({
               values: {
                 ...defaultValuesRef.current,
-                ...{ ..._formValues.current },
+                ..._formValues.current,
               } as DefaultValues<TFieldValues>,
               name,
             });
@@ -803,8 +803,8 @@ export function useForm<
   const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
     (fieldNames, defaultValue, isGlobal, formValues) => {
       const isArrayNames = Array.isArray(fieldNames);
-      const fieldValues =
-        formValues || isMountedRef.current
+      const fieldValues = {
+        ...(formValues || isMountedRef.current
           ? {
               ...defaultValuesRef.current,
               ...((formValues || _formValues.current) as {}),
@@ -813,11 +813,12 @@ export function useForm<
           ? defaultValuesRef.current
           : isArrayNames
           ? defaultValue
-          : { [fieldNames as InternalFieldName]: defaultValue };
+          : { [fieldNames as InternalFieldName]: defaultValue }),
+      };
 
       if (isUndefined(fieldNames)) {
         isGlobal && (namesRef.current.watchAll = true);
-        return { ...fieldValues };
+        return fieldValues;
       }
 
       const result = [];
@@ -828,7 +829,7 @@ export function useForm<
       }
 
       return isArrayNames
-        ? [...result]
+        ? result
         : isObject(result[0])
         ? { ...result[0] }
         : Array.isArray(result[0])
