@@ -17,7 +17,6 @@ Array [
             name="test"
             type="text"
           />,
-          "value": "test",
         },
       },
       "names": Array [
@@ -41,7 +40,6 @@ Array [
             name="test"
             type="text"
           />,
-          "value": "test",
         },
       },
       "names": Array [
@@ -69,7 +67,6 @@ Array [
           name="test"
           type="text"
         />,
-        "value": "test",
       },
     },
     "names": Array [

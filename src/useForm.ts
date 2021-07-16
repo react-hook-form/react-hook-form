@@ -662,11 +662,13 @@ export function useForm<
         const isWatched =
           !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
-        !isUndefined(inputValue) && set(_formValues.current, name, inputValue);
+        if (!isUndefined(inputValue)) {
+          set(_formValues.current, name, inputValue);
+        }
 
         const inputState = updateTouchAndDirtyState(
           name,
-          field._f.value,
+          inputValue,
           isBlurEvent,
           false,
         );
