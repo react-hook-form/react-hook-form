@@ -67,7 +67,7 @@ export const useFieldArray = <
     inFieldArrayActionRef,
     setValues,
     register,
-    _values,
+    _formValues,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -75,7 +75,7 @@ export const useFieldArray = <
   >(
     mapIds(
       (get(fieldsRef.current, name) && isMountedRef.current
-        ? get(_values.current, name)
+        ? get(_formValues.current, name)
         : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
         ? get(fieldArrayDefaultValuesRef.current, name)
         : get(defaultValuesRef.current, name)) || [],
@@ -96,7 +96,7 @@ export const useFieldArray = <
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
-    const values = get(_values.current, name, []);
+    const values = get(_formValues.current, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayDefaultValuesRef.current, name, []).map(
@@ -141,9 +141,13 @@ export const useFieldArray = <
       shouldSet && set(fieldsRef.current, name, output);
     }
 
-    if (get(_values.current, name)) {
-      const output = method(get(_values.current, name), args.argA, args.argB);
-      shouldSet && set(_values.current, name, output);
+    if (get(_formValues.current, name)) {
+      const output = method(
+        get(_formValues.current, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(_formValues.current, name, output);
     }
 
     if (Array.isArray(get(formStateRef.current.errors, name))) {
@@ -414,7 +418,7 @@ export const useFieldArray = <
 
     subjectsRef.current.watch.next({
       name,
-      values: _values.current,
+      values: _formValues.current,
     });
 
     focusNameRef.current &&
@@ -437,7 +441,7 @@ export const useFieldArray = <
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
-          unset(_values.current, inputFieldArrayName || name);
+          unset(_formValues.current, inputFieldArrayName || name);
 
           inputFieldArrayName
             ? set(
@@ -452,7 +456,7 @@ export const useFieldArray = <
       },
     });
 
-    !get(_values.current, name) && set(_values.current, name, []);
+    !get(_formValues.current, name) && set(_formValues.current, name, []);
     isMountedRef.current = true;
 
     return () => {
@@ -461,7 +465,7 @@ export const useFieldArray = <
         unregister(name as FieldPath<TFieldValues>);
         unset(fieldArrayDefaultValuesRef.current, name);
       } else {
-        const fieldArrayValues = get(_values.current, name);
+        const fieldArrayValues = get(_formValues.current, name);
         fieldArrayValues &&
           set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
       }

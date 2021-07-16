@@ -1,4 +1,3 @@
-// @ts-nocheck
 import getCheckboxValue from '../../logic/getCheckboxValue';
 import getRadioValue from '../../logic/getRadioValue';
 import validateField from '../../logic/validateField';
@@ -6,7 +5,7 @@ import validateField from '../../logic/validateField';
 jest.mock('../../logic/getRadioValue');
 jest.mock('../../logic/getCheckboxValue');
 
-describe.skip('validateField', () => {
+describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
     (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '2',
@@ -24,9 +23,9 @@ describe.skip('validateField', () => {
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: true,
-            value: '',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -47,6 +46,7 @@ describe.skip('validateField', () => {
             required: 'required',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -67,6 +67,7 @@ describe.skip('validateField', () => {
             required: 'required',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -90,6 +91,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -113,6 +115,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -136,6 +139,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        '',
         false,
       ),
     ).toEqual({});
@@ -150,6 +154,7 @@ describe.skip('validateField', () => {
             required: true,
           },
         },
+        false,
         false,
       ),
     ).toEqual({
@@ -170,6 +175,7 @@ describe.skip('validateField', () => {
             required: 'test',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -190,6 +196,7 @@ describe.skip('validateField', () => {
             required: 'test',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -211,6 +218,7 @@ describe.skip('validateField', () => {
           },
         },
         false,
+        false,
       ),
     ).toEqual({
       test: {
@@ -231,6 +239,7 @@ describe.skip('validateField', () => {
             value: '0',
           },
         },
+        '0',
         false,
       ),
     ).toEqual({});
@@ -250,6 +259,7 @@ describe.skip('validateField', () => {
             required: 'test',
           },
         },
+        '',
         false,
       ),
     ).toEqual({});
@@ -266,6 +276,7 @@ describe.skip('validateField', () => {
             value: NaN,
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -290,6 +301,7 @@ describe.skip('validateField', () => {
             value: {},
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -318,6 +330,7 @@ describe.skip('validateField', () => {
             max: 0,
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -343,6 +356,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -368,6 +382,7 @@ describe.skip('validateField', () => {
             value: 10,
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -390,6 +405,7 @@ describe.skip('validateField', () => {
             max: 8,
           },
         },
+        8,
         false,
       ),
     ).toEqual({});
@@ -405,6 +421,7 @@ describe.skip('validateField', () => {
             max: 8,
           },
         },
+        10,
         true,
       ),
     ).toEqual({
@@ -429,6 +446,7 @@ describe.skip('validateField', () => {
             required: true,
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -454,6 +472,7 @@ describe.skip('validateField', () => {
             required: true,
           },
         },
+        undefined,
         false,
       ),
     ).toEqual({
@@ -484,6 +503,7 @@ describe.skip('validateField', () => {
             required: true,
           },
         },
+        null,
         false,
       ),
     ).toEqual({
@@ -505,6 +525,7 @@ describe.skip('validateField', () => {
             value: 'ok',
           },
         },
+        'ok',
         false,
       ),
     ).toEqual({});
@@ -524,6 +545,7 @@ describe.skip('validateField', () => {
             max: '2019-1-12',
           },
         },
+        '2019-2-13',
         false,
       ),
     ).toEqual({
@@ -551,6 +573,7 @@ describe.skip('validateField', () => {
             min: 0,
           },
         },
+        -1,
         false,
       ),
     ).toEqual({
@@ -576,6 +599,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        -1,
         false,
       ),
     ).toEqual({
@@ -601,6 +625,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        -1,
         false,
       ),
     ).toEqual({
@@ -623,6 +648,7 @@ describe.skip('validateField', () => {
             min: 12,
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -649,6 +675,7 @@ describe.skip('validateField', () => {
             min: '2019-3-12',
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -681,6 +708,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -713,6 +741,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -741,6 +770,7 @@ describe.skip('validateField', () => {
             min: '4',
           },
         },
+        '1',
         false,
       ),
     ).toEqual({
@@ -763,6 +793,7 @@ describe.skip('validateField', () => {
             max: '2',
           },
         },
+        '4',
         false,
       ),
     ).toEqual({
@@ -789,6 +820,7 @@ describe.skip('validateField', () => {
             max: '2019-1-12',
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -820,6 +852,7 @@ describe.skip('validateField', () => {
             maxLength: 12,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -851,6 +884,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -882,6 +916,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -912,6 +947,7 @@ describe.skip('validateField', () => {
             minLength: 200,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -943,6 +979,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -974,6 +1011,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1007,6 +1045,7 @@ describe.skip('validateField', () => {
             pattern: emailRegex,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1038,6 +1077,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1069,6 +1109,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1097,6 +1138,7 @@ describe.skip('validateField', () => {
             pattern: emailRegex,
           },
         },
+        'test@test.com',
         false,
       ),
     ).toEqual({});
@@ -1116,6 +1158,7 @@ describe.skip('validateField', () => {
             pattern: emailRegex,
           },
         },
+        null,
         false,
       ),
     ).toEqual({});
@@ -1137,6 +1180,7 @@ describe.skip('validateField', () => {
             validate: (value) => value.toString().length > 3,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({});
@@ -1156,6 +1200,7 @@ describe.skip('validateField', () => {
             validate: (value) => value.toString().length < 3,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1187,6 +1232,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1224,6 +1270,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input!',
         false,
       ),
     ).toEqual({
@@ -1255,6 +1302,7 @@ describe.skip('validateField', () => {
             refs: [{ type: 'data' } as HTMLInputElement],
           },
         },
+        'This is a long text input!',
         false,
       ),
     ).toEqual({
@@ -1286,6 +1334,7 @@ describe.skip('validateField', () => {
             ],
           },
         },
+        'This is a long text input!',
         false,
       ),
     ).toEqual({});
@@ -1313,6 +1362,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1347,6 +1397,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1376,6 +1427,7 @@ describe.skip('validateField', () => {
             validate: (value) => value.toString().length < 3 || 'bill',
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1403,6 +1455,7 @@ describe.skip('validateField', () => {
             validate: (value) => value.toString().length < 3 || 'bill',
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1432,6 +1485,7 @@ describe.skip('validateField', () => {
             validate: () => undefined,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({});
@@ -1453,6 +1507,7 @@ describe.skip('validateField', () => {
             validate: 'validate',
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({});
@@ -1476,6 +1531,7 @@ describe.skip('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        '',
         true,
       ),
     ).toMatchSnapshot();
@@ -1494,6 +1550,7 @@ describe.skip('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        '123',
         true,
       ),
     ).toMatchSnapshot();
@@ -1519,6 +1576,7 @@ describe.skip('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        'a',
         true,
       ),
     ).toMatchSnapshot();
@@ -1537,6 +1595,7 @@ describe.skip('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        'a',
         true,
       ),
     ).toMatchSnapshot();
@@ -1570,6 +1629,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        '',
         true,
       ),
     ).toMatchSnapshot();
@@ -1598,6 +1658,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'bil',
         true,
       ),
     ).toMatchSnapshot();
@@ -1626,6 +1687,7 @@ describe.skip('validateField', () => {
             },
           },
         },
+        'bil',
         true,
       ),
     ).toMatchSnapshot();
@@ -1651,6 +1713,7 @@ describe.skip('validateField', () => {
             mount: true,
           },
         },
+        '',
         false,
         true,
       );
@@ -1678,6 +1741,7 @@ describe.skip('validateField', () => {
             mount: true,
           },
         },
+        '',
         false,
         true,
       );
@@ -1705,6 +1769,7 @@ describe.skip('validateField', () => {
             mount: true,
           },
         },
+        'test',
         false,
         true,
       );
