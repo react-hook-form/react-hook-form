@@ -1118,8 +1118,10 @@ export function useForm<
       }
     }
 
-    !keepStateOptions.keepDefaultValues &&
-      (defaultValuesRef.current = { ...updatedValues });
+    if (!keepStateOptions.keepDefaultValues) {
+      defaultValuesRef.current = { ...updatedValues };
+      fieldArrayDefaultValuesRef.current = { ...updatedValues };
+    }
 
     if (!keepStateOptions.keepValues) {
       fieldsRef.current = {};
