@@ -679,7 +679,7 @@ describe('useFieldArray', () => {
               type: 'min length',
             });
           }
-        }, [fields]);
+        }, [fields, setError]);
 
         return (
           <div>

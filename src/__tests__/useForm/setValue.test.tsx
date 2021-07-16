@@ -917,7 +917,7 @@ describe('setValue', () => {
 
       React.useEffect(() => {
         setValue('setStringDate', '2021-04-23');
-      }, []);
+      }, [setValue]);
 
       return (
         <form
@@ -957,7 +957,7 @@ describe('setValue', () => {
 
       React.useEffect(() => {
         setValue('names', [{ name: 'initial value' }]);
-      }, []);
+      }, [setValue]);
 
       const onChangeValue = () => {
         setValue('names.0', { name: 'updated value', id: 'test' });

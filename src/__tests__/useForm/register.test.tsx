@@ -1083,7 +1083,7 @@ describe('register', () => {
           reset({
             test: '1234',
           });
-        }, []);
+        }, [reset]);
 
         return (
           <form>

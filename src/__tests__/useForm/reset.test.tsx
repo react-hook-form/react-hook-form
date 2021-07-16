@@ -446,7 +446,7 @@ describe('reset', () => {
 
       React.useEffect(() => {
         reset({ names: [{ name: 'Bill' }, { name: 'Luo' }] });
-      }, []);
+      }, [reset]);
 
       getValuesResult.push(getValues());
 
