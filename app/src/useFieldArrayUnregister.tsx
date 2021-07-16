@@ -38,8 +38,6 @@ const ConditionField = <T extends any[]>({
     };
   }, [unregister, index]);
 
-  console.log('output', output?.[index]?.name);
-
   return output?.[index]?.name === 'bill' ? (
     <input {...control.register(`data.${index}.conditional`)} />
   ) : null;
