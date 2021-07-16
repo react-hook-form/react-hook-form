@@ -24,7 +24,7 @@ const ConditionField = <T extends any[]>({
   index: number;
   fields: T;
 }) => {
-  const output = useWatch<FormInputs>({
+  const output = useWatch({
     name: 'data',
     control,
   });
@@ -37,6 +37,8 @@ const ConditionField = <T extends any[]>({
       });
     };
   }, [unregister, index]);
+
+  console.log('output', output?.[index]?.name);
 
   return output?.[index]?.name === 'bill' ? (
     <input {...control.register(`data.${index}.conditional`)} />
@@ -68,7 +70,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     setData(data);
   };
   const updateFieldArray = () => {
-    setValue('data', [...getValues().data, { name: 'test' }]);
+    setValue('data', [...getValues().data, { name: 'test', conditional: '' }]);
   };
 
   renderCount++;

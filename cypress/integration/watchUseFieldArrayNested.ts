@@ -36,7 +36,7 @@ describe('watchUseFieldArrayNested', () => {
     cy.get('#insert').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"billUpdate"},{"name":"1a"},{"name":"1c"},{"name":"append"}],"lastName":"Luo"}]',
+      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","lastName":"Luo","keyValue":[{"name":"billUpdate"},{"name":"1a"},{"name":"1c"},{"name":"append"}]}]',
     );
 
     cy.get(`#nest-append-0`).click();
@@ -46,14 +46,14 @@ describe('watchUseFieldArrayNested', () => {
     cy.get(`#nest-move-0`).click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"billUpdate"},{"name":"1a"},{"name":"1c"},{"name":"append"}],"lastName":"Luo"}]',
+      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","lastName":"Luo","keyValue":[{"name":"billUpdate"},{"name":"1a"},{"name":"1c"},{"name":"append"}]}]',
     );
 
     cy.get('#nest-remove-3').click();
     cy.get('#nest-remove-3').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"billUpdate"},{"name":"append"}],"lastName":"Luo"}]',
+      '[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","lastName":"Luo","keyValue":[{"name":"billUpdate"},{"name":"append"}]}]',
     );
 
     cy.get('#nest-remove-all-3').click();
@@ -62,13 +62,13 @@ describe('watchUseFieldArrayNested', () => {
     cy.get('#nest-remove-all-0').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[],"lastName":"Luo"}]',
+      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","lastName":"Luo","keyValue":[]}]',
     );
 
     cy.get('#update').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"BillUpdate","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[],"lastName":"Luo"}]',
+      '[{"firstName":"BillUpdate","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","lastName":"Luo","keyValue":[]}]',
     );
 
     cy.get('#remove').click();

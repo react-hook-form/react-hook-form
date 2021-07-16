@@ -823,7 +823,7 @@ export function useForm<
 
       if (isUndefined(fieldNames)) {
         isGlobal && (namesRef.current.watchAll = true);
-        return fieldValues;
+        return { ...fieldValues };
       }
 
       const result = [];
@@ -833,7 +833,13 @@ export function useForm<
         result.push(get(fieldValues, fieldName as InternalFieldName));
       }
 
-      return isArrayNames ? result : result[0];
+      return isArrayNames
+        ? [...result]
+        : isObject(result[0])
+        ? { ...result[0] }
+        : Array.isArray(result[0])
+        ? [...result[0]]
+        : result[0];
     },
     [],
   );
