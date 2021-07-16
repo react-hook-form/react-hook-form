@@ -260,7 +260,7 @@ export function useForm<
             subjectsRef.current.control.next({
               values: {
                 ...defaultValuesRef.current,
-                ..._formValues.current,
+                ...getValues(),
               } as DefaultValues<TFieldValues>,
               name,
             });
@@ -287,7 +287,7 @@ export function useForm<
   const getIsDirty: GetIsDirty = React.useCallback((name, data) => {
     name && data && set(_formValues.current, name, data);
 
-    return !deepEqual({ ..._formValues.current }, defaultValuesRef.current);
+    return !deepEqual({ ...getValues() }, defaultValuesRef.current);
   }, []);
 
   const updateTouchAndDirtyState = React.useCallback(
@@ -358,7 +358,7 @@ export function useForm<
       const error = (
         await validateField(
           get(fieldsRef.current, name) as Field,
-          get(_formValues.current, name),
+          get(getValues(), name),
           isValidateAllFieldCriteria,
           shouldUseNativeValidation,
         )
@@ -374,7 +374,7 @@ export function useForm<
   const executeResolverValidation = React.useCallback(
     async (names?: InternalFieldName[]) => {
       const { errors } = await resolverRef.current!(
-        _formValues.current as UnpackNestedValue<TFieldValues>,
+        getValues(),
         contextRef.current,
         getResolverOptions(
           namesRef.current.mount,
@@ -417,7 +417,7 @@ export function useForm<
         if (_f) {
           const fieldError = await validateField(
             field,
-            get(_formValues.current, _f.name),
+            get(getValues(), _f.name),
             isValidateAllFieldCriteria,
             shouldUseNativeValidation,
           );
@@ -498,7 +498,7 @@ export function useForm<
 
   const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(fieldsRef.current, name) as Field;
-    const fieldValue = get(_formValues.current, name);
+    const fieldValue = get(getValues(), name);
 
     if (field) {
       const isValueUndefined = isUndefined(fieldValue);
@@ -527,7 +527,7 @@ export function useForm<
       ? isEmptyObject(
           (
             await resolverRef.current!(
-              _formValues.current as UnpackNestedValue<TFieldValues>,
+              getValues(),
               contextRef.current,
               getResolverOptions(
                 namesRef.current.mount,
@@ -627,7 +627,7 @@ export function useForm<
     isFieldWatched(name) && subjectsRef.current.state.next({});
     subjectsRef.current.watch.next({
       name,
-      values: { ..._formValues.current },
+      values: getValues(),
     });
   };
 
@@ -696,7 +696,7 @@ export function useForm<
 
         if (resolver) {
           const { errors } = await resolverRef.current!(
-            _formValues.current as UnpackNestedValue<TFieldValues>,
+            getValues(),
             contextRef.current,
             getResolverOptions(
               [name],
@@ -725,7 +725,7 @@ export function useForm<
           error = (
             await validateField(
               field,
-              get(_formValues.current, name),
+              get(getValues(), name),
               isValidateAllFieldCriteria,
               shouldUseNativeValidation,
             )
@@ -806,7 +806,7 @@ export function useForm<
         ...(formValues || isMountedRef.current
           ? {
               ...defaultValuesRef.current,
-              ...((formValues || _formValues.current) as {}),
+              ...((formValues || getValues()) as {}),
             }
           : isUndefined(defaultValue)
           ? defaultValuesRef.current
