@@ -961,7 +961,12 @@ export function useForm<
         set(_formValues.current, name, options.value);
       }
 
-      if (field && field._f && field._f.ref.disabled !== options.disabled) {
+      if (
+        !isUndefined(options.disabled) &&
+        field &&
+        field._f &&
+        field._f.ref.disabled !== options.disabled
+      ) {
         set(
           _formValues.current,
           name,

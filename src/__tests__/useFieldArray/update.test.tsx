@@ -176,7 +176,7 @@ describe('update', () => {
     await waitFor(() =>
       expect(renderedItems).toEqual([
         undefined,
-        [{ value: 'test' }],
+        [],
         [{ value: 'test' }],
         [{ value: 'test' }],
       ]),
