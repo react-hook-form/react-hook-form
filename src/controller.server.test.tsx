@@ -22,10 +22,6 @@ describe('Controller with SSR', () => {
       );
     };
 
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-
     renderToString(<Component />);
-
-    expect(console.error).not.toHaveBeenCalled();
   });
 });
