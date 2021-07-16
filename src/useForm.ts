@@ -522,35 +522,29 @@ export function useForm<
     isMountedRef.current && readFormStateRef.current.isValid && updateIsValid();
   };
 
-  const updateIsValid = React.useCallback(
-    async (values = {}) => {
-      const isValid = resolver
-        ? isEmptyObject(
-            (
-              await resolverRef.current!(
-                {
-                  ..._formValues.current,
-                  ...values,
-                },
-                contextRef.current,
-                getResolverOptions(
-                  namesRef.current.mount,
-                  fieldsRef.current,
-                  criteriaMode,
-                  shouldUseNativeValidation,
-                ),
-              )
-            ).errors,
-          )
-        : await validateForm(fieldsRef.current, true);
+  const updateIsValid = React.useCallback(async () => {
+    const isValid = resolver
+      ? isEmptyObject(
+          (
+            await resolverRef.current!(
+              _formValues.current as UnpackNestedValue<TFieldValues>,
+              contextRef.current,
+              getResolverOptions(
+                namesRef.current.mount,
+                fieldsRef.current,
+                criteriaMode,
+                shouldUseNativeValidation,
+              ),
+            )
+          ).errors,
+        )
+      : await validateForm(fieldsRef.current, true);
 
-      isValid !== formStateRef.current.isValid &&
-        subjectsRef.current.state.next({
-          isValid,
-        });
-    },
-    [criteriaMode, shouldUseNativeValidation],
-  );
+    isValid !== formStateRef.current.isValid &&
+      subjectsRef.current.state.next({
+        isValid,
+      });
+  }, [criteriaMode, shouldUseNativeValidation]);
 
   const setValues = React.useCallback(
     (
@@ -1200,7 +1194,7 @@ export function useForm<
       next(state) {
         if (state.values && state.name && readFormStateRef.current.isValid) {
           set(_formValues.current, state.name, state.values);
-          updateIsValid({ ..._formValues.current });
+          updateIsValid();
         }
       },
     });

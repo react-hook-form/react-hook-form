@@ -4,7 +4,7 @@ exports[`useForm handleChangeRef with resolver should call the resolver with the
 Array [
   Array [
     Object {
-      "test": "",
+      "test": "test",
     },
     undefined,
     Object {
