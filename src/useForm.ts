@@ -635,7 +635,7 @@ export function useForm<
     async ({ type, target, target: { value, name, type: inputType } }) => {
       let error;
       let isValid;
-      const field = get(fieldsRef.current, name) as Field;
+      const field: Field = get(fieldsRef.current, name);
 
       if (field) {
         let inputValue = inputType ? getFieldValue(field) : undefined;
@@ -662,10 +662,7 @@ export function useForm<
         const isWatched =
           !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
-        if (!isUndefined(inputValue)) {
-          field._f.value = inputValue;
-          set(_formValues.current, name, inputValue);
-        }
+        !isUndefined(inputValue) && set(_formValues.current, name, inputValue);
 
         const inputState = updateTouchAndDirtyState(
           name,
