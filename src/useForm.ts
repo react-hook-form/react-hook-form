@@ -262,10 +262,7 @@ export function useForm<
 
           if (shouldRender) {
             _subjects.current.control.next({
-              values: {
-                ..._defaultValues.current,
-                ...getValues(),
-              } as DefaultValues<TFieldValues>,
+              values: getValues(),
               name,
             });
           }
