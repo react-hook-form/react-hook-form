@@ -20,6 +20,7 @@ export function useWatch<
 >(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -28,6 +29,7 @@ export function useWatch<
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -36,6 +38,7 @@ export function useWatch<
   name: readonly [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const { control, name, defaultValue, disabled } = props || {};
