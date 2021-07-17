@@ -40,8 +40,8 @@ export function useWatch<
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const { control, name, defaultValue } = props || {};
   const methods = useFormContext();
-  const nameRef = React.useRef(name);
-  nameRef.current = name;
+  const _name = React.useRef(name);
+  _name.current = name;
 
   const { watchInternal, _subjects } = control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
@@ -55,9 +55,9 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
 
     const watchSubscription = _subjects.current.watch.subscribe({
       next: ({ name: inputName, values }) =>
-        (!nameRef.current ||
+        (!_name.current ||
           !inputName ||
-          convertToArrayPayload(nameRef.current).some(
+          convertToArrayPayload(_name.current).some(
             (fieldName) =>
               inputName &&
               fieldName &&
@@ -66,7 +66,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           )) &&
         updateValue(
           watchInternal(
-            nameRef.current as string,
+            _name.current as string,
             defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
             false,
             values,

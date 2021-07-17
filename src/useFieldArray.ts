@@ -50,7 +50,7 @@ export const useFieldArray = <
   TKeyName
 >): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
-  const focusNameRef = React.useRef('');
+  const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
   const {
     getIsDirty,
@@ -266,7 +266,7 @@ export const useFieldArray = <
     );
     registerFieldArray(appendValue, currentIndex);
 
-    focusNameRef.current = getFocusFieldName(currentIndex, options);
+    _focusName.current = getFocusFieldName(currentIndex, options);
   };
 
   const prepend = (
@@ -296,7 +296,7 @@ export const useFieldArray = <
     );
     registerFieldArray(prependValue);
 
-    focusNameRef.current = getFocusFieldName(0, options);
+    _focusName.current = getFocusFieldName(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -345,7 +345,7 @@ export const useFieldArray = <
     );
     registerFieldArray(insertValue, index);
 
-    focusNameRef.current = getFocusFieldName(index, options);
+    _focusName.current = getFocusFieldName(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -420,12 +420,12 @@ export const useFieldArray = <
       values: _formValues.current,
     });
 
-    focusNameRef.current &&
+    _focusName.current &&
       focusFieldBy(fieldsRef.current, (key: string) =>
-        key.startsWith(focusNameRef.current),
+        key.startsWith(_focusName.current),
       );
 
-    focusNameRef.current = '';
+    _focusName.current = '';
 
     _subjects.current.array.next({
       name,
