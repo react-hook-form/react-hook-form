@@ -832,6 +832,8 @@ export function useForm<
         ? result
         : isObject(result[0])
         ? { ...result[0] }
+        : Array.isArray(result[0])
+        ? [...result[0]]
         : result[0];
     },
     [],
