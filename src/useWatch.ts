@@ -54,15 +54,15 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     getWatch(name as InternalFieldName);
 
     const watchSubscription = _subjects.current.watch.subscribe({
-      next: ({ name: inputName, values }) =>
+      next: ({ name, values }) =>
         (!_name.current ||
-          !inputName ||
+          !name ||
           convertToArrayPayload(_name.current).some(
             (fieldName) =>
-              inputName &&
+              name &&
               fieldName &&
-              (fieldName.startsWith(inputName as InternalFieldName) ||
-                inputName.startsWith(fieldName as InternalFieldName)),
+              (fieldName.startsWith(name as InternalFieldName) ||
+                name.startsWith(fieldName as InternalFieldName)),
           )) &&
         updateValue(
           getWatch(
