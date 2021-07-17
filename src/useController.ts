@@ -30,12 +30,12 @@ export function useController<
 > {
   const methods = useFormContext<TFieldValues>();
   const {
-    defaultValuesRef,
+    _defaultValues,
     register,
     fieldsRef,
     unregister,
-    namesRef,
-    subjectsRef,
+    _names,
+    _subjects,
     shouldUnmount,
     inFieldArrayActionRef,
     _formValues,
@@ -45,9 +45,9 @@ export function useController<
   const [value, setInputStateValue] = React.useState(
     !isUndefined(fieldValue)
       ? fieldValue
-      : isUndefined(get(defaultValuesRef.current, name))
+      : isUndefined(get(_defaultValues.current, name))
       ? defaultValue
-      : get(defaultValuesRef.current, name),
+      : get(_defaultValues.current, name),
   );
   const { onChange, onBlur, ref } = register(name, {
     ...rules,
@@ -60,7 +60,7 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = subjectsRef.current.control.subscribe({
+    const controllerSubscription = _subjects.current.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
@@ -71,7 +71,7 @@ export function useController<
       const shouldUnmountField = shouldUnmount || shouldUnregister;
 
       if (
-        isNameInFieldArray(namesRef.current.array, name)
+        isNameInFieldArray(_names.current.array, name)
           ? shouldUnmountField && !inFieldArrayActionRef.current
           : shouldUnmountField
       ) {

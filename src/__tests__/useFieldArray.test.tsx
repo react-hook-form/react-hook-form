@@ -461,7 +461,7 @@ describe('useFieldArray', () => {
         { id: '0', value: 'default' },
         { id: '1', value: 'test' },
       ]);
-      expect(result.current.control.namesRef.current.array).toEqual(
+      expect(result.current.control._names.current.array).toEqual(
         new Set(['test']),
       );
     });

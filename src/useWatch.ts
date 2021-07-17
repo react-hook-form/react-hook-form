@@ -43,7 +43,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const nameRef = React.useRef(name);
   nameRef.current = name;
 
-  const { watchInternal, subjectsRef } = control || methods.control;
+  const { watchInternal, _subjects } = control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
       ? watchInternal(name as InternalFieldName)
@@ -53,7 +53,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   React.useEffect(() => {
     watchInternal(name as InternalFieldName);
 
-    const watchSubscription = subjectsRef.current.watch.subscribe({
+    const watchSubscription = _subjects.current.watch.subscribe({
       next: ({ name: inputName, values }) =>
         (!nameRef.current ||
           !inputName ||

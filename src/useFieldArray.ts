@@ -51,17 +51,17 @@ export const useFieldArray = <
 >): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const focusNameRef = React.useRef('');
-  const isMountedRef = React.useRef(false);
+  const _isMounted = React.useRef(false);
   const {
     getIsDirty,
-    namesRef,
+    _names,
     fieldsRef,
-    defaultValuesRef,
-    formStateRef,
-    subjectsRef,
-    readFormStateRef,
+    _defaultValues,
+    _formState,
+    _subjects,
+    _proxyFormState,
     updateIsValid,
-    fieldArrayDefaultValuesRef,
+    _fieldArrayDefaultValues,
     unregister,
     shouldUnmount,
     inFieldArrayActionRef,
@@ -74,17 +74,17 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      (get(_formValues.current, name) && isMountedRef.current
+      (get(_formValues.current, name) && _isMounted.current
         ? get(_formValues.current, name)
-        : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
-        ? get(fieldArrayDefaultValuesRef.current, name)
-        : get(defaultValuesRef.current, name)) || [],
+        : get(_fieldArrayDefaultValues.current, getFieldArrayParentName(name))
+        ? get(_fieldArrayDefaultValues.current, name)
+        : get(_defaultValues.current, name)) || [],
       keyName,
     ),
   );
 
-  set(fieldArrayDefaultValuesRef.current, name, [...fields]);
-  namesRef.current.array.add(name);
+  set(_fieldArrayDefaultValues.current, name, [...fields]);
+  _names.current.array.add(name);
 
   const omitKey = <
     T extends Partial<
@@ -99,7 +99,7 @@ export const useFieldArray = <
     const values = get(_formValues.current, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
-      get(fieldArrayDefaultValuesRef.current, name, []).map(
+      get(_fieldArrayDefaultValues.current, name, []).map(
         (item: Partial<TFieldValues>, index: number) => ({
           ...item,
           ...values[index],
@@ -150,59 +150,59 @@ export const useFieldArray = <
       shouldSet && set(_formValues.current, name, output);
     }
 
-    if (Array.isArray(get(formStateRef.current.errors, name))) {
+    if (Array.isArray(get(_formState.current.errors, name))) {
       const output = method(
-        get(formStateRef.current.errors, name),
+        get(_formState.current.errors, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(formStateRef.current.errors, name, output);
-      cleanup(formStateRef.current.errors);
+      shouldSet && set(_formState.current.errors, name, output);
+      cleanup(_formState.current.errors);
     }
 
     if (
-      readFormStateRef.current.touchedFields &&
-      get(formStateRef.current.touchedFields, name)
+      _proxyFormState.current.touchedFields &&
+      get(_formState.current.touchedFields, name)
     ) {
       const output = method(
-        get(formStateRef.current.touchedFields, name),
+        get(_formState.current.touchedFields, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(formStateRef.current.touchedFields, name, output);
-      cleanup(formStateRef.current.touchedFields);
+      shouldSet && set(_formState.current.touchedFields, name, output);
+      cleanup(_formState.current.touchedFields);
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
+      _proxyFormState.current.dirtyFields ||
+      _proxyFormState.current.isDirty
     ) {
       set(
-        formStateRef.current.dirtyFields,
+        _formState.current.dirtyFields,
         name,
         setFieldArrayDirtyFields(
           omitKey(updatedFieldArrayValues),
-          get(defaultValuesRef.current, name, []),
-          get(formStateRef.current.dirtyFields, name, []),
+          get(_defaultValues.current, name, []),
+          get(_formState.current.dirtyFields, name, []),
         ),
       );
       updatedFieldArrayValues &&
         set(
-          formStateRef.current.dirtyFields,
+          _formState.current.dirtyFields,
           name,
           setFieldArrayDirtyFields(
             omitKey(updatedFieldArrayValues),
-            get(defaultValuesRef.current, name, []),
-            get(formStateRef.current.dirtyFields, name, []),
+            get(_defaultValues.current, name, []),
+            get(_formState.current.dirtyFields, name, []),
           ),
         );
-      cleanup(formStateRef.current.dirtyFields);
+      cleanup(_formState.current.dirtyFields);
     }
 
-    subjectsRef.current.state.next({
+    _subjects.current.state.next({
       isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
-      errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
-      isValid: formStateRef.current.isValid,
+      errors: _formState.current.errors as FieldErrors<TFieldValues>,
+      isValid: _formState.current.isValid,
     });
   };
 
@@ -388,10 +388,9 @@ export const useFieldArray = <
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
       {
-        shouldValidate: !!readFormStateRef.current.isValid,
+        shouldValidate: !!_proxyFormState.current.isValid,
         shouldDirty: !!(
-          readFormStateRef.current.dirtyFields ||
-          readFormStateRef.current.isDirty
+          _proxyFormState.current.dirtyFields || _proxyFormState.current.isDirty
         ),
       },
     );
@@ -405,18 +404,18 @@ export const useFieldArray = <
   React.useEffect(() => {
     inFieldArrayActionRef.current = false;
 
-    if (namesRef.current.watchAll) {
-      subjectsRef.current.state.next({});
+    if (_names.current.watchAll) {
+      _subjects.current.state.next({});
     } else {
-      for (const watchField of namesRef.current.watch) {
+      for (const watchField of _names.current.watch) {
         if (name.startsWith(watchField)) {
-          subjectsRef.current.state.next({});
+          _subjects.current.state.next({});
           break;
         }
       }
     }
 
-    subjectsRef.current.watch.next({
+    _subjects.current.watch.next({
       name,
       values: _formValues.current,
     });
@@ -428,46 +427,42 @@ export const useFieldArray = <
 
     focusNameRef.current = '';
 
-    subjectsRef.current.array.next({
+    _subjects.current.array.next({
       name,
       values: omitKey([...fields]),
     });
 
-    readFormStateRef.current.isValid && updateIsValid();
+    _proxyFormState.current.isValid && updateIsValid();
   }, [fields, name]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = subjectsRef.current.array.subscribe({
+    const fieldArraySubscription = _subjects.current.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(fieldsRef.current, inputFieldArrayName || name);
           unset(_formValues.current, inputFieldArrayName || name);
 
           inputFieldArrayName
-            ? set(
-                fieldArrayDefaultValuesRef.current,
-                inputFieldArrayName,
-                values,
-              )
-            : (fieldArrayDefaultValuesRef.current = values);
+            ? set(_fieldArrayDefaultValues.current, inputFieldArrayName, values)
+            : (_fieldArrayDefaultValues.current = values);
 
-          setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
+          setFieldsAndNotify(get(_fieldArrayDefaultValues.current, name));
         }
       },
     });
 
     !get(_formValues.current, name) && set(_formValues.current, name, []);
-    isMountedRef.current = true;
+    _isMounted.current = true;
 
     return () => {
       fieldArraySubscription.unsubscribe();
       if (shouldUnmount || shouldUnregister) {
         unregister(name as FieldPath<TFieldValues>);
-        unset(fieldArrayDefaultValuesRef.current, name);
+        unset(_fieldArrayDefaultValues.current, name);
       } else {
         const fieldArrayValues = get(_formValues.current, name);
         fieldArrayValues &&
-          set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
+          set(_fieldArrayDefaultValues.current, name, fieldArrayValues);
       }
     };
   }, []);

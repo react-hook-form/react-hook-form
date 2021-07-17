@@ -144,7 +144,7 @@ describe('reset', () => {
 
     act(() => result.current.reset({ test: 'test' }));
 
-    expect(result.current.control.defaultValuesRef.current).toEqual({
+    expect(result.current.control._defaultValues.current).toEqual({
       test: 'test',
     });
   });
