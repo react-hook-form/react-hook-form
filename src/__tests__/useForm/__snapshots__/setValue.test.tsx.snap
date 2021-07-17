@@ -12,7 +12,6 @@ Object {
             "name": "test.0.name",
             "value": "append",
           },
-          "value": "append",
         },
       },
       "nestedArray": Array [
@@ -25,7 +24,6 @@ Object {
                 "name": "test.0.nestedArray.0.field1",
                 "value": "append",
               },
-              "value": "append",
             },
           },
           "field2": Object {
@@ -36,7 +34,6 @@ Object {
                 "name": "test.0.nestedArray.0.field2",
                 "value": "append",
               },
-              "value": "append",
             },
           },
         },

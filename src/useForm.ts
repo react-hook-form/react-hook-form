@@ -227,7 +227,6 @@ export function useForm<
               ? ''
               : rawValue;
           const fieldValue = getFieldValueAs(rawValue, _f);
-          _f.value = fieldValue;
 
           if (isRadioInput(_f.ref)) {
             (_f.refs || []).forEach(

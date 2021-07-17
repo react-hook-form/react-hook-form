@@ -1180,7 +1180,6 @@ describe('useForm', () => {
             mount: true,
             name: 'test',
             ref: { name: 'test', value: 'value' },
-            value: 'value',
           },
         },
         names: ['test'],

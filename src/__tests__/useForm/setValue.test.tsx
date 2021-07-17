@@ -267,7 +267,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test1', value: ['1', '2', '3'] },
         name: 'test1',
-        value: ['1', '2', '3'],
       },
     });
     expect(result.current.control._fields.current['test2']).toEqual({
@@ -275,7 +274,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
         name: 'test2',
-        value: { key1: '1', key2: 2 },
       },
     });
     expect(result.current.control._fields.current['test3']).toEqual({
@@ -289,10 +287,6 @@ describe('setValue', () => {
           ],
         },
         name: 'test3',
-        value: [
-          { key1: '1', key2: 2 },
-          { key1: '3', key2: 4 },
-        ],
       },
     });
   });
@@ -319,7 +313,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.0', value: '1' },
         name: 'test.0',
-        value: '1',
       },
     });
     expect(get(result.current.control._fields.current, 'test.1')).toEqual({
@@ -327,7 +320,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.1', value: '2' },
         name: 'test.1',
-        value: '2',
       },
     });
     expect(get(result.current.control._fields.current, 'test.2')).toEqual({
@@ -335,7 +327,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.2', value: '3' },
         name: 'test.2',
-        value: '3',
       },
     });
   });
@@ -366,7 +357,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.0.test', value: '1' },
         name: 'test.0.test',
-        value: '1',
       },
     });
     expect(get(result.current.control._fields.current, 'test.1.test')).toEqual({
@@ -374,7 +364,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.1.test', value: '2' },
         name: 'test.1.test',
-        value: '2',
       },
     });
     expect(get(result.current.control._fields.current, 'test.2.test')).toEqual({
@@ -382,7 +371,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.2.test', value: '3' },
         name: 'test.2.test',
-        value: '3',
       },
     });
   });
@@ -414,7 +402,6 @@ describe('setValue', () => {
         ref: { name: 'test.bill', value: '1' },
         mount: true,
         name: 'test.bill',
-        value: '1',
       },
     });
     expect(get(result.current.control._fields.current, 'test.luo')).toEqual({
@@ -422,7 +409,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.luo', value: '2' },
         name: 'test.luo',
-        value: '2',
       },
     });
     expect(get(result.current.control._fields.current, 'test.test')).toEqual({
@@ -430,7 +416,6 @@ describe('setValue', () => {
         mount: true,
         ref: { name: 'test.test', value: '3' },
         name: 'test.test',
-        value: '3',
       },
     });
   });
@@ -447,7 +432,6 @@ describe('setValue', () => {
         name: 'test',
         mount: true,
         ref: { name: 'test', value: '1' },
-        value: '1',
       },
     });
   });
@@ -475,7 +459,6 @@ describe('setValue', () => {
             name: 'test.test',
             value: 'test',
           },
-          value: 'test',
         },
       },
       test1: {
@@ -486,7 +469,6 @@ describe('setValue', () => {
             name: 'test.test1',
             value: 'test1',
           },
-          value: 'test1',
         },
       },
       test2: {
@@ -497,7 +479,6 @@ describe('setValue', () => {
             name: 'test.test2',
             value: 'test2',
           },
-          value: 'test2',
         },
       },
     });

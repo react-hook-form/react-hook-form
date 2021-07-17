@@ -432,7 +432,6 @@ describe('update', () => {
                     name: 'test.0.value',
                     value: '1',
                   },
-                  value: '1',
                 },
               },
             ],
