@@ -129,7 +129,7 @@ export function useForm<
   const contextRef = React.useRef(context);
   const inFieldArrayActionRef = React.useRef(false);
   const isMountedRef = React.useRef(false);
-  const debounceRef = React.useRef<any>();
+  const _delayCallback = React.useRef<any>();
   const subjectsRef: Subjects<TFieldValues> = React.useRef({
     watch: new Subject(),
     control: new Subject(),
@@ -753,15 +753,15 @@ export function useForm<
         if (get(formStateRef.current.errors, name) || !delayError) {
           handleValidate(target, fieldState, isWatched, isBlurEvent);
         } else {
-          debounceRef.current = debounceRef.current
-            ? debounceRef.current
+          _delayCallback.current = _delayCallback.current
+            ? _delayCallback.current
             : debounce(
                 () =>
                   handleValidate(target, fieldState, isWatched, isBlurEvent),
                 delayError,
               );
 
-          debounceRef.current(target, fieldState, isWatched, isBlurEvent);
+          _delayCallback.current(target, fieldState, isWatched, isBlurEvent);
           isWatched && subjectsRef.current.state.next({ name });
         }
       }
