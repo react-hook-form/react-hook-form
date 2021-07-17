@@ -30,13 +30,13 @@ export function useController<
 > {
   const methods = useFormContext<TFieldValues>();
   const {
-    _defaultValues,
-    register,
-    _fields,
     unregister,
+    register,
+    shouldUnmount,
+    _defaultValues,
+    _fields,
     _names,
     _subjects,
-    shouldUnmount,
     _isDuringAction,
     _formValues,
   } = control || methods.control;

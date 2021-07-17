@@ -54,19 +54,19 @@ export const useFieldArray = <
   const _isMounted = React.useRef(false);
   const {
     getIsDirty,
+    unregister,
+    shouldUnmount,
+    updateValid,
+    setValues,
+    register,
     _names,
     _fields,
     _defaultValues,
     _formState,
     _subjects,
     _proxyFormState,
-    updateValid,
     _fieldArrayDefaultValues,
-    unregister,
-    shouldUnmount,
     _isDuringAction,
-    setValues,
-    register,
     _formValues,
   } = control || methods.control;
 
