@@ -302,12 +302,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmount?: boolean;
   _subjects: Subjects<TFieldValues>;
   _names: React.MutableRefObject<Names>;
-  inFieldArrayActionRef: React.MutableRefObject<boolean>;
+  _isDuringAction: React.MutableRefObject<boolean>;
   getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FieldArrayDefaultValues;
   _formState: React.MutableRefObject<FormState<TFieldValues>>;
   updateIsValid: <T extends FieldValues>(payload?: T) => void;
-  fieldsRef: React.MutableRefObject<FieldRefs>;
+  _fields: React.MutableRefObject<FieldRefs>;
   _formValues: React.MutableRefObject<FieldValues>;
   _proxyFormState: React.MutableRefObject<ReadFormState>;
   _defaultValues: React.MutableRefObject<DefaultValues<TFieldValues>>;

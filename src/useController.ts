@@ -32,12 +32,12 @@ export function useController<
   const {
     _defaultValues,
     register,
-    fieldsRef,
+    _fields,
     unregister,
     _names,
     _subjects,
     shouldUnmount,
-    inFieldArrayActionRef,
+    _isDuringAction,
     _formValues,
   } = control || methods.control;
 
@@ -72,12 +72,12 @@ export function useController<
 
       if (
         isNameInFieldArray(_names.current.array, name)
-          ? shouldUnmountField && !inFieldArrayActionRef.current
+          ? shouldUnmountField && !_isDuringAction.current
           : shouldUnmountField
       ) {
         unregister(name);
       } else {
-        const field = get(fieldsRef.current, name);
+        const field = get(_fields.current, name);
 
         if (field && field._f) {
           field._f.mount = false;

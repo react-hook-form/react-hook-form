@@ -55,7 +55,7 @@ export const useFieldArray = <
   const {
     getIsDirty,
     _names,
-    fieldsRef,
+    _fields,
     _defaultValues,
     _formState,
     _subjects,
@@ -64,7 +64,7 @@ export const useFieldArray = <
     _fieldArrayDefaultValues,
     unregister,
     shouldUnmount,
-    inFieldArrayActionRef,
+    _isDuringAction,
     setValues,
     register,
     _formValues,
@@ -135,10 +135,10 @@ export const useFieldArray = <
     >[] = [],
     shouldSet = true,
   ) => {
-    inFieldArrayActionRef.current = true;
-    if (get(fieldsRef.current, name)) {
-      const output = method(get(fieldsRef.current, name), args.argA, args.argB);
-      shouldSet && set(fieldsRef.current, name, output);
+    _isDuringAction.current = true;
+    if (get(_fields.current, name)) {
+      const output = method(get(_fields.current, name), args.argA, args.argB);
+      shouldSet && set(_fields.current, name, output);
     }
 
     if (get(_formValues.current, name)) {
@@ -402,7 +402,7 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
-    inFieldArrayActionRef.current = false;
+    _isDuringAction.current = false;
 
     if (_names.current.watchAll) {
       _subjects.current.state.next({});
@@ -421,7 +421,7 @@ export const useFieldArray = <
     });
 
     _focusName.current &&
-      focusFieldBy(fieldsRef.current, (key: string) =>
+      focusFieldBy(_fields.current, (key: string) =>
         key.startsWith(_focusName.current),
       );
 
@@ -439,7 +439,7 @@ export const useFieldArray = <
     const fieldArraySubscription = _subjects.current.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
-          unset(fieldsRef.current, inputFieldArrayName || name);
+          unset(_fields.current, inputFieldArrayName || name);
           unset(_formValues.current, inputFieldArrayName || name);
 
           inputFieldArrayName

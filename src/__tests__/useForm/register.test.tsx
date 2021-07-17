@@ -976,7 +976,7 @@ describe('register', () => {
           test: [true, false, false],
         },
       });
-      inputs = control.fieldsRef;
+      inputs = control._fields;
       watchedValue.push(watch());
 
       return (

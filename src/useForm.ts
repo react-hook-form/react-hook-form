@@ -121,13 +121,13 @@ export function useForm<
   });
   const _resolver = React.useRef(resolver);
   const _formState = React.useRef(formState);
-  const fieldsRef = React.useRef<FieldRefs>({});
+  const _fields = React.useRef<FieldRefs>({});
   const _formValues = React.useRef<FieldValues>({});
   const _defaultValues =
     React.useRef<DefaultValues<TFieldValues>>(defaultValues);
   const _fieldArrayDefaultValues = React.useRef<FieldArrayDefaultValues>({});
   const _context = React.useRef(context);
-  const inFieldArrayActionRef = React.useRef(false);
+  const _isDuringAction = React.useRef(false);
   const _isMounted = React.useRef(false);
   const _delayCallback = React.useRef<any>();
   const _subjects: Subjects<TFieldValues> = React.useRef({
@@ -171,7 +171,7 @@ export function useForm<
       const isValid = _proxyFormState.current.isValid
         ? resolver
           ? isValidFromResolver
-          : await validateForm(fieldsRef.current, true)
+          : await validateForm(_fields.current, true)
         : false;
 
       error
@@ -216,7 +216,7 @@ export function useForm<
       shouldRegister?: boolean,
     ) => {
       shouldRegister && register(name as Path<TFieldValues>);
-      const field = get(fieldsRef.current, name);
+      const field = get(_fields.current, name);
 
       if (field) {
         const _f = (field as Field)._f;
@@ -358,7 +358,7 @@ export function useForm<
     ): Promise<boolean> => {
       const error = (
         await validateField(
-          get(fieldsRef.current, name) as Field,
+          get(_fields.current, name) as Field,
           get(getValues(), name),
           isValidateAllFieldCriteria,
           shouldUseNativeValidation,
@@ -379,7 +379,7 @@ export function useForm<
         _context.current,
         getResolverOptions(
           _names.current.mount,
-          fieldsRef.current,
+          _fields.current,
           criteriaMode,
           shouldUseNativeValidation,
         ),
@@ -402,14 +402,14 @@ export function useForm<
   );
 
   const validateForm = async (
-    fieldsRef: FieldRefs,
+    _fields: FieldRefs,
     shouldCheckValid?: boolean,
     context = {
       valid: true,
     },
   ) => {
-    for (const name in fieldsRef) {
-      const field = fieldsRef[name];
+    for (const name in _fields) {
+      const field = _fields[name];
 
       if (field) {
         const _f = field._f;
@@ -463,7 +463,7 @@ export function useForm<
           isValid = (
             await Promise.all(
               fieldNames
-                .filter((fieldName) => get(fieldsRef.current, fieldName, {})._f)
+                .filter((fieldName) => get(_fields.current, fieldName, {})._f)
                 .map(
                   async (fieldName) =>
                     await executeInlineValidation(fieldName, true),
@@ -471,7 +471,7 @@ export function useForm<
             )
           ).every(Boolean);
         } else {
-          await validateForm(fieldsRef.current);
+          await validateForm(_fields.current);
           isValid = isEmptyObject(_formState.current.errors);
         }
       }
@@ -484,7 +484,7 @@ export function useForm<
 
       if (options.shouldFocus && !isValid) {
         focusFieldBy(
-          fieldsRef.current,
+          _fields.current,
           (key) => get(_formState.current.errors, key),
           name ? fieldNames : _names.current.mount,
         );
@@ -498,7 +498,7 @@ export function useForm<
   );
 
   const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
-    const field = get(fieldsRef.current, name) as Field;
+    const field = get(_fields.current, name) as Field;
     const fieldValue = get(getValues(), name);
 
     if (field) {
@@ -532,14 +532,14 @@ export function useForm<
               _context.current,
               getResolverOptions(
                 _names.current.mount,
-                fieldsRef.current,
+                _fields.current,
                 criteriaMode,
                 shouldUseNativeValidation,
               ),
             )
           ).errors,
         )
-      : await validateForm(fieldsRef.current, true);
+      : await validateForm(_fields.current, true);
 
     isValid !== _formState.current.isValid &&
       _subjects.current.state.next({
@@ -557,7 +557,7 @@ export function useForm<
     ) =>
       Object.entries(value).forEach(([fieldKey, fieldValue]) => {
         const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
-        const field = get(fieldsRef.current, fieldName);
+        const field = get(_fields.current, fieldName);
         const isFieldArray = _names.current.array.has(name);
 
         (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
@@ -583,7 +583,7 @@ export function useForm<
     value,
     options = {},
   ) => {
-    const field = get(fieldsRef.current, name);
+    const field = get(_fields.current, name);
     const isFieldArray = _names.current.array.has(name);
 
     if (isFieldArray) {
@@ -640,7 +640,7 @@ export function useForm<
     let error;
     let isValid;
     let name = target.name;
-    const field = get(fieldsRef.current, name) as Field;
+    const field = get(_fields.current, name) as Field;
 
     if (resolver) {
       const { errors } = await _resolver.current!(
@@ -648,7 +648,7 @@ export function useForm<
         _context.current,
         getResolverOptions(
           [name],
-          fieldsRef.current,
+          _fields.current,
           criteriaMode,
           shouldUseNativeValidation,
         ),
@@ -689,7 +689,7 @@ export function useForm<
 
   const handleChange: ChangeHandler = React.useCallback(
     async ({ type, target, target: { value, name, type: inputType } }) => {
-      const field = get(fieldsRef.current, name) as Field;
+      const field = get(_fields.current, name) as Field;
 
       if (field) {
         let inputValue = inputType ? getFieldValue(field) : undefined;
@@ -792,9 +792,8 @@ export function useForm<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    const ref = (
-      ((get(fieldsRef.current, name) as Field) || { _f: {} })._f || {}
-    ).ref;
+    const ref = (((get(_fields.current, name) as Field) || { _f: {} })._f || {})
+      .ref;
 
     set(_formState.current.errors, name, {
       ...error,
@@ -880,9 +879,9 @@ export function useForm<
       _names.current.mount.delete(inputName);
       _names.current.array.delete(inputName);
 
-      if (get(fieldsRef.current, inputName) as Field) {
+      if (get(_fields.current, inputName) as Field) {
         if (!options.keepValue) {
-          unset(fieldsRef.current, inputName);
+          unset(_fields.current, inputName);
           unset(_formValues.current, inputName);
         }
 
@@ -913,7 +912,7 @@ export function useForm<
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
     register(name as FieldPath<TFieldValues>, options);
-    let field = get(fieldsRef.current, name) as Field;
+    let field = get(_fields.current, name) as Field;
 
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
 
@@ -943,16 +942,16 @@ export function useForm<
           },
     };
 
-    set(fieldsRef.current, name, field);
+    set(_fields.current, name, field);
 
     updateIsValidAndInputValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options = {}) => {
-      const field = get(fieldsRef.current, name);
+      const field = get(_fields.current, name);
 
-      set(fieldsRef.current, name, {
+      set(_fields.current, name, {
         _f: {
           ...(field && field._f ? field._f : { ref: { name } }),
           name,
@@ -994,7 +993,7 @@ export function useForm<
               if (ref) {
                 registerFieldRef(name, ref, options);
               } else {
-                const field = get(fieldsRef.current, name, {}) as Field;
+                const field = get(_fields.current, name, {}) as Field;
                 const shouldUnmount =
                   shouldUnregister || options.shouldUnregister;
 
@@ -1005,7 +1004,7 @@ export function useForm<
                 shouldUnmount &&
                   !(
                     isNameInFieldArray(_names.current.array, name) &&
-                    inFieldArrayActionRef.current
+                    _isDuringAction.current
                   ) &&
                   _names.current.unMount.add(name);
               }
@@ -1035,7 +1034,7 @@ export function useForm<
             _context.current,
             getResolverOptions(
               _names.current.mount,
-              fieldsRef.current,
+              _fields.current,
               criteriaMode,
               shouldUseNativeValidation,
             ),
@@ -1043,7 +1042,7 @@ export function useForm<
           _formState.current.errors = errors;
           fieldValues = values;
         } else {
-          await validateForm(fieldsRef.current);
+          await validateForm(_fields.current);
         }
 
         if (
@@ -1061,7 +1060,7 @@ export function useForm<
           onInvalid && (await onInvalid(_formState.current.errors, e));
           shouldFocusError &&
             focusFieldBy(
-              fieldsRef.current,
+              _fields.current,
               (key) => get(_formState.current.errors, key),
               _names.current.mount,
             );
@@ -1096,7 +1095,7 @@ export function useForm<
     for (const key in defaultValues) {
       const value = defaultValues[key];
       const fieldName = name + (name ? '.' : '') + key;
-      const field = get(fieldsRef.current, fieldName);
+      const field = get(_fields.current, fieldName);
 
       if (!field || !field._f) {
         if (isObject(value) || Array.isArray(value)) {
@@ -1113,7 +1112,7 @@ export function useForm<
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.current.mount) {
-        const field = get(fieldsRef.current, name);
+        const field = get(_fields.current, name);
         if (field && field._f) {
           const inputRef = Array.isArray(field._f.refs)
             ? field._f.refs[0]
@@ -1133,7 +1132,7 @@ export function useForm<
     }
 
     if (!keepStateOptions.keepValues) {
-      fieldsRef.current = {};
+      _fields.current = {};
       _formValues.current = {};
 
       _subjects.current.control.next({
@@ -1187,7 +1186,7 @@ export function useForm<
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
-    get(fieldsRef.current, name)._f.ref.focus();
+    get(_fields.current, name)._f.ref.focus();
 
   React.useEffect(() => {
     const formStateSubscription = _subjects.current.state.subscribe({
@@ -1229,7 +1228,7 @@ export function useForm<
     }
 
     for (const name of _names.current.unMount) {
-      const field = get(fieldsRef.current, name) as Field;
+      const field = get(_fields.current, name) as Field;
 
       field &&
         (field._f.refs
@@ -1248,18 +1247,18 @@ export function useForm<
     control: React.useMemo(
       () => ({
         register,
-        inFieldArrayActionRef,
+        setValues,
         getIsDirty,
-        _subjects,
         watchInternal,
-        fieldsRef,
         updateIsValid,
+        _fields,
+        _isDuringAction,
+        _subjects,
         _names,
         _proxyFormState,
         _formState,
         _defaultValues,
         _fieldArrayDefaultValues,
-        setValues,
         _formValues,
         unregister,
         shouldUnmount: shouldUnregister,

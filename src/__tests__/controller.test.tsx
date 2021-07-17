@@ -417,7 +417,7 @@ describe('Controller', () => {
     let fieldsRef: any;
     const Component = ({ required = true }: { required?: boolean }) => {
       const { control } = useForm();
-      fieldsRef = control.fieldsRef;
+      fieldsRef = control._fields;
       return (
         <Controller
           defaultValue=""
