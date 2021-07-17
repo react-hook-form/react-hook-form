@@ -54,7 +54,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     getWatch(name as InternalFieldName);
 
     const watchSubscription = _subjects.current.watch.subscribe({
-      next: ({ name, values }) =>
+      next: ({ name }) =>
         (!_name.current ||
           !name ||
           convertToArrayPayload(_name.current).some(
@@ -68,8 +68,6 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           getWatch(
             _name.current as string,
             defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-            false,
-            values,
           ),
         ),
     });
