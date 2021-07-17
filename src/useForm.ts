@@ -674,6 +674,7 @@ export function useForm<
       error = (
         await validateField(
           field,
+          get(_formValues.current, name) as Field,
           isValidateAllFieldCriteria,
           shouldUseNativeValidation,
         )
