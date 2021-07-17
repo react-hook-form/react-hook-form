@@ -209,7 +209,7 @@ export function useForm<
   const setFieldValue = React.useCallback(
     (
       name: InternalFieldName,
-      rawValue: SetFieldValue<TFieldValues>,
+      value: SetFieldValue<TFieldValues>,
       options: SetValueConfig = {},
       shouldRender?: boolean,
       shouldRegister?: boolean,
@@ -221,44 +221,43 @@ export function useForm<
         const _f = field._f;
 
         if (_f) {
-          const value =
-            isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(rawValue)
+          const fieldValue =
+            isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(value)
               ? ''
-              : rawValue;
-          const fieldValue = getFieldValueAs(rawValue, _f);
+              : value;
 
-          if (isFileInput(_f.ref) && !isString(value)) {
-            _f.ref.files = value as FileList;
+          if (isFileInput(_f.ref) && !isString(fieldValue)) {
+            _f.ref.files = fieldValue as FileList;
           } else if (isMultipleSelect(_f.ref)) {
             [..._f.ref.options].forEach(
               (selectRef) =>
-                (selectRef.selected = (value as InternalFieldName[]).includes(
-                  selectRef.value,
-                )),
+                (selectRef.selected = (
+                  fieldValue as InternalFieldName[]
+                ).includes(selectRef.value)),
             );
           } else if (_f.refs) {
             if (isCheckBoxInput(_f.ref)) {
               _f.refs.length > 1
                 ? _f.refs.forEach(
                     (checkboxRef) =>
-                      (checkboxRef.checked = Array.isArray(value)
-                        ? !!(value as []).find(
+                      (checkboxRef.checked = Array.isArray(fieldValue)
+                        ? !!(fieldValue as []).find(
                             (data: string) => data === checkboxRef.value,
                           )
-                        : value === checkboxRef.value),
+                        : fieldValue === checkboxRef.value),
                   )
-                : (_f.refs[0].checked = !!value);
+                : (_f.refs[0].checked = !!fieldValue);
             } else {
               _f.refs.forEach(
                 (radioRef: HTMLInputElement) =>
-                  (radioRef.checked = radioRef.value === value),
+                  (radioRef.checked = radioRef.value === fieldValue),
               );
             }
           } else {
-            _f.ref.value = value;
+            _f.ref.value = fieldValue;
           }
 
-          set(_formValues.current, name, fieldValue);
+          set(_formValues.current, name, getFieldValueAs(value, _f));
 
           if (shouldRender) {
             _subjects.current.control.next({
@@ -268,16 +267,8 @@ export function useForm<
           }
 
           (options.shouldDirty || options.shouldTouch) &&
-            updateTouchAndDirtyState(name, value, options.shouldTouch);
+            updateTouchAndDirtyState(name, fieldValue, options.shouldTouch);
           options.shouldValidate && trigger(name as Path<TFieldValues>);
-        } else {
-          field._f = {
-            name,
-            ref: {
-              value: rawValue,
-            } as Ref,
-          };
-          set(_formValues.current, name, rawValue);
         }
       }
     },
