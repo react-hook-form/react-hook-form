@@ -490,14 +490,14 @@ export function useForm<
         );
       }
 
-      _proxyFormState.current.isValid && updateIsValid();
+      _proxyFormState.current.isValid && updateValid();
 
       return isValid;
     },
     [executeResolverValidation, executeInlineValidation],
   );
 
-  const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
+  const updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(_fields.current, name) as Field;
     const fieldValue = get(getValues(), name);
 
@@ -520,10 +520,10 @@ export function useForm<
       }
     }
 
-    _isMounted.current && _proxyFormState.current.isValid && updateIsValid();
+    _isMounted.current && _proxyFormState.current.isValid && updateValid();
   };
 
-  const updateIsValid = React.useCallback(async () => {
+  const updateValid = React.useCallback(async () => {
     const isValid = resolver
       ? isEmptyObject(
           (
@@ -903,7 +903,7 @@ export function useForm<
       ..._formState.current,
       ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
     });
-    !options.keepIsValid && updateIsValid();
+    !options.keepIsValid && updateValid();
   };
 
   const registerFieldRef = (
@@ -944,7 +944,7 @@ export function useForm<
 
     set(_fields.current, name, field);
 
-    updateIsValidAndInputValue(name, ref);
+    updateValidAndInputValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
@@ -978,7 +978,7 @@ export function useForm<
       }
 
       _names.current.mount.add(name);
-      !field && updateIsValidAndInputValue(name);
+      !field && updateValidAndInputValue(name);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
@@ -1205,7 +1205,7 @@ export function useForm<
       next(state) {
         if (state.values && state.name && _proxyFormState.current.isValid) {
           set(_formValues.current, state.name, state.values);
-          updateIsValid();
+          updateValid();
         }
       },
     });
@@ -1223,7 +1223,7 @@ export function useForm<
 
     if (!_isMounted.current) {
       _isMounted.current = true;
-      _proxyFormState.current.isValid && updateIsValid();
+      _proxyFormState.current.isValid && updateValid();
       !shouldUnregister && registerAbsentFields(_defaultValues.current);
     }
 
@@ -1250,7 +1250,9 @@ export function useForm<
         setValues,
         getIsDirty,
         watchInternal,
-        updateIsValid,
+        updateValid,
+        unregister,
+        shouldUnmount: shouldUnregister,
         _fields,
         _isDuringAction,
         _subjects,
@@ -1260,8 +1262,6 @@ export function useForm<
         _defaultValues,
         _fieldArrayDefaultValues,
         _formValues,
-        unregister,
-        shouldUnmount: shouldUnregister,
       }),
       [],
     ),

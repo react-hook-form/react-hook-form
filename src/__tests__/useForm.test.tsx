@@ -1091,7 +1091,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('updateIsValid', () => {
+  describe('updateValid', () => {
     it('should be called resolver with default values if default value is defined', async () => {
       type FormValues = {
         test: string;

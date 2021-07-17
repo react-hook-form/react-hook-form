@@ -60,7 +60,7 @@ export const useFieldArray = <
     _formState,
     _subjects,
     _proxyFormState,
-    updateIsValid,
+    updateValid,
     _fieldArrayDefaultValues,
     unregister,
     shouldUnmount,
@@ -432,7 +432,7 @@ export const useFieldArray = <
       values: omitKey([...fields]),
     });
 
-    _proxyFormState.current.isValid && updateIsValid();
+    _proxyFormState.current.isValid && updateValid();
   }, [fields, name]);
 
   React.useEffect(() => {

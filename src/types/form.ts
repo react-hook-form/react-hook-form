@@ -306,7 +306,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FieldArrayDefaultValues;
   _formState: React.MutableRefObject<FormState<TFieldValues>>;
-  updateIsValid: <T extends FieldValues>(payload?: T) => void;
+  updateValid: <T extends FieldValues>(payload?: T) => void;
   _fields: React.MutableRefObject<FieldRefs>;
   _formValues: React.MutableRefObject<FieldValues>;
   _proxyFormState: React.MutableRefObject<ReadFormState>;
