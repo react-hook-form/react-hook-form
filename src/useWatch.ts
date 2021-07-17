@@ -66,7 +66,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           )) &&
         updateValue(
           getWatch(
-            _name.current as string,
+            _name.current as InternalFieldName,
             defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           ),
         ),

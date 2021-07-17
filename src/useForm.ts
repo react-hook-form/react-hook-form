@@ -239,7 +239,7 @@ export function useForm<
           } else if (isMultipleSelect(_f.ref)) {
             [..._f.ref.options].forEach(
               (selectRef) =>
-                (selectRef.selected = (value as string[]).includes(
+                (selectRef.selected = (value as InternalFieldName[]).includes(
                   selectRef.value,
                 )),
             );
