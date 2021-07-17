@@ -346,7 +346,7 @@ export function useForm<
       const error = (
         await validateField(
           get(_fields.current, name) as Field,
-          get(getValues(), name),
+          getValues(name as FieldPath<TFieldValues>),
           isValidateAllFieldCriteria,
           shouldUseNativeValidation,
         )
@@ -486,7 +486,7 @@ export function useForm<
 
   const updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(_fields.current, name) as Field;
-    const fieldValue = get(getValues(), name);
+    const fieldValue = getValues(name as FieldPath<TFieldValues>);
 
     if (field) {
       const isValueUndefined = isUndefined(fieldValue);
