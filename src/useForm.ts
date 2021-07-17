@@ -1094,7 +1094,7 @@ export function useForm<
   };
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
-    const updatedValues = values || _defaultValues.current;
+    const updatedValues = { ...(values || _defaultValues.current) };
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.current.mount) {
@@ -1113,8 +1113,8 @@ export function useForm<
     }
 
     if (!keepStateOptions.keepDefaultValues) {
-      _defaultValues.current = { ...updatedValues };
-      _fieldArrayDefaultValues.current = { ...updatedValues };
+      _defaultValues.current = updatedValues;
+      _fieldArrayDefaultValues.current = updatedValues;
     }
 
     if (!keepStateOptions.keepValues) {
@@ -1124,13 +1124,13 @@ export function useForm<
       _subjects.current.control.next({
         values: keepStateOptions.keepDefaultValues
           ? _defaultValues.current
-          : { ...updatedValues },
+          : updatedValues,
       });
 
       _subjects.current.watch.next({});
 
       _subjects.current.array.next({
-        values: { ...updatedValues },
+        values: updatedValues,
         isReset: true,
       });
     }
