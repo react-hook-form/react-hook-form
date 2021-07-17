@@ -1001,11 +1001,7 @@ describe('useWatch', () => {
     it('should return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
-      const Child = ({ register, setValue }: UseFormReturn<FormValues>) => {
-        React.useEffect(() => {
-          setValue('test', 'bill');
-        }, [setValue]);
-
+      const Child = ({ register }: UseFormReturn<FormValues>) => {
         return <input {...register('test')} />;
       };
 
@@ -1018,6 +1014,10 @@ describe('useWatch', () => {
         const methods = useForm<FormValues>({
           defaultValues: { test: 'test' },
         });
+
+        React.useEffect(() => {
+          methods.setValue('test', 'bill');
+        }, [methods.setValue]);
 
         return (
           <>

@@ -627,7 +627,6 @@ export function useForm<
     isFieldWatched(name) && _subjects.current.state.next({});
     _subjects.current.watch.next({
       name,
-      values: getValues(),
     });
   };
 
@@ -681,7 +680,6 @@ export function useForm<
       _subjects.current.watch.next({
         name,
         type: target.type,
-        values: getValues(),
       });
 
     shouldRenderBaseOnError(false, name, error, fieldState, isValid, isWatched);
@@ -734,7 +732,6 @@ export function useForm<
             _subjects.current.watch.next({
               name,
               type,
-              values: getValues(),
             });
           return (
             shouldRender &&
@@ -809,23 +806,17 @@ export function useForm<
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
-  const watchInternal: WatchInternal<TFieldValues> = React.useCallback(
-    (fieldNames, defaultValue, isGlobal, formValues) => {
-      const isArrayNames = Array.isArray(fieldNames);
+  const getWatch: WatchInternal<TFieldValues> = React.useCallback(
+    (fieldNames, defaultValue, isGlobal) => {
       const fieldValues = {
-        ...(formValues || _isMounted.current
-          ? {
-              ..._defaultValues.current,
-              ...((formValues || getValues()) as {}),
-            }
+        ...(_isMounted.current
+          ? getValues()
           : isUndefined(defaultValue)
           ? _defaultValues.current
-          : isArrayNames
-          ? defaultValue
-          : { [fieldNames as InternalFieldName]: defaultValue }),
+          : defaultValue),
       };
 
-      if (isUndefined(fieldNames)) {
+      if (!fieldNames) {
         isGlobal && (_names.current.watchAll = true);
         return fieldValues;
       }
@@ -837,13 +828,7 @@ export function useForm<
         result.push(get(fieldValues, fieldName as InternalFieldName));
       }
 
-      return isArrayNames
-        ? result
-        : isObject(result[0])
-        ? { ...result[0] }
-        : Array.isArray(result[0])
-        ? [...result[0]]
-        : result[0];
+      return Array.isArray(fieldNames) ? result : result[0];
     },
     [],
   );
@@ -859,14 +844,14 @@ export function useForm<
       ? _subjects.current.watch.subscribe({
           next: (info) =>
             fieldName(
-              watchInternal(
+              getWatch(
                 undefined,
                 defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
               ) as UnpackNestedValue<TFieldValues>,
               info,
             ),
         })
-      : watchInternal(
+      : getWatch(
           fieldName as InternalFieldName | InternalFieldName[],
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           true,
@@ -895,9 +880,7 @@ export function useForm<
       }
     }
 
-    _subjects.current.watch.next({
-      values: getValues(),
-    });
+    _subjects.current.watch.next({});
 
     _subjects.current.state.next({
       ..._formState.current,
@@ -1141,9 +1124,7 @@ export function useForm<
           : { ...updatedValues },
       });
 
-      _subjects.current.watch.next({
-        values: { ...updatedValues },
-      });
+      _subjects.current.watch.next({});
 
       _subjects.current.array.next({
         values: { ...updatedValues },
@@ -1249,7 +1230,7 @@ export function useForm<
         register,
         setValues,
         getIsDirty,
-        watchInternal,
+        getWatch,
         updateValid,
         unregister,
         shouldUnmount: shouldUnregister,

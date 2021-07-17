@@ -311,7 +311,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   _formValues: React.MutableRefObject<FieldValues>;
   _proxyFormState: React.MutableRefObject<ReadFormState>;
   _defaultValues: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  watchInternal: WatchInternal<TFieldValues>;
+  getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   setValues: (
     name: FieldPath<TFieldValues>,
