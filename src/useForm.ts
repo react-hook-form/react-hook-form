@@ -29,7 +29,6 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import isObject from './utils/isObject';
 import isPrimitive from './utils/isPrimitive';
 import isProxyEnabled from './utils/isProxyEnabled';
-import isRadioInput from './utils/isRadioInput';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
@@ -228,12 +227,7 @@ export function useForm<
               : rawValue;
           const fieldValue = getFieldValueAs(rawValue, _f);
 
-          if (isRadioInput(_f.ref)) {
-            (_f.refs || []).forEach(
-              (radioRef: HTMLInputElement) =>
-                (radioRef.checked = radioRef.value === value),
-            );
-          } else if (isFileInput(_f.ref) && !isString(value)) {
+          if (isFileInput(_f.ref) && !isString(value)) {
             _f.ref.files = value as FileList;
           } else if (isMultipleSelect(_f.ref)) {
             [..._f.ref.options].forEach(
@@ -242,17 +236,24 @@ export function useForm<
                   selectRef.value,
                 )),
             );
-          } else if (isCheckBoxInput(_f.ref) && _f.refs) {
-            _f.refs.length > 1
-              ? _f.refs.forEach(
-                  (checkboxRef) =>
-                    (checkboxRef.checked = Array.isArray(value)
-                      ? !!(value as []).find(
-                          (data: string) => data === checkboxRef.value,
-                        )
-                      : value === checkboxRef.value),
-                )
-              : (_f.refs[0].checked = !!value);
+          } else if (_f.refs) {
+            if (isCheckBoxInput(_f.ref)) {
+              _f.refs.length > 1
+                ? _f.refs.forEach(
+                    (checkboxRef) =>
+                      (checkboxRef.checked = Array.isArray(value)
+                        ? !!(value as []).find(
+                            (data: string) => data === checkboxRef.value,
+                          )
+                        : value === checkboxRef.value),
+                  )
+                : (_f.refs[0].checked = !!value);
+            } else {
+              _f.refs.forEach(
+                (radioRef: HTMLInputElement) =>
+                  (radioRef.checked = radioRef.value === value),
+              );
+            }
           } else {
             _f.ref.value = value;
           }
