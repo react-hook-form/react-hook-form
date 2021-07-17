@@ -358,6 +358,7 @@ export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
+  disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]

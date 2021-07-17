@@ -38,7 +38,7 @@ export function useWatch<
   control?: Control<TFieldValues>;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
-  const { control, name, defaultValue } = props || {};
+  const { control, name, defaultValue, disabled } = props || {};
   const methods = useFormContext();
   const _name = React.useRef(name);
   _name.current = name;
@@ -70,8 +70,10 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         ),
     });
 
+    disabled && watchSubscription.unsubscribe();
+
     return () => watchSubscription.unsubscribe();
-  }, []);
+  }, [disabled]);
 
   return value;
 }
