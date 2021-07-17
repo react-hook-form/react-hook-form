@@ -23,7 +23,7 @@ Version 7 | [Version 6](/docs/README.V6.md)
 
 ## Features
 
-- Built with performance and DX in mind
+- Built with performance, UX and DX in mind
 - Embraces native form validation
 - Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
 - [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)

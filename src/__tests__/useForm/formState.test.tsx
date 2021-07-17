@@ -13,6 +13,8 @@ import { Controller } from '../../controller';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
+jest.useFakeTimers();
+
 describe('formState', () => {
   it('should return isValid correctly with resolver', async () => {
     let isValidValue = false;
@@ -527,5 +529,103 @@ describe('formState', () => {
     });
 
     expect(dirtyFieldsState).toEqual({});
+  });
+
+  describe('when delay config is set', () => {
+    it('should only show error after 500ms with register', async () => {
+      const message = 'required.';
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            <input
+              {...register('test', {
+                maxLength: 4,
+              })}
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123456',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      await waitFor(async () => {
+        screen.getByText(message);
+      });
+    });
+
+    it('should only show error after 500ms with Controller', async () => {
+      const message = 'required.';
+      const App = () => {
+        const {
+          control,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            <Controller
+              render={({ field }) => <input {...field} />}
+              rules={{
+                maxLength: 4,
+              }}
+              control={control}
+              name="test"
+              defaultValue=""
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123456',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      await waitFor(async () => {
+        screen.getByText(message);
+      });
+    });
   });
 });
