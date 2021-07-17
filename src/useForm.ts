@@ -215,10 +215,10 @@ export function useForm<
       shouldRegister?: boolean,
     ) => {
       shouldRegister && register(name as Path<TFieldValues>);
-      const field = get(_fields.current, name);
+      const field: Field = get(_fields.current, name);
 
       if (field) {
-        const _f = (field as Field)._f;
+        const _f = field._f;
 
         if (_f) {
           const value =
@@ -272,11 +272,10 @@ export function useForm<
           options.shouldValidate && trigger(name as Path<TFieldValues>);
         } else {
           field._f = {
+            name,
             ref: {
-              name,
               value: rawValue,
-            },
-            value: rawValue,
+            } as Ref,
           };
           set(_formValues.current, name, rawValue);
         }
