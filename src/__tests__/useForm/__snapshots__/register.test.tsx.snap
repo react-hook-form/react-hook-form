@@ -5,7 +5,6 @@ Object {
   "current": Object {
     "test": Object {
       "_f": Object {
-        "_c": true,
         "mount": true,
         "name": "test",
         "ref": Object {

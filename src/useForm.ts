@@ -228,12 +228,12 @@ export function useForm<
               : rawValue;
           _f.value = getFieldValueAs(rawValue, _f);
 
-          if (isRadioInput(_f.ref) && !_f._c) {
+          if (isRadioInput(_f.ref)) {
             (_f.refs || []).forEach(
               (radioRef: HTMLInputElement) =>
                 (radioRef.checked = radioRef.value === value),
             );
-          } else if (isFileInput(_f.ref) && !isString(value) && !_f._c) {
+          } else if (isFileInput(_f.ref) && !isString(value)) {
             _f.ref.files = value as FileList;
           } else if (isMultipleSelect(_f.ref)) {
             [..._f.ref.options].forEach(
@@ -242,7 +242,7 @@ export function useForm<
                   selectRef.value,
                 )),
             );
-          } else if (isCheckBoxInput(_f.ref) && _f.refs && !_f._c) {
+          } else if (isCheckBoxInput(_f.ref) && _f.refs) {
             _f.refs.length > 1
               ? _f.refs.forEach(
                   (checkboxRef) =>
@@ -257,7 +257,7 @@ export function useForm<
             _f.ref.value = value;
           }
 
-          if (shouldRender && _f._c) {
+          if (shouldRender) {
             const values = getFieldsValues(fieldsRef);
             set(values, name, rawValue);
             subjectsRef.current.control.next({
@@ -1109,8 +1109,10 @@ export function useForm<
       }
     }
 
-    !keepStateOptions.keepDefaultValues &&
-      (defaultValuesRef.current = { ...updatedValues });
+    if (!keepStateOptions.keepDefaultValues) {
+      defaultValuesRef.current = { ...updatedValues };
+      fieldArrayDefaultValuesRef.current = { ...updatedValues };
+    }
 
     if (!keepStateOptions.keepValues) {
       fieldsRef.current = {};

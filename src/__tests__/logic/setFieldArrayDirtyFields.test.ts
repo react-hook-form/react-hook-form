@@ -175,4 +175,54 @@ describe('setFieldArrayDirtyFields', () => {
       },
     ]);
   });
+
+  it('should reset dirtyFields fields', () => {
+    expect(
+      setFieldArrayDirtyFields(
+        [
+          {
+            test1: 'test',
+            test: [
+              {
+                test: 'test1',
+              },
+            ],
+          },
+        ],
+
+        [
+          {
+            test1: 'test1',
+            test: null,
+          },
+
+          {
+            test1: 'test',
+            test: [
+              {
+                test: 'test1',
+              },
+            ],
+          },
+        ],
+
+        [],
+      ),
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "test": true,
+          "test1": true,
+        },
+        Object {
+          "test": Array [
+            Object {
+              "test": true,
+            },
+          ],
+          "test1": true,
+        },
+      ]
+    `);
+  });
 });

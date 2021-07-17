@@ -9,7 +9,12 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { Control, NestedValue, UseFormReturn } from '../../types';
+import {
+  Control,
+  NestedValue,
+  UseFormRegister,
+  UseFormReturn,
+} from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -510,5 +515,84 @@ describe('reset', () => {
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('test1');
+  });
+
+  it('should allow to reset unmounted field array', () => {
+    type FormValues = {
+      test: { name: string }[];
+    };
+
+    const FieldArray = ({
+      control,
+      register,
+    }: {
+      control: Control<FormValues>;
+      register: UseFormRegister<FormValues>;
+    }) => {
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <div>
+          {fields.map((field, index) => {
+            return (
+              <input
+                key={field.id}
+                {...register(`test.${index}.name` as const)}
+              />
+            );
+          })}
+          <button
+            onClick={() => {
+              append({ name: '' });
+            }}
+          >
+            append
+          </button>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { control, register, reset } = useForm<FormValues>();
+
+      return (
+        <div>
+          {show && <FieldArray control={control} register={register} />}
+          <button
+            onClick={() => {
+              setShow(!show);
+            }}
+          >
+            toggle
+          </button>
+          <button
+            onClick={() => {
+              reset({
+                test: [{ name: 'test' }],
+              });
+            }}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    expect(screen.getAllByRole('textbox').length).toEqual(2);
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
 });
