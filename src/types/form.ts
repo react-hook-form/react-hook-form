@@ -80,6 +80,15 @@ export type TriggerConfig = Partial<{
 
 export type ChangeHandler = (event: any) => Promise<void | boolean>;
 
+export type ValidateHandler = <TFieldValues>(
+  event: any,
+  fieldState: Partial<
+    Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
+  >,
+  isWatched: boolean,
+  isBlurEvent: boolean,
+) => Promise<void | boolean>;
+
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object,
@@ -93,6 +102,7 @@ export type UseFormProps<
   shouldUnregister: boolean;
   shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
+  delayError: number;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
