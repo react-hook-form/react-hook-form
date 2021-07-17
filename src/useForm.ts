@@ -753,13 +753,8 @@ export function useForm<
         if (get(formStateRef.current.errors, name) || !delayError) {
           handleValidate(target, fieldState, isWatched, isBlurEvent);
         } else {
-          _delayCallback.current = _delayCallback.current
-            ? _delayCallback.current
-            : debounce(
-                () =>
-                  handleValidate(target, fieldState, isWatched, isBlurEvent),
-                delayError,
-              );
+          _delayCallback.current =
+            _delayCallback.current || debounce(handleValidate, delayError);
 
           _delayCallback.current(target, fieldState, isWatched, isBlurEvent);
           isWatched && subjectsRef.current.state.next({ name });
