@@ -57,7 +57,7 @@ export const useFieldArray = <
     unregister,
     _shouldUnregister,
     _updateValid,
-    setValues,
+    _setValues,
     register,
     _names,
     _fields,
@@ -382,7 +382,7 @@ export const useFieldArray = <
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    setValues(
+    _setValues(
       (name + '.' + index) as FieldPath<TFieldValues>,
       value as UnpackNestedValue<
         PathValue<TFieldValues, FieldPath<TFieldValues>>

@@ -23,7 +23,9 @@ export function useForm<
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues> {
-  const _formControl = React.useRef(createFormControl(props));
+  const _formControl = React.useRef(
+    createFormControl<TFieldValues, TContext>(props),
+  );
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,

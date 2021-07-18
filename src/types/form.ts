@@ -297,15 +297,23 @@ export type Names = {
   watchAll: boolean;
 };
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = {
+export type FormControl<T> = {
+  current: T;
+};
+
+export type Control<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+> = {
   _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _names: {
-    current: Names;
-  };
-  _isMounted: any;
-  _updateProps: any;
-  _registerMissFields: any;
+  _names: FormControl<Names>;
+  _isMounted: FormControl<boolean>;
+  _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
+  _registerMissFields: <T extends DefaultValues<TFieldValues>>(
+    defaultValues: T,
+    name?: string,
+  ) => void;
   _isDuringAction: React.MutableRefObject<boolean>;
   _getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FieldArrayDefaultValues;
@@ -314,10 +322,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   _fields: React.MutableRefObject<FieldRefs>;
   _formValues: React.MutableRefObject<FieldValues>;
   _proxyFormState: React.MutableRefObject<ReadFormState>;
-  _defaultValues: React.MutableRefObject<DefaultValues<TFieldValues>>;
+  _defaultValues: FormControl<Partial<DefaultValues<TFieldValues>>>;
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
-  setValues: (
+  _setValues: (
     name: FieldPath<TFieldValues>,
     value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
     options: SetValueConfig,
@@ -334,7 +342,10 @@ export type WatchObserver<TFieldValues> = (
   },
 ) => void;
 
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
+export type UseFormReturn<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+> = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
@@ -345,7 +356,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
-  control: Control<TFieldValues>;
+  control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
 };

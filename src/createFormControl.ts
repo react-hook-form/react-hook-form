@@ -87,13 +87,13 @@ export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object,
 >(
-  constructOptions: UseFormProps<TFieldValues, TContext> = {},
-): Omit<UseFormReturn<TFieldValues>, 'formState'> {
+  props: UseFormProps<TFieldValues, TContext> = {},
+): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
   let formOptions = {
     ...defaultOptions,
-    ...constructOptions,
+    ...props,
   };
-  let _delayCallback: any;
+  let _delayCallback: ValidateHandler;
   let _formState = {
     isDirty: false,
     isValidating: false,
@@ -338,7 +338,7 @@ export function createFormControl<
       getValues(),
       formOptions.context,
       getResolverOptions(
-        _names.mount as any,
+        _names.mount,
         _fields,
         formOptions.criteriaMode,
         formOptions.shouldUseNativeValidation,
@@ -443,7 +443,7 @@ export function createFormControl<
       focusFieldBy(
         _fields,
         (key) => get(_formState.errors, key),
-        name ? fieldNames : (_names.mount as any),
+        name ? fieldNames : _names.mount,
       );
     }
 
@@ -502,7 +502,7 @@ export function createFormControl<
       });
   };
 
-  const setValues = (
+  const _setValues = (
     name: FieldPath<TFieldValues>,
     value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
     options: SetValueConfig,
@@ -514,7 +514,7 @@ export function createFormControl<
 
       (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setValues(
+        ? _setValues(
             fieldName,
             fieldValue as SetFieldValue<TFieldValues>,
             options,
@@ -570,7 +570,7 @@ export function createFormControl<
     set(_formValues, name, value);
 
     ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
-      ? setValues(name, value, isFieldArray ? {} : options)
+      ? _setValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && _subjects.state.next({});
@@ -1103,13 +1103,14 @@ export function createFormControl<
   return {
     control: {
       register,
-      setValues,
       unregister,
+      _setValues,
       _getIsDirty,
       _getWatch,
       _updateValid,
-      _shouldUnregister: formOptions.shouldUnregister,
       _registerMissFields,
+      _subjects,
+      _shouldUnregister: formOptions.shouldUnregister,
       _names: {
         get current() {
           return _names;
@@ -1126,7 +1127,6 @@ export function createFormControl<
           _isDuringAction = v;
         },
       },
-      _subjects,
       _fields: {
         get current() {
           return _fields;
@@ -1166,7 +1166,7 @@ export function createFormControl<
         set current(v) {
           _defaultValues = v;
         },
-      } as any,
+      },
       _fieldArrayDefaultValues: {
         get current() {
           return _fieldArrayDefaultValues;
@@ -1183,7 +1183,7 @@ export function createFormControl<
           _isMounted = v;
         },
       },
-      _updateProps: (options: UseFormProps<TFieldValues, TContext>) => {
+      _updateProps: (options) => {
         formOptions = { ...defaultOptions, ...options };
       },
     },
