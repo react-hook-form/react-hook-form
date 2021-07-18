@@ -325,8 +325,8 @@ export type Control<
   _updateValid: <T extends FieldValues>(payload?: T) => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
-  _proxyFormState: FormControl<ReadFormState>;
-  _defaultValues: FormControl<Partial<DefaultValues<TFieldValues>>>;
+  _proxyFormState: ReadFormState;
+  _defaultValues: Partial<DefaultValues<TFieldValues>>;
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   _setValues: (

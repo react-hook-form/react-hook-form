@@ -50,9 +50,7 @@ export function useForm<
   React.useEffect(() => {
     const formStateSubscription = control._subjects.state.subscribe({
       next(formState) {
-        if (
-          shouldRenderFormState(formState, control._proxyFormState.val, true)
-        ) {
+        if (shouldRenderFormState(formState, control._proxyFormState, true)) {
           control._formState.val = {
             ...control._formState.val,
             ...formState,
@@ -65,7 +63,7 @@ export function useForm<
 
     const useFieldArraySubscription = control._subjects.array.subscribe({
       next(state) {
-        if (state.values && state.name && control._proxyFormState.val.isValid) {
+        if (state.values && state.name && control._proxyFormState.isValid) {
           set(control._formValues, state.name, state.values);
           control._updateValid();
         }
@@ -85,9 +83,9 @@ export function useForm<
 
     if (!control._isMounted.val) {
       control._isMounted.val = true;
-      control._proxyFormState.val.isValid && control._updateValid();
+      control._proxyFormState.isValid && control._updateValid();
       !props.shouldUnregister &&
-        control._registerMissFields(control._defaultValues.val);
+        control._registerMissFields(control._defaultValues);
     }
 
     for (const name of control._names.val.unMount) {

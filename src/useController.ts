@@ -45,9 +45,9 @@ export function useController<
   const [value, setInputStateValue] = React.useState(
     !isUndefined(fieldValue)
       ? fieldValue
-      : isUndefined(get(_defaultValues.val, name))
+      : isUndefined(get(_defaultValues, name))
       ? defaultValue
-      : get(_defaultValues.val, name),
+      : get(_defaultValues, name),
   );
   const { onChange, onBlur, ref } = register(name, {
     ...rules,

@@ -78,7 +78,7 @@ export const useFieldArray = <
         ? get(_formValues, name)
         : get(_fieldArrayDefaultValues.val, getFieldArrayParentName(name))
         ? get(_fieldArrayDefaultValues.val, name)
-        : get(_defaultValues.val, name)) || [],
+        : get(_defaultValues, name)) || [],
       keyName,
     ),
   );
@@ -157,7 +157,7 @@ export const useFieldArray = <
     }
 
     if (
-      _proxyFormState.val.touchedFields &&
+      _proxyFormState.touchedFields &&
       get(_formState.val.touchedFields, name)
     ) {
       const output = method(
@@ -169,13 +169,13 @@ export const useFieldArray = <
       cleanup(_formState.val.touchedFields);
     }
 
-    if (_proxyFormState.val.dirtyFields || _proxyFormState.val.isDirty) {
+    if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
       set(
         _formState.val.dirtyFields,
         name,
         setFieldArrayDirtyFields(
           omitKey(updatedFieldArrayValues),
-          get(_defaultValues.val, name, []),
+          get(_defaultValues, name, []),
           get(_formState.val.dirtyFields, name, []),
         ),
       );
@@ -185,7 +185,7 @@ export const useFieldArray = <
           name,
           setFieldArrayDirtyFields(
             omitKey(updatedFieldArrayValues),
-            get(_defaultValues.val, name, []),
+            get(_defaultValues, name, []),
             get(_formState.val.dirtyFields, name, []),
           ),
         );
@@ -381,10 +381,8 @@ export const useFieldArray = <
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
       {
-        shouldValidate: !!_proxyFormState.val.isValid,
-        shouldDirty: !!(
-          _proxyFormState.val.dirtyFields || _proxyFormState.val.isDirty
-        ),
+        shouldValidate: !!_proxyFormState.isValid,
+        shouldDirty: !!(_proxyFormState.dirtyFields || _proxyFormState.isDirty),
       },
     );
 
@@ -425,7 +423,7 @@ export const useFieldArray = <
       values: omitKey([...fields]),
     });
 
-    _proxyFormState.val.isValid && _updateValid();
+    _proxyFormState.isValid && _updateValid();
   }, [fields, name]);
 
   React.useEffect(() => {

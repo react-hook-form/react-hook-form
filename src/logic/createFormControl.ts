@@ -107,7 +107,7 @@ export function createFormControl<
     isValid: false,
     errors: {},
   };
-  let _proxyFormState = {
+  const _proxyFormState = {
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
     touchedFields: !isProxyEnabled,
@@ -1114,60 +1114,51 @@ export function createFormControl<
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,
       _formValues,
+      _proxyFormState,
+      get _defaultValues() {
+        return _defaultValues;
+      },
+      set _defaultValues(value) {
+        _defaultValues = value;
+      },
       _names: {
         get val() {
           return _names;
         },
-        set val(v) {
-          _names = v;
+        set val(value) {
+          _names = value;
         },
       },
       _isDuringAction: {
         get val() {
           return _isDuringAction;
         },
-        set val(v) {
-          _isDuringAction = v;
+        set val(value) {
+          _isDuringAction = value;
         },
       },
       _formState: {
         get val() {
           return _formState;
         },
-        set val(v) {
-          _formState = v;
-        },
-      },
-      _proxyFormState: {
-        get val() {
-          return _proxyFormState;
-        },
-        set val(v) {
-          _proxyFormState = v;
-        },
-      },
-      _defaultValues: {
-        get val() {
-          return _defaultValues;
-        },
-        set val(v) {
-          _defaultValues = v;
+        set val(value) {
+          _formState = value;
         },
       },
       _fieldArrayDefaultValues: {
         get val() {
           return _fieldArrayDefaultValues;
         },
-        set val(v) {
-          _fieldArrayDefaultValues = v;
+        set val(value) {
+          _fieldArrayDefaultValues = value;
         },
       },
       _isMounted: {
         get val() {
           return _isMounted;
         },
-        set val(v) {
-          _isMounted = v;
+        set val(value) {
+          _isMounted = value;
         },
       },
       _updateProps: (options) => {
