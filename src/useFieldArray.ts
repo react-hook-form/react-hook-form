@@ -199,7 +199,7 @@ export const useFieldArray = <
       cleanup(_formState.current.dirtyFields);
     }
 
-    _subjects.current.state.next({
+    _subjects.state.next({
       isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: _formState.current.errors as FieldErrors<TFieldValues>,
       isValid: _formState.current.isValid,
@@ -405,17 +405,17 @@ export const useFieldArray = <
     _isDuringAction.current = false;
 
     if (_names.current.watchAll) {
-      _subjects.current.state.next({});
+      _subjects.state.next({});
     } else {
       for (const watchField of _names.current.watch) {
         if (name.startsWith(watchField)) {
-          _subjects.current.state.next({});
+          _subjects.state.next({});
           break;
         }
       }
     }
 
-    _subjects.current.watch.next({
+    _subjects.watch.next({
       name,
       values: _formValues.current,
     });
@@ -427,7 +427,7 @@ export const useFieldArray = <
 
     _focusName.current = '';
 
-    _subjects.current.array.next({
+    _subjects.array.next({
       name,
       values: omitKey([...fields]),
     });
@@ -436,7 +436,7 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = _subjects.current.array.subscribe({
+    const fieldArraySubscription = _subjects.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
           unset(_fields.current, inputFieldArrayName || name);

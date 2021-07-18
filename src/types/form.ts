@@ -271,24 +271,23 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
   Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
 >;
 
-export type Subjects<TFieldValues extends FieldValues = FieldValues> =
-  React.MutableRefObject<{
-    watch: SubjectType<{
-      name?: InternalFieldName;
-      type?: EventType;
-      values?: FieldValues;
-    }>;
-    control: SubjectType<{
-      name?: InternalFieldName;
-      values?: FieldValues;
-    }>;
-    array: SubjectType<{
-      name?: InternalFieldName;
-      values?: FieldValues;
-      isReset?: boolean;
-    }>;
-    state: FormStateSubjectRef<TFieldValues>;
+export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
+  watch: SubjectType<{
+    name?: InternalFieldName;
+    type?: EventType;
+    values?: FieldValues;
   }>;
+  control: SubjectType<{
+    name?: InternalFieldName;
+    values?: FieldValues;
+  }>;
+  array: SubjectType<{
+    name?: InternalFieldName;
+    values?: FieldValues;
+    isReset?: boolean;
+  }>;
+  state: FormStateSubjectRef<TFieldValues>;
+};
 
 export type Names = {
   mount: InternalNameSet;
@@ -301,7 +300,12 @@ export type Names = {
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   shouldUnmount?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _names: React.MutableRefObject<Names>;
+  _names: {
+    current: Names;
+  };
+  _isMounted: any;
+  _updateProps: any;
+  registerAbsentFields: any;
   _isDuringAction: React.MutableRefObject<boolean>;
   getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FieldArrayDefaultValues;

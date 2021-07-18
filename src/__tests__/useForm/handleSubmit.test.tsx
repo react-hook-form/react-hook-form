@@ -107,6 +107,8 @@ describe('handleSubmit', () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
     const { ref } = result.current.register('test', { required: true });
 
+    result.current.formState;
+
     isFunction(ref) &&
       ref({
         focus,
@@ -122,7 +124,9 @@ describe('handleSubmit', () => {
 
     expect(callback).not.toBeCalled();
     expect(focus).toBeCalled();
-    expect(result.current.formState.errors?.test?.type).toBe('required');
+    expect(result.current.control._formState.current.errors?.test?.type).toBe(
+      'required',
+    );
   });
 
   it('should not focus if shouldFocusError is false', async () => {
@@ -133,6 +137,7 @@ describe('handleSubmit', () => {
     );
 
     result.current.register('test', { required: true });
+    result.current.formState;
 
     const callback = jest.fn();
     await act(async () => {
@@ -144,7 +149,9 @@ describe('handleSubmit', () => {
 
     expect(callback).not.toBeCalled();
     expect(mockFocus).not.toBeCalled();
-    expect(result.current.formState.errors?.test?.type).toBe('required');
+    expect(result.current.control._formState.current.errors?.test?.type).toBe(
+      'required',
+    );
   });
 
   it('should submit form data when inputs are removed', async () => {

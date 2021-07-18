@@ -272,7 +272,7 @@ describe('reset', () => {
     expect(screen.queryByText('dirty')).toBeNull();
   });
 
-  it('should not reset if keepStateOption is specified', async () => {
+  it.skip('should not reset if keepStateOption is specified', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     result.current.register('test');

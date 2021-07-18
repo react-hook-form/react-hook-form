@@ -54,7 +54,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   );
 
   React.useEffect(() => {
-    const watchSubscription = _subjects.current.watch.subscribe({
+    const watchSubscription = _subjects.watch.subscribe({
       next: ({ name }) =>
         (!_name.current ||
           !name ||

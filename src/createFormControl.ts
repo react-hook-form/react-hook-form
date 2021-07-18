@@ -46,12 +46,14 @@ import {
   FormState,
   GetIsDirty,
   InternalFieldName,
+  Names,
   Path,
   PathValue,
   Ref,
   RegisterOptions,
   SetFieldValue,
   SetValueConfig,
+  Subjects,
   UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetValues,
@@ -86,7 +88,7 @@ export function createFormControl<
   TContext extends object = object,
 >(
   constructOptions: UseFormProps<TFieldValues, TContext> = {},
-): UseFormReturn<TFieldValues> {
+): Omit<UseFormReturn<TFieldValues>, 'formState'> {
   let formOptions = {
     ...defaultOptions,
     ...constructOptions,
@@ -104,7 +106,7 @@ export function createFormControl<
     isValid: false,
     errors: {},
   };
-  const _proxyFormState = {
+  let _proxyFormState = {
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
     touchedFields: !isProxyEnabled,
@@ -118,7 +120,7 @@ export function createFormControl<
   let _fieldArrayDefaultValues = {};
   let _isDuringAction = false;
   let _isMounted = false;
-  let _subjects: any = {
+  const _subjects: Subjects<TFieldValues> = {
     watch: new Subject(),
     control: new Subject(),
     array: new Subject(),
@@ -130,7 +132,7 @@ export function createFormControl<
     array: new Set(),
     watch: new Set(),
     watchAll: false,
-  };
+  } as Names;
 
   const validationMode = getValidationModes(formOptions.mode);
   const isValidateAllFieldCriteria =
@@ -183,10 +185,10 @@ export function createFormControl<
         ...updatedFormState,
       };
 
-      _subjects.current.state.next(isWatched ? { name } : updatedFormState);
+      _subjects.state.next(isWatched ? { name } : updatedFormState);
     }
 
-    _subjects.current.state.next({
+    _subjects.state.next({
       isValidating: false,
     });
   };
@@ -244,7 +246,7 @@ export function createFormControl<
         set(_formValues, name, getFieldValueAs(value, _f));
 
         if (shouldRender) {
-          _subjects.current.control.next({
+          _subjects.control.next({
             values: getValues(),
             name,
           });
@@ -308,7 +310,7 @@ export function createFormControl<
           isPreviousFieldTouched !== isCurrentTouched);
     }
 
-    isChanged && shouldRender && _subjects.current.state.next(state);
+    isChanged && shouldRender && _subjects.state.next(state);
 
     return isChanged ? state : {};
   };
@@ -402,7 +404,7 @@ export function createFormControl<
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
     let isValid;
 
-    _subjects.current.state.next({
+    _subjects.state.next({
       isValidating: true,
     });
 
@@ -431,7 +433,7 @@ export function createFormControl<
       }
     }
 
-    _subjects.current.state.next({
+    _subjects.state.next({
       ...(isString(name) ? { name } : {}),
       errors: _formState.errors,
       isValidating: false,
@@ -495,7 +497,7 @@ export function createFormControl<
       : await validateForm(_fields, true);
 
     isValid !== _formState.isValid &&
-      _subjects.current.state.next({
+      _subjects.state.next({
         isValid,
       });
   };
@@ -572,7 +574,7 @@ export function createFormControl<
       : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && _subjects.state.next({});
-    _subjects.current.watch.next({
+    _subjects.watch.next({
       name,
     });
   };
@@ -624,7 +626,7 @@ export function createFormControl<
     }
 
     !isBlurEvent &&
-      _subjects.current.watch.next({
+      _subjects.watch.next({
         name,
         type: target.type,
       });
@@ -677,19 +679,17 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         !isBlurEvent &&
-          _subjects.current.watch.next({
+          _subjects.watch.next({
             name,
             type,
           });
         return (
           shouldRender &&
-          _subjects.current.state.next(
-            isWatched ? { name } : { ...fieldState, name },
-          )
+          _subjects.state.next(isWatched ? { name } : { ...fieldState, name })
         );
       }
 
-      _subjects.current.state.next({
+      _subjects.state.next({
         isValidating: true,
       });
 
@@ -700,7 +700,7 @@ export function createFormControl<
           _delayCallback || debounce(handleValidate, formOptions.delayError);
 
         _delayCallback(target, fieldState, isWatched, isBlurEvent);
-        isWatched && _subjects.current.state.next({ name });
+        isWatched && _subjects.state.next({ name });
       }
     }
   };
@@ -829,9 +829,9 @@ export function createFormControl<
       }
     }
 
-    _subjects.current.watch.next({});
+    _subjects.watch.next({});
 
-    _subjects.current.state.next({
+    _subjects.state.next({
       ..._formState,
       ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
     });
@@ -844,7 +844,7 @@ export function createFormControl<
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
     register(name as FieldPath<TFieldValues>, options);
-    let field = get(_fields, name) as Field;
+    let field: Field = get(_fields, name);
 
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
 
@@ -948,7 +948,7 @@ export function createFormControl<
       let hasNoPromiseError = true;
       let fieldValues: any = { ..._formValues };
 
-      _subjects.current.state.next({
+      _subjects.state.next({
         isSubmitting: true,
       });
 
@@ -974,7 +974,7 @@ export function createFormControl<
           isEmptyObject(_formState.errors) &&
           Object.keys(_formState.errors).every((name) => get(fieldValues, name))
         ) {
-          _subjects.current.state.next({
+          _subjects.state.next({
             errors: {},
             isSubmitting: true,
           });
@@ -1108,8 +1108,16 @@ export function createFormControl<
       getIsDirty,
       updateValid,
       unregister,
-      shouldUnmount: formOptions.shouldUnregister,
       registerAbsentFields,
+      shouldUnmount: formOptions.shouldUnregister,
+      _names: {
+        get current() {
+          return _names;
+        },
+        set current(v) {
+          _names = v;
+        },
+      },
       _isDuringAction: {
         get current() {
           return _isDuringAction;
@@ -1118,14 +1126,7 @@ export function createFormControl<
           _isDuringAction = v;
         },
       },
-      _subjects: {
-        get current() {
-          return _subjects;
-        },
-        set current(v) {
-          _subjects = v;
-        },
-      },
+      _subjects,
       _fields: {
         get current() {
           return _fields;
@@ -1134,15 +1135,37 @@ export function createFormControl<
           _fields = v;
         },
       },
-      _names: {
-        // @ts-ignore
-        current: _names,
+      _formState: {
+        get current() {
+          return _formState;
+        },
+        set current(v) {
+          _formState = v;
+        },
+      },
+      _formValues: {
+        get current() {
+          return _formValues;
+        },
+        set current(v) {
+          _formValues = v;
+        },
       },
       _proxyFormState: {
-        current: _proxyFormState,
+        get current() {
+          return _proxyFormState;
+        },
+        set current(v) {
+          _proxyFormState = v;
+        },
       },
       _defaultValues: {
-        current: _defaultValues,
+        get current() {
+          return _defaultValues;
+        },
+        set current(v) {
+          _defaultValues = v;
+        },
       } as any,
       _fieldArrayDefaultValues: {
         get current() {
@@ -1160,13 +1183,13 @@ export function createFormControl<
           _isMounted = v;
         },
       },
+      _updateProps: (options: UseFormProps<TFieldValues, TContext>) => {
+        formOptions = { ...defaultOptions, ...options };
+      },
     },
     trigger,
     register,
     handleSubmit,
-    setOptions: (options: UseFormProps<TFieldValues, TContext>) => {
-      formOptions = { ...defaultOptions, ...options };
-    },
     watch,
     setValue,
     getValues,

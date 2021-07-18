@@ -55,6 +55,7 @@ describe('useForm', () => {
         }>(),
       );
 
+      result.current.formState.errors;
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -78,6 +79,7 @@ describe('useForm', () => {
         }>(),
       );
 
+      result.current.formState.errors;
       result.current.register('test', { required: true });
 
       await act(async () => {

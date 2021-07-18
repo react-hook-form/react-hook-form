@@ -518,6 +518,7 @@ describe('setValue', () => {
       });
 
       result.current.formState.dirtyFields;
+      result.current.formState.errors;
 
       await act(async () =>
         result.current.setValue('test', 'abc', {
@@ -608,6 +609,8 @@ describe('setValue', () => {
       result.current.register('test.0', rules);
       result.current.register('test.1', rules);
       result.current.register('test.2', rules);
+
+      result.current.formState.errors;
 
       await act(async () =>
         result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {

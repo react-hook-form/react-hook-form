@@ -60,7 +60,7 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = _subjects.current.control.subscribe({
+    const controllerSubscription = _subjects.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
