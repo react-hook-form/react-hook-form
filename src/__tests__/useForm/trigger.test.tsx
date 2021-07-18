@@ -103,6 +103,8 @@ describe('trigger', () => {
       }),
     );
 
+    result.current.formState.errors;
+
     result.current.register('test', { required: 'required' });
     result.current.register('test1', { required: 'required' });
 
@@ -134,6 +136,8 @@ describe('trigger', () => {
         }),
       );
 
+      result.current.formState.errors;
+
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -162,6 +166,8 @@ describe('trigger', () => {
           resolver,
         }),
       );
+
+      result.current.formState.errors;
 
       result.current.register('test1', { required: false });
       result.current.register('test2', { required: true });
@@ -225,6 +231,8 @@ describe('trigger', () => {
         }),
       );
 
+      result.current.formState.errors;
+
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -277,7 +285,7 @@ describe('trigger', () => {
       });
 
       await act(async () => {
-        expect(errors).toEqual({
+        expect(result.current.formState.errors).toEqual({
           test3: {
             type: 'test',
           },
@@ -306,6 +314,8 @@ describe('trigger', () => {
           resolver,
         }),
       );
+
+      result.current.formState.errors;
 
       result.current.register('test', { required: true });
       result.current.register('test1', { required: true });
@@ -515,7 +525,9 @@ describe('trigger', () => {
   it('should return isValid for the entire form', async () => {
     const App = () => {
       const [isValid, setIsValid] = React.useState(true);
-      const { register, trigger } = useForm();
+      const { register, trigger, formState } = useForm();
+
+      formState.isValid;
 
       return (
         <div>

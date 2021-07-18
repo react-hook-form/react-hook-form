@@ -1,5 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`reset should not reset if keepStateOption is specified 1`] = `
+Object {
+  "errors": Object {},
+  "isDirty": true,
+  "touchedFields": Object {
+    "test": true,
+  },
+}
+`;
+
+exports[`reset should not reset if keepStateOption is specified 2`] = `
+Object {
+  "errors": Object {},
+  "isDirty": true,
+  "touchedFields": Object {
+    "test": true,
+  },
+}
+`;
+
 exports[`reset should return reset nested value 1`] = `
 Array [
   Object {

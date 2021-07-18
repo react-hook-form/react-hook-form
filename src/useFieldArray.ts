@@ -39,52 +39,34 @@ export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
->({
-  control,
-  name,
-  keyName = 'id' as TKeyName,
-  shouldUnregister,
-}: UseFieldArrayProps<
-  TFieldValues,
-  TFieldArrayName,
-  TKeyName
->): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
+>(
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
   const {
-    getIsDirty,
-    unregister,
-    shouldUnmount,
-    updateValid,
-    setValues,
-    register,
-    _names,
-    _fields,
-    _defaultValues,
-    _formState,
-    _subjects,
-    _proxyFormState,
-    _fieldArrayDefaultValues,
-    _isDuringAction,
-    _formValues,
-  } = control || methods.control;
+    control = methods.control,
+    name,
+    keyName = 'id' as TKeyName,
+    shouldUnregister,
+  } = props;
 
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      (get(_formValues.current, name) && _isMounted.current
-        ? get(_formValues.current, name)
-        : get(_fieldArrayDefaultValues.current, getFieldArrayParentName(name))
-        ? get(_fieldArrayDefaultValues.current, name)
-        : get(_defaultValues.current, name)) || [],
+      (get(control._formValues, name) && _isMounted.current
+        ? get(control._formValues, name)
+        : get(control._fieldArrayDefaultValues, getFieldArrayParentName(name))
+        ? get(control._fieldArrayDefaultValues, name)
+        : get(control._defaultValues, name)) || [],
       keyName,
     ),
   );
 
-  set(_fieldArrayDefaultValues.current, name, [...fields]);
-  _names.current.array.add(name);
+  set(control._fieldArrayDefaultValues, name, [...fields]);
+  control._names.array.add(name);
 
   const omitKey = <
     T extends Partial<
@@ -96,10 +78,10 @@ export const useFieldArray = <
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
-    const values = get(_formValues.current, name, []);
+    const values = get(control._formValues, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
-      get(_fieldArrayDefaultValues.current, name, []).map(
+      get(control._fieldArrayDefaultValues, name, []).map(
         (item: Partial<TFieldValues>, index: number) => ({
           ...item,
           ...values[index],
@@ -135,74 +117,74 @@ export const useFieldArray = <
     >[] = [],
     shouldSet = true,
   ) => {
-    _isDuringAction.current = true;
-    if (get(_fields.current, name)) {
-      const output = method(get(_fields.current, name), args.argA, args.argB);
-      shouldSet && set(_fields.current, name, output);
+    control._isInAction.val = true;
+    if (get(control._fields, name)) {
+      const output = method(get(control._fields, name), args.argA, args.argB);
+      shouldSet && set(control._fields, name, output);
     }
 
-    if (get(_formValues.current, name)) {
+    if (get(control._formValues, name)) {
       const output = method(
-        get(_formValues.current, name),
+        get(control._formValues, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(_formValues.current, name, output);
+      shouldSet && set(control._formValues, name, output);
     }
 
-    if (Array.isArray(get(_formState.current.errors, name))) {
+    if (Array.isArray(get(control._formState.val.errors, name))) {
       const output = method(
-        get(_formState.current.errors, name),
+        get(control._formState.val.errors, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(_formState.current.errors, name, output);
-      cleanup(_formState.current.errors);
+      shouldSet && set(control._formState.val.errors, name, output);
+      cleanup(control._formState.val.errors);
     }
 
     if (
-      _proxyFormState.current.touchedFields &&
-      get(_formState.current.touchedFields, name)
+      control._proxyFormState.touchedFields &&
+      get(control._formState.val.touchedFields, name)
     ) {
       const output = method(
-        get(_formState.current.touchedFields, name),
+        get(control._formState.val.touchedFields, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(_formState.current.touchedFields, name, output);
-      cleanup(_formState.current.touchedFields);
+      shouldSet && set(control._formState.val.touchedFields, name, output);
+      cleanup(control._formState.val.touchedFields);
     }
 
     if (
-      _proxyFormState.current.dirtyFields ||
-      _proxyFormState.current.isDirty
+      control._proxyFormState.dirtyFields ||
+      control._proxyFormState.isDirty
     ) {
       set(
-        _formState.current.dirtyFields,
+        control._formState.val.dirtyFields,
         name,
         setFieldArrayDirtyFields(
           omitKey(updatedFieldArrayValues),
-          get(_defaultValues.current, name, []),
-          get(_formState.current.dirtyFields, name, []),
+          get(control._defaultValues, name, []),
+          get(control._formState.val.dirtyFields, name, []),
         ),
       );
       updatedFieldArrayValues &&
         set(
-          _formState.current.dirtyFields,
+          control._formState.val.dirtyFields,
           name,
           setFieldArrayDirtyFields(
             omitKey(updatedFieldArrayValues),
-            get(_defaultValues.current, name, []),
-            get(_formState.current.dirtyFields, name, []),
+            get(control._defaultValues, name, []),
+            get(control._formState.val.dirtyFields, name, []),
           ),
         );
-      cleanup(_formState.current.dirtyFields);
+      cleanup(control._formState.val.dirtyFields);
     }
 
-    _subjects.current.state.next({
-      isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
-      errors: _formState.current.errors as FieldErrors<TFieldValues>,
-      isValid: _formState.current.isValid,
+    control._subjects.state.next({
+      isDirty: control._getIsDirty(name, omitKey(updatedFieldArrayValues)),
+      errors: control._formState.val.errors as FieldErrors<TFieldValues>,
+      isValid: control._formState.val.isValid,
     });
   };
 
@@ -216,7 +198,7 @@ export const useFieldArray = <
         parentName ? valueIndex : index + valueIndex
       }`;
       isPrimitive(appendValueItem)
-        ? (register as UseFormRegister<TFieldValues>)(
+        ? (control.register as UseFormRegister<TFieldValues>)(
             rootName as Path<TFieldValues>,
             {
               value: appendValueItem as PathValue<
@@ -230,7 +212,7 @@ export const useFieldArray = <
 
             Array.isArray(value)
               ? registerFieldArray(value, valueIndex, inputName)
-              : (register as UseFormRegister<TFieldValues>)(
+              : (control.register as UseFormRegister<TFieldValues>)(
                   inputName as Path<TFieldValues>,
                   { value },
                 );
@@ -382,15 +364,15 @@ export const useFieldArray = <
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    setValues(
+    control._setValues(
       (name + '.' + index) as FieldPath<TFieldValues>,
       value as UnpackNestedValue<
         PathValue<TFieldValues, FieldPath<TFieldValues>>
       >,
       {
-        shouldValidate: !!_proxyFormState.current.isValid,
+        shouldValidate: !!control._proxyFormState.isValid,
         shouldDirty: !!(
-          _proxyFormState.current.dirtyFields || _proxyFormState.current.isDirty
+          control._proxyFormState.dirtyFields || control._proxyFormState.isDirty
         ),
       },
     );
@@ -402,67 +384,67 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
-    _isDuringAction.current = false;
+    control._isInAction.val = false;
 
-    if (_names.current.watchAll) {
-      _subjects.current.state.next({});
+    if (control._names.watchAll) {
+      control._subjects.state.next({});
     } else {
-      for (const watchField of _names.current.watch) {
+      for (const watchField of control._names.watch) {
         if (name.startsWith(watchField)) {
-          _subjects.current.state.next({});
+          control._subjects.state.next({});
           break;
         }
       }
     }
 
-    _subjects.current.watch.next({
+    control._subjects.watch.next({
       name,
-      values: _formValues.current,
+      values: control._formValues,
     });
 
     _focusName.current &&
-      focusFieldBy(_fields.current, (key: string) =>
+      focusFieldBy(control._fields, (key: string) =>
         key.startsWith(_focusName.current),
       );
 
     _focusName.current = '';
 
-    _subjects.current.array.next({
+    control._subjects.array.next({
       name,
       values: omitKey([...fields]),
     });
 
-    _proxyFormState.current.isValid && updateValid();
+    control._proxyFormState.isValid && control._updateValid();
   }, [fields, name]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = _subjects.current.array.subscribe({
+    const fieldArraySubscription = control._subjects.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
-          unset(_fields.current, inputFieldArrayName || name);
-          unset(_formValues.current, inputFieldArrayName || name);
+          unset(control._fields, inputFieldArrayName || name);
+          unset(control._formValues, inputFieldArrayName || name);
 
           inputFieldArrayName
-            ? set(_fieldArrayDefaultValues.current, inputFieldArrayName, values)
-            : (_fieldArrayDefaultValues.current = values);
+            ? set(control._fieldArrayDefaultValues, inputFieldArrayName, values)
+            : values && (control._fieldArrayDefaultValues = values);
 
-          setFieldsAndNotify(get(_fieldArrayDefaultValues.current, name));
+          setFieldsAndNotify(get(control._fieldArrayDefaultValues, name));
         }
       },
     });
 
-    !get(_formValues.current, name) && set(_formValues.current, name, []);
+    !get(control._formValues, name) && set(control._formValues, name, []);
     _isMounted.current = true;
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      if (shouldUnmount || shouldUnregister) {
-        unregister(name as FieldPath<TFieldValues>);
-        unset(_fieldArrayDefaultValues.current, name);
+      if (control._shouldUnregister || shouldUnregister) {
+        control.unregister(name as FieldPath<TFieldValues>);
+        unset(control._fieldArrayDefaultValues, name);
       } else {
-        const fieldArrayValues = get(_formValues.current, name);
+        const fieldArrayValues = get(control._formValues, name);
         fieldArrayValues &&
-          set(_fieldArrayDefaultValues.current, name, fieldArrayValues);
+          set(control._fieldArrayDefaultValues, name, fieldArrayValues);
       }
     };
   }, []);

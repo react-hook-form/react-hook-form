@@ -46,6 +46,9 @@ describe('setError', () => {
   ];
   test.each(tests)('%s', (_, input, output) => {
     const { result } = renderHook(() => useForm<{ input: string }>());
+
+    result.current.formState.errors;
+
     act(() => {
       result.current.setError('input', input);
     });

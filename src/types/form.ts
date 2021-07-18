@@ -163,6 +163,13 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
+export type RegisterMissFields<TFieldValues extends FieldValues> = <
+  T extends Partial<DefaultValues<TFieldValues>>,
+>(
+  defaultValues: T,
+  name?: string,
+) => void;
+
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
@@ -271,24 +278,23 @@ export type FormStateSubjectRef<TFieldValues> = SubjectType<
   Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
 >;
 
-export type Subjects<TFieldValues extends FieldValues = FieldValues> =
-  React.MutableRefObject<{
-    watch: SubjectType<{
-      name?: InternalFieldName;
-      type?: EventType;
-      values?: FieldValues;
-    }>;
-    control: SubjectType<{
-      name?: InternalFieldName;
-      values?: FieldValues;
-    }>;
-    array: SubjectType<{
-      name?: InternalFieldName;
-      values?: FieldValues;
-      isReset?: boolean;
-    }>;
-    state: FormStateSubjectRef<TFieldValues>;
+export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
+  watch: SubjectType<{
+    name?: InternalFieldName;
+    type?: EventType;
+    values?: FieldValues;
   }>;
+  control: SubjectType<{
+    name?: InternalFieldName;
+    values?: FieldValues;
+  }>;
+  array: SubjectType<{
+    name?: InternalFieldName;
+    values?: FieldValues;
+    isReset?: boolean;
+  }>;
+  state: FormStateSubjectRef<TFieldValues>;
+};
 
 export type Names = {
   mount: InternalNameSet;
@@ -298,22 +304,32 @@ export type Names = {
   watchAll: boolean;
 };
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = {
-  shouldUnmount?: boolean;
+export type FormControl<T> = {
+  val: T;
+};
+
+export type Control<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+> = {
+  _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _names: React.MutableRefObject<Names>;
-  _isDuringAction: React.MutableRefObject<boolean>;
-  getIsDirty: GetIsDirty;
+  _names: Names;
+  _isMounted: boolean;
+  _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
+  _registerMissFields: RegisterMissFields<TFieldValues>;
+  _isInAction: FormControl<boolean>;
+  _getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FieldArrayDefaultValues;
-  _formState: React.MutableRefObject<FormState<TFieldValues>>;
-  updateValid: <T extends FieldValues>(payload?: T) => void;
-  _fields: React.MutableRefObject<FieldRefs>;
-  _formValues: React.MutableRefObject<FieldValues>;
-  _proxyFormState: React.MutableRefObject<ReadFormState>;
-  _defaultValues: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  getWatch: WatchInternal<TFieldValues>;
+  _formState: FormControl<FormState<TFieldValues>>;
+  _updateValid: <T extends FieldValues>(payload?: T) => void;
+  _fields: FieldRefs;
+  _formValues: FieldValues;
+  _proxyFormState: ReadFormState;
+  _defaultValues: Partial<DefaultValues<TFieldValues>>;
+  _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
-  setValues: (
+  _setValues: (
     name: FieldPath<TFieldValues>,
     value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
     options: SetValueConfig,
@@ -330,7 +346,10 @@ export type WatchObserver<TFieldValues> = (
   },
 ) => void;
 
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
+export type UseFormReturn<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+> = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
@@ -341,7 +360,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues> = {
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
-  control: Control<TFieldValues>;
+  control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
 };

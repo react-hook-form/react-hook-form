@@ -22,7 +22,7 @@ describe('useForm with React Native', () => {
 
     render(<Component />);
 
-    expect(control._fields.current.test).toBeDefined();
+    expect(control._fields.test).toBeDefined();
   });
 
   it('should invoke focus with RN', async () => {

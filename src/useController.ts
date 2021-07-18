@@ -32,22 +32,22 @@ export function useController<
   const {
     unregister,
     register,
-    shouldUnmount,
+    _shouldUnregister,
     _defaultValues,
     _fields,
     _names,
     _subjects,
-    _isDuringAction,
+    _isInAction,
     _formValues,
   } = control || methods.control;
 
-  const fieldValue = get(_formValues.current, name);
+  const fieldValue = get(_formValues, name);
   const [value, setInputStateValue] = React.useState(
     !isUndefined(fieldValue)
       ? fieldValue
-      : isUndefined(get(_defaultValues.current, name))
+      : isUndefined(get(_defaultValues, name))
       ? defaultValue
-      : get(_defaultValues.current, name),
+      : get(_defaultValues, name),
   );
   const { onChange, onBlur, ref } = register(name, {
     ...rules,
@@ -60,7 +60,7 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = _subjects.current.control.subscribe({
+    const controllerSubscription = _subjects.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
@@ -68,16 +68,16 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const _shouldUnregisterField = _shouldUnregister || shouldUnregister;
 
       if (
-        isNameInFieldArray(_names.current.array, name)
-          ? shouldUnmountField && !_isDuringAction.current
-          : shouldUnmountField
+        isNameInFieldArray(_names.array, name)
+          ? _shouldUnregisterField && !_isInAction.val
+          : _shouldUnregisterField
       ) {
         unregister(name);
       } else {
-        const field = get(_fields.current, name);
+        const field = get(_fields, name);
 
         if (field && field._f) {
           field._f.mount = false;

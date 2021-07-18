@@ -432,7 +432,7 @@ describe('Controller', () => {
 
     rerender(<Component required={false} />);
 
-    expect(fieldsRef.current.test.required).toBeFalsy();
+    expect(fieldsRef.test.required).toBeFalsy();
   });
 
   it('should set initial state from unmount state', () => {

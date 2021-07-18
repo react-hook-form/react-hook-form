@@ -262,21 +262,21 @@ describe('setValue', () => {
       ]);
     });
 
-    expect(result.current.control._fields.current['test1']).toEqual({
+    expect(result.current.control._fields['test1']).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test1', value: ['1', '2', '3'] },
         name: 'test1',
       },
     });
-    expect(result.current.control._fields.current['test2']).toEqual({
+    expect(result.current.control._fields['test2']).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
         name: 'test2',
       },
     });
-    expect(result.current.control._fields.current['test3']).toEqual({
+    expect(result.current.control._fields['test3']).toEqual({
       _f: {
         mount: true,
         ref: {
@@ -308,21 +308,21 @@ describe('setValue', () => {
 
     act(() => result.current.setValue('test', ['1', '2', '3']));
 
-    expect(get(result.current.control._fields.current, 'test.0')).toEqual({
+    expect(get(result.current.control._fields, 'test.0')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.0', value: '1' },
         name: 'test.0',
       },
     });
-    expect(get(result.current.control._fields.current, 'test.1')).toEqual({
+    expect(get(result.current.control._fields, 'test.1')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.1', value: '2' },
         name: 'test.1',
       },
     });
-    expect(get(result.current.control._fields.current, 'test.2')).toEqual({
+    expect(get(result.current.control._fields, 'test.2')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.2', value: '3' },
@@ -352,21 +352,21 @@ describe('setValue', () => {
       ]),
     );
 
-    expect(get(result.current.control._fields.current, 'test.0.test')).toEqual({
+    expect(get(result.current.control._fields, 'test.0.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.0.test', value: '1' },
         name: 'test.0.test',
       },
     });
-    expect(get(result.current.control._fields.current, 'test.1.test')).toEqual({
+    expect(get(result.current.control._fields, 'test.1.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.1.test', value: '2' },
         name: 'test.1.test',
       },
     });
-    expect(get(result.current.control._fields.current, 'test.2.test')).toEqual({
+    expect(get(result.current.control._fields, 'test.2.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.2.test', value: '3' },
@@ -397,21 +397,21 @@ describe('setValue', () => {
     act(() =>
       result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
     );
-    expect(get(result.current.control._fields.current, 'test.bill')).toEqual({
+    expect(get(result.current.control._fields, 'test.bill')).toEqual({
       _f: {
         ref: { name: 'test.bill', value: '1' },
         mount: true,
         name: 'test.bill',
       },
     });
-    expect(get(result.current.control._fields.current, 'test.luo')).toEqual({
+    expect(get(result.current.control._fields, 'test.luo')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.luo', value: '2' },
         name: 'test.luo',
       },
     });
-    expect(get(result.current.control._fields.current, 'test.test')).toEqual({
+    expect(get(result.current.control._fields, 'test.test')).toEqual({
       _f: {
         mount: true,
         ref: { name: 'test.test', value: '3' },
@@ -427,7 +427,7 @@ describe('setValue', () => {
       result.current.setValue('test', '1');
     });
 
-    expect(result.current.control._fields.current['test']).toEqual({
+    expect(result.current.control._fields['test']).toEqual({
       _f: {
         name: 'test',
         mount: true,
@@ -450,7 +450,7 @@ describe('setValue', () => {
       });
     });
 
-    expect(result.current.control._fields.current['test']).toEqual({
+    expect(result.current.control._fields['test']).toEqual({
       test: {
         _f: {
           mount: true,
@@ -518,6 +518,7 @@ describe('setValue', () => {
       });
 
       result.current.formState.dirtyFields;
+      result.current.formState.errors;
 
       await act(async () =>
         result.current.setValue('test', 'abc', {
@@ -608,6 +609,8 @@ describe('setValue', () => {
       result.current.register('test.0', rules);
       result.current.register('test.1', rules);
       result.current.register('test.2', rules);
+
+      result.current.formState.errors;
 
       await act(async () =>
         result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
@@ -971,7 +974,7 @@ describe('setValue', () => {
         name: 'test',
       });
       const [, setShow] = React.useState(false);
-      fields = control._fields.current;
+      fields = control._fields;
 
       return (
         <button
