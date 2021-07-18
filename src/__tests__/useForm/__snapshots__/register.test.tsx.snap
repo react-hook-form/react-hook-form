@@ -2,7 +2,7 @@
 
 exports[`register should not register nested input 1`] = `
 Object {
-  "current": Object {
+  "val": Object {
     "test": Object {
       "_f": Object {
         "mount": true,

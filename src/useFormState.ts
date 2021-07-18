@@ -22,7 +22,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
   nameRef.current = name as InternalFieldName;
 
-  const [formState, updateFormState] = React.useState(_formState.current);
+  const [formState, updateFormState] = React.useState(_formState.val);
   const readFormState = React.useRef({
     isDirty: false,
     dirtyFields: false,
@@ -40,7 +40,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
           convertToArrayPayload(nameRef.current).includes(formState.name)) &&
         shouldRenderFormState(formState, readFormState.current) &&
         updateFormState({
-          ..._formState.current,
+          ..._formState.val,
           ...formState,
         }),
     });

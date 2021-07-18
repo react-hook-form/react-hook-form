@@ -36,7 +36,6 @@ import { EVENTS, VALIDATION_MODE } from './constants';
 import {
   ChangeHandler,
   DeepPartial,
-  DefaultValues,
   Field,
   FieldError,
   FieldNamesMarkedBoolean,
@@ -50,6 +49,7 @@ import {
   Path,
   PathValue,
   Ref,
+  RegisterMissFields,
   RegisterOptions,
   SetFieldValue,
   SetValueConfig,
@@ -371,7 +371,7 @@ export function createFormControl<
 
       if (field) {
         const _f = field._f;
-        const current = omit(field, '_f');
+        const val = omit(field, '_f');
 
         if (_f) {
           const fieldError = await validateField(
@@ -393,7 +393,7 @@ export function createFormControl<
           }
         }
 
-        current && (await validateForm(current, shouldCheckValid, context));
+        val && (await validateForm(val, shouldCheckValid, context));
       }
     }
 
@@ -605,10 +605,10 @@ export function createFormControl<
 
       if (isCheckBoxInput(target as Ref) && !error) {
         const parentNodeName = getNodeParentName(name);
-        const currentError = get(errors, parentNodeName, {});
-        currentError.type && currentError.message && (error = currentError);
+        const valError = get(errors, parentNodeName, {});
+        valError.type && valError.message && (error = valError);
 
-        if (currentError || get(_formState.errors, parentNodeName)) {
+        if (valError || get(_formState.errors, parentNodeName)) {
           name = parentNodeName;
         }
       }
@@ -1004,8 +1004,8 @@ export function createFormControl<
       }
     };
 
-  const _registerMissFields = <T extends Partial<DefaultValues<TFieldValues>>>(
-    defaultValues: T,
+  const _registerMissFields: RegisterMissFields<TFieldValues> = (
+    defaultValues,
     name = '',
   ): void => {
     for (const key in defaultValues) {
@@ -1112,74 +1112,74 @@ export function createFormControl<
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _names: {
-        get current() {
+        get val() {
           return _names;
         },
-        set current(v) {
+        set val(v) {
           _names = v;
         },
       },
       _isDuringAction: {
-        get current() {
+        get val() {
           return _isDuringAction;
         },
-        set current(v) {
+        set val(v) {
           _isDuringAction = v;
         },
       },
       _fields: {
-        get current() {
+        get val() {
           return _fields;
         },
-        set current(v) {
+        set val(v) {
           _fields = v;
         },
       },
       _formState: {
-        get current() {
+        get val() {
           return _formState;
         },
-        set current(v) {
+        set val(v) {
           _formState = v;
         },
       },
       _formValues: {
-        get current() {
+        get val() {
           return _formValues;
         },
-        set current(v) {
+        set val(v) {
           _formValues = v;
         },
       },
       _proxyFormState: {
-        get current() {
+        get val() {
           return _proxyFormState;
         },
-        set current(v) {
+        set val(v) {
           _proxyFormState = v;
         },
       },
       _defaultValues: {
-        get current() {
+        get val() {
           return _defaultValues;
         },
-        set current(v) {
+        set val(v) {
           _defaultValues = v;
         },
       },
       _fieldArrayDefaultValues: {
-        get current() {
+        get val() {
           return _fieldArrayDefaultValues;
         },
-        set current(v) {
+        set val(v) {
           _fieldArrayDefaultValues = v;
         },
       },
       _isMounted: {
-        get current() {
+        get val() {
           return _isMounted;
         },
-        set current(v) {
+        set val(v) {
           _isMounted = v;
         },
       },

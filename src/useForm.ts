@@ -47,30 +47,22 @@ export function useForm<
     const formStateSubscription = control._subjects.state.subscribe({
       next(formState) {
         if (
-          shouldRenderFormState(
-            formState,
-            control._proxyFormState.current,
-            true,
-          )
+          shouldRenderFormState(formState, control._proxyFormState.val, true)
         ) {
-          control._formState.current = {
-            ...control._formState.current,
+          control._formState.val = {
+            ...control._formState.val,
             ...formState,
           };
 
-          updateFormState({ ...control._formState.current });
+          updateFormState({ ...control._formState.val });
         }
       },
     });
 
     const useFieldArraySubscription = control._subjects.array.subscribe({
       next(state) {
-        if (
-          state.values &&
-          state.name &&
-          control._proxyFormState.current.isValid
-        ) {
-          set(control._formValues.current, state.name, state.values);
+        if (state.values && state.name && control._proxyFormState.val.isValid) {
+          set(control._formValues.val, state.name, state.values);
           control._updateValid();
         }
       },
@@ -87,15 +79,15 @@ export function useForm<
     const isLiveInDom = (ref: Ref) =>
       !isHTMLElement(ref) || !document.contains(ref);
 
-    if (!control._isMounted.current) {
-      control._isMounted.current = true;
-      control._proxyFormState.current.isValid && control._updateValid();
+    if (!control._isMounted.val) {
+      control._isMounted.val = true;
+      control._proxyFormState.val.isValid && control._updateValid();
       !props.shouldUnregister &&
-        control._registerMissFields(control._defaultValues.current);
+        control._registerMissFields(control._defaultValues.val);
     }
 
-    for (const name of control._names.current.unMount) {
-      const field = get(control._fields.current, name) as Field;
+    for (const name of control._names.val.unMount) {
+      const field = get(control._fields.val, name) as Field;
 
       field &&
         (field._f.refs
@@ -109,7 +101,7 @@ export function useForm<
         unregisterFieldNames as FieldPath<TFieldValues>[],
       );
 
-    control._names.current.unMount = new Set();
+    control._names.val.unMount = new Set();
   });
 
   return {

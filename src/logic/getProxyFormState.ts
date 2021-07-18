@@ -1,12 +1,17 @@
 import * as React from 'react';
 
 import { VALIDATION_MODE } from '../constants';
-import { FormState, FormStateProxy, ReadFormState } from '../types';
+import {
+  FormControl,
+  FormState,
+  FormStateProxy,
+  ReadFormState,
+} from '../types';
 
 export default <TFieldValues>(
   isProxyEnabled: boolean,
   formState: FormState<TFieldValues>,
-  _proxyFormState: React.MutableRefObject<ReadFormState>,
+  _proxyFormState: FormControl<ReadFormState>,
   localReadFormStateRef?: React.MutableRefObject<ReadFormState>,
   isRoot = true,
 ) =>
@@ -14,10 +19,8 @@ export default <TFieldValues>(
     ? new Proxy(formState, {
         get: (obj, prop: keyof FormStateProxy) => {
           if (prop in obj) {
-            if (_proxyFormState.current[prop] !== VALIDATION_MODE.all) {
-              _proxyFormState.current[prop] = isRoot
-                ? VALIDATION_MODE.all
-                : true;
+            if (_proxyFormState.val[prop] !== VALIDATION_MODE.all) {
+              _proxyFormState.val[prop] = isRoot ? VALIDATION_MODE.all : true;
             }
             localReadFormStateRef &&
               (localReadFormStateRef.current[prop] = true);

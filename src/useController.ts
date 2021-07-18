@@ -41,13 +41,13 @@ export function useController<
     _formValues,
   } = control || methods.control;
 
-  const fieldValue = get(_formValues.current, name);
+  const fieldValue = get(_formValues.val, name);
   const [value, setInputStateValue] = React.useState(
     !isUndefined(fieldValue)
       ? fieldValue
-      : isUndefined(get(_defaultValues.current, name))
+      : isUndefined(get(_defaultValues.val, name))
       ? defaultValue
-      : get(_defaultValues.current, name),
+      : get(_defaultValues.val, name),
   );
   const { onChange, onBlur, ref } = register(name, {
     ...rules,
@@ -71,13 +71,13 @@ export function useController<
       const _shouldUnregisterField = _shouldUnregister || shouldUnregister;
 
       if (
-        isNameInFieldArray(_names.current.array, name)
-          ? _shouldUnregisterField && !_isDuringAction.current
+        isNameInFieldArray(_names.val.array, name)
+          ? _shouldUnregisterField && !_isDuringAction.val
           : _shouldUnregisterField
       ) {
         unregister(name);
       } else {
-        const field = get(_fields.current, name);
+        const field = get(_fields.val, name);
 
         if (field && field._f) {
           field._f.mount = false;
