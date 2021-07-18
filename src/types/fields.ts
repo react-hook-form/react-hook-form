@@ -25,6 +25,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   options?: HTMLOptionsCollection;
   files?: FileList | null;
   focus?: () => void;
+  input?: any;
 };
 
 export type FieldValue<

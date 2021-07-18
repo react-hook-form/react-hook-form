@@ -126,6 +126,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
             {
               name,
               focus: onFocusRef.current,
+              input: ref.current,
             },
             {
               value: {
