@@ -51,7 +51,6 @@ export const useFieldArray = <
 >): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const _focusName = React.useRef('');
-  const _isMounted = React.useRef(false);
   const {
     _getIsDirty,
     unregister,
@@ -68,13 +67,14 @@ export const useFieldArray = <
     _fieldArrayDefaultValues,
     _isDuringAction,
     _formValues,
+    _isMounted,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      (get(_formValues.val, name) && _isMounted.current
+      (get(_formValues.val, name) && _isMounted.val
         ? get(_formValues.val, name)
         : get(_fieldArrayDefaultValues.val, getFieldArrayParentName(name))
         ? get(_fieldArrayDefaultValues.val, name)
@@ -445,7 +445,7 @@ export const useFieldArray = <
     });
 
     !get(_formValues.val, name) && set(_formValues.val, name, []);
-    _isMounted.current = true;
+    _isMounted.val = true;
 
     return () => {
       fieldArraySubscription.unsubscribe();

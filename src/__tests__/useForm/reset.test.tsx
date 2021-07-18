@@ -272,47 +272,70 @@ describe('reset', () => {
     expect(screen.queryByText('dirty')).toBeNull();
   });
 
-  it.skip('should not reset if keepStateOption is specified', async () => {
-    const { result } = renderHook(() => useForm<{ test: string }>());
+  it('should not reset if keepStateOption is specified', async () => {
+    let formState = {};
 
-    result.current.register('test');
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { touchedFields, errors, isDirty },
+      } = useForm<{ test: string }>({
+        defaultValues: {
+          test: '',
+        },
+      });
 
-    result.current.formState.errors = {
-      test: {
-        type: 'test',
-        message: 'something wrong',
-      },
+      formState = { touchedFields, errors, isDirty };
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('test', { required: true, minLength: 3 })} />
+          <button>submit</button>
+          <button
+            onClick={() => {
+              reset(
+                { test: '' },
+                {
+                  keepErrors: true,
+                  keepDirty: true,
+                  keepIsSubmitted: true,
+                  keepTouched: true,
+                  keepIsValid: true,
+                  keepSubmitCount: true,
+                },
+              );
+            }}
+            type={'button'}
+          >
+            reset
+          </button>
+        </form>
+      );
     };
 
-    result.current.formState.touchedFields = { test: true };
-    result.current.formState.isDirty = true;
-    result.current.formState.isSubmitted = true;
+    render(<App />);
 
-    act(() =>
-      result.current.reset(
-        { test: '' },
-        {
-          keepErrors: true,
-          keepDirty: true,
-          keepIsSubmitted: true,
-          keepTouched: true,
-          keepIsValid: true,
-          keepSubmitCount: true,
+    await actComponent(async () => {
+      await fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
         },
-      ),
-    );
+      });
 
-    expect(result.current.formState.errors).toEqual({
-      test: {
-        type: 'test',
-        message: 'something wrong',
-      },
+      await fireEvent.blur(screen.getByRole('textbox'));
+
+      await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
-    expect(result.current.formState.touchedFields).toEqual({
-      test: true,
+
+    expect(formState).toMatchSnapshot();
+
+    await actComponent(async () => {
+      await fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     });
-    expect(result.current.formState.isDirty).toBeTruthy();
-    expect(result.current.formState.isSubmitted).toBeTruthy();
+
+    expect(formState).toMatchSnapshot();
   });
 
   it('should keep isValid state when keep option is presented', async () => {
