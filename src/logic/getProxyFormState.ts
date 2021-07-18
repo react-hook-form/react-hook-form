@@ -15,7 +15,7 @@ export default <TFieldValues>(
         get: (obj, prop: keyof FormStateProxy) => {
           if (prop in obj) {
             if (_proxyFormState[prop] !== VALIDATION_MODE.all) {
-              _proxyFormState[prop] = isRoot ? VALIDATION_MODE.all : true;
+              _proxyFormState[prop] = !isRoot || VALIDATION_MODE.all;
             }
             localReadFormStateRef &&
               (localReadFormStateRef.current[prop] = true);
