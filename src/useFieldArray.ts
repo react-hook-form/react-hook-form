@@ -74,8 +74,8 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      (get(_formValues.val, name) && _isMounted.current
-        ? get(_formValues.val, name)
+      (get(_formValues, name) && _isMounted.current
+        ? get(_formValues, name)
         : get(_fieldArrayDefaultValues.val, getFieldArrayParentName(name))
         ? get(_fieldArrayDefaultValues.val, name)
         : get(_defaultValues.val, name)) || [],
@@ -96,7 +96,7 @@ export const useFieldArray = <
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
-    const values = get(_formValues.val, name, []);
+    const values = get(_formValues, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(_fieldArrayDefaultValues.val, name, []).map(
@@ -136,14 +136,14 @@ export const useFieldArray = <
     shouldSet = true,
   ) => {
     _isDuringAction.val = true;
-    if (get(_fields.val, name)) {
-      const output = method(get(_fields.val, name), args.argA, args.argB);
-      shouldSet && set(_fields.val, name, output);
+    if (get(_fields, name)) {
+      const output = method(get(_fields, name), args.argA, args.argB);
+      shouldSet && set(_fields, name, output);
     }
 
-    if (get(_formValues.val, name)) {
-      const output = method(get(_formValues.val, name), args.argA, args.argB);
-      shouldSet && set(_formValues.val, name, output);
+    if (get(_formValues, name)) {
+      const output = method(get(_formValues, name), args.argA, args.argB);
+      shouldSet && set(_formValues, name, output);
     }
 
     if (Array.isArray(get(_formState.val.errors, name))) {
@@ -410,11 +410,11 @@ export const useFieldArray = <
 
     _subjects.watch.next({
       name,
-      values: _formValues.val,
+      values: _formValues,
     });
 
     _focusName.current &&
-      focusFieldBy(_fields.val, (key: string) =>
+      focusFieldBy(_fields, (key: string) =>
         key.startsWith(_focusName.current),
       );
 
@@ -432,8 +432,8 @@ export const useFieldArray = <
     const fieldArraySubscription = _subjects.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
-          unset(_fields.val, inputFieldArrayName || name);
-          unset(_formValues.val, inputFieldArrayName || name);
+          unset(_fields, inputFieldArrayName || name);
+          unset(_formValues, inputFieldArrayName || name);
 
           inputFieldArrayName
             ? set(_fieldArrayDefaultValues.val, inputFieldArrayName, values)
@@ -444,7 +444,7 @@ export const useFieldArray = <
       },
     });
 
-    !get(_formValues.val, name) && set(_formValues.val, name, []);
+    !get(_formValues, name) && set(_formValues, name, []);
     _isMounted.current = true;
 
     return () => {
@@ -453,7 +453,7 @@ export const useFieldArray = <
         unregister(name as FieldPath<TFieldValues>);
         unset(_fieldArrayDefaultValues.val, name);
       } else {
-        const fieldArrayValues = get(_formValues.val, name);
+        const fieldArrayValues = get(_formValues, name);
         fieldArrayValues &&
           set(_fieldArrayDefaultValues.val, name, fieldArrayValues);
       }

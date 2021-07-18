@@ -1111,6 +1111,8 @@ export function createFormControl<
       _registerMissFields,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
+      _fields,
+      _formValues,
       _names: {
         get val() {
           return _names;
@@ -1127,28 +1129,12 @@ export function createFormControl<
           _isDuringAction = v;
         },
       },
-      _fields: {
-        get val() {
-          return _fields;
-        },
-        set val(v) {
-          _fields = v;
-        },
-      },
       _formState: {
         get val() {
           return _formState;
         },
         set val(v) {
           _formState = v;
-        },
-      },
-      _formValues: {
-        get val() {
-          return _formValues;
-        },
-        set val(v) {
-          _formValues = v;
         },
       },
       _proxyFormState: {
