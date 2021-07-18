@@ -259,7 +259,7 @@ export function createFormControl<
     }
   };
 
-  const getIsDirty: GetIsDirty = (name, data) => {
+  const _getIsDirty: GetIsDirty = (name, data) => {
     name && data && set(_formValues, name, data);
 
     return !deepEqual({ ...getValues() }, _defaultValues);
@@ -280,7 +280,7 @@ export function createFormControl<
 
     if (_proxyFormState.isDirty) {
       const previousIsDirty = _formState.isDirty;
-      _formState.isDirty = getIsDirty();
+      _formState.isDirty = _getIsDirty();
       state.isDirty = _formState.isDirty;
       isChanged = previousIsDirty !== state.isDirty;
     }
@@ -447,12 +447,12 @@ export function createFormControl<
       );
     }
 
-    _proxyFormState.isValid && updateValid();
+    _proxyFormState.isValid && _updateValid();
 
     return isValid;
   };
 
-  const updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
+  const _updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(_fields, name) as Field;
     const fieldValue = getValues(name as FieldPath<TFieldValues>);
 
@@ -475,10 +475,10 @@ export function createFormControl<
       }
     }
 
-    _isMounted && _proxyFormState.isValid && updateValid();
+    _isMounted && _proxyFormState.isValid && _updateValid();
   };
 
-  const updateValid = async () => {
+  const _updateValid = async () => {
     const isValid = formOptions.resolver
       ? isEmptyObject(
           (
@@ -560,7 +560,7 @@ export function createFormControl<
         _subjects.state.next({
           name,
           dirtyFields: _formState.dirtyFields,
-          isDirty: getIsDirty(name, value),
+          isDirty: _getIsDirty(name, value),
         });
       }
 
@@ -751,7 +751,7 @@ export function createFormControl<
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
-  const getWatch: WatchInternal<TFieldValues> = (
+  const _getWatch: WatchInternal<TFieldValues> = (
     fieldNames,
     defaultValue,
     isGlobal,
@@ -796,14 +796,14 @@ export function createFormControl<
       ? _subjects.watch.subscribe({
           next: (info: any) =>
             fieldName(
-              getWatch(
+              _getWatch(
                 undefined,
                 defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
               ) as UnpackNestedValue<TFieldValues>,
               info,
             ),
         })
-      : getWatch(
+      : _getWatch(
           fieldName as InternalFieldName | InternalFieldName[],
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           true,
@@ -833,9 +833,9 @@ export function createFormControl<
 
     _subjects.state.next({
       ..._formState,
-      ...(!options.keepDirty ? {} : { isDirty: getIsDirty() }),
+      ...(!options.keepDirty ? {} : { isDirty: _getIsDirty() }),
     });
-    !options.keepIsValid && updateValid();
+    !options.keepIsValid && _updateValid();
   };
 
   const registerFieldRef = (
@@ -876,7 +876,7 @@ export function createFormControl<
 
     set(_fields, name, field);
 
-    updateValidAndInputValue(name, ref);
+    _updateValidAndInputValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
@@ -905,7 +905,7 @@ export function createFormControl<
     }
 
     _names.mount.add(name);
-    !field && updateValidAndInputValue(name);
+    !field && _updateValidAndInputValue(name);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
@@ -921,14 +921,14 @@ export function createFormControl<
               registerFieldRef(name, ref, options);
             } else {
               const field = get(_fields, name, {}) as Field;
-              const shouldUnmount =
+              const _shouldUnregister =
                 formOptions.shouldUnregister || options.shouldUnregister;
 
               if (field._f) {
                 field._f.mount = false;
               }
 
-              shouldUnmount &&
+              _shouldUnregister &&
                 !(
                   isNameInFieldArray(_names.array as any, name) &&
                   _isDuringAction
@@ -1004,7 +1004,7 @@ export function createFormControl<
       }
     };
 
-  const registerAbsentFields = <T extends DefaultValues<TFieldValues>>(
+  const _registerMissFields = <T extends DefaultValues<TFieldValues>>(
     defaultValues: T,
     name = '',
   ): void => {
@@ -1015,7 +1015,7 @@ export function createFormControl<
 
       if (!field || !field._f) {
         if (isObject(value) || Array.isArray(value)) {
-          registerAbsentFields(value, fieldName);
+          _registerMissFields(value, fieldName);
         } else if (!field) {
           register(fieldName as Path<TFieldValues>, { value });
         }
@@ -1104,12 +1104,12 @@ export function createFormControl<
     control: {
       register,
       setValues,
-      getWatch,
-      getIsDirty,
-      updateValid,
       unregister,
-      registerAbsentFields,
-      shouldUnmount: formOptions.shouldUnregister,
+      _getIsDirty,
+      _getWatch,
+      _updateValid,
+      _shouldUnregister: formOptions.shouldUnregister,
+      _registerMissFields,
       _names: {
         get current() {
           return _names;

@@ -53,10 +53,10 @@ export const useFieldArray = <
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
   const {
-    getIsDirty,
+    _getIsDirty,
     unregister,
-    shouldUnmount,
-    updateValid,
+    _shouldUnregister,
+    _updateValid,
     setValues,
     register,
     _names,
@@ -200,7 +200,7 @@ export const useFieldArray = <
     }
 
     _subjects.state.next({
-      isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
+      isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: _formState.current.errors as FieldErrors<TFieldValues>,
       isValid: _formState.current.isValid,
     });
@@ -432,7 +432,7 @@ export const useFieldArray = <
       values: omitKey([...fields]),
     });
 
-    _proxyFormState.current.isValid && updateValid();
+    _proxyFormState.current.isValid && _updateValid();
   }, [fields, name]);
 
   React.useEffect(() => {
@@ -456,7 +456,7 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      if (shouldUnmount || shouldUnregister) {
+      if (_shouldUnregister || shouldUnregister) {
         unregister(name as FieldPath<TFieldValues>);
         unset(_fieldArrayDefaultValues.current, name);
       } else {

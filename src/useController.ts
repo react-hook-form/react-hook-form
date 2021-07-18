@@ -32,7 +32,7 @@ export function useController<
   const {
     unregister,
     register,
-    shouldUnmount,
+    _shouldUnregister,
     _defaultValues,
     _fields,
     _names,
@@ -68,12 +68,12 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const _shouldUnregisterField = _shouldUnregister || shouldUnregister;
 
       if (
         isNameInFieldArray(_names.current.array, name)
-          ? shouldUnmountField && !_isDuringAction.current
-          : shouldUnmountField
+          ? _shouldUnregisterField && !_isDuringAction.current
+          : _shouldUnregisterField
       ) {
         unregister(name);
       } else {

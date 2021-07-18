@@ -69,7 +69,7 @@ export function useForm<
           control._proxyFormState.current.isValid
         ) {
           set(control._formValues.current, state.name, state.values);
-          control.updateValid();
+          control._updateValid();
         }
       },
     });
@@ -87,9 +87,9 @@ export function useForm<
 
     if (!control._isMounted.current) {
       control._isMounted.current = true;
-      control._proxyFormState.current.isValid && control.updateValid();
+      control._proxyFormState.current.isValid && control._updateValid();
       !props.shouldUnregister &&
-        control.registerAbsentFields(control._defaultValues.current);
+        control._registerMissFields(control._defaultValues.current);
     }
 
     for (const name of control._names.current.unMount) {

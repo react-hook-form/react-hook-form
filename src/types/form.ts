@@ -298,24 +298,24 @@ export type Names = {
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
-  shouldUnmount?: boolean;
+  _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
   _names: {
     current: Names;
   };
   _isMounted: any;
   _updateProps: any;
-  registerAbsentFields: any;
+  _registerMissFields: any;
   _isDuringAction: React.MutableRefObject<boolean>;
-  getIsDirty: GetIsDirty;
+  _getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FieldArrayDefaultValues;
   _formState: React.MutableRefObject<FormState<TFieldValues>>;
-  updateValid: <T extends FieldValues>(payload?: T) => void;
+  _updateValid: <T extends FieldValues>(payload?: T) => void;
   _fields: React.MutableRefObject<FieldRefs>;
   _formValues: React.MutableRefObject<FieldValues>;
   _proxyFormState: React.MutableRefObject<ReadFormState>;
   _defaultValues: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  getWatch: WatchInternal<TFieldValues>;
+  _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   setValues: (
     name: FieldPath<TFieldValues>,
