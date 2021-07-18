@@ -53,12 +53,12 @@ export function useForm<
         if (
           shouldRenderFormState(formState, control._proxyFormState.val, true)
         ) {
-          control._formState.val = {
-            ...control._formState.val,
+          control._formState = {
+            ...control._formState,
             ...formState,
           };
 
-          updateFormState({ ...control._formState.val });
+          updateFormState({ ...control._formState });
         }
       },
     });
@@ -66,7 +66,7 @@ export function useForm<
     const useFieldArraySubscription = control._subjects.array.subscribe({
       next(state) {
         if (state.values && state.name && control._proxyFormState.val.isValid) {
-          set(control._formValues.val, state.name, state.values);
+          set(control._formValues, state.name, state.values);
           control._updateValid();
         }
       },
@@ -91,7 +91,7 @@ export function useForm<
     }
 
     for (const name of control._names.val.unMount) {
-      const field = get(control._fields.val, name) as Field;
+      const field: Field = get(control._fields, name);
 
       field &&
         (field._f.refs

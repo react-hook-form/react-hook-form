@@ -321,10 +321,10 @@ export type Control<
   _isDuringAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
   _fieldArrayDefaultValues: FormControl<FieldArrayDefaultValues>;
-  _formState: FormControl<FormState<TFieldValues>>;
   _updateValid: <T extends FieldValues>(payload?: T) => void;
-  _fields: FormControl<FieldRefs>;
-  _formValues: FormControl<FieldValues>;
+  _fields: FieldRefs;
+  _formValues: FieldValues;
+  _formState: FormState<TFieldValues>;
   _proxyFormState: FormControl<ReadFormState>;
   _defaultValues: FormControl<Partial<DefaultValues<TFieldValues>>>;
   _getWatch: WatchInternal<TFieldValues>;
