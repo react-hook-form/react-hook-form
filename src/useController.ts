@@ -37,7 +37,7 @@ export function useController<
     _fields,
     _names,
     _subjects,
-    _isDuringAction,
+    _isInAction,
     _formValues,
   } = control || methods.control;
 
@@ -71,8 +71,8 @@ export function useController<
       const _shouldUnregisterField = _shouldUnregister || shouldUnregister;
 
       if (
-        isNameInFieldArray(_names.val.array, name)
-          ? _shouldUnregisterField && !_isDuringAction.val
+        isNameInFieldArray(_names.array, name)
+          ? _shouldUnregisterField && !_isInAction
           : _shouldUnregisterField
       ) {
         unregister(name);

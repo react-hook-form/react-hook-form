@@ -314,13 +314,13 @@ export type Control<
 > = {
   _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _names: FormControl<Names>;
-  _isMounted: FormControl<boolean>;
+  _names: Names;
+  _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
   _registerMissFields: RegisterMissFields<TFieldValues>;
-  _isDuringAction: FormControl<boolean>;
+  _isInAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
-  _fieldArrayDefaultValues: FormControl<FieldArrayDefaultValues>;
+  _fieldArrayDefaultValues: FieldArrayDefaultValues;
   _formState: FormControl<FormState<TFieldValues>>;
   _updateValid: <T extends FieldValues>(payload?: T) => void;
   _fields: FieldRefs;
