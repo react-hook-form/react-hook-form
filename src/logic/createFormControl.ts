@@ -1,38 +1,4 @@
-import focusFieldBy from './logic/focusFieldBy';
-import getFieldValue from './logic/getFieldValue';
-import getFieldValueAs from './logic/getFieldValueAs';
-import getNodeParentName from './logic/getNodeParentName';
-import getResolverOptions from './logic/getResolverOptions';
-import hasValidation from './logic/hasValidation';
-import isNameInFieldArray from './logic/isNameInFieldArray';
-import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
-import skipValidation from './logic/skipValidation';
-import validateField from './logic/validateField';
-import compact from './utils/compact';
-import convertToArrayPayload from './utils/convertToArrayPayload';
-import debounce from './utils/debounce';
-import deepEqual from './utils/deepEqual';
-import get from './utils/get';
-import getValidationModes from './utils/getValidationModes';
-import isCheckBoxInput from './utils/isCheckBoxInput';
-import isDateObject from './utils/isDateObject';
-import isEmptyObject from './utils/isEmptyObject';
-import isFileInput from './utils/isFileInput';
-import isFunction from './utils/isFunction';
-import isHTMLElement from './utils/isHTMLElement';
-import isMultipleSelect from './utils/isMultipleSelect';
-import isNullOrUndefined from './utils/isNullOrUndefined';
-import isObject from './utils/isObject';
-import isPrimitive from './utils/isPrimitive';
-import isProxyEnabled from './utils/isProxyEnabled';
-import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
-import isString from './utils/isString';
-import isUndefined from './utils/isUndefined';
-import isWeb from './utils/isWeb';
-import omit from './utils/omit';
-import Subject from './utils/Subject';
-import unset from './utils/unset';
-import { EVENTS, VALIDATION_MODE } from './constants';
+import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   ChangeHandler,
   DeepPartial,
@@ -72,8 +38,43 @@ import {
   ValidateHandler,
   WatchInternal,
   WatchObserver,
-} from './types';
-import { set } from './utils';
+} from '../types';
+import { set } from '../utils';
+import compact from '../utils/compact';
+import convertToArrayPayload from '../utils/convertToArrayPayload';
+import debounce from '../utils/debounce';
+import deepEqual from '../utils/deepEqual';
+import get from '../utils/get';
+import getValidationModes from '../utils/getValidationModes';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isDateObject from '../utils/isDateObject';
+import isEmptyObject from '../utils/isEmptyObject';
+import isFileInput from '../utils/isFileInput';
+import isFunction from '../utils/isFunction';
+import isHTMLElement from '../utils/isHTMLElement';
+import isMultipleSelect from '../utils/isMultipleSelect';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
+import isPrimitive from '../utils/isPrimitive';
+import isProxyEnabled from '../utils/isProxyEnabled';
+import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
+import isString from '../utils/isString';
+import isUndefined from '../utils/isUndefined';
+import isWeb from '../utils/isWeb';
+import omit from '../utils/omit';
+import Subject from '../utils/Subject';
+import unset from '../utils/unset';
+
+import focusFieldBy from './focusFieldBy';
+import getFieldValue from './getFieldValue';
+import getFieldValueAs from './getFieldValueAs';
+import getNodeParentName from './getNodeParentName';
+import getResolverOptions from './getResolverOptions';
+import hasValidation from './hasValidation';
+import isNameInFieldArray from './isNameInFieldArray';
+import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
+import skipValidation from './skipValidation';
+import validateField from './validateField';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,

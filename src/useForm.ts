@@ -1,12 +1,12 @@
 import * as React from 'react';
 
+import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import get from './utils/get';
 import isHTMLElement from './utils/isHTMLElement';
 import isProxyEnabled from './utils/isProxyEnabled';
 import set from './utils/set';
-import { createFormControl } from './createFormControl';
 import {
   Field,
   FieldPath,
