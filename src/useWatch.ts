@@ -41,12 +41,17 @@ export function useWatch<
   disabled?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
-  const { control, name, defaultValue, disabled } = props || {};
   const methods = useFormContext();
+  const {
+    control = methods.control,
+    name,
+    defaultValue,
+    disabled,
+  } = props || {};
   const _name = React.useRef(name);
   _name.current = name;
 
-  const { _getWatch, _subjects } = control || methods.control;
+  const { _getWatch, _subjects } = control;
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
       ? _getWatch(name as InternalFieldName)

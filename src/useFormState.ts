@@ -16,9 +16,9 @@ import { useFormContext } from './useFormContext';
 function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const { control, name } = props || {};
   const methods = useFormContext();
-  const { _formState, _subjects, _proxyFormState } = control || methods.control;
+  const { control = methods.control, disabled, name } = props || {};
+  const { _formState, _subjects, _proxyFormState } = control;
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
   nameRef.current = name as InternalFieldName;
 
@@ -44,6 +44,8 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
           ...formState,
         }),
     });
+
+    disabled && formStateSubscription.unsubscribe();
 
     return () => formStateSubscription.unsubscribe();
   }, []);
