@@ -4,15 +4,14 @@ import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import get from './utils/get';
-import isHTMLElement from './utils/isHTMLElement';
 import isProxyEnabled from './utils/isProxyEnabled';
+import live from './utils/live';
 import set from './utils/set';
 import {
   Field,
   FieldPath,
   FieldValues,
   FormState,
-  Ref,
   UseFormProps,
   UseFormReturn,
 } from './types';
@@ -78,8 +77,6 @@ export function useForm<
 
   React.useEffect(() => {
     const unregisterFieldNames = [];
-    const isLiveInDom = (ref: Ref) =>
-      !isHTMLElement(ref) || !document.contains(ref);
 
     if (!control._isMounted) {
       control._isMounted = true;
@@ -92,9 +89,7 @@ export function useForm<
       const field = get(control._fields, name) as Field;
 
       field &&
-        (field._f.refs
-          ? field._f.refs.every(isLiveInDom)
-          : isLiveInDom(field._f.ref)) &&
+        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
         unregisterFieldNames.push(name);
     }
 
