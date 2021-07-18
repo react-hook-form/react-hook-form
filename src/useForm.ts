@@ -38,11 +38,9 @@ export function useForm<
     errors: {},
   });
 
-  if (!_formControl.current) {
-    _formControl.current = createFormControl(props);
-  } else {
-    _formControl.current.control._updateProps(props);
-  }
+  _formControl.current
+    ? _formControl.current.control._updateProps(props)
+    : (_formControl.current = createFormControl(props));
 
   const control = _formControl.current.control;
 
