@@ -23,9 +23,9 @@ export function useForm<
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {
-  const _formControl = React.useRef(
-    createFormControl<TFieldValues, TContext>(props),
-  );
+  const _formControl = React.useRef<
+    Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> | undefined
+  >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
@@ -39,9 +39,13 @@ export function useForm<
     errors: {},
   });
 
-  const control = _formControl.current.control;
+  if (!_formControl.current) {
+    _formControl.current = createFormControl(props);
+  } else {
+    _formControl.current.control._updateProps(props);
+  }
 
-  control._updateProps(props);
+  const control = _formControl.current.control;
 
   React.useEffect(() => {
     const formStateSubscription = control._subjects.state.subscribe({
@@ -97,7 +101,7 @@ export function useForm<
     }
 
     unregisterFieldNames.length &&
-      _formControl.current.unregister(
+      _formControl.current!.unregister(
         unregisterFieldNames as FieldPath<TFieldValues>[],
       );
 
