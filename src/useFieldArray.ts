@@ -444,7 +444,7 @@ export const useFieldArray = <
 
           inputFieldArrayName
             ? set(_fieldArrayDefaultValues.current, inputFieldArrayName, values)
-            : (_fieldArrayDefaultValues.current = values);
+            : values && (_fieldArrayDefaultValues.current = values);
 
           setFieldsAndNotify(get(_fieldArrayDefaultValues.current, name));
         }

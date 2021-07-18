@@ -22,7 +22,7 @@ export function useForm<
   TContext extends object = object,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
-): UseFormReturn<TFieldValues> {
+): UseFormReturn<TFieldValues, TContext> {
   const _formControl = React.useRef(
     createFormControl<TFieldValues, TContext>(props),
   );

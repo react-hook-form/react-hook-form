@@ -310,18 +310,18 @@ export type Control<
   _names: FormControl<Names>;
   _isMounted: FormControl<boolean>;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _registerMissFields: <T extends DefaultValues<TFieldValues>>(
+  _registerMissFields: <T extends Partial<DefaultValues<TFieldValues>>>(
     defaultValues: T,
     name?: string,
   ) => void;
-  _isDuringAction: React.MutableRefObject<boolean>;
+  _isDuringAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
-  _fieldArrayDefaultValues: FieldArrayDefaultValues;
-  _formState: React.MutableRefObject<FormState<TFieldValues>>;
+  _fieldArrayDefaultValues: FormControl<FieldArrayDefaultValues>;
+  _formState: FormControl<FormState<TFieldValues>>;
   _updateValid: <T extends FieldValues>(payload?: T) => void;
-  _fields: React.MutableRefObject<FieldRefs>;
-  _formValues: React.MutableRefObject<FieldValues>;
-  _proxyFormState: React.MutableRefObject<ReadFormState>;
+  _fields: FormControl<FieldRefs>;
+  _formValues: FormControl<FieldValues>;
+  _proxyFormState: FormControl<ReadFormState>;
   _defaultValues: FormControl<Partial<DefaultValues<TFieldValues>>>;
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;

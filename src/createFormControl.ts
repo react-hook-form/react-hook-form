@@ -1004,7 +1004,7 @@ export function createFormControl<
       }
     };
 
-  const _registerMissFields = <T extends DefaultValues<TFieldValues>>(
+  const _registerMissFields = <T extends Partial<DefaultValues<TFieldValues>>>(
     defaultValues: T,
     name = '',
   ): void => {
