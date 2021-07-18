@@ -2,23 +2,25 @@
 
 exports[`register should not register nested input 1`] = `
 Object {
-  "test": Object {
-    "_f": Object {
-      "mount": true,
-      "name": "test",
-      "ref": Object {
+  "val": Object {
+    "test": Object {
+      "_f": Object {
+        "mount": true,
         "name": "test",
+        "ref": Object {
+          "name": "test",
+          "value": Array [
+            true,
+            false,
+            false,
+          ],
+        },
         "value": Array [
-          true,
+          false,
           false,
           false,
         ],
       },
-      "value": Array [
-        false,
-        false,
-        false,
-      ],
     },
   },
 }

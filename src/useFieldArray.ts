@@ -74,8 +74,8 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(
     mapIds(
-      (get(_formValues, name) && _isMounted.current
-        ? get(_formValues, name)
+      (get(_formValues.val, name) && _isMounted.current
+        ? get(_formValues.val, name)
         : get(_fieldArrayDefaultValues.val, getFieldArrayParentName(name))
         ? get(_fieldArrayDefaultValues.val, name)
         : get(_defaultValues.val, name)) || [],
@@ -96,7 +96,7 @@ export const useFieldArray = <
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getCurrentFieldsValues = () => {
-    const values = get(_formValues, name, []);
+    const values = get(_formValues.val, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(_fieldArrayDefaultValues.val, name, []).map(
@@ -136,62 +136,66 @@ export const useFieldArray = <
     shouldSet = true,
   ) => {
     _isDuringAction.val = true;
-    if (get(_fields, name)) {
-      const output = method(get(_fields, name), args.argA, args.argB);
-      shouldSet && set(_fields, name, output);
+    if (get(_fields.val, name)) {
+      const output = method(get(_fields.val, name), args.argA, args.argB);
+      shouldSet && set(_fields.val, name, output);
     }
 
-    if (get(_formValues, name)) {
-      const output = method(get(_formValues, name), args.argA, args.argB);
-      shouldSet && set(_formValues, name, output);
+    if (get(_formValues.val, name)) {
+      const output = method(get(_formValues.val, name), args.argA, args.argB);
+      shouldSet && set(_formValues.val, name, output);
     }
 
-    if (Array.isArray(get(_formState.errors, name))) {
-      const output = method(get(_formState.errors, name), args.argA, args.argB);
-      shouldSet && set(_formState.errors, name, output);
-      cleanup(_formState.errors);
+    if (Array.isArray(get(_formState.val.errors, name))) {
+      const output = method(
+        get(_formState.val.errors, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(_formState.val.errors, name, output);
+      cleanup(_formState.val.errors);
     }
 
     if (
       _proxyFormState.val.touchedFields &&
-      get(_formState.touchedFields, name)
+      get(_formState.val.touchedFields, name)
     ) {
       const output = method(
-        get(_formState.touchedFields, name),
+        get(_formState.val.touchedFields, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(_formState.touchedFields, name, output);
-      cleanup(_formState.touchedFields);
+      shouldSet && set(_formState.val.touchedFields, name, output);
+      cleanup(_formState.val.touchedFields);
     }
 
     if (_proxyFormState.val.dirtyFields || _proxyFormState.val.isDirty) {
       set(
-        _formState.dirtyFields,
+        _formState.val.dirtyFields,
         name,
         setFieldArrayDirtyFields(
           omitKey(updatedFieldArrayValues),
           get(_defaultValues.val, name, []),
-          get(_formState.dirtyFields, name, []),
+          get(_formState.val.dirtyFields, name, []),
         ),
       );
       updatedFieldArrayValues &&
         set(
-          _formState.dirtyFields,
+          _formState.val.dirtyFields,
           name,
           setFieldArrayDirtyFields(
             omitKey(updatedFieldArrayValues),
             get(_defaultValues.val, name, []),
-            get(_formState.dirtyFields, name, []),
+            get(_formState.val.dirtyFields, name, []),
           ),
         );
-      cleanup(_formState.dirtyFields);
+      cleanup(_formState.val.dirtyFields);
     }
 
     _subjects.state.next({
       isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues)),
-      errors: _formState.errors as FieldErrors<TFieldValues>,
-      isValid: _formState.isValid,
+      errors: _formState.val.errors as FieldErrors<TFieldValues>,
+      isValid: _formState.val.isValid,
     });
   };
 
@@ -406,11 +410,11 @@ export const useFieldArray = <
 
     _subjects.watch.next({
       name,
-      values: _formValues,
+      values: _formValues.val,
     });
 
     _focusName.current &&
-      focusFieldBy(_fields, (key: string) =>
+      focusFieldBy(_fields.val, (key: string) =>
         key.startsWith(_focusName.current),
       );
 
@@ -428,8 +432,8 @@ export const useFieldArray = <
     const fieldArraySubscription = _subjects.array.subscribe({
       next({ name: inputFieldArrayName, values, isReset }) {
         if (isReset) {
-          unset(_fields, inputFieldArrayName || name);
-          unset(_formValues, inputFieldArrayName || name);
+          unset(_fields.val, inputFieldArrayName || name);
+          unset(_formValues.val, inputFieldArrayName || name);
 
           inputFieldArrayName
             ? set(_fieldArrayDefaultValues.val, inputFieldArrayName, values)
@@ -440,7 +444,7 @@ export const useFieldArray = <
       },
     });
 
-    !get(_formValues, name) && set(_formValues, name, []);
+    !get(_formValues.val, name) && set(_formValues.val, name, []);
     _isMounted.current = true;
 
     return () => {
@@ -449,7 +453,7 @@ export const useFieldArray = <
         unregister(name as FieldPath<TFieldValues>);
         unset(_fieldArrayDefaultValues.val, name);
       } else {
-        const fieldArrayValues = get(_formValues, name);
+        const fieldArrayValues = get(_formValues.val, name);
         fieldArrayValues &&
           set(_fieldArrayDefaultValues.val, name, fieldArrayValues);
       }

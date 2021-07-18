@@ -41,7 +41,7 @@ export function useController<
     _formValues,
   } = control || methods.control;
 
-  const fieldValue = get(_formValues, name);
+  const fieldValue = get(_formValues.val, name);
   const [value, setInputStateValue] = React.useState(
     !isUndefined(fieldValue)
       ? fieldValue
@@ -77,7 +77,7 @@ export function useController<
       ) {
         unregister(name);
       } else {
-        const field = get(_fields, name);
+        const field = get(_fields.val, name);
 
         if (field && field._f) {
           field._f.mount = false;
