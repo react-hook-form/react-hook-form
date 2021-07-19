@@ -4,7 +4,6 @@ import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import get from './utils/get';
-import isProxyEnabled from './utils/isProxyEnabled';
 import live from './utils/live';
 import set from './utils/set';
 import {
@@ -102,7 +101,6 @@ export function useForm<
   return {
     ..._formControl.current,
     formState: getProxyFormState<TFieldValues>(
-      isProxyEnabled,
       formState,
       control._proxyFormState,
     ),

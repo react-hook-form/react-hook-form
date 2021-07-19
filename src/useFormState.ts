@@ -3,7 +3,6 @@ import * as React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import convertToArrayPayload from './utils/convertToArrayPayload';
-import isProxyEnabled from './utils/isProxyEnabled';
 import {
   FieldValues,
   FormState,
@@ -51,7 +50,6 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   }, []);
 
   return getProxyFormState<TFieldValues>(
-    isProxyEnabled,
     formState as FormState<TFieldValues>,
     _proxyFormState,
     readFormState,
