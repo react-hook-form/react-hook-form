@@ -56,7 +56,6 @@ import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
-import isProxyEnabled from '../utils/isProxyEnabled';
 import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
@@ -108,12 +107,12 @@ export function createFormControl<
     errors: {},
   };
   const _proxyFormState = {
-    isDirty: !isProxyEnabled,
-    dirtyFields: !isProxyEnabled,
-    touchedFields: !isProxyEnabled,
-    isValidating: !isProxyEnabled,
-    isValid: !isProxyEnabled,
-    errors: !isProxyEnabled,
+    isDirty: false,
+    dirtyFields: false,
+    touchedFields: false,
+    isValidating: false,
+    isValid: false,
+    errors: false,
   };
   let _fields = {};
   let _formValues = {};
