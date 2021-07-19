@@ -17,12 +17,9 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext();
   const { control = methods.control, disabled, name } = props || {};
-  const { _formState, _subjects, _proxyFormState } = control;
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
-  nameRef.current = name as InternalFieldName;
-
-  const [formState, updateFormState] = React.useState(_formState.val);
-  const readFormState = React.useRef({
+  const [formState, updateFormState] = React.useState(control._formState.val);
+  const _localProxyFormState = React.useRef({
     isDirty: false,
     dirtyFields: false,
     touchedFields: false,
@@ -30,16 +27,17 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
+  nameRef.current = name as InternalFieldName;
 
   React.useEffect(() => {
-    const formStateSubscription = _subjects.state.subscribe({
+    const formStateSubscription = control._subjects.state.subscribe({
       next: (formState) =>
         (!nameRef.current ||
           !formState.name ||
           convertToArrayPayload(nameRef.current).includes(formState.name)) &&
-        shouldRenderFormState(formState, readFormState.current) &&
+        shouldRenderFormState(formState, _localProxyFormState.current) &&
         updateFormState({
-          ..._formState.val,
+          ...control._formState.val,
           ...formState,
         }),
     });
@@ -49,10 +47,10 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     return () => formStateSubscription.unsubscribe();
   }, []);
 
-  return getProxyFormState<TFieldValues>(
+  return getProxyFormState(
     formState as FormState<TFieldValues>,
-    _proxyFormState,
-    readFormState,
+    control._proxyFormState,
+    _localProxyFormState.current,
     false,
   );
 }

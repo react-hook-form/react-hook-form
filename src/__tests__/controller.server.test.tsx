@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 
-import { Controller } from './controller';
-import { useForm } from './useForm';
+import { Controller } from '../controller';
+import { useForm } from '../useForm';
 
 describe('Controller with SSR', () => {
   // issue: https://github.com/react-hook-form/react-hook-form/issues/1398

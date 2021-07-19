@@ -18,39 +18,21 @@ import { useFormState } from './useFormState';
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  name,
-  rules,
-  defaultValue,
-  control,
-  shouldUnregister,
-}: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
-  TFieldValues,
-  TName
-> {
+>(
+  props: UseControllerProps<TFieldValues, TName>,
+): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const {
-    unregister,
-    register,
-    _shouldUnregister,
-    _defaultValues,
-    _fields,
-    _names,
-    _subjects,
-    _isInAction,
-    _formValues,
-  } = control || methods.control;
-
-  const fieldValue = get(_formValues, name);
+  const { name, control = methods.control } = props;
+  const fieldValue = get(control._formValues, name);
   const [value, setInputStateValue] = React.useState(
     !isUndefined(fieldValue)
       ? fieldValue
-      : isUndefined(get(_defaultValues, name))
-      ? defaultValue
-      : get(_defaultValues, name),
+      : isUndefined(get(control._defaultValues, name))
+      ? props.defaultValue
+      : get(control._defaultValues, name),
   );
-  const { onChange, onBlur, ref } = register(name, {
-    ...rules,
+  const registerProps = control.register(name, {
+    ...props.rules,
     value,
   });
 
@@ -60,7 +42,7 @@ export function useController<
   });
 
   React.useEffect(() => {
-    const controllerSubscription = _subjects.control.subscribe({
+    const controllerSubscription = control._subjects.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
@@ -68,16 +50,17 @@ export function useController<
 
     return () => {
       controllerSubscription.unsubscribe();
-      const _shouldUnregisterField = _shouldUnregister || shouldUnregister;
+      const _shouldUnregisterField =
+        control._shouldUnregister || props.shouldUnregister;
 
       if (
-        isNameInFieldArray(_names.array, name)
-          ? _shouldUnregisterField && !_isInAction.val
+        isNameInFieldArray(control._names.array, name)
+          ? _shouldUnregisterField && !control._isInAction.val
           : _shouldUnregisterField
       ) {
-        unregister(name);
+        control.unregister(name);
       } else {
-        const field = get(_fields, name);
+        const field = get(control._fields, name);
 
         if (field && field._f) {
           field._f.mount = false;
@@ -92,7 +75,7 @@ export function useController<
         const value = getControllerValue(event);
         setInputStateValue(value);
 
-        onChange({
+        registerProps.onChange({
           target: {
             value,
             name: name as InternalFieldName,
@@ -101,7 +84,7 @@ export function useController<
         });
       },
       onBlur: () => {
-        onBlur({
+        registerProps.onBlur({
           target: {
             name: name as InternalFieldName,
           },
@@ -112,7 +95,7 @@ export function useController<
       value,
       ref: (elm) =>
         elm &&
-        ref({
+        registerProps.ref({
           focus: () => elm.focus && elm.focus(),
           setCustomValidity: (message: string) =>
             elm.setCustomValidity(message),

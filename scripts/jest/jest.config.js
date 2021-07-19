@@ -32,7 +32,7 @@ const server = {
 const native = {
   ...jestDefaultConfig,
   displayName: {
-    name: 'Native',
+    name: 'React Native',
     color: 'magenta',
   },
   preset: 'react-native',

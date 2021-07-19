@@ -100,9 +100,6 @@ export function useForm<
 
   return {
     ..._formControl.current,
-    formState: getProxyFormState<TFieldValues>(
-      formState,
-      control._proxyFormState,
-    ),
+    formState: getProxyFormState(formState, control._proxyFormState),
   };
 }

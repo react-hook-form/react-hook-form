@@ -4,7 +4,7 @@ import { FormState, FormStateProxy, ReadFormState } from '../types';
 export default <TFieldValues>(
   formState: FormState<TFieldValues>,
   _proxyFormState: ReadFormState,
-  localReadFormStateRef?: React.MutableRefObject<ReadFormState>,
+  localProxyFormState?: React.MutableRefObject<ReadFormState>,
   isRoot = true,
 ) => {
   function createGetter(prop: keyof FormStateProxy) {
@@ -13,7 +13,7 @@ export default <TFieldValues>(
         if (_proxyFormState[prop] !== VALIDATION_MODE.all) {
           _proxyFormState[prop] = !isRoot || VALIDATION_MODE.all;
         }
-        localReadFormStateRef && (localReadFormStateRef.current[prop] = true);
+        localProxyFormState && (localProxyFormState.current[prop] = true);
         return formState[prop];
       }
       return undefined;

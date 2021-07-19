@@ -45,12 +45,7 @@ export const useFieldArray = <
   const methods = useFormContext();
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
-  const {
-    control = methods.control,
-    name,
-    keyName = 'id' as TKeyName,
-    shouldUnregister,
-  } = props;
+  const { control = methods.control, name, keyName = 'id' as TKeyName } = props;
 
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
@@ -438,7 +433,7 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      if (control._shouldUnregister || shouldUnregister) {
+      if (control._shouldUnregister || props.shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
         unset(control._fieldArrayDefaultValues, name);
       } else {

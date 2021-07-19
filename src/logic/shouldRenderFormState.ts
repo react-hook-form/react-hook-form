@@ -16,7 +16,7 @@ export default <T extends Record<string, any>, K extends ReadFormState>(
     Object.keys(formState).find(
       (key) =>
         _proxyFormState[key as keyof ReadFormState] ===
-        (isRoot ? VALIDATION_MODE.all : true),
+        (!isRoot || VALIDATION_MODE.all),
     )
   );
 };
