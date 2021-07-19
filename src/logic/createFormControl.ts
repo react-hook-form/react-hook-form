@@ -208,6 +208,8 @@ export function createFormControl<
       const _f = field._f;
 
       if (_f) {
+        set(_formValues, name, getFieldValueAs(value, _f));
+
         const fieldValue =
           isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(value)
             ? ''
@@ -243,8 +245,6 @@ export function createFormControl<
         } else {
           _f.ref.value = fieldValue;
         }
-
-        set(_formValues, name, getFieldValueAs(value, _f));
 
         if (shouldRender) {
           _subjects.control.next({

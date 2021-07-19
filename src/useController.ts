@@ -3,7 +3,6 @@ import * as React from 'react';
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
-import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
   FieldPath,
@@ -23,22 +22,21 @@ export function useController<
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control } = props;
-  const fieldValue = get(control._formValues, name);
   const [value, setInputStateValue] = React.useState(
-    !isUndefined(fieldValue)
-      ? fieldValue
-      : isUndefined(get(control._defaultValues, name))
-      ? props.defaultValue
-      : get(control._defaultValues, name),
+    get(
+      control._formValues,
+      name,
+      get(control._defaultValues, name, props.defaultValue),
+    ),
   );
-  const registerProps = control.register(name, {
-    ...props.rules,
-    value,
-  });
-
   const formState = useFormState({
     control: control || methods.control,
     name,
+  });
+
+  const registerProps = control.register(name, {
+    ...props.rules,
+    value,
   });
 
   React.useEffect(() => {
