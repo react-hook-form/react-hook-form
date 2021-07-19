@@ -45,7 +45,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     disabled && formStateSubscription.unsubscribe();
 
     return () => formStateSubscription.unsubscribe();
-  }, []);
+  }, [disabled]);
 
   return getProxyFormState(
     formState as FormState<TFieldValues>,

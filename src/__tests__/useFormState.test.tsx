@@ -477,4 +477,62 @@ describe('useFormState', () => {
 
     expect(count).toEqual(1);
   });
+
+  it('should be able to stop the formState subscription', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    function Child({ control }: { control: Control<FormValues> }) {
+      const [disabled, setDisabled] = React.useState(true);
+      const { errors } = useFormState({
+        control,
+        name: 'test',
+        disabled,
+      });
+
+      return (
+        <div>
+          {errors.test && <p>error</p>}
+          <button onClick={() => setDisabled(!disabled)}>toggle</button>
+        </div>
+      );
+    }
+
+    const App = () => {
+      const { trigger, register, control } = useForm<FormValues>();
+
+      return (
+        <div>
+          <input {...register('test', { required: true })} />
+          <Child control={control} />
+          <button
+            onClick={() => {
+              trigger();
+            }}
+          >
+            trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    expect(screen.queryByText('error')).toBeNull();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    screen.getByText('error');
+  });
 });
