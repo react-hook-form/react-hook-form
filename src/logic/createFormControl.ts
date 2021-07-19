@@ -377,7 +377,7 @@ export function createFormControl<
         if (_f) {
           const fieldError = await validateField(
             field,
-            get(getValues(), _f.name),
+            get(_formValues, _f.name),
             isValidateAllFieldCriteria,
             formOptions.shouldUseNativeValidation,
           );
@@ -455,7 +455,7 @@ export function createFormControl<
 
   const _updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(_fields, name) as Field;
-    const fieldValue = getValues(name as FieldPath<TFieldValues>);
+    const fieldValue = get(_formValues, name);
 
     if (field) {
       const isValueUndefined = isUndefined(fieldValue);
@@ -484,7 +484,7 @@ export function createFormControl<
       ? isEmptyObject(
           (
             await formOptions.resolver(
-              getValues(),
+              { ..._formValues } as UnpackNestedValue<TFieldValues>,
               formOptions.context,
               getResolverOptions(
                 _names.mount as any,
@@ -593,7 +593,7 @@ export function createFormControl<
 
     if (formOptions.resolver) {
       const { errors } = await formOptions.resolver!(
-        getValues(),
+        { ..._formValues } as UnpackNestedValue<TFieldValues>,
         formOptions.context,
         getResolverOptions(
           [name],
@@ -759,7 +759,12 @@ export function createFormControl<
   ) => {
     const fieldValues = {
       ...(_isMounted
-        ? getValues()
+        ? {
+            ...{
+              ..._defaultValues,
+              ..._formValues,
+            },
+          }
         : isUndefined(defaultValue)
         ? _defaultValues
         : defaultValue),
