@@ -17,6 +17,7 @@ import {
   Ref,
   RegisterMissFields,
   RegisterOptions,
+  ResolverResult,
   SetFieldValue,
   SetValueConfig,
   Subjects,
@@ -316,6 +317,21 @@ export function createFormControl<
     return isChanged ? state : {};
   };
 
+  const executeResolver = async (name?: InternalFieldName[]) => {
+    return formOptions.resolver
+      ? await formOptions.resolver(
+          { ..._formValues } as UnpackNestedValue<TFieldValues>,
+          formOptions.context,
+          getResolverOptions(
+            name || _names.mount,
+            _fields,
+            formOptions.criteriaMode,
+            formOptions.shouldUseNativeValidation,
+          ),
+        )
+      : ({} as ResolverResult);
+  };
+
   const executeInlineValidation = async (
     name: InternalFieldName,
     skipReRender: boolean,
@@ -335,16 +351,7 @@ export function createFormControl<
   };
 
   const executeResolverValidation = async (names?: InternalFieldName[]) => {
-    const { errors } = await formOptions.resolver!(
-      getValues(),
-      formOptions.context,
-      getResolverOptions(
-        _names.mount,
-        _fields,
-        formOptions.criteriaMode,
-        formOptions.shouldUseNativeValidation,
-      ),
-    );
+    const { errors } = await executeResolver();
 
     if (names) {
       for (const name of names) {
@@ -481,20 +488,7 @@ export function createFormControl<
 
   const _updateValid = async () => {
     const isValid = formOptions.resolver
-      ? isEmptyObject(
-          (
-            await formOptions.resolver(
-              { ..._formValues } as UnpackNestedValue<TFieldValues>,
-              formOptions.context,
-              getResolverOptions(
-                _names.mount as any,
-                _fields,
-                formOptions.criteriaMode,
-                formOptions.shouldUseNativeValidation,
-              ),
-            )
-          ).errors,
-        )
+      ? isEmptyObject((await executeResolver()).errors)
       : await validateForm(_fields, true);
 
     isValid !== _formState.isValid &&
@@ -592,16 +586,7 @@ export function createFormControl<
     const field = get(_fields, name) as Field;
 
     if (formOptions.resolver) {
-      const { errors } = await formOptions.resolver!(
-        { ..._formValues } as UnpackNestedValue<TFieldValues>,
-        formOptions.context,
-        getResolverOptions(
-          [name],
-          _fields,
-          formOptions.criteriaMode,
-          formOptions.shouldUseNativeValidation,
-        ),
-      );
+      const { errors } = await executeResolver([name]);
       error = get(errors, name);
 
       if (isCheckBoxInput(target as Ref) && !error) {
@@ -959,16 +944,7 @@ export function createFormControl<
 
       try {
         if (formOptions.resolver) {
-          const { errors, values } = await formOptions.resolver(
-            fieldValues as UnpackNestedValue<TFieldValues>,
-            formOptions.context,
-            getResolverOptions(
-              _names.mount as any,
-              _fields,
-              formOptions.criteriaMode,
-              formOptions.shouldUseNativeValidation,
-            ),
-          );
+          const { errors, values } = await executeResolver();
           _formState.errors = errors;
           fieldValues = values;
         } else {
