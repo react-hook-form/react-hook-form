@@ -413,8 +413,9 @@ export const useFieldArray = <
     });
 
     focusNameRef.current &&
-      focusFieldBy(fieldsRef.current, (key: string) =>
-        !!key && key.startsWith(focusNameRef.current),
+      focusFieldBy(
+        fieldsRef.current,
+        (key: string) => !!key && key.startsWith(focusNameRef.current),
       );
 
     focusNameRef.current = '';
