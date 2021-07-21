@@ -78,7 +78,14 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
-export type ChangeHandler = (event: React.ChangeEvent<unknown>) => Promise<void | boolean>;
+export type ChangeHandler = (event: {
+  target: {
+    name: string;
+    value?: unknown;
+    type?: unknown;
+  };
+  type?: any;
+}) => Promise<void | boolean>;
 
 export type ValidateHandler = <TFieldValues>(
   event: any,
