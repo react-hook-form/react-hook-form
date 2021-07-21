@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react';
 
 import { createFormControl } from './logic/createFormControl';
@@ -60,7 +61,7 @@ export function useForm<
     const useFieldArraySubscription = control._subjects.array.subscribe({
       next(state) {
         if (state.values && state.name && control._proxyFormState.isValid) {
-          set(control._formValues, state.name, state.values);
+          // set(control._formValues, state.name, state.values);
           control._updateValid();
         }
       },

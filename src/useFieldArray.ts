@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
-import getFieldArrayParentName from './logic/getNodeParentName';
 import mapIds from './logic/mapId';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
@@ -46,21 +45,16 @@ export const useFieldArray = <
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
   const { control = methods.control, name, keyName = 'id' as TKeyName } = props;
+  const fieldArrayValues =
+    (control._isMounted
+      ? get(control._formValues, name)
+      : get(control._defaultValues, name)) || [];
 
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-  >(
-    mapIds(
-      (get(control._formValues, name) && _isMounted.current
-        ? get(control._formValues, name)
-        : get(control._fieldArrayDefaultValues, getFieldArrayParentName(name))
-        ? get(control._fieldArrayDefaultValues, name)
-        : get(control._defaultValues, name)) || [],
-      keyName,
-    ),
-  );
+  >(mapIds(fieldArrayValues, keyName));
 
-  set(control._fieldArrayDefaultValues, name, [...fields]);
+  set(control._formValues, name, [...fieldArrayValues]);
   control._names.array.add(name);
 
   const omitKey = <
@@ -76,7 +70,7 @@ export const useFieldArray = <
     const values = get(control._formValues, name, []);
 
     return mapIds<TFieldValues, TKeyName>(
-      get(control._fieldArrayDefaultValues, name, []).map(
+      get(control._formValues, name, []).map(
         (item: Partial<TFieldValues>, index: number) => ({
           ...item,
           ...values[index],
@@ -420,10 +414,10 @@ export const useFieldArray = <
           unset(control._formValues, inputFieldArrayName || name);
 
           inputFieldArrayName
-            ? set(control._fieldArrayDefaultValues, inputFieldArrayName, values)
-            : values && (control._fieldArrayDefaultValues = values);
+            ? set(control._formValues, inputFieldArrayName, values)
+            : values && (control._formValues = values);
 
-          setFieldsAndNotify(get(control._fieldArrayDefaultValues, name));
+          setFieldsAndNotify(get(control._formValues, name));
         }
       },
     });
@@ -435,11 +429,10 @@ export const useFieldArray = <
       fieldArraySubscription.unsubscribe();
       if (control._shouldUnregister || props.shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
-        unset(control._fieldArrayDefaultValues, name);
+        unset(control._formValues, name);
       } else {
         const fieldArrayValues = get(control._formValues, name);
-        fieldArrayValues &&
-          set(control._fieldArrayDefaultValues, name, fieldArrayValues);
+        fieldArrayValues && set(control._formValues, name, fieldArrayValues);
       }
     };
   }, []);

@@ -1,31 +1,34 @@
+// @ts-nocheck
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Control } from '../../src/types';
 
-type FormValues = {
+type FormInputs = {
   nest: {
     test: {
       value: string;
-      nestedArray: {
-        value: string;
-      }[];
+      nestedArray: { value: string }[];
     }[];
   };
 };
+
 const ChildComponent = ({
   index,
   control,
 }: {
-  control: Control<FormValues>;
+  control: Control<FormInputs>;
   index: number;
 }) => {
-  const { fields } = useFieldArray<FormValues>({
+  const { fields } = useFieldArray<FormInputs>({
     name: `nest.test.${index}.nestedArray` as const,
     control,
   });
 
+  console.log('fields', `nest.test.${index}.nestedArray`, fields);
+
   return (
-    <div>
+    <div style={{ marginLeft: 20 }}>
+      <h3>Child</h3>
       {fields.map((item, i) => (
         <input
           key={item.id}
@@ -39,43 +42,35 @@ const ChildComponent = ({
 };
 
 const Component = () => {
-  const { register, control } = useForm({
+  const { register, control } = useForm<FormInputs>({
     defaultValues: {
       nest: {
         test: [
-          { value: '1', nestedArray: [{ value: '2' }] },
-          { value: '3', nestedArray: [{ value: '4' }] },
+          { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
+          { value: '4', nestedArray: [{ value: '5' }] },
         ],
       },
     },
   });
-  const { fields, remove, append } = useFieldArray({
+  const { fields, prepend } = useFieldArray({
     name: 'nest.test',
     control,
   });
 
   return (
-    <div>
+    <>
       {fields.map((item, i) => (
         <div key={item.id}>
           <input {...register(`nest.test.${i}.value` as const)} />
-
           <ChildComponent control={control} index={i} />
-
-          <button
-            type={'button'}
-            onClick={() => remove(i)}
-            data-testid={item.value}
-          >
-            remove
-          </button>
+          <hr />
         </div>
       ))}
 
-      <button type={'button'} onClick={() => append({ value: 'test' })}>
-        append
+      <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+        prepend
       </button>
-    </div>
+    </>
   );
 };
 

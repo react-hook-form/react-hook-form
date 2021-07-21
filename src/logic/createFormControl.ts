@@ -118,7 +118,6 @@ export function createFormControl<
   let _fields = {};
   let _formValues = {};
   let _defaultValues = formOptions.defaultValues || {};
-  let _fieldArrayDefaultValues = {};
   let _isInAction = false;
   let _isMounted = false;
   const _subjects: Subjects<TFieldValues> = {
@@ -466,9 +465,9 @@ export function createFormControl<
     if (field) {
       const isValueUndefined = isUndefined(fieldValue);
       const defaultValue = isValueUndefined
-        ? isUndefined(get(_fieldArrayDefaultValues, name))
+        ? isUndefined(get(_formValues, name))
           ? get(_defaultValues, name)
-          : get(_fieldArrayDefaultValues, name)
+          : get(_formValues, name)
         : fieldValue;
 
       if (!isUndefined(defaultValue)) {
@@ -558,7 +557,7 @@ export function createFormControl<
         });
       }
 
-      !(value as []).length && set(_fieldArrayDefaultValues, name, []);
+      !(value as []).length && set(_formValues, name, []);
     }
 
     set(_formValues, name, value);
@@ -1024,7 +1023,7 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = { ...updatedValues };
-      _fieldArrayDefaultValues = { ...updatedValues };
+      _formValues = { ...updatedValues };
     }
 
     if (!keepStateOptions.keepValues) {
@@ -1105,12 +1104,6 @@ export function createFormControl<
       },
       set _defaultValues(value) {
         _defaultValues = value;
-      },
-      get _fieldArrayDefaultValues() {
-        return _fieldArrayDefaultValues;
-      },
-      set _fieldArrayDefaultValues(value) {
-        _fieldArrayDefaultValues = value;
       },
       get _names() {
         return _names;
