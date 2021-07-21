@@ -179,7 +179,7 @@ describe('swap', () => {
 
     expect(watched).toEqual([
       { test: [{ value: '1' }, { value: '2' }] }, // first render
-      { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
+      { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
       { test: [{ value: '2' }, { value: '1' }] }, // render inside move method
       { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
     ]);

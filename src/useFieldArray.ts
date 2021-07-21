@@ -95,19 +95,13 @@ export const useFieldArray = <
     shouldSet = true,
   ) => {
     control._isInAction.val = true;
+
     if (get(control._fields, name)) {
       const output = method(get(control._fields, name), args.argA, args.argB);
       shouldSet && set(control._fields, name, output);
     }
 
-    if (get(control._formValues, name)) {
-      const output = method(
-        get(control._formValues, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(control._formValues, name, output);
-    }
+    set(control._formValues, name, updatedFieldArrayValues);
 
     if (Array.isArray(get(control._formState.val.errors, name))) {
       const output = method(
