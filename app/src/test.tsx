@@ -1,77 +1,67 @@
 // @ts-nocheck
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Control } from '../../src/types';
+import { Control, UseFormRegister } from '../../src/types';
 
-type FormInputs = {
-  nest: {
-    test: {
-      value: string;
-      nestedArray: { value: string }[];
-    }[];
-  };
+type FormValues = {
+  test: { name: string }[];
 };
 
-const ChildComponent = ({
-  index,
+const FieldArray = ({
   control,
+  register,
 }: {
-  control: Control<FormInputs>;
-  index: number;
+  control: Control<FormValues>;
+  register: UseFormRegister<FormValues>;
 }) => {
-  const { fields } = useFieldArray<FormInputs>({
-    name: `nest.test.${index}.nestedArray` as const,
+  const { fields, append } = useFieldArray({
     control,
+    name: 'test',
   });
 
-  console.log('fields', `nest.test.${index}.nestedArray`, fields);
-
   return (
-    <div style={{ marginLeft: 20 }}>
-      <h3>Child</h3>
-      {fields.map((item, i) => (
-        <input
-          key={item.id}
-          {...control.register(
-            `nest.test.${index}.nestedArray.${i}.value` as const,
-          )}
-        />
-      ))}
+    <div>
+      {fields.map((field, index) => {
+        return (
+          <input key={field.id} {...register(`test.${index}.name` as const)} />
+        );
+      })}
+      <button
+        onClick={() => {
+          append({ name: '' });
+        }}
+      >
+        append
+      </button>
     </div>
   );
 };
 
-const Component = () => {
-  const { register, control } = useForm<FormInputs>({
-    defaultValues: {
-      nest: {
-        test: [
-          { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
-          { value: '4', nestedArray: [{ value: '5' }] },
-        ],
-      },
-    },
-  });
-  const { fields, prepend } = useFieldArray({
-    name: 'nest.test',
-    control,
-  });
+const App = () => {
+  const [show, setShow] = React.useState(true);
+  const { control, register, reset } = useForm<FormValues>();
 
   return (
-    <>
-      {fields.map((item, i) => (
-        <div key={item.id}>
-          <input {...register(`nest.test.${i}.value` as const)} />
-          <ChildComponent control={control} index={i} />
-          <hr />
-        </div>
-      ))}
-
-      <button type={'button'} onClick={() => prepend({ value: 'test' })}>
-        prepend
+    <div>
+      {show && <FieldArray control={control} register={register} />}
+      <button
+        onClick={() => {
+          setShow(!show);
+        }}
+      >
+        toggle
       </button>
-    </>
+      <button
+        onClick={() => {
+          reset({
+            test: [{ name: 'test' }],
+          });
+        }}
+      >
+        reset
+      </button>
+    </div>
   );
 };
 
-export default Component;
+export default App;

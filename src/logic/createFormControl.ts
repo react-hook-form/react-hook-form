@@ -1091,8 +1091,13 @@ export function createFormControl<
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,
-      _formValues,
       _proxyFormState,
+      get _formValues() {
+        return _formValues;
+      },
+      set _formValues(value) {
+        _formValues = value;
+      },
       get _isMounted() {
         return _isMounted;
       },
