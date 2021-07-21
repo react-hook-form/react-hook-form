@@ -557,3 +557,16 @@ Array [
   },
 ]
 `;
+
+exports[`useFieldArray when component unMount should remove reset method when field array is removed 1`] = `
+Array [
+  Object {
+    "id": "1",
+    "value": "default",
+  },
+  Object {
+    "id": "2",
+    "value": "test",
+  },
+]
+`;

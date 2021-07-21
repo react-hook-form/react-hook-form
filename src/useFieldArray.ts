@@ -54,7 +54,6 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(fieldArrayValues, keyName));
 
-  set(control._formValues, name, [...fieldArrayValues]);
   control._names.array.add(name);
 
   const omitKey = <
@@ -66,19 +65,8 @@ export const useFieldArray = <
   ) =>
     fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
-  const getCurrentFieldsValues = () => {
-    const values = get(control._formValues, name, []);
-
-    return mapIds<TFieldValues, TKeyName>(
-      get(control._formValues, name, []).map(
-        (item: Partial<TFieldValues>, index: number) => ({
-          ...item,
-          ...values[index],
-        }),
-      ),
-      keyName,
-    );
-  };
+  const getCurrentFieldsValues = () =>
+    mapIds<TFieldValues, TKeyName>(get(control._formValues, name, []), keyName);
 
   const getFocusFieldName = (
     index: number,

@@ -457,10 +457,7 @@ describe('useFieldArray', () => {
 
       unmount();
 
-      expect(result.current.fields).toEqual([
-        { id: '0', value: 'default' },
-        { id: '1', value: 'test' },
-      ]);
+      expect(result.current.fields).toMatchSnapshot();
       expect(result.current.control._names.array).toEqual(new Set(['test']));
     });
 
@@ -740,7 +737,7 @@ describe('useFieldArray', () => {
       act(() => {
         result.current.reset();
       });
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -767,7 +764,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -775,7 +772,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '7', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
