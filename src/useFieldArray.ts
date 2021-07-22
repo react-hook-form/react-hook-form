@@ -11,7 +11,7 @@ import get from './utils/get';
 import insertAt from './utils/insert';
 import isPrimitive from './utils/isPrimitive';
 import moveArrayAt from './utils/move';
-import omit from './utils/omit';
+import omitKey from './utils/omitKeys';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
@@ -33,11 +33,6 @@ import {
   UseFormRegister,
 } from './types';
 import { useFormContext } from './useFormContext';
-
-const omitKey = <T extends Partial<FieldArrayWithId>[]>(
-  fields: T,
-  keyName: string,
-) => fields.map((field = {}) => omit(field, keyName));
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
