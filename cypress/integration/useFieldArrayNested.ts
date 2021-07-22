@@ -209,12 +209,7 @@ describe('useFieldArrayNested', () => {
           {
             firstName: true,
             lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
+            keyValue: [{ name: true }, { name: true }],
           },
         ],
       }),
@@ -238,11 +233,11 @@ describe('useFieldArrayNested', () => {
     cy.get('#nest-remove-all-0').click();
 
     cy.get('#touched-nested-2').contains(
-      '{"test":[{"firstName":true,"keyValue":[{"name":true},{"name":true},{"name":true}]},{"firstName":true},{"firstName":true},null]}',
+      '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
     );
 
     cy.get('#dirty-nested-2').contains(
-      '{"test":[{"keyValue":[{"name":true},{"name":true},{"name":true}],"firstName":true,"lastName":true},{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true},{"name":true},{"name":true}]},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
+      '{"test":[{"keyValue":[{"name":true},{"name":true}],"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
     );
 
     cy.get('#submit').click();
