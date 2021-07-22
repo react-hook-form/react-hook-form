@@ -25,6 +25,7 @@ import {
   FieldArrayPath,
   FieldArrayWithId,
   FieldErrors,
+  FieldNamesMarkedBoolean,
   FieldPath,
   FieldValues,
   Path,
@@ -191,6 +192,8 @@ export const useFieldArray = <
     }
 
     subjectsRef.current.state.next({
+      dirtyFields: formStateRef.current
+        .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
       isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
       errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
