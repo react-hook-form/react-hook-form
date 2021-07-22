@@ -79,11 +79,7 @@ export type TriggerConfig = Partial<{
 }>;
 
 export type ChangeHandler = (event: {
-  target: {
-    name: string;
-    value?: unknown;
-    type?: unknown;
-  };
+  target: any;
   type?: any;
 }) => Promise<void | boolean>;
 
