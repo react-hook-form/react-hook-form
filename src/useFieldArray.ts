@@ -34,6 +34,11 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 
+const omitKey = <T extends Partial<FieldArrayWithId>[]>(
+  fields: T,
+  keyName: string,
+) => fields.map((field = {}) => omit(field, keyName));
+
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
@@ -56,15 +61,6 @@ export const useFieldArray = <
   >(mapIds(getFieldArrayValues(), keyName));
 
   control._names.array.add(name);
-
-  const omitKey = <
-    T extends Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
-  >(
-    fields: T,
-  ) =>
-    fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
 
   const getFocusFieldName = (
     index: number,
@@ -132,7 +128,7 @@ export const useFieldArray = <
         control._formState.val.dirtyFields,
         name,
         setFieldArrayDirtyFields(
-          omitKey(updatedFieldArrayValues),
+          omitKey(updatedFieldArrayValues, keyName),
           get(control._defaultValues, name, []),
           get(control._formState.val.dirtyFields, name, []),
         ),
@@ -142,7 +138,7 @@ export const useFieldArray = <
           control._formState.val.dirtyFields,
           name,
           setFieldArrayDirtyFields(
-            omitKey(updatedFieldArrayValues),
+            omitKey(updatedFieldArrayValues, keyName),
             get(control._defaultValues, name, []),
             get(control._formState.val.dirtyFields, name, []),
           ),
@@ -151,7 +147,10 @@ export const useFieldArray = <
     }
 
     control._subjects.state.next({
-      isDirty: control._getIsDirty(name, omitKey(updatedFieldArrayValues)),
+      isDirty: control._getIsDirty(
+        name,
+        omitKey(updatedFieldArrayValues, keyName),
+      ),
       errors: control._formState.val.errors as FieldErrors<TFieldValues>,
       isValid: control._formState.val.isValid,
     });
@@ -380,7 +379,7 @@ export const useFieldArray = <
 
     control._subjects.array.next({
       name,
-      values: omitKey([...fields]),
+      values: omitKey([...fields], keyName),
     });
 
     control._proxyFormState.isValid && control._updateValid();
