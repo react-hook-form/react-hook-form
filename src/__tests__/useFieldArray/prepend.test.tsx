@@ -72,8 +72,8 @@ describe('prepend', () => {
 
     act(() => {
       expect(currentFields).toEqual([
-        { id: '3', test: 'test' },
         { id: '2', test: 'test' },
+        { id: '3', test: 'test' },
       ]);
     });
 
@@ -83,10 +83,10 @@ describe('prepend', () => {
 
     act(() => {
       expect(currentFields).toEqual([
-        { id: '8', test: 'test-batch' },
-        { id: '9', test: 'test-batch1' },
-        { id: '6', test: 'test' },
-        { id: '7', test: 'test' },
+        { id: '6', test: 'test-batch' },
+        { id: '7', test: 'test-batch1' },
+        { id: '8', test: 'test' },
+        { id: '9', test: 'test' },
       ]);
     });
   });
