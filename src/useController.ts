@@ -64,6 +64,7 @@ export function useController<
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
     });
+    get(fieldsRef.current, name)._f.mount = true;
 
     return () => {
       controllerSubscription.unsubscribe();
