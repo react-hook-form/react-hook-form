@@ -504,9 +504,7 @@ export function useForm<
     if (field) {
       const isValueUndefined = isUndefined(field._f.value);
       const defaultValue = isValueUndefined
-        ? isUndefined(
-            get(fieldArrayDefaultValuesRef.current, getNodeParentName(name)),
-          )
+        ? isUndefined(get(fieldArrayDefaultValuesRef.current, name))
           ? get(defaultValuesRef.current, name)
           : get(fieldArrayDefaultValuesRef.current, name)
         : field._f.value;
