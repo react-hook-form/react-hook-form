@@ -468,14 +468,13 @@ export function createFormControl<
         ? get(_defaultValues, name)
         : fieldValue;
 
-      if (!isUndefined(defaultValue)) {
-        if (ref && (ref as HTMLInputElement).defaultChecked) {
-          set(_formValues, name, getFieldValue(field));
-        } else {
-          setFieldValue(name, defaultValue);
-        }
-      } else {
+      if (
+        isUndefined(defaultValue) ||
+        (ref && (ref as HTMLInputElement).defaultChecked)
+      ) {
         set(_formValues, name, getFieldValue(field));
+      } else {
+        setFieldValue(name, defaultValue);
       }
     }
 
