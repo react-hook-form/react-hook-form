@@ -460,9 +460,9 @@ export function createFormControl<
 
   const _updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
     const field = get(_fields, name) as Field;
-    const fieldValue = get(_formValues, name);
 
     if (field) {
+      const fieldValue = get(_formValues, name);
       const isValueUndefined = isUndefined(fieldValue);
       const defaultValue = isValueUndefined
         ? get(_defaultValues, name)
@@ -474,7 +474,7 @@ export function createFormControl<
         } else {
           setFieldValue(name, defaultValue);
         }
-      } else if (isValueUndefined) {
+      } else {
         set(_formValues, name, getFieldValue(field));
       }
     }
