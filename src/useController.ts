@@ -45,6 +45,11 @@ export function useController<
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
     });
+    const field = get(control._fields, name);
+
+    if (field) {
+      field._f.mount = true;
+    }
 
     return () => {
       controllerSubscription.unsubscribe();
@@ -60,7 +65,7 @@ export function useController<
       } else {
         const field = get(control._fields, name);
 
-        if (field && field._f) {
+        if (field) {
           field._f.mount = false;
         }
       }
