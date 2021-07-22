@@ -916,9 +916,7 @@ export function createFormControl<
               }
 
               _shouldUnregister &&
-                !(
-                  isNameInFieldArray(_names.array as any, name) && _isInAction
-                ) &&
+                !(isNameInFieldArray(_names.array, name) && _isInAction) &&
                 _names.unMount.add(name);
             }
           },
@@ -962,7 +960,7 @@ export function createFormControl<
             focusFieldBy(
               _fields,
               (key) => get(_formState.errors, key),
-              _names.mount as any,
+              _names.mount,
             );
         }
       } catch (err) {
@@ -1005,7 +1003,7 @@ export function createFormControl<
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
-        const field = get(_fields, name as any);
+        const field = get(_fields, name);
         if (field && field._f) {
           const inputRef = Array.isArray(field._f.refs)
             ? field._f.refs[0]
