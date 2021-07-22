@@ -4,7 +4,6 @@ import { SubjectType, Subscription } from '../utils/Subject';
 
 import { ErrorOption, FieldErrors } from './errors';
 import { EventType } from './events';
-import { FieldArrayDefaultValues } from './fieldArray';
 import {
   FieldRefs,
   FieldValue,
@@ -320,7 +319,6 @@ export type Control<
   _registerMissFields: RegisterMissFields<TFieldValues>;
   _isInAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
-  _fieldArrayDefaultValues: FieldArrayDefaultValues;
   _formState: FormControl<FormState<TFieldValues>>;
   _updateValid: <T extends FieldValues>(payload?: T) => void;
   _fields: FieldRefs;

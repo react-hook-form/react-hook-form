@@ -457,10 +457,7 @@ describe('useFieldArray', () => {
 
       unmount();
 
-      expect(result.current.fields).toEqual([
-        { id: '0', value: 'default' },
-        { id: '1', value: 'test' },
-      ]);
+      expect(result.current.fields).toMatchSnapshot();
       expect(result.current.control._names.array).toEqual(new Set(['test']));
     });
 
@@ -740,7 +737,7 @@ describe('useFieldArray', () => {
       act(() => {
         result.current.reset();
       });
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -767,7 +764,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -775,7 +772,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '7', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -2234,5 +2231,117 @@ describe('useFieldArray', () => {
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('luo');
+  });
+
+  it('should not populate defaultValue when field array is already mounted', async () => {
+    type FormValues = {
+      root: {
+        test: string;
+        children: { name: string }[];
+      }[];
+    };
+
+    const Child = ({
+      control,
+      index,
+      register,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+      register: UseFormRegister<FormValues>;
+    }) => {
+      const { fields, append } = useFieldArray({
+        name: `root.${index}.children`,
+        control,
+      });
+
+      return (
+        <div>
+          {fields.map((field, k) => {
+            return (
+              <div key={field.id}>
+                <input {...register(`root.${index}.children.${k}.name`)} />
+              </div>
+            );
+          })}
+
+          <button
+            onClick={() => {
+              append({
+                name: 'test',
+              });
+            }}
+          >
+            append
+          </button>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { register, control } = useForm<FormValues>({
+        defaultValues: {
+          root: [
+            {
+              test: 'default',
+              children: [
+                {
+                  name: 'child of index 0',
+                },
+              ],
+            },
+            {
+              test: 'default1',
+              children: [],
+            },
+          ],
+        },
+      });
+      const { fields, swap } = useFieldArray({
+        control,
+        name: 'root',
+      });
+
+      return (
+        <div>
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <input {...register(`root.${index}.test` as const)} />
+                <Child control={control} register={register} index={index} />
+              </div>
+            );
+          })}
+          <button
+            type={'button'}
+            onClick={() => {
+              swap(0, 1);
+            }}
+          >
+            swap
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+      fireEvent.click(screen.getAllByRole('button', { name: 'append' })[0]);
+    });
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('default1');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('test');
+    expect(
+      (screen.getAllByRole('textbox')[2] as HTMLInputElement).value,
+    ).toEqual('default');
+    expect(
+      (screen.getAllByRole('textbox')[3] as HTMLInputElement).value,
+    ).toEqual('child of index 0');
   });
 });

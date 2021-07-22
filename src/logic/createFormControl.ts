@@ -118,7 +118,6 @@ export function createFormControl<
   let _fields = {};
   let _formValues = {};
   let _defaultValues = formOptions.defaultValues || {};
-  let _fieldArrayDefaultValues = {};
   let _isInAction = false;
   let _isMounted = false;
   const _subjects: Subjects<TFieldValues> = {
@@ -466,9 +465,7 @@ export function createFormControl<
     if (field) {
       const isValueUndefined = isUndefined(fieldValue);
       const defaultValue = isValueUndefined
-        ? isUndefined(get(_fieldArrayDefaultValues, name))
-          ? get(_defaultValues, name)
-          : get(_fieldArrayDefaultValues, name)
+        ? get(_defaultValues, name)
         : fieldValue;
 
       if (!isUndefined(defaultValue)) {
@@ -558,7 +555,7 @@ export function createFormControl<
         });
       }
 
-      !(value as []).length && set(_fieldArrayDefaultValues, name, []);
+      !(value as []).length && set(_formValues, name, []);
     }
 
     set(_formValues, name, value);
@@ -919,9 +916,7 @@ export function createFormControl<
               }
 
               _shouldUnregister &&
-                !(
-                  isNameInFieldArray(_names.array as any, name) && _isInAction
-                ) &&
+                !(isNameInFieldArray(_names.array, name) && _isInAction) &&
                 _names.unMount.add(name);
             }
           },
@@ -965,7 +960,7 @@ export function createFormControl<
             focusFieldBy(
               _fields,
               (key) => get(_formState.errors, key),
-              _names.mount as any,
+              _names.mount,
             );
         }
       } catch (err) {
@@ -1008,7 +1003,7 @@ export function createFormControl<
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
-        const field = get(_fields, name as any);
+        const field = get(_fields, name);
         if (field && field._f) {
           const inputRef = Array.isArray(field._f.refs)
             ? field._f.refs[0]
@@ -1024,7 +1019,7 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = { ...updatedValues };
-      _fieldArrayDefaultValues = { ...updatedValues };
+      _formValues = { ...updatedValues };
     }
 
     if (!keepStateOptions.keepValues) {
@@ -1092,8 +1087,13 @@ export function createFormControl<
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,
-      _formValues,
       _proxyFormState,
+      get _formValues() {
+        return _formValues;
+      },
+      set _formValues(value) {
+        _formValues = value;
+      },
       get _isMounted() {
         return _isMounted;
       },
@@ -1105,12 +1105,6 @@ export function createFormControl<
       },
       set _defaultValues(value) {
         _defaultValues = value;
-      },
-      get _fieldArrayDefaultValues() {
-        return _fieldArrayDefaultValues;
-      },
-      set _fieldArrayDefaultValues(value) {
-        _fieldArrayDefaultValues = value;
       },
       get _names() {
         return _names;

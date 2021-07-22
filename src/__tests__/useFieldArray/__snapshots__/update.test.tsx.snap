@@ -31,12 +31,12 @@ exports[`update should update field array with multiple values 1`] = `
 Array [
   Object {
     "firstName": "test1",
-    "id": "0",
+    "id": "4",
     "lastName": "test2",
   },
   Object {
     "firstName": "test3",
-    "id": "3",
+    "id": "5",
     "lastName": "test4",
   },
 ]
@@ -619,6 +619,19 @@ Array [
   },
   Object {
     "names": Array [],
+  },
+]
+`;
+
+exports[`useFieldArray when component unMount should remove reset method when field array is removed 1`] = `
+Array [
+  Object {
+    "id": "1",
+    "value": "default",
+  },
+  Object {
+    "id": "2",
+    "value": "test",
   },
 ]
 `;
