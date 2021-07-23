@@ -9,7 +9,6 @@ import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
-import isPrimitive from './utils/isPrimitive';
 import moveArrayAt from './utils/move';
 import omitKey from './utils/omitKeys';
 import prependAt from './utils/prepend';
@@ -26,12 +25,10 @@ import {
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldValues,
-  Path,
   PathValue,
   UnpackNestedValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
-  UseFormRegister,
 } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -154,37 +151,6 @@ export const useFieldArray = <
     });
   };
 
-  const registerFieldArray = <T extends Object[]>(
-    values: T,
-    index = 0,
-    parentName = '',
-  ) =>
-    values.forEach((appendValueItem, valueIndex) => {
-      const rootName = `${parentName || name}.${
-        parentName ? valueIndex : index + valueIndex
-      }`;
-      isPrimitive(appendValueItem)
-        ? (control.register as UseFormRegister<TFieldValues>)(
-            rootName as Path<TFieldValues>,
-            {
-              value: appendValueItem as PathValue<
-                TFieldValues,
-                Path<TFieldValues>
-              >,
-            },
-          )
-        : Object.entries(appendValueItem).forEach(([key, value]) => {
-            const inputName = rootName + '.' + key;
-
-            Array.isArray(value)
-              ? registerFieldArray(value, valueIndex, inputName)
-              : (control.register as UseFormRegister<TFieldValues>)(
-                  inputName as Path<TFieldValues>,
-                  { value },
-                );
-          });
-    });
-
   const append = (
     value:
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
@@ -212,7 +178,6 @@ export const useFieldArray = <
       >[],
       false,
     );
-    registerFieldArray(appendValue, currentIndex);
 
     _focusName.current = getFocusFieldName(currentIndex, options);
   };
@@ -242,7 +207,6 @@ export const useFieldArray = <
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
       >[],
     );
-    registerFieldArray(prependValue);
 
     _focusName.current = getFocusFieldName(0, options);
   };
@@ -291,7 +255,6 @@ export const useFieldArray = <
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
       >[],
     );
-    registerFieldArray(insertValue, index);
 
     _focusName.current = getFocusFieldName(index, options);
   };

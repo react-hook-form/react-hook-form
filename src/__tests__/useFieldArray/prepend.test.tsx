@@ -401,22 +401,8 @@ describe('prepend', () => {
         undefined,
         {
           criteriaMode: undefined,
-          fields: {
-            test: [
-              {
-                value: {
-                  mount: true,
-                  name: 'test.0.value',
-                  ref: {
-                    name: 'test.0.value',
-                    value: '1',
-                  },
-                  value: '1',
-                },
-              },
-            ],
-          },
-          names: ['test.0.value'],
+          fields: {},
+          names: [],
         },
       );
     });
