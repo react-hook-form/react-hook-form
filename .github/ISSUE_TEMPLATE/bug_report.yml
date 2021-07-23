@@ -1,9 +1,9 @@
 name: Bug Report
 description: File a bug report
-title: "[Bug]: "
-labels: [bug, triage]
+title: '[Bug]: '
+labels: [bug]
 assignees:
-  - octocat
+  - bluebill1049
 body:
   - type: markdown
     attributes:
@@ -22,7 +22,6 @@ body:
     attributes:
       label: Codesandbox
       description: Codesandbox link
-      placeholder: Codesandbox link
     validations:
       required: true
   - type: markdown
@@ -38,16 +37,15 @@ body:
   - type: textarea
     id: what-happened
     attributes:
-      label: What happened?
-      description: Steps to reproduce the behavior.
+      label: Steps to reproduce
       placeholder: Tell us what you see!
-      value: "A bug happened!"
+      value: 'A bug happened!'
     validations:
       required: true
   - type: textarea
     id: what-expect
     attributes:
-      label: What's expected?
+      label: Expected behaviour
     validations:
       required: true
   - type: dropdown
