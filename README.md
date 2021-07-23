@@ -84,6 +84,9 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
 <a href="https://www.leniolabs.com/" target="_blank">
   <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="94" height="94" />
 </a>
+<a href="https://graphcms.com/" target="_blank">
+  <img src="https://avatars.githubusercontent.com/u/31031438?s=200&v=4" width="94" height="94" />
+</a>
 
 <p>
     <a href="https://github.com/sayav"
