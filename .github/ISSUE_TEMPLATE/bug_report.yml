@@ -39,7 +39,11 @@ body:
     attributes:
       label: Steps to reproduce
       placeholder: Tell us what you see!
-      value: 'A bug happened!'
+      value: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
     validations:
       required: true
   - type: textarea
