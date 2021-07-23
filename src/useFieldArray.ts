@@ -23,6 +23,7 @@ import {
   FieldArrayPath,
   FieldArrayWithId,
   FieldErrors,
+  FieldNamesMarkedBoolean,
   FieldPath,
   FieldValues,
   Path,
@@ -146,6 +147,8 @@ export const useFieldArray = <
         name,
         omitKey(updatedFieldArrayValues, keyName),
       ),
+      dirtyFields: control._formState.val
+        .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
       errors: control._formState.val.errors as FieldErrors<TFieldValues>,
       isValid: control._formState.val.isValid,
     });
