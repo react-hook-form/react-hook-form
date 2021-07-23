@@ -991,7 +991,7 @@ export function createFormControl<
         if (isObject(value) || Array.isArray(value)) {
           _registerMissFields(value, fieldName);
         } else if (!field) {
-          register(fieldName as Path<TFieldValues>, { value });
+          set(_formValues, fieldName, value);
         }
       }
     }

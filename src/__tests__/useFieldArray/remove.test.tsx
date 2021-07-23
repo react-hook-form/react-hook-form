@@ -950,7 +950,7 @@ describe('remove', () => {
           test: [],
         },
         undefined,
-        { criteriaMode: undefined, fields: {}, names: ['test.0.value'] },
+        { criteriaMode: undefined, fields: {}, names: [] },
       );
     });
 
