@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.12.0] - 2021-07-24
+
+## Add
+
+- new `useForm` config `delayError`
+
+```tsx
+useForm({
+  delayError: 500, // delay error appear with 500ms
+});
+```
+
 ## [7.11.0] - 2021-07-13
 
 ## Add
