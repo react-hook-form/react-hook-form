@@ -545,10 +545,12 @@ export function useForm<
           )
         : await validateForm(fieldsRef.current, true);
 
-      isValid !== formStateRef.current.isValid &&
+      if (isValid !== formStateRef.current.isValid) {
+        formStateRef.current.isValid = isValid;
         subjectsRef.current.state.next({
           isValid,
         });
+      }
     },
     [criteriaMode, shouldUseNativeValidation],
   );
