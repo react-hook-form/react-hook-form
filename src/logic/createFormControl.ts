@@ -486,10 +486,12 @@ export function createFormControl<
       ? isEmptyObject((await executeResolver()).errors)
       : await validateForm(_fields, true);
 
-    isValid !== _formState.isValid &&
+    if (isValid !== _formState.isValid) {
+      _formState.isValid = isValid;
       _subjects.state.next({
         isValid,
       });
+    }
   };
 
   const _setValues = (
