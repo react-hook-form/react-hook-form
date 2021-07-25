@@ -1,10 +1,10 @@
 import * as React from 'react';
 
+import unsetEmptyArray from './__tests__/logic/unsetEmptyArray';
 import focusFieldBy from './logic/focusFieldBy';
 import mapIds from './logic/mapId';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
-import compact from './utils/compact';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
@@ -32,9 +32,6 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 
-const cleanup = <T>(ref: T, name: string) =>
-  !compact(get(ref, name, [])).length && unset(ref, name);
-
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
@@ -43,7 +40,12 @@ export const useFieldArray = <
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
-  const { control = methods.control, name, keyName = 'id' as TKeyName } = props;
+  const {
+    control = methods.control,
+    name,
+    keyName = 'id' as TKeyName,
+    shouldUnregister,
+  } = props;
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
 
@@ -65,10 +67,6 @@ export const useFieldArray = <
     options && !options.shouldFocus
       ? options.focusName || `${name}.${options.focusIndex}.`
       : `${name}.${index}.`;
-
-  const setValues = (
-    fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
-  ) => setFields(mapIds(fieldsValues, keyName));
 
   const batchStateUpdate = <T extends Function>(
     method: T,
@@ -97,7 +95,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(control._formState.val.errors, name, output);
-      cleanup(control._formState.val.errors, name);
+      unsetEmptyArray(control._formState.val.errors, name);
     }
 
     if (
@@ -110,7 +108,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(control._formState.val.touchedFields, name, output);
-      cleanup(control._formState.val.touchedFields, name);
+      unsetEmptyArray(control._formState.val.touchedFields, name);
     }
 
     if (
@@ -136,7 +134,7 @@ export const useFieldArray = <
             get(control._formState.val.dirtyFields, name, []),
           ),
         );
-      cleanup(control._formState.val.dirtyFields, name);
+      unsetEmptyArray(control._formState.val.dirtyFields, name);
     }
 
     control._subjects.state.next({
@@ -160,10 +158,13 @@ export const useFieldArray = <
     const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(getValues(), appendValue);
     const currentIndex = updatedFieldArrayValues.length - appendValue.length;
-    setValues(
-      updatedFieldArrayValues as Partial<
-        FieldArray<TFieldValues, TFieldArrayName>
-      >[],
+    setFields(
+      mapIds(
+        updatedFieldArrayValues as Partial<
+          FieldArray<TFieldValues, TFieldArrayName>
+        >[],
+        keyName,
+      ),
     );
     batchStateUpdate(
       appendAt,
@@ -187,10 +188,13 @@ export const useFieldArray = <
   ) => {
     const prependValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = prependAt(getValues(), prependValue);
-    setValues(
-      updatedFieldArrayValues as Partial<
-        FieldArray<TFieldValues, TFieldArrayName>
-      >[],
+    setFields(
+      mapIds(
+        updatedFieldArrayValues as Partial<
+          FieldArray<TFieldValues, TFieldArrayName>
+        >[],
+        keyName,
+      ),
     );
     batchStateUpdate(
       prependAt,
@@ -210,7 +214,7 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(getValues(), index);
 
-    setValues(updatedFieldArrayValues);
+    setFields(mapIds(updatedFieldArrayValues, keyName));
 
     batchStateUpdate(
       removeArrayAt,
@@ -230,10 +234,13 @@ export const useFieldArray = <
   ) => {
     const insertValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = insertAt(getValues(), index, insertValue);
-    setValues(
-      updatedFieldArrayValues as Partial<
-        FieldArray<TFieldValues, TFieldArrayName>
-      >[],
+    setFields(
+      mapIds(
+        updatedFieldArrayValues as Partial<
+          FieldArray<TFieldValues, TFieldArrayName>
+        >[],
+        keyName,
+      ),
     );
     batchStateUpdate(
       insertAt,
@@ -261,13 +268,13 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setValues(fieldValues);
+    setFields(mapIds(fieldValues, keyName));
   };
 
   const move = (from: number, to: number) => {
     const fieldValues = getValues();
     moveArrayAt(fieldValues, from, to);
-    setValues(fieldValues);
+    setFields(mapIds(fieldValues, keyName));
     batchStateUpdate(
       moveArrayAt,
       {
@@ -299,7 +306,7 @@ export const useFieldArray = <
     const fieldValues = getValues();
     fieldValues[index] = value;
 
-    setValues(fieldValues);
+    setFields(mapIds(fieldValues, keyName));
   };
 
   React.useEffect(() => {
@@ -334,7 +341,7 @@ export const useFieldArray = <
     });
 
     control._proxyFormState.isValid && control._updateValid();
-  }, [fields, name]);
+  }, [fields, name, control, keyName]);
 
   React.useEffect(() => {
     const fieldArraySubscription = control._subjects.array.subscribe({
@@ -347,7 +354,7 @@ export const useFieldArray = <
             ? set(control._formValues, inputFieldArrayName, values)
             : values && (control._formValues = values);
 
-          setValues(get(control._formValues, name));
+          setFields(mapIds(get(control._formValues, name), keyName));
         }
       },
     });
@@ -357,7 +364,7 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      if (control._shouldUnregister || props.shouldUnregister) {
+      if (control._shouldUnregister || shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
         unset(control._formValues, name);
       } else {
@@ -365,7 +372,7 @@ export const useFieldArray = <
         fieldArrayValues && set(control._formValues, name, fieldArrayValues);
       }
     };
-  }, []);
+  }, [name, control, keyName, shouldUnregister]);
 
   return {
     swap: React.useCallback(swap, [name]),
