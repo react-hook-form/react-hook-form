@@ -1173,7 +1173,7 @@ describe('useWatch', () => {
 
         React.useEffect(() => {
           methods.setValue('test', 'bill');
-        }, [methods.setValue]);
+        }, [methods]);
 
         return (
           <>

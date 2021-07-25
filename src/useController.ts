@@ -21,7 +21,7 @@ export function useController<
   props: UseControllerProps<TFieldValues, TName>,
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const { name, control = methods.control } = props;
+  const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
     get(
       control._formValues,
@@ -54,7 +54,7 @@ export function useController<
     return () => {
       controllerSubscription.unsubscribe();
       const _shouldUnregisterField =
-        control._shouldUnregister || props.shouldUnregister;
+        control._shouldUnregister || shouldUnregister;
 
       if (
         isNameInFieldArray(control._names.array, name)
@@ -70,7 +70,7 @@ export function useController<
         }
       }
     };
-  }, [name]);
+  }, [name, control, shouldUnregister]);
 
   return {
     field: {

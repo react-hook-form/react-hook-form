@@ -70,7 +70,7 @@ export function useForm<
       formStateSubscription.unsubscribe();
       useFieldArraySubscription.unsubscribe();
     };
-  }, []);
+  }, [control]);
 
   React.useEffect(() => {
     const unregisterFieldNames = [];

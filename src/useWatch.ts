@@ -80,7 +80,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     disabled && watchSubscription.unsubscribe();
 
     return () => watchSubscription.unsubscribe();
-  }, [disabled]);
+  }, [disabled, control]);
 
   return value;
 }
