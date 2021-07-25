@@ -269,14 +269,14 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = control._subjects.array.subscribe({
-      next({ name: inputFieldArrayName, values, isReset }) {
-        if (isReset) {
-          unset(control._fields, inputFieldArrayName || name);
-          unset(control._formValues, inputFieldArrayName || name);
+      next(payload) {
+        if (payload.isReset) {
+          unset(control._fields, payload.name || name);
+          unset(control._formValues, payload.name || name);
 
-          inputFieldArrayName
-            ? set(control._formValues, inputFieldArrayName, values)
-            : values && (control._formValues = values);
+          payload.name
+            ? set(control._formValues, payload.name, payload.values)
+            : payload.values && (control._formValues = payload.values);
 
           setFields(mapIds(get(control._formValues, name), keyName));
         }
