@@ -4,6 +4,7 @@ import { SubjectType, Subscription } from '../utils/Subject';
 
 import { ErrorOption, FieldErrors } from './errors';
 import { EventType } from './events';
+import { FieldArrayWithId } from './fieldArray';
 import {
   FieldRefs,
   FieldValue,
@@ -14,6 +15,7 @@ import { Resolver } from './resolvers';
 import {
   DeepMap,
   DeepPartial,
+  FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
@@ -335,6 +337,27 @@ export type Control<
     value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
     options: SetValueConfig,
   ) => void;
+  _bathFieldArrayUpdate: <
+    T extends Function,
+    TFieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TKeyName extends string = 'id',
+  >(
+    keyName: TKeyName,
+    name: InternalFieldName,
+    method: T,
+    args: {
+      argA?: unknown;
+      argB?: unknown;
+    },
+    updatedFieldArrayValues?: Partial<
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+    >[],
+    shouldSet?: boolean,
+  ) => void;
+  _getFieldArrayValue: <TFieldArrayValues>(
+    name: InternalFieldName,
+  ) => Partial<TFieldArrayValues>[];
   unregister: UseFormUnregister<TFieldValues>;
 };
 

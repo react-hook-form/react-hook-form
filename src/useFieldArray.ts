@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import unsetEmptyArray from './__tests__/logic/unsetEmptyArray';
 import focusFieldBy from './logic/focusFieldBy';
+import getFocusFieldName from './logic/getFocusFieldName';
 import mapIds from './logic/mapId';
-import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
@@ -21,8 +20,6 @@ import {
   FieldArrayMethodProps,
   FieldArrayPath,
   FieldArrayWithId,
-  FieldErrors,
-  FieldNamesMarkedBoolean,
   FieldPath,
   FieldValues,
   PathValue,
@@ -48,106 +45,11 @@ export const useFieldArray = <
   } = props;
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
-
-  const getValues = () =>
-    (control._isMounted
-      ? get(control._formValues, name, [])
-      : get(control._defaultValues, name)) || [];
-
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-  >(mapIds(getValues(), keyName));
+  >(mapIds(control._getFieldArrayValue(name), keyName));
 
   control._names.array.add(name);
-
-  const getFocusFieldName = (
-    index: number,
-    options?: FieldArrayMethodProps,
-  ): string =>
-    options && !options.shouldFocus
-      ? options.focusName || `${name}.${options.focusIndex}.`
-      : `${name}.${index}.`;
-
-  const batchStateUpdate = <T extends Function>(
-    method: T,
-    args: {
-      argA?: unknown;
-      argB?: unknown;
-    },
-    updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = [],
-    shouldSet = true,
-  ) => {
-    control._isInAction.val = true;
-
-    if (get(control._fields, name)) {
-      const output = method(get(control._fields, name), args.argA, args.argB);
-      shouldSet && set(control._fields, name, output);
-    }
-
-    set(control._formValues, name, updatedFieldArrayValues);
-
-    if (Array.isArray(get(control._formState.val.errors, name))) {
-      const output = method(
-        get(control._formState.val.errors, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(control._formState.val.errors, name, output);
-      unsetEmptyArray(control._formState.val.errors, name);
-    }
-
-    if (
-      control._proxyFormState.touchedFields &&
-      get(control._formState.val.touchedFields, name)
-    ) {
-      const output = method(
-        get(control._formState.val.touchedFields, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(control._formState.val.touchedFields, name, output);
-      unsetEmptyArray(control._formState.val.touchedFields, name);
-    }
-
-    if (
-      control._proxyFormState.dirtyFields ||
-      control._proxyFormState.isDirty
-    ) {
-      set(
-        control._formState.val.dirtyFields,
-        name,
-        setFieldArrayDirtyFields(
-          omitKey(updatedFieldArrayValues, keyName),
-          get(control._defaultValues, name, []),
-          get(control._formState.val.dirtyFields, name, []),
-        ),
-      );
-      updatedFieldArrayValues &&
-        set(
-          control._formState.val.dirtyFields,
-          name,
-          setFieldArrayDirtyFields(
-            omitKey(updatedFieldArrayValues, keyName),
-            get(control._defaultValues, name, []),
-            get(control._formState.val.dirtyFields, name, []),
-          ),
-        );
-      unsetEmptyArray(control._formState.val.dirtyFields, name);
-    }
-
-    control._subjects.state.next({
-      isDirty: control._getIsDirty(
-        name,
-        omitKey(updatedFieldArrayValues, keyName),
-      ),
-      dirtyFields: control._formState.val
-        .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
-      errors: control._formState.val.errors as FieldErrors<TFieldValues>,
-      isValid: control._formState.val.isValid,
-    });
-  };
 
   const append = (
     value:
@@ -156,7 +58,10 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = appendAt(getValues(), appendValue);
+    const updatedFieldArrayValues = appendAt(
+      control._getFieldArrayValue(name),
+      appendValue,
+    );
     const currentIndex = updatedFieldArrayValues.length - appendValue.length;
     setFields(
       mapIds(
@@ -166,7 +71,9 @@ export const useFieldArray = <
         keyName,
       ),
     );
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       appendAt,
       {
         argA: fillEmptyArray(value),
@@ -177,7 +84,7 @@ export const useFieldArray = <
       false,
     );
 
-    _focusName.current = getFocusFieldName(currentIndex, options);
+    _focusName.current = getFocusFieldName(name, currentIndex, options);
   };
 
   const prepend = (
@@ -187,7 +94,10 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const prependValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = prependAt(getValues(), prependValue);
+    const updatedFieldArrayValues = prependAt(
+      control._getFieldArrayValue(name),
+      prependValue,
+    );
     setFields(
       mapIds(
         updatedFieldArrayValues as Partial<
@@ -196,7 +106,9 @@ export const useFieldArray = <
         keyName,
       ),
     );
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       prependAt,
       {
         argA: fillEmptyArray(value),
@@ -206,17 +118,19 @@ export const useFieldArray = <
       >[],
     );
 
-    _focusName.current = getFocusFieldName(0, options);
+    _focusName.current = getFocusFieldName(name, 0, options);
   };
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = removeArrayAt(getValues(), index);
+    >[] = removeArrayAt(control._getFieldArrayValue(name), index);
 
     setFields(mapIds(updatedFieldArrayValues, keyName));
 
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       removeArrayAt,
       {
         argA: index,
@@ -233,7 +147,11 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = insertAt(getValues(), index, insertValue);
+    const updatedFieldArrayValues = insertAt(
+      control._getFieldArrayValue(name),
+      index,
+      insertValue,
+    );
     setFields(
       mapIds(
         updatedFieldArrayValues as Partial<
@@ -242,7 +160,9 @@ export const useFieldArray = <
         keyName,
       ),
     );
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       insertAt,
       {
         argA: index,
@@ -253,13 +173,15 @@ export const useFieldArray = <
       >[],
     );
 
-    _focusName.current = getFocusFieldName(index, options);
+    _focusName.current = getFocusFieldName(name, index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getValues();
+    const fieldValues = control._getFieldArrayValue(name);
     swapArrayAt(fieldValues, indexA, indexB);
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       swapArrayAt,
       {
         argA: indexA,
@@ -272,10 +194,12 @@ export const useFieldArray = <
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getValues();
+    const fieldValues = control._getFieldArrayValue(name);
     moveArrayAt(fieldValues, from, to);
     setFields(mapIds(fieldValues, keyName));
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       moveArrayAt,
       {
         argA: from,
@@ -303,7 +227,7 @@ export const useFieldArray = <
       },
     );
 
-    const fieldValues = getValues();
+    const fieldValues = control._getFieldArrayValue(name);
     fieldValues[index] = value;
 
     setFields(mapIds(fieldValues, keyName));
@@ -375,13 +299,13 @@ export const useFieldArray = <
   }, [name, control, keyName, shouldUnregister]);
 
   return {
-    swap: React.useCallback(swap, [name]),
-    move: React.useCallback(move, [name]),
-    prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name]),
-    remove: React.useCallback(remove, [name]),
-    insert: React.useCallback(insert, [name]),
-    update: React.useCallback(update, [name]),
+    swap: React.useCallback(swap, [name, control, keyName]),
+    move: React.useCallback(move, [name, control, keyName]),
+    prepend: React.useCallback(prepend, [name, control, keyName]),
+    append: React.useCallback(append, [name, control, keyName]),
+    remove: React.useCallback(remove, [name, control, keyName]),
+    insert: React.useCallback(insert, [name, control, keyName]),
+    update: React.useCallback(update, [name, control, keyName]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,

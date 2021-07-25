@@ -3,6 +3,8 @@ import {
   ChangeHandler,
   DeepPartial,
   Field,
+  FieldArrayPath,
+  FieldArrayWithId,
   FieldError,
   FieldNamesMarkedBoolean,
   FieldPath,
@@ -62,6 +64,7 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import omit from '../utils/omit';
+import omitKey from '../utils/omitKeys';
 import Subject from '../utils/Subject';
 import unset from '../utils/unset';
 
@@ -74,6 +77,7 @@ import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 import skipValidation from './skipValidation';
+import unsetEmptyArray from './unsetEmptyArray';
 import validateField from './validateField';
 
 const defaultOptions = {
@@ -643,6 +647,83 @@ export function createFormControl<
     }
   };
 
+  const _bathFieldArrayUpdate = <
+    T extends Function,
+    TFieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TKeyName extends string = 'id',
+  >(
+    keyName: TKeyName,
+    name: InternalFieldName,
+    method: T,
+    args: {
+      argA?: unknown;
+      argB?: unknown;
+    },
+    updatedFieldArrayValues: Partial<
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+    >[] = [],
+    shouldSet = true,
+  ) => {
+    _isInAction = true;
+
+    if (get(_fields, name)) {
+      const output = method(get(_fields, name), args.argA, args.argB);
+      shouldSet && set(_fields, name, output);
+    }
+
+    set(_formValues, name, updatedFieldArrayValues);
+
+    if (Array.isArray(get(_formState.errors, name))) {
+      const output = method(get(_formState.errors, name), args.argA, args.argB);
+      shouldSet && set(_formState.errors, name, output);
+      unsetEmptyArray(_formState.errors, name);
+    }
+
+    if (_proxyFormState.touchedFields && get(_formState.touchedFields, name)) {
+      const output = method(
+        get(_formState.touchedFields, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(_formState.touchedFields, name, output);
+      unsetEmptyArray(_formState.touchedFields, name);
+    }
+
+    if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
+      set(
+        _formState.dirtyFields,
+        name,
+        setFieldArrayDirtyFields(
+          omitKey(updatedFieldArrayValues, keyName),
+          get(_defaultValues, name, []),
+          get(_formState.dirtyFields, name, []),
+        ),
+      );
+      updatedFieldArrayValues &&
+        set(
+          _formState.dirtyFields,
+          name,
+          setFieldArrayDirtyFields(
+            omitKey(updatedFieldArrayValues, keyName),
+            get(_defaultValues, name, []),
+            get(_formState.dirtyFields, name, []),
+          ),
+        );
+      unsetEmptyArray(_formState.dirtyFields, name);
+    }
+
+    _subjects.state.next({
+      isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues, keyName)),
+      dirtyFields: _formState.dirtyFields,
+      errors: _formState.errors,
+      isValid: _formState.isValid,
+    });
+  };
+
+  const _getFieldArrayValue = (name: InternalFieldName) =>
+    (_isMounted ? get(_formValues, name, []) : get(_defaultValues, name)) || [];
+
   const setValue: UseFormSetValue<TFieldValues> = (
     name,
     value,
@@ -1085,6 +1166,8 @@ export function createFormControl<
       _getWatch,
       _updateValid,
       _updateFormValues,
+      _bathFieldArrayUpdate,
+      _getFieldArrayValue,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,
