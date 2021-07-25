@@ -980,7 +980,7 @@ export function createFormControl<
       }
     };
 
-  const _registerMissFields: RegisterMissFields<TFieldValues> = (
+  const _updateFormValues: RegisterMissFields<TFieldValues> = (
     defaultValues,
     name = '',
   ): void => {
@@ -991,7 +991,7 @@ export function createFormControl<
 
       if (!field || !field._f) {
         if (isObject(value) || Array.isArray(value)) {
-          _registerMissFields(value, fieldName);
+          _updateFormValues(value, fieldName);
         } else if (!field) {
           set(_formValues, fieldName, value);
         }
@@ -1084,7 +1084,7 @@ export function createFormControl<
       _getIsDirty,
       _getWatch,
       _updateValid,
-      _registerMissFields,
+      _updateFormValues,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,

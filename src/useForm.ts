@@ -79,7 +79,7 @@ export function useForm<
       control._isMounted = true;
       control._proxyFormState.isValid && control._updateValid();
       !props.shouldUnregister &&
-        control._registerMissFields(control._defaultValues);
+        control._updateFormValues(control._defaultValues);
     }
 
     for (const name of control._names.unMount) {

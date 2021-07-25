@@ -319,7 +319,7 @@ export type Control<
   _names: Names;
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _registerMissFields: RegisterMissFields<TFieldValues>;
+  _updateFormValues: RegisterMissFields<TFieldValues>;
   _isInAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
   _formState: FormControl<FormState<TFieldValues>>;
