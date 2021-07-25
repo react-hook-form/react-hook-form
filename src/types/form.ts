@@ -312,6 +312,25 @@ export type FormControl<T> = {
   val: T;
 };
 
+export type BatchFieldArrayUpdate = <
+  T extends Function,
+  TFieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TKeyName extends string = 'id',
+>(
+  keyName: TKeyName,
+  name: InternalFieldName,
+  method: T,
+  args: {
+    argA?: unknown;
+    argB?: unknown;
+  },
+  updatedFieldArrayValues?: Partial<
+    FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+  >[],
+  shouldSet?: boolean,
+) => void;
+
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object,
@@ -337,24 +356,7 @@ export type Control<
     value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
     options: SetValueConfig,
   ) => void;
-  _bathFieldArrayUpdate: <
-    T extends Function,
-    TFieldValues,
-    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-    TKeyName extends string = 'id',
-  >(
-    keyName: TKeyName,
-    name: InternalFieldName,
-    method: T,
-    args: {
-      argA?: unknown;
-      argB?: unknown;
-    },
-    updatedFieldArrayValues?: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
-    shouldSet?: boolean,
-  ) => void;
+  _bathFieldArrayUpdate: BatchFieldArrayUpdate;
   _getFieldArrayValue: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];

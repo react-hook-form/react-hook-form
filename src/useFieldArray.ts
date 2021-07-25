@@ -44,7 +44,6 @@ export const useFieldArray = <
     shouldUnregister,
   } = props;
   const _focusName = React.useRef('');
-  const _isMounted = React.useRef(false);
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(control._getFieldArrayValue(name), keyName));
@@ -284,7 +283,6 @@ export const useFieldArray = <
     });
 
     !get(control._formValues, name) && set(control._formValues, name, []);
-    _isMounted.current = true;
 
     return () => {
       fieldArraySubscription.unsubscribe();

@@ -1,10 +1,9 @@
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
+  BatchFieldArrayUpdate,
   ChangeHandler,
   DeepPartial,
   Field,
-  FieldArrayPath,
-  FieldArrayWithId,
   FieldError,
   FieldNamesMarkedBoolean,
   FieldPath,
@@ -647,22 +646,12 @@ export function createFormControl<
     }
   };
 
-  const _bathFieldArrayUpdate = <
-    T extends Function,
-    TFieldValues,
-    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-    TKeyName extends string = 'id',
-  >(
-    keyName: TKeyName,
-    name: InternalFieldName,
-    method: T,
-    args: {
-      argA?: unknown;
-      argB?: unknown;
-    },
-    updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = [],
+  const _bathFieldArrayUpdate: BatchFieldArrayUpdate = (
+    keyName,
+    name,
+    method,
+    args,
+    updatedFieldArrayValues = [],
     shouldSet = true,
   ) => {
     _isInAction = true;
