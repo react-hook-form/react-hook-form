@@ -32,6 +32,9 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 
+const cleanup = <T>(ref: T, name: string) =>
+  !compact(get(ref, name, [])).length && unset(ref, name);
+
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
@@ -44,14 +47,14 @@ export const useFieldArray = <
   const _focusName = React.useRef('');
   const _isMounted = React.useRef(false);
 
-  const getFieldArrayValues = () =>
+  const getValues = () =>
     (control._isMounted
       ? get(control._formValues, name, [])
       : get(control._defaultValues, name)) || [];
 
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-  >(mapIds(getFieldArrayValues(), keyName));
+  >(mapIds(getValues(), keyName));
 
   control._names.array.add(name);
 
@@ -63,12 +66,9 @@ export const useFieldArray = <
       ? options.focusName || `${name}.${options.focusIndex}.`
       : `${name}.${index}.`;
 
-  const setFieldsAndMapIds = (
+  const setValues = (
     fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => setFields(mapIds(fieldsValues, keyName));
-
-  const cleanup = <T>(ref: T) =>
-    !compact(get(ref, name, [])).length && unset(ref, name);
 
   const batchStateUpdate = <T extends Function>(
     method: T,
@@ -97,7 +97,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(control._formState.val.errors, name, output);
-      cleanup(control._formState.val.errors);
+      cleanup(control._formState.val.errors, name);
     }
 
     if (
@@ -110,7 +110,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(control._formState.val.touchedFields, name, output);
-      cleanup(control._formState.val.touchedFields);
+      cleanup(control._formState.val.touchedFields, name);
     }
 
     if (
@@ -136,7 +136,7 @@ export const useFieldArray = <
             get(control._formState.val.dirtyFields, name, []),
           ),
         );
-      cleanup(control._formState.val.dirtyFields);
+      cleanup(control._formState.val.dirtyFields, name);
     }
 
     control._subjects.state.next({
@@ -158,12 +158,9 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = appendAt(
-      getFieldArrayValues(),
-      appendValue,
-    );
+    const updatedFieldArrayValues = appendAt(getValues(), appendValue);
     const currentIndex = updatedFieldArrayValues.length - appendValue.length;
-    setFieldsAndMapIds(
+    setValues(
       updatedFieldArrayValues as Partial<
         FieldArray<TFieldValues, TFieldArrayName>
       >[],
@@ -189,11 +186,8 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const prependValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = prependAt(
-      getFieldArrayValues(),
-      prependValue,
-    );
-    setFieldsAndMapIds(
+    const updatedFieldArrayValues = prependAt(getValues(), prependValue);
+    setValues(
       updatedFieldArrayValues as Partial<
         FieldArray<TFieldValues, TFieldArrayName>
       >[],
@@ -214,9 +208,9 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = removeArrayAt(getFieldArrayValues(), index);
+    >[] = removeArrayAt(getValues(), index);
 
-    setFieldsAndMapIds(updatedFieldArrayValues);
+    setValues(updatedFieldArrayValues);
 
     batchStateUpdate(
       removeArrayAt,
@@ -235,12 +229,8 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = insertAt(
-      getFieldArrayValues(),
-      index,
-      insertValue,
-    );
-    setFieldsAndMapIds(
+    const updatedFieldArrayValues = insertAt(getValues(), index, insertValue);
+    setValues(
       updatedFieldArrayValues as Partial<
         FieldArray<TFieldValues, TFieldArrayName>
       >[],
@@ -260,7 +250,7 @@ export const useFieldArray = <
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getFieldArrayValues();
+    const fieldValues = getValues();
     swapArrayAt(fieldValues, indexA, indexB);
     batchStateUpdate(
       swapArrayAt,
@@ -271,13 +261,13 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setFieldsAndMapIds(fieldValues);
+    setValues(fieldValues);
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getFieldArrayValues();
+    const fieldValues = getValues();
     moveArrayAt(fieldValues, from, to);
-    setFieldsAndMapIds(fieldValues);
+    setValues(fieldValues);
     batchStateUpdate(
       moveArrayAt,
       {
@@ -306,10 +296,10 @@ export const useFieldArray = <
       },
     );
 
-    const fieldValues = getFieldArrayValues();
+    const fieldValues = getValues();
     fieldValues[index] = value;
 
-    setFieldsAndMapIds(fieldValues);
+    setValues(fieldValues);
   };
 
   React.useEffect(() => {
@@ -357,7 +347,7 @@ export const useFieldArray = <
             ? set(control._formValues, inputFieldArrayName, values)
             : values && (control._formValues = values);
 
-          setFieldsAndMapIds(get(control._formValues, name));
+          setValues(get(control._formValues, name));
         }
       },
     });
