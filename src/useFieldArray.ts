@@ -61,7 +61,6 @@ export const useFieldArray = <
       control._getFieldArrayValue(name),
       appendValue,
     );
-    const currentIndex = updatedFieldArrayValues.length - appendValue.length;
     setFields(
       mapIds(
         updatedFieldArrayValues as Partial<
@@ -83,7 +82,11 @@ export const useFieldArray = <
       false,
     );
 
-    _focusName.current = getFocusFieldName(name, currentIndex, options);
+    _focusName.current = getFocusFieldName(
+      name,
+      updatedFieldArrayValues.length - appendValue.length,
+      options,
+    );
   };
 
   const prepend = (
@@ -92,10 +95,9 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const prependValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = prependAt(
       control._getFieldArrayValue(name),
-      prependValue,
+      convertToArrayPayload(value),
     );
     setFields(
       mapIds(
@@ -145,11 +147,10 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const insertValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = insertAt(
       control._getFieldArrayValue(name),
       index,
-      insertValue,
+      convertToArrayPayload(value),
     );
     setFields(
       mapIds(

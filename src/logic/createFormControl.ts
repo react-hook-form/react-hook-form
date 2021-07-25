@@ -711,7 +711,7 @@ export function createFormControl<
   };
 
   const _getFieldArrayValue = (name: InternalFieldName) =>
-    (_isMounted ? get(_formValues, name, []) : get(_defaultValues, name)) || [];
+    get(_isMounted ? _formValues : _defaultValues, name, []);
 
   const setValue: UseFormSetValue<TFieldValues> = (
     name,
