@@ -3,6 +3,7 @@ import {
   BatchFieldArrayUpdate,
   ChangeHandler,
   DeepPartial,
+  DelayCallback,
   Field,
   FieldError,
   FieldNamesMarkedBoolean,
@@ -37,7 +38,6 @@ import {
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
-  ValidateHandler,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -97,7 +97,7 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let _delayCallback: ValidateHandler;
+  let _delayCallback: DelayCallback;
   let _formState = {
     isDirty: false,
     isValidating: false,
@@ -146,6 +146,14 @@ export function createFormControl<
     _names.watch.has(name) ||
     _names.watch.has((name.match(/\w+/) || [])[0]);
 
+  const updateErrorState = (name: InternalFieldName, error: FieldError) => {
+    set(_formState.errors, name, error);
+
+    _subjects.state.next({
+      errors: _formState.errors,
+    });
+  };
+
   const shouldRenderBaseOnError = async (
     shouldSkipRender: boolean,
     name: InternalFieldName,
@@ -165,9 +173,16 @@ export function createFormControl<
         : await validateForm(_fields, true)
       : false;
 
-    error
-      ? set(_formState.errors, name, error)
-      : unset(_formState.errors, name);
+    if (props.delayError && !previousError && error) {
+      _delayCallback =
+        _delayCallback || debounce(updateErrorState, props.delayError);
+
+      _delayCallback(name, error);
+    } else {
+      error
+        ? set(_formState.errors, name, error)
+        : unset(_formState.errors, name);
+    }
 
     if (
       (isWatched ||
@@ -388,57 +403,13 @@ export function createFormControl<
     return context.valid;
   };
 
-  const handleValidate: ValidateHandler = async (
-    target,
-    fieldState,
-    isWatched,
-    isBlurEvent,
-  ) => {
-    let error;
-    let isValid;
-    let name = target.name;
-    const field = get(_fields, name) as Field;
-
-    if (formOptions.resolver) {
-      const { errors } = await executeResolver([name]);
-      error = get(errors, name);
-
-      if (isCheckBoxInput(target as Ref) && !error) {
-        const parentNodeName = getNodeParentName(name);
-        const valError = get(errors, parentNodeName, {});
-        valError.type && valError.message && (error = valError);
-
-        if (valError || get(_formState.errors, parentNodeName)) {
-          name = parentNodeName;
-        }
-      }
-
-      isValid = isEmptyObject(errors);
-    } else {
-      error = (
-        await validateField(
-          field,
-          get(_formValues, name) as Field,
-          isValidateAllFieldCriteria,
-          formOptions.shouldUseNativeValidation,
-        )
-      )[name];
-    }
-
-    !isBlurEvent &&
-      _subjects.watch.next({
-        name,
-        type: target.type,
-      });
-
-    shouldRenderBaseOnError(false, name, error, fieldState, isValid, isWatched);
-  };
-
   const handleChange: ChangeHandler = async ({
     type,
     target,
     target: { value, name, type: inputType },
   }) => {
+    let error;
+    let isValid;
     const field = get(_fields, name) as Field;
 
     if (field) {
@@ -493,15 +464,47 @@ export function createFormControl<
         isValidating: true,
       });
 
-      if (get(_formState.errors, name) || !formOptions.delayError) {
-        handleValidate(target, fieldState, isWatched, isBlurEvent);
-      } else {
-        _delayCallback =
-          _delayCallback || debounce(handleValidate, formOptions.delayError);
+      if (formOptions.resolver) {
+        const { errors } = await executeResolver([name]);
+        error = get(errors, name);
 
-        _delayCallback(target, fieldState, isWatched, isBlurEvent);
-        isWatched && _subjects.state.next({ name });
+        if (isCheckBoxInput(target as Ref) && !error) {
+          const parentNodeName = getNodeParentName(name);
+          const valError = get(errors, parentNodeName, {});
+          valError.type && valError.message && (error = valError);
+
+          if (valError || get(_formState.errors, parentNodeName)) {
+            name = parentNodeName;
+          }
+        }
+
+        isValid = isEmptyObject(errors);
+      } else {
+        error = (
+          await validateField(
+            field,
+            get(_formValues, name) as Field,
+            isValidateAllFieldCriteria,
+            formOptions.shouldUseNativeValidation,
+          )
+        )[name];
       }
+
+      !isBlurEvent &&
+        _subjects.watch.next({
+          name,
+          type,
+          values: getValues(),
+        });
+
+      shouldRenderBaseOnError(
+        false,
+        name,
+        error,
+        fieldState,
+        isValid,
+        isWatched,
+      );
     }
   };
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { SubjectType, Subscription } from '../utils/Subject';
 
-import { ErrorOption, FieldErrors } from './errors';
+import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArrayWithId } from './fieldArray';
 import {
@@ -84,14 +84,10 @@ export type ChangeHandler = (event: {
   type?: any;
 }) => Promise<void | boolean>;
 
-export type ValidateHandler = <TFieldValues>(
-  event: any,
-  fieldState: Partial<
-    Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
-  >,
-  isWatched: boolean,
-  isBlurEvent: boolean,
-) => Promise<void | boolean>;
+export type DelayCallback = (
+  name: InternalFieldName,
+  error: FieldError,
+) => void;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
