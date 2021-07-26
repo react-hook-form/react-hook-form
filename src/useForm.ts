@@ -182,7 +182,7 @@ export function useForm<
           : await validateForm(fieldsRef.current, true)
         : false;
 
-      if (delayError && !previousError && error) {
+      if (delayError && error) {
         _delayCallback.current =
           _delayCallback.current || debounce(updateErrorState, delayError);
 
