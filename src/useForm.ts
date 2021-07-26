@@ -154,6 +154,14 @@ export function useForm<
     namesRef.current.watch.has(name) ||
     namesRef.current.watch.has((name.match(/\w+/) || [])[0]);
 
+  const updateErrorState = (name: InternalFieldName, error: FieldError) => {
+    set(formStateRef.current.errors, name, error);
+
+    subjectsRef.current.state.next({
+      errors: formStateRef.current.errors,
+    });
+  };
+
   const shouldRenderBaseOnError = React.useCallback(
     async (
       shouldSkipRender: boolean,
@@ -174,9 +182,16 @@ export function useForm<
           : await validateForm(fieldsRef.current, true)
         : false;
 
-      error
-        ? set(formStateRef.current.errors, name, error)
-        : unset(formStateRef.current.errors, name);
+      if (delayError && error) {
+        _delayCallback.current =
+          _delayCallback.current || debounce(updateErrorState, delayError);
+
+        _delayCallback.current(name, error);
+      } else {
+        error
+          ? set(formStateRef.current.errors, name, error)
+          : unset(formStateRef.current.errors, name);
+      }
 
       if (
         (isWatched ||
@@ -752,15 +767,7 @@ export function useForm<
           isValidating: true,
         });
 
-        if (get(formStateRef.current.errors, name) || !delayError) {
-          handleValidate(target, fieldState, isWatched, isBlurEvent);
-        } else {
-          _delayCallback.current =
-            _delayCallback.current || debounce(handleValidate, delayError);
-
-          _delayCallback.current(target, fieldState, isWatched, isBlurEvent);
-          isWatched && subjectsRef.current.state.next({ name });
-        }
+        handleValidate(target, fieldState, isWatched, isBlurEvent);
       }
     },
     [],
