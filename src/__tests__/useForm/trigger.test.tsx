@@ -613,4 +613,51 @@ describe('trigger', () => {
 
     expect(isValid).toBeFalsy();
   });
+
+  it('should be able to trigger an object of fields', async () => {
+    let isValid;
+
+    function App() {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm();
+
+      const onTrigger = async () => {
+        isValid = await trigger('test');
+      };
+
+      return (
+        <form>
+          <input
+            {...register('test.firstName', { required: true })}
+            placeholder="First name"
+          />
+          {errors?.test?.firstName && <p>firstName</p>}
+
+          <input
+            {...register('test.lastName', { required: true })}
+            placeholder="Last name"
+          />
+          {errors?.test?.lastName && <p>lastName</p>}
+
+          <input type="button" onClick={onTrigger} value="trigger" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(isValid).toBeFalsy();
+
+    await waitFor(() => {
+      screen.getByText('firstName');
+      screen.getByText('lastName');
+    });
+  });
 });

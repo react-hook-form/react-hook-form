@@ -327,24 +327,6 @@ export function createFormControl<
       : ({} as ResolverResult);
   };
 
-  const executeBuildinValidation = async (
-    name: InternalFieldName,
-    skipReRender: boolean,
-  ): Promise<boolean> => {
-    const error = (
-      await validateField(
-        get(_fields, name) as Field,
-        getValues(name as FieldPath<TFieldValues>),
-        isValidateAllFieldCriteria,
-        formOptions.shouldUseNativeValidation,
-      )
-    )[name];
-
-    await shouldRenderBaseOnError(skipReRender, name, error);
-
-    return isUndefined(error);
-  };
-
   const executeResolverValidation = async (names?: InternalFieldName[]) => {
     const { errors } = await executeResolver();
 
@@ -390,6 +372,9 @@ export function createFormControl<
               break;
             }
           } else {
+            if (fieldError[_f.name]) {
+              context.valid = false;
+            }
             fieldError[_f.name]
               ? set(_formState.errors, _f.name, fieldError[_f.name])
               : unset(_formState.errors, _f.name);
@@ -783,12 +768,12 @@ export function createFormControl<
       if (name) {
         isValid = (
           await Promise.all(
-            fieldNames
-              .filter((fieldName) => get(_fields, fieldName, {})._f)
-              .map(
-                async (fieldName) =>
-                  await executeBuildinValidation(fieldName, true),
-              ),
+            fieldNames.map(async (fieldName) => {
+              const field = get(_fields, fieldName);
+              return await validateForm(
+                field._f ? { [fieldName]: field } : field,
+              );
+            }),
           )
         ).every(Boolean);
       } else {
