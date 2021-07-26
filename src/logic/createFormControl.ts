@@ -173,7 +173,7 @@ export function createFormControl<
         : await validateForm(_fields, true)
       : false;
 
-    if (props.delayError && !previousError && error) {
+    if (props.delayError && error) {
       _delayCallback =
         _delayCallback || debounce(updateErrorState, props.delayError);
 
