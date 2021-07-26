@@ -5,6 +5,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
 import { EVENTS } from './constants';
 import {
+  Field,
   FieldPath,
   FieldValues,
   InternalFieldName,
@@ -39,17 +40,21 @@ export function useController<
     value,
   });
 
+  const updateMounted = (name: InternalFieldName, value: boolean) => {
+    const field: Field = get(control._fields, name);
+
+    if (field) {
+      field._f.mount = value;
+    }
+  };
+
   React.useEffect(() => {
     const controllerSubscription = control._subjects.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
     });
-    const field = get(control._fields, name);
-
-    if (field) {
-      field._f.mount = true;
-    }
+    updateMounted(name, true);
 
     return () => {
       controllerSubscription.unsubscribe();
@@ -63,11 +68,7 @@ export function useController<
       ) {
         control.unregister(name);
       } else {
-        const field = get(control._fields, name);
-
-        if (field) {
-          field._f.mount = false;
-        }
+        updateMounted(name, false);
       }
     };
   }, [name, control, shouldUnregister]);
