@@ -654,7 +654,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await act(async () => {
+      await actComponent(async () => {
         await fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123456',
@@ -664,7 +664,73 @@ describe('formState', () => {
         expect(screen.queryByText(message)).toBeNull();
       });
 
-      act(() => {
+      actComponent(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      await waitFor(async () => {
+        screen.getByText(message);
+      });
+    });
+
+    it('should only show error after 500ms with register and render formState instantly', async () => {
+      const message = 'required.';
+      const App = () => {
+        const {
+          register,
+          formState: { errors, isValid },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            {isValid ? 'valid' : 'inValid'}
+            <input
+              {...register('test', {
+                required: true,
+                maxLength: 4,
+              })}
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      await actComponent(async () => {
+        await waitFor(() => screen.getByText('valid'));
+      });
+
+      await actComponent(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      await actComponent(async () => {
+        await waitFor(() => screen.getByText('inValid'));
+      });
+
+      expect(screen.queryByText(message)).toBeNull();
+
+      actComponent(() => {
         jest.advanceTimersByTime(500);
       });
 
@@ -704,7 +770,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await act(async () => {
+      await actComponent(async () => {
         await fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123456',
@@ -714,7 +780,7 @@ describe('formState', () => {
         expect(screen.queryByText(message)).toBeNull();
       });
 
-      act(() => {
+      actComponent(() => {
         jest.advanceTimersByTime(500);
       });
 
