@@ -58,13 +58,20 @@ export function useController<
     name,
   });
 
+  function updateIsMounted(name: string, value: boolean) {
+    const field = get(fieldsRef.current, name);
+    if (field && field._f) {
+      field._f.mount = value;
+    }
+  }
+
   React.useEffect(() => {
     const controllerSubscription = subjectsRef.current.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
     });
-    get(fieldsRef.current, name)._f.mount = true;
+    updateIsMounted(name, true);
 
     return () => {
       controllerSubscription.unsubscribe();
@@ -77,11 +84,7 @@ export function useController<
       ) {
         unregister(name);
       } else {
-        const field = get(fieldsRef.current, name);
-
-        if (field && field._f) {
-          field._f.mount = false;
-        }
+        updateIsMounted(name, false);
       }
     };
   }, [name]);
