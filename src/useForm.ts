@@ -513,7 +513,11 @@ export function useForm<
     [executeResolverValidation, executeInlineValidation],
   );
 
-  const updateIsValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
+  const updateIsValidAndInputValue = (
+    name: InternalFieldName,
+    ref?: Ref,
+    shouldSkipValueAs?: boolean,
+  ) => {
     const field = get(fieldsRef.current, name) as Field;
 
     if (field) {
@@ -527,8 +531,10 @@ export function useForm<
       if (!isUndefined(defaultValue)) {
         if (ref && (ref as HTMLInputElement).defaultChecked) {
           field._f.value = getFieldValue(field);
+        } else if (shouldSkipValueAs) {
+          field._f.value = defaultValue;
         } else {
-          setFieldValue(name, defaultValue);
+          setFieldValue(name, defaultValue, {});
         }
       } else if (isValueUndefined) {
         field._f.value = getFieldValue(field);
@@ -962,7 +968,7 @@ export function useForm<
         },
       });
       namesRef.current.mount.add(name);
-      !field && updateIsValidAndInputValue(name);
+      !field && updateIsValidAndInputValue(name, undefined, true);
 
       return isWindowUndefined
         ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
