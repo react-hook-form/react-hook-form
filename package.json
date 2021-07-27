@@ -83,7 +83,7 @@
     "babel-jest": "^27.0.6",
     "bundlesize": "^0.18.0",
     "copyfiles": "^2.4.1",
-    "cypress": "7.7.0",
+    "cypress": "8.0.0",
     "cypress-parallel": "^0.3.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
