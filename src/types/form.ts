@@ -19,7 +19,6 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
-  PathValue,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -347,11 +346,6 @@ export type Control<
   _defaultValues: Partial<DefaultValues<TFieldValues>>;
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
-  _setValues: (
-    name: FieldPath<TFieldValues>,
-    value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
-    options: SetValueConfig,
-  ) => void;
   _bathFieldArrayUpdate: BatchFieldArrayUpdate;
   _getFieldArrayValue: <TFieldArrayValues>(
     name: InternalFieldName,

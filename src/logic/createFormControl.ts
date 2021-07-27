@@ -559,7 +559,7 @@ export function createFormControl<
     }
   };
 
-  const _setValues = (
+  const setValues = (
     name: FieldPath<TFieldValues>,
     value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
     options: SetValueConfig,
@@ -571,7 +571,7 @@ export function createFormControl<
 
       (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? _setValues(
+        ? setValues(
             fieldName,
             fieldValue as SetFieldValue<TFieldValues>,
             options,
@@ -750,7 +750,7 @@ export function createFormControl<
     set(_formValues, name, value);
 
     ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
-      ? _setValues(name, value, isFieldArray ? {} : options)
+      ? setValues(name, value, isFieldArray ? {} : options)
       : setFieldValue(name, value, options, true, !field);
 
     isFieldWatched(name) && _subjects.state.next({});
@@ -1145,7 +1145,6 @@ export function createFormControl<
     control: {
       register,
       unregister,
-      _setValues,
       _getIsDirty,
       _getWatch,
       _updateValid,
