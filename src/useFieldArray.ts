@@ -15,6 +15,7 @@ import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
+import updateAt from './utils/update';
 import {
   FieldArray,
   FieldArrayMethodProps,
@@ -22,8 +23,6 @@ import {
   FieldArrayWithId,
   FieldPath,
   FieldValues,
-  PathValue,
-  UnpackNestedValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -214,23 +213,19 @@ export const useFieldArray = <
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    control._setValues(
-      (name + '.' + index) as FieldPath<TFieldValues>,
-      value as UnpackNestedValue<
-        PathValue<TFieldValues, FieldPath<TFieldValues>>
-      >,
-      {
-        shouldValidate: !!control._proxyFormState.isValid,
-        shouldDirty: !!(
-          control._proxyFormState.dirtyFields || control._proxyFormState.isDirty
-        ),
-      },
-    );
-
     const fieldValues = control._getFieldArrayValue(name);
-    fieldValues[index] = value;
-
-    setFields(mapIds(fieldValues, keyName));
+    const updatedFieldArrayValues = updateAt(fieldValues, index, value);
+    setFields(mapIds(updatedFieldArrayValues, keyName));
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
+      updateAt,
+      {
+        argA: index,
+        argB: value,
+      },
+      fieldValues,
+    );
   };
 
   React.useEffect(() => {

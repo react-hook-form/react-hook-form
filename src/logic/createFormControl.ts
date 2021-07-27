@@ -745,8 +745,6 @@ export function createFormControl<
           isDirty: _getIsDirty(name, value),
         });
       }
-
-      !(value as []).length && set(_formValues, name, []);
     }
 
     set(_formValues, name, value);

@@ -48,8 +48,8 @@ Array [
     Object {
       "id": "0",
       "value": Object {
-        "firstName": "firstName",
-        "lastName": "lastName",
+        "firstName": "bill",
+        "lastName": "luo",
       },
     },
   ],
