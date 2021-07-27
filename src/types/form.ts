@@ -323,7 +323,8 @@ export type BatchFieldArrayUpdate = <
   updatedFieldArrayValues?: Partial<
     FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
   >[],
-  shouldSet?: boolean,
+  shouldSetValue?: boolean,
+  shouldSetFields?: boolean,
 ) => void;
 
 export type Control<

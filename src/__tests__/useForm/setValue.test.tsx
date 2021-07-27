@@ -931,8 +931,10 @@ describe('setValue', () => {
 
   it('should not register deeply nested inputs', () => {
     let fields: unknown;
+    let data: unknown;
+
     const App = () => {
-      const { setValue, control } = useForm();
+      const { setValue, control, getValues } = useForm();
       useFieldArray({
         control,
         name: 'test',
@@ -941,26 +943,40 @@ describe('setValue', () => {
       fields = control._fields;
 
       return (
-        <button
-          onClick={() => {
-            setValue('test', [
-              {
-                name: 'append',
-                nestedArray: [{ field1: 'append', field2: 'append' }],
-              },
-            ]);
-            setShow(true);
-          }}
-        >
-          setValue
-        </button>
+        <>
+          <button
+            onClick={() => {
+              setValue('test', [
+                {
+                  name: 'append',
+                  nestedArray: [{ field1: 'append', field2: 'append' }],
+                },
+              ]);
+              setShow(true);
+            }}
+          >
+            setValue
+          </button>
+          <button
+            onClick={() => {
+              data = getValues();
+            }}
+          >
+            getValues
+          </button>
+        </>
       );
     };
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+
     expect(fields).toMatchSnapshot();
+
+    fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
+
+    expect(data).toMatchSnapshot();
   });
 
   describe('when set field to null', () => {

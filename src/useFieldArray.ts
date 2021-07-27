@@ -225,6 +225,8 @@ export const useFieldArray = <
         argB: value,
       },
       fieldValues,
+      true,
+      false,
     );
   };
 

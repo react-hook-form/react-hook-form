@@ -647,10 +647,11 @@ export function createFormControl<
     args,
     updatedFieldArrayValues = [],
     shouldSet = true,
+    shouldSetFields = true,
   ) => {
     _isInAction = true;
 
-    if (get(_fields, name)) {
+    if (shouldSetFields && get(_fields, name)) {
       const output = method(get(_fields, name), args.argA, args.argB);
       shouldSet && set(_fields, name, output);
     }

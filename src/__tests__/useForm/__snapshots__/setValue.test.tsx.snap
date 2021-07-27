@@ -2,6 +2,22 @@
 
 exports[`setValue should not register deeply nested inputs 1`] = `Object {}`;
 
+exports[`setValue should not register deeply nested inputs 2`] = `
+Object {
+  "test": Array [
+    Object {
+      "name": "append",
+      "nestedArray": Array [
+        Object {
+          "field1": "append",
+          "field2": "append",
+        },
+      ],
+    },
+  ],
+}
+`;
+
 exports[`setValue should update nested object which contain date object without register 1`] = `
 Array [
   Object {
