@@ -534,7 +534,7 @@ export function useForm<
         } else if (shouldSkipValueAs) {
           field._f.value = defaultValue;
         } else {
-          setFieldValue(name, defaultValue, {});
+          setFieldValue(name, defaultValue);
         }
       } else if (isValueUndefined) {
         field._f.value = getFieldValue(field);
