@@ -420,22 +420,6 @@ describe('setValue', () => {
     });
   });
 
-  it('should work if field is not registered', () => {
-    const { result } = renderHook(() => useForm());
-
-    act(() => {
-      result.current.setValue('test', '1');
-    });
-
-    expect(result.current.control._fields['test']).toEqual({
-      _f: {
-        name: 'test',
-        mount: true,
-        ref: { name: 'test', value: '1' },
-      },
-    });
-  });
-
   it('should work for nested fields which are not registered', () => {
     const { result } = renderHook(() => useForm());
 
@@ -458,26 +442,6 @@ describe('setValue', () => {
           ref: {
             name: 'test.test',
             value: 'test',
-          },
-        },
-      },
-      test1: {
-        _f: {
-          mount: true,
-          name: 'test.test1',
-          ref: {
-            name: 'test.test1',
-            value: 'test1',
-          },
-        },
-      },
-      test2: {
-        _f: {
-          mount: true,
-          name: 'test.test2',
-          ref: {
-            name: 'test.test2',
-            value: 'test2',
           },
         },
       },
@@ -965,7 +929,7 @@ describe('setValue', () => {
     expect(screen.getByTestId(inputId)).toHaveValue('updated value');
   });
 
-  it('should register deeply nested inputs correctly', () => {
+  it('should not register deeply nested inputs', () => {
     let fields: unknown;
     const App = () => {
       const { setValue, control } = useForm();

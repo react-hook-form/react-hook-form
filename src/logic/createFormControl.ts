@@ -216,9 +216,7 @@ export function createFormControl<
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
     shouldRender?: boolean,
-    shouldRegister?: boolean,
   ) => {
-    shouldRegister && register(name as Path<TFieldValues>);
     const field: Field = get(_fields, name);
 
     if (field) {
@@ -581,7 +579,6 @@ export function createFormControl<
             fieldValue as SetFieldValue<TFieldValues>,
             options,
             true,
-            !field,
           );
     });
 
@@ -751,7 +748,7 @@ export function createFormControl<
 
     ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
       ? setValues(name, value, isFieldArray ? {} : options)
-      : setFieldValue(name, value, options, true, !field);
+      : setFieldValue(name, value, options, true);
 
     isFieldWatched(name) && _subjects.state.next({});
     _subjects.watch.next({
