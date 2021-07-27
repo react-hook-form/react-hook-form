@@ -1055,7 +1055,6 @@ describe('useForm', () => {
             name: 'test1',
             ref: {
               name: 'test1',
-              value: 'test1',
             },
           },
         };

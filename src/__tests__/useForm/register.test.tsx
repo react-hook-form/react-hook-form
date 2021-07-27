@@ -1052,7 +1052,7 @@ describe('register', () => {
   });
 
   describe('when setValueAs is presented with inputs', () => {
-    it('should update inputs correctly with useForm defaultValues', () => {
+    it('should not update inputs correctly with useForm defaultValues', () => {
       const App = () => {
         const { register } = useForm({
           defaultValues: {
@@ -1071,11 +1071,11 @@ describe('register', () => {
       render(<App />);
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        '12345',
+        '1234',
       );
     });
 
-    it('should update inputs correctly with reset', () => {
+    it('should not update inputs correctly with reset', () => {
       const App = () => {
         const { register, reset } = useForm();
 
@@ -1097,8 +1097,47 @@ describe('register', () => {
       render(<App />);
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        '12345',
+        '1234',
       );
+    });
+
+    it('should populate input as string and submit as datetime object ', async () => {
+      let submitData: unknown;
+
+      const App = () => {
+        const { register, handleSubmit } = useForm<{
+          test: Date;
+        }>({
+          defaultValues: {
+            test: '2020-10-10',
+          },
+        });
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submitData = data;
+            })}
+          >
+            <input {...register('test', { valueAsDate: true })} />
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '2020-10-10',
+      );
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(submitData).toEqual({
+        test: new Date('2020-10-10'),
+      });
     });
   });
 });
