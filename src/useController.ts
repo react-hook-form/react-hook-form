@@ -40,13 +40,16 @@ export function useController<
     value,
   });
 
-  const updateMounted = (name: InternalFieldName, value: boolean) => {
-    const field: Field = get(control._fields, name);
+  const updateMounted = React.useCallback(
+    (name: InternalFieldName, value: boolean) => {
+      const field: Field = get(control._fields, name);
 
-    if (field) {
-      field._f.mount = value;
-    }
-  };
+      if (field) {
+        field._f.mount = value;
+      }
+    },
+    [control],
+  );
 
   React.useEffect(() => {
     const controllerSubscription = control._subjects.control.subscribe({
@@ -71,7 +74,7 @@ export function useController<
         updateMounted(name, false);
       }
     };
-  }, [name, control, shouldUnregister]);
+  }, [name, control, shouldUnregister, updateMounted]);
 
   return {
     field: {
