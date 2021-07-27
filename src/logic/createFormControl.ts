@@ -508,7 +508,11 @@ export function createFormControl<
     }
   };
 
-  const _updateValidAndInputValue = (name: InternalFieldName, ref?: Ref) => {
+  const _updateValidAndInputValue = (
+    name: InternalFieldName,
+    ref?: Ref,
+    shouldSkipValueAs?: boolean,
+  ) => {
     const field = get(_fields, name) as Field;
 
     if (field) {
@@ -520,9 +524,14 @@ export function createFormControl<
 
       if (
         isUndefined(defaultValue) ||
-        (ref && (ref as HTMLInputElement).defaultChecked)
+        (ref && (ref as HTMLInputElement).defaultChecked) ||
+        shouldSkipValueAs
       ) {
-        set(_formValues, name, getFieldValue(field));
+        set(
+          _formValues,
+          name,
+          shouldSkipValueAs ? defaultValue : getFieldValue(field),
+        );
       } else {
         setFieldValue(name, defaultValue);
       }
@@ -970,7 +979,7 @@ export function createFormControl<
     }
 
     _names.mount.add(name);
-    !field && _updateValidAndInputValue(name);
+    !field && _updateValidAndInputValue(name, undefined, true);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
