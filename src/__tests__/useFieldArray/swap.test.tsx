@@ -337,7 +337,6 @@ describe('swap', () => {
                   name: 'test.1.value',
                   ref: {
                     name: 'test.1.value',
-                    value: '2',
                   },
                   value: '2',
                 },
@@ -348,7 +347,6 @@ describe('swap', () => {
                   name: 'test.0.value',
                   ref: {
                     name: 'test.0.value',
-                    value: '1',
                   },
                   value: '1',
                 },
