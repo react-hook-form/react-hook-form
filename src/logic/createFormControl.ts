@@ -716,6 +716,8 @@ export function createFormControl<
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
 
+    set(_formValues, name, value);
+
     if (isFieldArray) {
       _subjects.array.next({
         values: value,
@@ -743,13 +745,11 @@ export function createFormControl<
           isDirty: _getIsDirty(name, value),
         });
       }
+    } else {
+      field && !field._f && !isNullOrUndefined(value)
+        ? setValues(name, value, options)
+        : setFieldValue(name, value, options, true);
     }
-
-    set(_formValues, name, value);
-
-    ((field && !field._f) || isFieldArray) && !isNullOrUndefined(value)
-      ? setValues(name, value, isFieldArray ? {} : options)
-      : setFieldValue(name, value, options, true);
 
     isFieldWatched(name) && _subjects.state.next({});
     _subjects.watch.next({
