@@ -186,7 +186,7 @@ export function createFormControl<
 
     if (
       (isWatched ||
-        (error ? !deepEqual(previousError, error, true) : previousError) ||
+        (error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
         _formState.isValid !== isValid) &&
       !shouldSkipRender
