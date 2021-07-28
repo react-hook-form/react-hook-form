@@ -915,11 +915,11 @@ export function createFormControl<
   ): ((name: InternalFieldName) => void) | void => {
     register(name as FieldPath<TFieldValues>, options);
     let field: Field = get(_fields, name);
-    const ref = fieldRef.value
-      ? fieldRef
-      : fieldRef.querySelectorAll
-      ? (fieldRef.querySelectorAll('input,select,textarea')[0] as Ref) ||
-        fieldRef
+    const ref = isUndefined(fieldRef.value)
+      ? fieldRef.querySelectorAll
+        ? (fieldRef.querySelectorAll('input,select,textarea')[0] as Ref) ||
+          fieldRef
+        : fieldRef
       : fieldRef;
 
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
