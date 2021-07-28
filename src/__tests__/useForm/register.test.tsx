@@ -1140,4 +1140,94 @@ describe('register', () => {
       });
     });
   });
+
+  it('should not throw error when register with non input ref', () => {
+    const App = () => {
+      const { register } = useForm();
+
+      return (
+        <div {...register('test')}>
+          <h1>test</h1>
+        </div>
+      );
+    };
+
+    render(<App />);
+  });
+
+  it('should be able to register input/textarea/select when embedded deeply', async () => {
+    let submitData: unknown;
+
+    const Select = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div ref={ref}>
+          <select data-testid="select">
+            <option value={''}></option>
+            <option value={'select'}>select</option>
+          </select>
+        </div>
+      );
+    });
+
+    const Input = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div ref={ref}>
+          <input data-testid="input" />
+        </div>
+      );
+    });
+
+    const Textarea = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div ref={ref}>
+          <textarea data-testid="textarea" />
+        </div>
+      );
+    });
+
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        defaultValues: {
+          input: 'input',
+          select: 'select',
+          textarea: 'textarea',
+        },
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submitData = data;
+          })}
+        >
+          <Input {...register('input')} />
+          <Select {...register('select')} />
+          <Textarea {...register('textarea')} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(submitData).toEqual({
+      input: 'input',
+      select: 'select',
+      textarea: 'textarea',
+    });
+
+    expect((screen.getByTestId('input') as HTMLInputElement).value).toEqual(
+      'input',
+    );
+    expect((screen.getByTestId('select') as HTMLSelectElement).value).toEqual(
+      'select',
+    );
+    expect(
+      (screen.getByTestId('textarea') as HTMLTextAreaElement).value,
+    ).toEqual('textarea');
+  });
 });
