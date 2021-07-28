@@ -195,7 +195,7 @@ export function useForm<
 
       if (
         (isWatched ||
-          (error ? !deepEqual(previousError, error, true) : previousError) ||
+          (error ? !deepEqual(previousError, error) : previousError) ||
           !isEmptyObject(fieldState) ||
           formStateRef.current.isValid !== isValid) &&
         !shouldSkipRender
