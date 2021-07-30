@@ -162,6 +162,16 @@ export function useForm<
     });
   };
 
+  const shouldRenderBaseOnValid = async () => {
+    const isValid = await validateForm(fieldsRef.current, true);
+    if (isValid !== formStateRef.current.isValid) {
+      formStateRef.current.isValid = isValid;
+      subjectsRef.current.state.next({
+        isValid,
+      });
+    }
+  };
+
   const shouldRenderBaseOnError = React.useCallback(
     async (
       shouldSkipRender: boolean,
@@ -179,7 +189,7 @@ export function useForm<
       const isValid = readFormStateRef.current.isValid
         ? resolver
           ? isValidFromResolver
-          : await validateForm(fieldsRef.current, true)
+          : shouldRenderBaseOnValid()
         : false;
 
       if (delayError && error) {
@@ -202,7 +212,7 @@ export function useForm<
       ) {
         const updatedFormState = {
           ...fieldState,
-          isValid: !!isValid,
+          ...(resolver ? { isValid: !!isValid } : {}),
           errors: formStateRef.current.errors,
           name,
         };
