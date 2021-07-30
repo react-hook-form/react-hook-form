@@ -52,6 +52,15 @@ const items: Item[] = [
     ],
   },
   {
+    title: 'CustomResolverValidation',
+    description: 'Should validate the form in different modes',
+    slugs: [
+      '/customResolverValidation/onSubmit',
+      '/customResolverValidation/onBlur',
+      '/customResolverValidation/onChange',
+    ],
+  },
+  {
     title: 'DefaultValues',
     description: 'Should populate defaultValue for inputs',
     slugs: ['/default-values'],

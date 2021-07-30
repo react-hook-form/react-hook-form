@@ -60,6 +60,11 @@ const App: React.FC = () => {
         exact
         component={BasicSchemaValidation}
       />
+      <Route
+        path="/customResolverValidation/:mode"
+        exact
+        component={CustomResolverValidation}
+      />
       <Route path="/setError" exact component={SetError} />
       <Route
         path="/setValueWithTrigger"

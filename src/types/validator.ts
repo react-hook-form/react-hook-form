@@ -40,4 +40,5 @@ export type RegisterOptions<
   setValueAs: (value: any) => any;
   shouldUnregister?: boolean;
   disabled?: boolean;
+  deps: FieldValues;
 }>;
