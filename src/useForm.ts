@@ -166,7 +166,6 @@ export function useForm<
     const isValid = await validateForm(fieldsRef.current, true);
     if (isValid !== formStateRef.current.isValid) {
       formStateRef.current.isValid = isValid;
-
       subjectsRef.current.state.next({
         isValid,
       });
@@ -213,7 +212,7 @@ export function useForm<
       ) {
         const updatedFormState = {
           ...fieldState,
-          isValid: !!isValid,
+          ...(resolver ? { isValid: !!isValid } : {}),
           errors: formStateRef.current.errors,
           name,
         };
