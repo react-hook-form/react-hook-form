@@ -154,6 +154,16 @@ export function createFormControl<
     });
   };
 
+  const shouldRenderBaseOnValid = async () => {
+    const isValid = await validateForm(_fields, true);
+    if (isValid !== _formState.isValid) {
+      _formState.isValid = isValid;
+      _subjects.state.next({
+        isValid,
+      });
+    }
+  };
+
   const shouldRenderBaseOnError = async (
     shouldSkipRender: boolean,
     name: InternalFieldName,
@@ -170,7 +180,7 @@ export function createFormControl<
     const isValid = !!(_proxyFormState.isValid
       ? formOptions.resolver
         ? isValidFromResolver
-        : await validateForm(_fields, true)
+        : shouldRenderBaseOnValid()
       : false);
 
     if (props.delayError && error) {
