@@ -29,6 +29,7 @@ describe('clearErrors', () => {
     const { result } = renderHook(() =>
       useForm<{ input: { nested: string } }>(),
     );
+    result.current.formState.errors;
     act(() =>
       result.current.setError('input.nested', {
         type: 'test',
@@ -92,6 +93,8 @@ describe('clearErrors', () => {
         nest: { data: string; data1: string };
       }>(),
     );
+
+    result.current.formState.errors;
 
     const error = {
       type: 'test',
@@ -161,6 +164,8 @@ describe('clearErrors', () => {
     const { result } = renderHook(() =>
       useForm<{ input: string; input1: string; input2: string }>(),
     );
+
+    result.current.formState.errors;
 
     const error = {
       type: 'test',

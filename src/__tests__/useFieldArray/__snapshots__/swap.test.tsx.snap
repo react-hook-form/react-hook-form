@@ -500,7 +500,16 @@ Array [
 
 exports[`useFieldArray should unregister field array when shouldUnregister set to true 1`] = `
 Array [
-  Object {},
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
   Object {
     "test": Array [
       Object {
@@ -545,6 +554,19 @@ Array [
   },
   Object {
     "names": Array [],
+  },
+]
+`;
+
+exports[`useFieldArray when component unMount should remove reset method when field array is removed 1`] = `
+Array [
+  Object {
+    "id": "1",
+    "value": "default",
+  },
+  Object {
+    "id": "2",
+    "value": "test",
   },
 ]
 `;

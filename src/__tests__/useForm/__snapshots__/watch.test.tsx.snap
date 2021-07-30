@@ -25,20 +25,10 @@ Array [
   Object {
     "names": Array [
       Object {
-        "name": "test",
+        "name": "123",
       },
       Object {
-        "name": "test",
-      },
-    ],
-  },
-  Object {
-    "names": Array [
-      Object {
-        "name": "test",
-      },
-      Object {
-        "name": "test",
+        "name": "456",
       },
     ],
   },
@@ -48,7 +38,17 @@ Array [
         "name": "123",
       },
       Object {
-        "name": "test",
+        "name": "456",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "123",
+      },
+      Object {
+        "name": "456",
       },
     ],
   },

@@ -160,6 +160,6 @@ describe('ConditionalField', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('38');
+    cy.get('#renderCount').contains('36');
   });
 });

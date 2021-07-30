@@ -2,20 +2,18 @@
 
 exports[`register should not register nested input 1`] = `
 Object {
-  "current": Object {
-    "test": Object {
-      "_f": Object {
-        "mount": true,
+  "test": Object {
+    "_f": Object {
+      "mount": true,
+      "name": "test",
+      "ref": Object {
         "name": "test",
-        "ref": Object {
-          "name": "test",
-        },
-        "value": Array [
-          false,
-          false,
-          false,
-        ],
       },
+      "value": Array [
+        false,
+        false,
+        false,
+      ],
     },
   },
 }
@@ -23,7 +21,9 @@ Object {
 
 exports[`register should remove input value and reference with shouldUnregister: true 1`] = `
 Array [
-  Object {},
+  Object {
+    "test": "bill",
+  },
   Object {
     "test": "bill",
   },

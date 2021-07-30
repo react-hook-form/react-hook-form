@@ -171,7 +171,7 @@ describe('remove', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.fields).toEqual([{ id: '0', value: 'default' }]);
+    expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
 
     act(() => {
       result.current.remove(0);
@@ -950,7 +950,7 @@ describe('remove', () => {
           test: [],
         },
         undefined,
-        { criteriaMode: undefined, fields: {}, names: ['test.0.value'] },
+        { criteriaMode: undefined, fields: {}, names: [] },
       );
     });
 

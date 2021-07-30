@@ -20,6 +20,7 @@ export function useWatch<
 >(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -28,6 +29,7 @@ export function useWatch<
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -36,46 +38,49 @@ export function useWatch<
   name: readonly [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
-  const { control, name, defaultValue } = props || {};
   const methods = useFormContext();
-  const nameRef = React.useRef(name);
-  nameRef.current = name;
+  const {
+    control = methods.control,
+    name,
+    defaultValue,
+    disabled,
+  } = props || {};
+  const _name = React.useRef(name);
+  _name.current = name;
 
-  const { watchInternal, subjectsRef } = control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
-      ? watchInternal(name as InternalFieldName)
+      ? control._getWatch(name as InternalFieldName)
       : defaultValue,
   );
 
   React.useEffect(() => {
-    watchInternal(name as InternalFieldName);
-
-    const watchSubscription = subjectsRef.current.watch.subscribe({
-      next: ({ name: inputName, values }) =>
-        (!nameRef.current ||
-          !inputName ||
-          convertToArrayPayload(nameRef.current).some(
+    const watchSubscription = control._subjects.watch.subscribe({
+      next: ({ name }) =>
+        (!_name.current ||
+          !name ||
+          convertToArrayPayload(_name.current).some(
             (fieldName) =>
-              inputName &&
+              name &&
               fieldName &&
-              (fieldName.startsWith(inputName as InternalFieldName) ||
-                inputName.startsWith(fieldName as InternalFieldName)),
+              (fieldName.startsWith(name as InternalFieldName) ||
+                name.startsWith(fieldName as InternalFieldName)),
           )) &&
         updateValue(
-          watchInternal(
-            nameRef.current as string,
+          control._getWatch(
+            _name.current as InternalFieldName,
             defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-            false,
-            values,
           ),
         ),
     });
 
+    disabled && watchSubscription.unsubscribe();
+
     return () => watchSubscription.unsubscribe();
-  }, []);
+  }, [disabled, control, defaultValue]);
 
   return value;
 }

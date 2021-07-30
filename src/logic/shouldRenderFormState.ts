@@ -5,18 +5,18 @@ import omit from '../utils/omit';
 
 export default <T extends Record<string, any>, K extends ReadFormState>(
   formStateData: T,
-  readFormStateRef: K,
+  _proxyFormState: K,
   isRoot?: boolean,
 ) => {
   const formState = omit(formStateData, 'name');
 
   return (
     isEmptyObject(formState) ||
-    Object.keys(formState).length >= Object.keys(readFormStateRef).length ||
+    Object.keys(formState).length >= Object.keys(_proxyFormState).length ||
     Object.keys(formState).find(
       (key) =>
-        readFormStateRef[key as keyof ReadFormState] ===
-        (isRoot ? VALIDATION_MODE.all : true),
+        _proxyFormState[key as keyof ReadFormState] ===
+        (!isRoot || VALIDATION_MODE.all),
     )
   );
 };

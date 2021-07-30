@@ -1,39 +1,30 @@
 import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
-import getFieldsValues from './logic/getFieldsValues';
-import getFieldArrayParentName from './logic/getNodeParentName';
+import getFocusFieldName from './logic/getFocusFieldName';
 import mapIds from './logic/mapId';
-import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import appendAt from './utils/append';
-import compact from './utils/compact';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
-import isPrimitive from './utils/isPrimitive';
 import moveArrayAt from './utils/move';
-import omit from './utils/omit';
+import omitKey from './utils/omitKeys';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
+import updateAt from './utils/update';
 import {
   FieldArray,
   FieldArrayMethodProps,
   FieldArrayPath,
   FieldArrayWithId,
-  FieldErrors,
-  FieldNamesMarkedBoolean,
   FieldPath,
   FieldValues,
-  Path,
-  PathValue,
-  UnpackNestedValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
-  UseFormRegister,
 } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -41,195 +32,22 @@ export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
->({
-  control,
-  name,
-  keyName = 'id' as TKeyName,
-  shouldUnregister,
-}: UseFieldArrayProps<
-  TFieldValues,
-  TFieldArrayName,
-  TKeyName
->): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
+>(
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
-  const focusNameRef = React.useRef('');
-  const isMountedRef = React.useRef(false);
   const {
-    getIsDirty,
-    namesRef,
-    fieldsRef,
-    defaultValuesRef,
-    formStateRef,
-    subjectsRef,
-    readFormStateRef,
-    updateIsValid,
-    fieldArrayDefaultValuesRef,
-    unregister,
-    shouldUnmount,
-    inFieldArrayActionRef,
-    setValues,
-    register,
-  } = control || methods.control;
-
+    control = methods.control,
+    name,
+    keyName = 'id' as TKeyName,
+    shouldUnregister,
+  } = props;
+  const _focusName = React.useRef('');
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-  >(
-    mapIds(
-      (get(fieldsRef.current, name) && isMountedRef.current
-        ? get(getFieldsValues(fieldsRef), name)
-        : get(fieldArrayDefaultValuesRef.current, getFieldArrayParentName(name))
-        ? get(fieldArrayDefaultValuesRef.current, name)
-        : get(defaultValuesRef.current, name)) || [],
-      keyName,
-    ),
-  );
+  >(mapIds(control._getFieldArrayValue(name), keyName));
 
-  set(fieldArrayDefaultValuesRef.current, name, [...fields]);
-  namesRef.current.array.add(name);
-
-  const omitKey = <
-    T extends Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[],
-  >(
-    fields: T,
-  ) =>
-    fields.map((field = {}) => omit(field as Record<TKeyName, any>, keyName));
-
-  const getCurrentFieldsValues = () => {
-    const values = get(getFieldsValues(fieldsRef), name, []);
-
-    return mapIds<TFieldValues, TKeyName>(
-      get(fieldArrayDefaultValuesRef.current, name, []).map(
-        (item: Partial<TFieldValues>, index: number) => ({
-          ...item,
-          ...values[index],
-        }),
-      ),
-      keyName,
-    );
-  };
-
-  const getFocusFieldName = (
-    index: number,
-    options?: FieldArrayMethodProps,
-  ): string =>
-    options && !options.shouldFocus
-      ? options.focusName || `${name}.${options.focusIndex}.`
-      : `${name}.${index}.`;
-
-  const setFieldsAndNotify = (
-    fieldsValues: Partial<FieldArray<TFieldValues, TFieldArrayName>>[] = [],
-  ) => setFields(mapIds(fieldsValues, keyName));
-
-  const cleanup = <T>(ref: T) =>
-    !compact(get(ref, name, [])).length && unset(ref, name);
-
-  const batchStateUpdate = <T extends Function>(
-    method: T,
-    args: {
-      argA?: unknown;
-      argB?: unknown;
-    },
-    updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = [],
-    shouldSet = true,
-  ) => {
-    inFieldArrayActionRef.current = true;
-    if (get(fieldsRef.current, name)) {
-      const output = method(get(fieldsRef.current, name), args.argA, args.argB);
-      shouldSet && set(fieldsRef.current, name, output);
-    }
-
-    if (Array.isArray(get(formStateRef.current.errors, name))) {
-      const output = method(
-        get(formStateRef.current.errors, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(formStateRef.current.errors, name, output);
-      cleanup(formStateRef.current.errors);
-    }
-
-    if (
-      readFormStateRef.current.touchedFields &&
-      get(formStateRef.current.touchedFields, name)
-    ) {
-      const output = method(
-        get(formStateRef.current.touchedFields, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(formStateRef.current.touchedFields, name, output);
-      cleanup(formStateRef.current.touchedFields);
-    }
-
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
-    ) {
-      set(
-        formStateRef.current.dirtyFields,
-        name,
-        setFieldArrayDirtyFields(
-          omitKey(updatedFieldArrayValues),
-          get(defaultValuesRef.current, name, []),
-          get(formStateRef.current.dirtyFields, name, []),
-        ),
-      );
-      updatedFieldArrayValues &&
-        set(
-          formStateRef.current.dirtyFields,
-          name,
-          setFieldArrayDirtyFields(
-            omitKey(updatedFieldArrayValues),
-            get(defaultValuesRef.current, name, []),
-            get(formStateRef.current.dirtyFields, name, []),
-          ),
-        );
-      cleanup(formStateRef.current.dirtyFields);
-    }
-
-    subjectsRef.current.state.next({
-      dirtyFields: formStateRef.current
-        .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
-      isDirty: getIsDirty(name, omitKey(updatedFieldArrayValues)),
-      errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
-      isValid: formStateRef.current.isValid,
-    });
-  };
-
-  const registerFieldArray = <T extends Object[]>(
-    values: T,
-    index = 0,
-    parentName = '',
-  ) =>
-    values.forEach((appendValueItem, valueIndex) => {
-      const rootName = `${parentName || name}.${
-        parentName ? valueIndex : index + valueIndex
-      }`;
-      isPrimitive(appendValueItem)
-        ? (register as UseFormRegister<TFieldValues>)(
-            rootName as Path<TFieldValues>,
-            {
-              value: appendValueItem as PathValue<
-                TFieldValues,
-                Path<TFieldValues>
-              >,
-            },
-          )
-        : Object.entries(appendValueItem).forEach(([key, value]) => {
-            const inputName = rootName + '.' + key;
-
-            Array.isArray(value)
-              ? registerFieldArray(value, valueIndex, inputName)
-              : (register as UseFormRegister<TFieldValues>)(
-                  inputName as Path<TFieldValues>,
-                  { value },
-                );
-          });
-    });
+  control._names.array.add(name);
 
   const append = (
     value:
@@ -239,16 +57,20 @@ export const useFieldArray = <
   ) => {
     const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(
-      getCurrentFieldsValues(),
+      control._getFieldArrayValue(name),
       appendValue,
     );
-    const currentIndex = updatedFieldArrayValues.length - appendValue.length;
-    setFieldsAndNotify(
-      updatedFieldArrayValues as Partial<
-        FieldArray<TFieldValues, TFieldArrayName>
-      >[],
+    setFields(
+      mapIds(
+        updatedFieldArrayValues as Partial<
+          FieldArray<TFieldValues, TFieldArrayName>
+        >[],
+        keyName,
+      ),
     );
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       appendAt,
       {
         argA: fillEmptyArray(value),
@@ -258,9 +80,12 @@ export const useFieldArray = <
       >[],
       false,
     );
-    registerFieldArray(appendValue, currentIndex);
 
-    focusNameRef.current = getFocusFieldName(currentIndex, options);
+    _focusName.current = getFocusFieldName(
+      name,
+      updatedFieldArrayValues.length - appendValue.length,
+      options,
+    );
   };
 
   const prepend = (
@@ -269,17 +94,21 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const prependValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = prependAt(
-      getCurrentFieldsValues(),
-      prependValue,
+      control._getFieldArrayValue(name),
+      convertToArrayPayload(value),
     );
-    setFieldsAndNotify(
-      updatedFieldArrayValues as Partial<
-        FieldArray<TFieldValues, TFieldArrayName>
-      >[],
+    setFields(
+      mapIds(
+        updatedFieldArrayValues as Partial<
+          FieldArray<TFieldValues, TFieldArrayName>
+        >[],
+        keyName,
+      ),
     );
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       prependAt,
       {
         argA: fillEmptyArray(value),
@@ -288,19 +117,20 @@ export const useFieldArray = <
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
       >[],
     );
-    registerFieldArray(prependValue);
 
-    focusNameRef.current = getFocusFieldName(0, options);
+    _focusName.current = getFocusFieldName(name, 0, options);
   };
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = removeArrayAt(getCurrentFieldsValues(), index);
+    >[] = removeArrayAt(control._getFieldArrayValue(name), index);
 
-    setFieldsAndNotify(updatedFieldArrayValues);
+    setFields(mapIds(updatedFieldArrayValues, keyName));
 
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       removeArrayAt,
       {
         argA: index,
@@ -316,18 +146,22 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const insertValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = insertAt(
-      getCurrentFieldsValues(),
+      control._getFieldArrayValue(name),
       index,
-      insertValue,
+      convertToArrayPayload(value),
     );
-    setFieldsAndNotify(
-      updatedFieldArrayValues as Partial<
-        FieldArray<TFieldValues, TFieldArrayName>
-      >[],
+    setFields(
+      mapIds(
+        updatedFieldArrayValues as Partial<
+          FieldArray<TFieldValues, TFieldArrayName>
+        >[],
+        keyName,
+      ),
     );
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       insertAt,
       {
         argA: index,
@@ -337,15 +171,16 @@ export const useFieldArray = <
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
       >[],
     );
-    registerFieldArray(insertValue, index);
 
-    focusNameRef.current = getFocusFieldName(index, options);
+    _focusName.current = getFocusFieldName(name, index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getCurrentFieldsValues();
+    const fieldValues = control._getFieldArrayValue(name);
     swapArrayAt(fieldValues, indexA, indexB);
-    batchStateUpdate(
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       swapArrayAt,
       {
         argA: indexA,
@@ -354,14 +189,16 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setFieldsAndNotify(fieldValues);
+    setFields(mapIds(fieldValues, keyName));
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getCurrentFieldsValues();
+    const fieldValues = control._getFieldArrayValue(name);
     moveArrayAt(fieldValues, from, to);
-    setFieldsAndNotify(fieldValues);
-    batchStateUpdate(
+    setFields(mapIds(fieldValues, keyName));
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
       moveArrayAt,
       {
         argA: from,
@@ -376,102 +213,95 @@ export const useFieldArray = <
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    setValues(
-      (name + '.' + index) as FieldPath<TFieldValues>,
-      value as UnpackNestedValue<
-        PathValue<TFieldValues, FieldPath<TFieldValues>>
-      >,
+    const fieldValues = control._getFieldArrayValue(name);
+    const updatedFieldArrayValues = updateAt(fieldValues, index, value);
+    setFields(mapIds(updatedFieldArrayValues, keyName));
+    control._bathFieldArrayUpdate(
+      keyName,
+      name,
+      updateAt,
       {
-        shouldValidate: !!readFormStateRef.current.isValid,
-        shouldDirty: !!(
-          readFormStateRef.current.dirtyFields ||
-          readFormStateRef.current.isDirty
-        ),
+        argA: index,
+        argB: value,
       },
+      fieldValues,
+      true,
+      false,
     );
-
-    const fieldValues = getCurrentFieldsValues();
-    fieldValues[index] = value;
-
-    setFieldsAndNotify(fieldValues);
   };
 
   React.useEffect(() => {
-    inFieldArrayActionRef.current = false;
+    control._isInAction.val = false;
 
-    if (namesRef.current.watchAll) {
-      subjectsRef.current.state.next({});
+    if (control._names.watchAll) {
+      control._subjects.state.next({});
     } else {
-      for (const watchField of namesRef.current.watch) {
+      for (const watchField of control._names.watch) {
         if (name.startsWith(watchField)) {
-          subjectsRef.current.state.next({});
+          control._subjects.state.next({});
           break;
         }
       }
     }
 
-    subjectsRef.current.watch.next({
+    control._subjects.watch.next({
       name,
-      values: getFieldsValues(fieldsRef),
+      values: control._formValues,
     });
 
-    focusNameRef.current &&
-      focusFieldBy(fieldsRef.current, (key: string) =>
-        key.startsWith(focusNameRef.current),
+    _focusName.current &&
+      focusFieldBy(control._fields, (key: string) =>
+        key.startsWith(_focusName.current),
       );
 
-    focusNameRef.current = '';
+    _focusName.current = '';
 
-    subjectsRef.current.array.next({
+    control._subjects.array.next({
       name,
-      values: omitKey([...fields]),
+      values: omitKey([...fields], keyName),
     });
 
-    readFormStateRef.current.isValid && updateIsValid();
-  }, [fields, name]);
+    control._proxyFormState.isValid && control._updateValid();
+  }, [fields, name, control, keyName]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = subjectsRef.current.array.subscribe({
-      next({ name: inputFieldArrayName, values, isReset }) {
-        if (isReset) {
-          unset(fieldsRef.current, inputFieldArrayName || name);
+    const fieldArraySubscription = control._subjects.array.subscribe({
+      next(payload) {
+        if (payload.isReset) {
+          unset(control._fields, payload.name || name);
+          unset(control._formValues, payload.name || name);
 
-          inputFieldArrayName
-            ? set(
-                fieldArrayDefaultValuesRef.current,
-                inputFieldArrayName,
-                values,
-              )
-            : (fieldArrayDefaultValuesRef.current = values);
+          payload.name
+            ? set(control._formValues, payload.name, payload.values)
+            : payload.values && (control._formValues = payload.values);
 
-          setFieldsAndNotify(get(fieldArrayDefaultValuesRef.current, name));
+          setFields(mapIds(get(control._formValues, name), keyName));
         }
       },
     });
-    !get(fieldsRef.current, name) && set(fieldsRef.current, name, []);
-    isMountedRef.current = true;
+
+    !get(control._formValues, name) && set(control._formValues, name, []);
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      if (shouldUnmount || shouldUnregister) {
-        unregister(name as FieldPath<TFieldValues>);
-        unset(fieldArrayDefaultValuesRef.current, name);
+      if (control._shouldUnregister || shouldUnregister) {
+        control.unregister(name as FieldPath<TFieldValues>);
+        unset(control._formValues, name);
       } else {
-        const fieldArrayValues = get(getFieldsValues(fieldsRef), name);
-        fieldArrayValues &&
-          set(fieldArrayDefaultValuesRef.current, name, fieldArrayValues);
+        const fieldArrayValues = get(control._formValues, name);
+        fieldArrayValues && set(control._formValues, name, fieldArrayValues);
       }
     };
-  }, []);
+  }, [name, control, keyName, shouldUnregister]);
 
   return {
-    swap: React.useCallback(swap, [name]),
-    move: React.useCallback(move, [name]),
-    prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name]),
-    remove: React.useCallback(remove, [name]),
-    insert: React.useCallback(insert, [name]),
-    update: React.useCallback(update, [name]),
+    swap: React.useCallback(swap, [name, control, keyName]),
+    move: React.useCallback(move, [name, control, keyName]),
+    prepend: React.useCallback(prepend, [name, control, keyName]),
+    append: React.useCallback(append, [name, control, keyName]),
+    remove: React.useCallback(remove, [name, control, keyName]),
+    insert: React.useCallback(insert, [name, control, keyName]),
+    update: React.useCallback(update, [name, control, keyName]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,

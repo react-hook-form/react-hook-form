@@ -14,7 +14,9 @@ export default function getFieldValue(field?: Field) {
   if (field && field._f) {
     const ref = field._f.ref;
 
-    if (ref.disabled) {
+    if (
+      field._f.refs ? field._f.refs.every((ref) => ref.disabled) : ref.disabled
+    ) {
       return;
     }
 

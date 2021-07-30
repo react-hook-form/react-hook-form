@@ -417,7 +417,7 @@ describe('Controller', () => {
     let fieldsRef: any;
     const Component = ({ required = true }: { required?: boolean }) => {
       const { control } = useForm();
-      fieldsRef = control.fieldsRef;
+      fieldsRef = control._fields;
       return (
         <Controller
           defaultValue=""
@@ -432,7 +432,7 @@ describe('Controller', () => {
 
     rerender(<Component required={false} />);
 
-    expect(fieldsRef.current.test.required).toBeFalsy();
+    expect(fieldsRef.test.required).toBeFalsy();
   });
 
   it('should set initial state from unmount state', () => {
@@ -1121,5 +1121,68 @@ describe('Controller', () => {
     expect(
       (screen.getByPlaceholderText('test') as HTMLInputElement).value,
     ).toEqual('720');
+  });
+
+  it('should mark mounted inputs correctly within field array', async () => {
+    const App = () => {
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+      } = useForm({
+        defaultValues: {
+          test: [{ firstName: 'test' }],
+        },
+      });
+      const { fields, prepend } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <Controller
+                  control={control}
+                  render={({ field }) => <input {...field} />}
+                  name={`test.${index}.firstName`}
+                  rules={{ required: true }}
+                />
+                {errors?.test?.[index]?.firstName && <p>error</p>}
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() =>
+              prepend({
+                firstName: '',
+              })
+            }
+          >
+            prepend
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    screen.getByText('error');
   });
 });
