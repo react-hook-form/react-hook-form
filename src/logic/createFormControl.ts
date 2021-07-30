@@ -177,11 +177,10 @@ export function createFormControl<
     isWatched?: boolean,
   ): Promise<void> => {
     const previousError = get(_formState.errors, name);
-    const isValid = !!(_proxyFormState.isValid
-      ? formOptions.resolver
-        ? isValidFromResolver
-        : shouldRenderBaseOnValid()
-      : false);
+    const isValid = !!(
+      _proxyFormState.isValid &&
+      (formOptions.resolver ? isValidFromResolver : shouldRenderBaseOnValid())
+    );
 
     if (props.delayError && error) {
       _delayCallback =
