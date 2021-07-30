@@ -203,7 +203,7 @@ export function createFormControl<
     ) {
       const updatedFormState = {
         ...fieldState,
-        isValid,
+        ...(_proxyFormState.isValid && formOptions.resolver ? { isValid } : {}),
         errors: _formState.errors,
         name,
       };
