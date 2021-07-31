@@ -3,9 +3,9 @@ import * as React from 'react';
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
-import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
+  Field,
   FieldPath,
   FieldValues,
   InternalFieldName,
@@ -18,79 +18,63 @@ import { useFormState } from './useFormState';
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  name,
-  rules,
-  defaultValue,
-  control,
-  shouldUnregister,
-}: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
-  TFieldValues,
-  TName
-> {
+>(
+  props: UseControllerProps<TFieldValues, TName>,
+): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const {
-    defaultValuesRef,
-    register,
-    fieldsRef,
-    unregister,
-    namesRef,
-    subjectsRef,
-    shouldUnmount,
-    inFieldArrayActionRef,
-  } = control || methods.control;
-
-  const field = get(fieldsRef.current, name);
+  const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
-    field && field._f && !isUndefined(field._f.value)
-      ? field._f.value
-      : isUndefined(get(defaultValuesRef.current, name))
-      ? defaultValue
-      : get(defaultValuesRef.current, name),
+    get(
+      control._formValues,
+      name,
+      get(control._defaultValues, name, props.defaultValue),
+    ),
   );
-  const { onChange, onBlur, ref } = register(name, {
-    ...rules,
-    value,
-  });
   const formState = useFormState({
     control: control || methods.control,
     name,
   });
 
-  React.useEffect(() => {
-    const field = get(fieldsRef.current, name);
-
-    if (field && field._f) {
-      field._f._c = true;
-    }
+  const registerProps = control.register(name, {
+    ...props.rules,
+    value,
   });
 
+  const updateMounted = React.useCallback(
+    (name: InternalFieldName, value: boolean) => {
+      const field: Field = get(control._fields, name);
+
+      if (field) {
+        field._f.mount = value;
+      }
+    },
+    [control],
+  );
+
   React.useEffect(() => {
-    const controllerSubscription = subjectsRef.current.control.subscribe({
+    const controllerSubscription = control._subjects.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
     });
+    updateMounted(name, true);
 
     return () => {
       controllerSubscription.unsubscribe();
-      const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const _shouldUnregisterField =
+        control._shouldUnregister || shouldUnregister;
 
       if (
-        isNameInFieldArray(namesRef.current.array, name)
-          ? shouldUnmountField && !inFieldArrayActionRef.current
-          : shouldUnmountField
+        isNameInFieldArray(control._names.array, name)
+          ? _shouldUnregisterField && !control._isInAction.val
+          : _shouldUnregisterField
       ) {
-        unregister(name);
+        control.unregister(name);
       } else {
-        const field = get(fieldsRef.current, name);
-
-        if (field && field._f) {
-          field._f.mount = false;
-        }
+        updateMounted(name, false);
       }
     };
-  }, [name]);
+  }, [name, control, shouldUnregister, updateMounted]);
 
   return {
     field: {
@@ -98,7 +82,7 @@ export function useController<
         const value = getControllerValue(event);
         setInputStateValue(value);
 
-        onChange({
+        registerProps.onChange({
           target: {
             value,
             name: name as InternalFieldName,
@@ -107,7 +91,7 @@ export function useController<
         });
       },
       onBlur: () => {
-        onBlur({
+        registerProps.onBlur({
           target: {
             name: name as InternalFieldName,
           },
@@ -116,7 +100,14 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) => elm && ref(elm),
+      ref: (elm) =>
+        elm &&
+        registerProps.ref({
+          focus: () => elm.focus && elm.focus(),
+          setCustomValidity: (message: string) =>
+            elm.setCustomValidity(message),
+          reportValidity: () => elm.reportValidity(),
+        }),
     },
     formState,
     fieldState: {

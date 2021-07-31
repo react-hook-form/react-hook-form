@@ -37,7 +37,7 @@ export type UseControllerProps<
   name: TName;
   rules?: Omit<
     RegisterOptions<TFieldValues, TName>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >;
   shouldUnregister?: boolean;
   defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;

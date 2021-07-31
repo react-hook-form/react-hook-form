@@ -222,13 +222,13 @@ describe('register', () => {
         >
           <input {...register('test')} disabled />
           <input
-            disabled={true}
+            disabled
             value={'test'}
             type={'checkbox'}
             {...register('test1')}
           />
           <input
-            disabled={true}
+            disabled
             value={'test'}
             type={'radio'}
             {...register('test2')}
@@ -976,7 +976,7 @@ describe('register', () => {
           test: [true, false, false],
         },
       });
-      inputs = control.fieldsRef;
+      inputs = control._fields;
       watchedValue.push(watch());
 
       return (
@@ -1020,9 +1020,8 @@ describe('register', () => {
       return (
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
-            disabled={!editable}
             defaultValue={defaultValue}
-            {...register('test', { validate })}
+            {...register('test', { validate, disabled: !editable })}
           />
           <button type="button" onClick={() => setEditable(!editable)}>
             Toggle Edit
@@ -1053,7 +1052,7 @@ describe('register', () => {
   });
 
   describe('when setValueAs is presented with inputs', () => {
-    it('should update inputs correctly with useForm defaultValues', () => {
+    it('should not update inputs correctly with useForm defaultValues', () => {
       const App = () => {
         const { register } = useForm({
           defaultValues: {
@@ -1072,11 +1071,11 @@ describe('register', () => {
       render(<App />);
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        '12345',
+        '1234',
       );
     });
 
-    it('should update inputs correctly with reset', () => {
+    it('should not update inputs correctly with reset', () => {
       const App = () => {
         const { register, reset } = useForm();
 
@@ -1084,7 +1083,7 @@ describe('register', () => {
           reset({
             test: '1234',
           });
-        }, []);
+        }, [reset]);
 
         return (
           <form>
@@ -1098,8 +1097,137 @@ describe('register', () => {
       render(<App />);
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        '12345',
+        '1234',
       );
     });
+
+    it('should populate input as string and submit as datetime object ', async () => {
+      let submitData: unknown;
+
+      const App = () => {
+        const { register, handleSubmit } = useForm<{
+          test: Date;
+        }>({
+          defaultValues: {
+            test: '2020-10-10',
+          },
+        });
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submitData = data;
+            })}
+          >
+            <input {...register('test', { valueAsDate: true })} />
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        '2020-10-10',
+      );
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(submitData).toEqual({
+        test: new Date('2020-10-10'),
+      });
+    });
+  });
+
+  it('should not throw error when register with non input ref', () => {
+    const App = () => {
+      const { register } = useForm();
+
+      return (
+        <div {...register('test')}>
+          <h1>test</h1>
+        </div>
+      );
+    };
+
+    render(<App />);
+  });
+
+  it('should be able to register input/textarea/select when embedded deeply', async () => {
+    let submitData: unknown;
+
+    const Select = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div ref={ref}>
+          <select data-testid="select">
+            <option value={''}></option>
+            <option value={'select'}>select</option>
+          </select>
+        </div>
+      );
+    });
+
+    const Input = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div ref={ref}>
+          <input data-testid="input" />
+        </div>
+      );
+    });
+
+    const Textarea = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div ref={ref}>
+          <textarea data-testid="textarea" />
+        </div>
+      );
+    });
+
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        defaultValues: {
+          input: 'input',
+          select: 'select',
+          textarea: 'textarea',
+        },
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submitData = data;
+          })}
+        >
+          <Input {...register('input')} />
+          <Select {...register('select')} />
+          <Textarea {...register('textarea')} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(submitData).toEqual({
+      input: 'input',
+      select: 'select',
+      textarea: 'textarea',
+    });
+
+    expect((screen.getByTestId('input') as HTMLInputElement).value).toEqual(
+      'input',
+    );
+    expect((screen.getByTestId('select') as HTMLSelectElement).value).toEqual(
+      'select',
+    );
+    expect(
+      (screen.getByTestId('textarea') as HTMLTextAreaElement).value,
+    ).toEqual('textarea');
   });
 });

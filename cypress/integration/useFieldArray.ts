@@ -106,7 +106,7 @@ describe('useFieldArray', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('42');
+    cy.get('#renderCount').contains('41');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -463,7 +463,7 @@ describe('useFieldArray', () => {
       }),
     );
     cy.get('#dirty').contains('yes');
-    cy.get('#renderCount').contains('17');
+    cy.get('#renderCount').contains('15');
   });
 
   it('should display the correct dirty value without default value', () => {

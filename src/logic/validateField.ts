@@ -19,26 +19,25 @@ import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
 export default async (
-  {
-    _f: {
-      ref,
-      refs,
-      required,
-      maxLength,
-      minLength,
-      min,
-      max,
-      pattern,
-      validate,
-      name,
-      value: inputValue,
-      valueAsNumber,
-      mount,
-    },
-  }: Field,
+  field: Field,
+  inputValue: any,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
 ): Promise<InternalFieldErrors> => {
+  const {
+    ref,
+    refs,
+    required,
+    maxLength,
+    minLength,
+    min,
+    max,
+    pattern,
+    validate,
+    name,
+    valueAsNumber,
+    mount,
+  } = field._f;
   if (!mount) {
     return {};
   }

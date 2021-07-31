@@ -4,8 +4,6 @@ import { FieldArrayPath, FieldArrayPathValue } from './utils';
 
 export type FieldArrayName = string;
 
-export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
-
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,

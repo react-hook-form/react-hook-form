@@ -124,8 +124,8 @@ describe('append', () => {
 
     act(() => {
       expect(currentFields).toEqual([
-        { id: '0', test: 'test' },
         { id: '2', test: 'test' },
+        { id: '3', test: 'test' },
       ]);
     });
 
@@ -135,10 +135,10 @@ describe('append', () => {
 
     act(() => {
       expect(currentFields).toEqual([
-        { id: '0', test: 'test' },
-        { id: '2', test: 'test' },
-        { id: '5', test: 'test-batch' },
-        { id: '6', test: 'test-batch1' },
+        { id: '6', test: 'test' },
+        { id: '7', test: 'test' },
+        { id: '8', test: 'test-batch' },
+        { id: '9', test: 'test-batch1' },
       ]);
     });
   });
@@ -369,22 +369,8 @@ describe('append', () => {
         undefined,
         {
           criteriaMode: undefined,
-          fields: {
-            test: [
-              {
-                value: {
-                  mount: true,
-                  name: 'test.0.value',
-                  ref: {
-                    name: 'test.0.value',
-                    value: '1',
-                  },
-                  value: '1',
-                },
-              },
-            ],
-          },
-          names: ['test.0.value'],
+          fields: {},
+          names: [],
         },
       );
     });

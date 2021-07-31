@@ -24,7 +24,7 @@ const ConditionField = <T extends any[]>({
   index: number;
   fields: T;
 }) => {
-  const output = useWatch<FormInputs>({
+  const output = useWatch({
     name: 'data',
     control,
   });
@@ -68,7 +68,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     setData(data);
   };
   const updateFieldArray = () => {
-    setValue('data', [...getValues().data, { name: 'test' }]);
+    setValue('data', [...getValues().data, { name: 'test', conditional: '' }]);
   };
 
   renderCount++;

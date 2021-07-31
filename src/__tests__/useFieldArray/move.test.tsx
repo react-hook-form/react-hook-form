@@ -179,7 +179,7 @@ describe('swap', () => {
 
     expect(watched).toEqual([
       { test: [{ value: '1' }, { value: '2' }] }, // first render
-      { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
+      { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       { test: [{ value: '2' }, { value: '1' }] }, // render inside move method
       { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
     ]);
@@ -308,33 +308,8 @@ describe('swap', () => {
         undefined,
         {
           criteriaMode: undefined,
-          fields: {
-            test: [
-              {
-                value: {
-                  mount: true,
-                  name: 'test.1.value',
-                  ref: {
-                    name: 'test.1.value',
-                    value: '2',
-                  },
-                  value: '2',
-                },
-              },
-              {
-                value: {
-                  mount: true,
-                  name: 'test.0.value',
-                  ref: {
-                    name: 'test.0.value',
-                    value: '1',
-                  },
-                  value: '1',
-                },
-              },
-            ],
-          },
-          names: ['test.0.value', 'test.1.value'],
+          fields: {},
+          names: [],
         },
       );
     });

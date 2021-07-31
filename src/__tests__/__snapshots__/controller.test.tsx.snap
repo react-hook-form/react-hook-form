@@ -2,7 +2,9 @@
 
 exports[`Controller should remove input value and reference with Controller and set shouldUnregister: true 1`] = `
 Array [
-  Object {},
+  Object {
+    "test": "bill",
+  },
   Object {
     "test": "bill",
   },

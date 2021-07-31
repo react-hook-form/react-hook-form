@@ -4,7 +4,11 @@ exports[`update should trigger reRender when user update input and is watching t
 Array [
   Object {},
   Object {
-    "test": Array [],
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
   },
   Object {
     "test": Array [
@@ -27,12 +31,12 @@ exports[`update should update field array with multiple values 1`] = `
 Array [
   Object {
     "firstName": "test1",
-    "id": "0",
+    "id": "4",
     "lastName": "test2",
   },
   Object {
     "firstName": "test3",
-    "id": "3",
+    "id": "5",
     "lastName": "test4",
   },
 ]
@@ -44,8 +48,8 @@ Array [
     Object {
       "id": "0",
       "value": Object {
-        "firstName": "firstName",
-        "lastName": "lastName",
+        "firstName": "bill",
+        "lastName": "luo",
       },
     },
   ],
@@ -561,7 +565,16 @@ Array [
 
 exports[`useFieldArray should unregister field array when shouldUnregister set to true 1`] = `
 Array [
-  Object {},
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
   Object {
     "test": Array [
       Object {
@@ -606,6 +619,19 @@ Array [
   },
   Object {
     "names": Array [],
+  },
+]
+`;
+
+exports[`useFieldArray when component unMount should remove reset method when field array is removed 1`] = `
+Array [
+  Object {
+    "id": "1",
+    "value": "default",
+  },
+  Object {
+    "id": "2",
+    "value": "test",
   },
 ]
 `;

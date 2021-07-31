@@ -55,6 +55,7 @@ describe('useForm', () => {
         }>(),
       );
 
+      result.current.formState.errors;
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -78,6 +79,7 @@ describe('useForm', () => {
         }>(),
       );
 
+      result.current.formState.errors;
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -246,8 +248,7 @@ describe('useForm', () => {
       };
 
       it('should remove and unregister inputs when inputs gets unmounted', async () => {
-        let submittedData: FormValues[] = [];
-        submittedData = [];
+        const submittedData: FormValues[] = [];
 
         const Component = () => {
           const [show, setShow] = React.useState(true);
@@ -1046,8 +1047,7 @@ describe('useForm', () => {
             sub: {
               mount: true,
               name: 'test.sub',
-              ref: { name: 'test.sub', value: 'test' },
-              value: 'test',
+              ref: { name: 'test.sub' },
             },
           },
           test1: {
@@ -1055,9 +1055,7 @@ describe('useForm', () => {
             name: 'test1',
             ref: {
               name: 'test1',
-              value: 'test1',
             },
-            value: 'test1',
           },
         };
 
@@ -1092,7 +1090,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('updateIsValid', () => {
+  describe('updateValid', () => {
     it('should be called resolver with default values if default value is defined', async () => {
       type FormValues = {
         test: string;
@@ -1142,7 +1140,6 @@ describe('useForm', () => {
                 },
                 value: 'default',
               },
-              value: 'default',
             },
           },
           names: ['test'],
@@ -1181,7 +1178,6 @@ describe('useForm', () => {
             mount: true,
             name: 'test',
             ref: { name: 'test', value: 'value' },
-            value: 'value',
           },
         },
         names: ['test'],
