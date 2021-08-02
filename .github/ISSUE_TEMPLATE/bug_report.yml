@@ -20,8 +20,8 @@ body:
   - type: input
     id: codesandbox
     attributes:
-      label: Codesandbox
-      description: Codesandbox link
+      label: Codesandbox/Expo snack
+      description: Codesandbox/Expo snack link
     validations:
       required: true
   - type: markdown
