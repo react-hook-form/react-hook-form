@@ -6,6 +6,7 @@ import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
 import SetError from './setError';
 import SetValue from './setValue';
+import CustomResolverValidation from './customResolverValidation';
 import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
