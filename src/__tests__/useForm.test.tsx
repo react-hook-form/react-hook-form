@@ -1045,6 +1045,7 @@ describe('useForm', () => {
         const fields = {
           test: {
             sub: {
+              hasValidated: true,
               mount: true,
               name: 'test.sub',
               ref: { name: 'test.sub' },
@@ -1063,6 +1064,7 @@ describe('useForm', () => {
           criteriaMode: undefined,
           fields,
           names: ['test.sub', 'test1'],
+          shouldUseNativeValidation: undefined,
         });
 
         // `trigger` called to validate all fields
@@ -1074,6 +1076,7 @@ describe('useForm', () => {
           criteriaMode: undefined,
           fields,
           names: ['test.sub', 'test1'],
+          shouldUseNativeValidation: undefined,
         });
 
         // `trigger` called to validate fields
@@ -1081,9 +1084,28 @@ describe('useForm', () => {
           result.current.trigger(['test.sub', 'test1']);
         });
 
+        const fields2 = {
+          test: {
+            sub: {
+              hasValidated: true,
+              mount: true,
+              name: 'test.sub',
+              ref: { name: 'test.sub' },
+            },
+          },
+          test1: {
+            hasValidated: true,
+            mount: true,
+            name: 'test1',
+            ref: {
+              name: 'test1',
+            },
+          },
+        };
+
         expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
           criteriaMode: undefined,
-          fields,
+          fields: fields2,
           names: ['test.sub', 'test1'],
         });
       });
