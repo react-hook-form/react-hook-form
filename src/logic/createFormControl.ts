@@ -793,7 +793,9 @@ export function createFormControl<
         fieldsToValidate.push(depName);
       }
     });
-    trigger(fieldsToValidate as Path<TFieldValues>[]);
+    if (fieldsToValidate.length) {
+      trigger(fieldsToValidate as Path<TFieldValues>[]);
+    }
   };
 
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
