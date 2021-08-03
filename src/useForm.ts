@@ -41,8 +41,8 @@ export function useForm<
     _formControl.current.control._updateProps(props);
   } else {
     _formControl.current = {
-      formState,
       ...createFormControl(props),
+      formState,
     };
   }
 
