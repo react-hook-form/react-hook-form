@@ -1230,4 +1230,123 @@ describe('register', () => {
       (screen.getByTestId('textarea') as HTMLTextAreaElement).value,
     ).toEqual('textarea');
   });
+
+  it('should should trigger deps validation', async () => {
+    const App = () => {
+      const { register, getValues, formState } = useForm<{
+        firstName: string;
+        lastName: string;
+      }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('firstName', {
+              validate: (value) => {
+                return getValues('lastName') === value;
+              },
+            })}
+          />
+          {formState.errors.firstName && <p>error</p>}
+          <input {...register('lastName', { deps: ['firstName'] })} />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    screen.getByText('error');
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    expect(screen.queryByText('error')).toBeNull();
+  });
+
+  it('should should trigger deps validation with schema validation', async () => {
+    const App = () => {
+      const { register, formState } = useForm<{
+        firstName: string;
+        lastName: string;
+      }>({
+        mode: 'onChange',
+        resolver: (values) => {
+          if (values.firstName === values.lastName) {
+            return {
+              errors: {},
+              values,
+            };
+          } else {
+            return {
+              errors: {
+                firstName: {
+                  type: 'error',
+                },
+                lastName: {
+                  type: 'error',
+                },
+              },
+              values,
+            };
+          }
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('firstName')} />
+          {formState.errors.firstName && <p>firstName error</p>}
+          <input {...register('lastName', { deps: ['firstName'] })} />
+          {formState.errors.lastName && <p>lastName error</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    screen.getByText('firstName error');
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: 'test1',
+        },
+      });
+    });
+
+    screen.getByText('lastName error');
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    expect(screen.queryByText('error')).toBeNull();
+  });
 });

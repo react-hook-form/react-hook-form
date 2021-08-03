@@ -11,7 +11,6 @@ Array [
       "criteriaMode": undefined,
       "fields": Object {
         "test": Object {
-          "hasValidated": true,
           "mount": true,
           "name": "test",
           "ref": <input
@@ -35,7 +34,6 @@ Array [
       "criteriaMode": undefined,
       "fields": Object {
         "test": Object {
-          "hasValidated": true,
           "mount": true,
           "name": "test",
           "ref": <input
@@ -63,7 +61,6 @@ Array [
     "criteriaMode": undefined,
     "fields": Object {
       "test": Object {
-        "hasValidated": true,
         "mount": true,
         "name": "test",
         "ref": <input

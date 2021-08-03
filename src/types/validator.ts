@@ -1,5 +1,5 @@
 import { Message } from './errors';
-import { FieldValues } from './fields';
+import { FieldValues, InternalFieldName } from './fields';
 import { FieldPath, FieldPathValue } from './utils';
 
 export type ValidationValue = boolean | number | string | RegExp;
@@ -40,5 +40,5 @@ export type RegisterOptions<
   setValueAs: (value: any) => any;
   shouldUnregister?: boolean;
   disabled?: boolean;
-  deps: FieldValues;
+  deps?: InternalFieldName[];
 }>;

@@ -430,7 +430,8 @@ export function createFormControl<
       const shouldSkipValidation =
         (!hasValidation(field._f, field._f.mount) &&
           !formOptions.resolver &&
-          !get(_formState.errors, name)) ||
+          !get(_formState.errors, name) &&
+          !field._f.deps) ||
         skipValidation({
           isBlurEvent,
           isTouched: !!get(_formState.touchedFields, name),
@@ -497,15 +498,16 @@ export function createFormControl<
         )[name];
       }
 
-      field._f.hasValidated = true;
-      triggerDependentFieldValidation(name);
-
       !isBlurEvent &&
         _subjects.watch.next({
           name,
           type,
           values: getValues(),
         });
+
+      if (field._f.deps) {
+        trigger(field._f.deps as FieldPath<TFieldValues>[]);
+      }
 
       shouldRenderBaseOnError(
         false,
@@ -769,35 +771,6 @@ export function createFormControl<
     });
   };
 
-  const getFieldsThatDependOnMe = (name: string) => {
-    const dependentFields: string[] = [];
-    _names?.mount?.forEach((fieldName: string) => {
-      const deps = get(_fields, fieldName)?._f?.deps || [];
-      const dependsOnMe = deps.some((depName: string) => {
-        return depName === name;
-      });
-      if (dependsOnMe) {
-        dependentFields.push(fieldName);
-      }
-    });
-    return dependentFields;
-  };
-  const triggerDependentFieldValidation = (name: string) => {
-    const dependentFields = getFieldsThatDependOnMe(name);
-    const fieldsToValidate: string[] = [];
-    dependentFields.forEach((depName) => {
-      if (
-        _formState.isSubmitted || // if form has been submitted, validation has been run on all fields already
-        get(_fields, depName)?._f?.hasValidated
-      ) {
-        fieldsToValidate.push(depName);
-      }
-    });
-    if (fieldsToValidate.length) {
-      trigger(fieldsToValidate as Path<TFieldValues>[]);
-    }
-  };
-
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
     let isValid;
@@ -829,16 +802,6 @@ export function createFormControl<
         await validateForm(_fields);
         isValid = isEmptyObject(_formState.errors);
       }
-    }
-
-    if (!isUndefined(name)) {
-      fieldNames.forEach((fieldName) => {
-        const field = get(_fields, fieldName) as Field;
-        if (field && field._f) {
-          field._f.hasValidated = true;
-        }
-      });
-      triggerDependentFieldValidation(name as Path<TFieldValues>);
     }
 
     _subjects.state.next({
@@ -964,7 +927,10 @@ export function createFormControl<
     fieldRef: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
-    register(name as FieldPath<TFieldValues>, options);
+    register(
+      name as FieldPath<TFieldValues>,
+      options as RegisterOptions<TFieldValues>,
+    );
     let field: Field = get(_fields, name);
     const ref = isUndefined(fieldRef.value)
       ? fieldRef.querySelectorAll

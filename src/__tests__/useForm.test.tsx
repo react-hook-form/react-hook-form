@@ -1045,7 +1045,6 @@ describe('useForm', () => {
         const fields = {
           test: {
             sub: {
-              hasValidated: true,
               mount: true,
               name: 'test.sub',
               ref: { name: 'test.sub' },
@@ -1087,14 +1086,12 @@ describe('useForm', () => {
         const fields2 = {
           test: {
             sub: {
-              hasValidated: true,
               mount: true,
               name: 'test.sub',
               ref: { name: 'test.sub' },
             },
           },
           test1: {
-            hasValidated: true,
             mount: true,
             name: 'test1',
             ref: {

@@ -38,7 +38,6 @@ export type Field = {
     name: InternalFieldName;
     refs?: HTMLInputElement[];
     mount?: boolean;
-    hasValidated?: boolean;
   } & RegisterOptions;
 };
 
