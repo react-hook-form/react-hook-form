@@ -927,10 +927,7 @@ export function createFormControl<
     fieldRef: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
-    register(
-      name as FieldPath<TFieldValues>,
-      options as RegisterOptions<TFieldValues>,
-    );
+    register(name as FieldPath<TFieldValues>, options);
     let field: Field = get(_fields, name);
     const ref = isUndefined(fieldRef.value)
       ? fieldRef.querySelectorAll
