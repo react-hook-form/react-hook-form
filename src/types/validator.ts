@@ -39,6 +39,6 @@ export type RegisterOptions<
   value: FieldPathValue<TFieldValues, TFieldName>;
   setValueAs: (value: any) => any;
   shouldUnregister?: boolean;
-  disabled?: boolean;
-  deps?: InternalFieldName[];
+  disabled: boolean;
+  deps: InternalFieldName[];
 }>;
