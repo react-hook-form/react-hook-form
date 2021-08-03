@@ -22,7 +22,7 @@ export function useForm<
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {
   const _formControl = React.useRef<
-    Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> | undefined
+    UseFormReturn<TFieldValues, TContext> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
@@ -37,9 +37,14 @@ export function useForm<
     errors: {},
   });
 
-  _formControl.current
-    ? _formControl.current.control._updateProps(props)
-    : (_formControl.current = createFormControl(props));
+  if (_formControl.current) {
+    _formControl.current.control._updateProps(props);
+  } else {
+    _formControl.current = {
+      formState,
+      ...createFormControl(props),
+    };
+  }
 
   const control = _formControl.current.control;
 
@@ -98,8 +103,10 @@ export function useForm<
     control._names.unMount = new Set();
   });
 
-  return {
-    ..._formControl.current,
-    formState: getProxyFormState(formState, control._proxyFormState),
-  };
+  _formControl.current.formState = getProxyFormState(
+    formState,
+    control._proxyFormState,
+  );
+
+  return _formControl.current;
 }
