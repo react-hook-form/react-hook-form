@@ -934,6 +934,7 @@ export function createFormControl<
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
 
     if (
+      field == null ||
       ref === field._f.ref ||
       (isRadioOrCheckbox &&
         compact(field._f.refs || []).find((option) => option === ref))
