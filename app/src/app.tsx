@@ -32,6 +32,7 @@ import WatchUseFieldArrayNested from './watchUseFieldArrayNested';
 import UseWatchUseFieldArrayNested from './useWatchUseFieldArrayNested';
 import Test from './test';
 import Welcome from './welcome';
+import ReserchBug from './reserchBug/reserchBug';
 import { UseFormState } from './useFormState';
 
 const App: React.FC = () => {
@@ -123,6 +124,11 @@ const App: React.FC = () => {
         path="/useWatchUseFieldArrayNested"
         exact
         component={UseWatchUseFieldArrayNested}
+      />
+      <Route
+        path="/reserchBug"
+        exact
+        component={ReserchBug}
       />
       <Route path="/test" exact component={Test} />
       <Route path="/" exact component={Welcome} />
