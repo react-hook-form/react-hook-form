@@ -138,7 +138,7 @@ describe('useFieldArrayUnregister', () => {
         data: [
           { name: '5' },
           { name: 'bill', conditional: '' },
-          { name: '10' },
+          { name: '12' },
           { name: 'test1' },
           { name: 'test2' },
         ],
@@ -154,7 +154,7 @@ describe('useFieldArrayUnregister', () => {
         data: [
           { name: '5' },
           { name: 'bill', conditional: '' },
-          { name: '10' },
+          { name: '12' },
           { name: 'test1test' },
           { name: 'test2' },
         ],
@@ -170,12 +170,12 @@ describe('useFieldArrayUnregister', () => {
         data: [
           { name: '5' },
           { name: 'bill', conditional: '' },
-          { name: '10' },
+          { name: '12' },
           { name: 'test2' },
         ],
       }),
     );
 
-    cy.get('#renderCount').contains('36');
+    cy.get('#renderCount').contains('43');
   });
 });
