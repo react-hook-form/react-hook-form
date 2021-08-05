@@ -26,7 +26,11 @@ export const NewItemForm: React.FC<NewItemFormProps> = ({ onSubmit, buttonName, 
           form.reset({ name: "" });
         })}
       >
-        <input {...form.register("name")} style={{ border: "1px solid" }} />
+        <input
+          {...form.register("name")}
+          id={`${buttonId}_input`}
+          style={{ border: "1px solid" }}
+        />
         <button
         	id={buttonId}
         	type="submit"
