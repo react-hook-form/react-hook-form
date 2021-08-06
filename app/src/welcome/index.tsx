@@ -155,7 +155,6 @@ const items: Item[] = [
       '/useFieldArray/asyncReset',
       '/useFieldArray/defaultAndWithoutFocus',
       '/useFieldArray/formState',
-      '/useFieldArrayWithExternalRHForm'
     ],
   },
   {

@@ -706,16 +706,12 @@ export function createFormControl<
       unsetEmptyArray(_formState.dirtyFields, name);
     }
 
-    setTimeout(
-      () =>
-        _subjects.state.next({
-          isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues, keyName)),
-          dirtyFields: _formState.dirtyFields,
-          errors: _formState.errors,
-          isValid: _formState.isValid,
-        }),
-      0,
-    );
+    _subjects.state.next({
+      isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues, keyName)),
+      dirtyFields: _formState.dirtyFields,
+      errors: _formState.errors,
+      isValid: _formState.isValid,
+    });
   };
 
   const _getFieldArrayValue = (name: InternalFieldName) =>
