@@ -40,14 +40,9 @@ export function useForm<
   if (_formControl.current) {
     _formControl.current.control._updateProps(props);
   } else {
-    const formControl = createFormControl(props);
-
     _formControl.current = {
-      ...formControl,
-      formState: getProxyFormState(
-        formState,
-        formControl.control._proxyFormState,
-      ),
+      ...createFormControl(props),
+      formState,
     };
   }
 
@@ -107,6 +102,11 @@ export function useForm<
 
     control._names.unMount = new Set();
   });
+
+  _formControl.current.formState = getProxyFormState(
+    formState,
+    control._proxyFormState,
+  );
 
   return _formControl.current;
 }
