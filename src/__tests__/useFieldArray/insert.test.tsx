@@ -12,6 +12,8 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
+jest.useFakeTimers();
+
 describe('insert', () => {
   beforeEach(() => {
     mockGenerateId();
@@ -535,6 +537,92 @@ describe('insert', () => {
       });
 
       expect(resolver).not.toBeCalled();
+    });
+
+    it('should insert update fields during async submit', () => {
+      type FormValues = {
+        test: { name: string }[];
+      };
+
+      function App() {
+        const { register, control } = useForm<FormValues>();
+        const [value, setValue] = React.useState('');
+        const { fields, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <div>
+            <form>
+              {fields.map((field, index) => {
+                return (
+                  <fieldset key={field.id}>
+                    <input {...register(`test.${index}.name`)} />
+                  </fieldset>
+                );
+              })}
+            </form>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const target = e.target as HTMLFormElement;
+
+                setTimeout(() => {
+                  insert(0, {
+                    name: value,
+                  });
+                }, 1000);
+
+                target.reset();
+              }}
+            >
+              <input
+                name="name"
+                data-testid="input"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              />
+              <button>submit</button>
+            </form>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByTestId('input'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      actComponent(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test');
+
+      fireEvent.change(screen.getByTestId('input'), {
+        target: {
+          value: 'test1',
+        },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      actComponent(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test1');
     });
   });
 });

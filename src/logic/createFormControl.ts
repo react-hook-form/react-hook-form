@@ -665,8 +665,6 @@ export function createFormControl<
       shouldSet && set(_fields, name, output);
     }
 
-    set(_formValues, name, updatedFieldArrayValues);
-
     if (Array.isArray(get(_formState.errors, name))) {
       const output = method(get(_formState.errors, name), args.argA, args.argB);
       shouldSet && set(_formState.errors, name, output);
