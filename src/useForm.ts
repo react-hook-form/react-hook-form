@@ -78,8 +78,6 @@ export function useForm<
   }, [control]);
 
   React.useEffect(() => {
-    const unregisterFieldNames = [];
-
     if (!control._isMounted) {
       control._isMounted = true;
       control._proxyFormState.isValid && control._updateValid();
@@ -92,13 +90,8 @@ export function useForm<
 
       field &&
         (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
-        unregisterFieldNames.push(name);
+        _formControl.current!.unregister(name as FieldPath<TFieldValues>);
     }
-
-    unregisterFieldNames.length &&
-      _formControl.current!.unregister(
-        unregisterFieldNames as FieldPath<TFieldValues>[],
-      );
 
     control._names.unMount = new Set();
   });
