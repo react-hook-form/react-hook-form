@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Control } from '../../src/types';
@@ -38,45 +39,44 @@ const ChildComponent = ({
   );
 };
 
-const Component = () => {
-  const { register, control } = useForm({
-    defaultValues: {
-      nest: {
-        test: [
-          { value: '1', nestedArray: [{ value: '2' }] },
-          { value: '3', nestedArray: [{ value: '4' }] },
-        ],
-      },
-    },
-  });
-  const { fields, remove, append } = useFieldArray({
-    name: 'nest.test',
+function App() {
+  const { register, control } = useForm<FormValues>();
+  const { fields, insert } = useFieldArray({
     control,
+    name: 'test',
   });
 
   return (
     <div>
-      {fields.map((item, i) => (
-        <div key={item.id}>
-          <input {...register(`nest.test.${i}.value` as const)} />
+      <form>
+        {fields.map((field, index) => {
+          return (
+            <fieldset key={field.id}>
+              <input {...register(`test.${index}.name`)} />
+            </fieldset>
+          );
+        })}
+      </form>
 
-          <ChildComponent control={control} index={i} />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const target = e.target as HTMLFormElement;
+          let formData = new FormData(target);
 
-          <button
-            type={'button'}
-            onClick={() => remove(i)}
-            data-testid={item.value}
-          >
-            remove
-          </button>
-        </div>
-      ))}
+          setTimeout(() => {
+            insert(0, {
+              name: formData.get('name'),
+            });
+          }, 1000);
 
-      <button type={'button'} onClick={() => append({ value: 'test' })}>
-        append
-      </button>
+          target.reset();
+        }}
+      >
+        <input name="name" data-testid="input" />
+        <button>submit</button>
+      </form>
     </div>
   );
-};
-
-export default Component;
+}
+export default App;
