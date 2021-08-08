@@ -178,6 +178,7 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     const fieldValues = control._getFieldArrayValue(name);
     swapArrayAt(fieldValues, indexA, indexB);
+    setFields(mapIds(fieldValues, keyName));
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -189,7 +190,6 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setFields(mapIds(fieldValues, keyName));
   };
 
   const move = (from: number, to: number) => {
