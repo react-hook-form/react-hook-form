@@ -42,6 +42,7 @@ import {
   WatchObserver,
 } from '../types';
 import { set } from '../utils';
+import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import debounce from '../utils/debounce';
@@ -1077,6 +1078,7 @@ export function createFormControl<
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
     const updatedValues = values || _defaultValues;
+    const formValues = cloneObject({ ...updatedValues });
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
@@ -1096,7 +1098,7 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = { ...updatedValues };
-      _formValues = { ...updatedValues };
+      _formValues = formValues;
     }
 
     if (!keepStateOptions.keepValues) {
@@ -1112,7 +1114,7 @@ export function createFormControl<
       _subjects.watch.next({});
 
       _subjects.array.next({
-        values: { ...updatedValues },
+        values: formValues,
         isReset: true,
       });
     }
