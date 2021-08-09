@@ -45,7 +45,6 @@ import { set } from '../utils';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
-import debounce from '../utils/debounce';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
@@ -130,6 +129,7 @@ export function createFormControl<
     array: new Subject(),
     state: new Subject(),
   };
+  let _timer = 0;
   let _names = {
     mount: new Set(),
     unMount: new Set(),
@@ -141,6 +141,13 @@ export function createFormControl<
   const validationMode = getValidationModes(formOptions.mode);
   const isValidateAllFieldCriteria =
     formOptions.criteriaMode === VALIDATION_MODE.all;
+
+  const debounce =
+    <T extends Function>(callback: T, wait: number) =>
+    (...args: any) => {
+      clearTimeout(_timer);
+      _timer = window.setTimeout(() => callback(...args), wait);
+    };
 
   const isFieldWatched = (name: FieldPath<TFieldValues>) =>
     _names.watchAll ||
@@ -189,6 +196,7 @@ export function createFormControl<
 
       _delayCallback(name, error);
     } else {
+      clearTimeout(_timer);
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
