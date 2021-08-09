@@ -627,8 +627,9 @@ describe('formState', () => {
   });
 
   describe('when delay config is set', () => {
+    const message = 'required.';
+
     it('should only show error after 500ms with register', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           register,
@@ -674,7 +675,6 @@ describe('formState', () => {
     });
 
     it('should only show error after 500ms with register and render formState instantly', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           register,
@@ -740,7 +740,6 @@ describe('formState', () => {
     });
 
     it('should only show error after 500ms with Controller', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           control,
@@ -787,6 +786,59 @@ describe('formState', () => {
       await waitFor(async () => {
         screen.getByText(message);
       });
+    });
+
+    it('should prevent error from showing once input is validated', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            <input
+              {...register('test', {
+                maxLength: 4,
+              })}
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123456',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      await actComponent(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      actComponent(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(screen.queryByText(message)).toBeNull();
     });
   });
 });
