@@ -627,8 +627,9 @@ describe('formState', () => {
   });
 
   describe('when delay config is set', () => {
+    const message = 'required.';
+
     it('should only show error after 500ms with register', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           register,
@@ -674,7 +675,6 @@ describe('formState', () => {
     });
 
     it('should only show error after 500ms with register and render formState instantly', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           register,
@@ -740,7 +740,6 @@ describe('formState', () => {
     });
 
     it('should only show error after 500ms with Controller', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           control,
@@ -790,7 +789,6 @@ describe('formState', () => {
     });
 
     it('should prevent error from showing once input is validated', async () => {
-      const message = 'required.';
       const App = () => {
         const {
           register,
