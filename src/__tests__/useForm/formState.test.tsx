@@ -788,5 +788,59 @@ describe('formState', () => {
         screen.getByText(message);
       });
     });
+
+    it('should prevent error from showing once input is validated', async () => {
+      const message = 'required.';
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            <input
+              {...register('test', {
+                maxLength: 4,
+              })}
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123456',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      await actComponent(async () => {
+        await fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      actComponent(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(screen.queryByText(message)).toBeNull();
+    });
   });
 });
