@@ -252,13 +252,6 @@ export const useFieldArray = <
     const fieldArraySubscription = control._subjects.array.subscribe({
       next(payload) {
         if (payload.isReset) {
-          unset(control._fields, payload.name || name);
-          unset(control._formValues, payload.name || name);
-
-          payload.name
-            ? set(control._formValues, payload.name, payload.values)
-            : payload.values && (control._formValues = payload.values);
-
           setFields(mapIds(get(control._formValues, name), keyName));
         }
       },
