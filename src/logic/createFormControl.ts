@@ -1086,7 +1086,9 @@ export function createFormControl<
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
     const updatedValues = values || _defaultValues;
-    const formValues = cloneObject({ ...updatedValues });
+    const formValues = cloneObject(updatedValues);
+
+    _formValues = formValues;
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
@@ -1106,12 +1108,10 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = { ...updatedValues };
-      _formValues = formValues;
     }
 
     if (!keepStateOptions.keepValues) {
       _fields = {};
-      _formValues = {};
 
       _subjects.control.next({
         values: keepStateOptions.keepDefaultValues
