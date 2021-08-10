@@ -124,7 +124,7 @@ describe('watch', () => {
     });
   });
 
-  it.skip('should return default value if value is empty', () => {
+  it('should return default value for single input', () => {
     const results: unknown[] = [];
     const App = () => {
       const { watch } = useForm<{ test: string }>();
@@ -137,6 +137,26 @@ describe('watch', () => {
     render(<App />);
 
     expect(results).toEqual(['default']);
+  });
+
+  it('should return array of default value for array of inputs', () => {
+    const results: unknown[] = [];
+    const App = () => {
+      const { watch } = useForm<{ test: string; test1: string }>();
+
+      results.push(
+        watch(['test', 'test1'], {
+          test: 'default',
+          test1: 'test',
+        }),
+      );
+
+      return null;
+    };
+
+    render(<App />);
+
+    expect(results).toEqual([['default', 'test']]);
   });
 
   it('should watch array of inputs', () => {

@@ -607,14 +607,11 @@ export function createFormControl<
   ) => {
     const fieldValues = {
       ...(_isMounted
-        ? {
-            ...{
-              ..._defaultValues,
-              ..._formValues,
-            },
-          }
+        ? _formValues
         : isUndefined(defaultValue)
         ? _defaultValues
+        : isString(fieldNames)
+        ? { [fieldNames]: defaultValue }
         : defaultValue),
     };
 
