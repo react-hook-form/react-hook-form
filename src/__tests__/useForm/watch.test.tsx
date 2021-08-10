@@ -418,4 +418,41 @@ describe('watch', () => {
       },
     });
   });
+
+  it('should remove input value after input is unmounted with shouldUnregister: true', () => {
+    const watched: unknown[] = [];
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { watch, register } = useForm({
+        shouldUnregister: true,
+      });
+
+      watched.push(watch());
+
+      return (
+        <div>
+          {show && <input {...register('test')} />}
+          <button
+            onClick={() => {
+              setShow(false);
+            }}
+          >
+            toggle
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '1',
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(watched).toMatchSnapshot();
+  });
 });
