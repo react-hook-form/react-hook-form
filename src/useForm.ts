@@ -22,7 +22,7 @@ export function useForm<
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {
   const _formControl = React.useRef<
-    Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> | undefined
+    UseFormReturn<TFieldValues, TContext> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
@@ -37,9 +37,14 @@ export function useForm<
     errors: {},
   });
 
-  _formControl.current
-    ? _formControl.current.control._updateProps(props)
-    : (_formControl.current = createFormControl(props));
+  if (_formControl.current) {
+    _formControl.current.control._updateProps(props);
+  } else {
+    _formControl.current = {
+      ...createFormControl(props),
+      formState,
+    };
+  }
 
   const control = _formControl.current.control;
 
@@ -73,8 +78,6 @@ export function useForm<
   }, [control]);
 
   React.useEffect(() => {
-    const unregisterFieldNames = [];
-
     if (!control._isMounted) {
       control._isMounted = true;
       control._proxyFormState.isValid && control._updateValid();
@@ -87,19 +90,16 @@ export function useForm<
 
       field &&
         (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
-        unregisterFieldNames.push(name);
+        _formControl.current!.unregister(name as FieldPath<TFieldValues>);
     }
-
-    unregisterFieldNames.length &&
-      _formControl.current!.unregister(
-        unregisterFieldNames as FieldPath<TFieldValues>[],
-      );
 
     control._names.unMount = new Set();
   });
 
-  return {
-    ..._formControl.current,
-    formState: getProxyFormState(formState, control._proxyFormState),
-  };
+  _formControl.current.formState = getProxyFormState(
+    formState,
+    control._proxyFormState,
+  );
+
+  return _formControl.current;
 }

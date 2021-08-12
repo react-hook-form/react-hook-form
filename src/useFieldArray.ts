@@ -49,6 +49,13 @@ export const useFieldArray = <
 
   control._names.array.add(name);
 
+  const setFieldsAndMapId = <T extends Partial<FieldValues>[]>(
+    updatedFieldArrayValues: T,
+  ) => {
+    set(control._formValues, name, updatedFieldArrayValues);
+    setFields(mapIds(updatedFieldArrayValues, keyName));
+  };
+
   const append = (
     value:
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
@@ -60,14 +67,7 @@ export const useFieldArray = <
       control._getFieldArrayValue(name),
       appendValue,
     );
-    setFields(
-      mapIds(
-        updatedFieldArrayValues as Partial<
-          FieldArray<TFieldValues, TFieldArrayName>
-        >[],
-        keyName,
-      ),
-    );
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -98,14 +98,7 @@ export const useFieldArray = <
       control._getFieldArrayValue(name),
       convertToArrayPayload(value),
     );
-    setFields(
-      mapIds(
-        updatedFieldArrayValues as Partial<
-          FieldArray<TFieldValues, TFieldArrayName>
-        >[],
-        keyName,
-      ),
-    );
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -125,9 +118,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArrayValue(name), index);
-
-    setFields(mapIds(updatedFieldArrayValues, keyName));
-
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -151,14 +142,7 @@ export const useFieldArray = <
       index,
       convertToArrayPayload(value),
     );
-    setFields(
-      mapIds(
-        updatedFieldArrayValues as Partial<
-          FieldArray<TFieldValues, TFieldArrayName>
-        >[],
-        keyName,
-      ),
-    );
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -176,8 +160,9 @@ export const useFieldArray = <
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = control._getFieldArrayValue(name);
-    swapArrayAt(fieldValues, indexA, indexB);
+    const updatedFieldArrayValues = control._getFieldArrayValue(name);
+    swapArrayAt(updatedFieldArrayValues, indexA, indexB);
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -186,16 +171,15 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      fieldValues,
+      updatedFieldArrayValues,
       false,
     );
-    setFields(mapIds(fieldValues, keyName));
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = control._getFieldArrayValue(name);
-    moveArrayAt(fieldValues, from, to);
-    setFields(mapIds(fieldValues, keyName));
+    const updatedFieldArrayValues = control._getFieldArrayValue(name);
+    moveArrayAt(updatedFieldArrayValues, from, to);
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -204,7 +188,7 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      fieldValues,
+      updatedFieldArrayValues,
       false,
     );
   };
@@ -215,7 +199,7 @@ export const useFieldArray = <
   ) => {
     const fieldValues = control._getFieldArrayValue(name);
     const updatedFieldArrayValues = updateAt(fieldValues, index, value);
-    setFields(mapIds(updatedFieldArrayValues, keyName));
+    setFieldsAndMapId(updatedFieldArrayValues);
     control._bathFieldArrayUpdate(
       keyName,
       name,
@@ -268,13 +252,6 @@ export const useFieldArray = <
     const fieldArraySubscription = control._subjects.array.subscribe({
       next(payload) {
         if (payload.isReset) {
-          unset(control._fields, payload.name || name);
-          unset(control._formValues, payload.name || name);
-
-          payload.name
-            ? set(control._formValues, payload.name, payload.values)
-            : payload.values && (control._formValues = payload.values);
-
           setFields(mapIds(get(control._formValues, name), keyName));
         }
       },

@@ -42,9 +42,9 @@ import {
   WatchObserver,
 } from '../types';
 import { set } from '../utils';
+import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
-import debounce from '../utils/debounce';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
@@ -129,6 +129,7 @@ export function createFormControl<
     array: new Subject(),
     state: new Subject(),
   };
+  let _timer = 0;
   let _names = {
     mount: new Set(),
     unMount: new Set(),
@@ -140,6 +141,13 @@ export function createFormControl<
   const validationMode = getValidationModes(formOptions.mode);
   const isValidateAllFieldCriteria =
     formOptions.criteriaMode === VALIDATION_MODE.all;
+
+  const debounce =
+    <T extends Function>(callback: T, wait: number) =>
+    (...args: any) => {
+      clearTimeout(_timer);
+      _timer = window.setTimeout(() => callback(...args), wait);
+    };
 
   const isFieldWatched = (name: FieldPath<TFieldValues>) =>
     _names.watchAll ||
@@ -188,6 +196,7 @@ export function createFormControl<
 
       _delayCallback(name, error);
     } else {
+      clearTimeout(_timer);
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
@@ -598,14 +607,11 @@ export function createFormControl<
   ) => {
     const fieldValues = {
       ...(_isMounted
-        ? {
-            ...{
-              ..._defaultValues,
-              ..._formValues,
-            },
-          }
+        ? _formValues
         : isUndefined(defaultValue)
         ? _defaultValues
+        : isString(fieldNames)
+        ? { [fieldNames]: defaultValue }
         : defaultValue),
     };
 
@@ -664,8 +670,6 @@ export function createFormControl<
       const output = method(get(_fields, name), args.argA, args.argB);
       shouldSet && set(_fields, name, output);
     }
-
-    set(_formValues, name, updatedFieldArrayValues);
 
     if (Array.isArray(get(_formState.errors, name))) {
       const output = method(get(_formState.errors, name), args.argA, args.argB);
@@ -1079,6 +1083,9 @@ export function createFormControl<
 
   const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
     const updatedValues = values || _defaultValues;
+    const formValues = cloneObject(updatedValues);
+
+    _formValues = formValues;
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
@@ -1098,12 +1105,10 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = { ...updatedValues };
-      _formValues = { ...updatedValues };
     }
 
     if (!keepStateOptions.keepValues) {
       _fields = {};
-      _formValues = {};
 
       _subjects.control.next({
         values: keepStateOptions.keepDefaultValues
@@ -1114,7 +1119,7 @@ export function createFormControl<
       _subjects.watch.next({});
 
       _subjects.array.next({
-        values: { ...updatedValues },
+        values: formValues,
         isReset: true,
       });
     }
