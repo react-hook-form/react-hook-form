@@ -290,7 +290,6 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
   array: SubjectType<{
     name?: InternalFieldName;
     values?: FieldValues;
-    isReset?: boolean;
   }>;
   state: FormStateSubjectRef<TFieldValues>;
 };
