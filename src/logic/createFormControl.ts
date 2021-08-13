@@ -309,7 +309,7 @@ export function createFormControl<
 
     if (_proxyFormState.isDirty) {
       const previousIsDirty = _formState.isDirty;
-      _formState.isDirty = _getIsDirty();
+      _formState.isDirty = _getDirty();
       state.isDirty = _formState.isDirty;
       isChanged = previousIsDirty !== state.isDirty;
     }
@@ -557,7 +557,7 @@ export function createFormControl<
     _isMounted && _proxyFormState.isValid && _updateValid();
   };
 
-  const _getIsDirty: GetIsDirty = (name, data) => {
+  const _getDirty: GetIsDirty = (name, data) => {
     name && data && set(_formValues, name, data);
 
     return !deepEqual({ ...getValues() }, _defaultValues);
@@ -712,7 +712,7 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues, keyName)),
+      isDirty: _getDirty(name, omitKey(updatedFieldArrayValues, keyName)),
       dirtyFields: _formState.dirtyFields,
       errors: _formState.errors,
       isValid: _formState.isValid,
@@ -754,7 +754,7 @@ export function createFormControl<
         _subjects.state.next({
           name,
           dirtyFields: _formState.dirtyFields,
-          isDirty: _getIsDirty(name, value),
+          isDirty: _getDirty(name, value),
         });
       }
     } else {
@@ -915,7 +915,7 @@ export function createFormControl<
 
     _subjects.state.next({
       ..._formState,
-      ...(!options.keepDirty ? {} : { isDirty: _getIsDirty() }),
+      ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
     !options.keepIsValid && _updateValid();
   };
@@ -1125,13 +1125,11 @@ export function createFormControl<
       });
     }
 
-    _names = {
-      mount: new Set(),
-      unMount: new Set(),
-      array: new Set(),
-      watch: new Set(),
-      watchAll: false,
-    };
+    _names.mount.clear();
+    _names.unMount.clear();
+    _names.array.clear();
+    _names.watch.clear();
+    _names.watchAll = false;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
@@ -1169,7 +1167,7 @@ export function createFormControl<
         unregister(name as FieldPath<TFieldValues>);
     }
 
-    _names.unMount = new Set();
+    _names.unMount.clear();
   };
 
   return {
@@ -1177,7 +1175,7 @@ export function createFormControl<
       register,
       unregister,
       _getWatch,
-      _getIsDirty,
+      _getDirty,
       _updateValid,
       _updateValues,
       _removeFields,

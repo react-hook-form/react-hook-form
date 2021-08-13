@@ -338,7 +338,7 @@ export type Control<
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
   _updateValues: RegisterMissFields<TFieldValues>;
   _isInAction: FormControl<boolean>;
-  _getIsDirty: GetIsDirty;
+  _getDirty: GetIsDirty;
   _formState: FormControl<FormState<TFieldValues>>;
   _updateValid: <T extends FieldValues>(payload?: T) => void;
   _fields: FieldRefs;
