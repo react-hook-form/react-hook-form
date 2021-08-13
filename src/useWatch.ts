@@ -76,7 +76,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
             ),
           );
 
-        control._removeUnmountFields();
+        control._removeFields();
       },
     });
 

@@ -61,10 +61,9 @@ export function useForm<
     if (!control._isMounted) {
       control._isMounted = true;
       control._proxyFormState.isValid && control._updateValid();
-      !props.shouldUnregister &&
-        control._updateFormValues(control._defaultValues);
+      !props.shouldUnregister && control._updateValues(control._defaultValues);
     }
-    control._removeUnmountFields();
+    control._removeFields();
   });
 
   _formControl.current.formState = getProxyFormState(

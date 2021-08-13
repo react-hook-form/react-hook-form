@@ -637,7 +637,7 @@ export function createFormControl<
       : result[0];
   };
 
-  const _updateFormValues: RegisterMissFields<TFieldValues> = (
+  const _updateValues: RegisterMissFields<TFieldValues> = (
     defaultValues,
     name = '',
   ): void => {
@@ -648,7 +648,7 @@ export function createFormControl<
 
       if (!field || !field._f) {
         if (isObject(value) || Array.isArray(value)) {
-          _updateFormValues(value, fieldName);
+          _updateValues(value, fieldName);
         } else if (!field) {
           set(_formValues, fieldName, value);
         }
@@ -656,7 +656,7 @@ export function createFormControl<
     }
   };
 
-  const _bathFieldArrayUpdate: BatchFieldArrayUpdate = (
+  const _updateFieldArray: BatchFieldArrayUpdate = (
     keyName,
     name,
     method,
@@ -1160,7 +1160,7 @@ export function createFormControl<
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(_fields, name)._f.ref.focus();
 
-  const _removeUnmountFields = () => {
+  const _removeFields = () => {
     for (const name of _names.unMount) {
       const field = get(_fields, name) as Field;
 
@@ -1176,13 +1176,13 @@ export function createFormControl<
     control: {
       register,
       unregister,
-      _getIsDirty,
       _getWatch,
+      _getIsDirty,
       _updateValid,
-      _updateFormValues,
-      _bathFieldArrayUpdate,
+      _updateValues,
+      _removeFields,
+      _updateFieldArray,
       _getFieldArrayValue,
-      _removeUnmountFields,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,
