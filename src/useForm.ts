@@ -5,7 +5,6 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import get from './utils/get';
 import live from './utils/live';
-import set from './utils/set';
 import {
   Field,
   FieldPath,
@@ -62,18 +61,8 @@ export function useForm<
       },
     });
 
-    const useFieldArraySubscription = control._subjects.array.subscribe({
-      next(state) {
-        if (state.values && state.name && control._proxyFormState.isValid) {
-          set(control._formValues, state.name, state.values);
-          control._updateValid();
-        }
-      },
-    });
-
     return () => {
       formStateSubscription.unsubscribe();
-      useFieldArraySubscription.unsubscribe();
     };
   }, [control]);
 

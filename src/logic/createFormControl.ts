@@ -733,9 +733,7 @@ export function createFormControl<
 
     if (isFieldArray) {
       _subjects.array.next({
-        values: value,
-        name,
-        isReset: true,
+        values: _formValues,
       });
 
       if (
@@ -1081,11 +1079,14 @@ export function createFormControl<
       }
     };
 
-  const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
-    const updatedValues = values || _defaultValues;
-    const formValues = cloneObject(updatedValues);
+  const reset: UseFormReset<TFieldValues> = (
+    formValues,
+    keepStateOptions = {},
+  ) => {
+    const updatedValues = formValues || _defaultValues;
+    const values = cloneObject(updatedValues);
 
-    _formValues = formValues;
+    _formValues = values;
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
@@ -1119,8 +1120,7 @@ export function createFormControl<
       _subjects.watch.next({});
 
       _subjects.array.next({
-        values: formValues,
-        isReset: true,
+        values,
       });
     }
 
@@ -1139,7 +1139,7 @@ export function createFormControl<
       isDirty: keepStateOptions.keepDirty
         ? _formState.isDirty
         : keepStateOptions.keepDefaultValues
-        ? deepEqual(values, _defaultValues)
+        ? deepEqual(formValues, _defaultValues)
         : false,
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted

@@ -9,7 +9,6 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import moveArrayAt from './utils/move';
-import omitKey from './utils/omitKeys';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
@@ -240,20 +239,13 @@ export const useFieldArray = <
 
     _focusName.current = '';
 
-    control._subjects.array.next({
-      name,
-      values: omitKey([...fields], keyName),
-    });
-
     control._proxyFormState.isValid && control._updateValid();
   }, [fields, name, control, keyName]);
 
   React.useEffect(() => {
     const fieldArraySubscription = control._subjects.array.subscribe({
-      next(payload) {
-        if (payload.isReset) {
-          setFields(mapIds(get(control._formValues, name), keyName));
-        }
+      next() {
+        setFields(mapIds(get(control._formValues, name), keyName));
       },
     });
 
