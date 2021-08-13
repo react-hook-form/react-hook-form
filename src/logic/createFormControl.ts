@@ -62,6 +62,7 @@ import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
+import live from '../utils/live';
 import omit from '../utils/omit';
 import omitKey from '../utils/omitKeys';
 import Subject from '../utils/Subject';
@@ -1159,6 +1160,20 @@ export function createFormControl<
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(_fields, name)._f.ref.focus();
 
+  const _removeUnmountFields = () => {
+    if (props.shouldUnregister) {
+      for (const name of _names.unMount) {
+        const field = get(_fields, name) as Field;
+
+        field &&
+          (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
+          unregister(name as FieldPath<TFieldValues>);
+      }
+
+      _names.unMount = new Set();
+    }
+  };
+
   return {
     control: {
       register,
@@ -1169,6 +1184,7 @@ export function createFormControl<
       _updateFormValues,
       _bathFieldArrayUpdate,
       _getFieldArrayValue,
+      _removeUnmountFields,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
       _fields,

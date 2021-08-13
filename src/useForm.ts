@@ -3,16 +3,7 @@ import * as React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import get from './utils/get';
-import live from './utils/live';
-import {
-  Field,
-  FieldPath,
-  FieldValues,
-  FormState,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -73,16 +64,7 @@ export function useForm<
       !props.shouldUnregister &&
         control._updateFormValues(control._defaultValues);
     }
-
-    for (const name of control._names.unMount) {
-      const field = get(control._fields, name) as Field;
-
-      field &&
-        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
-        _formControl.current!.unregister(name as FieldPath<TFieldValues>);
-    }
-
-    control._names.unMount = new Set();
+    control._removeUnmountFields();
   });
 
   _formControl.current.formState = getProxyFormState(

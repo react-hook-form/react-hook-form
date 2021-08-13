@@ -332,6 +332,7 @@ export type Control<
 > = {
   _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
+  _removeUnmountFields: () => void;
   _names: Names;
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
