@@ -1161,17 +1161,15 @@ export function createFormControl<
     get(_fields, name)._f.ref.focus();
 
   const _removeUnmountFields = () => {
-    if (props.shouldUnregister) {
-      for (const name of _names.unMount) {
-        const field = get(_fields, name) as Field;
+    for (const name of _names.unMount) {
+      const field = get(_fields, name) as Field;
 
-        field &&
-          (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
-          unregister(name as FieldPath<TFieldValues>);
-      }
-
-      _names.unMount = new Set();
+      field &&
+        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
+        unregister(name as FieldPath<TFieldValues>);
     }
+
+    _names.unMount = new Set();
   };
 
   return {
