@@ -11,7 +11,12 @@ import {
 import { renderHook } from '@testing-library/react-hooks';
 
 import * as generateId from '../logic/generateId';
-import { Control, UseFieldArrayReturn, UseFormReturn } from '../types';
+import {
+  Control,
+  UseFieldArrayReturn,
+  UseFormRegister,
+  UseFormReturn,
+} from '../types';
 import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
@@ -144,6 +149,63 @@ describe('useWatch', () => {
       wrapper: Provider,
     });
     expect(result.error).toBeUndefined();
+  });
+
+  it('should remove input with shouldUnregister: true and deeply nested', async () => {
+    type FormValue = {
+      test: string;
+    };
+
+    let submitData = {};
+
+    const Child = ({
+      control,
+      register,
+    }: {
+      register: UseFormRegister<FormValue>;
+      control: Control<FormValue>;
+    }) => {
+      const show = useWatch({
+        control,
+        name: 'test',
+      });
+
+      return <>{show && show !== 'test' && <input {...register('test')} />}</>;
+    };
+
+    const Component = () => {
+      const { register, control, handleSubmit } = useForm<FormValue>({
+        defaultValues: {
+          test: 'bill',
+        },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submitData = data;
+          })}
+        >
+          <Child control={control} register={register} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(submitData).toEqual({});
   });
 
   describe('when disabled prop is used', () => {

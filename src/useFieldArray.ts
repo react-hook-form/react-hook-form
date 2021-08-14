@@ -67,7 +67,7 @@ export const useFieldArray = <
       appendValue,
     );
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       appendAt,
@@ -98,7 +98,7 @@ export const useFieldArray = <
       convertToArrayPayload(value),
     );
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       prependAt,
@@ -118,7 +118,7 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArrayValue(name), index);
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       removeArrayAt,
@@ -142,7 +142,7 @@ export const useFieldArray = <
       convertToArrayPayload(value),
     );
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       insertAt,
@@ -162,7 +162,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues = control._getFieldArrayValue(name);
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       swapArrayAt,
@@ -179,7 +179,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues = control._getFieldArrayValue(name);
     moveArrayAt(updatedFieldArrayValues, from, to);
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       moveArrayAt,
@@ -199,7 +199,7 @@ export const useFieldArray = <
     const fieldValues = control._getFieldArrayValue(name);
     const updatedFieldArrayValues = updateAt(fieldValues, index, value);
     setFieldsAndMapId(updatedFieldArrayValues);
-    control._bathFieldArrayUpdate(
+    control._updateFieldArray(
       keyName,
       name,
       updateAt,

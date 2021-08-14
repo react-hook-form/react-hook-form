@@ -62,6 +62,7 @@ import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
+import live from '../utils/live';
 import omit from '../utils/omit';
 import omitKey from '../utils/omitKeys';
 import Subject from '../utils/Subject';
@@ -636,7 +637,7 @@ export function createFormControl<
       : result[0];
   };
 
-  const _updateFormValues: RegisterMissFields<TFieldValues> = (
+  const _updateValues: RegisterMissFields<TFieldValues> = (
     defaultValues,
     name = '',
   ): void => {
@@ -647,7 +648,7 @@ export function createFormControl<
 
       if (!field || !field._f) {
         if (isObject(value) || Array.isArray(value)) {
-          _updateFormValues(value, fieldName);
+          _updateValues(value, fieldName);
         } else if (!field) {
           set(_formValues, fieldName, value);
         }
@@ -655,7 +656,7 @@ export function createFormControl<
     }
   };
 
-  const _bathFieldArrayUpdate: BatchFieldArrayUpdate = (
+  const _updateFieldArray: BatchFieldArrayUpdate = (
     keyName,
     name,
     method,
@@ -1159,15 +1160,28 @@ export function createFormControl<
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(_fields, name)._f.ref.focus();
 
+  const _removeFields = () => {
+    for (const name of _names.unMount) {
+      const field = get(_fields, name) as Field;
+
+      field &&
+        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
+        unregister(name as FieldPath<TFieldValues>);
+    }
+
+    _names.unMount = new Set();
+  };
+
   return {
     control: {
       register,
       unregister,
-      _getIsDirty,
       _getWatch,
+      _getIsDirty,
       _updateValid,
-      _updateFormValues,
-      _bathFieldArrayUpdate,
+      _updateValues,
+      _removeFields,
+      _updateFieldArray,
       _getFieldArrayValue,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,

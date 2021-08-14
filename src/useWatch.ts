@@ -59,7 +59,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
 
   React.useEffect(() => {
     const watchSubscription = control._subjects.watch.subscribe({
-      next: ({ name }) =>
+      next: ({ name }) => {
         (!_name.current ||
           !name ||
           convertToArrayPayload(_name.current).some(
@@ -69,18 +69,23 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
               (fieldName.startsWith(name as InternalFieldName) ||
                 name.startsWith(fieldName as InternalFieldName)),
           )) &&
-        updateValue(
-          control._getWatch(
-            _name.current as InternalFieldName,
-            defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-          ),
-        ),
+          updateValue(
+            control._getWatch(
+              _name.current as InternalFieldName,
+              defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+            ),
+          );
+      },
     });
 
     disabled && watchSubscription.unsubscribe();
 
     return () => watchSubscription.unsubscribe();
   }, [disabled, control, defaultValue]);
+
+  React.useEffect(() => {
+    control._removeFields();
+  });
 
   return value;
 }
