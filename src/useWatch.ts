@@ -75,8 +75,6 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
               defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
             ),
           );
-
-        control._removeFields();
       },
     });
 
@@ -84,6 +82,10 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
 
     return () => watchSubscription.unsubscribe();
   }, [disabled, control, defaultValue]);
+
+  React.useEffect(() => {
+    control._removeFields();
+  });
 
   return value;
 }
