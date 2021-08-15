@@ -125,7 +125,7 @@ describe('append', () => {
     act(() => {
       expect(currentFields).toEqual([
         { id: '0', test: 'test' },
-        { id: '3', test: 'test' },
+        { id: '2', test: 'test' },
       ]);
     });
 
@@ -136,9 +136,9 @@ describe('append', () => {
     act(() => {
       expect(currentFields).toEqual([
         { id: '0', test: 'test' },
-        { id: '3', test: 'test' },
-        { id: '8', test: 'test-batch' },
-        { id: '9', test: 'test-batch1' },
+        { id: '2', test: 'test' },
+        { id: '5', test: 'test-batch' },
+        { id: '6', test: 'test-batch1' },
       ]);
     });
   });

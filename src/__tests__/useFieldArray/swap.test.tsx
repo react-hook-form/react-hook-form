@@ -40,8 +40,8 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '5', value: '2' },
-      { id: '6', value: '1' },
+      { id: '1', value: '2' },
+      { id: '0', value: '1' },
     ]);
   });
 
@@ -67,8 +67,8 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '5', value: '2' },
-      { id: '6', value: '1' },
+      { id: '1', value: '2' },
+      { id: '0', value: '1' },
     ]);
   });
 
@@ -233,7 +233,7 @@ describe('swap', () => {
 
     expect(watched).toEqual([
       { test: [{ value: '1' }, { value: '2' }] }, // first render
-      { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
+      { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
       { test: [{ value: '2' }, { value: '1' }] }, // render inside swap method
       { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
     ]);

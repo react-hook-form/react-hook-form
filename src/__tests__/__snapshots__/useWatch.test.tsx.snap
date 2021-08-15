@@ -65,7 +65,7 @@ Array [
       "prop": "test",
     },
     Object {
-      "id": "3",
+      "id": "2",
       "prop": "ShouldBeTHere",
     },
     Object {
@@ -116,21 +116,21 @@ Array [
   ],
   Array [
     Object {
-      "id": "8",
+      "id": "6",
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "9",
+      "id": "7",
       "prop": "test1",
     },
   ],
   Array [
     Object {
-      "id": "8",
+      "id": "6",
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "9",
+      "id": "7",
       "prop": "test1",
     },
   ],

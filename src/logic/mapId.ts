@@ -10,6 +10,6 @@ export default <
   keyName: TKeyName,
 ): any =>
   values.map((value: Partial<TFieldArrayValues>) => ({
-    [keyName]: generateId(),
+    ...(value[keyName] ? {} : { [keyName]: generateId() }),
     ...value,
   }));

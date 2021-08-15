@@ -191,7 +191,9 @@ export const useFieldArray = <
   };
 
   const move = (from: number, to: number) => {
-    const updatedFieldArrayValues = control._getFieldArrayValue(name);
+    const updatedFieldArrayValues = mapCurrentId(
+      control._getFieldArrayValue(name),
+    );
     moveArrayAt(updatedFieldArrayValues, from, to);
     setFieldsAndMapId(updatedFieldArrayValues);
     control._updateFieldArray(

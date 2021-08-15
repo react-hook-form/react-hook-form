@@ -1,82 +1,53 @@
+// @ts-nocheck
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Control } from '../../src/types';
+import { Control, UseFormRegister } from '../../src/types';
+import { Controller } from '../../src';
 
-type FormValues = {
-  nest: {
-    test: {
-      value: string;
-      nestedArray: {
-        value: string;
-      }[];
-    }[];
-  };
-};
-const ChildComponent = ({
-  index,
-  control,
-}: {
-  control: Control<FormValues>;
-  index: number;
-}) => {
-  const { fields } = useFieldArray<FormValues>({
-    name: `nest.test.${index}.nestedArray` as const,
-    control,
-  });
+let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
 
-  return (
-    <div>
-      {fields.map((item, i) => (
-        <input
-          key={item.id}
-          {...control.register(
-            `nest.test.${index}.nestedArray.${i}.value` as const,
-          )}
-        />
-      ))}
-    </div>
-  );
-};
-
-const Component = () => {
-  const { register, control } = useForm({
+const App = () => {
+  const { register, control } = useForm<{
+    test: { firstName: string; lastName: string }[];
+  }>({
     defaultValues: {
-      nest: {
-        test: [
-          { value: '1', nestedArray: [{ value: '2' }] },
-          { value: '3', nestedArray: [{ value: '4' }] },
-        ],
-      },
+      test: [
+        {
+          firstName: 'bill',
+          lastName: 'luo',
+        },
+        {
+          firstName: 'bill1',
+          lastName: 'luo1',
+        },
+      ],
     },
   });
-  const { fields, remove, append } = useFieldArray({
-    name: 'nest.test',
+  const { fields, update } = useFieldArray({
+    name: 'test',
     control,
   });
 
+  fieldArrayValues = fields;
+
   return (
     <div>
-      {fields.map((item, i) => (
-        <div key={item.id}>
-          <input {...register(`nest.test.${i}.value` as const)} />
-
-          <ChildComponent control={control} index={i} />
-
-          <button
-            type={'button'}
-            onClick={() => remove(i)}
-            data-testid={item.value}
-          >
-            remove
-          </button>
+      {fields.map((field, i) => (
+        <div key={field.id}>
+          <input {...register(`test.${i}.firstName` as const)} />
+          <input {...register(`test.${i}.lastName` as const)} />
         </div>
       ))}
-
-      <button type={'button'} onClick={() => append({ value: 'test' })}>
-        append
+      <button
+        onClick={() => {
+          update(0, { firstName: 'test1', lastName: 'test2' });
+          update(1, { firstName: 'test3', lastName: 'test4' });
+        }}
+      >
+        update
       </button>
     </div>
   );
 };
 
-export default Component;
+export default App;
