@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act as actComponent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -329,7 +335,7 @@ describe('update', () => {
     expect(fieldArrayValues[0].value).toEqual('test');
   });
 
-  it('should update field array with multiple values', () => {
+  it('should update field array with multiple values', async () => {
     let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
 
     const App = () => {
@@ -378,7 +384,9 @@ describe('update', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,

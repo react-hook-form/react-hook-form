@@ -53,43 +53,31 @@ Array [
   ],
   Array [
     Object {
-      "id": "2",
       "prop": "test",
     },
     Object {
-      "id": "3",
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "id": "4",
       "prop": "test1",
     },
   ],
   Array [
+    Object {
+      "id": "0",
+      "prop": "test",
+    },
     Object {
       "id": "2",
-      "prop": "test",
-    },
-    Object {
-      "id": "3",
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "4",
+      "id": "1",
       "prop": "test1",
     },
   ],
   Array [
     Object {
-      "id": "2",
       "prop": "test",
     },
     Object {
-      "id": "3",
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "id": "4",
       "prop": "test1",
     },
   ],
@@ -128,21 +116,21 @@ Array [
   ],
   Array [
     Object {
-      "id": "8",
+      "id": "6",
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "9",
+      "id": "7",
       "prop": "test1",
     },
   ],
   Array [
     Object {
-      "id": "8",
+      "id": "6",
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "9",
+      "id": "7",
       "prop": "test1",
     },
   ],
