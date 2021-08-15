@@ -65,6 +65,7 @@ import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
 import omitKey from '../utils/omitKeys';
+import omitKeys from '../utils/omitKeys';
 import Subject from '../utils/Subject';
 import unset from '../utils/unset';
 
@@ -661,15 +662,22 @@ export function createFormControl<
     name,
     method,
     args,
-    updatedFieldArrayValues = [],
+    updatedFieldArrayValuesWithKey = [],
     shouldSet = true,
     shouldSetFields = true,
   ) => {
+    const updatedFieldArrayValues = omitKeys(
+      updatedFieldArrayValuesWithKey,
+      keyName,
+    );
     _isInAction = true;
 
     if (shouldSetFields && get(_fields, name)) {
-      const output = method(get(_fields, name), args.argA, args.argB);
+      let output = method(get(_fields, name), args.argA, args.argB);
       shouldSet && set(_fields, name, output);
+
+      output = method(get(_formValues, name), args.argA, args.argB);
+      shouldSet && set(_formValues, name, output);
     }
 
     if (Array.isArray(get(_formState.errors, name))) {

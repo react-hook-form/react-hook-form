@@ -10,7 +10,6 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import moveArrayAt from './utils/move';
-import omitKeys from './utils/omitKeys';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
@@ -52,18 +51,6 @@ export const useFieldArray = <
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  const updateFields = React.useCallback(
-    <T extends Partial<FieldValues>[]>(updatedFieldArrayValues: T) => {
-      set(
-        control._formValues,
-        name,
-        omitKeys(updatedFieldArrayValues, keyName),
-      );
-      setFields(mapIds(updatedFieldArrayValues, keyName));
-    },
-    [control, keyName, name],
-  );
-
   const append = (
     value:
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
@@ -71,11 +58,11 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(value);
-    const updatedFieldArrayValues = appendAt(
+    const updatedFieldArrayValuesWithKey = appendAt(
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
-      appendValue,
+      mapIds(convertToArrayPayload(value), keyName),
     );
-    updateFields(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -83,15 +70,13 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      updatedFieldArrayValues as Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >[],
+      updatedFieldArrayValuesWithKey,
       false,
     );
 
     _focusName.current = getFocusFieldName(
       name,
-      updatedFieldArrayValues.length - appendValue.length,
+      updatedFieldArrayValuesWithKey.length - appendValue.length,
       options,
     );
   };
@@ -102,11 +87,11 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const updatedFieldArrayValues = prependAt(
+    const updatedFieldArrayValuesWithKey = prependAt(
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
-      convertToArrayPayload(value),
+      mapIds(convertToArrayPayload(value), keyName),
     );
-    updateFields(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -114,22 +99,20 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      updatedFieldArrayValues as Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >[],
+      updatedFieldArrayValuesWithKey,
     );
 
     _focusName.current = getFocusFieldName(name, 0, options);
   };
 
   const remove = (index?: number | number[]) => {
-    const updatedFieldArrayValues: Partial<
+    const updatedFieldArrayValuesWithKey: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       index,
     );
-    updateFields(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -137,7 +120,7 @@ export const useFieldArray = <
       {
         argA: index,
       },
-      updatedFieldArrayValues,
+      updatedFieldArrayValuesWithKey,
     );
   };
 
@@ -148,12 +131,12 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const updatedFieldArrayValues = insertAt(
+    const updatedFieldArrayValuesWithKey = insertAt(
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       index,
-      convertToArrayPayload(value),
+      mapIds(convertToArrayPayload(value), keyName),
     );
-    updateFields(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -162,22 +145,20 @@ export const useFieldArray = <
         argA: index,
         argB: fillEmptyArray(value),
       },
-      updatedFieldArrayValues as Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >[],
+      updatedFieldArrayValuesWithKey,
     );
 
     _focusName.current = getFocusFieldName(name, index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const updatedFieldArrayValues = mapCurrentIds(
+    const updatedFieldArrayValuesWithKey = mapCurrentIds(
       control._getFieldArrayValue(name),
       _fieldIds,
       keyName,
     );
-    swapArrayAt(updatedFieldArrayValues, indexA, indexB);
-    updateFields(updatedFieldArrayValues);
+    swapArrayAt(updatedFieldArrayValuesWithKey, indexA, indexB);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -186,19 +167,19 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      updatedFieldArrayValues,
+      updatedFieldArrayValuesWithKey,
       false,
     );
   };
 
   const move = (from: number, to: number) => {
-    const updatedFieldArrayValues = mapCurrentIds(
+    const updatedFieldArrayValuesWithKey = mapCurrentIds(
       control._getFieldArrayValue(name),
       _fieldIds,
       keyName,
     );
-    moveArrayAt(updatedFieldArrayValues, from, to);
-    updateFields(updatedFieldArrayValues);
+    moveArrayAt(updatedFieldArrayValuesWithKey, from, to);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -207,7 +188,7 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      updatedFieldArrayValues,
+      updatedFieldArrayValuesWithKey,
       false,
     );
   };
@@ -216,9 +197,17 @@ export const useFieldArray = <
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    const fieldValues = control._getFieldArrayValue(name);
-    const updatedFieldArrayValues = updateAt(fieldValues, index, value);
-    updateFields(updatedFieldArrayValues);
+    const updatedFieldArrayValuesWithKey = mapCurrentIds(
+      control._getFieldArrayValue(name),
+      _fieldIds,
+      keyName,
+    );
+    const updatedFieldArrayValues = updateAt(
+      updatedFieldArrayValuesWithKey,
+      index,
+      value,
+    );
+    setFields(mapIds(updatedFieldArrayValues, keyName));
     control._updateFieldArray(
       keyName,
       name,
@@ -227,9 +216,8 @@ export const useFieldArray = <
         argA: index,
         argB: value,
       },
-      fieldValues,
+      updatedFieldArrayValuesWithKey,
       true,
-      false,
     );
   };
 
@@ -284,13 +272,13 @@ export const useFieldArray = <
   }, [name, control, keyName, shouldUnregister]);
 
   return {
-    swap: React.useCallback(swap, [name, control, keyName, updateFields]),
-    move: React.useCallback(move, [name, control, keyName, updateFields]),
-    prepend: React.useCallback(prepend, [name, control, keyName, updateFields]),
-    append: React.useCallback(append, [name, control, keyName, updateFields]),
-    remove: React.useCallback(remove, [name, control, keyName, updateFields]),
-    insert: React.useCallback(insert, [name, control, keyName, updateFields]),
-    update: React.useCallback(update, [name, control, keyName, updateFields]),
+    swap: React.useCallback(swap, [name, control, keyName]),
+    move: React.useCallback(move, [name, control, keyName]),
+    prepend: React.useCallback(prepend, [name, control, keyName]),
+    append: React.useCallback(append, [name, control, keyName]),
+    remove: React.useCallback(remove, [name, control, keyName]),
+    insert: React.useCallback(insert, [name, control, keyName]),
+    update: React.useCallback(update, [name, control, keyName]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,
