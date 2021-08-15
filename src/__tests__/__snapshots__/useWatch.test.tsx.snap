@@ -116,21 +116,23 @@ Array [
   ],
   Array [
     Object {
-      "id": "6",
+      "prop": "test",
+    },
+    Object {
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "7",
       "prop": "test1",
     },
   ],
   Array [
     Object {
-      "id": "6",
+      "prop": "test",
+    },
+    Object {
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "7",
       "prop": "test1",
     },
   ],

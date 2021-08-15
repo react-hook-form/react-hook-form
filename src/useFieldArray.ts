@@ -120,7 +120,10 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = removeArrayAt(control._getFieldArrayValue(name), index);
+    >[] = removeArrayAt(
+      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
+      index,
+    );
     updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
