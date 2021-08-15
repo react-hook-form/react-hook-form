@@ -1,53 +1,82 @@
-// @ts-nocheck
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Control, UseFormRegister } from '../../src/types';
-import { Controller } from '../../src';
+import { Control } from '../../src/types';
 
-let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
-
-const App = () => {
-  const { register, control } = useForm<{
-    test: { firstName: string; lastName: string }[];
-  }>({
-    defaultValues: {
-      test: [
-        {
-          firstName: 'bill',
-          lastName: 'luo',
-        },
-        {
-          firstName: 'bill1',
-          lastName: 'luo1',
-        },
-      ],
-    },
-  });
-  const { fields, update } = useFieldArray({
-    name: 'test',
+type FormValues = {
+  nest: {
+    test: {
+      value: string;
+      nestedArray: {
+        value: string;
+      }[];
+    }[];
+  };
+};
+const ChildComponent = ({
+  index,
+  control,
+}: {
+  control: Control<FormValues>;
+  index: number;
+}) => {
+  const { fields } = useFieldArray<FormValues>({
+    name: `nest.test.${index}.nestedArray` as const,
     control,
   });
 
-  fieldArrayValues = fields;
+  return (
+    <div>
+      {fields.map((item, i) => (
+        <input
+          key={item.id}
+          {...control.register(
+            `nest.test.${index}.nestedArray.${i}.value` as const,
+          )}
+        />
+      ))}
+    </div>
+  );
+};
+
+const Component = () => {
+  const { register, control } = useForm({
+    defaultValues: {
+      nest: {
+        test: [
+          { value: '1', nestedArray: [{ value: '2' }] },
+          { value: '3', nestedArray: [{ value: '4' }] },
+        ],
+      },
+    },
+  });
+  const { fields, remove, append } = useFieldArray({
+    name: 'nest.test',
+    control,
+  });
 
   return (
     <div>
-      {fields.map((field, i) => (
-        <div key={field.id}>
-          <input {...register(`test.${i}.firstName` as const)} />
-          <input {...register(`test.${i}.lastName` as const)} />
+      {fields.map((item, i) => (
+        <div key={item.id}>
+          <input {...register(`nest.test.${i}.value` as const)} />
+
+          <ChildComponent control={control} index={i} />
+
+          <button
+            type={'button'}
+            onClick={() => remove(i)}
+            data-testid={item.value}
+          >
+            remove
+          </button>
         </div>
       ))}
-      <button
-        onClick={() => {
-          update(0, { firstName: 'test1', lastName: 'test2' });
-          update(1, { firstName: 'test3', lastName: 'test4' });
-        }}
-      >
-        update
+
+      <button type={'button'} onClick={() => append({ value: 'test' })}>
+        append
       </button>
     </div>
   );
 };
 
-export default App;
+export default Component;
