@@ -1140,6 +1140,7 @@ export function createFormControl<
       array: new Set(),
       watch: new Set(),
       watchAll: false,
+      focus: '',
     };
 
     _subjects.state.next({

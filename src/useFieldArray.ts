@@ -41,7 +41,6 @@ export const useFieldArray = <
     keyName = 'id' as TKeyName,
     shouldUnregister,
   } = props;
-  const _focusName = React.useRef('');
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(control._getFieldArrayValue(name), keyName));
@@ -72,7 +71,7 @@ export const useFieldArray = <
       updatedFieldArrayValuesWithKey,
     );
 
-    _focusName.current = getFocusFieldName(
+    control._names.focus = getFocusFieldName(
       name,
       updatedFieldArrayValuesWithKey.length - appendValue.length,
       options,
@@ -100,7 +99,7 @@ export const useFieldArray = <
       updatedFieldArrayValuesWithKey,
     );
 
-    _focusName.current = getFocusFieldName(name, 0, options);
+    control._names.focus = getFocusFieldName(name, 0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -146,7 +145,7 @@ export const useFieldArray = <
       updatedFieldArrayValuesWithKey,
     );
 
-    _focusName.current = getFocusFieldName(name, index, options);
+    control._names.focus = getFocusFieldName(name, index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -240,12 +239,12 @@ export const useFieldArray = <
       values: control._formValues,
     });
 
-    _focusName.current &&
+    control._names.focus &&
       focusFieldBy(control._fields, (key: string) =>
-        key.startsWith(_focusName.current),
+        key.startsWith(control._names.focus),
       );
 
-    _focusName.current = '';
+    control._names.focus = '';
 
     control._proxyFormState.isValid && control._updateValid();
   }, [fields, name, control, keyName]);
