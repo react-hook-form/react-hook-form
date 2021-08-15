@@ -71,7 +71,6 @@ export const useFieldArray = <
         argA: fillEmptyArray(value),
       },
       updatedFieldArrayValuesWithKey,
-      false,
     );
 
     _focusName.current = getFocusFieldName(
@@ -207,7 +206,8 @@ export const useFieldArray = <
       index,
       value,
     );
-    setFields(mapIds(updatedFieldArrayValues, keyName));
+    _fieldIds.current = mapIds(updatedFieldArrayValues, keyName);
+    setFields(_fieldIds.current);
     control._updateFieldArray(
       keyName,
       name,
@@ -218,6 +218,7 @@ export const useFieldArray = <
       },
       updatedFieldArrayValuesWithKey,
       true,
+      false,
     );
   };
 

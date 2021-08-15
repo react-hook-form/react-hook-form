@@ -617,7 +617,7 @@ describe('useFieldArray', () => {
     );
   });
 
-  it('should return correct touched values without autoFocus', () => {
+  it.only('should return correct touched values without autoFocus', () => {
     cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
     cy.get('#field0').type('1');
     cy.get('#field1').type('1');
@@ -626,26 +626,28 @@ describe('useFieldArray', () => {
     cy.get('#append').click();
     cy.get('#prepend').click();
     cy.get('#touched').contains(
-      '[null,{"name":true},{"name":true},{"name":true}]',
+      '[null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#insert').click();
     cy.get('#touched').contains(
-      '[null,null,{"name":true},{"name":true},{"name":true}]',
+      '[null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#swap').click();
     cy.get('#touched').contains(
-      '[null,{"name":true},null,{"name":true},{"name":true}]',
+      '[null,{"name":true},null,{"name":true},{"name":true},null]',
     );
     cy.get('#move').click();
     cy.get('#touched').contains(
-      '[null,null,{"name":true},{"name":true},{"name":true}]',
+      '[null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#insert').click();
     cy.get('#touched').contains(
-      '[null,null,null,{"name":true},{"name":true},{"name":true}]',
+      '[null,null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#delete4').click();
-    cy.get('#touched').contains('[null,null,null,{"name":true},{"name":true}]');
+    cy.get('#touched').contains(
+      '[null,null,null,{"name":true},{"name":true},null]',
+    );
   });
 
   it('should return correct isValid formState', () => {

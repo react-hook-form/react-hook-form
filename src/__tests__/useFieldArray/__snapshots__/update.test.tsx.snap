@@ -4,7 +4,11 @@ exports[`update should trigger reRender when user update input and is watching t
 Array [
   Object {},
   Object {
-    "test": Array [],
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
   },
   Object {
     "test": Array [
@@ -27,7 +31,7 @@ exports[`update should update field array with multiple values 1`] = `
 Array [
   Object {
     "firstName": "test1",
-    "id": "0",
+    "id": "2",
     "lastName": "test2",
   },
   Object {

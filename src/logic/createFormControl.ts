@@ -666,6 +666,7 @@ export function createFormControl<
     shouldSet = true,
     shouldSetFields = true,
   ) => {
+    let output;
     const updatedFieldArrayValues = omitKeys(
       updatedFieldArrayValuesWithKey,
       keyName,
@@ -673,12 +674,12 @@ export function createFormControl<
     _isInAction = true;
 
     if (shouldSetFields && get(_fields, name)) {
-      let output = method(get(_fields, name), args.argA, args.argB);
+      output = method(get(_fields, name), args.argA, args.argB);
       shouldSet && set(_fields, name, output);
-
-      output = method(get(_formValues, name), args.argA, args.argB);
-      shouldSet && set(_formValues, name, output);
     }
+
+    output = method(get(_formValues, name), args.argA, args.argB);
+    shouldSet && set(_formValues, name, output);
 
     if (Array.isArray(get(_formState.errors, name))) {
       const output = method(get(_formState.errors, name), args.argA, args.argB);
