@@ -50,7 +50,7 @@ const UseFieldArray: React.FC = (props: any) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <ul>
         {fields.map((data, index) => (
-          <li key={index}>
+          <li key={data.id}>
             {index % 2 ? (
               <input
                 id={`field${index}`}
