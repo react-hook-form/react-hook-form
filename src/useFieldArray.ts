@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
 import getFocusFieldName from './logic/getFocusFieldName';
-import mapCurrentId from './logic/mapCurrentId';
+import mapCurrentIds from './logic/mapCurrentIds';
 import mapIds from './logic/mapId';
 import appendAt from './utils/append';
 import convertToArrayPayload from './utils/convertToArrayPayload';
@@ -67,7 +67,7 @@ export const useFieldArray = <
   ) => {
     const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(
-      mapCurrentId(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       appendValue,
     );
     setFieldsAndMapId(updatedFieldArrayValues);
@@ -98,7 +98,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = prependAt(
-      mapCurrentId(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       convertToArrayPayload(value),
     );
     setFieldsAndMapId(updatedFieldArrayValues);
@@ -141,7 +141,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = insertAt(
-      mapCurrentId(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       index,
       convertToArrayPayload(value),
     );
@@ -163,7 +163,7 @@ export const useFieldArray = <
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const updatedFieldArrayValues = mapCurrentId(
+    const updatedFieldArrayValues = mapCurrentIds(
       control._getFieldArrayValue(name),
       _fieldIds,
       keyName,
@@ -184,7 +184,7 @@ export const useFieldArray = <
   };
 
   const move = (from: number, to: number) => {
-    const updatedFieldArrayValues = mapCurrentId(
+    const updatedFieldArrayValues = mapCurrentIds(
       control._getFieldArrayValue(name),
       _fieldIds,
       keyName,
