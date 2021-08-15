@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Control } from '../../src/types';
 
-type FormValues = {
+type FormData = {
   nest: {
     test: {
       value: string;
@@ -16,10 +16,10 @@ const ChildComponent = ({
   index,
   control,
 }: {
-  control: Control<FormValues>;
+  control: Control<FormData>;
   index: number;
 }) => {
-  const { fields } = useFieldArray<FormValues>({
+  const { fields } = useFieldArray<FormData>({
     name: `nest.test.${index}.nestedArray` as const,
     control,
   });
