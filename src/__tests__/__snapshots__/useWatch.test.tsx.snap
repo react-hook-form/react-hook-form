@@ -53,21 +53,15 @@ Array [
   ],
   Array [
     Object {
-      "id": "2",
       "prop": "test",
     },
     Object {
-      "id": "3",
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "id": "4",
       "prop": "test1",
     },
   ],
   Array [
     Object {
-      "id": "2",
+      "id": "0",
       "prop": "test",
     },
     Object {
@@ -75,21 +69,15 @@ Array [
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "4",
+      "id": "1",
       "prop": "test1",
     },
   ],
   Array [
     Object {
-      "id": "2",
       "prop": "test",
     },
     Object {
-      "id": "3",
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "id": "4",
       "prop": "test1",
     },
   ],

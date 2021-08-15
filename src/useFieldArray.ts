@@ -150,7 +150,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = insertAt(
-      control._getFieldArrayValue(name),
+      mapCurrentId(control._getFieldArrayValue(name)),
       index,
       convertToArrayPayload(value),
     );
@@ -172,7 +172,9 @@ export const useFieldArray = <
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const updatedFieldArrayValues = control._getFieldArrayValue(name);
+    const updatedFieldArrayValues = mapCurrentId(
+      control._getFieldArrayValue(name),
+    );
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
     setFieldsAndMapId(updatedFieldArrayValues);
     control._updateFieldArray(

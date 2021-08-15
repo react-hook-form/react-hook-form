@@ -38,9 +38,9 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '2', test: '1' },
+      { id: '0', test: '1' },
       { id: '3', test: '3' },
-      { id: '4', test: '2' },
+      { id: '1', test: '2' },
     ]);
   });
 
@@ -63,10 +63,10 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '2', test: '1' },
+      { id: '0', test: '1' },
       { id: '3', test: '3' },
       { id: '4', test: '4' },
-      { id: '5', test: '2' },
+      { id: '1', test: '2' },
     ]);
   });
 
