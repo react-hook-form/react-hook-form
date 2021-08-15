@@ -299,6 +299,7 @@ export type Names = {
   unMount: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
+  focus: InternalFieldName;
   watchAll: boolean;
 };
 
