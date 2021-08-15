@@ -14,7 +14,6 @@ import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
-import unset from './utils/unset';
 import updateAt from './utils/update';
 import {
   FieldArray,
@@ -264,10 +263,6 @@ export const useFieldArray = <
       fieldArraySubscription.unsubscribe();
       if (control._shouldUnregister || shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
-        unset(control._formValues, name);
-      } else {
-        const fieldArrayValues = get(control._formValues, name);
-        fieldArrayValues && set(control._formValues, name, fieldArrayValues);
       }
     };
   }, [name, control, keyName, shouldUnregister]);
