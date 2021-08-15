@@ -51,7 +51,7 @@ export const useFieldArray = <
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  const setFieldsAndMapId = React.useCallback(
+  const updateFields = React.useCallback(
     <T extends Partial<FieldValues>[]>(updatedFieldArrayValues: T) => {
       set(control._formValues, name, updatedFieldArrayValues);
       setFields(mapIds(updatedFieldArrayValues, keyName));
@@ -70,7 +70,7 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       appendValue,
     );
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -101,7 +101,7 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       convertToArrayPayload(value),
     );
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -121,7 +121,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArrayValue(name), index);
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -145,7 +145,7 @@ export const useFieldArray = <
       index,
       convertToArrayPayload(value),
     );
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -169,7 +169,7 @@ export const useFieldArray = <
       keyName,
     );
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -190,7 +190,7 @@ export const useFieldArray = <
       keyName,
     );
     moveArrayAt(updatedFieldArrayValues, from, to);
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -210,7 +210,7 @@ export const useFieldArray = <
   ) => {
     const fieldValues = control._getFieldArrayValue(name);
     const updatedFieldArrayValues = updateAt(fieldValues, index, value);
-    setFieldsAndMapId(updatedFieldArrayValues);
+    updateFields(updatedFieldArrayValues);
     control._updateFieldArray(
       keyName,
       name,
@@ -276,38 +276,13 @@ export const useFieldArray = <
   }, [name, control, keyName, shouldUnregister]);
 
   return {
-    swap: React.useCallback(swap, [name, control, keyName, setFieldsAndMapId]),
-    move: React.useCallback(move, [name, control, keyName, setFieldsAndMapId]),
-    prepend: React.useCallback(prepend, [
-      name,
-      control,
-      keyName,
-      setFieldsAndMapId,
-    ]),
-    append: React.useCallback(append, [
-      name,
-      control,
-      keyName,
-      setFieldsAndMapId,
-    ]),
-    remove: React.useCallback(remove, [
-      name,
-      control,
-      keyName,
-      setFieldsAndMapId,
-    ]),
-    insert: React.useCallback(insert, [
-      name,
-      control,
-      keyName,
-      setFieldsAndMapId,
-    ]),
-    update: React.useCallback(update, [
-      name,
-      control,
-      keyName,
-      setFieldsAndMapId,
-    ]),
+    swap: React.useCallback(swap, [name, control, keyName, updateFields]),
+    move: React.useCallback(move, [name, control, keyName, updateFields]),
+    prepend: React.useCallback(prepend, [name, control, keyName, updateFields]),
+    append: React.useCallback(append, [name, control, keyName, updateFields]),
+    remove: React.useCallback(remove, [name, control, keyName, updateFields]),
+    insert: React.useCallback(insert, [name, control, keyName, updateFields]),
+    update: React.useCallback(update, [name, control, keyName, updateFields]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,
