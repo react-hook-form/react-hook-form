@@ -617,7 +617,7 @@ describe('useFieldArray', () => {
     );
   });
 
-  it.only('should return correct touched values without autoFocus', () => {
+  it('should return correct touched values without autoFocus', () => {
     cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
     cy.get('#field0').type('1');
     cy.get('#field1').type('1');
