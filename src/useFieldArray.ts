@@ -50,17 +50,6 @@ export const useFieldArray = <
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  const mapCurrentId = <T>(values: T[]) => {
-    return values.map((value: any, index: number) => {
-      const output = _fieldIds.current[index];
-
-      return {
-        ...value,
-        ...(output ? { [keyName]: output[keyName] } : {}),
-      };
-    });
-  };
-
   const setFieldsAndMapId = <T extends Partial<FieldValues>[]>(
     updatedFieldArrayValues: T,
   ) => {
@@ -76,7 +65,7 @@ export const useFieldArray = <
   ) => {
     const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(
-      mapCurrentId(control._getFieldArrayValue(name)),
+      mapCurrentId(control._getFieldArrayValue(name), _fieldIds, keyName),
       appendValue,
     );
     setFieldsAndMapId(updatedFieldArrayValues);
@@ -107,7 +96,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = prependAt(
-      mapCurrentId(control._getFieldArrayValue(name)),
+      mapCurrentId(control._getFieldArrayValue(name), _fieldIds, keyName),
       convertToArrayPayload(value),
     );
     setFieldsAndMapId(updatedFieldArrayValues);
@@ -150,7 +139,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = insertAt(
-      mapCurrentId(control._getFieldArrayValue(name)),
+      mapCurrentId(control._getFieldArrayValue(name), _fieldIds, keyName),
       index,
       convertToArrayPayload(value),
     );
@@ -174,6 +163,8 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     const updatedFieldArrayValues = mapCurrentId(
       control._getFieldArrayValue(name),
+      _fieldIds,
+      keyName,
     );
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
     setFieldsAndMapId(updatedFieldArrayValues);
@@ -193,6 +184,8 @@ export const useFieldArray = <
   const move = (from: number, to: number) => {
     const updatedFieldArrayValues = mapCurrentId(
       control._getFieldArrayValue(name),
+      _fieldIds,
+      keyName,
     );
     moveArrayAt(updatedFieldArrayValues, from, to);
     setFieldsAndMapId(updatedFieldArrayValues);
