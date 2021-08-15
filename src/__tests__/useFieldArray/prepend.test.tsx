@@ -73,7 +73,7 @@ describe('prepend', () => {
     act(() => {
       expect(currentFields).toEqual([
         { id: '2', test: 'test' },
-        { id: '3', test: 'test' },
+        { id: '0', test: 'test' },
       ]);
     });
 
@@ -85,8 +85,8 @@ describe('prepend', () => {
       expect(currentFields).toEqual([
         { id: '6', test: 'test-batch' },
         { id: '7', test: 'test-batch1' },
-        { id: '8', test: 'test' },
-        { id: '9', test: 'test' },
+        { id: '2', test: 'test' },
+        { id: '0', test: 'test' },
       ]);
     });
   });
@@ -160,7 +160,7 @@ describe('prepend', () => {
     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
 
     expect(touched).toEqual({
-      test: [undefined, undefined, { value: true }],
+      test: [undefined, { value: true }, { value: true }],
     });
   });
 

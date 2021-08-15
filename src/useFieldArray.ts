@@ -45,8 +45,21 @@ export const useFieldArray = <
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(control._getFieldArrayValue(name), keyName));
+  const _fieldIds = React.useRef(fields);
 
+  _fieldIds.current = fields;
   control._names.array.add(name);
+
+  const mapCurrentId = <T>(values: T[]) => {
+    return values.map((value: any, index: number) => {
+      const output = _fieldIds.current[index];
+
+      return {
+        ...value,
+        ...(output ? { [keyName]: output[keyName] } : {}),
+      };
+    });
+  };
 
   const setFieldsAndMapId = <T extends Partial<FieldValues>[]>(
     updatedFieldArrayValues: T,
@@ -63,7 +76,7 @@ export const useFieldArray = <
   ) => {
     const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValues = appendAt(
-      control._getFieldArrayValue(name),
+      mapCurrentId(control._getFieldArrayValue(name)),
       appendValue,
     );
     setFieldsAndMapId(updatedFieldArrayValues);
@@ -94,7 +107,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValues = prependAt(
-      control._getFieldArrayValue(name),
+      mapCurrentId(control._getFieldArrayValue(name)),
       convertToArrayPayload(value),
     );
     setFieldsAndMapId(updatedFieldArrayValues);
