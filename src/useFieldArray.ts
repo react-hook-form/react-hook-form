@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
 import getFocusFieldName from './logic/getFocusFieldName';
+import mapCurrentId from './logic/mapCurrentId';
 import mapIds from './logic/mapId';
 import appendAt from './utils/append';
 import convertToArrayPayload from './utils/convertToArrayPayload';
@@ -50,12 +51,13 @@ export const useFieldArray = <
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  const setFieldsAndMapId = <T extends Partial<FieldValues>[]>(
-    updatedFieldArrayValues: T,
-  ) => {
-    set(control._formValues, name, updatedFieldArrayValues);
-    setFields(mapIds(updatedFieldArrayValues, keyName));
-  };
+  const setFieldsAndMapId = React.useCallback(
+    <T extends Partial<FieldValues>[]>(updatedFieldArrayValues: T) => {
+      set(control._formValues, name, updatedFieldArrayValues);
+      setFields(mapIds(updatedFieldArrayValues, keyName));
+    },
+    [control, keyName, name],
+  );
 
   const append = (
     value:
@@ -274,13 +276,38 @@ export const useFieldArray = <
   }, [name, control, keyName, shouldUnregister]);
 
   return {
-    swap: React.useCallback(swap, [name, control, keyName]),
-    move: React.useCallback(move, [name, control, keyName]),
-    prepend: React.useCallback(prepend, [name, control, keyName]),
-    append: React.useCallback(append, [name, control, keyName]),
-    remove: React.useCallback(remove, [name, control, keyName]),
-    insert: React.useCallback(insert, [name, control, keyName]),
-    update: React.useCallback(update, [name, control, keyName]),
+    swap: React.useCallback(swap, [name, control, keyName, setFieldsAndMapId]),
+    move: React.useCallback(move, [name, control, keyName, setFieldsAndMapId]),
+    prepend: React.useCallback(prepend, [
+      name,
+      control,
+      keyName,
+      setFieldsAndMapId,
+    ]),
+    append: React.useCallback(append, [
+      name,
+      control,
+      keyName,
+      setFieldsAndMapId,
+    ]),
+    remove: React.useCallback(remove, [
+      name,
+      control,
+      keyName,
+      setFieldsAndMapId,
+    ]),
+    insert: React.useCallback(insert, [
+      name,
+      control,
+      keyName,
+      setFieldsAndMapId,
+    ]),
+    update: React.useCallback(update, [
+      name,
+      control,
+      keyName,
+      setFieldsAndMapId,
+    ]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,
