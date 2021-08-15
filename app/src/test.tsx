@@ -28,7 +28,7 @@ const ChildComponent = ({
     <div>
       {fields.map((item, i) => (
         <input
-          key={item.id}
+          key={i}
           {...control.register(
             `nest.test.${index}.nestedArray.${i}.value` as const,
           )}

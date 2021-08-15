@@ -91,11 +91,8 @@ describe('useFieldArray', () => {
         return (
           <form>
             {show &&
-              fields.map((field, i) => (
-                <input
-                  key={field.id}
-                  {...register(`test.${i}.value` as const)}
-                />
+              fields.map((_, i) => (
+                <input key={i} {...register(`test.${i}.value` as const)} />
               ))}
             <button type="button" onClick={() => append({ value: '' })}>
               append
@@ -139,8 +136,8 @@ describe('useFieldArray', () => {
 
         return (
           <form>
-            {fields.map((field, i) => (
-              <input key={field.id} {...register(`test.${i}.value` as const)} />
+            {fields.map((_, i) => (
+              <input key={i} {...register(`test.${i}.value` as const)} />
             ))}
             <button
               type="button"
@@ -183,9 +180,9 @@ describe('useFieldArray', () => {
 
         return (
           <div>
-            {fields.map((item, index) => {
+            {fields.map((_, index) => {
               return (
-                <div key={item.id}>
+                <div key={index}>
                   <input {...register(`test.${index}.name`)} />
                 </div>
               );
@@ -258,8 +255,8 @@ describe('useFieldArray', () => {
         return (
           <div>
             <input {...register('data')} defaultValue="test" />
-            {fields.map((field, i) => (
-              <input key={field.id} {...register(`test.${i}.value` as const)} />
+            {fields.map((_, i) => (
+              <input key={i} {...register(`test.${i}.value` as const)} />
             ))}
             <button onClick={() => append({ value: '' })}>append</button>
             <span>{isValid && 'valid'}</span>
@@ -306,9 +303,9 @@ describe('useFieldArray', () => {
 
         return (
           <div>
-            {fields.map((item, i) => (
+            {fields.map((_, i) => (
               <input
-                key={item.id}
+                key={i}
                 {...control.register(
                   `test.${index}.nestedArray.${i}.value` as const,
                 )}
@@ -347,8 +344,8 @@ describe('useFieldArray', () => {
 
         return (
           <form>
-            {fields.map((item, i) => (
-              <fieldset key={item.id}>
+            {fields.map((_, i) => (
+              <fieldset key={i}>
                 <input {...register(`test.${i}.value` as const)} />
 
                 <Nested control={control} index={i} />
