@@ -10,6 +10,7 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import moveArrayAt from './utils/move';
+import omitKeys from './utils/omitKeys';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
@@ -53,7 +54,11 @@ export const useFieldArray = <
 
   const updateFields = React.useCallback(
     <T extends Partial<FieldValues>[]>(updatedFieldArrayValues: T) => {
-      set(control._formValues, name, updatedFieldArrayValues);
+      set(
+        control._formValues,
+        name,
+        omitKeys(updatedFieldArrayValues, keyName),
+      );
       setFields(mapIds(updatedFieldArrayValues, keyName));
     },
     [control, keyName, name],
