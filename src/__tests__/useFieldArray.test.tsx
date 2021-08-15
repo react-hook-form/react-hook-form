@@ -737,7 +737,7 @@ describe('useFieldArray', () => {
       act(() => {
         result.current.reset();
       });
-      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -764,7 +764,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -772,7 +772,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '7', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -2328,6 +2328,9 @@ describe('useFieldArray', () => {
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+    });
+
+    await actComponent(async () => {
       fireEvent.click(screen.getAllByRole('button', { name: 'append' })[0]);
     });
 

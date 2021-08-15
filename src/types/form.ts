@@ -290,7 +290,6 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
   array: SubjectType<{
     name?: InternalFieldName;
     values?: FieldValues;
-    isReset?: boolean;
   }>;
   state: FormStateSubjectRef<TFieldValues>;
 };
@@ -300,6 +299,7 @@ export type Names = {
   unMount: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
+  focus: InternalFieldName;
   watchAll: boolean;
 };
 
@@ -333,10 +333,11 @@ export type Control<
 > = {
   _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
+  _removeFields: () => void;
   _names: Names;
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _updateFormValues: RegisterMissFields<TFieldValues>;
+  _updateValues: RegisterMissFields<TFieldValues>;
   _isInAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
   _formState: FormControl<FormState<TFieldValues>>;
@@ -347,7 +348,7 @@ export type Control<
   _defaultValues: Partial<DefaultValues<TFieldValues>>;
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
-  _bathFieldArrayUpdate: BatchFieldArrayUpdate;
+  _updateFieldArray: BatchFieldArrayUpdate;
   _getFieldArrayValue: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];

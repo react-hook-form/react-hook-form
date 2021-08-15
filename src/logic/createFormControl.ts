@@ -62,8 +62,10 @@ import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
+import live from '../utils/live';
 import omit from '../utils/omit';
 import omitKey from '../utils/omitKeys';
+import omitKeys from '../utils/omitKeys';
 import Subject from '../utils/Subject';
 import unset from '../utils/unset';
 
@@ -636,7 +638,7 @@ export function createFormControl<
       : result[0];
   };
 
-  const _updateFormValues: RegisterMissFields<TFieldValues> = (
+  const _updateValues: RegisterMissFields<TFieldValues> = (
     defaultValues,
     name = '',
   ): void => {
@@ -647,7 +649,7 @@ export function createFormControl<
 
       if (!field || !field._f) {
         if (isObject(value) || Array.isArray(value)) {
-          _updateFormValues(value, fieldName);
+          _updateValues(value, fieldName);
         } else if (!field) {
           set(_formValues, fieldName, value);
         }
@@ -655,21 +657,29 @@ export function createFormControl<
     }
   };
 
-  const _bathFieldArrayUpdate: BatchFieldArrayUpdate = (
+  const _updateFieldArray: BatchFieldArrayUpdate = (
     keyName,
     name,
     method,
     args,
-    updatedFieldArrayValues = [],
+    updatedFieldArrayValuesWithKey = [],
     shouldSet = true,
     shouldSetFields = true,
   ) => {
+    let output;
+    const updatedFieldArrayValues = omitKeys(
+      updatedFieldArrayValuesWithKey,
+      keyName,
+    );
     _isInAction = true;
 
     if (shouldSetFields && get(_fields, name)) {
-      const output = method(get(_fields, name), args.argA, args.argB);
+      output = method(get(_fields, name), args.argA, args.argB);
       shouldSet && set(_fields, name, output);
     }
+
+    output = method(get(_formValues, name), args.argA, args.argB);
+    shouldSet && set(_formValues, name, output);
 
     if (Array.isArray(get(_formState.errors, name))) {
       const output = method(get(_formState.errors, name), args.argA, args.argB);
@@ -733,9 +743,7 @@ export function createFormControl<
 
     if (isFieldArray) {
       _subjects.array.next({
-        values: value,
-        name,
-        isReset: true,
+        values: _formValues,
       });
 
       if (
@@ -1081,11 +1089,14 @@ export function createFormControl<
       }
     };
 
-  const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
-    const updatedValues = values || _defaultValues;
-    const formValues = cloneObject(updatedValues);
+  const reset: UseFormReset<TFieldValues> = (
+    formValues,
+    keepStateOptions = {},
+  ) => {
+    const updatedValues = formValues || _defaultValues;
+    const values = cloneObject(updatedValues);
 
-    _formValues = formValues;
+    _formValues = values;
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
@@ -1119,8 +1130,7 @@ export function createFormControl<
       _subjects.watch.next({});
 
       _subjects.array.next({
-        values: formValues,
-        isReset: true,
+        values,
       });
     }
 
@@ -1130,6 +1140,7 @@ export function createFormControl<
       array: new Set(),
       watch: new Set(),
       watchAll: false,
+      focus: '',
     };
 
     _subjects.state.next({
@@ -1139,7 +1150,7 @@ export function createFormControl<
       isDirty: keepStateOptions.keepDirty
         ? _formState.isDirty
         : keepStateOptions.keepDefaultValues
-        ? deepEqual(values, _defaultValues)
+        ? deepEqual(formValues, _defaultValues)
         : false,
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
@@ -1159,15 +1170,28 @@ export function createFormControl<
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
     get(_fields, name)._f.ref.focus();
 
+  const _removeFields = () => {
+    for (const name of _names.unMount) {
+      const field = get(_fields, name) as Field;
+
+      field &&
+        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
+        unregister(name as FieldPath<TFieldValues>);
+    }
+
+    _names.unMount = new Set();
+  };
+
   return {
     control: {
       register,
       unregister,
-      _getIsDirty,
       _getWatch,
+      _getIsDirty,
       _updateValid,
-      _updateFormValues,
-      _bathFieldArrayUpdate,
+      _updateValues,
+      _removeFields,
+      _updateFieldArray,
       _getFieldArrayValue,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
