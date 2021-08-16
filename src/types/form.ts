@@ -100,6 +100,7 @@ export type UseFormProps<
   shouldFocusError: boolean;
   shouldUnregister: boolean;
   shouldUseNativeValidation: boolean;
+  rethrowSubmitErrors: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
 }>;

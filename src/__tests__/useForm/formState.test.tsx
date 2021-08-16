@@ -386,6 +386,47 @@ describe('formState', () => {
     screen.getByText('isNotSubmitSuccessful');
   });
 
+  it('should set isSubmitSuccessful to false and swallow error when rethrowSubmitErrors is false', async () => {
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { isSubmitSuccessful, isSubmitted },
+      } = useForm({ rethrowSubmitErrors: false });
+
+      const rejectPromiseFn = jest
+        .fn()
+        .mockRejectedValue(new Error('this is an error'));
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <p>{isSubmitted ? 'isSubmitted' : 'no'}</p>
+          <p>
+            {isSubmitSuccessful
+              ? 'isSubmitSuccessful'
+              : 'isNotSubmitSuccessful'}
+          </p>
+          <button
+            type={'button'}
+            onClick={handleSubmit(rejectPromiseFn)}
+          >
+            Submit
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    screen.getByText('isSubmitted');
+    screen.getByText('isNotSubmitSuccessful');
+  });
+
   it('should update correct isValid formState with dynamic fields', async () => {
     const Component = () => {
       const {

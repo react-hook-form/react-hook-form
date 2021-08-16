@@ -85,6 +85,7 @@ const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
+  rethrowSubmitErrors: true,
 } as const;
 
 const isWindowUndefined = typeof window === 'undefined';
@@ -1075,7 +1076,9 @@ export function createFormControl<
         }
       } catch (err) {
         hasNoPromiseError = false;
-        throw err;
+        if (formOptions.rethrowSubmitErrors) {
+          throw err;
+        }
       } finally {
         _formState.isSubmitted = true;
         _subjects.state.next({
