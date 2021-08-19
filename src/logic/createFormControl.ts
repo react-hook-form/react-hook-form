@@ -132,13 +132,15 @@ export function createFormControl<
     state: new Subject(),
   };
   let _timer = 0;
-  let _names = {
+  let _names: Names = {
     mount: new Set(),
+    ids: {},
     unMount: new Set(),
     array: new Set(),
     watch: new Set(),
     watchAll: false,
-  } as Names;
+    focus: '',
+  };
 
   const validationMode = getValidationModes(formOptions.mode);
   const isValidateAllFieldCriteria =
@@ -1139,6 +1141,7 @@ export function createFormControl<
       unMount: new Set(),
       array: new Set(),
       watch: new Set(),
+      ids: {},
       watchAll: false,
       focus: '',
     };

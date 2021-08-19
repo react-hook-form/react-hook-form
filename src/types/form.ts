@@ -295,6 +295,7 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 export type Names = {
+  ids: Record<string, unknown>;
   mount: InternalNameSet;
   unMount: InternalNameSet;
   array: InternalNameSet;
