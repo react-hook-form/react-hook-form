@@ -132,6 +132,7 @@ export function createFormControl<
     state: new Subject(),
   };
   let _timer = 0;
+  const _validateCount: Record<InternalFieldName, number> = {};
   let _names = {
     mount: new Set(),
     unMount: new Set(),
@@ -226,9 +227,14 @@ export function createFormControl<
       _subjects.state.next(isWatched ? { name } : updatedFormState);
     }
 
-    _subjects.state.next({
-      isValidating: false,
-    });
+    _validateCount[name]--;
+
+    if (!_validateCount[name]) {
+      _subjects.state.next({
+        isValidating: false,
+      });
+      _validateCount[name] = 0;
+    }
   };
 
   const setFieldValue = (
@@ -477,6 +483,8 @@ export function createFormControl<
           _subjects.state.next(isWatched ? { name } : { ...fieldState, name })
         );
       }
+
+      _validateCount[name] = _validateCount[name] ? +1 : 1;
 
       _subjects.state.next({
         isValidating: true,
