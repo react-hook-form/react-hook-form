@@ -98,6 +98,7 @@ export function useForm<
   delayError,
   shouldUseNativeValidation,
   shouldUnregister,
+  shouldRegisterAbsentFields,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormReturn<TFieldValues> {
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
@@ -1227,7 +1228,9 @@ export function useForm<
     if (!isMountedRef.current) {
       isMountedRef.current = true;
       readFormStateRef.current.isValid && updateIsValid();
-      !shouldUnregister && registerAbsentFields(defaultValuesRef.current);
+      !shouldUnregister &&
+        shouldRegisterAbsentFields &&
+        registerAbsentFields(defaultValuesRef.current);
     }
 
     for (const name of namesRef.current.unMount) {

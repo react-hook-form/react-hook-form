@@ -104,6 +104,7 @@ export type UseFormProps<
   shouldFocusError: boolean;
   shouldUnregister: boolean;
   shouldUseNativeValidation: boolean;
+  shouldRegisterAbsentFields: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
 }>;
