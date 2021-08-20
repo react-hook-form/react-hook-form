@@ -251,8 +251,8 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = control._subjects.array.subscribe({
-      next({ values, name: subscribeName }) {
-        if (subscribeName === name || !subscribeName) {
+      next({ values, name: fieldArrayName }) {
+        if (fieldArrayName === name || !fieldArrayName) {
           setFields(mapIds(get(values, name), keyName));
         }
       },

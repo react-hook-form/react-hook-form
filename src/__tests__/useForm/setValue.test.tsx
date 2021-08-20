@@ -10,7 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { NestedValue } from '../../types';
+import { Control, NestedValue } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
@@ -927,6 +927,71 @@ describe('setValue', () => {
     fireEvent.click(screen.getByText('Update'));
 
     expect(screen.getByTestId(inputId)).toHaveValue('updated value');
+  });
+
+  it('should set field array correctly without affect the parent field array', async () => {
+    const fieldsValue: unknown[] = [];
+    type FormValues = {
+      test: { name: string; nestedArray: { name: string }[] }[];
+    };
+
+    const Child = ({
+      control,
+      index,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+    }) => {
+      useFieldArray({
+        control,
+        name: `test.${index}.nestedArray`,
+      });
+
+      return null;
+    };
+
+    const App = () => {
+      const { setValue, control } = useForm<FormValues>({
+        defaultValues: {
+          test: [{ name: 'bill', nestedArray: [] }],
+        },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      fieldsValue.push(fields);
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <Child key={field.id} control={control} index={index} />
+          ))}
+          <button
+            onClick={() => {
+              setValue('test.0.nestedArray' as `test.0.nestedArray`, [
+                { name: 'append' },
+              ]);
+            }}
+          >
+            setValue
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(fieldsValue.length).toEqual(1);
   });
 
   it('should not register deeply nested inputs', () => {
