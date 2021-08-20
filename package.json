@@ -23,12 +23,12 @@
     }
   },
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rm -r dist",
     "prebuild": "yarn clean",
     "build": "yarn build:modern && yarn cp:dts",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
-    "cp:dts": "copyfiles -f ./src/**/*.d.ts dist && rimraf dist/__tests__",
+    "cp:dts": "copyfiles -f ./src/**/*.d.ts dist && rm -r dist/__tests__",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "yarn lint -- --fix",
@@ -98,7 +98,6 @@
     "react-dom": "^17.0.1",
     "react-native": "^0.65.1",
     "react-test-renderer": "^17.0.1",
-    "rimraf": "^3.0.2",
     "rollup": "^2.56.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-sourcemaps": "^0.6.2",
