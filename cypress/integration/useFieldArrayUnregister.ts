@@ -23,7 +23,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#prepend').click();
 
     cy.get('input[name="data.0.conditional"]').should('not.exist');
-    cy.get('input[name="data.1.conditional"]').should('has.value', 'test');
+    cy.get('input[name="data.1.conditional"]').should('has.value', '');
 
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -48,7 +48,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#swap').click();
 
     cy.get('input[name="data.1.conditional"]').should('not.exist');
-    cy.get('input[name="data.2.conditional"]').should('has.value', 'test');
+    cy.get('input[name="data.2.conditional"]').should('has.value', '');
 
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({

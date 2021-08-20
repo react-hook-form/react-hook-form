@@ -299,6 +299,12 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/svict4"
+    ><img
+            src="https://avatars.githubusercontent.com/u/1137112?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ## Backers

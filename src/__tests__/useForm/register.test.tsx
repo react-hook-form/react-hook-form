@@ -1169,6 +1169,8 @@ describe('register', () => {
       );
     });
 
+    Select.displayName = 'Select';
+
     const Input = React.forwardRef<HTMLDivElement>((_, ref) => {
       return (
         <div ref={ref}>
@@ -1177,6 +1179,8 @@ describe('register', () => {
       );
     });
 
+    Input.displayName = 'Input';
+
     const Textarea = React.forwardRef<HTMLDivElement>((_, ref) => {
       return (
         <div ref={ref}>
@@ -1184,6 +1188,8 @@ describe('register', () => {
         </div>
       );
     });
+
+    Textarea.displayName = 'Textarea';
 
     const App = () => {
       const { register, handleSubmit } = useForm({
