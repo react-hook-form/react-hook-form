@@ -38,7 +38,7 @@ export type DeepMap<T, TValue> = {
     : NonNullable<T[K]> extends NestedValue | Date | FileList | File
     ? TValue
     : NonUndefined<T[K]> extends object
-    ? DeepMap<T[K], TValue> & TValue
+    ? DeepMap<T[K], TValue> & Partial<TValue>
     : NonUndefined<T[K]> extends null
     ? DeepMap<T[K], TValue>
     : NonUndefined<T[K]> extends Array<infer U>
