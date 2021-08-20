@@ -1,5 +1,3 @@
-import 'jest-performance-testing';
-
 import * as React from 'react';
 import {
   act as actComponent,
