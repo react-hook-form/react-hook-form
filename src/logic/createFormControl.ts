@@ -743,6 +743,7 @@ export function createFormControl<
 
     if (isFieldArray) {
       _subjects.array.next({
+        name,
         values: _formValues,
       });
 
