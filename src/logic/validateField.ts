@@ -37,8 +37,9 @@ export default async (
     name,
     valueAsNumber,
     mount,
+    disabled,
   } = field._f;
-  if (!mount) {
+  if (!mount || disabled) {
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
