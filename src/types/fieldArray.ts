@@ -67,5 +67,10 @@ export type UseFieldArrayReturn<
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => void;
+  replace: (
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+  ) => void;
   fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };
