@@ -112,6 +112,19 @@ export function createFormControl<
     isValid: false,
     errors: {},
   };
+  let _fields = {};
+  let _formValues = {};
+  let _defaultValues = formOptions.defaultValues || {};
+  let _isInAction = false;
+  let _isMounted = false;
+  let _timer = 0;
+  let _names: Names = {
+    mount: new Set(),
+    unMount: new Set(),
+    array: new Set(),
+    watch: new Set(),
+  } as Names;
+  let _validateCount: Record<InternalFieldName, number> = {};
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -120,26 +133,12 @@ export function createFormControl<
     isValid: false,
     errors: false,
   };
-  let _fields = {};
-  let _formValues = {};
-  let _defaultValues = formOptions.defaultValues || {};
-  let _isInAction = false;
-  let _isMounted = false;
   const _subjects: Subjects<TFieldValues> = {
     watch: new Subject(),
     control: new Subject(),
     array: new Subject(),
     state: new Subject(),
   };
-  let _timer = 0;
-  const _validateCount: Record<InternalFieldName, number> = {};
-  let _names = {
-    mount: new Set(),
-    unMount: new Set(),
-    array: new Set(),
-    watch: new Set(),
-    watchAll: false,
-  } as Names;
 
   const validationMode = getValidationModes(formOptions.mode);
   const isValidateAllFieldCriteria =
@@ -233,7 +232,7 @@ export function createFormControl<
       _subjects.state.next({
         isValidating: false,
       });
-      _validateCount[name] = 0;
+      _validateCount = {};
     }
   };
 
