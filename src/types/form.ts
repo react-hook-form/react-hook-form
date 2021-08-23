@@ -407,7 +407,9 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   control?: Control<TFieldValues>;
 };
 
-export type FormProviderProps<TFieldValues extends FieldValues = FieldValues> =
-  {
-    children: React.ReactNode;
-  } & UseFormReturn<TFieldValues>;
+export type FormProviderProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+> = {
+  children: React.ReactNode;
+} & UseFormReturn<TFieldValues, TContext>;
