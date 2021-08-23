@@ -446,7 +446,8 @@ export function createFormControl<
       const shouldSkipValidation =
         (!hasValidation(field._f, field._f.mount) &&
           !formOptions.resolver &&
-          !get(_formState.errors, name)) ||
+          !get(_formState.errors, name) &&
+          !field._f.deps) ||
         skipValidation({
           isBlurEvent,
           isTouched: !!get(_formState.touchedFields, name),
@@ -521,6 +522,10 @@ export function createFormControl<
           type,
           values: getValues(),
         });
+
+      if (field._f.deps) {
+        trigger(field._f.deps as FieldPath<TFieldValues>[]);
+      }
 
       shouldRenderBaseOnError(
         false,
