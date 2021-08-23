@@ -1,6 +1,7 @@
+import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
-import * as React from 'react';
+
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
@@ -20,7 +21,7 @@ describe('replace', () => {
 
   it('should replace fields correctly', () => {
     let currentFields: any = [];
-    let defaultValues: DefaultValues = {
+    const defaultValues: DefaultValues = {
       test: [{ x: '101' }, { x: '102' }, { x: '103' }],
     };
 

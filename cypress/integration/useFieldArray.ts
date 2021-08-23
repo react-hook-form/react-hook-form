@@ -426,14 +426,14 @@ describe('useFieldArray', () => {
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
-        expect(JSON.parse($state.text())).to.be.deep.equal({
-          data: [
-            { name: '37. lorem' },
-            { name: '37. ipsum' },
-            { name: '37. dolor' },
-            { name: '37. sit amet' },
-          ],
-        }),
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '37. lorem' },
+          { name: '37. ipsum' },
+          { name: '37. dolor' },
+          { name: '37. sit amet' },
+        ],
+      }),
     );
   });
 
