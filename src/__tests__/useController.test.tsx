@@ -472,4 +472,32 @@ describe('useController', () => {
     expect(reportValidity).toBeCalledTimes(3);
     expect(focus).toBeCalledTimes(1);
   });
+
+  it('should update with inline defaultValue', async () => {
+    const onSubmit = jest.fn();
+    const App = () => {
+      const { control, handleSubmit } = useForm();
+      useController({ control, defaultValue: 'test', name: 'test' });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(onSubmit).toBeCalledWith({
+      test: 'test',
+    });
+  });
 });
