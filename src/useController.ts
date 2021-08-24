@@ -102,14 +102,18 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) =>
-        elm &&
-        registerProps.ref({
-          focus: () => elm.focus && elm.focus(),
-          setCustomValidity: (message: string) =>
-            elm.setCustomValidity(message),
-          reportValidity: () => elm.reportValidity(),
-        }),
+      ref: (elm) => {
+        const field = get(control._fields, name);
+
+        if (elm && field) {
+          field._f.ref = {
+            focus: () => elm.focus(),
+            setCustomValidity: (message: string) =>
+              elm.setCustomValidity(message),
+            reportValidity: () => elm.reportValidity(),
+          };
+        }
+      },
     },
     formState,
     fieldState: {
