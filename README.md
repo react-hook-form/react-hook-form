@@ -21,6 +21,8 @@
 
 Version 7 | [Version 6](/docs/README.V6.md)
 
+English | <a href="./docs/README.V7.ja-JP.md">日本語</a> 
+
 ## Features
 
 - Built with performance, UX and DX in mind
