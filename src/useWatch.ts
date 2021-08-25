@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import convertToArrayPayload from './utils/convertToArrayPayload';
+import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import {
   Control,
@@ -60,7 +61,8 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   React.useEffect(() => {
     const watchSubscription = control._subjects.watch.subscribe({
       next: ({ name }) => {
-        (!_name.current ||
+        if (
+          !_name.current ||
           !name ||
           convertToArrayPayload(_name.current).some(
             (fieldName) =>
@@ -68,13 +70,20 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
               fieldName &&
               (fieldName.startsWith(name as InternalFieldName) ||
                 name.startsWith(fieldName as InternalFieldName)),
-          )) &&
-          updateValue(
-            control._getWatch(
-              _name.current as InternalFieldName,
-              defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-            ),
+          )
+        ) {
+          const result = control._getWatch(
+            _name.current as InternalFieldName,
+            defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           );
+          updateValue(
+            isObject(result)
+              ? { ...result }
+              : Array.isArray(result)
+              ? [...result]
+              : result,
+          );
+        }
       },
     });
 

@@ -631,13 +631,7 @@ export function createFormControl<
       result.push(get(fieldValues, fieldName as InternalFieldName));
     }
 
-    return Array.isArray(fieldNames)
-      ? result
-      : isObject(result[0])
-      ? { ...result[0] }
-      : Array.isArray(result[0])
-      ? [...result[0]]
-      : result[0];
+    return Array.isArray(fieldNames) ? result : result[0];
   };
 
   const _updateValues: RegisterMissFields<TFieldValues> = (
