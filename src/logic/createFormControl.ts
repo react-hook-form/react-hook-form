@@ -164,16 +164,6 @@ export function createFormControl<
     });
   };
 
-  const shouldRenderBaseOnValid = async () => {
-    const isValid = await validateForm(_fields, true);
-    if (isValid !== _formState.isValid) {
-      _formState.isValid = isValid;
-      _subjects.state.next({
-        isValid,
-      });
-    }
-  };
-
   const shouldRenderBaseOnError = async (
     shouldSkipRender: boolean,
     name: InternalFieldName,
@@ -189,7 +179,7 @@ export function createFormControl<
     const previousError = get(_formState.errors, name);
     const isValid = !!(
       _proxyFormState.isValid &&
-      (formOptions.resolver ? isValidFromResolver : shouldRenderBaseOnValid())
+      (formOptions.resolver ? isValidFromResolver : _updateValid())
     );
 
     if (props.delayError && error) {
@@ -208,7 +198,7 @@ export function createFormControl<
       (isWatched ||
         (error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
-        _formState.isValid !== isValid) &&
+        (formOptions.resolver && _formState.isValid !== isValid)) &&
       !shouldSkipRender
     ) {
       const updatedFormState = {
@@ -641,13 +631,7 @@ export function createFormControl<
       result.push(get(fieldValues, fieldName as InternalFieldName));
     }
 
-    return Array.isArray(fieldNames)
-      ? result
-      : isObject(result[0])
-      ? { ...result[0] }
-      : Array.isArray(result[0])
-      ? [...result[0]]
-      : result[0];
+    return Array.isArray(fieldNames) ? result : result[0];
   };
 
   const _updateValues: RegisterMissFields<TFieldValues> = (

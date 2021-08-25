@@ -65,4 +65,32 @@ describe('FormProvider', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('should not throw type error', () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    type Context = {
+      someValue: boolean;
+    };
+
+    function App() {
+      const methods = useForm<FormValues, Context>();
+      const { handleSubmit, register } = methods;
+
+      return (
+        <div>
+          <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(() => {})}>
+              <input {...register('firstName')} placeholder="First Name" />
+              <input type="submit" />
+            </form>
+          </FormProvider>
+        </div>
+      );
+    }
+
+    render(<App />);
+  });
 });
