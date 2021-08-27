@@ -586,9 +586,10 @@ export function createFormControl<
     Object.entries(value).forEach(([fieldKey, fieldValue]) => {
       const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
       const field = get(_fields, fieldName);
-      const isFieldArray = _names.array.has(name);
 
-      (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
+      (_names.array.has(name) ||
+        !isPrimitive(fieldValue) ||
+        (field && !field._f)) &&
       !isDateObject(fieldValue)
         ? setValues(
             fieldName,
