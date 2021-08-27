@@ -537,8 +537,7 @@ export function createFormControl<
 
     if (field) {
       const fieldValue = get(_formValues, name);
-      const isValueUndefined = isUndefined(fieldValue);
-      const defaultValue = isValueUndefined
+      const defaultValue = isUndefined(fieldValue)
         ? get(_defaultValues, name)
         : fieldValue;
 
