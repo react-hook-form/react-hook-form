@@ -219,7 +219,7 @@ export function createFormControl<
 
     _validateCount[name]--;
 
-    if (!_validateCount[name]) {
+    if (_proxyFormState.isValidating && !_validateCount[name]) {
       _subjects.state.next({
         isValidating: false,
       });
@@ -426,15 +426,14 @@ export function createFormControl<
     const field = get(_fields, name) as Field;
 
     if (field) {
-      let inputValue = inputType ? getFieldValue(field) : undefined;
-      inputValue = isUndefined(inputValue) ? value : inputValue;
+      const inputValue = inputType ? getFieldValue(field._f) : value;
 
       const isBlurEvent = type === EVENTS.BLUR;
       const { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange } =
         getValidationModes(formOptions.reValidateMode);
 
       const shouldSkipValidation =
-        (!hasValidation(field._f, field._f.mount) &&
+        (!hasValidation(field._f) &&
           !formOptions.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
@@ -476,9 +475,10 @@ export function createFormControl<
 
       _validateCount[name] = _validateCount[name] ? +1 : 1;
 
-      _subjects.state.next({
-        isValidating: true,
-      });
+      _proxyFormState.isValidating &&
+        _subjects.state.next({
+          isValidating: true,
+        });
 
       if (formOptions.resolver) {
         const { errors } = await executeResolver([name]);
@@ -504,6 +504,7 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           )
         )[name];
+
         _updateValid();
       }
 
@@ -550,7 +551,7 @@ export function createFormControl<
         set(
           _formValues,
           name,
-          shouldSkipValueAs ? defaultValue : getFieldValue(field),
+          shouldSkipValueAs ? defaultValue : getFieldValue(field._f),
         );
       } else {
         setFieldValue(name, defaultValue);
