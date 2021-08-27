@@ -48,6 +48,7 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
+import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -173,14 +174,14 @@ export function createFormControl<
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-    isValidFromResolver?: boolean,
+    isValid?: boolean,
     isWatched?: boolean,
   ): Promise<void> => {
     const previousError = get(_formState.errors, name);
-    const isValid = !!(
+    const shouldUpdateValid =
       _proxyFormState.isValid &&
-      (formOptions.resolver ? isValidFromResolver : _updateValid())
-    );
+      isBoolean(isValid) &&
+      _formState.isValid !== isValid;
 
     if (props.delayError && error) {
       _delayCallback =
@@ -198,12 +199,12 @@ export function createFormControl<
       (isWatched ||
         (error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
-        (formOptions.resolver && _formState.isValid !== isValid)) &&
+        shouldUpdateValid) &&
       !shouldSkipRender
     ) {
       const updatedFormState = {
         ...fieldState,
-        ...(_proxyFormState.isValid && formOptions.resolver ? { isValid } : {}),
+        ...(shouldUpdateValid ? { isValid } : {}),
         errors: _formState.errors,
         name,
       };
@@ -384,7 +385,7 @@ export function createFormControl<
 
       if (field) {
         const _f = field._f;
-        const val = omit(field, '_f');
+        const fieldValue = omit(field, '_f');
 
         if (_f) {
           const fieldError = await validateField(
@@ -394,22 +395,21 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           );
 
-          if (shouldCheckValid) {
-            if (fieldError[_f.name]) {
-              context.valid = false;
+          if (fieldError[_f.name]) {
+            context.valid = false;
+
+            if (shouldCheckValid) {
               break;
             }
-          } else {
-            if (fieldError[_f.name]) {
-              context.valid = false;
-            }
-            fieldError[_f.name]
-              ? set(_formState.errors, _f.name, fieldError[_f.name])
-              : unset(_formState.errors, _f.name);
           }
+
+          fieldError[_f.name]
+            ? set(_formState.errors, _f.name, fieldError[_f.name])
+            : unset(_formState.errors, _f.name);
         }
 
-        val && (await validateForm(val, shouldCheckValid, context));
+        fieldValue &&
+          (await validateForm(fieldValue, shouldCheckValid, context));
       }
     }
 
@@ -504,6 +504,7 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           )
         )[name];
+        _updateValid();
       }
 
       !isBlurEvent &&
@@ -537,8 +538,7 @@ export function createFormControl<
 
     if (field) {
       const fieldValue = get(_formValues, name);
-      const isValueUndefined = isUndefined(fieldValue);
-      const defaultValue = isValueUndefined
+      const defaultValue = isUndefined(fieldValue)
         ? get(_defaultValues, name)
         : fieldValue;
 
@@ -557,7 +557,7 @@ export function createFormControl<
       }
     }
 
-    _isMounted && _proxyFormState.isValid && _updateValid();
+    _isMounted && _updateValid();
   };
 
   const _getIsDirty: GetIsDirty = (name, data) => {
@@ -567,15 +567,17 @@ export function createFormControl<
   };
 
   const _updateValid = async () => {
-    const isValid = formOptions.resolver
-      ? isEmptyObject((await executeResolver()).errors)
-      : await validateForm(_fields, true);
+    if (_proxyFormState.isValid) {
+      const isValid = formOptions.resolver
+        ? isEmptyObject((await executeResolver()).errors)
+        : await validateForm(_fields, true);
 
-    if (isValid !== _formState.isValid) {
-      _formState.isValid = isValid;
-      _subjects.state.next({
-        isValid,
-      });
+      if (isValid !== _formState.isValid) {
+        _formState.isValid = isValid;
+        _subjects.state.next({
+          isValid,
+        });
+      }
     }
   };
 
@@ -587,9 +589,10 @@ export function createFormControl<
     Object.entries(value).forEach(([fieldKey, fieldValue]) => {
       const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
       const field = get(_fields, fieldName);
-      const isFieldArray = _names.array.has(name);
 
-      (isFieldArray || !isPrimitive(fieldValue) || (field && !field._f)) &&
+      (_names.array.has(name) ||
+        !isPrimitive(fieldValue) ||
+        (field && !field._f)) &&
       !isDateObject(fieldValue)
         ? setValues(
             fieldName,
@@ -805,15 +808,17 @@ export function createFormControl<
             }),
           )
         ).every(Boolean);
+
+        _updateValid();
       } else {
-        await validateForm(_fields);
-        isValid = isEmptyObject(_formState.errors);
+        isValid = await validateForm(_fields);
       }
     }
 
     _subjects.state.next({
       ...(isString(name) ? { name } : {}),
       errors: _formState.errors,
+      isValid,
       isValidating: false,
     });
 
@@ -824,8 +829,6 @@ export function createFormControl<
         name ? fieldNames : _names.mount,
       );
     }
-
-    _proxyFormState.isValid && _updateValid();
 
     return isValid;
   };
@@ -890,7 +893,7 @@ export function createFormControl<
               _getWatch(
                 undefined,
                 defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-              ) as UnpackNestedValue<TFieldValues>,
+              ),
               info,
             ),
         })
@@ -905,7 +908,7 @@ export function createFormControl<
       _names.mount.delete(inputName);
       _names.array.delete(inputName);
 
-      if (get(_fields, inputName) as Field) {
+      if (get(_fields, inputName)) {
         if (!options.keepValue) {
           unset(_fields, inputName);
           unset(_formValues, inputName);
@@ -926,6 +929,7 @@ export function createFormControl<
       ..._formState,
       ...(!options.keepDirty ? {} : { isDirty: _getIsDirty() }),
     });
+
     !options.keepIsValid && _updateValid();
   };
 
