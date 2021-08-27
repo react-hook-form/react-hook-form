@@ -383,7 +383,7 @@ export function createFormControl<
 
       if (field) {
         const _f = field._f;
-        const val = omit(field, '_f');
+        const fieldValue = omit(field, '_f');
 
         if (_f) {
           const fieldError = await validateField(
@@ -406,7 +406,8 @@ export function createFormControl<
             : unset(_formState.errors, _f.name);
         }
 
-        val && (await validateForm(val, shouldCheckValid, context));
+        fieldValue &&
+          (await validateForm(fieldValue, shouldCheckValid, context));
       }
     }
 
