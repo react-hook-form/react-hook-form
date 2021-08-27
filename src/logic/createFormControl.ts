@@ -393,19 +393,17 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           );
 
-          if (shouldCheckValid) {
-            if (fieldError[_f.name]) {
-              context.valid = false;
+          if (fieldError[_f.name]) {
+            context.valid = false;
+
+            if (shouldCheckValid) {
               break;
             }
-          } else {
-            if (fieldError[_f.name]) {
-              context.valid = false;
-            }
-            fieldError[_f.name]
-              ? set(_formState.errors, _f.name, fieldError[_f.name])
-              : unset(_formState.errors, _f.name);
           }
+
+          fieldError[_f.name]
+            ? set(_formState.errors, _f.name, fieldError[_f.name])
+            : unset(_formState.errors, _f.name);
         }
 
         val && (await validateForm(val, shouldCheckValid, context));
@@ -806,8 +804,7 @@ export function createFormControl<
           )
         ).every(Boolean);
       } else {
-        await validateForm(_fields);
-        isValid = isEmptyObject(_formState.errors);
+        isValid = await validateForm(_fields);
       }
     }
 
