@@ -509,6 +509,10 @@ describe('register', () => {
       const { register, handleSubmit } = useForm({
         defaultValues: {
           test: ['1', '2', '3'],
+          nested: {
+            test: {},
+            test1: [],
+          },
         },
       });
       return (
@@ -528,6 +532,10 @@ describe('register', () => {
     });
 
     expect(data).toEqual({
+      nested: {
+        test: {},
+        test1: [],
+      },
       test: ['1', '2', '3'],
     });
 
@@ -539,6 +547,10 @@ describe('register', () => {
 
     expect(data).toEqual({
       test: ['2', '3'],
+      nested: {
+        test: {},
+        test1: [],
+      },
     });
   });
 

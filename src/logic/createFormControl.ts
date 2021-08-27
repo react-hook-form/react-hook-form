@@ -17,13 +17,13 @@ import {
   Path,
   PathValue,
   Ref,
-  RegisterMissFields,
   RegisterOptions,
   ResolverResult,
   SetFieldValue,
   SetValueConfig,
   Subjects,
   UnpackNestedValue,
+  UpdateValues,
   UseFormClearErrors,
   UseFormGetValues,
   UseFormHandleSubmit,
@@ -634,7 +634,7 @@ export function createFormControl<
     return Array.isArray(fieldNames) ? result : result[0];
   };
 
-  const _updateValues: RegisterMissFields<TFieldValues> = (
+  const _updateValues: UpdateValues<TFieldValues> = (
     defaultValues,
     name = '',
   ): void => {
@@ -644,7 +644,10 @@ export function createFormControl<
       const field = get(_fields, fieldName);
 
       if (!field || !field._f) {
-        if (isObject(value) || Array.isArray(value)) {
+        if (
+          (isObject(value) && Object.keys(value).length) ||
+          (Array.isArray(value) && value.length)
+        ) {
           _updateValues(value, fieldName);
         } else if (!field) {
           set(_formValues, fieldName, value);
