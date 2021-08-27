@@ -805,6 +805,8 @@ export function createFormControl<
             }),
           )
         ).every(Boolean);
+
+        _updateValid();
       } else {
         isValid = await validateForm(_fields);
       }
@@ -813,6 +815,7 @@ export function createFormControl<
     _subjects.state.next({
       ...(isString(name) ? { name } : {}),
       errors: _formState.errors,
+      isValid,
       isValidating: false,
     });
 
@@ -823,8 +826,6 @@ export function createFormControl<
         name ? fieldNames : _names.mount,
       );
     }
-
-    _updateValid();
 
     return isValid;
   };
