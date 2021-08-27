@@ -48,6 +48,7 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
+import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -173,13 +174,10 @@ export function createFormControl<
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-    isValidFromResolver?: boolean,
+    isValid?: boolean,
     isWatched?: boolean,
   ): Promise<void> => {
     const previousError = get(_formState.errors, name);
-    const isValid = formOptions.resolver
-      ? isValidFromResolver
-      : !!_updateValid();
 
     if (props.delayError && error) {
       _delayCallback =
@@ -197,12 +195,12 @@ export function createFormControl<
       (isWatched ||
         (error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
-        (formOptions.resolver && _formState.isValid !== isValid)) &&
+        (isBoolean(isValid) && _formState.isValid !== isValid)) &&
       !shouldSkipRender
     ) {
       const updatedFormState = {
         ...fieldState,
-        ...(_proxyFormState.isValid && formOptions.resolver ? { isValid } : {}),
+        ...(_proxyFormState.isValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
         name,
       };
@@ -502,6 +500,7 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           )
         )[name];
+        _updateValid();
       }
 
       !isBlurEvent &&
