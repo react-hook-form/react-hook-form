@@ -997,9 +997,10 @@ export function createFormControl<
     }
 
     if (
-      !isUndefined(options.disabled) &&
+      isBoolean(options.disabled) &&
       field &&
       field._f &&
+      isBoolean(field._f.ref.disabled) &&
       field._f.ref.disabled !== options.disabled
     ) {
       set(_formValues, name, options.disabled ? undefined : field._f.ref.value);
