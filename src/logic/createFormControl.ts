@@ -142,6 +142,7 @@ export function createFormControl<
   };
 
   const validationMode = getValidationModes(formOptions.mode);
+  const reValidateMode = getValidationModes(formOptions.reValidateMode);
   const isValidateAllFieldCriteria =
     formOptions.criteriaMode === VALIDATION_MODE.all;
 
@@ -438,7 +439,7 @@ export function createFormControl<
           isBlurEvent,
           get(_formState.touchedFields, name),
           _formState.isSubmitted,
-          getValidationModes(formOptions.reValidateMode),
+          reValidateMode,
           validationMode,
         );
       const isWatched =
