@@ -178,6 +178,10 @@ export function createFormControl<
     isWatched?: boolean,
   ): Promise<void> => {
     const previousError = get(_formState.errors, name);
+    const shouldUpdateValid =
+      _proxyFormState.isValid &&
+      isBoolean(isValid) &&
+      _formState.isValid !== isValid;
 
     if (props.delayError && error) {
       _delayCallback =
@@ -195,12 +199,12 @@ export function createFormControl<
       (isWatched ||
         (error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
-        (isBoolean(isValid) && _formState.isValid !== isValid)) &&
+        shouldUpdateValid) &&
       !shouldSkipRender
     ) {
       const updatedFormState = {
         ...fieldState,
-        ...(_proxyFormState.isValid && isBoolean(isValid) ? { isValid } : {}),
+        ...(shouldUpdateValid ? { isValid } : {}),
         errors: _formState.errors,
         name,
       };
