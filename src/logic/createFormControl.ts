@@ -427,24 +427,20 @@ export function createFormControl<
 
     if (field) {
       const inputValue = inputType ? getFieldValue(field._f) : value;
-
       const isBlurEvent = type === EVENTS.BLUR;
-      const { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange } =
-        getValidationModes(formOptions.reValidateMode);
 
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !formOptions.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
-        skipValidation({
+        skipValidation(
           isBlurEvent,
-          isTouched: !!get(_formState.touchedFields, name),
-          isSubmitted: _formState.isSubmitted,
-          isReValidateOnBlur,
-          isReValidateOnChange,
-          ...validationMode,
-        });
+          get(_formState.touchedFields, name),
+          _formState.isSubmitted,
+          getValidationModes(formOptions.reValidateMode),
+          validationMode,
+        );
       const isWatched =
         !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
 
