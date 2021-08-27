@@ -1777,5 +1777,26 @@ describe('validateField', () => {
       expect(setCustomValidity).toBeCalledWith('');
       expect(reportValidity).toBeCalled();
     });
+
+    it('should abort validation early when input is disabled', async () => {
+      expect(
+        await validateField(
+          {
+            _f: {
+              name: 'test',
+              ref: {
+                name: 'test',
+                value: '',
+              },
+              value: '',
+              required: 'something is wrong',
+              disabled: true,
+            },
+          },
+          '',
+          false,
+        ),
+      ).toEqual({});
+    });
   });
 });

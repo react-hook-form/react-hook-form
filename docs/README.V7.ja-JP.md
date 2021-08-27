@@ -19,24 +19,22 @@
 
 </div>
 
-Version 7 | [Version 6](/docs/README.V6.md)
+Version 7 | [Version 6(日本語)](/docs/README.ja-JP.md)
 
-English | <a href="./docs/README.V7.ja-JP.md">日本語</a> 
+## 特徴
 
-## Features
+- パフォーマンスと UX/DX を念頭に構築
+- 非制御フォームバリデーション
+- [UIライブラリ](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)と統合し、すぐに利用が可能
+- [依存関係](./package.json)がなく、[小さいサイズ](https://bundlephobia.com/result?p=react-hook-form@latest)
+- ブラウザのネイティブ[バリデーション](https://react-hook-form.com/get-started#Applyvalidation)をサポート
+- [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) また custom をサポート
 
-- Built with performance, UX and DX in mind
-- Embraces native form validation
-- Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
-- [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
-- Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) or custom
-
-## Install
+## インストール
 
     npm install react-hook-form
 
-## Links
+## リンク集
 
 - [Get started](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
@@ -76,9 +74,9 @@ function App() {
   <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
 </a>
 
-## Sponsors
+## スポンサー
 
-Thanks go to these kind and lovely sponsors (companies and individuals)!
+親切で素敵なスポンサー(個人/企業)に感謝します!
 
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="94" height="94" />
@@ -307,33 +305,27 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
-    <a href="https://github.com/raisiqueira"
-    ><img
-            src="https://avatars.githubusercontent.com/u/2914170?v=4"
-            width="45"
-            height="45"
-    /></a>
 </p>
 
-## Backers
+## 支持者(後援者)
 
-Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+すべての支援者(後援者)に感謝します! [[支持者(後援者)になる](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-## Organizations
+## 組織
 
-Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
+素晴らしい組織に感謝します! [[貢献する](https://opencollective.com/react-hook-form/contribute)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
 </a>
 
-## Contributors
+## コントリビューター
 
-Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
+素晴らしいコントリビューターに感謝します! [[コントリビューターになる](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />

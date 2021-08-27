@@ -14,6 +14,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
+import { set } from './utils';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
@@ -30,6 +31,7 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
   );
+  set(control._formValues, name, value);
   const formState = useFormState({
     control: control || methods.control,
     name,
@@ -100,14 +102,18 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) =>
-        elm &&
-        registerProps.ref({
-          focus: () => elm.focus && elm.focus(),
-          setCustomValidity: (message: string) =>
-            elm.setCustomValidity(message),
-          reportValidity: () => elm.reportValidity(),
-        }),
+      ref: (elm) => {
+        const field = get(control._fields, name);
+
+        if (elm && field) {
+          field._f.ref = {
+            focus: () => elm.focus(),
+            setCustomValidity: (message: string) =>
+              elm.setCustomValidity(message),
+            reportValidity: () => elm.reportValidity(),
+          };
+        }
+      },
     },
     formState,
     fieldState: {

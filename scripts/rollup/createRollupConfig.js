@@ -1,5 +1,4 @@
 import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
 import external from 'rollup-plugin-peer-deps-external';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import { terser } from 'rollup-plugin-terser';
@@ -25,7 +24,6 @@ export function createRollupConfig(options, callback) {
         tsconfig: options.tsconfig,
         clean: true,
       }),
-      resolve(),
       options.format === 'umd' &&
         commonjs({
           include: /\/node_modules\//,

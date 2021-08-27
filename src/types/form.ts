@@ -162,7 +162,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
-export type RegisterMissFields<TFieldValues extends FieldValues> = <
+export type UpdateValues<TFieldValues extends FieldValues> = <
   T extends Partial<DefaultValues<TFieldValues>>,
 >(
   defaultValues: T,
@@ -337,7 +337,7 @@ export type Control<
   _names: Names;
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _updateValues: RegisterMissFields<TFieldValues>;
+  _updateValues: UpdateValues<TFieldValues>;
   _isInAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
   _formState: FormControl<FormState<TFieldValues>>;
@@ -407,7 +407,9 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   control?: Control<TFieldValues>;
 };
 
-export type FormProviderProps<TFieldValues extends FieldValues = FieldValues> =
-  {
-    children: React.ReactNode;
-  } & UseFormReturn<TFieldValues>;
+export type FormProviderProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+> = {
+  children: React.ReactNode;
+} & UseFormReturn<TFieldValues, TContext>;
