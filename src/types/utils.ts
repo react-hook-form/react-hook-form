@@ -102,26 +102,24 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V>
 export type FieldArrayPath<TFieldValues extends FieldValues> =
   ArrayPath<TFieldValues>;
 
-export type PathValue<
-  T,
-  P extends Path<T> | ArrayPath<T>,
-> = P extends `${infer K}.${infer R}`
-  ? K extends keyof T
-    ? R extends Path<T[K]>
-      ? PathValue<T[K], R>
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> =
+  P extends `${infer K}.${infer R}`
+    ? K extends keyof T
+      ? R extends Path<T[K]>
+        ? PathValue<T[K], R>
+        : never
+      : K extends `${ArrayKey}`
+      ? T extends ReadonlyArray<infer V>
+        ? PathValue<V, R & Path<V>>
+        : never
       : never
-    : K extends `${ArrayKey}`
+    : P extends keyof T
+    ? T[P]
+    : P extends `${ArrayKey}`
     ? T extends ReadonlyArray<infer V>
-      ? PathValue<V, R & Path<V>>
+      ? V
       : never
-    : never
-  : P extends keyof T
-  ? T[P]
-  : P extends `${ArrayKey}`
-  ? T extends ReadonlyArray<infer V>
-    ? V
-    : never
-  : never;
+    : never;
 
 export type FieldPathValue<
   TFieldValues extends FieldValues,
@@ -142,3 +140,28 @@ export type FieldPathValues<
     TPath[K] & FieldPath<TFieldValues>
   >;
 };
+
+type UnionKeys<T> = T extends any ? keyof T : never;
+
+type UnionValues<T, K> = T extends any
+  ? K extends keyof T
+    ? T[K]
+    : never
+  : never;
+
+type OptionalKeys<T> = T extends any
+  ? { [K in keyof T]-?: {} extends Pick<T, K> ? K : never }[keyof T]
+  : never;
+
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export type UnionLike<T> = T[] extends ReadonlyArray<infer U>[]
+  ? { [K in keyof T]: UnionLike<U> }
+  : T[] extends object[]
+  ? PartialBy<
+      {
+        [K in UnionKeys<T>]: UnionLike<UnionValues<T, K>>;
+      },
+      Exclude<UnionKeys<T>, keyof T> | OptionalKeys<T>
+    >
+  : T;
