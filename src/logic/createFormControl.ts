@@ -419,11 +419,11 @@ export function createFormControl<
     target,
     target: { value, name, type: inputType },
   }) => {
-    let error;
-    let isValid;
     const field = get(_fields, name) as Field;
 
     if (field) {
+      let error;
+      let isValid;
       const inputValue = inputType ? getFieldValue(field._f) : value;
       const isBlurEvent = type === EVENTS.BLUR;
 
@@ -439,8 +439,7 @@ export function createFormControl<
           reValidateMode,
           validationMode,
         );
-      const isWatched =
-        !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
+      const isWatched = !isBlurEvent && isFieldWatched(name);
 
       if (!isUndefined(inputValue)) {
         set(_formValues, name, inputValue);
