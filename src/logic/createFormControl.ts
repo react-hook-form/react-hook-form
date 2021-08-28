@@ -455,15 +455,20 @@ export function createFormControl<
 
       const shouldRender = !isEmptyObject(fieldState) || isWatched;
 
-      if (shouldSkipValidation) {
+      const sendSignalToUseWatch = () => {
         !isBlurEvent &&
           _subjects.watch.next({
             name,
             type,
           });
+      };
+
+      if (shouldSkipValidation) {
+        sendSignalToUseWatch();
+
         return (
           shouldRender &&
-          _subjects.state.next(isWatched ? { name } : { ...fieldState, name })
+          _subjects.state.next({ name, ...(isWatched ? {} : fieldState) })
         );
       }
 
@@ -474,11 +479,7 @@ export function createFormControl<
           isValidating: true,
         });
 
-      !isBlurEvent &&
-        _subjects.watch.next({
-          name,
-          type,
-        });
+      sendSignalToUseWatch();
 
       !isBlurEvent && isWatched && _subjects.state.next({});
 
