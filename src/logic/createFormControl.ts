@@ -455,22 +455,20 @@ export function createFormControl<
 
       const shouldRender = !isEmptyObject(fieldState) || isWatched;
 
-      const sendSignalToUseWatch = () => {
-        !isBlurEvent &&
-          _subjects.watch.next({
-            name,
-            type,
-          });
-      };
+      !isBlurEvent &&
+        _subjects.watch.next({
+          name,
+          type,
+        });
 
       if (shouldSkipValidation) {
-        sendSignalToUseWatch();
-
         return (
           shouldRender &&
           _subjects.state.next({ name, ...(isWatched ? {} : fieldState) })
         );
       }
+
+      !isBlurEvent && isWatched && _subjects.state.next({});
 
       _validateCount[name] = _validateCount[name] ? +1 : 1;
 
@@ -478,10 +476,6 @@ export function createFormControl<
         _subjects.state.next({
           isValidating: true,
         });
-
-      sendSignalToUseWatch();
-
-      !isBlurEvent && isWatched && _subjects.state.next({});
 
       if (formOptions.resolver) {
         const { errors } = await executeResolver([name]);
