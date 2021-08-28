@@ -48,7 +48,6 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
-import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -169,20 +168,17 @@ export function createFormControl<
   const shouldRenderBaseOnError = async (
     shouldSkipRender: boolean,
     name: InternalFieldName,
+    isValid: boolean,
     error?: FieldError,
     fieldState?: {
       dirty?: FieldNamesMarkedBoolean<TFieldValues>;
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-    isValid?: boolean,
-    isWatched?: boolean,
   ): Promise<void> => {
     const previousError = get(_formState.errors, name);
     const shouldUpdateValid =
-      _proxyFormState.isValid &&
-      isBoolean(isValid) &&
-      _formState.isValid !== isValid;
+      _proxyFormState.isValid && _formState.isValid !== isValid;
 
     if (props.delayError && error) {
       _delayCallback =
@@ -197,8 +193,7 @@ export function createFormControl<
     }
 
     if (
-      (isWatched ||
-        (error ? !deepEqual(previousError, error) : previousError) ||
+      ((error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
         shouldUpdateValid) &&
       !shouldSkipRender
@@ -215,7 +210,7 @@ export function createFormControl<
         ...updatedFormState,
       };
 
-      _subjects.state.next(isWatched ? { name } : updatedFormState);
+      _subjects.state.next(updatedFormState);
     }
 
     _validateCount[name]--;
@@ -404,9 +399,11 @@ export function createFormControl<
             }
           }
 
-          fieldError[_f.name]
-            ? set(_formState.errors, _f.name, fieldError[_f.name])
-            : unset(_formState.errors, _f.name);
+          if (!shouldCheckValid) {
+            fieldError[_f.name]
+              ? set(_formState.errors, _f.name, fieldError[_f.name])
+              : unset(_formState.errors, _f.name);
+          }
         }
 
         fieldValue &&
@@ -477,6 +474,15 @@ export function createFormControl<
           isValidating: true,
         });
 
+      !isBlurEvent &&
+        (isWatched
+          ? _subjects.state.next({})
+          : _subjects.watch.next({
+              name,
+              type,
+              values: getValues(),
+            }));
+
       if (formOptions.resolver) {
         const { errors } = await executeResolver([name]);
         error = get(errors, name);
@@ -502,28 +508,14 @@ export function createFormControl<
           )
         )[name];
 
-        _updateValid();
+        isValid = await _updateValid(true);
       }
-
-      !isBlurEvent &&
-        _subjects.watch.next({
-          name,
-          type,
-          values: getValues(),
-        });
 
       if (field._f.deps) {
         trigger(field._f.deps as FieldPath<TFieldValues>[]);
       }
 
-      shouldRenderBaseOnError(
-        false,
-        name,
-        error,
-        fieldState,
-        isValid,
-        isWatched,
-      );
+      shouldRenderBaseOnError(false, name, isValid, error, fieldState);
     }
   };
 
@@ -564,19 +556,21 @@ export function createFormControl<
     return !deepEqual({ ...getValues() }, _defaultValues);
   };
 
-  const _updateValid = async () => {
+  const _updateValid = async (skipRender?: boolean) => {
+    let isValid = false;
     if (_proxyFormState.isValid) {
-      const isValid = formOptions.resolver
+      isValid = formOptions.resolver
         ? isEmptyObject((await executeResolver()).errors)
         : await validateForm(_fields, true);
 
-      if (isValid !== _formState.isValid) {
+      if (!skipRender && isValid !== _formState.isValid) {
         _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
         });
       }
     }
+    return isValid;
   };
 
   const setValues = (
