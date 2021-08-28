@@ -475,13 +475,12 @@ export function createFormControl<
         });
 
       !isBlurEvent &&
-        (isWatched
-          ? _subjects.state.next({})
-          : _subjects.watch.next({
-              name,
-              type,
-              values: getValues(),
-            }));
+        _subjects.watch.next({
+          name,
+          type,
+        });
+
+      !isBlurEvent && isWatched && _subjects.state.next({});
 
       if (formOptions.resolver) {
         const { errors } = await executeResolver([name]);
