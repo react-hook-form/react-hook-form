@@ -12,6 +12,7 @@ import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
 import { ControllerRenderProps } from '../../types';
 import { useForm } from '../../useForm';
+import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
 
@@ -1061,6 +1062,75 @@ describe('register', () => {
     });
 
     expect(submit).toBeCalledWith({ test: undefined });
+  });
+
+  it('should not throw errors with disabled input', async () => {
+    const message = 'Must have at least one checked!';
+
+    function Checkbox() {
+      const { register } = useFormContext();
+
+      return (
+        <>
+          <p>
+            Must select:
+            <input
+              type="checkbox"
+              value="test"
+              {...register('test', {
+                disabled: false,
+                validate: (value) => {
+                  return value && value.length > 0 ? true : message;
+                },
+              })}
+            />
+            A
+          </p>
+        </>
+      );
+    }
+
+    function App() {
+      const formMethods = useForm({
+        mode: 'onSubmit',
+        defaultValues: { test: '' },
+      });
+      const { handleSubmit, formState } = formMethods;
+
+      return (
+        <>
+          <FormProvider {...formMethods}>
+            <form onSubmit={handleSubmit(() => {})}>
+              <Checkbox />
+              <button>Submit</button>
+              <p>{formState.errors.test?.message}</p>
+            </form>
+          </FormProvider>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(() => {
+      screen.getByText(message);
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('checkbox'));
+    });
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(screen.queryByText(message)).toBeNull();
   });
 
   describe('when setValueAs is presented with inputs', () => {
