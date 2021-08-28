@@ -142,6 +142,7 @@ export function createFormControl<
   };
 
   const validationMode = getValidationModes(formOptions.mode);
+  const reValidateMode = getValidationModes(formOptions.reValidateMode);
   const isValidateAllFieldCriteria =
     formOptions.criteriaMode === VALIDATION_MODE.all;
 
@@ -168,20 +169,17 @@ export function createFormControl<
   const shouldRenderBaseOnError = async (
     shouldSkipRender: boolean,
     name: InternalFieldName,
+    isValid: boolean,
     error?: FieldError,
     fieldState?: {
       dirty?: FieldNamesMarkedBoolean<TFieldValues>;
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-    isValid?: boolean,
-    isWatched?: boolean,
   ): Promise<void> => {
     const previousError = get(_formState.errors, name);
     const shouldUpdateValid =
-      _proxyFormState.isValid &&
-      isBoolean(isValid) &&
-      _formState.isValid !== isValid;
+      _proxyFormState.isValid && _formState.isValid !== isValid;
 
     if (props.delayError && error) {
       _delayCallback =
@@ -196,8 +194,7 @@ export function createFormControl<
     }
 
     if (
-      (isWatched ||
-        (error ? !deepEqual(previousError, error) : previousError) ||
+      ((error ? !deepEqual(previousError, error) : previousError) ||
         !isEmptyObject(fieldState) ||
         shouldUpdateValid) &&
       !shouldSkipRender
@@ -214,12 +211,12 @@ export function createFormControl<
         ...updatedFormState,
       };
 
-      _subjects.state.next(isWatched ? { name } : updatedFormState);
+      _subjects.state.next(updatedFormState);
     }
 
     _validateCount[name]--;
 
-    if (!_validateCount[name]) {
+    if (_proxyFormState.isValidating && !_validateCount[name]) {
       _subjects.state.next({
         isValidating: false,
       });
@@ -403,9 +400,11 @@ export function createFormControl<
             }
           }
 
-          fieldError[_f.name]
-            ? set(_formState.errors, _f.name, fieldError[_f.name])
-            : unset(_formState.errors, _f.name);
+          if (!shouldCheckValid) {
+            fieldError[_f.name]
+              ? set(_formState.errors, _f.name, fieldError[_f.name])
+              : unset(_formState.errors, _f.name);
+          }
         }
 
         fieldValue &&
@@ -421,33 +420,27 @@ export function createFormControl<
     target,
     target: { value, name, type: inputType },
   }) => {
-    let error;
-    let isValid;
     const field = get(_fields, name) as Field;
 
     if (field) {
-      let inputValue = inputType ? getFieldValue(field) : undefined;
-      inputValue = isUndefined(inputValue) ? value : inputValue;
-
+      let error;
+      let isValid;
+      const inputValue = inputType ? getFieldValue(field._f) : value;
       const isBlurEvent = type === EVENTS.BLUR;
-      const { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange } =
-        getValidationModes(formOptions.reValidateMode);
 
       const shouldSkipValidation =
-        (!hasValidation(field._f, field._f.mount) &&
+        (!hasValidation(field._f) &&
           !formOptions.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
-        skipValidation({
+        skipValidation(
           isBlurEvent,
-          isTouched: !!get(_formState.touchedFields, name),
-          isSubmitted: _formState.isSubmitted,
-          isReValidateOnBlur,
-          isReValidateOnChange,
-          ...validationMode,
-        });
-      const isWatched =
-        !isBlurEvent && isFieldWatched(name as FieldPath<TFieldValues>);
+          get(_formState.touchedFields, name),
+          _formState.isSubmitted,
+          reValidateMode,
+          validationMode,
+        );
+      const isWatched = !isBlurEvent && isFieldWatched(name);
 
       if (!isUndefined(inputValue)) {
         set(_formValues, name, inputValue);
@@ -462,23 +455,27 @@ export function createFormControl<
 
       const shouldRender = !isEmptyObject(fieldState) || isWatched;
 
+      !isBlurEvent &&
+        _subjects.watch.next({
+          name,
+          type,
+        });
+
       if (shouldSkipValidation) {
-        !isBlurEvent &&
-          _subjects.watch.next({
-            name,
-            type,
-          });
         return (
           shouldRender &&
-          _subjects.state.next(isWatched ? { name } : { ...fieldState, name })
+          _subjects.state.next({ name, ...(isWatched ? {} : fieldState) })
         );
       }
 
+      !isBlurEvent && isWatched && _subjects.state.next({});
+
       _validateCount[name] = _validateCount[name] ? +1 : 1;
 
-      _subjects.state.next({
-        isValidating: true,
-      });
+      _proxyFormState.isValidating &&
+        _subjects.state.next({
+          isValidating: true,
+        });
 
       if (formOptions.resolver) {
         const { errors } = await executeResolver([name]);
@@ -504,28 +501,15 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           )
         )[name];
-        _updateValid();
-      }
 
-      !isBlurEvent &&
-        _subjects.watch.next({
-          name,
-          type,
-          values: getValues(),
-        });
+        isValid = await _updateValid(true);
+      }
 
       if (field._f.deps) {
         trigger(field._f.deps as FieldPath<TFieldValues>[]);
       }
 
-      shouldRenderBaseOnError(
-        false,
-        name,
-        error,
-        fieldState,
-        isValid,
-        isWatched,
-      );
+      shouldRenderBaseOnError(false, name, isValid, error, fieldState);
     }
   };
 
@@ -550,7 +534,7 @@ export function createFormControl<
         set(
           _formValues,
           name,
-          shouldSkipValueAs ? defaultValue : getFieldValue(field),
+          shouldSkipValueAs ? defaultValue : getFieldValue(field._f),
         );
       } else {
         setFieldValue(name, defaultValue);
@@ -566,19 +550,21 @@ export function createFormControl<
     return !deepEqual({ ...getValues() }, _defaultValues);
   };
 
-  const _updateValid = async () => {
+  const _updateValid = async (skipRender?: boolean) => {
+    let isValid = false;
     if (_proxyFormState.isValid) {
-      const isValid = formOptions.resolver
+      isValid = formOptions.resolver
         ? isEmptyObject((await executeResolver()).errors)
         : await validateForm(_fields, true);
 
-      if (isValid !== _formState.isValid) {
+      if (!skipRender && isValid !== _formState.isValid) {
         _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
         });
       }
     }
+    return isValid;
   };
 
   const setValues = (
