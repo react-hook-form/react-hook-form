@@ -105,7 +105,7 @@ export function useController<
       ref: (elm) => {
         const field = get(control._fields, name);
 
-        if (elm && field) {
+        if (elm && field && elm.focus) {
           field._f.ref = {
             focus: () => elm.focus(),
             setCustomValidity: (message: string) =>
