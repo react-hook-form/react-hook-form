@@ -10,6 +10,8 @@ export type Primitive =
   | symbol
   | bigint;
 
+export type Builtin = NestedValue | Date | FileList | File;
+
 export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
@@ -18,11 +20,13 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Array<infer U>
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
   ? ReadonlyArray<DeepPartial<U>>
-  : T extends { [key in keyof T]: T[key] }
+  : T extends object
   ? {
       [K in keyof T]?: DeepPartial<T[K]>;
     }
@@ -32,26 +36,22 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type DeepMap<T, TValue> = {
-  [K in keyof T]?: IsAny<T[K]> extends true
-    ? any
-    : NonNullable<T[K]> extends NestedValue | Date | FileList | File
-    ? TValue
-    : NonUndefined<T[K]> extends object | null
-    ? DeepMap<T[K], TValue>
-    : NonUndefined<T[K]> extends Array<infer U>
-    ? IsAny<U> extends true
-      ? Array<any>
-      : U extends NestedValue | Date | FileList
-      ? Array<TValue>
-      : U extends object
-      ? Array<DeepMap<U, TValue>>
-      : Array<TValue>
-    : TValue;
-};
+export type DeepMap<T, TValue> = IsAny<T> extends true
+  ? any
+  : T extends undefined | null
+  ? never
+  : T extends Builtin
+  ? TValue
+  : T extends Array<infer U>
+  ? Array<DeepMap<U, TValue>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepMap<U, TValue>>
+  : T extends object
+  ? { [K in keyof T]: DeepMap<T[K], TValue> }
+  : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], NestedValue | Date | FileList>,
+  Exclude<T[keyof T], Builtin>,
   any[] | object
 > extends never
   ? true
@@ -153,7 +153,9 @@ type OptionalKeys<T> = T extends any
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type UnionLike<T> = T[] extends ReadonlyArray<infer U>[]
+export type UnionLike<T> = T extends Builtin
+  ? T
+  : T[] extends ReadonlyArray<infer U>[]
   ? { [K in keyof T]: UnionLike<U> }
   : T[] extends object[]
   ? PartialBy<

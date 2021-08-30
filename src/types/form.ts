@@ -13,12 +13,14 @@ import {
 } from './fields';
 import { Resolver } from './resolvers';
 import {
+  Builtin,
   DeepMap,
   DeepPartial,
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  UnionLike,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -34,7 +36,7 @@ export type NestedValue<
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends Date | FileList
+  : T extends Exclude<Builtin, NestedValue>
   ? T
   : T extends Record<string, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
@@ -105,7 +107,7 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  TFieldValues,
+  DeepPartial<UnionLike<TFieldValues>>,
   true
 >;
 

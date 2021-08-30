@@ -1,5 +1,5 @@
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { DeepMap, LiteralUnion, UnionLike } from './utils';
+import { DeepMap, DeepPartial, LiteralUnion, UnionLike } from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -24,7 +24,7 @@ export type ErrorOption = {
 };
 
 export type FieldErrors<TFieldValues extends FieldValues = FieldValues> =
-  DeepMap<UnionLike<TFieldValues>, FieldError>;
+  DeepMap<DeepPartial<UnionLike<TFieldValues>>, FieldError>;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>
