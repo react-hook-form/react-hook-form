@@ -38,7 +38,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
         shouldRenderFormState(formState, _localProxyFormState.current) &&
         updateFormState({
           ...control._formState.val,
-          ...formState,
+          ...(formState as TFieldValues),
         }),
     });
 
