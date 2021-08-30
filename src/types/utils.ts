@@ -155,11 +155,11 @@ type OptionalKeys<T> = T extends any
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type UnionLike<T> = T extends Builtin
+export type UnionLike<T> = [T] extends [Builtin]
   ? T
-  : T[] extends ReadonlyArray<infer U>[]
+  : [T] extends [ReadonlyArray<infer U>]
   ? { [K in keyof T]: UnionLike<U> }
-  : T[] extends object[]
+  : [T] extends [object]
   ? PartialBy<
       {
         [K in UnionKeys<T>]: UnionLike<UnionValues<T, K>>;
