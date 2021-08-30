@@ -1188,7 +1188,7 @@ describe('register', () => {
 
       const App = () => {
         const { register, handleSubmit } = useForm<{
-          test: Date;
+          test: Date | string;
         }>({
           defaultValues: {
             test: '2020-10-10',

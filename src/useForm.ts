@@ -3,7 +3,14 @@ import * as React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import {
+  FieldErrors,
+  FieldNamesMarkedBoolean,
+  FieldValues,
+  FormState,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -11,20 +18,19 @@ export function useForm<
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {
-  const _formControl = React.useRef<
-    UseFormReturn<TFieldValues, TContext> | undefined
-  >();
+  const _formControl =
+    React.useRef<UseFormReturn<TFieldValues, TContext> | undefined>();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    dirtyFields: {},
+    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
     submitCount: 0,
-    touchedFields: {},
+    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
-    errors: {},
+    errors: {} as FieldErrors<TFieldValues>,
   });
 
   if (_formControl.current) {

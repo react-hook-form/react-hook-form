@@ -6,6 +6,7 @@ import {
   DelayCallback,
   Field,
   FieldError,
+  FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -104,14 +105,14 @@ export function createFormControl<
   let _formState = {
     isDirty: false,
     isValidating: false,
-    dirtyFields: {},
+    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
     submitCount: 0,
-    touchedFields: {},
+    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
-    errors: {},
+    errors: {} as FieldErrors<TFieldValues>,
   };
   let _fields = {};
   let _formValues = {};
@@ -364,7 +365,7 @@ export function createFormControl<
           : unset(_formState.errors, name);
       }
     } else {
-      _formState.errors = errors;
+      _formState.errors = errors as FieldErrors<TFieldValues>;
     }
 
     return errors;
@@ -841,7 +842,7 @@ export function createFormControl<
       ? convertToArrayPayload(name).forEach((inputName) =>
           unset(_formState.errors, inputName),
         )
-      : (_formState.errors = {});
+      : (_formState.errors = {} as FieldErrors<TFieldValues>);
 
     _subjects.state.next({
       errors: _formState.errors,
@@ -1040,7 +1041,7 @@ export function createFormControl<
       try {
         if (formOptions.resolver) {
           const { errors, values } = await executeResolver();
-          _formState.errors = errors;
+          _formState.errors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
         } else {
           await validateForm(_fields);
@@ -1051,7 +1052,7 @@ export function createFormControl<
           Object.keys(_formState.errors).every((name) => get(fieldValues, name))
         ) {
           _subjects.state.next({
-            errors: {},
+            errors: {} as FieldErrors<TFieldValues>,
             isSubmitting: true,
           });
           await onValid(fieldValues, e);
@@ -1146,11 +1147,15 @@ export function createFormControl<
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields: keepStateOptions.keepDirty ? _formState.dirtyFields : {},
+      dirtyFields: keepStateOptions.keepDirty
+        ? _formState.dirtyFields
+        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
-        : {},
-      errors: keepStateOptions.keepErrors ? _formState.errors : {},
+        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
+      errors: keepStateOptions.keepErrors
+        ? _formState.errors
+        : ({} as FieldErrors<TFieldValues>),
       isSubmitting: false,
       isSubmitSuccessful: false,
     });
