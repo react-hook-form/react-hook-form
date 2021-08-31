@@ -1186,8 +1186,13 @@ export function createFormControl<
       _getFieldArrayValue,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
-      _fields,
       _proxyFormState,
+      get _fields() {
+        return _fields;
+      },
+      set _fields(value) {
+        _fields = value;
+      },
       get _formValues() {
         return _formValues;
       },
