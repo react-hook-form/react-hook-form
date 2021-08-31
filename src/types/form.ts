@@ -358,10 +358,7 @@ export type Control<
 export type WatchObserver<TFieldValues> = (
   value: UnpackNestedValue<TFieldValues>,
   info: {
-    name?:
-      | FieldPath<TFieldValues>
-      | FieldPath<TFieldValues>[]
-      | readonly FieldPath<TFieldValues>[];
+    name?: FieldPath<TFieldValues>;
     type?: EventType;
     value?: unknown;
   },
