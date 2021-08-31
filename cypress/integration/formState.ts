@@ -90,7 +90,7 @@ describe('form state', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('14');
   });
 
   it('should return correct form state with onChange mode', () => {
@@ -184,7 +184,7 @@ describe('form state', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('17');
+    cy.get('#renderCount').contains('14');
   });
 
   it('should return correct form state with onBlur mode', () => {
@@ -278,7 +278,7 @@ describe('form state', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('17');
+    cy.get('#renderCount').contains('15');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -495,7 +495,7 @@ describe('form state', () => {
         isValid: false,
       }),
     );
-    cy.get('#renderCount').contains('9');
+    cy.get('#renderCount').contains('8');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
@@ -554,6 +554,6 @@ describe('form state', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('16');
+    cy.get('#renderCount').contains('13');
   });
 });

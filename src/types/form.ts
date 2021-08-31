@@ -341,7 +341,7 @@ export type Control<
   _isInAction: FormControl<boolean>;
   _getIsDirty: GetIsDirty;
   _formState: FormControl<FormState<TFieldValues>>;
-  _updateValid: <T extends FieldValues>(payload?: T) => void;
+  _updateValid: () => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;
