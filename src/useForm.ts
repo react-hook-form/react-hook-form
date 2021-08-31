@@ -42,12 +42,12 @@ export function useForm<
     const formStateSubscription = control._subjects.state.subscribe({
       next(formState) {
         if (shouldRenderFormState(formState, control._proxyFormState, true)) {
-          control._formState.val = {
-            ...control._formState.val,
+          control._formState = {
+            ...control._formState,
             ...formState,
           };
 
-          updateFormState({ ...control._formState.val });
+          updateFormState({ ...control._formState });
         }
       },
     });

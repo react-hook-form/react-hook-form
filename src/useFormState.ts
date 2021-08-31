@@ -18,7 +18,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const methods = useFormContext();
   const { control = methods.control, disabled, name } = props || {};
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
-  const [formState, updateFormState] = React.useState(control._formState.val);
+  const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
     dirtyFields: false,
@@ -37,7 +37,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
           convertToArrayPayload(nameRef.current).includes(formState.name)) &&
         shouldRenderFormState(formState, _localProxyFormState.current) &&
         updateFormState({
-          ...control._formState.val,
+          ...control._formState,
           ...formState,
         }),
     });

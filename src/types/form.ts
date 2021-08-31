@@ -303,10 +303,6 @@ export type Names = {
   watchAll: boolean;
 };
 
-export type FormControl<T> = {
-  val: T;
-};
-
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues,
@@ -338,9 +334,9 @@ export type Control<
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
   _updateValues: UpdateValues<TFieldValues>;
-  _isInAction: FormControl<boolean>;
+  _isInAction: boolean;
   _getIsDirty: GetIsDirty;
-  _formState: FormControl<FormState<TFieldValues>>;
+  _formState: FormState<TFieldValues>;
   _updateValid: () => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
