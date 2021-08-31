@@ -68,7 +68,7 @@ export function useController<
 
       if (
         isNameInFieldArray(control._names.array, name)
-          ? _shouldUnregisterField && !control._isInAction.val
+          ? _shouldUnregisterField && !control._isInAction
           : _shouldUnregisterField
       ) {
         control.unregister(name);

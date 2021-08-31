@@ -1186,8 +1186,13 @@ export function createFormControl<
       _getFieldArrayValue,
       _subjects,
       _shouldUnregister: formOptions.shouldUnregister,
-      _fields,
       _proxyFormState,
+      get _fields() {
+        return _fields;
+      },
+      set _fields(value) {
+        _fields = value;
+      },
       get _formValues() {
         return _formValues;
       },
@@ -1212,21 +1217,17 @@ export function createFormControl<
       set _names(value) {
         _names = value;
       },
-      _isInAction: {
-        get val() {
-          return _isInAction;
-        },
-        set val(value) {
-          _isInAction = value;
-        },
+      get _isInAction() {
+        return _isInAction;
       },
-      _formState: {
-        get val() {
-          return _formState;
-        },
-        set val(value) {
-          _formState = value;
-        },
+      set _isInAction(value) {
+        _isInAction = value;
+      },
+      get _formState() {
+        return _formState;
+      },
+      set _formState(value) {
+        _formState = value;
       },
       _updateProps: (options) => {
         formOptions = { ...defaultOptions, ...options };
