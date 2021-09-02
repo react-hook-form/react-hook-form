@@ -24,11 +24,20 @@ const UseFieldArray: React.FC = (props: any) => {
       : {}),
     mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
-  const { fields, append, prepend, swap, move, insert, remove, update } =
-    useFieldArray({
-      control,
-      name: 'data',
-    });
+  const {
+    fields,
+    append,
+    prepend,
+    swap,
+    move,
+    insert,
+    remove,
+    update,
+    replace,
+  } = useFieldArray({
+    control,
+    name: 'data',
+  });
   const [data, setData] = React.useState<FormValues>();
   const onSubmit = (data: FormValues) => {
     setData(data);
@@ -166,6 +175,21 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
+      </button>
+
+      <button
+        id="replace"
+        type="button"
+        onClick={() =>
+          replace([
+            { name: `${renderCount}. lorem` },
+            { name: `${renderCount}. ipsum` },
+            { name: `${renderCount}. dolor` },
+            { name: `${renderCount}. sit amet` },
+          ])
+        }
+      >
+        replace
       </button>
 
       <button
