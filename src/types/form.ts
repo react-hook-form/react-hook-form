@@ -101,7 +101,7 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  TFieldValues,
+  DeepPartial<TFieldValues>,
   true
 >;
 
