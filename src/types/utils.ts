@@ -28,12 +28,10 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
-  : T extends null | undefined
-  ? T
   : T extends Date | FileList | File | NestedValue
   ? TValue
   : T extends object
-  ? { [K in keyof T]: DeepMap<T[K], TValue> }
+  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
   : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
