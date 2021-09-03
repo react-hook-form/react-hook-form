@@ -10,8 +10,6 @@ export type Primitive =
   | symbol
   | bigint;
 
-export type Builtin = NestedValue | Date | FileList | File;
-
 export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
@@ -20,7 +18,7 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Builtin
+export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
   ? T
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
@@ -40,7 +38,7 @@ export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
   : T extends undefined | null
   ? never
-  : T extends Builtin
+  : T extends Date | FileList | File | NestedValue
   ? TValue
   : T extends Array<infer U>
   ? Array<DeepMap<U, TValue>>
@@ -51,7 +49,7 @@ export type DeepMap<T, TValue> = IsAny<T> extends true
   : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], Builtin>,
+  Exclude<T[keyof T], NestedValue | Date | FileList>,
   any[] | object
 > extends never
   ? true
@@ -154,7 +152,7 @@ type OptionalKeys<T> = T extends any
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type UnionLike<T> = [T] extends [Builtin]
+export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
   ? T
   : [T] extends [ReadonlyArray<infer U>]
   ? { [K in keyof T]: UnionLike<U> }

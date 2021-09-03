@@ -13,7 +13,6 @@ import {
 } from './fields';
 import { Resolver } from './resolvers';
 import {
-  Builtin,
   DeepMap,
   DeepPartial,
   FieldArrayPath,
@@ -36,7 +35,7 @@ export type NestedValue<
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends Exclude<Builtin, NestedValue>
+  : T extends Date | FileList
   ? T
   : T extends Record<string, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
