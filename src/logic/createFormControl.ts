@@ -983,14 +983,14 @@ export function createFormControl<
       set(_formValues, name, options.value);
     }
 
-    if (
-      isBoolean(options.disabled) &&
-      field &&
-      field._f &&
-      isBoolean(field._f.ref.disabled) &&
-      field._f.ref.disabled !== options.disabled
-    ) {
-      set(_formValues, name, options.disabled ? undefined : field._f.ref.value);
+    if (isBoolean(options.disabled) && field) {
+      set(
+        _formValues,
+        name,
+        options.disabled
+          ? undefined
+          : get(_formValues, name, getFieldValue(field._f)),
+      );
     }
 
     _names.mount.add(name);
