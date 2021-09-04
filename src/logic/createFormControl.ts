@@ -970,33 +970,31 @@ export function createFormControl<
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     const field = get(_fields, name);
 
-    if (field) {
-      set(_fields, name, {
-        _f: {
-          ...(field._f ? field._f : { ref: { name } }),
-          name,
-          mount: true,
-          ...options,
-        },
-      });
+    set(_fields, name, {
+      _f: {
+        ...(field && field._f ? field._f : { ref: { name } }),
+        name,
+        mount: true,
+        ...options,
+      },
+    });
 
-      if (options.value) {
-        set(_formValues, name, options.value);
-      }
-
-      if (isBoolean(options.disabled)) {
-        set(
-          _formValues,
-          name,
-          options.disabled
-            ? undefined
-            : get(_formValues, name, getFieldValue(field._f)),
-        );
-      }
-
-      _names.mount.add(name);
-      !field && _updateValidAndInputValue(name, undefined, true);
+    if (options.value) {
+      set(_formValues, name, options.value);
     }
+
+    if (isBoolean(options.disabled) && field) {
+      set(
+        _formValues,
+        name,
+        options.disabled
+          ? undefined
+          : get(_formValues, name, getFieldValue(field._f)),
+      );
+    }
+
+    _names.mount.add(name);
+    !field && _updateValidAndInputValue(name, undefined, true);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
