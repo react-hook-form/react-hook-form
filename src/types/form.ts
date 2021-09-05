@@ -24,19 +24,15 @@ import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
 
-export type NestedValue<
-  TValue extends unknown[] | Record<string, unknown> | Map<unknown, unknown> =
-    | unknown[]
-    | Record<string, unknown>,
-> = {
+export type NestedValue<TValue extends object = object> = {
   [$NestedValue]: never;
 } & TValue;
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends Date | FileList
+  : T extends Date | FileList | File
   ? T
-  : T extends Record<string, unknown>
+  : T extends object
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
@@ -105,7 +101,7 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  TFieldValues,
+  DeepPartial<TFieldValues>,
   true
 >;
 
@@ -303,10 +299,6 @@ export type Names = {
   watchAll: boolean;
 };
 
-export type FormControl<T> = {
-  val: T;
-};
-
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues,
@@ -338,9 +330,9 @@ export type Control<
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
   _updateValues: UpdateValues<TFieldValues>;
-  _isInAction: FormControl<boolean>;
+  _isInAction: boolean;
   _getIsDirty: GetIsDirty;
-  _formState: FormControl<FormState<TFieldValues>>;
+  _formState: FormState<TFieldValues>;
   _updateValid: () => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
@@ -358,10 +350,7 @@ export type Control<
 export type WatchObserver<TFieldValues> = (
   value: UnpackNestedValue<TFieldValues>,
   info: {
-    name?:
-      | FieldPath<TFieldValues>
-      | FieldPath<TFieldValues>[]
-      | readonly FieldPath<TFieldValues>[];
+    name?: FieldPath<TFieldValues>;
     type?: EventType;
     value?: unknown;
   },

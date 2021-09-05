@@ -220,8 +220,30 @@ export const useFieldArray = <
     );
   };
 
+  const replace = (
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+  ) => {
+    const values = mapIds(convertToArrayPayload(value), keyName);
+    setFields(
+      values as Partial<
+        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      >[],
+    );
+    control._updateFieldArray(
+      keyName,
+      name,
+      () => values,
+      {},
+      values,
+      true,
+      false,
+    );
+  };
+
   React.useEffect(() => {
-    control._isInAction.val = false;
+    control._isInAction = false;
 
     if (control._names.watchAll) {
       control._subjects.state.next({});
@@ -276,6 +298,7 @@ export const useFieldArray = <
     remove: React.useCallback(remove, [name, control, keyName]),
     insert: React.useCallback(insert, [name, control, keyName]),
     update: React.useCallback(update, [name, control, keyName]),
+    replace: React.useCallback(replace, [name, control, keyName]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
       TFieldArrayName,

@@ -417,6 +417,26 @@ describe('useFieldArray', () => {
     cy.get('#renderCount').contains('37');
   });
 
+  it('should replace fields with new values', () => {
+    cy.get('#replace').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '37. lorem');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '37. ipsum');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '37. dolor');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '37. sit amet');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '37. lorem' },
+          { name: '37. ipsum' },
+          { name: '37. dolor' },
+          { name: '37. sit amet' },
+        ],
+      }),
+    );
+  });
+
   it('should display the correct dirty value with default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
     cy.get('#dirty').contains('no');

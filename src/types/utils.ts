@@ -18,37 +18,21 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Array<infer U>
-  ? Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPartial<U>>
-  : T extends { [key in keyof T]: T[key] }
-  ? {
-      [K in keyof T]?: DeepPartial<T[K]>;
-    }
-  : T;
+export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
+  ? T
+  : { [K in keyof T]?: DeepPartial<T[K]> };
 
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type DeepMap<T, TValue> = {
-  [K in keyof T]?: IsAny<T[K]> extends true
-    ? any
-    : NonNullable<T[K]> extends NestedValue | Date | FileList | File
-    ? TValue
-    : NonUndefined<T[K]> extends object | null
-    ? DeepMap<T[K], TValue>
-    : NonUndefined<T[K]> extends Array<infer U>
-    ? IsAny<U> extends true
-      ? Array<any>
-      : U extends NestedValue | Date | FileList
-      ? Array<TValue>
-      : U extends object
-      ? Array<DeepMap<U, TValue>>
-      : Array<TValue>
-    : TValue;
-};
+export type DeepMap<T, TValue> = IsAny<T> extends true
+  ? any
+  : T extends Date | FileList | File | NestedValue
+  ? TValue
+  : T extends object
+  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+  : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue | Date | FileList>,
@@ -100,24 +84,23 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V>
 export type FieldArrayPath<TFieldValues extends FieldValues> =
   ArrayPath<TFieldValues>;
 
-export type PathValue<
-  T,
-  P extends Path<T> | ArrayPath<T>,
-> = P extends `${infer K}.${infer R}`
-  ? K extends keyof T
-    ? R extends Path<T[K]>
-      ? PathValue<T[K], R>
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
+  ? P extends `${infer K}.${infer R}`
+    ? K extends keyof T
+      ? R extends Path<T[K]>
+        ? PathValue<T[K], R>
+        : never
+      : K extends `${ArrayKey}`
+      ? T extends ReadonlyArray<infer V>
+        ? PathValue<V, R & Path<V>>
+        : never
       : never
-    : K extends `${ArrayKey}`
+    : P extends keyof T
+    ? T[P]
+    : P extends `${ArrayKey}`
     ? T extends ReadonlyArray<infer V>
-      ? PathValue<V, R & Path<V>>
+      ? V
       : never
-    : never
-  : P extends keyof T
-  ? T[P]
-  : P extends `${ArrayKey}`
-  ? T extends ReadonlyArray<infer V>
-    ? V
     : never
   : never;
 
