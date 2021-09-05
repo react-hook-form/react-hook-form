@@ -427,12 +427,10 @@ export function createFormControl<
       const inputValue = target.type ? getFieldValue(field._f) : target.value;
       const isBlurEvent = event.type === EVENTS.BLUR;
 
-      if (field._f) {
-        if (isBlurEvent && field._f.onBlur) {
-          field._f.onBlur(event);
-        } else if (field._f.onChange) {
-          field._f.onChange(event);
-        }
+      if (isBlurEvent && field._f.onBlur) {
+        field._f.onBlur(event);
+      } else if (field._f.onChange) {
+        field._f.onChange(event);
       }
 
       const shouldSkipValidation =
