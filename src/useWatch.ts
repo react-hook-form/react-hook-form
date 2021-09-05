@@ -25,7 +25,11 @@ export function useWatch<
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TResult = unknown,
+  TFieldName extends FieldPath<TFieldValues, TResult> = FieldPath<
+    TFieldValues,
+    TResult
+  >,
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
@@ -34,7 +38,11 @@ export function useWatch<
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+  TResult = unknown,
+  TFieldNames extends FieldPath<TFieldValues, TResult>[] = FieldPath<
+    TFieldValues,
+    TResult
+  >[],
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;

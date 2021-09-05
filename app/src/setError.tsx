@@ -45,7 +45,7 @@ const SetError: React.FC = () => {
         message: 'Minlength is 10',
       },
     ].forEach(({ name, type, message }) =>
-      setError(name as FieldPath<FormInputs>, { type, message }),
+      setError(name as FieldPath<FormInputs, any>, { type, message }),
     );
     setError('username', {
       types: {

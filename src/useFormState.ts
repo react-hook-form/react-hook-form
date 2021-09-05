@@ -11,8 +11,11 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 
-function useFormState<TFieldValues extends FieldValues = FieldValues>(
-  props?: UseFormStateProps<TFieldValues>,
+function useFormState<
+  TFieldValues extends FieldValues = FieldValues,
+  TResult = unknown,
+>(
+  props?: UseFormStateProps<TFieldValues, TResult>,
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name } = props || {};

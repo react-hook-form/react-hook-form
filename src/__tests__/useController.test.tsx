@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control } from '../types';
+import { Control, FieldPath, FieldValues } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 
@@ -27,6 +27,37 @@ describe('useController', () => {
       });
 
       return null;
+    };
+
+    render(<Component />);
+  });
+
+  it('should render generic component correctly', () => {
+    type ExpectedType = { test: string };
+
+    const Generic = <FormValues extends FieldValues>({
+      name,
+      control,
+    }: {
+      name: FieldPath<FormValues, ExpectedType>;
+      control: Control<FormValues>;
+    }) => {
+      useController({
+        name,
+        control,
+        defaultValue: { test: 'test' },
+      });
+
+      return null;
+    };
+
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        key: ExpectedType[];
+      }>();
+
+      return <Generic name="key.0" control={control} />;
     };
 
     render(<Component />);
@@ -482,7 +513,7 @@ describe('useController', () => {
   it('should update with inline defaultValue', async () => {
     const onSubmit = jest.fn();
     const App = () => {
-      const { control, handleSubmit } = useForm();
+      const { control, handleSubmit } = useForm<{ test: string }>();
       useController({ control, defaultValue: 'test', name: 'test' });
 
       return (

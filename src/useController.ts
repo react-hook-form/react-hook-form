@@ -16,11 +16,15 @@ import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 
 export function useController<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TResult,
+  TName extends FieldPath<TFieldValues, TResult> = FieldPath<
+    TFieldValues,
+    TResult
+  >,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
-): UseControllerReturn<TFieldValues, TName> {
+  props: UseControllerProps<TFieldValues, TResult, TName>,
+): UseControllerReturn<TFieldValues, TResult, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
@@ -30,7 +34,7 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
   );
-  const formState = useFormState({
+  const formState = useFormState<TFieldValues, TResult>({
     control: control || methods.control,
     name,
   });

@@ -3,9 +3,13 @@ import { useController } from './useController';
 
 const Controller = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TResult = unknown,
+  TName extends FieldPath<TFieldValues, TResult> = FieldPath<
+    TFieldValues,
+    TResult
+  >,
 >(
-  props: ControllerProps<TFieldValues, TName>,
-) => props.render(useController<TFieldValues, TName>(props));
+  props: ControllerProps<TFieldValues, TResult, TName>,
+) => props.render(useController<TFieldValues, TResult, TName>(props));
 
 export { Controller };

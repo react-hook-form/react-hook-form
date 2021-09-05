@@ -16,7 +16,6 @@ import {
   InternalFieldName,
   Names,
   Path,
-  PathValue,
   Ref,
   RegisterOptions,
   ResolverResult,
@@ -154,7 +153,7 @@ export function createFormControl<
       _timer = window.setTimeout(() => callback(...args), wait);
     };
 
-  const isFieldWatched = (name: FieldPath<TFieldValues>) =>
+  const isFieldWatched = <TResult>(name: FieldPath<TFieldValues, TResult>) =>
     _names.watchAll ||
     _names.watch.has(name) ||
     _names.watch.has((name.match(/\w+/) || [])[0]);
@@ -225,9 +224,9 @@ export function createFormControl<
     }
   };
 
-  const setFieldValue = (
-    name: InternalFieldName,
-    value: SetFieldValue<TFieldValues>,
+  const setFieldValue = <TResult>(
+    name: FieldPath<TFieldValues, TResult>,
+    value: TResult,
     options: SetValueConfig = {},
     shouldRender?: boolean,
   ) => {
@@ -245,12 +244,12 @@ export function createFormControl<
             : value;
 
         if (isFileInput(_f.ref) && !isString(fieldValue)) {
-          _f.ref.files = fieldValue as FileList;
+          _f.ref.files = fieldValue as any as FileList;
         } else if (isMultipleSelect(_f.ref)) {
           [..._f.ref.options].forEach(
             (selectRef) =>
               (selectRef.selected = (
-                fieldValue as InternalFieldName[]
+                fieldValue as any as InternalFieldName[]
               ).includes(selectRef.value)),
           );
         } else if (_f.refs) {
@@ -259,7 +258,7 @@ export function createFormControl<
               ? _f.refs.forEach(
                   (checkboxRef) =>
                     (checkboxRef.checked = Array.isArray(fieldValue)
-                      ? !!(fieldValue as []).find(
+                      ? !!(fieldValue as any as []).find(
                           (data: string) => data === checkboxRef.value,
                         )
                       : fieldValue === checkboxRef.value),
@@ -284,7 +283,7 @@ export function createFormControl<
 
         (options.shouldDirty || options.shouldTouch) &&
           updateTouchAndDirtyState(name, fieldValue, options.shouldTouch);
-        options.shouldValidate && trigger(name as Path<TFieldValues>);
+        options.shouldValidate && trigger(name as Path<TFieldValues, unknown>);
       }
     }
   };
@@ -511,15 +510,15 @@ export function createFormControl<
       }
 
       if (field._f.deps) {
-        trigger(field._f.deps as FieldPath<TFieldValues>[]);
+        trigger(field._f.deps as FieldPath<TFieldValues, unknown>[]);
       }
 
       shouldRenderBaseOnError(false, name, isValid, error, fieldState);
     }
   };
 
-  const _updateValidAndInputValue = (
-    name: InternalFieldName,
+  const _updateValidAndInputValue = <TResult>(
+    name: FieldPath<TFieldValues, TResult>,
     ref?: Ref,
     shouldSkipValueAs?: boolean,
   ) => {
@@ -572,13 +571,13 @@ export function createFormControl<
     return isValid;
   };
 
-  const setValues = (
-    name: FieldPath<TFieldValues>,
-    value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
-    options: SetValueConfig,
+  const setValues = <TResult>(
+    name: FieldPath<TFieldValues, TResult>,
+    value: TResult,
+    options?: SetValueConfig,
   ) =>
     Object.entries(value).forEach(([fieldKey, fieldValue]) => {
-      const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
+      const fieldName = `${name}.${fieldKey}` as Path<TFieldValues, unknown>;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
@@ -703,10 +702,16 @@ export function createFormControl<
   const _getFieldArrayValue = (name: InternalFieldName) =>
     get(_isMounted ? _formValues : _defaultValues, name, []);
 
-  const setValue: UseFormSetValue<TFieldValues> = (
-    name,
-    value,
-    options = {},
+  const setValue: UseFormSetValue<TFieldValues> = <
+    TResult,
+    TFieldName extends FieldPath<TFieldValues, any> = FieldPath<
+      TFieldValues,
+      TResult
+    >,
+  >(
+    name: TFieldName,
+    value: TResult,
+    options?: SetValueConfig,
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
@@ -721,7 +726,7 @@ export function createFormControl<
 
       if (
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
-        options.shouldDirty
+        options?.shouldDirty
       ) {
         set(
           _formState.dirtyFields as TFieldValues,
@@ -805,8 +810,8 @@ export function createFormControl<
 
   const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+      | FieldPath<TFieldValues, unknown>
+      | ReadonlyArray<FieldPath<TFieldValues, unknown>>,
   ) => {
     const values = {
       ..._defaultValues,
@@ -849,11 +854,11 @@ export function createFormControl<
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
-  const watch: UseFormWatch<TFieldValues> = (
+  const watch: UseFormWatch<TFieldValues> = <TResult>(
     fieldName?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
-      | WatchObserver<TFieldValues>,
+      | FieldPath<TFieldValues, TResult>
+      | ReadonlyArray<FieldPath<TFieldValues, TResult>>
+      | WatchObserver<TFieldValues, TResult>,
     defaultValue?: unknown,
   ) =>
     isFunction(fieldName)
@@ -904,12 +909,12 @@ export function createFormControl<
     !options.keepIsValid && _updateValid();
   };
 
-  const registerFieldRef = (
-    name: InternalFieldName,
+  const registerFieldRef = <TResult>(
+    name: FieldPath<TFieldValues, TResult>,
     fieldRef: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void => {
-    register(name as FieldPath<TFieldValues>, options);
+    register(name, options);
     let field: Field = get(_fields, name);
     const ref = isUndefined(fieldRef.value)
       ? fieldRef.querySelectorAll
@@ -1158,7 +1163,7 @@ export function createFormControl<
 
       field &&
         (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
-        unregister(name as FieldPath<TFieldValues>);
+        unregister(name as FieldPath<TFieldValues, unknown>);
     }
 
     _names.unMount = new Set();

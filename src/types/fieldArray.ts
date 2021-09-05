@@ -17,16 +17,21 @@ export type UseFieldArrayProps<
 
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
+  TResult = unknown,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
-> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+> = FieldArray<TFieldValues, TResult, TFieldArrayName> &
+  Record<TKeyName, string>;
 
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
+  TResult = unknown,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<
-  infer U
->
+> = FieldArrayPathValue<
+  TFieldValues,
+  TResult,
+  TFieldArrayName
+> extends ReadonlyArray<infer U>
   ? U
   : never;
 
@@ -38,6 +43,7 @@ export type FieldArrayMethodProps = {
 
 export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
+  TResult = unknown,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 > = {
@@ -72,5 +78,5 @@ export type UseFieldArrayReturn<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => void;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+  fields: FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>[];
 };

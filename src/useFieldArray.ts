@@ -29,11 +29,12 @@ import { useFormContext } from './useFormContext';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
+  TResult = unknown,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
+): UseFieldArrayReturn<TFieldValues, TResult, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const {
     control = methods.control,
@@ -42,7 +43,9 @@ export const useFieldArray = <
     shouldUnregister,
   } = props;
   const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
+    Partial<
+      FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>
+    >[]
   >(mapIds(control._getFieldArrayValue(name), keyName));
   const _fieldIds = React.useRef(fields);
 
@@ -51,8 +54,8 @@ export const useFieldArray = <
 
   const append = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(value);
@@ -104,7 +107,7 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValuesWithKey: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       index,
@@ -228,7 +231,7 @@ export const useFieldArray = <
     const values = mapIds(convertToArrayPayload(value), keyName);
     setFields(
       values as Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+        FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>
       >[],
     );
     control._updateFieldArray(
@@ -285,7 +288,7 @@ export const useFieldArray = <
     return () => {
       fieldArraySubscription.unsubscribe();
       if (control._shouldUnregister || shouldUnregister) {
-        control.unregister(name as FieldPath<TFieldValues>);
+        control.unregister(name as FieldPath<TFieldValues, any>);
       }
     };
   }, [name, control, keyName, shouldUnregister]);
@@ -301,6 +304,7 @@ export const useFieldArray = <
     replace: React.useCallback(replace, [name, control, keyName]),
     fields: fields as FieldArrayWithId<
       TFieldValues,
+      TResult,
       TFieldArrayName,
       TKeyName
     >[],

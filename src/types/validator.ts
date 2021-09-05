@@ -23,7 +23,10 @@ export type Validate<TFieldValue> = (
 
 export type RegisterOptions<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends FieldPath<TFieldValues, any> = FieldPath<
+    TFieldValues,
+    any
+  >,
 > = Partial<{
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
