@@ -417,7 +417,7 @@ describe('Controller', () => {
     let fieldsRef: any;
     const Component = ({ required = true }: { required?: boolean }) => {
       const { control } = useForm();
-      fieldsRef = control.fieldsRef;
+      fieldsRef = control._fields;
       return (
         <Controller
           defaultValue=""
@@ -432,7 +432,7 @@ describe('Controller', () => {
 
     rerender(<Component required={false} />);
 
-    expect(fieldsRef.current.test.required).toBeFalsy();
+    expect(fieldsRef.test.required).toBeFalsy();
   });
 
   it('should set initial state from unmount state', () => {
@@ -459,6 +459,55 @@ describe('Controller', () => {
     rerender(<Component />);
 
     expect(screen.getByRole('textbox')).toHaveValue('test');
+  });
+
+  it('should skip validation when Controller is unmounted', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { control, handleSubmit } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          {show && (
+            <Controller
+              render={({ field }) => <input {...field} />}
+              name={'test'}
+              rules={{
+                required: true,
+              }}
+              control={control}
+            />
+          )}
+          <button type={'button'} onClick={() => setShow(false)}>
+            toggle
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(onValid).toBeCalledTimes(0);
+    expect(onInvalid).toBeCalledTimes(1);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(onInvalid).toBeCalledTimes(1);
+    expect(onValid).toBeCalledTimes(1);
   });
 
   it('should not set initial state from unmount state when input is part of field array', () => {
@@ -1033,5 +1082,107 @@ describe('Controller', () => {
         target: { value: 'test' },
       });
     });
+  });
+
+  it('should transform input value instead update via ref', () => {
+    type FormValues = {
+      test: number;
+    };
+
+    const transform = {
+      input: (x: number) => x / 10,
+    };
+
+    function App() {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: 7200,
+        },
+      });
+
+      return (
+        <Controller
+          name="test"
+          control={control}
+          render={({ field }) => (
+            <input
+              type="number"
+              {...field}
+              value={transform.input(+field.value)}
+              placeholder="test"
+            />
+          )}
+        />
+      );
+    }
+
+    render(<App />);
+
+    expect(
+      (screen.getByPlaceholderText('test') as HTMLInputElement).value,
+    ).toEqual('720');
+  });
+
+  it('should mark mounted inputs correctly within field array', async () => {
+    const App = () => {
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+      } = useForm({
+        defaultValues: {
+          test: [{ firstName: 'test' }],
+        },
+      });
+      const { fields, prepend } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <Controller
+                  control={control}
+                  render={({ field }) => <input {...field} />}
+                  name={`test.${index}.firstName`}
+                  rules={{ required: true }}
+                />
+                {errors?.test?.[index]?.firstName && <p>error</p>}
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() =>
+              prepend({
+                firstName: '',
+              })
+            }
+          >
+            prepend
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    screen.getByText('error');
   });
 });

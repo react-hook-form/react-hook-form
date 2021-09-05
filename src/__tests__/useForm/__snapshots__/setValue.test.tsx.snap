@@ -1,47 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`setValue should register deeply nested inputs correctly 1`] = `
+exports[`setValue should not register deeply nested inputs 1`] = `Object {}`;
+
+exports[`setValue should not register deeply nested inputs 2`] = `
 Object {
   "test": Array [
     Object {
-      "name": Object {
-        "_f": Object {
-          "mount": true,
-          "name": "test.0.name",
-          "ref": Object {
-            "name": "test.0.name",
-            "value": "append",
-          },
-          "value": "append",
-        },
-      },
+      "name": "append",
       "nestedArray": Array [
         Object {
-          "field1": Object {
-            "_f": Object {
-              "mount": true,
-              "name": "test.0.nestedArray.0.field1",
-              "ref": Object {
-                "name": "test.0.nestedArray.0.field1",
-                "value": "append",
-              },
-              "value": "append",
-            },
-          },
-          "field2": Object {
-            "_f": Object {
-              "mount": true,
-              "name": "test.0.nestedArray.0.field2",
-              "ref": Object {
-                "name": "test.0.nestedArray.0.field2",
-                "value": "append",
-              },
-              "value": "append",
-            },
-          },
+          "field1": "append",
+          "field2": "append",
         },
       ],
     },
   ],
 }
+`;
+
+exports[`setValue should update nested object which contain date object without register 1`] = `
+Array [
+  Object {
+    "date": 2021-06-15T00:00:00.000Z,
+    "userId": "abc",
+  },
+  Object {
+    "date": 2021-12-17T00:00:00.000Z,
+    "userId": "1234",
+  },
+]
 `;

@@ -10,33 +10,28 @@ import getFieldValueAs from './getFieldValueAs';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import getRadioValue from './getRadioValue';
 
-export default function getFieldValue(field?: Field) {
-  if (field && field._f) {
-    const ref = field._f.ref;
+export default function getFieldValue(_f: Field['_f']) {
+  const ref = _f.ref;
 
-    if (ref.disabled) {
-      return;
-    }
-
-    if (isFileInput(ref)) {
-      return ref.files;
-    }
-
-    if (isRadioInput(ref)) {
-      return getRadioValue(field._f.refs).value;
-    }
-
-    if (isMultipleSelect(ref)) {
-      return getMultipleSelectValue(ref.options);
-    }
-
-    if (isCheckBox(ref)) {
-      return getCheckboxValue(field._f.refs).value;
-    }
-
-    return getFieldValueAs(
-      isUndefined(ref.value) ? field._f.ref.value : ref.value,
-      field._f,
-    );
+  if (_f.refs ? _f.refs.every((ref) => ref.disabled) : ref.disabled) {
+    return;
   }
+
+  if (isFileInput(ref)) {
+    return ref.files;
+  }
+
+  if (isRadioInput(ref)) {
+    return getRadioValue(_f.refs).value;
+  }
+
+  if (isMultipleSelect(ref)) {
+    return getMultipleSelectValue(ref.options);
+  }
+
+  if (isCheckBox(ref)) {
+    return getCheckboxValue(_f.refs).value;
+  }
+
+  return getFieldValueAs(isUndefined(ref.value) ? _f.ref.value : ref.value, _f);
 }

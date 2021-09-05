@@ -12,6 +12,8 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
+jest.useFakeTimers();
+
 describe('insert', () => {
   beforeEach(() => {
     mockGenerateId();
@@ -159,11 +161,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              defaultValue={field.value}
-              {...register(`test.${i}.value` as const)}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -203,11 +201,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              defaultValue={field.value}
-              {...register(`test.${i}.value` as const)}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -344,11 +338,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => insert(1, { value: '' })}>
             insert
@@ -379,11 +369,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -422,11 +408,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              defaultValue={field.value}
-              {...register(`test.${i}.value` as const)}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => insert(0, { value: '' })}>
             insert
@@ -468,10 +450,7 @@ describe('insert', () => {
         <div>
           {fields.map((field, i) => (
             <div key={`${field.id}`}>
-              <input
-                defaultValue={field.value}
-                {...register(`test.${i}.value` as const)}
-              />
+              <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
           <button onClick={() => append({ value: '' })}>append</button>
@@ -535,21 +514,8 @@ describe('insert', () => {
         undefined,
         {
           criteriaMode: undefined,
-          fields: {
-            test: [
-              {
-                value: {
-                  mount: true,
-                  name: 'test.0.value',
-                  ref: {
-                    name: 'test.0.value',
-                  },
-                  value: '1',
-                },
-              },
-            ],
-          },
-          names: ['test.0.value'],
+          fields: {},
+          names: [],
         },
       );
     });
@@ -571,6 +537,92 @@ describe('insert', () => {
       });
 
       expect(resolver).not.toBeCalled();
+    });
+
+    it('should insert update fields during async submit', () => {
+      type FormValues = {
+        test: { name: string }[];
+      };
+
+      function App() {
+        const { register, control } = useForm<FormValues>();
+        const [value, setValue] = React.useState('');
+        const { fields, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <div>
+            <form>
+              {fields.map((field, index) => {
+                return (
+                  <fieldset key={field.id}>
+                    <input {...register(`test.${index}.name`)} />
+                  </fieldset>
+                );
+              })}
+            </form>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const target = e.target as HTMLFormElement;
+
+                setTimeout(() => {
+                  insert(0, {
+                    name: value,
+                  });
+                }, 1000);
+
+                target.reset();
+              }}
+            >
+              <input
+                name="name"
+                data-testid="input"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              />
+              <button>submit</button>
+            </form>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByTestId('input'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      actComponent(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test');
+
+      fireEvent.change(screen.getByTestId('input'), {
+        target: {
+          value: 'test1',
+        },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      actComponent(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test1');
     });
   });
 });

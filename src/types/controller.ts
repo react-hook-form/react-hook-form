@@ -8,6 +8,7 @@ import {
   FieldPathValue,
   FieldValues,
   RefCallBack,
+  UnpackNestedValue,
   UseFormStateReturn,
 } from './';
 
@@ -24,7 +25,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: () => void;
-  value: FieldPathValue<TFieldValues, TName>;
+  value: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   name: TName;
   ref: RefCallBack;
 };
@@ -36,10 +37,10 @@ export type UseControllerProps<
   name: TName;
   rules?: Omit<
     RegisterOptions<TFieldValues, TName>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >;
   shouldUnregister?: boolean;
-  defaultValue?: FieldPathValue<TFieldValues, TName>;
+  defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   control?: Control<TFieldValues>;
 };
 

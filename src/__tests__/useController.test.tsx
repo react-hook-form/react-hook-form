@@ -317,4 +317,187 @@ describe('useController', () => {
       'bill',
     );
   });
+
+  it('should be able to update input value without ref', () => {
+    const App = () => {
+      const { control, setValue } = useForm();
+      const { field } = useController({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <div>
+          <input value={field.value} onChange={field.onChange} />
+          <button
+            onClick={() => {
+              setValue('test', 'data');
+            }}
+          >
+            setValue
+          </button>
+        </div>
+      );
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'data',
+      );
+    };
+  });
+
+  it('should be able to setValue after reset', async () => {
+    let renderCount = 0;
+
+    type FormValues = {
+      name: string;
+    };
+
+    const Input = ({ control }: { control: Control<FormValues> }) => {
+      renderCount++;
+      const { field } = useController({
+        name: 'name',
+        control,
+        defaultValue: '',
+      });
+
+      return <input {...field} />;
+    };
+
+    function App() {
+      const { reset, control, setValue } = useForm<FormValues>();
+
+      React.useEffect(() => {
+        reset({ name: 'initial' });
+      }, [reset]);
+
+      return (
+        <div>
+          <Input control={control} />
+          <button type="button" onClick={() => setValue('name', 'test', {})}>
+            setValue
+          </button>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'test',
+    );
+    expect(renderCount).toEqual(3);
+  });
+
+  it('should invoke native validation with Controller', async () => {
+    const setCustomValidity = jest.fn();
+    const reportValidity = jest.fn();
+    const focus = jest.fn();
+    const message = 'This is required';
+
+    type FormValues = {
+      test: string;
+    };
+
+    function Input({ control }: { control: Control<FormValues> }) {
+      const { field } = useController({
+        control,
+        rules: { required: message },
+        name: 'test',
+      });
+
+      return (
+        <div>
+          <input
+            {...field}
+            ref={() => {
+              field.ref({
+                focus,
+                setCustomValidity,
+                reportValidity,
+              });
+            }}
+          />
+        </div>
+      );
+    }
+
+    function App() {
+      const { handleSubmit, control } = useForm<FormValues>({
+        defaultValues: {
+          test: '',
+        },
+        mode: 'onChange',
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Input control={control} />
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(setCustomValidity).toBeCalledWith(message);
+    expect(focus).toBeCalled();
+    expect(reportValidity).toBeCalled();
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'bill',
+        },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(setCustomValidity).toBeCalledTimes(3);
+    expect(reportValidity).toBeCalledTimes(3);
+    expect(focus).toBeCalledTimes(1);
+  });
+
+  it('should update with inline defaultValue', async () => {
+    const onSubmit = jest.fn();
+    const App = () => {
+      const { control, handleSubmit } = useForm();
+      useController({ control, defaultValue: 'test', name: 'test' });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(onSubmit).toBeCalledWith({
+      test: 'test',
+    });
+  });
 });

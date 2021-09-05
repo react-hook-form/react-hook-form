@@ -21,9 +21,11 @@
 
 Version 7 | [Version 6](/docs/README.V6.md)
 
+English | <a href="./docs/README.V7.ja-JP.md">日本語</a> 
+
 ## Features
 
-- Built with performance and DX in mind
+- Built with performance, UX and DX in mind
 - Embraces native form validation
 - Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
 - [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
@@ -83,6 +85,9 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
 </a>
 <a href="https://www.leniolabs.com/" target="_blank">
   <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="94" height="94" />
+</a>
+<a href="https://graphcms.com/" target="_blank">
+  <img src="https://avatars.githubusercontent.com/u/31031438?s=200&v=4" width="94" height="94" />
 </a>
 
 <p>
@@ -281,6 +286,30 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     <a href="https://github.com/JGibel"
     ><img
             src="https://avatars.githubusercontent.com/u/1953965?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/gpalrepo"
+    ><img
+            src="https://avatars.githubusercontent.com/u/41862257?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/pjsachdev"
+    ><img
+            src="https://avatars.githubusercontent.com/u/43356139?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/svict4"
+    ><img
+            src="https://avatars.githubusercontent.com/u/1137112?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/raisiqueira"
+    ><img
+            src="https://avatars.githubusercontent.com/u/2914170?v=4"
             width="45"
             height="45"
     /></a>

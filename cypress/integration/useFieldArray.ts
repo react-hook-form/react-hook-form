@@ -92,6 +92,10 @@ describe('useFieldArray', () => {
       }),
     );
 
+    cy.get('#update').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'changed');
+
     cy.get('#removeAll').click();
     cy.get('ul > li').should('have.length', 0);
 
@@ -102,7 +106,7 @@ describe('useFieldArray', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('40');
+    cy.get('#renderCount').contains('41');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -413,8 +417,37 @@ describe('useFieldArray', () => {
     cy.get('#renderCount').contains('37');
   });
 
+  it('should replace fields with new values', () => {
+    cy.get('#replace').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '37. lorem');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '37. ipsum');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '37. dolor');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '37. sit amet');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '37. lorem' },
+          { name: '37. ipsum' },
+          { name: '37. dolor' },
+          { name: '37. sit amet' },
+        ],
+      }),
+    );
+  });
+
   it('should display the correct dirty value with default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#dirty').contains('no');
+    cy.get('#update').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }],
+      }),
+    );
+    cy.get('#dirty').contains('yes');
+    cy.get('#updateRevert').click();
     cy.get('#dirty').contains('no');
     cy.get('#append').click();
     cy.get('#field1').type('test');
@@ -450,6 +483,7 @@ describe('useFieldArray', () => {
       }),
     );
     cy.get('#dirty').contains('yes');
+    cy.get('#renderCount').contains('15');
   });
 
   it('should display the correct dirty value without default value', () => {
@@ -612,26 +646,28 @@ describe('useFieldArray', () => {
     cy.get('#append').click();
     cy.get('#prepend').click();
     cy.get('#touched').contains(
-      '[null,{"name":true},{"name":true},{"name":true}]',
+      '[null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#insert').click();
     cy.get('#touched').contains(
-      '[null,null,{"name":true},{"name":true},{"name":true}]',
+      '[null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#swap').click();
     cy.get('#touched').contains(
-      '[null,{"name":true},null,{"name":true},{"name":true}]',
+      '[null,{"name":true},null,{"name":true},{"name":true},null]',
     );
     cy.get('#move').click();
     cy.get('#touched').contains(
-      '[null,null,{"name":true},{"name":true},{"name":true}]',
+      '[null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#insert').click();
     cy.get('#touched').contains(
-      '[null,null,null,{"name":true},{"name":true},{"name":true}]',
+      '[null,null,null,{"name":true},{"name":true},{"name":true},null]',
     );
     cy.get('#delete4').click();
-    cy.get('#touched').contains('[null,null,null,{"name":true},{"name":true}]');
+    cy.get('#touched').contains(
+      '[null,null,null,{"name":true},{"name":true},null]',
+    );
   });
 
   it('should return correct isValid formState', () => {

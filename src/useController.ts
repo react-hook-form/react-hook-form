@@ -3,9 +3,9 @@ import * as React from 'react';
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
-import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
+  Field,
   FieldPath,
   FieldValues,
   InternalFieldName,
@@ -14,72 +14,69 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
+import { set } from './utils';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  name,
-  rules,
-  defaultValue,
-  control,
-  shouldUnregister,
-}: UseControllerProps<TFieldValues, TName>): UseControllerReturn<
-  TFieldValues,
-  TName
-> {
+>(
+  props: UseControllerProps<TFieldValues, TName>,
+): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const {
-    defaultValuesRef,
-    register,
-    fieldsRef,
-    unregister,
-    namesRef,
-    subjectsRef,
-    shouldUnmount,
-    inFieldArrayActionRef,
-  } = control || methods.control;
-
-  const isFieldArray = isNameInFieldArray(namesRef.current.array, name);
-  const field = get(fieldsRef.current, name);
+  const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
-    isFieldArray || !field || !field._f
-      ? isFieldArray || isUndefined(get(defaultValuesRef.current, name))
-        ? defaultValue
-        : get(defaultValuesRef.current, name)
-      : field._f.value,
+    get(
+      control._formValues,
+      name,
+      get(control._defaultValues, name, props.defaultValue),
+    ),
   );
-  const { onChange, onBlur, ref } = register(name, {
-    ...rules,
-    value,
-  });
+  set(control._formValues, name, value);
   const formState = useFormState({
     control: control || methods.control,
     name,
   });
 
+  const registerProps = control.register(name, {
+    ...props.rules,
+    value,
+  });
+
+  const updateMounted = React.useCallback(
+    (name: InternalFieldName, value: boolean) => {
+      const field: Field = get(control._fields, name);
+
+      if (field) {
+        field._f.mount = value;
+      }
+    },
+    [control],
+  );
+
   React.useEffect(() => {
-    const controllerSubscription = subjectsRef.current.control.subscribe({
+    const controllerSubscription = control._subjects.control.subscribe({
       next: (data) =>
         (!data.name || name === data.name) &&
         setInputStateValue(get(data.values, name)),
     });
+    updateMounted(name, true);
 
     return () => {
       controllerSubscription.unsubscribe();
-      const shouldUnmountField = shouldUnmount || shouldUnregister;
+      const _shouldUnregisterField =
+        control._shouldUnregister || shouldUnregister;
 
       if (
-        isFieldArray
-          ? shouldUnmountField && !inFieldArrayActionRef.current
-          : shouldUnmountField
+        isNameInFieldArray(control._names.array, name)
+          ? _shouldUnregisterField && !control._isInAction
+          : _shouldUnregisterField
       ) {
-        unregister(name);
-      } else if (field && field._f) {
-        field._f.mount = false;
+        control.unregister(name);
+      } else {
+        updateMounted(name, false);
       }
     };
-  }, [name]);
+  }, [name, control, shouldUnregister, updateMounted]);
 
   return {
     field: {
@@ -87,7 +84,7 @@ export function useController<
         const value = getControllerValue(event);
         setInputStateValue(value);
 
-        onChange({
+        registerProps.onChange({
           target: {
             value,
             name: name as InternalFieldName,
@@ -96,7 +93,7 @@ export function useController<
         });
       },
       onBlur: () => {
-        onBlur({
+        registerProps.onBlur({
           target: {
             name: name as InternalFieldName,
           },
@@ -105,11 +102,18 @@ export function useController<
       },
       name,
       value,
-      ref: (elm) =>
-        elm &&
-        ref({
-          focus: () => elm.focus && elm.focus(),
-        }),
+      ref: (elm) => {
+        const field = get(control._fields, name);
+
+        if (elm && field && elm.focus) {
+          field._f.ref = {
+            focus: () => elm.focus(),
+            setCustomValidity: (message: string) =>
+              elm.setCustomValidity(message),
+            reportValidity: () => elm.reportValidity(),
+          };
+        }
+      },
     },
     formState,
     fieldState: {

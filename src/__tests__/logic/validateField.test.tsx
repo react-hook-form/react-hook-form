@@ -23,9 +23,9 @@ describe('validateField', () => {
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
             required: true,
-            value: '',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -46,6 +46,7 @@ describe('validateField', () => {
             required: 'required',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -66,6 +67,7 @@ describe('validateField', () => {
             required: 'required',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -89,6 +91,7 @@ describe('validateField', () => {
             },
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -112,6 +115,7 @@ describe('validateField', () => {
             },
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -135,6 +139,7 @@ describe('validateField', () => {
             },
           },
         },
+        '',
         false,
       ),
     ).toEqual({});
@@ -150,12 +155,13 @@ describe('validateField', () => {
           },
         },
         false,
+        false,
       ),
     ).toEqual({
       test: {
         message: '',
         type: 'required',
-        ref: {},
+        ref: { type: 'radio', name: 'test' },
       },
     });
 
@@ -169,6 +175,7 @@ describe('validateField', () => {
             required: 'test',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -189,13 +196,14 @@ describe('validateField', () => {
             required: 'test',
           },
         },
+        '',
         false,
       ),
     ).toEqual({
       test: {
         message: 'test',
         type: 'required',
-        ref: {},
+        ref: { type: 'radio', name: 'test', value: '' },
       },
     });
 
@@ -210,12 +218,13 @@ describe('validateField', () => {
           },
         },
         false,
+        false,
       ),
     ).toEqual({
       test: {
         message: 'test',
         type: 'required',
-        ref: {},
+        ref: { type: 'checkbox', name: 'test' },
       },
     });
 
@@ -230,6 +239,7 @@ describe('validateField', () => {
             value: '0',
           },
         },
+        '0',
         false,
       ),
     ).toEqual({});
@@ -249,6 +259,7 @@ describe('validateField', () => {
             required: 'test',
           },
         },
+        '',
         false,
       ),
     ).toEqual({});
@@ -265,6 +276,7 @@ describe('validateField', () => {
             value: NaN,
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -289,6 +301,7 @@ describe('validateField', () => {
             value: {},
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -317,6 +330,7 @@ describe('validateField', () => {
             max: 0,
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -342,6 +356,7 @@ describe('validateField', () => {
             },
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -367,6 +382,7 @@ describe('validateField', () => {
             value: 10,
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -389,6 +405,7 @@ describe('validateField', () => {
             max: 8,
           },
         },
+        8,
         false,
       ),
     ).toEqual({});
@@ -404,6 +421,7 @@ describe('validateField', () => {
             max: 8,
           },
         },
+        10,
         true,
       ),
     ).toEqual({
@@ -428,6 +446,7 @@ describe('validateField', () => {
             required: true,
           },
         },
+        '',
         false,
       ),
     ).toEqual({
@@ -453,6 +472,7 @@ describe('validateField', () => {
             required: true,
           },
         },
+        undefined,
         false,
       ),
     ).toEqual({
@@ -483,6 +503,7 @@ describe('validateField', () => {
             required: true,
           },
         },
+        null,
         false,
       ),
     ).toEqual({
@@ -504,6 +525,7 @@ describe('validateField', () => {
             value: 'ok',
           },
         },
+        'ok',
         false,
       ),
     ).toEqual({});
@@ -523,6 +545,7 @@ describe('validateField', () => {
             max: '2019-1-12',
           },
         },
+        '2019-2-13',
         false,
       ),
     ).toEqual({
@@ -550,6 +573,7 @@ describe('validateField', () => {
             min: 0,
           },
         },
+        -1,
         false,
       ),
     ).toEqual({
@@ -575,6 +599,7 @@ describe('validateField', () => {
             },
           },
         },
+        -1,
         false,
       ),
     ).toEqual({
@@ -600,6 +625,7 @@ describe('validateField', () => {
             },
           },
         },
+        -1,
         false,
       ),
     ).toEqual({
@@ -622,6 +648,7 @@ describe('validateField', () => {
             min: 12,
           },
         },
+        10,
         false,
       ),
     ).toEqual({
@@ -648,6 +675,7 @@ describe('validateField', () => {
             min: '2019-3-12',
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -680,6 +708,7 @@ describe('validateField', () => {
             },
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -712,6 +741,7 @@ describe('validateField', () => {
             },
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -740,6 +770,7 @@ describe('validateField', () => {
             min: '4',
           },
         },
+        '1',
         false,
       ),
     ).toEqual({
@@ -762,6 +793,7 @@ describe('validateField', () => {
             max: '2',
           },
         },
+        '4',
         false,
       ),
     ).toEqual({
@@ -788,6 +820,7 @@ describe('validateField', () => {
             max: '2019-1-12',
           },
         },
+        '2019-2-12',
         false,
       ),
     ).toEqual({
@@ -819,6 +852,7 @@ describe('validateField', () => {
             maxLength: 12,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -850,6 +884,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -881,6 +916,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -911,6 +947,7 @@ describe('validateField', () => {
             minLength: 200,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -942,6 +979,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -973,6 +1011,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1006,6 +1045,7 @@ describe('validateField', () => {
             pattern: emailRegex,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1037,6 +1077,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1068,6 +1109,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1096,6 +1138,7 @@ describe('validateField', () => {
             pattern: emailRegex,
           },
         },
+        'test@test.com',
         false,
       ),
     ).toEqual({});
@@ -1115,6 +1158,7 @@ describe('validateField', () => {
             pattern: emailRegex,
           },
         },
+        null,
         false,
       ),
     ).toEqual({});
@@ -1136,6 +1180,7 @@ describe('validateField', () => {
             validate: (value) => value.toString().length > 3,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({});
@@ -1155,6 +1200,7 @@ describe('validateField', () => {
             validate: (value) => value.toString().length < 3,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1186,6 +1232,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1223,6 +1270,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input!',
         false,
       ),
     ).toEqual({
@@ -1254,6 +1302,7 @@ describe('validateField', () => {
             refs: [{ type: 'data' } as HTMLInputElement],
           },
         },
+        'This is a long text input!',
         false,
       ),
     ).toEqual({
@@ -1285,6 +1334,7 @@ describe('validateField', () => {
             ],
           },
         },
+        'This is a long text input!',
         false,
       ),
     ).toEqual({});
@@ -1312,6 +1362,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1346,6 +1397,7 @@ describe('validateField', () => {
             },
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1375,6 +1427,7 @@ describe('validateField', () => {
             validate: (value) => value.toString().length < 3 || 'bill',
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1402,6 +1455,7 @@ describe('validateField', () => {
             validate: (value) => value.toString().length < 3 || 'bill',
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({
@@ -1431,6 +1485,7 @@ describe('validateField', () => {
             validate: () => undefined,
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({});
@@ -1452,6 +1507,7 @@ describe('validateField', () => {
             validate: 'validate',
           },
         },
+        'This is a long text input',
         false,
       ),
     ).toEqual({});
@@ -1475,6 +1531,7 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        '',
         true,
       ),
     ).toMatchSnapshot();
@@ -1493,6 +1550,7 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        '123',
         true,
       ),
     ).toMatchSnapshot();
@@ -1518,6 +1576,7 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        'a',
         true,
       ),
     ).toMatchSnapshot();
@@ -1536,6 +1595,7 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
+        'a',
         true,
       ),
     ).toMatchSnapshot();
@@ -1569,6 +1629,7 @@ describe('validateField', () => {
             },
           },
         },
+        '',
         true,
       ),
     ).toMatchSnapshot();
@@ -1597,6 +1658,7 @@ describe('validateField', () => {
             },
           },
         },
+        'bil',
         true,
       ),
     ).toMatchSnapshot();
@@ -1625,8 +1687,116 @@ describe('validateField', () => {
             },
           },
         },
+        'bil',
         true,
       ),
     ).toMatchSnapshot();
+  });
+
+  describe('with Browser native validation', () => {
+    it('should invoke setCustomValidity for invalid input', () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: '',
+            },
+            value: '',
+            required: true,
+            mount: true,
+          },
+        },
+        '',
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toBeCalledWith(' ');
+      expect(reportValidity).toBeCalled();
+    });
+
+    it('should invoke setCustomValidity for invalid input with its message', () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: '',
+            },
+            value: '',
+            required: 'something is wrong',
+            mount: true,
+          },
+        },
+        '',
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toBeCalledWith('something is wrong');
+      expect(reportValidity).toBeCalled();
+    });
+
+    it('should invoke setCustomValidity with empty string for a valid input', () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: 'test',
+            },
+            value: 'test',
+            required: true,
+            mount: true,
+          },
+        },
+        'test',
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toBeCalledWith('');
+      expect(reportValidity).toBeCalled();
+    });
+
+    it('should abort validation early when input is disabled', async () => {
+      expect(
+        await validateField(
+          {
+            _f: {
+              name: 'test',
+              ref: {
+                name: 'test',
+                value: '',
+              },
+              value: '',
+              required: 'something is wrong',
+              disabled: true,
+            },
+          },
+          '',
+          false,
+        ),
+      ).toEqual({});
+    });
   });
 });

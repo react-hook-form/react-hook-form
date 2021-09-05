@@ -12,8 +12,11 @@ export const useFormContext = <
 >(): UseFormReturn<TFieldValues> =>
   React.useContext(FormContext) as unknown as UseFormReturn<TFieldValues>;
 
-export const FormProvider = <TFieldValues extends FieldValues>(
-  props: FormProviderProps<TFieldValues>,
+export const FormProvider = <
+  TFieldValues extends FieldValues,
+  TContext extends object = object,
+>(
+  props: FormProviderProps<TFieldValues, TContext>,
 ) => (
   <FormContext.Provider
     value={omit(props, 'children') as unknown as UseFormReturn}

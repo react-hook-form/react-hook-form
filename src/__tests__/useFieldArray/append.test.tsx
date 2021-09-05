@@ -40,11 +40,7 @@ describe('append', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -94,7 +90,6 @@ describe('append', () => {
               <input
                 key={field.id}
                 {...register(`test.${index}.test` as const)}
-                defaultValue={field.test}
               />
             );
           })}
@@ -177,7 +172,6 @@ describe('append', () => {
                 <input
                   key={field.id}
                   {...register(`test.${index}.test` as const)}
-                  defaultValue={field.test}
                 />
               );
             })}
@@ -224,11 +218,7 @@ describe('append', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -261,11 +251,7 @@ describe('append', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '3' })}>
             append
@@ -297,11 +283,7 @@ describe('append', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input
-              key={field.id}
-              {...register(`test.${i}.value` as const)}
-              defaultValue={field.value}
-            />
+            <input key={field.id} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -339,10 +321,7 @@ describe('append', () => {
         <div>
           {fields.map((field, i) => (
             <div key={field.id}>
-              <input
-                defaultValue={field.value}
-                {...register(`test.${i}.value` as const)}
-              />
+              <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
           <button onClick={() => append({ value: 'test' })}>append</button>
@@ -390,21 +369,8 @@ describe('append', () => {
         undefined,
         {
           criteriaMode: undefined,
-          fields: {
-            test: [
-              {
-                value: {
-                  mount: true,
-                  name: 'test.0.value',
-                  ref: {
-                    name: 'test.0.value',
-                  },
-                  value: '1',
-                },
-              },
-            ],
-          },
-          names: ['test.0.value'],
+          fields: {},
+          names: [],
         },
       );
     });

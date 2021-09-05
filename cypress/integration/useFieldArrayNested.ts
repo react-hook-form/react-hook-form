@@ -209,20 +209,22 @@ describe('useFieldArrayNested', () => {
           {
             firstName: true,
             lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
+            keyValue: [{ name: true }, { name: true }],
           },
         ],
       }),
     );
 
+    cy.get('#nest-update-0').click();
+
+    cy.get('input[name="test.0.keyValue.0.name"]').should(
+      'have.value',
+      'update',
+    );
+
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"test":[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}],"lastName":"Luo"}]}',
+      '{"test":[{"firstName":"prepend","keyValue":[{"name":"update"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}],"lastName":"Luo"}]}',
     );
 
     cy.get('#nest-remove-all-3').click();
@@ -231,11 +233,11 @@ describe('useFieldArrayNested', () => {
     cy.get('#nest-remove-all-0').click();
 
     cy.get('#touched-nested-2').contains(
-      '{"test":[{"firstName":true,"keyValue":[{"name":true},{"name":true},{"name":true}]},{"firstName":true},{"firstName":true},null]}',
+      '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
     );
 
     cy.get('#dirty-nested-2').contains(
-      '{"test":[{"keyValue":[{"name":true},{"name":true},{"name":true}],"firstName":true,"lastName":true},{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true},{"name":true},{"name":true}]},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
+      '{"test":[{"keyValue":[{"name":true},{"name":true}],"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
     );
 
     cy.get('#submit').click();
@@ -256,6 +258,21 @@ describe('useFieldArrayNested', () => {
       '{"test":[{"firstName":"prepend","keyValue":[]}]}',
     );
 
+    cy.get('#update').click();
+
+    cy.get('input[name="test.0.firstName"]').should(
+      'have.value',
+      'updateFirstName',
+    );
+    cy.get('input[name="test.0.keyValue.0.name"]').should(
+      'have.value',
+      'updateFirstName1',
+    );
+    cy.get('input[name="test.0.keyValue.1.name"]').should(
+      'have.value',
+      'updateFirstName2',
+    );
+
     cy.get('#removeAll').click();
 
     cy.get('#dirty-nested-0').should('not.exist');
@@ -265,6 +282,6 @@ describe('useFieldArrayNested', () => {
     cy.get('#submit').click();
     cy.get('#result').contains('{"test":[]}');
 
-    cy.get('#count').contains('15');
+    cy.get('#count').contains('16');
   });
 });

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 
-import { useForm } from './useForm';
+import { useForm } from '../useForm';
 
 describe('useForm with SSR', () => {
   it('should not output error', () => {

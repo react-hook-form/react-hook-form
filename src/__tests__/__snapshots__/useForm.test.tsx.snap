@@ -17,12 +17,12 @@ Array [
             name="test"
             type="text"
           />,
-          "value": "test",
         },
       },
       "names": Array [
         "test",
       ],
+      "shouldUseNativeValidation": undefined,
     },
   ],
   Array [
@@ -40,12 +40,12 @@ Array [
             name="test"
             type="text"
           />,
-          "value": "test",
         },
       },
       "names": Array [
         "test",
       ],
+      "shouldUseNativeValidation": undefined,
     },
   ],
 ]
@@ -67,12 +67,12 @@ Array [
           name="test"
           type="text"
         />,
-        "value": "test",
       },
     },
     "names": Array [
       "test",
     ],
+    "shouldUseNativeValidation": undefined,
   },
 ]
 `;

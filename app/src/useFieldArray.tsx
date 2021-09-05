@@ -24,12 +24,20 @@ const UseFieldArray: React.FC = (props: any) => {
       : {}),
     mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
-      control,
-      name: 'data',
-    },
-  );
+  const {
+    fields,
+    append,
+    prepend,
+    swap,
+    move,
+    insert,
+    remove,
+    update,
+    replace,
+  } = useFieldArray({
+    control,
+    name: 'data',
+  });
   const [data, setData] = React.useState<FormValues>();
   const onSubmit = (data: FormValues) => {
     setData(data);
@@ -55,7 +63,6 @@ const UseFieldArray: React.FC = (props: any) => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                defaultValue={data.name}
                 data-order={index}
                 {...register(`data.${index}.name` as const, {
                   required: 'This is required',
@@ -71,7 +78,6 @@ const UseFieldArray: React.FC = (props: any) => {
                   required: 'This is required',
                 }}
                 name={`data.${index}.name`}
-                defaultValue={data.name}
                 data-order={index}
               />
             )}
@@ -124,6 +130,30 @@ const UseFieldArray: React.FC = (props: any) => {
       </button>
 
       <button
+        id="update"
+        onClick={() =>
+          update(0, {
+            name: 'changed',
+          })
+        }
+        type="button"
+      >
+        update
+      </button>
+
+      <button
+        id="updateRevert"
+        onClick={() =>
+          update(0, {
+            name: 'test',
+          })
+        }
+        type="button"
+      >
+        update revert
+      </button>
+
+      <button
         id="insert"
         type="button"
         onClick={() =>
@@ -145,6 +175,21 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
+      </button>
+
+      <button
+        id="replace"
+        type="button"
+        onClick={() =>
+          replace([
+            { name: `${renderCount}. lorem` },
+            { name: `${renderCount}. ipsum` },
+            { name: `${renderCount}. dolor` },
+            { name: `${renderCount}. sit amet` },
+          ])
+        }
+      >
+        replace
       </button>
 
       <button

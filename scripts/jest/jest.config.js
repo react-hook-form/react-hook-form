@@ -1,37 +1,26 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { defaults: tsjPresets } = require('ts-jest/presets');
-const jestPresets = require('@testing-library/react-native/jest-preset');
-
-const common = {
+const jestDefaultConfig = {
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
   rootDir: '.',
   roots: ['<rootDir>/src'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-  },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-    },
-  },
+  preset: 'ts-jest',
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-  moduleFileExtensions: ['ts', 'tsx', 'js'],
 };
 
 const web = {
-  ...common,
+  ...jestDefaultConfig,
   displayName: {
     name: 'Web',
     color: 'cyan',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)'],
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
+  testEnvironment: 'jsdom',
 };
 
 const server = {
-  ...common,
+  ...jestDefaultConfig,
   displayName: {
     name: 'Server',
     color: 'blue',
@@ -41,28 +30,20 @@ const server = {
 };
 
 const native = {
-  ...common,
+  ...jestDefaultConfig,
   displayName: {
-    name: 'Native',
+    name: 'React Native',
     color: 'magenta',
   },
-  preset: '@testing-library/react-native',
+  preset: 'react-native',
   testMatch: ['**/+([a-zA-Z]).native.(spec|test).ts?(x)'],
   transform: {
-    ...tsjPresets.transform,
     '^.+\\.tsx?$': 'ts-jest',
     '^.+\\.jsx?$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
   },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-      babelConfig: true,
-    },
-  },
   transformIgnorePatterns: [
-    '[/\\\\]node_modules[/\\\\](?!react-native)[/\\\\].+',
+    '[/\\\\]node_modules[/\\\\](?!(@react-native|react-native)[/\\\\])',
   ],
-  setupFiles: [...jestPresets.setupFiles],
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.native.ts'],
 };
 

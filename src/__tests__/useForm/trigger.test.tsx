@@ -103,6 +103,8 @@ describe('trigger', () => {
       }),
     );
 
+    result.current.formState.errors;
+
     result.current.register('test', { required: 'required' });
     result.current.register('test1', { required: 'required' });
 
@@ -134,6 +136,8 @@ describe('trigger', () => {
         }),
       );
 
+      result.current.formState.errors;
+
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -162,6 +166,8 @@ describe('trigger', () => {
           resolver,
         }),
       );
+
+      result.current.formState.errors;
 
       result.current.register('test1', { required: false });
       result.current.register('test2', { required: true });
@@ -225,6 +231,8 @@ describe('trigger', () => {
         }),
       );
 
+      result.current.formState.errors;
+
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -277,7 +285,7 @@ describe('trigger', () => {
       });
 
       await act(async () => {
-        expect(errors).toEqual({
+        expect(result.current.formState.errors).toEqual({
           test3: {
             type: 'test',
           },
@@ -306,6 +314,8 @@ describe('trigger', () => {
           resolver,
         }),
       );
+
+      result.current.formState.errors;
 
       result.current.register('test', { required: true });
       result.current.register('test1', { required: true });
@@ -479,10 +489,45 @@ describe('trigger', () => {
     expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
   });
 
+  it('should focus on first errored input', async () => {
+    const Component = () => {
+      const { register, trigger } = useForm<{
+        test: string;
+        test2: string;
+      }>();
+
+      return (
+        <>
+          <input
+            {...register('test', { required: true })}
+            placeholder={'test'}
+          />
+          <input
+            {...register('test2', { required: true })}
+            placeholder={'test2'}
+          />
+          <button onClick={() => trigger(undefined, { shouldFocus: true })}>
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+  });
+
   it('should return isValid for the entire form', async () => {
     const App = () => {
       const [isValid, setIsValid] = React.useState(true);
-      const { register, trigger } = useForm();
+      const { register, trigger, formState } = useForm();
+
+      formState.isValid;
 
       return (
         <div>
@@ -567,5 +612,52 @@ describe('trigger', () => {
     });
 
     expect(isValid).toBeFalsy();
+  });
+
+  it('should be able to trigger an object of fields', async () => {
+    let isValid;
+
+    function App() {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm();
+
+      const onTrigger = async () => {
+        isValid = await trigger('test');
+      };
+
+      return (
+        <form>
+          <input
+            {...register('test.firstName', { required: true })}
+            placeholder="First name"
+          />
+          {errors?.test?.firstName && <p>firstName</p>}
+
+          <input
+            {...register('test.lastName', { required: true })}
+            placeholder="Last name"
+          />
+          {errors?.test?.lastName && <p>lastName</p>}
+
+          <input type="button" onClick={onTrigger} value="trigger" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(isValid).toBeFalsy();
+
+    await waitFor(() => {
+      screen.getByText('firstName');
+      screen.getByText('lastName');
+    });
   });
 });

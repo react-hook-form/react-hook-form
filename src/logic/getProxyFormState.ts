@@ -1,30 +1,31 @@
-import * as React from 'react';
-
 import { VALIDATION_MODE } from '../constants';
 import { FormState, FormStateProxy, ReadFormState } from '../types';
 
 export default <TFieldValues>(
-  isProxyEnabled: boolean,
   formState: FormState<TFieldValues>,
-  readFormStateRef: React.MutableRefObject<ReadFormState>,
-  localReadFormStateRef?: React.MutableRefObject<ReadFormState>,
+  _proxyFormState: ReadFormState,
+  localProxyFormState?: ReadFormState,
   isRoot = true,
-) =>
-  isProxyEnabled
-    ? new Proxy(formState, {
-        get: (obj, prop: keyof FormStateProxy) => {
-          if (prop in obj) {
-            if (readFormStateRef.current[prop] !== VALIDATION_MODE.all) {
-              readFormStateRef.current[prop] = isRoot
-                ? VALIDATION_MODE.all
-                : true;
-            }
-            localReadFormStateRef &&
-              (localReadFormStateRef.current[prop] = true);
-            return obj[prop];
-          }
+) => {
+  function createGetter(prop: keyof FormStateProxy) {
+    return () => {
+      if (prop in formState) {
+        if (_proxyFormState[prop] !== VALIDATION_MODE.all) {
+          _proxyFormState[prop] = !isRoot || VALIDATION_MODE.all;
+        }
+        localProxyFormState && (localProxyFormState[prop] = true);
+        return formState[prop];
+      }
+      return undefined;
+    };
+  }
 
-          return undefined;
-        },
-      })
-    : formState;
+  const result = {} as any as typeof formState;
+  for (const key in formState) {
+    Object.defineProperty(result, key, {
+      get: createGetter(key as keyof FormStateProxy),
+    });
+  }
+
+  return result;
+};

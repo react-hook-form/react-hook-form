@@ -1,0 +1,637 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`update should trigger reRender when user update input and is watching the all field array 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "",
+      },
+    ],
+  },
+]
+`;
+
+exports[`update should update field array with multiple values 1`] = `
+Array [
+  Object {
+    "firstName": "test1",
+    "id": "2",
+    "lastName": "test2",
+  },
+  Object {
+    "firstName": "test3",
+    "id": "3",
+    "lastName": "test4",
+  },
+]
+`;
+
+exports[`update should update group input correctly 1`] = `
+Array [
+  Array [
+    Object {
+      "id": "0",
+      "value": Object {
+        "firstName": "bill",
+        "lastName": "luo",
+      },
+    },
+  ],
+  Array [
+    Object {
+      "id": "1",
+      "value": Object {
+        "firstName": "firstName",
+        "lastName": "lastName",
+      },
+    },
+  ],
+]
+`;
+
+exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": Array [],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+]
+`;
+
+exports[`useFieldArray array of array fields should populate all array fields correctly with setValue 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.0.value"
+        />
+      </div>
+    </div>
+    <div>
+      <input
+        name="nest.1.value"
+      />
+      <div>
+        <input
+          name="nest.1.nestedArray.0.value"
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should populate all array fields with setValue when name match Field Array 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.0.value"
+        />
+      </div>
+    </div>
+    <div>
+      <input
+        name="nest.1.value"
+      />
+      <div>
+        <input
+          name="nest.1.nestedArray.0.value"
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.deepNest.0.value"
+        />
+        <button
+          type="button"
+        >
+          append
+        </button>
+      </div>
+      <button
+        type="button"
+      >
+        setValue
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 2`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.deepNest.0.value"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.1.value"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.2.value"
+        />
+        <button
+          type="button"
+        >
+          append
+        </button>
+      </div>
+      <button
+        type="button"
+      >
+        setValue
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should worked with deep nested field array without chaining useFieldArray 3`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.deepNest.0.value"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.1.value"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.2.value"
+        />
+        <input
+          name="nest.0.nestedArray.deepNest.3.value"
+        />
+        <button
+          type="button"
+        >
+          append
+        </button>
+      </div>
+      <button
+        type="button"
+      >
+        setValue
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray should append multiple inputs correctly 1`] = `
+Array [
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+]
+`;
+
+exports[`useFieldArray should custom register append, prepend and insert inputs with values 1`] = `
+Array [
+  Array [],
+  Array [
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "insert",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "insert",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+]
+`;
+
+exports[`useFieldArray should unregister field array when shouldUnregister set to true 1`] = `
+Array [
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+  Object {},
+]
+`;
+
+exports[`useFieldArray should update field array defaultValues when invoke setValue 1`] = `
+Array [
+  Object {
+    "names": Array [
+      Object {
+        "name": "will",
+      },
+      Object {
+        "name": "Mike",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "will",
+      },
+      Object {
+        "name": "Mike",
+      },
+    ],
+  },
+  Object {
+    "names": Array [],
+  },
+  Object {
+    "names": Array [],
+  },
+  Object {
+    "names": Array [],
+  },
+]
+`;
+
+exports[`useFieldArray when component unMount should remove reset method when field array is removed 1`] = `
+Array [
+  Object {
+    "id": "0",
+    "value": "default",
+  },
+  Object {
+    "id": "1",
+    "value": "test",
+  },
+]
+`;

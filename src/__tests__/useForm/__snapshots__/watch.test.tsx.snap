@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`watch should remove input value after input is unmounted with shouldUnregister: true 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": "1",
+  },
+  Object {
+    "test": "1",
+  },
+  Object {},
+]
+`;
+
 exports[`watch should watch correctly with useFieldArray with action and then fallback to onChange 1`] = `
 Array [
   Object {
@@ -25,20 +38,10 @@ Array [
   Object {
     "names": Array [
       Object {
-        "name": "test",
+        "name": "123",
       },
       Object {
-        "name": "test",
-      },
-    ],
-  },
-  Object {
-    "names": Array [
-      Object {
-        "name": "test",
-      },
-      Object {
-        "name": "test",
+        "name": "456",
       },
     ],
   },
@@ -48,7 +51,17 @@ Array [
         "name": "123",
       },
       Object {
-        "name": "test",
+        "name": "456",
+      },
+    ],
+  },
+  Object {
+    "names": Array [
+      Object {
+        "name": "123",
+      },
+      Object {
+        "name": "456",
       },
     ],
   },
