@@ -417,17 +417,14 @@ export function createFormControl<
   };
 
   const handleChange: ChangeHandler = async (event) => {
-    const {
-      target,
-      target: { value, type: inputType },
-    } = event;
+    const target = event.target;
     let name = target.name;
     const field: Field = get(_fields, name);
 
     if (field) {
       let error;
       let isValid;
-      const inputValue = inputType ? getFieldValue(field._f) : value;
+      const inputValue = target.type ? getFieldValue(field._f) : target.value;
       const isBlurEvent = event.type === EVENTS.BLUR;
 
       if (field._f) {
