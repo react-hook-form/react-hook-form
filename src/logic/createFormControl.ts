@@ -482,12 +482,18 @@ export function createFormControl<
         const { errors } = await executeResolver([name]);
         error = get(errors, name);
 
-        if (isCheckBoxInput(target as Ref) && !error) {
+        if (isCheckBoxInput(target) && !error) {
           const parentNodeName = getNodeParentName(name);
-          const valError = get(errors, parentNodeName, {});
-          valError.type && valError.message && (error = valError);
+          const parentField = get(_fields, parentNodeName);
 
-          if (valError || get(_formState.errors, parentNodeName)) {
+          if (
+            Array.isArray(parentField) &&
+            parentField.every(
+              (field: Field) => field._f && isCheckBoxInput(field._f.ref),
+            )
+          ) {
+            const parentError = get(errors, parentNodeName, {});
+            parentError.type && (error = parentError);
             name = parentNodeName;
           }
         }

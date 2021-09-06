@@ -1323,6 +1323,82 @@ describe('useForm', () => {
       expect(errorsObject).toEqual({});
     });
 
+    it('should not clear errors for non checkbox parent inputs', async () => {
+      let errorsObject = {};
+
+      const Component = () => {
+        const {
+          formState: { errors },
+          register,
+          handleSubmit,
+        } = useForm<{
+          checkbox: [{ test: string }, { test1: string }];
+        }>({
+          mode: 'onChange',
+          resolver: (data) => {
+            return {
+              errors: {
+                ...(!data.checkbox[0].test || !data.checkbox[1].test1
+                  ? {
+                      checkbox: [
+                        {
+                          ...(!data.checkbox[0].test
+                            ? { test: { type: 'error', message: 'wrong' } }
+                            : {}),
+                          ...(!data.checkbox[1].test1
+                            ? { test1: { type: 'error', message: 'wrong' } }
+                            : {}),
+                        },
+                      ],
+                    }
+                  : {}),
+              },
+              values: {},
+            };
+          },
+        });
+        errorsObject = errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input type={'checkbox'} {...register(`checkbox.0.test`)} />
+
+            <input {...register(`checkbox.1.test1`)} />
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(errorsObject).toEqual({
+        checkbox: [
+          {
+            test: { type: 'error', message: 'wrong' },
+            test1: { type: 'error', message: 'wrong' },
+          },
+        ],
+      });
+
+      fireEvent.click(screen.getByRole('checkbox'));
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(errorsObject).toEqual({
+        checkbox: [
+          {
+            test1: { type: 'error', message: 'wrong' },
+          },
+        ],
+      });
+    });
+
     it('should have formState.isValid equals true with defined default values after executing resolver', async () => {
       const Toggle = () => {
         const [toggle, setToggle] = React.useState(false);
