@@ -102,7 +102,7 @@ export function createFormControl<
     ...props,
   };
   let _delayCallback: DelayCallback;
-  let _formState = {
+  let _formState: FormState<TFieldValues> = {
     isDirty: false,
     isValidating: false,
     dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
@@ -316,7 +316,7 @@ export function createFormControl<
         inputValue,
       );
       isCurrentFieldDirty
-        ? set(_formState.dirtyFields as TFieldValues, name, true)
+        ? set(_formState.dirtyFields, name, true)
         : unset(_formState.dirtyFields, name);
       state.dirtyFields = _formState.dirtyFields;
       isChanged =
@@ -326,7 +326,7 @@ export function createFormControl<
     const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
     if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
+      set(_formState.touchedFields, name, isCurrentTouched);
       state.touchedFields = _formState.touchedFields;
       isChanged =
         isChanged ||
@@ -351,7 +351,7 @@ export function createFormControl<
             formOptions.shouldUseNativeValidation,
           ),
         )
-      : ({} as ResolverResult);
+      : ({} as ResolverResult<TFieldValues>);
   };
 
   const executeResolverValidation = async (names?: InternalFieldName[]) => {
@@ -682,13 +682,13 @@ export function createFormControl<
         args.argA,
         args.argB,
       );
-      shouldSet && set(_formState.touchedFields as TFieldValues, name, output);
+      shouldSet && set(_formState.touchedFields, name, output);
       unsetEmptyArray(_formState.touchedFields, name);
     }
 
     if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
       set(
-        _formState.dirtyFields as TFieldValues,
+        _formState.dirtyFields,
         name,
         setFieldArrayDirtyFields(
           omitKey(updatedFieldArrayValues, keyName),
@@ -698,7 +698,7 @@ export function createFormControl<
       );
       updatedFieldArrayValues &&
         set(
-          _formState.dirtyFields as TFieldValues,
+          _formState.dirtyFields,
           name,
           setFieldArrayDirtyFields(
             omitKey(updatedFieldArrayValues, keyName),
@@ -741,7 +741,7 @@ export function createFormControl<
         options.shouldDirty
       ) {
         set(
-          _formState.dirtyFields as TFieldValues,
+          _formState.dirtyFields,
           name,
           setFieldArrayDirtyFields(
             value,
@@ -983,14 +983,14 @@ export function createFormControl<
       set(_formValues, name, options.value);
     }
 
-    if (
-      isBoolean(options.disabled) &&
-      field &&
-      field._f &&
-      isBoolean(field._f.ref.disabled) &&
-      field._f.ref.disabled !== options.disabled
-    ) {
-      set(_formValues, name, options.disabled ? undefined : field._f.ref.value);
+    if (isBoolean(options.disabled) && field) {
+      set(
+        _formValues,
+        name,
+        options.disabled
+          ? undefined
+          : get(_formValues, name, getFieldValue(field._f)),
+      );
     }
 
     _names.mount.add(name);

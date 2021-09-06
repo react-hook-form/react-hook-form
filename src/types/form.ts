@@ -25,19 +25,15 @@ import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
 
-export type NestedValue<
-  TValue extends unknown[] | Record<string, unknown> | Map<unknown, unknown> =
-    | unknown[]
-    | Record<string, unknown>,
-> = {
+export type NestedValue<TValue extends object = object> = {
   [$NestedValue]: never;
 } & TValue;
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends Date | FileList
+  : T extends Date | FileList | File
   ? T
-  : T extends Record<string, unknown>
+  : T extends object
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
