@@ -258,8 +258,8 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
 export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  isMounted?: boolean,
   isGlobal?: boolean,
-  formValues?: unknown,
 ) =>
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;

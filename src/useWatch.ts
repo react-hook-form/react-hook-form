@@ -75,6 +75,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           const result = control._getWatch(
             _name.current as InternalFieldName,
             defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+            true,
           );
           updateValue(
             isObject(result)

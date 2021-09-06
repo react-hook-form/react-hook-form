@@ -603,10 +603,11 @@ export function createFormControl<
   const _getWatch: WatchInternal<TFieldValues> = (
     fieldNames,
     defaultValue,
+    isMounted,
     isGlobal,
   ) => {
     const fieldValues = {
-      ...(_isMounted
+      ...(isMounted || _isMounted
         ? _formValues
         : isUndefined(defaultValue)
         ? _defaultValues
@@ -893,6 +894,7 @@ export function createFormControl<
       : _getWatch(
           fieldName as InternalFieldName | InternalFieldName[],
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          false,
           true,
         );
 
