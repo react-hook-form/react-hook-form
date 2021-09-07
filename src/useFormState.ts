@@ -5,7 +5,6 @@ import shouldRenderFormState from './logic/shouldRenderFormState';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import {
   FieldValues,
-  FormState,
   InternalFieldName,
   UseFormStateProps,
   UseFormStateReturn,
@@ -15,7 +14,7 @@ import { useFormContext } from './useFormContext';
 function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const methods = useFormContext();
+  const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name } = props || {};
   const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
   const [formState, updateFormState] = React.useState(control._formState);
@@ -48,7 +47,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   }, [disabled, control]);
 
   return getProxyFormState(
-    formState as FormState<TFieldValues>,
+    formState,
     control._proxyFormState,
     _localProxyFormState.current,
     false,

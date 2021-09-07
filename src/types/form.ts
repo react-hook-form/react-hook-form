@@ -19,6 +19,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  UnionLike,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -101,7 +102,7 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  DeepPartial<TFieldValues>,
+  DeepPartial<UnionLike<TFieldValues>>,
   true
 >;
 
@@ -258,8 +259,8 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
 export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  isMounted?: boolean,
   isGlobal?: boolean,
-  formValues?: unknown,
 ) =>
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;
