@@ -792,6 +792,42 @@ describe('register', () => {
       expect(output).toEqual({ test: 12345, test1: true });
     });
 
+    it('should return undefined value with setValueAs', async () => {
+      let output = {};
+      const Component = () => {
+        const { register, handleSubmit } = useForm<{
+          test: number;
+        }>();
+
+        return (
+          <form onSubmit={handleSubmit((data) => (output = data))}>
+            <input
+              {...register('test', {
+                setValueAs: (value: string) =>
+                  value === '' ? undefined : +value,
+              })}
+              defaultValue={12345}
+            />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: '',
+        },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(output).toEqual({ test: undefined });
+    });
+
     it('should return NaN when value is valid', async () => {
       let output = {};
       const Component = () => {
