@@ -447,9 +447,7 @@ export function createFormControl<
         );
       const isWatched = !isBlurEvent && isFieldWatched(name);
 
-      if (!isUndefined(inputValue)) {
-        set(_formValues, name, inputValue);
-      }
+      set(_formValues, name, inputValue);
 
       const fieldState = updateTouchAndDirtyState(
         name,
