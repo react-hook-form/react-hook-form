@@ -1,8 +1,109 @@
 # Changelog
 
+## [7.15.0] - 2021-09-05
+
+## Added
+
+- `useFieldArray` new method `replace()`
+
+```tsx
+const { control } = useForm({
+  defaultValues: {
+    test: [{ value: 'lorem' }, { value: 'ipsum' }],
+  },
+});
+const { fields, replace } = useFieldArray({
+  control,
+  name: 'test',
+});
+
+const handleFullyReplacement = (): void => {
+  // remove old and set fully new values
+  replace([{ value: 'dolor' }, { value: 'sit' }, { value: 'amet' }]);
+};
+```
+
+## [7.14.0] - 2021-08-27
+
+## Added
+
+- `register` add dependent validation
+
+```tsx
+const App = () => {
+  const { register, getValues } = useForm();
+
+  return (
+    <form>
+      <input
+        {...register('firstName', {
+          validate: (value) => {
+            return getValues('lastName') === value;
+          },
+        })}
+      />
+      <input {...register('lastName', { deps: ['firstName'] })} /> // dependant validation
+    </form>
+  );
+};
+```
+
+## [7.13.0] - 2021-08-22
+
+## Added
+
+`Trigger`
+
+- Trigger will enable object name trigger and field array name trigger
+
+```tsx
+useFieldArray({ name: 'test' });
+
+trigger('name'); // will trigger the whole field array to validate
+```
+
+`register`
+
+- added a `disabled` prop as an option to toggle input disable attribute
+- register will be able to seek input DOM reference through the `ref` callback
+
+```tsx
+register('test', { disabled: true }) // will set value to undeinfed and pass disabled down to the input attribute
+
+<div {...register('test')}>
+  <input name="test" /> // this input will be registered
+</div>
+```
+
+`useWatch`
+
+- added `disabled` prop to toggle the state subscription.
+
+```tsx
+useWatch({ disabled: true }); // you toggle the subscription
+```
+
+`useFormState`
+
+- added `disabled` prop to toggle the state subscription.
+
+```tsx
+useFormState({ disabled: true }); // you toggle the subscription
+```
+
+`setValue`
+
+- allow set value for non-registered inputs include nested object and array field.
+
+```tsx
+<input {...register('test.0.firstName')} />
+
+setValue('test', [{ firstName: 'bill' }, {firstName: 'kotaro}, {firstName: 'joris'}]) // this will works
+```
+
 ## [7.12.0] - 2021-07-24
 
-## Add
+## Added
 
 - new `useForm` config `delayError`
 
@@ -14,7 +115,7 @@ useForm({
 
 ## [7.11.0] - 2021-07-13
 
-## Add
+## Added
 
 - `update` method to update an field array inputs
 
@@ -32,7 +133,7 @@ update(0, data); // update an individual field array node
 
 ## [7.9.0] - 2021-06-19
 
-## Add
+## Added
 
 - new config at `useForm` to enabled native browser validation
 
