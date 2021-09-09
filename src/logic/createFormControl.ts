@@ -970,7 +970,7 @@ export function createFormControl<
 
     set(_fields, name, field);
 
-    _updateValidAndInputValue(name, ref);
+    (!options || !options.disabled) && _updateValidAndInputValue(name, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
