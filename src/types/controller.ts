@@ -3,20 +3,29 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
+  DeepMap,
+  DeepPartial,
   FieldError,
   FieldPath,
   FieldPathValue,
   FieldValues,
   RefCallBack,
+  UnionLike,
   UnpackNestedValue,
   UseFormStateReturn,
 } from './';
 
-export type ControllerFieldState = {
+export type ControllerFieldState<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldError;
+  error?: DeepMap<
+    DeepPartial<UnionLike<FieldPathValue<TFieldValues, TFieldName>>>,
+    FieldError
+  >;
 };
 
 export type ControllerRenderProps<
@@ -50,7 +59,7 @@ export type UseControllerReturn<
 > = {
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
-  fieldState: ControllerFieldState;
+  fieldState: ControllerFieldState<TFieldValues, TName>;
 };
 
 export type ControllerProps<
@@ -63,7 +72,7 @@ export type ControllerProps<
     formState,
   }: {
     field: ControllerRenderProps<TFieldValues, TName>;
-    fieldState: ControllerFieldState;
+    fieldState: ControllerFieldState<TFieldValues, TName>;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues, TName>;
