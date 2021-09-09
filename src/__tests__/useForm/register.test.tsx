@@ -485,6 +485,51 @@ describe('register', () => {
   });
 
   describe('register disabled', () => {
+    it('should return undefined for disabled inputs', async () => {
+      let output = {};
+      const defaultValues = {
+        test: true,
+      };
+
+      function App() {
+        const { register, handleSubmit } = useForm({
+          defaultValues: defaultValues,
+        });
+
+        return (
+          <form
+            onSubmit={handleSubmit((values) => {
+              output = values;
+            })}
+          >
+            {[
+              { value: 'test', label: 'test' },
+              { value: 'test1', label: 'test1' },
+            ].map((item) => (
+              <input
+                key={item.value}
+                type="checkbox"
+                {...register('test', {
+                  disabled: true,
+                })}
+              />
+            ))}
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(output).toEqual({
+        test: undefined,
+      });
+    });
+
     it('should omit all inputs which has disabled set to true', async () => {
       let outputData: object = {};
       const watchedData: object[] = [];
