@@ -3,14 +3,11 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
-  DeepMap,
-  DeepPartial,
-  FieldError,
+  FieldErrors,
   FieldPath,
   FieldPathValue,
   FieldValues,
   RefCallBack,
-  UnionLike,
   UnpackNestedValue,
   UseFormStateReturn,
 } from './';
@@ -22,10 +19,7 @@ export type ControllerFieldState<
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: DeepMap<
-    DeepPartial<UnionLike<FieldPathValue<TFieldValues, TFieldName>>>,
-    FieldError
-  >;
+  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>>;
 };
 
 export type ControllerRenderProps<
