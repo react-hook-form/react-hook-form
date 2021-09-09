@@ -489,7 +489,6 @@ describe('register', () => {
       let output = {};
       const defaultValues = {
         test: true,
-        test1: false,
       };
 
       function App() {
@@ -528,7 +527,6 @@ describe('register', () => {
 
       expect(output).toEqual({
         test: undefined,
-        test1: undefined,
       });
     });
 
