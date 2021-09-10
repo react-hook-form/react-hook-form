@@ -116,7 +116,8 @@
     }
   ],
   "peerDependencies": {
-    "react": "^16.8.0 || ^17"
+    "react": "^16.8.0 || ^17",
+    "typescript": "4.3.2"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
