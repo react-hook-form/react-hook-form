@@ -21,7 +21,7 @@
 
 Version 7 | [Version 6](/docs/README.V6.md)
 
-English | <a href="./docs/README.V7.ja-JP.md">日本語</a> 
+English | <a href="./docs/README.V7.ja-JP.md">日本語</a>
 
 ## Features
 
@@ -310,6 +310,12 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     <a href="https://github.com/raisiqueira"
     ><img
             src="https://avatars.githubusercontent.com/u/2914170?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/pashtet422"
+    ><img
+            src="https://avatars.githubusercontent.com/u/45594821?v=4"
             width="45"
             height="45"
     /></a>
