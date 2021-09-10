@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { Control } from '../types';
@@ -498,6 +504,49 @@ describe('useController', () => {
 
     expect(onSubmit).toBeCalledWith({
       test: 'test',
+    });
+  });
+
+  it('should return defaultValues when component is not yet mounted', async () => {
+    const defaultValues = {
+      test: {
+        deep: [
+          {
+            test: '0',
+            test1: '1',
+          },
+        ],
+      },
+    };
+
+    const App = () => {
+      const { control, getValues } = useForm<{
+        test: {
+          deep: { test: string; test1: string }[];
+        };
+      }>({
+        defaultValues,
+      });
+
+      const { field } = useController({
+        control,
+        name: 'test.deep.0.test',
+      });
+
+      return (
+        <div>
+          <input {...field} />
+          <p>{JSON.stringify(getValues())}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(true).toEqual(true);
+
+    await waitFor(() => {
+      screen.getByText('{"test":{"deep":[{"test":"0","test1":"1"}]}}');
     });
   });
 });

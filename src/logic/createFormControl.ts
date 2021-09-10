@@ -832,7 +832,7 @@ export function createFormControl<
   ) => {
     const values = {
       ..._defaultValues,
-      ..._formValues,
+      ...(_isMounted ? _formValues : {}),
     };
 
     return isUndefined(fieldNames)
