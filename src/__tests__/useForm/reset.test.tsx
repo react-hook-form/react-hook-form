@@ -618,4 +618,55 @@ describe('reset', () => {
 
     expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
+
+  it('should only return register input when reset is invoked with shouldUnregister:true', async () => {
+    let submittedData = {};
+
+    const App = () => {
+      const { reset, handleSubmit } = useForm({
+        defaultValues: {
+          test: 'bill',
+        },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submittedData = data;
+          })}
+        >
+          <button>submit</button>
+          <button
+            type={'button'}
+            onClick={() => {
+              reset({
+                test: '1234',
+              });
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(submittedData).toEqual({});
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(submittedData).toEqual({});
+  });
 });

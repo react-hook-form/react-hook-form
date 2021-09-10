@@ -1094,7 +1094,7 @@ export function createFormControl<
     const updatedValues = formValues || _defaultValues;
     const values = cloneObject(updatedValues);
 
-    _formValues = values;
+    _formValues = props.shouldUnregister ? {} : values;
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const name of _names.mount) {
