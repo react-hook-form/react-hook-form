@@ -1000,7 +1000,7 @@ export function createFormControl<
     }
 
     _names.mount.add(name);
-    // !field && _updateValidAndInputValue(name, undefined, true);
+    !field && _updateValidAndInputValue(name, undefined, true);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
