@@ -985,7 +985,7 @@ export function createFormControl<
       },
     });
 
-    if (options.value) {
+    if (!isUndefined(options.value)) {
       set(_formValues, name, options.value);
     }
 
@@ -1000,7 +1000,7 @@ export function createFormControl<
     }
 
     _names.mount.add(name);
-    !field && _updateValidAndInputValue(name, undefined, true);
+    // !field && _updateValidAndInputValue(name, undefined, true);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)

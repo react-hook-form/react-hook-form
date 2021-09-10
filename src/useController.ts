@@ -14,7 +14,6 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
-import { set } from './utils';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
@@ -31,7 +30,6 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
   );
-  set(control._formValues, name, value);
   const formState = useFormState({
     control: control || methods.control,
     name,
