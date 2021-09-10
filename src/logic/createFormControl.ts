@@ -985,7 +985,7 @@ export function createFormControl<
       },
     });
 
-    if (options.value) {
+    if (!isUndefined(options.value)) {
       set(_formValues, name, options.value);
     }
 
