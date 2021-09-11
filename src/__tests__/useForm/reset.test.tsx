@@ -669,4 +669,51 @@ describe('reset', () => {
 
     expect(submittedData).toEqual({});
   });
+
+  it('should keep input values when keepValues is set to true', () => {
+    function App() {
+      const { register, handleSubmit, reset } = useForm();
+      const [show, setShow] = React.useState(true);
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('firstName')} placeholder="First Name" />
+          {show && <input {...register('lastName')} placeholder="Last Name" />}
+          <button
+            type="button"
+            onClick={() => {
+              reset({}, { keepValues: true });
+            }}
+          >
+            reset
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShow(!show);
+            }}
+          >
+            toggle
+          </button>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('test');
+  });
 });
