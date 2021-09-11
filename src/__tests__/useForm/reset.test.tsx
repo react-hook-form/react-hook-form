@@ -676,32 +676,27 @@ describe('reset', () => {
       const [show, setShow] = React.useState(true);
 
       return (
-        <div>
-          <form onSubmit={handleSubmit(() => {})}>
-            <input {...register('firstName')} placeholder="First Name" />
-            {show && (
-              <input {...register('lastName')} placeholder="Last Name" />
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                reset({}, { keepValues: true });
-              }}
-            >
-              reset
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setShow(!show);
-              }}
-            >
-              toggle
-            </button>
-            <input type="submit" />
-          </form>
-        </div>
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('firstName')} placeholder="First Name" />
+          {show && <input {...register('lastName')} placeholder="Last Name" />}
+          <button
+            type="button"
+            onClick={() => {
+              reset({}, { keepValues: true });
+            }}
+          >
+            reset
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShow(!show);
+            }}
+          >
+            toggle
+          </button>
+          <input type="submit" />
+        </form>
       );
     }
 
