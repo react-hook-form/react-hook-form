@@ -65,12 +65,12 @@ export default function App() {
               },
             }}
             defaultValue={tel}
-            name="ContolledMaskedInput"
+            name="ControlledMaskedInput"
             control={control}
           />
 
-          {errors.ContolledMaskedInput && (
-            <p>{errors.ContolledMaskedInput.message}</p>
+          {errors.ControlledMaskedInput && (
+            <p>{errors.ControlledMaskedInput.message}</p>
           )}
         </div>
         <input type="submit" />

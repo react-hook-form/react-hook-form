@@ -8,7 +8,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>validationFeild</h1>
+      <h1>validationField</h1>
       <label>First name: </label>
       <input name="firstName" ref={register({ required: true })} />
 
