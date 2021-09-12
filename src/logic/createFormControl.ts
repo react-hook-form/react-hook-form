@@ -1166,7 +1166,7 @@ export function createFormControl<
       isSubmitSuccessful: false,
     });
 
-    _isMounted = !!keepStateOptions.keepIsValid;
+    _isMounted = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>

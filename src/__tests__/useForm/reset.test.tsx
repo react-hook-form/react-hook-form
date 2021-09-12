@@ -669,4 +669,56 @@ describe('reset', () => {
 
     expect(submittedData).toEqual({});
   });
+
+  it('should not update isMounted when isValid is subscribed', async () => {
+    const mounted: unknown[] = [];
+
+    const App = () => {
+      const { control, reset } = useForm();
+
+      mounted.push(control._isMounted);
+
+      React.useEffect(() => {
+        reset({});
+      }, [reset]);
+
+      return <form />;
+    };
+
+    render(<App />);
+
+    expect(mounted).toEqual([false, true]);
+  });
+
+  it('should update isMounted when isValid is subscribed', async () => {
+    const mounted: unknown[] = [];
+
+    const App = () => {
+      const {
+        control,
+        reset,
+        formState: { isValid },
+      } = useForm();
+
+      mounted.push(control._isMounted);
+
+      React.useEffect(() => {
+        reset({});
+      }, [reset]);
+
+      return (
+        <form>
+          <p>{isValid ? 'true' : 'false'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('false');
+    });
+
+    expect(mounted).toEqual([false, false, true]);
+  });
 });
