@@ -68,7 +68,7 @@ trigger('name'); // will trigger the whole field array to validate
 - register will be able to seek input DOM reference through the `ref` callback
 
 ```tsx
-register('test', { disabled: true }) // will set value to undeinfed and pass disabled down to the input attribute
+register('test', { disabled: true }) // will set value to undefined and pass disabled down to the input attribute
 
 <div {...register('test')}>
   <input name="test" /> // this input will be registered
@@ -632,7 +632,7 @@ function Input({ control, name }) {
 ```tsx
 useWatch({
   name: 'test',
-  defaultValue: 'data', // this value will only show on the inital render
+  defaultValue: 'data', // this value will only show on the initial render
 });
 ```
 

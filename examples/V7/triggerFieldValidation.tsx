@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <h1>validationFeild</h1>
+      <h1>validationField</h1>
       <label>First name: </label>
       <input {...register('firstName', { required: true })} />
 
