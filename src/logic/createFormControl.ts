@@ -24,7 +24,6 @@ import {
   SetValueConfig,
   Subjects,
   UnpackNestedValue,
-  UpdateValues,
   UseFormClearErrors,
   UseFormGetValues,
   UseFormHandleSubmit,
@@ -58,7 +57,6 @@ import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
-import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
@@ -115,8 +113,10 @@ export function createFormControl<
     errors: {} as FieldErrors<TFieldValues>,
   };
   let _fields = {};
-  let _formValues = {};
   let _defaultValues = formOptions.defaultValues || {};
+  let _formValues = formOptions.shouldUnregister
+    ? {}
+    : cloneObject(_defaultValues);
   let _isInAction = false;
   let _isMounted = false;
   let _timer = 0;
@@ -627,28 +627,6 @@ export function createFormControl<
     }
 
     return Array.isArray(fieldNames) ? result : result[0];
-  };
-
-  const _updateValues: UpdateValues<TFieldValues> = (
-    defaultValues,
-    name = '',
-  ): void => {
-    for (const key in defaultValues) {
-      const value = defaultValues[key];
-      const fieldName = name + (name ? '.' : '') + key;
-      const field = get(_fields, fieldName);
-
-      if (!field || !field._f) {
-        if (
-          (isObject(value) && Object.keys(value).length) ||
-          (Array.isArray(value) && value.length)
-        ) {
-          _updateValues(value, fieldName);
-        } else if (!field) {
-          set(_formValues, fieldName, value);
-        }
-      }
-    }
   };
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
@@ -1193,7 +1171,6 @@ export function createFormControl<
       _getWatch,
       _getIsDirty,
       _updateValid,
-      _updateValues,
       _removeFields,
       _updateFieldArray,
       _getFieldArrayValue,
