@@ -2,8 +2,14 @@ describe('useWatchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', () => {
     cy.visit('http://localhost:3000/useWatchUseFieldArrayNested');
 
-    cy.get('#result').contains(
-      '[{"firstName":"Bill","keyValue":[{"name":"1a"},{"name":"1c"}],"lastName":"Luo"}]',
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [{ name: '1a' }, { name: '1c' }],
+          lastName: 'Luo',
+        },
+      ]),
     );
 
     cy.get(`#nest-append-0`).click();
@@ -12,16 +18,39 @@ describe('useWatchUseFieldArrayNested', () => {
     cy.get(`#nest-swap-0`).click();
     cy.get(`#nest-move-0`).click();
 
-    cy.get('#result').contains(
-      '[{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"1a"},{"name":"1c"},{"name":"append"}],"lastName":"Luo"}]',
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [
+            { name: 'insert' },
+            { name: 'prepend' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+          lastName: 'Luo',
+        },
+      ]),
     );
 
     cy.get(`#nest-remove-0`).click();
 
     cy.get('#submit').click();
 
-    cy.get('#result').contains(
-      '[{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"1c"},{"name":"append"}],"lastName":"Luo"}]',
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [
+            { name: 'insert' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+          lastName: 'Luo',
+        },
+      ]),
     );
 
     cy.get('#prepend').click();

@@ -2,8 +2,14 @@ describe('watchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', () => {
     cy.visit('http://localhost:3000/watchUseFieldArrayNested');
 
-    cy.get('#result').contains(
-      '[{"firstName":"Bill","keyValue":[{"name":"1a"},{"name":"1c"}],"lastName":"Luo"}]',
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [{ name: '1a' }, { name: '1c' }],
+          lastName: 'Luo',
+        },
+      ]),
     );
 
     cy.get(`#nest-append-0`).click();

@@ -159,13 +159,6 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
-export type UpdateValues<TFieldValues extends FieldValues> = <
-  T extends Partial<DefaultValues<TFieldValues>>,
->(
-  defaultValues: T,
-  name?: string,
-) => void;
-
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
@@ -330,7 +323,6 @@ export type Control<
   _names: Names;
   _isMounted: boolean;
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _updateValues: UpdateValues<TFieldValues>;
   _isInAction: boolean;
   _getIsDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
