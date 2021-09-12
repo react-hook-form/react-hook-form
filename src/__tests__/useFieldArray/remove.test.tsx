@@ -15,6 +15,8 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
+jest.useFakeTimers();
+
 describe('remove', () => {
   beforeEach(() => {
     mockGenerateId();
@@ -1070,6 +1072,87 @@ describe('remove', () => {
           },
         ],
       });
+    });
+  });
+
+  it('should remove correct value with async reset', async () => {
+    let output = {};
+
+    function App() {
+      const { handleSubmit, control, reset } = useForm({
+        defaultValues: {
+          test: [
+            {
+              title: '',
+              description: '',
+            },
+            {
+              title: '',
+              description: '',
+            },
+          ],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      React.useEffect(() => {
+        setTimeout(() => {
+          reset({
+            test: [
+              {
+                title: 'title1',
+                description: 'description1',
+              },
+              {
+                title: 'title2',
+                description: 'description2',
+              },
+            ],
+          });
+        }, 2000);
+      }, [reset]);
+
+      return (
+        <form onSubmit={handleSubmit((data) => (output = data))}>
+          {fields.map((field, index) => (
+            <div
+              key={field.id}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <Controller
+                name={`test.${index}.title`}
+                control={control}
+                render={({ field }) => <input {...field} />}
+              />
+              <button type="button" onClick={() => remove(index)}>
+                remove
+              </button>
+            </div>
+          ))}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    actComponent(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(output).toEqual({
+      test: [{ title: 'title1', description: 'description1' }],
     });
   });
 });
