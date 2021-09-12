@@ -1112,7 +1112,7 @@ describe('remove', () => {
               },
             ],
           });
-        });
+        }, 2000);
       }, [reset]);
 
       return (
