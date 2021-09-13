@@ -618,4 +618,154 @@ describe('reset', () => {
 
     expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
+
+  it('should only return register input when reset is invoked with shouldUnregister:true', async () => {
+    let submittedData = {};
+
+    const App = () => {
+      const { reset, handleSubmit } = useForm({
+        defaultValues: {
+          test: 'bill',
+        },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submittedData = data;
+          })}
+        >
+          <button>submit</button>
+          <button
+            type={'button'}
+            onClick={() => {
+              reset({
+                test: '1234',
+              });
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(submittedData).toEqual({});
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(submittedData).toEqual({});
+  });
+
+  it('should keep input values when keepValues is set to true', () => {
+    function App() {
+      const { register, handleSubmit, reset } = useForm();
+      const [show, setShow] = React.useState(true);
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('firstName')} placeholder="First Name" />
+          {show && <input {...register('lastName')} placeholder="Last Name" />}
+          <button
+            type="button"
+            onClick={() => {
+              reset({}, { keepValues: true });
+            }}
+          >
+            reset
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShow(!show);
+            }}
+          >
+            toggle
+          </button>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('test');
+  });
+
+  it('should not update isMounted when isValid is subscribed', async () => {
+    const mounted: unknown[] = [];
+
+    const App = () => {
+      const { control, reset } = useForm();
+
+      mounted.push(control._isMounted);
+
+      React.useEffect(() => {
+        reset({});
+      }, [reset]);
+
+      return <form />;
+    };
+
+    render(<App />);
+
+    expect(mounted).toEqual([false, true]);
+  });
+
+  it('should update isMounted when isValid is subscribed', async () => {
+    const mounted: unknown[] = [];
+
+    const App = () => {
+      const {
+        control,
+        reset,
+        formState: { isValid },
+      } = useForm();
+
+      mounted.push(control._isMounted);
+
+      React.useEffect(() => {
+        reset({});
+      }, [reset]);
+
+      return (
+        <form>
+          <p>{isValid ? 'true' : 'false'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('false');
+    });
+
+    expect(mounted).toEqual([false, false, true]);
+  });
 });

@@ -68,7 +68,6 @@ export function useForm<
     if (!control._isMounted) {
       control._isMounted = true;
       control._proxyFormState.isValid && control._updateValid();
-      !props.shouldUnregister && control._updateValues(control._defaultValues);
     }
     control._removeFields();
   });
