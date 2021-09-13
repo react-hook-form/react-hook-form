@@ -115,16 +115,12 @@ export type PathValue<T, P extends Path<T, any> | ArrayPath<T>> = T extends any
       ? R extends Path<T[K], any>
         ? PathValue<T[K], R>
         : never
-      : K extends `${ArrayKey}`
+      : P extends keyof T
+      ? T[P]
+      : P extends `${ArrayKey}`
       ? T extends ReadonlyArray<infer V>
         ? PathValue<V, R & Path<V, any>>
         : never
-      : never
-    : P extends keyof T
-    ? T[P]
-    : P extends `${ArrayKey}`
-    ? T extends ReadonlyArray<infer V>
-      ? V
       : never
     : never
   : never;
