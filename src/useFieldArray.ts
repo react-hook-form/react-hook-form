@@ -80,8 +80,6 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       mapIds(appendValue, keyName),
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
-    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -89,7 +87,7 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
     );
 
     control._names.focus = getFocusFieldName(
@@ -109,7 +107,6 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       mapIds(convertToArrayPayload(value), keyName),
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -117,7 +114,7 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
     );
 
     control._names.focus = getFocusFieldName(name, 0, options);
@@ -130,7 +127,6 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
       index,
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -138,7 +134,7 @@ export const useFieldArray = <
       {
         argA: index,
       },
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
     );
   };
 
