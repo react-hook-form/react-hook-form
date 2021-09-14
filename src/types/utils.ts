@@ -88,28 +88,35 @@ export type FieldPath<TFieldValues extends FieldValues, TResult> = Path<
   TResult
 >;
 
-type ArrayPathImpl<K extends string | number, V> = V extends Primitive
+type ArrayPathImpl<K extends string | number, V, TResult> = V extends Primitive
   ? never
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive
+  ? U extends TResult
+    ? `${K}` | `${K}.${ArrayPath<V, TResult>}`
+    : U extends Primitive
     ? never
-    : `${K}` | `${K}.${ArrayPath<V>}`
-  : `${K}.${ArrayPath<V>}`;
+    : `${K}.${ArrayPath<V, TResult>}`
+  : `${K}.${ArrayPath<V, TResult>}`;
 
-export type ArrayPath<T> = T extends ReadonlyArray<infer V>
+export type ArrayPath<T, TResult> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKey<T>]-?: ArrayPathImpl<K & string, T[K]>;
+        [K in TupleKey<T>]-?: ArrayPathImpl<K & string, T[K], TResult>;
       }[TupleKey<T>]
-    : ArrayPathImpl<ArrayKey, V>
+    : ArrayPathImpl<ArrayKey, V, TResult>
   : {
-      [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
+      [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TResult>;
     }[keyof T];
 
-export type FieldArrayPath<TFieldValues extends FieldValues> =
-  ArrayPath<TFieldValues>;
+export type FieldArrayPath<
+  TFieldValues extends FieldValues,
+  TResult,
+> = ArrayPath<TFieldValues, TResult>;
 
-export type PathValue<T, P extends Path<T, any> | ArrayPath<T>> = T extends any
+export type PathValue<
+  T,
+  P extends Path<T, any> | ArrayPath<T, any>,
+> = T extends any
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
       ? R extends Path<T[K], any>
@@ -132,7 +139,7 @@ export type FieldPathValue<
 
 export type FieldArrayPathValue<
   TFieldValues extends FieldValues,
-  TFieldArrayPath extends FieldArrayPath<TFieldValues>,
+  TFieldArrayPath extends FieldArrayPath<TFieldValues, unknown>,
 > = PathValue<TFieldValues, TFieldArrayPath>;
 
 export type FieldPathValues<

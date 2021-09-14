@@ -15,7 +15,6 @@ import { Resolver } from './resolvers';
 import {
   DeepMap,
   DeepPartial,
-  FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
@@ -259,9 +258,12 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
-export type WatchInternal<TFieldValues> = (
-  fieldNames?: InternalFieldName | InternalFieldName[],
-  defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+export type WatchInternal<TFieldValues, TResult> = (
+  fieldNames?:
+    | FieldPath<TFieldValues, TResult>
+    | ReadonlyArray<FieldPath<TFieldValues, TResult>>
+    | WatchObserver<TFieldValues, TResult>,
+  defaultValue?: TResult,
   isMounted?: boolean,
   isGlobal?: boolean,
 ) =>
@@ -305,9 +307,7 @@ export type Names = {
 
 export type BatchFieldArrayUpdate = <
   T extends Function,
-  TFieldValues,
   TResult = unknown,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
   keyName: TKeyName,
@@ -317,9 +317,7 @@ export type BatchFieldArrayUpdate = <
     argA?: unknown;
     argB?: unknown;
   },
-  updatedFieldArrayValues?: Partial<
-    FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>
-  >[],
+  updatedFieldArrayValues?: Partial<FieldArrayWithId<TResult, TKeyName>>[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
 ) => void;
@@ -342,7 +340,7 @@ export type Control<
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;
   _defaultValues: Partial<DefaultValues<TFieldValues>>;
-  _getWatch: WatchInternal<TFieldValues>;
+  _getWatch: WatchInternal<TFieldValues, any>;
   register: UseFormRegister<TFieldValues>;
   _updateFieldArray: BatchFieldArrayUpdate;
   _getFieldArrayValue: <TFieldArrayValues>(

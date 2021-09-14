@@ -123,7 +123,7 @@ export function useController<
       invalid: !!get(formState.errors, name),
       isDirty: !!get(formState.dirtyFields, name),
       isTouched: !!get(formState.touchedFields, name),
-      error: get(formState.errors, name),
+      error: get(formState.errors, name) as any,
     },
   };
 }

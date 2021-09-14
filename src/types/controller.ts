@@ -8,7 +8,6 @@ import {
   FieldPathValue,
   FieldValues,
   RefCallBack,
-  UnpackNestedValue,
   UseFormStateReturn,
 } from './';
 
@@ -35,14 +34,14 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: () => void;
-  value: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
+  value: TResult;
   name: TName;
   ref: RefCallBack;
 };
 
 export type UseControllerProps<
   TFieldValues extends FieldValues,
-  TResult,
+  TResult = unknown,
   TName extends FieldPath<TFieldValues, TResult> = FieldPath<
     TFieldValues,
     TResult

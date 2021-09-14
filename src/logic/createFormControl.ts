@@ -2,7 +2,6 @@ import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
   ChangeHandler,
-  DeepPartial,
   DelayCallback,
   Field,
   FieldError,
@@ -597,7 +596,7 @@ export function createFormControl<
           );
     });
 
-  const _getWatch: WatchInternal<TFieldValues> = (
+  const _getWatch: WatchInternal<TFieldValues, any> = (
     fieldNames,
     defaultValue,
     isMounted,
@@ -859,25 +858,14 @@ export function createFormControl<
       | FieldPath<TFieldValues, TResult>
       | ReadonlyArray<FieldPath<TFieldValues, TResult>>
       | WatchObserver<TFieldValues, TResult>,
-    defaultValue?: unknown,
+    defaultValue?: TResult,
   ) =>
     isFunction(fieldName)
       ? _subjects.watch.subscribe({
           next: (info: any) =>
-            fieldName(
-              _getWatch(
-                undefined,
-                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-              ),
-              info,
-            ),
+            fieldName(_getWatch(undefined, defaultValue), info),
         })
-      : _getWatch(
-          fieldName as InternalFieldName | InternalFieldName[],
-          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-          false,
-          true,
-        );
+      : _getWatch(fieldName, defaultValue, false, true);
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const inputName of name ? convertToArrayPayload(name) : _names.mount) {
