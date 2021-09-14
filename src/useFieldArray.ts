@@ -150,7 +150,6 @@ export const useFieldArray = <
       index,
       mapIds(convertToArrayPayload(value), keyName),
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -159,7 +158,7 @@ export const useFieldArray = <
         argA: index,
         argB: fillEmptyArray(value),
       },
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
     );
 
     control._names.focus = getFocusFieldName(name, index, options);
@@ -172,7 +171,6 @@ export const useFieldArray = <
       keyName,
     );
     swapArrayAt(updatedFieldArrayValuesWithKey, indexA, indexB);
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -181,7 +179,7 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
   };
@@ -193,7 +191,6 @@ export const useFieldArray = <
       keyName,
     );
     moveArrayAt(updatedFieldArrayValuesWithKey, from, to);
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
@@ -202,7 +199,7 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
   };
@@ -222,7 +219,6 @@ export const useFieldArray = <
       value,
     );
     _fieldIds.current = mapIds(updatedFieldArrayValues, keyName);
-    const fieldArrayValues = updateValues(_fieldIds.current);
     control._updateFieldArray(
       keyName,
       name,
@@ -231,7 +227,7 @@ export const useFieldArray = <
         argA: index,
         argB: value,
       },
-      fieldArrayValues,
+      updateValues(_fieldIds.current),
       true,
       false,
     );
@@ -245,13 +241,12 @@ export const useFieldArray = <
     const updatedFieldArrayValuesWithKey: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = mapIds(convertToArrayPayload(value), keyName);
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       keyName,
       name,
       () => updatedFieldArrayValuesWithKey,
       {},
-      fieldArrayValues,
+      updateValues(updatedFieldArrayValuesWithKey),
       true,
       false,
     );
