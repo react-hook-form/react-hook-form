@@ -4,11 +4,7 @@ exports[`update should trigger reRender when user update input and is watching t
 Array [
   Object {},
   Object {
-    "test": Array [
-      Object {
-        "value": "",
-      },
-    ],
+    "test": Array [],
   },
   Object {
     "test": Array [
