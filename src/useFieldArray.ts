@@ -243,7 +243,7 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
-    control._isInAction = false;
+    control._stateFlags.action = false;
 
     if (control._names.watchAll) {
       control._subjects.state.next({});

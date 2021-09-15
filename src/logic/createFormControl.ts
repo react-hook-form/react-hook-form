@@ -117,8 +117,11 @@ export function createFormControl<
   let _formValues = formOptions.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
-  let _isInAction = false;
-  let _isMounted = false;
+  let _stateFlags = {
+    action: false,
+    mount: false,
+    watch: false,
+  };
   let _timer = 0;
   let _names: Names = {
     mount: new Set(),
@@ -546,7 +549,7 @@ export function createFormControl<
       }
     }
 
-    _isMounted && _updateValid();
+    _stateFlags.mount && _updateValid();
   };
 
   const _getIsDirty: GetIsDirty = (name, data) => {
@@ -605,7 +608,7 @@ export function createFormControl<
     isGlobal,
   ) => {
     const fieldValues = {
-      ...(isMounted || _isMounted
+      ...(isMounted || _stateFlags.mount
         ? _formValues
         : isUndefined(defaultValue)
         ? _defaultValues
@@ -643,7 +646,7 @@ export function createFormControl<
       updatedFieldArrayValuesWithKey,
       keyName,
     );
-    _isInAction = true;
+    _stateFlags.action = true;
 
     if (shouldSetFields && get(_fields, name)) {
       output = method(get(_fields, name), args.argA, args.argB);
@@ -701,7 +704,7 @@ export function createFormControl<
   };
 
   const _getFieldArrayValue = (name: InternalFieldName) =>
-    get(_isMounted ? _formValues : _defaultValues, name, []);
+    get(_stateFlags.mount ? _formValues : _defaultValues, name, []);
 
   const setValue: UseFormSetValue<TFieldValues> = (
     name,
@@ -810,7 +813,7 @@ export function createFormControl<
   ) => {
     const values = {
       ..._defaultValues,
-      ...(_isMounted ? _formValues : {}),
+      ...(_stateFlags.mount ? _formValues : {}),
     };
 
     return isUndefined(fieldNames)
@@ -1002,7 +1005,9 @@ export function createFormControl<
               }
 
               _shouldUnregister &&
-                !(isNameInFieldArray(_names.array, name) && _isInAction) &&
+                !(
+                  isNameInFieldArray(_names.array, name) && _stateFlags.action
+                ) &&
                 _names.unMount.add(name);
             }
           },
@@ -1146,7 +1151,9 @@ export function createFormControl<
       isSubmitSuccessful: false,
     });
 
-    _isMounted = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _stateFlags.mount =
+      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _stateFlags.watch = !!props.shouldUnregister;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
@@ -1189,11 +1196,11 @@ export function createFormControl<
       set _formValues(value) {
         _formValues = value;
       },
-      get _isMounted() {
-        return _isMounted;
+      get _stateFlags() {
+        return _stateFlags;
       },
-      set _isMounted(value) {
-        _isMounted = value;
+      set _stateFlags(value) {
+        _stateFlags = value;
       },
       get _defaultValues() {
         return _defaultValues;
@@ -1206,12 +1213,6 @@ export function createFormControl<
       },
       set _names(value) {
         _names = value;
-      },
-      get _isInAction() {
-        return _isInAction;
-      },
-      set _isInAction(value) {
-        _isInAction = value;
       },
       get _formState() {
         return _formState;
