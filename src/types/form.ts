@@ -321,9 +321,12 @@ export type Control<
   _subjects: Subjects<TFieldValues>;
   _removeFields: () => void;
   _names: Names;
-  _isMounted: boolean;
+  _stateFlags: {
+    mount: boolean;
+    action: boolean;
+    watch: boolean;
+  };
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _isInAction: boolean;
   _getIsDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: () => void;
