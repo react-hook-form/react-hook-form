@@ -65,7 +65,6 @@ import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
 import omitKey from '../utils/omitKeys';
-import omitKeys from '../utils/omitKeys';
 import Subject from '../utils/Subject';
 import unset from '../utils/unset';
 
@@ -637,24 +636,17 @@ export function createFormControl<
     name,
     method,
     args,
-    updatedFieldArrayValuesWithKey = [],
+    values = [],
     shouldSet = true,
     shouldSetFields = true,
   ) => {
     let output;
-    const updatedFieldArrayValues = omitKeys(
-      updatedFieldArrayValuesWithKey,
-      keyName,
-    );
     _stateFlags.action = true;
 
     if (shouldSetFields && get(_fields, name)) {
       output = method(get(_fields, name), args.argA, args.argB);
       shouldSet && set(_fields, name, output);
     }
-
-    output = method(get(_formValues, name), args.argA, args.argB);
-    shouldSet && set(_formValues, name, output);
 
     if (Array.isArray(get(_formState.errors, name))) {
       const output = method(get(_formState.errors, name), args.argA, args.argB);
@@ -677,17 +669,17 @@ export function createFormControl<
         _formState.dirtyFields as TFieldValues,
         name,
         setFieldArrayDirtyFields(
-          omitKey(updatedFieldArrayValues, keyName),
+          omitKey(values, keyName),
           get(_defaultValues, name, []),
           get(_formState.dirtyFields, name, []),
         ),
       );
-      updatedFieldArrayValues &&
+      values &&
         set(
           _formState.dirtyFields as TFieldValues,
           name,
           setFieldArrayDirtyFields(
-            omitKey(updatedFieldArrayValues, keyName),
+            omitKey(values, keyName),
             get(_defaultValues, name, []),
             get(_formState.dirtyFields, name, []),
           ),
@@ -696,7 +688,7 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      isDirty: _getIsDirty(name, omitKey(updatedFieldArrayValues, keyName)),
+      isDirty: _getIsDirty(name, omitKey(values, keyName)),
       dirtyFields: _formState.dirtyFields,
       errors: _formState.errors,
       isValid: _formState.isValid,
