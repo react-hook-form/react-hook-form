@@ -723,7 +723,7 @@ describe('reset', () => {
     const App = () => {
       const { control, reset } = useForm();
 
-      mounted.push(control._isMounted);
+      mounted.push(control._stateFlags.mount);
 
       React.useEffect(() => {
         reset({});
@@ -747,7 +747,7 @@ describe('reset', () => {
         formState: { isValid },
       } = useForm();
 
-      mounted.push(control._isMounted);
+      mounted.push(control._stateFlags.mount);
 
       React.useEffect(() => {
         reset({});
