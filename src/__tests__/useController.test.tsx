@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control } from '../types';
+import { Control, FieldPathWithValue, FieldValues } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 
@@ -27,6 +27,39 @@ describe('useController', () => {
       });
 
       return null;
+    };
+
+    render(<Component />);
+  });
+
+  it('should render generic component correctly', () => {
+    type ExpectedType = { test: string };
+
+    const Generic = <FormValues extends FieldValues>({
+      name,
+      control,
+    }: {
+      name: FieldPathWithValue<FormValues, ExpectedType>;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field: { value },
+      } = useController<FormValues, ExpectedType>({
+        name,
+        control,
+        defaultValue: { test: 'value' },
+      });
+
+      return <>{value.test}</>;
+    };
+
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        key: ExpectedType[];
+      }>();
+
+      return <Generic name="key.0" control={control} />;
     };
 
     render(<Component />);
@@ -508,6 +541,12 @@ describe('useController', () => {
   });
 
   it('should return defaultValues when component is not yet mounted', async () => {
+    type FormValues = {
+      test: {
+        deep: { test: string; test1: string }[];
+      };
+    };
+
     const defaultValues = {
       test: {
         deep: [
@@ -520,15 +559,11 @@ describe('useController', () => {
     };
 
     const App = () => {
-      const { control, getValues } = useForm<{
-        test: {
-          deep: { test: string; test1: string }[];
-        };
-      }>({
+      const { control, getValues } = useForm<FormValues>({
         defaultValues,
       });
 
-      const { field } = useController({
+      const { field } = useController<FormValues, string>({
         control,
         name: 'test.deep.0.test',
       });

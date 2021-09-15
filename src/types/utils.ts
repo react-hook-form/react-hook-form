@@ -170,3 +170,15 @@ export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
       Exclude<UnionKeys<T>, keyof T> | OptionalKeys<T>
     >
   : T;
+
+export type FieldPathWithValue<
+  TFieldValues extends FieldValues,
+  TResult = unknown,
+> = {
+  [key in FieldPath<TFieldValues>]: FieldPathValue<
+    TFieldValues,
+    key
+  > extends TResult
+    ? key
+    : never;
+}[FieldPath<TFieldValues>];

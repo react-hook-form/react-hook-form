@@ -7,6 +7,8 @@ import { EVENTS } from './constants';
 import {
   Field,
   FieldPath,
+  FieldPathValue,
+  FieldPathWithValue,
   FieldValues,
   InternalFieldName,
   UseControllerProps,
@@ -17,10 +19,14 @@ import { useFormState } from './useFormState';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TResult = FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
+  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
+    TFieldValues,
+    TResult
+  >,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
-): UseControllerReturn<TFieldValues, TName> {
+  props: UseControllerProps<TFieldValues, TResult, TName>,
+): UseControllerReturn<TFieldValues, TResult, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
