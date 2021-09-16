@@ -6,8 +6,6 @@ import get from './utils/get';
 import { EVENTS } from './constants';
 import {
   Field,
-  FieldPath,
-  FieldPathValue,
   FieldPathWithValue,
   FieldValues,
   InternalFieldName,
@@ -19,7 +17,7 @@ import { useFormState } from './useFormState';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
+  TResult = any,
   TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
     TFieldValues,
     TResult

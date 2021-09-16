@@ -8,6 +8,7 @@ import {
   FieldPathValue,
   FieldPathWithValue,
   FieldValues,
+  IsAny,
   RefCallBack,
   UseFormStateReturn,
 } from './';
@@ -24,7 +25,7 @@ export type ControllerFieldState<
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
+  TResult = any,
   TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
     TFieldValues,
     TResult
@@ -32,14 +33,16 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: () => void;
-  value: TResult;
+  value: IsAny<TResult> extends true
+    ? FieldPathValue<TFieldValues, TName>
+    : TResult;
   name: TName;
   ref: RefCallBack;
 };
 
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
+  TResult = any,
   TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
     TFieldValues,
     TResult
@@ -51,13 +54,15 @@ export type UseControllerProps<
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >;
   shouldUnregister?: boolean;
-  defaultValue?: TResult;
+  defaultValue?: IsAny<TResult> extends true
+    ? FieldPathValue<TFieldValues, TName>
+    : TResult;
   control?: Control<TFieldValues>;
 };
 
 export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
+  TResult = any,
   TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
     TFieldValues,
     TResult
@@ -70,7 +75,7 @@ export type UseControllerReturn<
 
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
+  TResult = any,
   TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
     TFieldValues,
     TResult
