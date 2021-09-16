@@ -4,7 +4,6 @@ import { RegisterOptions } from './validator';
 import {
   Control,
   FieldErrors,
-  FieldPath,
   FieldPathValue,
   FieldPathWithValue,
   FieldValues,
@@ -15,12 +14,18 @@ import {
 
 export type ControllerFieldState<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TResult = any,
+  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
+    TFieldValues,
+    TResult
+  >,
 > = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>>;
+  error?: FieldErrors<
+    IsAny<TResult> extends true ? FieldPathValue<TFieldValues, TName> : TResult
+  >;
 };
 
 export type ControllerRenderProps<
@@ -70,7 +75,7 @@ export type UseControllerReturn<
 > = {
   field: ControllerRenderProps<TFieldValues, TResult, TName>;
   formState: UseFormStateReturn<TFieldValues>;
-  fieldState: ControllerFieldState<TFieldValues, TName>;
+  fieldState: ControllerFieldState<TFieldValues, TResult, TName>;
 };
 
 export type ControllerProps<
@@ -87,7 +92,7 @@ export type ControllerProps<
     formState,
   }: {
     field: ControllerRenderProps<TFieldValues, TResult, TName>;
-    fieldState: ControllerFieldState<TFieldValues, TName>;
+    fieldState: ControllerFieldState<TFieldValues, TResult, TName>;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues, TResult, TName>;

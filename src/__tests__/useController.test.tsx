@@ -44,11 +44,16 @@ describe('useController', () => {
     }) => {
       const {
         field: { value },
+        fieldState: { error },
       } = useController<FormValues, ExpectedType>({
         name,
         control,
         defaultValue: { test: 'value' },
       });
+
+      if (error?.test?.message) {
+        return null;
+      }
 
       return <>{value.test}</>;
     };
