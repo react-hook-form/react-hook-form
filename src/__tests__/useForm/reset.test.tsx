@@ -385,14 +385,13 @@ describe('reset', () => {
 
   it('should reset field array fine with empty value', async () => {
     let data: unknown;
-    type FormValues = {
-      test: {
-        firstName: string;
-        lastName: string;
-      }[];
-    };
     const Component = () => {
-      const { control, register, reset, handleSubmit } = useForm<FormValues>();
+      const { control, register, reset, handleSubmit } = useForm<{
+        test: {
+          firstName: string;
+          lastName: string;
+        }[];
+      }>();
       const { fields } = useFieldArray({
         control,
         name: 'test',
@@ -407,7 +406,7 @@ describe('reset', () => {
           {fields.map((field, index) => (
             <div key={field.id}>
               <input {...register(`test.${index}.firstName` as const)} />
-              <Controller<FormValues, string>
+              <Controller
                 control={control}
                 name={`test.${index}.lastName` as const}
                 render={({ field }) => <input {...field} />}

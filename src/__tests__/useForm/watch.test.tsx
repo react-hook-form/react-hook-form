@@ -297,7 +297,7 @@ describe('watch', () => {
           {fields.map((item, index) => {
             return (
               <div key={item.id}>
-                <Controller<FormValues, string>
+                <Controller
                   control={control}
                   name={`names.${index}.name` as const}
                   render={({ field }) => <input {...field} />}

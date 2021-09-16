@@ -208,10 +208,7 @@ describe('update', () => {
       control: Control<FormValues>;
       index: number;
     }) => {
-      const { field } = useController<
-        FormValues,
-        { firstName: string; lastName: string }
-      >({
+      const { field } = useController({
         control,
         name: `test.${index}.value` as const,
       });

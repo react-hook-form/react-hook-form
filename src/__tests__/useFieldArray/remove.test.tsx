@@ -790,13 +790,12 @@ describe('remove', () => {
   });
 
   it('should remove Controller by index without error', () => {
-    type FormValues = {
-      test: {
-        firstName: string;
-      }[];
-    };
     const Component = () => {
-      const { control, handleSubmit } = useForm<FormValues>({
+      const { control, handleSubmit } = useForm<{
+        test: {
+          firstName: string;
+        }[];
+      }>({
         defaultValues: {
           test: [],
         },
@@ -812,7 +811,7 @@ describe('remove', () => {
             {fields.map((item, index) => {
               return (
                 <li key={item.id}>
-                  <Controller<FormValues, string>
+                  <Controller
                     render={({ field }) => <input {...field} />}
                     name={`test.${index}.firstName` as const}
                     control={control}
@@ -871,13 +870,7 @@ describe('remove', () => {
 
   it("should not reset Controller's value during remove when Field Array name is already registered", () => {
     function Component() {
-      type FormValues = {
-        test: {
-          firstName: string;
-          lastName: string;
-        }[];
-      };
-      const { control, handleSubmit } = useForm<FormValues>({
+      const { control, handleSubmit } = useForm({
         defaultValues: {
           test: [{ firstName: 'Bill', lastName: '' }],
         },
@@ -893,7 +886,7 @@ describe('remove', () => {
             {fields.map((item, index) => {
               return (
                 <li key={item.id}>
-                  <Controller<FormValues, string>
+                  <Controller
                     name={`test.${index}.lastName` as const}
                     control={control}
                     render={({ field }) => <input {...field} />}
@@ -1086,11 +1079,7 @@ describe('remove', () => {
     let output = {};
 
     function App() {
-      type FormValues = {
-        test: { title: string; description: string }[];
-      };
-
-      const { handleSubmit, control, reset } = useForm<FormValues>({
+      const { handleSubmit, control, reset } = useForm({
         defaultValues: {
           test: [
             {
@@ -1133,7 +1122,7 @@ describe('remove', () => {
               key={field.id}
               style={{ display: 'flex', alignItems: 'center' }}
             >
-              <Controller<FormValues, string>
+              <Controller
                 name={`test.${index}.title`}
                 control={control}
                 render={({ field }) => <input {...field} />}

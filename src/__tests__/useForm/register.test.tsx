@@ -1259,8 +1259,7 @@ describe('register', () => {
     };
 
     function App() {
-      type FormValues = { test: boolean[] };
-      const { control, watch } = useForm<FormValues>({
+      const { control, watch } = useForm({
         defaultValues: {
           test: [true, false, false],
         },
@@ -1270,7 +1269,7 @@ describe('register', () => {
 
       return (
         <form>
-          <Controller<FormValues, boolean[]>
+          <Controller
             name="test"
             control={control}
             render={({ field }) => (

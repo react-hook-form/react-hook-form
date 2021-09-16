@@ -1124,17 +1124,12 @@ describe('Controller', () => {
   });
 
   it('should mark mounted inputs correctly within field array', async () => {
-    type FormValues = {
-      test: {
-        firstName: string;
-      }[];
-    };
     const App = () => {
       const {
         control,
         handleSubmit,
         formState: { errors },
-      } = useForm<FormValues>({
+      } = useForm({
         defaultValues: {
           test: [{ firstName: 'test' }],
         },
@@ -1149,7 +1144,7 @@ describe('Controller', () => {
           {fields.map((field, index) => {
             return (
               <div key={field.id}>
-                <Controller<FormValues, string>
+                <Controller
                   control={control}
                   render={({ field }) => <input {...field} />}
                   name={`test.${index}.firstName`}
