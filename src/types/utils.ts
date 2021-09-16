@@ -174,11 +174,9 @@ export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
 export type FieldPathWithValue<
   TFieldValues extends FieldValues,
   TResult = unknown,
+  FieldPaths extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  [key in FieldPath<TFieldValues>]: FieldPathValue<
-    TFieldValues,
-    key
-  > extends TResult
+  [key in FieldPaths]: FieldPathValue<TFieldValues, key> extends TResult
     ? key
     : never;
-}[FieldPath<TFieldValues>];
+}[FieldPaths];
