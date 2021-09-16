@@ -9,6 +9,7 @@ import {
   FieldValues,
   IsAny,
   RefCallBack,
+  UnpackNestedValue,
   UseFormStateReturn,
 } from './';
 
@@ -24,7 +25,9 @@ export type ControllerFieldState<
   isTouched: boolean;
   isDirty: boolean;
   error?: FieldErrors<
-    IsAny<TResult> extends true ? FieldPathValue<TFieldValues, TName> : TResult
+    IsAny<TResult> extends true
+      ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
+      : TResult
   >;
 };
 
@@ -39,7 +42,7 @@ export type ControllerRenderProps<
   onChange: (...event: any[]) => void;
   onBlur: () => void;
   value: IsAny<TResult> extends true
-    ? FieldPathValue<TFieldValues, TName>
+    ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
     : TResult;
   name: TName;
   ref: RefCallBack;
@@ -60,7 +63,7 @@ export type UseControllerProps<
   >;
   shouldUnregister?: boolean;
   defaultValue?: IsAny<TResult> extends true
-    ? FieldPathValue<TFieldValues, TName>
+    ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
     : TResult;
   control?: Control<TFieldValues>;
 };
