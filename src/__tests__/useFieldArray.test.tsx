@@ -1018,7 +1018,7 @@ describe('useFieldArray', () => {
         return (
           <ul>
             {fields.map((item, i) => (
-              <Controller
+              <Controller<FormValues, string>
                 key={item.id}
                 render={({ field }) => (
                   <input

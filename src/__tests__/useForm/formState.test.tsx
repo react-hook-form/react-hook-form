@@ -388,11 +388,7 @@ describe('formState', () => {
 
   it('should update correct isValid formState with dynamic fields', async () => {
     const Component = () => {
-      const {
-        register,
-        control,
-        formState: { isValid },
-      } = useForm<{
+      type FormValues = {
         list: {
           firstName: string;
           lastName: string;
@@ -401,7 +397,12 @@ describe('formState', () => {
         test1: string;
         test2: string;
         test3: string;
-      }>({
+      };
+      const {
+        register,
+        control,
+        formState: { isValid },
+      } = useForm<FormValues>({
         mode: 'onChange',
       });
       const { append, fields } = useFieldArray({
@@ -436,7 +437,7 @@ describe('formState', () => {
           {fields.map((field, index) => {
             return (
               <div key={field.id}>
-                <Controller
+                <Controller<FormValues, string>
                   render={({ field }) => (
                     <input {...field} placeholder={field.name} />
                   )}

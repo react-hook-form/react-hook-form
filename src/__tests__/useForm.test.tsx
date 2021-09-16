@@ -264,7 +264,7 @@ describe('useForm', () => {
               {show && (
                 <>
                   <input {...register('test')} />
-                  <Controller
+                  <Controller<FormValues, string>
                     control={control}
                     render={({ field }) => <input {...field} />}
                     name={'test1'}

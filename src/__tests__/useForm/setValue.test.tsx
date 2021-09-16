@@ -889,11 +889,11 @@ describe('setValue', () => {
 
   it('should set value for field array name correctly', () => {
     const inputId = 'name';
-
+    type FormValues = {
+      names: { name: string; id?: string }[];
+    };
     const App = () => {
-      const { control, setValue } = useForm<{
-        names: { name: string; id?: string }[];
-      }>();
+      const { control, setValue } = useForm<FormValues>();
 
       const { fields } = useFieldArray({ control, name: 'names' });
 
@@ -908,7 +908,7 @@ describe('setValue', () => {
       return (
         <>
           {fields.map((item, index) => (
-            <Controller
+            <Controller<FormValues, string>
               key={item.id}
               control={control}
               name={`names.${index}.name` as const}
