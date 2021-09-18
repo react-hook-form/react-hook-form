@@ -279,7 +279,7 @@ export function createFormControl<
 
         if (shouldRender) {
           _subjects.control.next({
-            values: getValues(),
+            values: _formValues,
             name,
           });
         }
