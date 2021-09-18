@@ -234,6 +234,7 @@ export function createFormControl<
     shouldRender?: boolean,
   ) => {
     const field: Field = get(_fields, name);
+    let fieldValue: unknown = value;
 
     if (field) {
       const _f = field._f;
@@ -241,7 +242,7 @@ export function createFormControl<
       if (_f) {
         set(_formValues, name, getFieldValueAs(value, _f));
 
-        const fieldValue =
+        fieldValue =
           isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(value)
             ? ''
             : value;
@@ -283,12 +284,13 @@ export function createFormControl<
             name,
           });
         }
-
-        (options.shouldDirty || options.shouldTouch) &&
-          updateTouchAndDirtyState(name, fieldValue, options.shouldTouch);
-        options.shouldValidate && trigger(name as Path<TFieldValues>);
       }
     }
+
+    (options.shouldDirty || options.shouldTouch) &&
+      updateTouchAndDirtyState(name, fieldValue, options.shouldTouch);
+
+    options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
   const updateTouchAndDirtyState = (
@@ -707,7 +709,6 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
 
     set(_formValues, name, value);
-    !field && register(name);
 
     if (isFieldArray) {
       _subjects.array.next({
