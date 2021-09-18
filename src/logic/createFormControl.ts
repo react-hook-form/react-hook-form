@@ -707,6 +707,7 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
 
     set(_formValues, name, value);
+    !field && register(name);
 
     if (isFieldArray) {
       _subjects.array.next({
