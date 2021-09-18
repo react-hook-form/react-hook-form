@@ -234,6 +234,7 @@ export function createFormControl<
     shouldRender?: boolean,
   ) => {
     const field: Field = get(_fields, name);
+    let fieldValue: unknown = value;
 
     if (field) {
       const _f = field._f;
@@ -241,7 +242,7 @@ export function createFormControl<
       if (_f) {
         set(_formValues, name, getFieldValueAs(value, _f));
 
-        const fieldValue =
+        fieldValue =
           isWeb && isHTMLElement(_f.ref) && isNullOrUndefined(value)
             ? ''
             : value;
@@ -283,12 +284,13 @@ export function createFormControl<
             name,
           });
         }
-
-        (options.shouldDirty || options.shouldTouch) &&
-          updateTouchAndDirtyState(name, fieldValue, options.shouldTouch);
-        options.shouldValidate && trigger(name as Path<TFieldValues>);
       }
     }
+
+    (options.shouldDirty || options.shouldTouch) &&
+      updateTouchAndDirtyState(name, fieldValue, options.shouldTouch);
+
+    options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
   const updateTouchAndDirtyState = (
@@ -522,8 +524,8 @@ export function createFormControl<
 
   const _updateValidAndInputValue = (
     name: InternalFieldName,
-    ref?: Ref,
     shouldSkipValueAs?: boolean,
+    ref?: Ref,
   ) => {
     const field = get(_fields, name) as Field;
 
@@ -943,7 +945,8 @@ export function createFormControl<
 
     set(_fields, name, field);
 
-    (!options || !options.disabled) && _updateValidAndInputValue(name, ref);
+    (!options || !options.disabled) &&
+      _updateValidAndInputValue(name, false, ref);
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
@@ -957,12 +960,13 @@ export function createFormControl<
         ...options,
       },
     });
+    _names.mount.add(name);
 
     if (!isUndefined(options.value)) {
       set(_formValues, name, options.value);
     }
 
-    if (isBoolean(options.disabled) && field) {
+    if (field && isBoolean(options.disabled)) {
       set(
         _formValues,
         name,
@@ -972,16 +976,15 @@ export function createFormControl<
       );
     }
 
-    _names.mount.add(name);
-    !field && _updateValidAndInputValue(name, undefined, true);
+    !field && _updateValidAndInputValue(name, true);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
       : {
           name,
-          ...(isUndefined(options.disabled)
-            ? {}
-            : { disabled: options.disabled }),
+          ...(isBoolean(options.disabled)
+            ? { disabled: options.disabled }
+            : {}),
           onChange: handleChange,
           onBlur: handleChange,
           ref: (ref: HTMLInputElement | null): void => {
