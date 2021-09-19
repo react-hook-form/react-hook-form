@@ -1214,9 +1214,34 @@ describe('setValue', () => {
     render(<App />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
     });
 
     expect(watchedValue).toMatchSnapshot();
+  });
+
+  it('should update isDirty even input is not registered', async () => {
+    const App = () => {
+      const {
+        setValue,
+        formState: { isDirty },
+      } = useForm({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', '1234', { shouldDirty: true });
+      }, [setValue]);
+
+      return <p>{isDirty ? 'dirty' : 'not'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('dirty');
+    });
   });
 });
