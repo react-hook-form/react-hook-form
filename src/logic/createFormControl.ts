@@ -420,18 +420,22 @@ export function createFormControl<
     return context.valid;
   };
 
-  const handleChange: ChangeHandler = async ({
-    type,
-    target,
-    target: { value, name, type: inputType },
-  }) => {
-    const field = get(_fields, name) as Field;
+  const handleChange: ChangeHandler = async (event) => {
+    const target = event.target;
+    let name = target.name;
+    const field: Field = get(_fields, name);
 
     if (field) {
       let error;
       let isValid;
-      const inputValue = inputType ? getFieldValue(field._f) : value;
-      const isBlurEvent = type === EVENTS.BLUR;
+      const inputValue = target.type ? getFieldValue(field._f) : target.value;
+      const isBlurEvent = event.type === EVENTS.BLUR;
+
+      if (isBlurEvent && field._f.onBlur) {
+        field._f.onBlur(event);
+      } else if (field._f.onChange) {
+        field._f.onChange(event);
+      }
 
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
@@ -461,7 +465,7 @@ export function createFormControl<
       !isBlurEvent &&
         _subjects.watch.next({
           name,
-          type,
+          type: event.type,
         });
 
       if (shouldSkipValidation) {
