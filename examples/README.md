@@ -45,9 +45,9 @@ You can view the source code for most examples within their folder, or visit Cod
 
 ## React Native
 
-| Type Name   | Link                                                                |
-| ----------- | ------------------------------------------------------------------- |
-| Controller  | https://snack.expo.io/@bluebill1049/react-hook-form-v7---controller |
+| Type Name  | Link                                                                |
+| ---------- | ------------------------------------------------------------------- |
+| Controller | https://snack.expo.io/@bluebill1049/react-hook-form-v7---controller |
 
 ## Types
 
