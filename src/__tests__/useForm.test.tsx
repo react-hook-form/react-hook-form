@@ -1485,4 +1485,18 @@ describe('useForm', () => {
       expect(Object.is(firstRenderControl, secondRenderControl)).toBe(true);
     });
   });
+
+  describe('when input is not registered', () => {
+    it('trigger should not throw warn', async () => {
+      const { result } = renderHook(() =>
+        useForm<{
+          test: string;
+        }>(),
+      );
+
+      await act(async () =>
+        expect(await result.current.trigger('test')).toBeTruthy(),
+      );
+    });
+  });
 });
