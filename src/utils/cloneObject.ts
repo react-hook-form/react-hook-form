@@ -5,7 +5,9 @@ export default function cloneObject<T extends unknown>(data: T): T {
   const isArray = Array.isArray(data);
 
   if (data instanceof Date) {
-    copy = new Date(data.getTime());
+    copy = new Date(data);
+  } else if (data instanceof Set) {
+    copy = new Set(data);
   } else if (isArray || isObject(data)) {
     copy = isArray ? [] : {};
     for (const key in data) {

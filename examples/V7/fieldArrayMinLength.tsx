@@ -32,7 +32,7 @@ function App() {
     name: 'questions',
   });
 
-  const isInitalRender = React.useRef(true);
+  const isInitialRender = React.useRef(true);
   const appendQuestion = () => {
     append({
       text: '',
@@ -44,12 +44,12 @@ function App() {
   };
 
   React.useEffect(() => {
-    if (!fields.length && !isInitalRender.current) {
+    if (!fields.length && !isInitialRender.current) {
       trigger('questions');
     }
 
-    if (isInitalRender.current) {
-      isInitalRender.current = false;
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
     }
   }, [fields, register, setValue, unregister, trigger]);
 

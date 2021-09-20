@@ -19,6 +19,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  UnionLike,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -101,7 +102,7 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  DeepPartial<TFieldValues>,
+  DeepPartial<UnionLike<TFieldValues>>,
   true
 >;
 
@@ -157,13 +158,6 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
-
-export type UpdateValues<TFieldValues extends FieldValues> = <
-  T extends Partial<DefaultValues<TFieldValues>>,
->(
-  defaultValues: T,
-  name?: string,
-) => void;
 
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -258,8 +252,8 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
 export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  isMounted?: boolean,
   isGlobal?: boolean,
-  formValues?: unknown,
 ) =>
   | FieldPathValue<FieldValues, InternalFieldName>
   | FieldPathValues<FieldValues, InternalFieldName[]>;
@@ -327,10 +321,12 @@ export type Control<
   _subjects: Subjects<TFieldValues>;
   _removeFields: () => void;
   _names: Names;
-  _isMounted: boolean;
+  _stateFlags: {
+    mount: boolean;
+    action: boolean;
+    watch: boolean;
+  };
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _updateValues: UpdateValues<TFieldValues>;
-  _isInAction: boolean;
   _getIsDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: () => void;

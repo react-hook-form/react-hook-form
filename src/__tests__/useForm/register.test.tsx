@@ -485,6 +485,51 @@ describe('register', () => {
   });
 
   describe('register disabled', () => {
+    it('should return undefined for disabled inputs', async () => {
+      let output = {};
+      const defaultValues = {
+        test: true,
+      };
+
+      function App() {
+        const { register, handleSubmit } = useForm({
+          defaultValues: defaultValues,
+        });
+
+        return (
+          <form
+            onSubmit={handleSubmit((values) => {
+              output = values;
+            })}
+          >
+            {[
+              { value: 'test', label: 'test' },
+              { value: 'test1', label: 'test1' },
+            ].map((item) => (
+              <input
+                key={item.value}
+                type="checkbox"
+                {...register('test', {
+                  disabled: true,
+                })}
+              />
+            ))}
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(output).toEqual({
+        test: undefined,
+      });
+    });
+
     it('should omit all inputs which has disabled set to true', async () => {
       let outputData: object = {};
       const watchedData: object[] = [];
@@ -790,6 +835,42 @@ describe('register', () => {
       });
 
       expect(output).toEqual({ test: 12345, test1: true });
+    });
+
+    it('should return undefined value with setValueAs', async () => {
+      let output = {};
+      const Component = () => {
+        const { register, handleSubmit } = useForm<{
+          test: number;
+        }>();
+
+        return (
+          <form onSubmit={handleSubmit((data) => (output = data))}>
+            <input
+              {...register('test', {
+                setValueAs: (value: string) =>
+                  value === '' ? undefined : +value,
+              })}
+              defaultValue={12345}
+            />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: '',
+        },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(output).toEqual({ test: undefined });
     });
 
     it('should return NaN when value is valid', async () => {
@@ -1515,5 +1596,69 @@ describe('register', () => {
     });
 
     expect(screen.queryByText('error')).toBeNull();
+  });
+
+  it('should trigger custom onChange event', async () => {
+    const onChange = jest.fn();
+
+    const App = () => {
+      const { register } = useForm();
+
+      return (
+        <form>
+          <input {...register('test', { onChange })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: 'value',
+        },
+      });
+    });
+
+    expect(onChange).toBeCalledTimes(1);
+    expect(onChange).toBeCalledWith(
+      expect.objectContaining({
+        bubbles: true,
+        cancelable: false,
+        currentTarget: null,
+        type: 'change',
+      }),
+    );
+  });
+
+  it('should trigger custom onBlur event', async () => {
+    const onBlur = jest.fn();
+
+    const App = () => {
+      const { register } = useForm();
+
+      return (
+        <form>
+          <input {...register('test', { onBlur })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+    });
+
+    expect(onBlur).toBeCalledTimes(1);
+    expect(onBlur).toBeCalledWith(
+      expect.objectContaining({
+        bubbles: true,
+        cancelable: false,
+        currentTarget: null,
+        type: 'blur',
+      }),
+    );
   });
 });

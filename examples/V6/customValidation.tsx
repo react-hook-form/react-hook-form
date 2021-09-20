@@ -7,7 +7,7 @@ export default function App() {
   const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
-  const intialValues = {
+  const initialValues = {
     firstName: 'bill',
     lastName: 'luo',
     email: 'bluebill1049@hotmail.com',
@@ -20,7 +20,7 @@ export default function App() {
         <div>
           <label htmlFor="firstName">First Name</label>
           <input
-            defaultValue={intialValues.firstName}
+            defaultValue={initialValues.firstName}
             name="firstName"
             placeholder="bill"
             ref={register({
@@ -33,7 +33,7 @@ export default function App() {
         <div>
           <label htmlFor="lastName">Last Name</label>
           <input
-            defaultValue={intialValues.lastName}
+            defaultValue={initialValues.lastName}
             name="lastName"
             placeholder="luo"
             ref={register({
@@ -46,7 +46,7 @@ export default function App() {
         <div>
           <label htmlFor="email">Email</label>
           <input
-            defaultValue={intialValues.email}
+            defaultValue={initialValues.email}
             name="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"
@@ -57,7 +57,7 @@ export default function App() {
         <div>
           <label htmlFor="age">Age</label>
           <input
-            defaultValue={intialValues.age}
+            defaultValue={initialValues.age}
             name="age"
             placeholder="0"
             type="text"

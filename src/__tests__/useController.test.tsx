@@ -1,10 +1,17 @@
 import * as React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { Control } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
+import { FormProvider, useFormContext } from '../useFormContext';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -498,6 +505,89 @@ describe('useController', () => {
 
     expect(onSubmit).toBeCalledWith({
       test: 'test',
+    });
+  });
+
+  it('should return defaultValues when component is not yet mounted', async () => {
+    const defaultValues = {
+      test: {
+        deep: [
+          {
+            test: '0',
+            test1: '1',
+          },
+        ],
+      },
+    };
+
+    const App = () => {
+      const { control, getValues } = useForm<{
+        test: {
+          deep: { test: string; test1: string }[];
+        };
+      }>({
+        defaultValues,
+      });
+
+      const { field } = useController({
+        control,
+        name: 'test.deep.0.test',
+      });
+
+      return (
+        <div>
+          <input {...field} />
+          <p>{JSON.stringify(getValues())}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(true).toEqual(true);
+
+    await waitFor(() => {
+      screen.getByText('{"test":{"deep":[{"test":"0","test1":"1"}]}}');
+    });
+  });
+
+  it('should trigger extra re-render and update latest value when setValue called during mount', async () => {
+    const Child = () => {
+      const { setValue } = useFormContext();
+      const {
+        field: { value },
+      } = useController({
+        name: 'content',
+      });
+
+      React.useEffect(() => {
+        setValue('content', 'expected value');
+      }, [setValue]);
+
+      return <p>{value}</p>;
+    };
+
+    function App() {
+      const methods = useForm({
+        defaultValues: {
+          content: 'default',
+        },
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            <Child />
+            <input type="submit" />
+          </form>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('expected value');
     });
   });
 });

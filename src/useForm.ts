@@ -65,10 +65,13 @@ export function useForm<
   }, [control]);
 
   React.useEffect(() => {
-    if (!control._isMounted) {
-      control._isMounted = true;
+    if (!control._stateFlags.mount) {
       control._proxyFormState.isValid && control._updateValid();
-      !props.shouldUnregister && control._updateValues(control._defaultValues);
+      control._stateFlags.mount = true;
+    }
+    if (control._stateFlags.watch) {
+      control._stateFlags.watch = false;
+      control._subjects.state.next({});
     }
     control._removeFields();
   });

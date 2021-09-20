@@ -1,6 +1,26 @@
 import { FieldValues } from './fields';
 import { NestedValue } from './form';
 
+/*
+Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
+React Native applications is no DOM available. The JavaScript runtime is ES6/ES2015 only.
+These definitions allow such projects to compile with only --lib ES6.
+
+Warning: all of these interfaces are empty.
+If you want type definitions for various properties, you need to add `--lib DOM` (via command line or tsconfig.json).
+*/
+
+interface File extends Blob {
+  readonly lastModified: number;
+  readonly name: string;
+}
+
+interface FileList {
+  readonly length: number;
+  item(index: number): File | null;
+  [index: number]: File;
+}
+
 export type Primitive =
   | null
   | undefined
@@ -123,3 +143,30 @@ export type FieldPathValues<
     TPath[K] & FieldPath<TFieldValues>
   >;
 };
+
+type UnionKeys<T> = T extends any ? keyof T : never;
+
+type UnionValues<T, K> = T extends any
+  ? K extends keyof T
+    ? T[K]
+    : never
+  : never;
+
+type OptionalKeys<T> = T extends any
+  ? { [K in keyof T]-?: {} extends Pick<T, K> ? K : never }[keyof T]
+  : never;
+
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
+  ? T
+  : [T] extends [ReadonlyArray<any>]
+  ? { [K in keyof T]: UnionLike<T[K]> }
+  : [T] extends [object]
+  ? PartialBy<
+      {
+        [K in UnionKeys<T>]: UnionLike<UnionValues<T, K>>;
+      },
+      Exclude<UnionKeys<T>, keyof T> | OptionalKeys<T>
+    >
+  : T;

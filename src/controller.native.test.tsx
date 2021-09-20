@@ -7,7 +7,7 @@ import { Controller } from './controller';
 import { useForm } from './useForm';
 
 describe('Controller with React Native', () => {
-  jest.setTimeout(12000);
+  jest.setTimeout(20000);
 
   it('should not occur error when invoked reset', async () => {
     const mockFocus = jest.spyOn(focusOnErrorField, 'default');
