@@ -21,14 +21,12 @@ export type FieldArrayWithId<
   TKeyName extends string = 'id',
 > = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
+type ArrayElement<T> = T extends ReadonlyArray<infer U> ? U : never;
+
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<
-  infer U
->
-  ? U
-  : never;
+> = ArrayElement<FieldArrayPathValue<TFieldValues, TFieldArrayName>>;
 
 export type FieldArrayMethodProps = {
   shouldFocus?: boolean;
