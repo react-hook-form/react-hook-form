@@ -29,15 +29,11 @@ export type NestedValue<TValue extends object = object> = {
   [$NestedValue]: never;
 } & TValue;
 
-type UnpackNestedValueImpl<T> = T extends NestedValue<infer U>
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
   : T extends ReadonlyArray<any> | Record<any, unknown>
-  ? UnpackNestedValue<T>
+  ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
-
-export type UnpackNestedValue<T> = {
-  [K in keyof T]: UnpackNestedValueImpl<T[K]>;
-};
 
 export type DefaultValues<TFieldValues> = UnpackNestedValue<
   DeepPartial<TFieldValues>
