@@ -1,26 +1,6 @@
 import { FieldValues } from './fields';
 import { NestedValue } from './form';
 
-/*
-Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
-React Native applications is no DOM available. The JavaScript runtime is ES6/ES2015 only.
-These definitions allow such projects to compile with only --lib ES6.
-
-Warning: all of these interfaces are empty.
-If you want type definitions for various properties, you need to add `--lib DOM` (via command line or tsconfig.json).
-*/
-
-interface File extends Blob {
-  readonly lastModified: number;
-  readonly name: string;
-}
-
-interface FileList {
-  readonly length: number;
-  item(index: number): File | null;
-  [index: number]: File;
-}
-
 export type Primitive =
   | null
   | undefined
@@ -38,9 +18,11 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
+export type DeepPartial<T> = T extends NestedValue
   ? T
-  : { [K in keyof T]?: DeepPartial<T[K]> };
+  : T extends ReadonlyArray<any> | Record<any, unknown>
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : T;
 
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
@@ -48,9 +30,9 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
-  : T extends Date | FileList | File | NestedValue
+  : T extends NestedValue
   ? TValue
-  : T extends object
+  : T extends ReadonlyArray<any> | Record<any, unknown>
   ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
   : TValue;
 
