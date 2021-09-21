@@ -152,7 +152,7 @@ export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
   ? T
   : [T] extends [ReadonlyArray<any>]
   ? { [K in keyof T]: UnionLike<T[K]> }
-  : [T] extends [object]
+  : [T] extends [Record<any, unknown>]
   ? PartialBy<
       {
         [K in UnionKeys<T>]: UnionLike<UnionValues<T, K>>;
