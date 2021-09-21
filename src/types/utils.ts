@@ -18,23 +18,31 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends NestedValue
+type DeepPartialImpl<T> = T extends NestedValue
   ? T
   : T extends ReadonlyArray<any> | Record<any, unknown>
-  ? { [K in keyof T]?: DeepPartial<T[K]> }
+  ? DeepPartial<T>
   : T;
+
+export type DeepPartial<T> = {
+  [K in keyof T]?: DeepPartialImpl<T[K]>;
+};
 
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type DeepMap<T, TValue> = IsAny<T> extends true
+type DeepMapImpl<T, TValue> = IsAny<T> extends true
   ? any
   : T extends NestedValue
   ? TValue
   : T extends ReadonlyArray<any> | Record<any, unknown>
-  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+  ? DeepMap<T, TValue>
   : TValue;
+
+export type DeepMap<T, TValue> = {
+  [K in keyof T]: DeepMapImpl<NonUndefined<T[K]>, TValue>;
+};
 
 export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue | Date | FileList>,
