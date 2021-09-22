@@ -31,9 +31,7 @@ export type NestedValue<TValue extends object = object> = {
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends Date | FileList | File
-  ? T
-  : T extends object
+  : T extends ReadonlyArray<any> | Record<any, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
