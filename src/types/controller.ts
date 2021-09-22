@@ -3,11 +3,14 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
+  FieldError,
   FieldErrors,
   FieldPathValue,
   FieldPathWithValue,
   FieldValues,
   IsAny,
+  NestedValue,
+  Primitive,
   RefCallBack,
   UnpackNestedValue,
   UseFormStateReturn,
@@ -24,12 +27,22 @@ export type ControllerFieldState<
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldErrors<
-    IsAny<TResult> extends true
-      ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
-      : TResult
-  >;
+  error?: ControllerFieldErrors<TFieldValues, TResult, TName>;
 };
+
+type ControllerFieldErrors<
+  TFieldValues extends FieldValues = FieldValues,
+  TResult = any,
+  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
+    TFieldValues,
+    TResult
+  >,
+  FieldValuesAtPath = IsAny<TResult> extends true
+    ? FieldPathValue<TFieldValues, TName>
+    : TResult,
+> = FieldValuesAtPath extends NestedValue | Primitive
+  ? FieldError
+  : FieldErrors<FieldValuesAtPath>;
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
