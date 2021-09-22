@@ -8,7 +8,12 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPathWithValue, FieldValues } from '../types';
+import {
+  Control,
+  FieldPathWithValue,
+  FieldValues,
+  NestedValue,
+} from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -53,6 +58,44 @@ describe('useController', () => {
       });
 
       if (error?.test?.message) {
+        return null;
+      }
+
+      return <>{value.test}</>;
+    };
+
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        key: ExpectedType[];
+      }>();
+
+      return <Generic name="key.0" control={control} />;
+    };
+
+    render(<Component />);
+  });
+
+  it('should be able to access values and error in generic components using NestedValue', () => {
+    type ExpectedType = NestedValue<{ test: string }>;
+
+    const Generic = <FormValues extends FieldValues>({
+      name,
+      control,
+    }: {
+      name: FieldPathWithValue<FormValues, ExpectedType>;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field: { value },
+        fieldState: { error },
+      } = useController<FormValues, ExpectedType>({
+        name,
+        control,
+        defaultValue: { test: 'value' },
+      });
+
+      if (error?.message) {
         return null;
       }
 

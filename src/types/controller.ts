@@ -43,7 +43,7 @@ export type ControllerRenderProps<
   onBlur: () => void;
   value: IsAny<TResult> extends true
     ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
-    : TResult;
+    : UnpackNestedValue<TResult>;
   name: TName;
   ref: RefCallBack;
 };
@@ -64,7 +64,7 @@ export type UseControllerProps<
   shouldUnregister?: boolean;
   defaultValue?: IsAny<TResult> extends true
     ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
-    : TResult;
+    : UnpackNestedValue<TResult>;
   control?: Control<TFieldValues>;
 };
 
