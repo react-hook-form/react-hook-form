@@ -14,6 +14,7 @@ import omitKeys from './utils/omitKeys';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
+import { TearDown } from './utils/Subject';
 import swapArrayAt from './utils/swap';
 import updateAt from './utils/update';
 import {
@@ -46,7 +47,19 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(control._getFieldArrayValue(name), keyName));
   const _fieldIds = React.useRef(fields);
+  const _fieldArraySubscription = React.useRef<{
+    unsubscribe: TearDown;
+  }>();
 
+  _fieldArraySubscription.current =
+    _fieldArraySubscription.current ||
+    control._subjects.array.subscribe({
+      next({ values, name: fieldArrayName }) {
+        if (fieldArrayName === name || !fieldArrayName) {
+          setFields(mapIds(get(values, name), keyName));
+        }
+      },
+    });
   _fieldIds.current = fields;
   control._names.array.add(name);
 
@@ -282,18 +295,10 @@ export const useFieldArray = <
   }, [fields, name, control, keyName]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = control._subjects.array.subscribe({
-      next({ values, name: fieldArrayName }) {
-        if (fieldArrayName === name || !fieldArrayName) {
-          setFields(mapIds(get(values, name), keyName));
-        }
-      },
-    });
-
     !get(control._formValues, name) && set(control._formValues, name, []);
 
     return () => {
-      fieldArraySubscription.unsubscribe();
+      _fieldArraySubscription.current!.unsubscribe();
       if (control._shouldUnregister || shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
       }
