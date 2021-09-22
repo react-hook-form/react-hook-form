@@ -75,13 +75,15 @@ export type Path<T> = T extends ReadonlyArray<infer V>
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-type ArrayPathImpl<K extends string | number, V> = V extends Primitive
-  ? never
+type ArrayPathImpl<K extends string | number, V> = IsAny<V> extends true
+  ? `${K}` | `${K}.${ArrayPath<V>}`
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive
-    ? never
-    : `${K}` | `${K}.${ArrayPath<V>}`
-  : `${K}.${ArrayPath<V>}`;
+  ? U extends ReadonlyArray<any> | Record<any, unknown>
+    ? `${K}` | `${K}.${ArrayPath<V>}`
+    : never
+  : V extends Record<any, unknown>
+  ? `${K}.${ArrayPath<V>}`
+  : never;
 
 export type ArrayPath<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
