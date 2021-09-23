@@ -698,6 +698,7 @@ describe('useWatch', () => {
         'Totals',
         'Type',
         'Totals',
+        undefined,
       ]);
     });
 

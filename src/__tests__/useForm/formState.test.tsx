@@ -153,7 +153,7 @@ describe('formState', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
-    it.only('should update valid when toggle Controller', async () => {
+    it('should update valid when toggle Controller', async () => {
       const App = () => {
         const {
           control,
