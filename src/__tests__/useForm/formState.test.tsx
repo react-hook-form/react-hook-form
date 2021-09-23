@@ -235,15 +235,15 @@ describe('formState', () => {
 
       await waitFor(() => screen.getByText('valid'));
 
-      // await actComponent(async () => {
-      //   fireEvent.change(screen.getByTestId('select'), {
-      //     target: {
-      //       value: 'test1',
-      //     },
-      //   });
-      // });
-      //
-      // await waitFor(() => screen.getByText('invalid'));
+      await actComponent(async () => {
+        fireEvent.change(screen.getByTestId('select'), {
+          target: {
+            value: 'test1',
+          },
+        });
+      });
+
+      await waitFor(() => screen.getByText('invalid'));
     });
   });
 
