@@ -55,36 +55,44 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   }>();
   const _name = React.useRef(name);
   _name.current = name;
-  _watchSubscription.current =
-    _watchSubscription.current ||
-    control._subjects.watch.subscribe({
-      next: ({ name }) => {
-        if (
-          !_name.current ||
-          !name ||
-          convertToArrayPayload(_name.current).some(
-            (fieldName) =>
-              name &&
-              fieldName &&
-              (fieldName.startsWith(name as InternalFieldName) ||
-                name.startsWith(fieldName as InternalFieldName)),
-          )
-        ) {
-          const result = control._getWatch(
-            _name.current as InternalFieldName,
-            defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-            true,
-          );
-          updateValue(
-            isObject(result)
-              ? { ...result }
-              : Array.isArray(result)
-              ? [...result]
-              : result,
-          );
-        }
-      },
-    });
+
+  if (disabled) {
+    if (_watchSubscription.current) {
+      _watchSubscription.current?.unsubscribe();
+      _watchSubscription.current = undefined;
+    }
+  } else {
+    if (!_watchSubscription.current) {
+      _watchSubscription.current = control._subjects.watch.subscribe({
+        next: ({ name }) => {
+          if (
+            !_name.current ||
+            !name ||
+            convertToArrayPayload(_name.current).some(
+              (fieldName) =>
+                name &&
+                fieldName &&
+                (fieldName.startsWith(name as InternalFieldName) ||
+                  name.startsWith(fieldName as InternalFieldName)),
+            )
+          ) {
+            const result = control._getWatch(
+              _name.current as InternalFieldName,
+              defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+              true,
+            );
+            updateValue(
+              isObject(result)
+                ? { ...result }
+                : Array.isArray(result)
+                ? [...result]
+                : result,
+            );
+          }
+        },
+      });
+    }
+  }
 
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
@@ -93,9 +101,9 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   );
 
   React.useEffect(() => {
-    disabled && _watchSubscription.current!.unsubscribe();
-    return () => _watchSubscription.current!.unsubscribe();
-  }, [disabled, control, defaultValue]);
+    return () =>
+      _watchSubscription.current && _watchSubscription.current!.unsubscribe();
+  }, []);
 
   React.useEffect(() => {
     control._removeFields();

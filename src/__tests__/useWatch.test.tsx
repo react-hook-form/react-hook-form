@@ -207,7 +207,7 @@ describe('useWatch', () => {
   });
 
   describe('when disabled prop is used', () => {
-    it('should be able to disabled subscription and started with true', async () => {
+    it.only('should be able to disabled subscription and started with true', async () => {
       type FormValues = {
         test: string;
       };
