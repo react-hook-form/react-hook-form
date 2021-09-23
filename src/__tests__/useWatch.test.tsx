@@ -207,7 +207,7 @@ describe('useWatch', () => {
   });
 
   describe('when disabled prop is used', () => {
-    it.only('should be able to disabled subscription and started with true', async () => {
+    it('should be able to disabled subscription and started with true', async () => {
       type FormValues = {
         test: string;
       };
@@ -405,11 +405,11 @@ describe('useWatch', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+        fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
       });
 
       await actComponent(async () => {
-        await fireEvent.input(childInput, { target: { value: 'test1' } });
+        fireEvent.input(childInput, { target: { value: 'test1' } });
       });
     });
 
@@ -560,7 +560,7 @@ describe('useWatch', () => {
       screen.getByText('test');
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
       });
 
       expect(screen.queryByText('test')).toBeNull();

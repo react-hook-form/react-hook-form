@@ -581,6 +581,16 @@ Array [
       },
     ],
   },
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
   Object {},
 ]
 `;
@@ -608,10 +618,14 @@ Array [
     ],
   },
   Object {
-    "names": Array [],
-  },
-  Object {
-    "names": Array [],
+    "names": Array [
+      Object {
+        "name": "will",
+      },
+      Object {
+        "name": "Mike",
+      },
+    ],
   },
   Object {
     "names": Array [],

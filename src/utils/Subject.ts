@@ -9,6 +9,7 @@ export type SubjectType<T> = {
   subscribe: (value: Observer<T>) => {
     unsubscribe: TearDown;
   };
+  unsubscribe: () => void;
 };
 
 export class Subscription {

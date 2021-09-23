@@ -3,7 +3,6 @@ import * as React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import { TearDown } from './utils/Subject';
 import {
   FieldErrors,
   FieldNamesMarkedBoolean,
@@ -12,6 +11,7 @@ import {
   UseFormProps,
   UseFormReturn,
 } from './types';
+import { useSubscribe } from './useSubscribe';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -34,9 +34,6 @@ export function useForm<
     isValid: false,
     errors: {} as FieldErrors<TFieldValues>,
   });
-  const _formStateSubscription = React.useRef<{
-    unsubscribe: TearDown;
-  }>();
 
   if (_formControl.current) {
     _formControl.current.control._updateProps(props);
@@ -49,26 +46,19 @@ export function useForm<
 
   const control = _formControl.current.control;
 
-  _formStateSubscription.current =
-    _formStateSubscription.current ||
-    control._subjects.state.subscribe({
-      next(formState) {
-        if (shouldRenderFormState(formState, control._proxyFormState, true)) {
-          control._formState = {
-            ...control._formState,
-            ...formState,
-          };
+  useSubscribe({
+    subject: control._subjects.state,
+    callback: (formState) => {
+      if (shouldRenderFormState(formState, control._proxyFormState, true)) {
+        control._formState = {
+          ...control._formState,
+          ...formState,
+        };
 
-          updateFormState({ ...control._formState });
-        }
-      },
-    });
-
-  React.useEffect(() => {
-    return () => {
-      _formStateSubscription.current!.unsubscribe();
-    };
-  }, [control]);
+        updateFormState({ ...control._formState });
+      }
+    },
+  });
 
   React.useEffect(() => {
     if (!control._stateFlags.mount) {

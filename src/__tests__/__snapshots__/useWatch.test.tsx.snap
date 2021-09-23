@@ -136,22 +136,6 @@ Array [
       "prop": "test1",
     },
   ],
-  Array [
-    Object {
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
 ]
 `;
 

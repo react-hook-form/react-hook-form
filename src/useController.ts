@@ -14,6 +14,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
+import { useSubscribe } from './useSubscribe';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
@@ -35,6 +36,13 @@ export function useController<
     name,
   });
 
+  useSubscribe({
+    subject: control._subjects.control,
+    callback: (data) =>
+      (!data.name || name === data.name) &&
+      setInputStateValue(get(data.values, name)),
+  });
+
   const registerProps = control.register(name, {
     ...props.rules,
     value,
@@ -52,15 +60,9 @@ export function useController<
   );
 
   React.useEffect(() => {
-    const controllerSubscription = control._subjects.control.subscribe({
-      next: (data) =>
-        (!data.name || name === data.name) &&
-        setInputStateValue(get(data.values, name)),
-    });
     updateMounted(name, true);
 
     return () => {
-      controllerSubscription.unsubscribe();
       const _shouldUnregisterField =
         control._shouldUnregister || shouldUnregister;
 

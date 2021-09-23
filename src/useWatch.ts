@@ -3,7 +3,6 @@ import * as React from 'react';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
-import { TearDown } from './utils/Subject';
 import {
   Control,
   DeepPartial,
@@ -16,6 +15,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useSubscribe } from './useSubscribe';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -50,60 +50,43 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     defaultValue,
     disabled,
   } = props || {};
-  const _watchSubscription = React.useRef<{
-    unsubscribe: TearDown;
-  }>();
-  const _name = React.useRef(name);
-  _name.current = name;
 
-  if (disabled) {
-    if (_watchSubscription.current) {
-      _watchSubscription.current?.unsubscribe();
-      _watchSubscription.current = undefined;
-    }
-  } else {
-    if (!_watchSubscription.current) {
-      _watchSubscription.current = control._subjects.watch.subscribe({
-        next: ({ name }) => {
-          if (
-            !_name.current ||
-            !name ||
-            convertToArrayPayload(_name.current).some(
-              (fieldName) =>
-                name &&
-                fieldName &&
-                (fieldName.startsWith(name as InternalFieldName) ||
-                  name.startsWith(fieldName as InternalFieldName)),
-            )
-          ) {
-            const result = control._getWatch(
-              _name.current as InternalFieldName,
-              defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-              true,
-            );
-            updateValue(
-              isObject(result)
-                ? { ...result }
-                : Array.isArray(result)
-                ? [...result]
-                : result,
-            );
-          }
-        },
-      });
-    }
-  }
+  useSubscribe({
+    disabled,
+    subject: control._subjects.watch,
+    callback: ({ name: fieldName }) => {
+      if (
+        !name ||
+        !fieldName ||
+        convertToArrayPayload(name).some(
+          (fieldName) =>
+            fieldName &&
+            fieldName &&
+            (fieldName.startsWith(fieldName as InternalFieldName) ||
+              fieldName.startsWith(fieldName as InternalFieldName)),
+        )
+      ) {
+        const result = control._getWatch(
+          name as InternalFieldName,
+          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          true,
+        );
+        updateValue(
+          isObject(result)
+            ? { ...result }
+            : Array.isArray(result)
+            ? [...result]
+            : result,
+        );
+      }
+    },
+  });
 
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
       ? control._getWatch(name as InternalFieldName)
       : defaultValue,
   );
-
-  React.useEffect(() => {
-    return () =>
-      _watchSubscription.current && _watchSubscription.current!.unsubscribe();
-  }, []);
 
   React.useEffect(() => {
     control._removeFields();
