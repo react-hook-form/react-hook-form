@@ -22,12 +22,10 @@ export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
       _subscription.current = subject;
     }
 
-    if (!_unSubscribe.current) {
-      if (_subscription.current) {
-        _unSubscribe.current = _subscription.current.subscribe({
-          next: callback,
-        });
-      }
+    if (!_unSubscribe.current && _subscription.current) {
+      _unSubscribe.current = _subscription.current.subscribe({
+        next: callback,
+      });
     }
   }
 
