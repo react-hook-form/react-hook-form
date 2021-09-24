@@ -59,11 +59,11 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         !name ||
         !fieldName ||
         convertToArrayPayload(name).some(
-          (fieldName) =>
+          (currentName) =>
             fieldName &&
-            fieldName &&
-            (fieldName.startsWith(fieldName as InternalFieldName) ||
-              fieldName.startsWith(fieldName as InternalFieldName)),
+            currentName &&
+            (fieldName.startsWith(currentName as InternalFieldName) ||
+              currentName.startsWith(fieldName as InternalFieldName)),
         )
       ) {
         const result = control._getWatch(
