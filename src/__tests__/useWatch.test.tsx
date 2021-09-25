@@ -608,7 +608,7 @@ describe('useWatch', () => {
   });
 
   describe('fieldArray', () => {
-    it.only('should watch correct input update with single field array input', () => {
+    it('should watch correct input update with single field array input', () => {
       const inputValues: string[] = [];
 
       type FormValues = {

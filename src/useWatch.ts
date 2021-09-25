@@ -50,36 +50,37 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     defaultValue,
     disabled,
   } = props || {};
+  const _name = React.useRef(name);
+  _name.current = name;
 
   useSubscribe({
     disabled,
     subject: control._subjects.watch,
-    callback: ({ name: fieldName }) => {
+    callback: ({ name }) => {
       if (
+        !_name.current ||
         !name ||
-        !fieldName ||
-        convertToArrayPayload(name).some(
+        convertToArrayPayload(_name.current).some(
           (currentName) =>
-            fieldName &&
+            name &&
             currentName &&
-            (fieldName.startsWith(currentName as InternalFieldName) ||
-              currentName.startsWith(fieldName as InternalFieldName)),
+            (name.startsWith(currentName as InternalFieldName) ||
+              currentName.startsWith(name as InternalFieldName)),
         )
       ) {
         const result = control._getWatch(
-          name as InternalFieldName,
+          _name.current as InternalFieldName,
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           true,
         );
 
-        !isUndefined(result) &&
-          updateValue(
-            isObject(result)
-              ? { ...result }
-              : Array.isArray(result)
-              ? [...result]
-              : result,
-          );
+        updateValue(
+          isObject(result)
+            ? { ...result }
+            : Array.isArray(result)
+            ? [...result]
+            : result,
+        );
       }
     },
   });
