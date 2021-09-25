@@ -5,18 +5,18 @@ import shouldRenderFormState from './logic/shouldRenderFormState';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import {
   FieldValues,
-  InternalFieldName,
+  Path,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useSubscribe } from './useSubscribe';
 
 function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name } = props || {};
-  const nameRef = React.useRef<InternalFieldName>(name as InternalFieldName);
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
@@ -26,25 +26,22 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
-  nameRef.current = name as InternalFieldName;
 
-  React.useEffect(() => {
-    const formStateSubscription = control._subjects.state.subscribe({
-      next: (formState) =>
-        (!nameRef.current ||
-          !formState.name ||
-          convertToArrayPayload(nameRef.current).includes(formState.name)) &&
-        shouldRenderFormState(formState, _localProxyFormState.current) &&
-        updateFormState({
-          ...control._formState,
-          ...formState,
-        }),
-    });
-
-    disabled && formStateSubscription.unsubscribe();
-
-    return () => formStateSubscription.unsubscribe();
-  }, [disabled, control]);
+  useSubscribe({
+    disabled,
+    callback: (formState) =>
+      (!name ||
+        !formState.name ||
+        convertToArrayPayload(name).includes(
+          formState.name as Path<TFieldValues>,
+        )) &&
+      shouldRenderFormState(formState, _localProxyFormState.current) &&
+      updateFormState({
+        ...control._formState,
+        ...formState,
+      }),
+    subject: control._subjects.state,
+  });
 
   return getProxyFormState(
     formState,

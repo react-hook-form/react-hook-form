@@ -535,7 +535,7 @@ describe('setValue', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'update' }));
+        fireEvent.click(screen.getByRole('button', { name: 'update' }));
       });
 
       expect(screen.queryByText('test')).toBeNull();
@@ -806,11 +806,11 @@ describe('setValue', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'change' }));
+      fireEvent.click(screen.getByRole('button', { name: 'change' }));
     });
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
 
     expect(submitData).toEqual({

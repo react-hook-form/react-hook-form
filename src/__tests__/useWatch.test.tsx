@@ -405,11 +405,11 @@ describe('useWatch', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+        fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
       });
 
       await actComponent(async () => {
-        await fireEvent.input(childInput, { target: { value: 'test1' } });
+        fireEvent.input(childInput, { target: { value: 'test1' } });
       });
     });
 
@@ -560,7 +560,7 @@ describe('useWatch', () => {
       screen.getByText('test');
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
       });
 
       expect(screen.queryByText('test')).toBeNull();
@@ -608,7 +608,7 @@ describe('useWatch', () => {
   });
 
   describe('fieldArray', () => {
-    it('should watch correct input update with single field array input', () => {
+    it.only('should watch correct input update with single field array input', () => {
       const inputValues: string[] = [];
 
       type FormValues = {
