@@ -1018,6 +1018,7 @@ export function createFormControl<
       if (e) {
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
+        e.stopPropagation && e.stopPropagation();
       }
       let hasNoPromiseError = true;
       let fieldValues: any = { ..._formValues };
