@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import { Control } from '../types';
 import { useForm } from '../useForm';
+import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 
 describe('useFormState', () => {
@@ -534,5 +536,53 @@ describe('useFormState', () => {
     });
 
     screen.getByText('error');
+  });
+
+  describe('When nested forms are in portals', () => {
+    it('Should validate forms independently', async () => {
+      const portal = document.createElement('div');
+      portal.setAttribute('id', 'portal');
+      document.body.appendChild(portal);
+
+      function PortalForm() {
+        const methods = useForm();
+        const { isSubmitted } = useFormState({ control: methods.control });
+        const portal = document.getElementById('portal');
+
+        return (
+          portal &&
+          createPortal(
+            <FormProvider {...methods}>
+              <form onSubmit={methods.handleSubmit(() => void 0)}>
+                <h2>Is child submitted: {isSubmitted ? 'yes' : 'no'}</h2>
+                <button type="submit">submit</button>
+              </form>
+            </FormProvider>,
+            portal,
+          )
+        );
+      }
+
+      function MainForm() {
+        const methods = useForm();
+        const { isSubmitted } = useFormState({ control: methods.control });
+        return (
+          <FormProvider {...methods}>
+            <form onSubmit={() => void 0}>
+              <h1>Is parent submitted: {isSubmitted ? 'yes' : 'no'}</h1>
+              <PortalForm />
+            </form>
+          </FormProvider>
+        );
+      }
+
+      render(<MainForm />);
+      await act(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(screen.getByText(/is child submitted: yes/i)).toBeInTheDocument();
+      expect(screen.getByText(/is parent submitted: no/i)).toBeInTheDocument();
+    });
   });
 });
