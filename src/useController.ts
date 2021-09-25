@@ -35,12 +35,13 @@ export function useController<
     control: control || methods.control,
     name,
   });
+  const _name = React.useRef(name);
+  _name.current = name;
 
   useSubscribe({
-    name,
     subject: control._subjects.control,
     callback: (data) =>
-      (!data.name || name === data.name) &&
+      (!data.name || _name.current === data.name) &&
       setInputStateValue(get(data.values, name)),
   });
 

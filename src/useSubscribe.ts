@@ -6,15 +6,9 @@ type Props<T> = {
   disabled?: boolean;
   subject?: SubjectType<T>;
   callback: (value: T) => void;
-  name?: any;
 };
 
-export function useSubscribe<T>({
-  disabled,
-  subject,
-  callback,
-  name,
-}: Props<T>) {
+export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
   const _subscription = React.useRef(subject);
   const _unSubscribe = React.useRef<{ unsubscribe: TearDown }>();
 
@@ -39,6 +33,6 @@ export function useSubscribe<T>({
     () => () => {
       _unSubscribe.current && _unSubscribe.current.unsubscribe();
     },
-    [name],
+    [],
   );
 }
