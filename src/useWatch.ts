@@ -71,13 +71,15 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           true,
         );
-        updateValue(
-          isObject(result)
-            ? { ...result }
-            : Array.isArray(result)
-            ? [...result]
-            : result,
-        );
+
+        !isUndefined(result) &&
+          updateValue(
+            isObject(result)
+              ? { ...result }
+              : Array.isArray(result)
+              ? [...result]
+              : result,
+          );
       }
     },
   });

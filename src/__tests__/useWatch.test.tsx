@@ -608,7 +608,7 @@ describe('useWatch', () => {
   });
 
   describe('fieldArray', () => {
-    it('should watch correct input update with single field array input', () => {
+    it.only('should watch correct input update with single field array input', () => {
       const inputValues: string[] = [];
 
       type FormValues = {
@@ -698,7 +698,6 @@ describe('useWatch', () => {
         'Totals',
         'Type',
         'Totals',
-        undefined,
       ]);
     });
 
