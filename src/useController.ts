@@ -37,6 +37,7 @@ export function useController<
   });
 
   useSubscribe({
+    name,
     subject: control._subjects.control,
     callback: (data) =>
       (!data.name || name === data.name) &&

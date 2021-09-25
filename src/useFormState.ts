@@ -28,6 +28,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   });
 
   useSubscribe({
+    name,
     disabled,
     callback: (formState) =>
       (!name ||

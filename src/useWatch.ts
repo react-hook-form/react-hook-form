@@ -54,6 +54,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   useSubscribe({
     disabled,
     subject: control._subjects.watch,
+    name,
     callback: ({ name: fieldName }) => {
       if (
         !name ||
@@ -72,14 +73,13 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           true,
         );
 
-        !isUndefined(result) &&
-          updateValue(
-            isObject(result)
-              ? { ...result }
-              : Array.isArray(result)
-              ? [...result]
-              : result,
-          );
+        updateValue(
+          isObject(result)
+            ? { ...result }
+            : Array.isArray(result)
+            ? [...result]
+            : result,
+        );
       }
     },
   });
