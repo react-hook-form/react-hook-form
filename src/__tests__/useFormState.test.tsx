@@ -417,7 +417,7 @@ describe('useFormState', () => {
       });
     });
 
-    expect(count).toEqual(3);
+    expect(count).toEqual(2);
   });
 
   it('should only re-render when subscribed field names updated', async () => {
