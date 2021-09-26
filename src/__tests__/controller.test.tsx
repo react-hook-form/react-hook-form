@@ -1196,7 +1196,7 @@ describe('Controller', () => {
 
     function App() {
       const { control } = useForm<FormValues>({
-        defaultValues: { firstName: '' },
+        defaultValues: { firstName: '', deepNested: { test: '' } },
       });
 
       return (

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
-  FieldErrors,
+  FieldError,
   FieldPath,
   FieldPathValue,
   FieldValues,
@@ -12,14 +12,11 @@ import {
   UseFormStateReturn,
 } from './';
 
-export type ControllerFieldState<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
+export type ControllerFieldState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>>;
+  error?: FieldError;
 };
 
 export type ControllerRenderProps<
@@ -53,7 +50,7 @@ export type UseControllerReturn<
 > = {
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
-  fieldState: ControllerFieldState<TFieldValues, TName>;
+  fieldState: ControllerFieldState;
 };
 
 export type ControllerProps<
@@ -66,7 +63,7 @@ export type ControllerProps<
     formState,
   }: {
     field: ControllerRenderProps<TFieldValues, TName>;
-    fieldState: ControllerFieldState<TFieldValues, TName>;
+    fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues, TName>;
