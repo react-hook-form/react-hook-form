@@ -1189,6 +1189,9 @@ describe('Controller', () => {
   it('should not throw type error with field state', () => {
     type FormValues = {
       firstName: string;
+      deepNested: {
+        test: string;
+      };
     };
 
     function App() {
@@ -1208,12 +1211,22 @@ describe('Controller', () => {
             control={control}
             name="firstName"
           />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="deepNested.test"
+          />
         </form>
       );
     }
 
     render(<App />);
 
-    expect(screen.getByRole('textbox'));
+    expect(screen.getAllByRole('textbox'));
   });
 });
