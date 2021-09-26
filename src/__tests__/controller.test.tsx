@@ -1185,4 +1185,32 @@ describe('Controller', () => {
 
     screen.getByText('error');
   });
+
+  it('should not throw type error with field state', () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { control } = useForm<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field, fieldState }) => (
+              <input {...field} helperText={fieldState.error.message} />
+            )}
+            control={control}
+            name="firstName"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getByRole('textbox'));
+  });
 });
