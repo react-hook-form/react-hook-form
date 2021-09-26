@@ -3,10 +3,12 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
+  FieldError,
   FieldErrors,
   FieldPath,
   FieldPathValue,
   FieldValues,
+  isNested,
   RefCallBack,
   UnpackNestedValue,
   UseFormStateReturn,
@@ -19,7 +21,9 @@ export type ControllerFieldState<
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>>;
+  error?: isNested<TFieldName> extends true
+    ? FieldErrors<FieldPathValue<TFieldValues, TFieldName>>
+    : FieldError;
 };
 
 export type ControllerRenderProps<

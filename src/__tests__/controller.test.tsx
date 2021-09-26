@@ -1200,7 +1200,10 @@ describe('Controller', () => {
         <form>
           <Controller
             render={({ field, fieldState }) => (
-              <input {...field} helperText={fieldState.error.message} />
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
             )}
             control={control}
             name="firstName"
