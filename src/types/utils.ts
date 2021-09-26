@@ -32,8 +32,6 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type isNested<T> = T extends `${string}.${string}` ? true : false;
-
 type DeepMapImpl<T, TValue> = IsAny<T> extends true
   ? any
   : T extends NestedValue
