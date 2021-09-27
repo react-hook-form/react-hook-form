@@ -1192,11 +1192,12 @@ describe('Controller', () => {
       deepNested: {
         test: string;
       };
+      todos: string[];
     };
 
     function App() {
       const { control } = useForm<FormValues>({
-        defaultValues: { firstName: '', deepNested: { test: '' } },
+        defaultValues: { firstName: '', deepNested: { test: '' }, todos: [] },
       });
 
       return (
@@ -1220,6 +1221,16 @@ describe('Controller', () => {
             )}
             control={control}
             name="deepNested.test"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.[0]?.message}</p>
+              </>
+            )}
+            control={control}
+            name="todos"
           />
         </form>
       );
