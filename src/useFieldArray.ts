@@ -27,6 +27,7 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useSubscribe } from './useSubscribe';
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
@@ -46,6 +47,15 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(control._getFieldArrayValue(name), keyName));
   const _fieldIds = React.useRef(fields);
+
+  useSubscribe({
+    callback: ({ values, name: fieldArrayName }) => {
+      if (fieldArrayName === name || !fieldArrayName) {
+        setFields(mapIds(get(values, name), keyName));
+      }
+    },
+    subject: control._subjects.array,
+  });
 
   _fieldIds.current = fields;
   control._names.array.add(name);
@@ -282,18 +292,9 @@ export const useFieldArray = <
   }, [fields, name, control, keyName]);
 
   React.useEffect(() => {
-    const fieldArraySubscription = control._subjects.array.subscribe({
-      next({ values, name: fieldArrayName }) {
-        if (fieldArrayName === name || !fieldArrayName) {
-          setFields(mapIds(get(values, name), keyName));
-        }
-      },
-    });
-
     !get(control._formValues, name) && set(control._formValues, name, []);
 
     return () => {
-      fieldArraySubscription.unsubscribe();
       if (control._shouldUnregister || shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
       }

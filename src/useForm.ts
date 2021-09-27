@@ -11,6 +11,7 @@ import {
   UseFormProps,
   UseFormReturn,
 } from './types';
+import { useSubscribe } from './useSubscribe';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -45,24 +46,19 @@ export function useForm<
 
   const control = _formControl.current.control;
 
-  React.useEffect(() => {
-    const formStateSubscription = control._subjects.state.subscribe({
-      next(formState) {
-        if (shouldRenderFormState(formState, control._proxyFormState, true)) {
-          control._formState = {
-            ...control._formState,
-            ...formState,
-          };
+  useSubscribe({
+    subject: control._subjects.state,
+    callback: (formState) => {
+      if (shouldRenderFormState(formState, control._proxyFormState, true)) {
+        control._formState = {
+          ...control._formState,
+          ...formState,
+        };
 
-          updateFormState({ ...control._formState });
-        }
-      },
-    });
-
-    return () => {
-      formStateSubscription.unsubscribe();
-    };
-  }, [control]);
+        updateFormState({ ...control._formState });
+      }
+    },
+  });
 
   React.useEffect(() => {
     if (!control._stateFlags.mount) {

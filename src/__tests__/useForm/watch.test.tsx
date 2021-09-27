@@ -41,7 +41,7 @@ describe('watch', () => {
     screen.getByText('test');
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
     });
 
     expect(screen.queryByText('test')).toBeNull();

@@ -774,7 +774,7 @@ export function createFormControl<
             fieldNames.map(async (fieldName) => {
               const field = get(_fields, fieldName);
               return await validateForm(
-                field._f ? { [fieldName]: field } : field,
+                field && field._f ? { [fieldName]: field } : field,
               );
             }),
           )

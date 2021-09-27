@@ -92,7 +92,7 @@ describe('useFormState', () => {
     render(<Component />);
 
     await act(async () => {
-      await fireEvent.input(screen.getByLabelText('test'), {
+      fireEvent.input(screen.getByLabelText('test'), {
         target: {
           value: 'test',
         },
@@ -103,7 +103,7 @@ describe('useFormState', () => {
     screen.getByText('no');
 
     await act(async () => {
-      await fireEvent.input(screen.getByLabelText('test'), {
+      fireEvent.input(screen.getByLabelText('test'), {
         target: {
           value: 'testtest',
         },
@@ -171,7 +171,7 @@ describe('useFormState', () => {
     render(<Component />);
 
     await act(async () => {
-      await fireEvent.input(screen.getByLabelText('test'), {
+      fireEvent.input(screen.getByLabelText('test'), {
         target: {
           value: 'test',
         },
@@ -193,7 +193,7 @@ describe('useFormState', () => {
     expect(test1Count).toEqual(2);
 
     await act(async () => {
-      await fireEvent.input(screen.getByLabelText('test'), {
+      fireEvent.input(screen.getByLabelText('test'), {
         target: {
           value: '',
         },
@@ -236,7 +236,7 @@ describe('useFormState', () => {
     render(<Component />);
 
     await act(async () => {
-      await fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
     });
 
     screen.getByText('isSubmitted');

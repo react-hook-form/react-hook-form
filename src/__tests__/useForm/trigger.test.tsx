@@ -47,17 +47,17 @@ describe('trigger', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
     });
 
     await waitFor(() => screen.getByText('error'));
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
     });
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
     });
 
     expect(screen.queryByText('error')).toBeNull();
@@ -411,17 +411,17 @@ describe('trigger', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
     });
 
     await waitFor(() => screen.getByText('error'));
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
     });
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
     });
 
     expect(screen.queryByText('error')).toBeNull();

@@ -206,7 +206,7 @@ describe('formState', () => {
       screen.getByText('invalid');
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByTestId('select'), {
+        fireEvent.change(screen.getByTestId('select'), {
           target: {
             value: 'test',
           },
@@ -216,7 +216,7 @@ describe('formState', () => {
       await waitFor(() => screen.getByText('valid'));
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByTestId('select'), {
+        fireEvent.change(screen.getByTestId('select'), {
           target: {
             value: 'test1',
           },
@@ -226,7 +226,7 @@ describe('formState', () => {
       await waitFor(() => screen.getByText('invalid'));
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByTestId('select'), {
+        fireEvent.change(screen.getByTestId('select'), {
           target: {
             value: 'test',
           },
@@ -236,7 +236,7 @@ describe('formState', () => {
       await waitFor(() => screen.getByText('valid'));
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByTestId('select'), {
+        fireEvent.change(screen.getByTestId('select'), {
           target: {
             value: 'test1',
           },
@@ -656,7 +656,7 @@ describe('formState', () => {
       render(<App />);
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123456',
           },
@@ -703,7 +703,7 @@ describe('formState', () => {
       render(<App />);
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123',
           },
@@ -717,7 +717,7 @@ describe('formState', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '',
           },
@@ -770,7 +770,7 @@ describe('formState', () => {
       render(<App />);
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123456',
           },
@@ -815,7 +815,7 @@ describe('formState', () => {
       render(<App />);
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123456',
           },
@@ -825,7 +825,7 @@ describe('formState', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.change(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123',
           },

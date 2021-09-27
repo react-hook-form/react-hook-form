@@ -134,7 +134,7 @@ describe('remove', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
     });
 
     await waitFor(() => {
@@ -142,9 +142,7 @@ describe('remove', () => {
     });
 
     await actComponent(async () => {
-      await fireEvent.click(
-        screen.getAllByRole('button', { name: /remove/i })[1],
-      );
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
     });
 
     await waitFor(() => {
@@ -619,23 +617,19 @@ describe('remove', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
     expect(screen.queryByTestId('nested-error')).toBeInTheDocument();
 
     await actComponent(async () => {
-      await fireEvent.click(
-        screen.getByRole('button', { name: /nested delete/i }),
-      );
+      fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
     });
 
     expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
 
     await actComponent(async () => {
-      await fireEvent.click(
-        screen.getByRole('button', { name: /nested append/i }),
-      );
+      fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
     });
 
     expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
@@ -1040,7 +1034,7 @@ describe('remove', () => {
       render(<Component />);
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
       });
 
       expect(output).toEqual({
