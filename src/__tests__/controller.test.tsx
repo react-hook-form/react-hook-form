@@ -1185,4 +1185,59 @@ describe('Controller', () => {
 
     screen.getByText('error');
   });
+
+  it('should not throw type error with field state', () => {
+    type FormValues = {
+      firstName: string;
+      deepNested: {
+        test: string;
+      };
+      todos: string[];
+    };
+
+    function App() {
+      const { control } = useForm<FormValues>({
+        defaultValues: { firstName: '', deepNested: { test: '' }, todos: [] },
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="firstName"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="deepNested.test"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.[0]?.message}</p>
+              </>
+            )}
+            control={control}
+            name="todos"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getAllByRole('textbox').length).toEqual(3);
+  });
 });
