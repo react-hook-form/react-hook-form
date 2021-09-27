@@ -394,7 +394,7 @@ describe('useController', () => {
     render(<App />);
 
     await act(async () => {
-      await fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
     });
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
@@ -500,7 +500,7 @@ describe('useController', () => {
     render(<App />);
 
     await act(async () => {
-      await fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
     });
 
     expect(onSubmit).toBeCalledWith({

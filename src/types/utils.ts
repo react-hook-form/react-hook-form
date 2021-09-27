@@ -32,7 +32,7 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-type DeepMapImpl<T, TValue> = IsAny<T> extends true
+export type DeepMapImpl<T, TValue> = IsAny<T> extends true
   ? any
   : T extends NestedValue
   ? TValue

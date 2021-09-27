@@ -15,6 +15,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useSubscribe } from './useSubscribe';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -52,46 +53,43 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const _name = React.useRef(name);
   _name.current = name;
 
+  useSubscribe({
+    disabled,
+    subject: control._subjects.watch,
+    callback: ({ name }) => {
+      if (
+        !_name.current ||
+        !name ||
+        convertToArrayPayload(_name.current).some(
+          (currentName) =>
+            name &&
+            currentName &&
+            (name.startsWith(currentName as InternalFieldName) ||
+              currentName.startsWith(name as InternalFieldName)),
+        )
+      ) {
+        const result = control._getWatch(
+          _name.current as InternalFieldName,
+          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          true,
+        );
+
+        updateValue(
+          isObject(result)
+            ? { ...result }
+            : Array.isArray(result)
+            ? [...result]
+            : result,
+        );
+      }
+    },
+  });
+
   const [value, updateValue] = React.useState<unknown>(
     isUndefined(defaultValue)
       ? control._getWatch(name as InternalFieldName)
       : defaultValue,
   );
-
-  React.useEffect(() => {
-    const watchSubscription = control._subjects.watch.subscribe({
-      next: ({ name }) => {
-        if (
-          !_name.current ||
-          !name ||
-          convertToArrayPayload(_name.current).some(
-            (fieldName) =>
-              name &&
-              fieldName &&
-              (fieldName.startsWith(name as InternalFieldName) ||
-                name.startsWith(fieldName as InternalFieldName)),
-          )
-        ) {
-          const result = control._getWatch(
-            _name.current as InternalFieldName,
-            defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-            true,
-          );
-          updateValue(
-            isObject(result)
-              ? { ...result }
-              : Array.isArray(result)
-              ? [...result]
-              : result,
-          );
-        }
-      },
-    });
-
-    disabled && watchSubscription.unsubscribe();
-
-    return () => watchSubscription.unsubscribe();
-  }, [disabled, control, defaultValue]);
 
   React.useEffect(() => {
     control._removeFields();

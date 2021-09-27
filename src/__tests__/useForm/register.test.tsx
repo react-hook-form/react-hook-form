@@ -831,7 +831,7 @@ describe('register', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
       });
 
       expect(output).toEqual({ test: 12345, test1: true });
@@ -867,7 +867,7 @@ describe('register', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
       });
 
       expect(output).toEqual({ test: undefined });
@@ -897,7 +897,7 @@ describe('register', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
       });
 
       expect(output).toEqual({ test: NaN });

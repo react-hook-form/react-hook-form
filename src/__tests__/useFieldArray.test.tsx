@@ -1659,13 +1659,13 @@ describe('useFieldArray', () => {
       expect(asFragment()).toMatchSnapshot();
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+        fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
       });
 
       expect(asFragment()).toMatchSnapshot();
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'append' }));
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
       expect(asFragment()).toMatchSnapshot();
@@ -1773,7 +1773,7 @@ describe('useFieldArray', () => {
 
       render(<Component />);
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
       });
 
       expect(submitData).toEqual({
