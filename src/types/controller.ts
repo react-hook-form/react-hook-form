@@ -3,6 +3,7 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
+  FieldError,
   FieldErrors,
   FieldPath,
   FieldPathValue,
@@ -19,7 +20,9 @@ export type ControllerFieldState<
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>>;
+  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>> extends any[]
+    ? FieldErrors<FieldPathValue<TFieldValues, TFieldName>>
+    : FieldError;
 };
 
 export type ControllerRenderProps<
