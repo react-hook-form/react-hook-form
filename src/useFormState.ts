@@ -26,13 +26,15 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
+  const _name = React.useRef(name);
+  _name.current = name;
 
   useSubscribe({
     disabled,
     callback: (formState) =>
-      (!name ||
+      (!_name.current ||
         !formState.name ||
-        convertToArrayPayload(name).includes(
+        convertToArrayPayload(_name.current).includes(
           formState.name as Path<TFieldValues>,
         )) &&
       shouldRenderFormState(formState, _localProxyFormState.current) &&
