@@ -1,5 +1,27 @@
 # Changelog
 
+## [7.16.1] - 2021-09-27
+
+## Changed
+
+- `formState` subscription no longer subscribed at `useEffect` instead the execution of each hook
+
+## [7.16.0] - 2021-09-25
+
+## Added
+
+- `register` allowed pass custom `onChange` and `onBlur`
+
+```tsx
+<input
+  type="text"
+  {...register('test', {
+    onChange: (e) => {},
+    onBlur: (e) => {},
+  })}
+/>
+```
+
 ## [7.15.0] - 2021-09-05
 
 ## Added

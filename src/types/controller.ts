@@ -1,10 +1,11 @@
 import * as React from 'react';
 
+import { FieldErrors } from '..';
+
 import { RegisterOptions } from './validator';
 import {
   Control,
   FieldError,
-  FieldErrors,
   FieldPathValue,
   FieldPathWithValue,
   FieldValues,
@@ -16,21 +17,7 @@ import {
   UseFormStateReturn,
 } from './';
 
-export type ControllerFieldState<
-  TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
-> = {
-  invalid: boolean;
-  isTouched: boolean;
-  isDirty: boolean;
-  error?: ControllerFieldErrors<TFieldValues, TResult, TName>;
-};
-
-type ControllerFieldErrors<
+type ControllerFieldError<
   TFieldValues extends FieldValues = FieldValues,
   TResult = any,
   TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
@@ -43,6 +30,20 @@ type ControllerFieldErrors<
 > = FieldValuesAtPath extends NestedValue | Primitive
   ? FieldError
   : FieldErrors<FieldValuesAtPath>;
+
+export type ControllerFieldState<
+  TFieldValues extends FieldValues = FieldValues,
+  TResult = any,
+  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
+    TFieldValues,
+    TResult
+  >,
+> = {
+  invalid: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
+  error?: ControllerFieldError<TFieldValues, TResult, TName>;
+};
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,

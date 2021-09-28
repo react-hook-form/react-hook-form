@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps } from '../types';
+import { ControllerRenderProps, NestedValue } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 
@@ -1184,5 +1184,76 @@ describe('Controller', () => {
     });
 
     screen.getByText('error');
+  });
+
+  it('should not throw type error with field state', () => {
+    type FormValues = {
+      firstName: string;
+      deepNested: {
+        test: string;
+      };
+      todos: string[];
+      nestedValue: NestedValue<{ test: string }>;
+    };
+
+    function App() {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          firstName: '',
+          deepNested: { test: '' },
+          todos: [],
+          nestedValue: { test: '' },
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="firstName"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="deepNested.test"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.[0]?.message}</p>
+              </>
+            )}
+            control={control}
+            name="todos"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...{ ...field, value: field.value.test }} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="nestedValue"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getAllByRole('textbox').length).toEqual(4);
   });
 });

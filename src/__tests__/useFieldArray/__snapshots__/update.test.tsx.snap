@@ -581,12 +581,32 @@ Array [
       },
     ],
   },
+  Object {
+    "test": Array [
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
   Object {},
 ]
 `;
 
 exports[`useFieldArray should update field array defaultValues when invoke setValue 1`] = `
 Array [
+  Object {
+    "names": Array [
+      Object {
+        "name": "will",
+      },
+      Object {
+        "name": "Mike",
+      },
+    ],
+  },
   Object {
     "names": Array [
       Object {

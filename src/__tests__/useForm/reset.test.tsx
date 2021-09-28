@@ -318,21 +318,21 @@ describe('reset', () => {
     render(<App />);
 
     await actComponent(async () => {
-      await fireEvent.change(screen.getByRole('textbox'), {
+      fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: 'test',
         },
       });
 
-      await fireEvent.blur(screen.getByRole('textbox'));
+      fireEvent.blur(screen.getByRole('textbox'));
 
-      await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
 
     expect(formState).toMatchSnapshot();
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     });
 
     expect(formState).toMatchSnapshot();
