@@ -5,6 +5,8 @@ export default (
   index: number,
   options?: FieldArrayMethodProps,
 ): string =>
-  options && !options.shouldFocus
-    ? options.focusName || `${name}.${options.focusIndex}.`
+  options
+    ? options.shouldFocus === false
+      ? ''
+      : options.focusName || `${name}.${options.focusIndex}.`
     : `${name}.${index}.`;
