@@ -49,7 +49,7 @@ describe('useController', () => {
       control: Control<FormValues>;
     }) => {
       const {
-        field: { value },
+        field: { value, ...fieldProps },
         fieldState: { error },
       } = useController<FormValues, ExpectedType>({
         name,
@@ -61,19 +61,25 @@ describe('useController', () => {
         return null;
       }
 
-      return <>{value.test}</>;
+      return <input type="text" value={value.test} {...fieldProps} />;
     };
 
     const Component = () => {
       const { control } = useForm<{
         test: string;
         key: ExpectedType[];
-      }>();
+      }>({
+        defaultValues: { test: 'test', key: [{ test: 'input value' }] },
+      });
 
       return <Generic name="key.0" control={control} />;
     };
 
     render(<Component />);
+
+    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+    expect(input).toBeInTheDocument();
+    expect(input?.value).toEqual('input value');
   });
 
   it('should be able to access values and error in generic components using NestedValue', () => {
@@ -87,7 +93,7 @@ describe('useController', () => {
       control: Control<FormValues>;
     }) => {
       const {
-        field: { value },
+        field: { value, ...fieldProps },
         fieldState: { error },
       } = useController<FormValues, ExpectedType>({
         name,
@@ -96,22 +102,32 @@ describe('useController', () => {
       });
 
       if (error?.message) {
-        return null;
+        return <>There was an error</>;
       }
 
-      return <>{value.test}</>;
+      return <input type="text" value={value.test} {...fieldProps} />;
     };
 
     const Component = () => {
       const { control } = useForm<{
         test: string;
         key: ExpectedType[];
-      }>();
+      }>({
+        defaultValues: {
+          test: 'test',
+          key: [{ test: 'input value' }],
+        },
+      });
 
       return <Generic name="key.0" control={control} />;
     };
 
     render(<Component />);
+
+    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+
+    expect(input).toBeInTheDocument();
+    expect(input?.value).toEqual('input value');
   });
 
   it('should only subscribe to formState at each useController level', async () => {
