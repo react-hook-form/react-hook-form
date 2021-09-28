@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-describe.only('useFieldArray focus', () => {
+describe('useFieldArray focus', () => {
   it('should not focus any element when shouldFocus is set to false', () => {
     const Component = () => {
       const { register, control } = useForm<{
