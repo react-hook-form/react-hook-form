@@ -25,6 +25,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | DefaultValues                          | https://codesandbox.io/s/react-hook-form-defaultvalues-wv8c4                            |
 | Default/Initial Form Value             | https://codesandbox.io/s/react-hook-form-defaultinitial-form-value-cujvt                |
 | Dirty/Touched/Submitted                | https://codesandbox.io/s/react-hook-form-formstate-dirty-touched-submitted-forked-wjk0k |
+| Dirty Fields Only Submitted            | https://codesandbox.io/s/react-hook-form-submit-only-dirty-fields-ol5d2                 |
 | Disable Native Validation              | https://codesandbox.io/s/purple-glitter-4pgqq                                           |
 | Field Array Min Length                 | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-k87iy    |
 | FormProvider                           | https://codesandbox.io/s/react-hook-form-form-context-2703c                             |
@@ -45,9 +46,9 @@ You can view the source code for most examples within their folder, or visit Cod
 
 ## React Native
 
-| Type Name   | Link                                                                |
-| ----------- | ------------------------------------------------------------------- |
-| Controller  | https://snack.expo.io/@bluebill1049/react-hook-form-v7---controller |
+| Type Name  | Link                                                                |
+| ---------- | ------------------------------------------------------------------- |
+| Controller | https://snack.expo.io/@bluebill1049/react-hook-form-v7---controller |
 
 ## Types
 
