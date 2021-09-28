@@ -18,7 +18,7 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-type DeepPartialImpl<T> = T extends NestedValue
+export type DeepPartialImpl<T> = T extends NestedValue
   ? T
   : T extends ReadonlyArray<any> | Record<any, unknown>
   ? DeepPartial<T>
