@@ -4,7 +4,7 @@ import { RegisterOptions } from './validator';
 import {
   Control,
   DeepMapImpl,
-  DeepPartial,
+  DeepPartialImpl,
   FieldError,
   FieldPath,
   FieldPathValue,
@@ -16,7 +16,7 @@ import {
 } from './';
 
 type ControllerFieldError<T> = DeepMapImpl<
-  DeepPartial<UnionLike<T>>,
+  DeepPartialImpl<UnionLike<T>>,
   FieldError
 >;
 
