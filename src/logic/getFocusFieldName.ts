@@ -10,4 +10,3 @@ export default (
     ? options.focusName ||
       `${name}.${isUndefined(options.focusIndex) ? index : options.focusIndex}.`
     : '';
-g;
