@@ -1239,7 +1239,12 @@ describe('Controller', () => {
             name="todos"
           />
           <Controller
-            render={({ fieldState }) => <p>{fieldState.error?.message}</p>}
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
             control={control}
             name="nestedValue"
           />
