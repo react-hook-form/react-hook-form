@@ -3,22 +3,15 @@ import * as React from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
-  DeepMapImpl,
-  DeepPartial,
   FieldError,
+  FieldErrors,
   FieldPath,
   FieldPathValue,
   FieldValues,
   RefCallBack,
-  UnionLike,
   UnpackNestedValue,
   UseFormStateReturn,
 } from './';
-
-type ControllerFieldError<T> = DeepMapImpl<
-  DeepPartial<UnionLike<T>>,
-  FieldError
->;
 
 export type ControllerFieldState<
   TFieldValues extends FieldValues = FieldValues,
@@ -27,7 +20,9 @@ export type ControllerFieldState<
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: ControllerFieldError<FieldPathValue<TFieldValues, TFieldName>>;
+  error?: FieldErrors<FieldPathValue<TFieldValues, TFieldName>> extends any[]
+    ? FieldErrors<FieldPathValue<TFieldValues, TFieldName>>
+    : FieldError;
 };
 
 export type ControllerRenderProps<
