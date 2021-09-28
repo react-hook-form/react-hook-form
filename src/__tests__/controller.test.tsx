@@ -1254,6 +1254,6 @@ describe('Controller', () => {
 
     render(<App />);
 
-    expect(screen.getAllByRole('textbox').length).toEqual(3);
+    expect(screen.getAllByRole('textbox').length).toEqual(4);
   });
 });
