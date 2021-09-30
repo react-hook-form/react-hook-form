@@ -11,7 +11,7 @@ export default function getFieldValue<FormValues extends FieldValues>(
   fields: FieldsRefs<FormValues>,
   ref: Ref,
 ) {
-  const { type, name, options, checked, value, files } = ref;
+  const { type, name, options, selectedOptions, checked, value, files } = ref;
 
   if (type === 'file') {
     return files;
@@ -23,7 +23,7 @@ export default function getFieldValue<FormValues extends FieldValues>(
   }
 
   if (isMultipleSelect(type)) {
-    return getMultipleSelectValue(options);
+    return getMultipleSelectValue(selectedOptions);
   }
 
   if (isCheckBox(type)) {
