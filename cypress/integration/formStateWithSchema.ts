@@ -346,7 +346,7 @@ describe('form state with schema validation', () => {
       }),
     );
 
-    cy.get('input[name="checkbox"]').check('on');
+    cy.get('input[name="checkbox"]').click();
     cy.get('input[name="checkbox"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -360,7 +360,7 @@ describe('form state with schema validation', () => {
         isValid: false,
       }),
     );
-    cy.get('input[name="checkbox"]').uncheck();
+    cy.get('input[name="checkbox"]').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirty: [],
@@ -374,7 +374,7 @@ describe('form state with schema validation', () => {
       }),
     );
 
-    cy.get('input[name="checkbox-checked"]').uncheck();
+    cy.get('input[name="checkbox-checked"]').click();
     cy.get('input[name="checkbox-checked"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -394,7 +394,7 @@ describe('form state with schema validation', () => {
         isValid: false,
       }),
     );
-    cy.get('input[name="checkbox-checked"]').check();
+    cy.get('input[name="checkbox-checked"]').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirty: [],
@@ -414,7 +414,7 @@ describe('form state with schema validation', () => {
       }),
     );
 
-    cy.get('input[name="radio"]').check();
+    cy.get('input[name="radio"]').click();
     cy.get('input[name="radio"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({

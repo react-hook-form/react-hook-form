@@ -281,7 +281,7 @@ describe('form state', () => {
     cy.get('#renderCount').contains('15');
   });
 
-  it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
+  it.only('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formState/onSubmit');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
@@ -332,6 +332,7 @@ describe('form state', () => {
       }),
     );
     cy.get('select[name="select"]').select('');
+
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirty: [],
@@ -345,7 +346,7 @@ describe('form state', () => {
       }),
     );
 
-    cy.get('input[name="checkbox"]').check('on');
+    cy.get('input[name="checkbox"]').click();
     cy.get('input[name="checkbox"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -394,7 +395,7 @@ describe('form state', () => {
         isValid: false,
       }),
     );
-    cy.get('input[name="checkbox-checked"]').check();
+    cy.get('input[name="checkbox-checked"]').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirty: [],
@@ -414,7 +415,7 @@ describe('form state', () => {
       }),
     );
 
-    cy.get('input[name="radio"]').check();
+    cy.get('input[name="radio"]').click();
     cy.get('input[name="radio"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
