@@ -8,25 +8,25 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@hookform/resolvers": "2.0.0-beta.12",
+    "@hookform/resolvers": "2.8.1",
     "@material-ui/core": "^4.8.0",
-    "joi": "^17.3.0",
+    "joi": "^17.4.2",
     "react": "18.0.0-alpha-e6be2d531",
     "react-dom": "18.0.0-alpha-e6be2d531",
-    "react-hook-form": "^6.0.0",
-    "react-router-dom": "^5.1.2",
-    "react-select": "^3.0.8",
+    "react-hook-form": "^7.16.2",
+    "react-router-dom": "^5.3.0",
+    "react-select": "^5.0.0",
     "yup": "^0.32.8"
   },
   "devDependencies": {
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "@types/react-router-dom": "^5.1.6",
-    "@types/react-select": "^3.0.22",
-    "@types/yup": "^0.29.8",
-    "@vitejs/plugin-react-refresh": "^1.1.0",
-    "react-scripts": "^3.4.0",
-    "typescript": "4.2.0-dev.20210101",
-    "vite": "^2.0.0-beta.65"
+    "@types/react": "^17.0.26",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-router-dom": "^5.3.0",
+    "@types/react-select": "^5.0.1",
+    "@types/yup": "^0.29.13",
+    "@vitejs/plugin-react-refresh": "^1.3.6",
+    "react-scripts": "^4.0.3",
+    "typescript": "4.4.3",
+    "vite": "^2.6.2"
   }
 }
