@@ -1080,22 +1080,6 @@ export function createFormControl<
       _formValues = props.shouldUnregister ? {} : values;
     }
 
-    if (isWeb && !keepStateOptions.keepValues) {
-      for (const name of _names.mount) {
-        const field = get(_fields, name);
-        if (field && field._f) {
-          const inputRef = Array.isArray(field._f.refs)
-            ? field._f.refs[0]
-            : field._f.ref;
-
-          try {
-            isHTMLElement(inputRef) && inputRef.closest('form')!.reset();
-            break;
-          } catch {}
-        }
-      }
-    }
-
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = { ...updatedValues };
     }
