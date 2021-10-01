@@ -305,6 +305,7 @@ export function createFormControl<
       name,
     };
     let isChanged = false;
+    const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
     if (_proxyFormState.isDirty) {
       const previousIsDirty = _formState.isDirty;
@@ -327,8 +328,6 @@ export function createFormControl<
         isChanged || isPreviousFieldDirty !== get(_formState.dirtyFields, name);
     }
 
-    const isPreviousFieldTouched = get(_formState.touchedFields, name);
-
     if (isCurrentTouched && !isPreviousFieldTouched) {
       set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
       state.touchedFields = _formState.touchedFields;
@@ -343,8 +342,8 @@ export function createFormControl<
     return isChanged ? state : {};
   };
 
-  const executeResolver = async (name?: InternalFieldName[]) => {
-    return formOptions.resolver
+  const executeResolver = async (name?: InternalFieldName[]) =>
+    formOptions.resolver
       ? await formOptions.resolver(
           { ..._formValues } as UnpackNestedValue<TFieldValues>,
           formOptions.context,
@@ -356,7 +355,6 @@ export function createFormControl<
           ),
         )
       : ({} as ResolverResult<TFieldValues>);
-  };
 
   const executeResolverValidation = async (names?: InternalFieldName[]) => {
     const { errors } = await executeResolver();
