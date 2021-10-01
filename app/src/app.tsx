@@ -34,7 +34,7 @@ import Test from './test';
 import Welcome from './welcome';
 import { UseFormState } from './useFormState';
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   return (
     <Router>
       <Route path="/basic/:mode" exact component={Basic} />
@@ -129,5 +129,3 @@ const App: React.FC = () => {
     </Router>
   );
 };
-
-export default App;
