@@ -15,7 +15,7 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext> | undefined
   >();
-  const rerender = React.useReducer(() => ({}), {})[1];
+  const rerender = React.useState({})[1];
 
   if (_formControl.current) {
     _formControl.current.control._updateProps(props);
@@ -37,7 +37,7 @@ export function useForm<
           ...formState,
         };
 
-        rerender();
+        rerender({});
       }
     },
   });
