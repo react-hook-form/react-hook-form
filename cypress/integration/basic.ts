@@ -141,7 +141,7 @@ describe('basic form validation', () => {
     cy.get('#renderCount').contains('11');
   });
 
-  it.only('should validate the form with onBlur mode and reset the form', () => {
+  it('should validate the form with onBlur mode and reset the form', () => {
     cy.visit('http://localhost:3000/basic/onBlur');
 
     cy.get('input[name="nestItem.nest1"]').focus();
