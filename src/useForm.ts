@@ -3,14 +3,7 @@ import * as React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import {
-  FieldErrors,
-  FieldNamesMarkedBoolean,
-  FieldValues,
-  FormState,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
 export function useForm<
@@ -22,25 +15,14 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext> | undefined
   >();
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
-    isDirty: false,
-    isValidating: false,
-    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
-    isSubmitted: false,
-    submitCount: 0,
-    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    errors: {} as FieldErrors<TFieldValues>,
-  });
+  const rerender = React.useReducer(() => ({}), {})[1];
 
   if (_formControl.current) {
     _formControl.current.control._updateProps(props);
   } else {
     _formControl.current = {
       ...createFormControl(props),
-      formState,
+      formState: {} as FormState<TFieldValues>,
     };
   }
 
@@ -55,7 +37,7 @@ export function useForm<
           ...formState,
         };
 
-        updateFormState({ ...control._formState });
+        rerender();
       }
     },
   });
@@ -73,7 +55,7 @@ export function useForm<
   });
 
   _formControl.current.formState = getProxyFormState(
-    formState,
+    control._formState,
     control._proxyFormState,
   );
 
