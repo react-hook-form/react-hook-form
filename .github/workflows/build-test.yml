@@ -1,0 +1,24 @@
+name: Unit Test / Lint
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Lint
+        run: |
+          yarn lint
+          yarn lint:types
+      - name: Test
+        run: yarn test --ci
+
+      - name: Build
+        run: yarn build

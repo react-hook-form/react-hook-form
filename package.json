@@ -1,32 +1,53 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "3.26.5",
-  "main": "dist/react-hook-form.js",
-  "module": "dist/react-hook-form.es.js",
+  "version": "7.16.2",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "umd:main": "dist/index.umd.js",
+  "unpkg": "dist/index.umd.js",
+  "jsdelivr": "dist/index.umd.js",
+  "jsnext:main": "dist/index.esm.js",
+  "source": "src/index.ts",
   "types": "dist/index.d.ts",
+  "sideEffects": true,
+  "files": [
+    "dist",
+    "dist/__tests__"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "yarn clean",
-    "build": "yarn build:modern && yarn build:ie11",
-    "build:modern": "rollup -c",
-    "build:min": "rollup -c rollup.min.config.js",
-    "build:ie11": "rollup -c rollup.ie11.config.js",
-    "prettier": "prettier --write './src/**/*.ts' './src/**/*.tsx' --config ./.prettierrc",
-    "lint": "yarn lint:check --fix && yarn prettier",
-    "lint:check": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts --report-unused-disable-directives",
-    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "postrelease": "yarn publish && git push --follow-tags",
-    "test": "jest --runInBand",
-    "test:coverage": "jest --runInBand --coverage",
-    "testw": "yarn test:coverage -- --watchAll",
+    "build": "yarn build:modern",
+    "postbuild": "rimraf dist/__tests__",
+    "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
+    "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
+    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx}\"",
+    "lint": "eslint '**/*.{js,ts,tsx}'",
+    "lint:fix": "yarn lint -- --fix",
+    "lint:types": "tsc --noEmit",
+    "coverage": "jest --coverage --coverageReporters=text-lcov",
+    "test": "jest --config ./scripts/jest/jest.config.js",
+    "test:coverage": "yarn test -- --coverage",
+    "test:watch": "yarn test -- --onlyChanged --watch",
+    "test:web": "TEST_ENV=web yarn test",
+    "test:server": "TEST_ENV=server yarn test",
+    "test:native": "TEST_ENV=native yarn test",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "yarn build:min && bundlesize",
-    "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
-    "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
+    "cypress:parallel": "cypress-parallel -s cypress -t 4 -d -a",
+    "postversion": "git push && git push origin v$npm_package_version",
+    "prepublishOnly": "yarn && yarn lint:fix && yarn lint:types && yarn test && yarn build",
+    "bundlesize": "yarn build:modern && bundlesize",
+    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
   },
-  "sideEffects": false,
   "keywords": [
     "react",
     "hooks",
@@ -37,60 +58,83 @@
     "typescript",
     "react-hooks"
   ],
-  "repository": "https://github.com/react-hook-form/react-hook-form.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/react-hook-form/react-hook-form"
+  },
   "homepage": "https://www.react-hook-form.com",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/react-hooks": "^3.2.1",
-    "@types/jest": "^24.0.22",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.4",
-    "@types/react-test-renderer": "^16.9.0",
-    "@typescript-eslint/eslint-plugin": "^2.6.1",
-    "@typescript-eslint/parser": "^2.6.1",
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.5",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.1.0",
+    "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/react-native": "^7.2.0",
+    "@types/jest": "^27.0.2",
+    "@types/react": "^17.0.24",
+    "@types/react-native": "^0.65.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
+    "@vitejs/plugin-react-refresh": "^1.3.6",
+    "babel-jest": "^27.2.1",
     "bundlesize": "^0.18.0",
-    "coveralls": "^3.0.3",
-    "cypress": "^3.6.0",
-    "eslint": "^6.6.0",
-    "eslint-plugin-react": "^7.13.0",
-    "eslint-plugin-react-hooks": "^2.2.0",
-    "husky": ">=1",
-    "jest": "^24.7.1",
-    "lint-staged": ">=8",
-    "mutationobserver-shim": "^0.3.3",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^1.18.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-test-renderer": "^16.9.0",
-    "rimraf": "^3.0.0",
-    "rollup": "^1.20.3",
-    "rollup-plugin-terser": "^5.1.1",
-    "rollup-plugin-typescript2": "^0.24.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.7.2"
+    "cypress": "8.3.1",
+    "cypress-parallel": "^0.5.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.26.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^7.0.2",
+    "jest": "^27.2.1",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.4.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-native": "^0.65.1",
+    "react-test-renderer": "^17.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.57.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-sourcemaps": "^0.6.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.3"
+  },
+  "resolutions": {
+    "react-native/@jest/create-cache-key-function": "^27.0.2"
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "5.5 kB"
+      "path": "./dist/index.cjs.js",
+      "maxSize": "9.5 kB"
     }
   ],
   "peerDependencies": {
-    "react": "^16.8.0"
+    "react": "^16.8.0 || ^17"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "yarn lint:fix",
+      "yarn prettier:fix"
+    ],
+    "*.{md,json,yml}": [
+      "prettier --write"
+    ]
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
-  "lint-staged": {
-    "*.{jsx,ts}": [
-      "npm run lint",
-      "npm run prettier",
-      "git add"
-    ]
-  }
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-hook-form"
+  },
+  "dependencies": {}
 }

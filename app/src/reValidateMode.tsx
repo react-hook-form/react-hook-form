@@ -1,10 +1,17 @@
 import React from 'react';
-import useForm from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{
+    firstName: string;
+    lastName: string;
+  }>({
     mode: props.match.params.mode,
     reValidateMode: props.match.params.reValidateMode,
   });
@@ -15,14 +22,12 @@ const Basic: React.FC = (props: any) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
-        name="firstName"
-        ref={register({ required: true })}
+        {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       {errors.firstName && <p>firstName error</p>}
       <input
-        name="lastName"
-        ref={register({ required: true, maxLength: 5 })}
+        {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />
       {errors.lastName && <p>lastName error</p>}

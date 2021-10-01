@@ -1,4 +1,4 @@
-context('form triggerValidation', () => {
+describe('form trigger', () => {
   it('should trigger input validation', () => {
     cy.visit('http://localhost:3000/trigger-validation');
 
@@ -14,9 +14,9 @@ context('form triggerValidation', () => {
     cy.get('#test1Error').contains('required');
     cy.get('#test2Error').contains('required');
 
-    cy.get('#renderCount').contains('5');
+    cy.get('#renderCount').contains('4');
 
     cy.get('#multiple').click();
-    cy.get('#renderCount').contains('6');
+    cy.get('#renderCount').contains('5');
   });
 });

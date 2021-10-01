@@ -13,6 +13,13 @@ node_modules/
 app/node_modules/
 example/node_modules/
 example/build/
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 
 # Optional npm cache directory
 .npm
@@ -31,7 +38,8 @@ example/build/
 /dist
 .idea/
 .rpt2_cache
-.coveralls.yml
 package-lock.json
 /cypress/videos
+/cypress/parallel-weights.json
 /cypress/screenshots
+/cypress/fixtures

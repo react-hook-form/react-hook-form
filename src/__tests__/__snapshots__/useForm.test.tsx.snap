@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useForm handleChangeRef with resolver should call the resolver with the field being validated when an input's value change 1`] = `
+Array [
+  Array [
+    Object {
+      "test": "",
+    },
+    undefined,
+    Object {
+      "criteriaMode": undefined,
+      "fields": Object {
+        "test": Object {
+          "mount": true,
+          "name": "test",
+          "ref": <input
+            name="test"
+            type="text"
+          />,
+        },
+      },
+      "names": Array [
+        "test",
+      ],
+      "shouldUseNativeValidation": undefined,
+    },
+  ],
+  Array [
+    Object {
+      "test": "test",
+    },
+    undefined,
+    Object {
+      "criteriaMode": undefined,
+      "fields": Object {
+        "test": Object {
+          "mount": true,
+          "name": "test",
+          "ref": <input
+            name="test"
+            type="text"
+          />,
+        },
+      },
+      "names": Array [
+        "test",
+      ],
+      "shouldUseNativeValidation": undefined,
+    },
+  ],
+]
+`;
+
+exports[`useForm handleChangeRef with resolver should call the resolver with the field being validated when an input's value change 2`] = `
+Array [
+  Object {
+    "test": "test",
+  },
+  undefined,
+  Object {
+    "criteriaMode": undefined,
+    "fields": Object {
+      "test": Object {
+        "mount": true,
+        "name": "test",
+        "ref": <input
+          name="test"
+          type="text"
+        />,
+      },
+    },
+    "names": Array [
+      "test",
+    ],
+    "shouldUseNativeValidation": undefined,
+  },
+]
+`;
+
+exports[`useForm when shouldUnregister set to true with useFieldArray should remove and unregister inputs when inputs gets unmounted 1`] = `
+Array [
+  Object {
+    "test": "bill",
+    "test1": "bill1",
+    "test2": Array [
+      Object {
+        "value": "bill2",
+      },
+    ],
+  },
+  Object {},
+]
+`;

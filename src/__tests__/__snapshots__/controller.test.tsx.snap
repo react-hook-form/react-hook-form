@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Controller should remove input value and reference with Controller and set shouldUnregister: true 1`] = `
+Array [
+  Object {
+    "test": "bill",
+  },
+  Object {
+    "test": "bill",
+  },
+  Object {},
+]
+`;

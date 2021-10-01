@@ -1,29 +1,21 @@
-import isArray from '../utils/isArray';
-import { Ref, MutationWatcher } from '../types';
-
-interface RadioFieldResult {
+type RadioFieldResult = {
   isValid: boolean;
-  value: number | string;
-}
+  value: number | string | null;
+};
 
 const defaultReturn: RadioFieldResult = {
   isValid: false,
-  value: '',
+  value: null,
 };
 
-export default (
-  options?: {
-    ref?: Ref;
-    mutationWatcher?: MutationWatcher;
-  }[],
-): RadioFieldResult =>
-  isArray(options)
+export default (options?: HTMLInputElement[]): RadioFieldResult =>
+  Array.isArray(options)
     ? options.reduce(
-        (previous, { ref: { checked, value } }: Ref): RadioFieldResult =>
-          checked
+        (previous, option): RadioFieldResult =>
+          option && option.checked && !option.disabled
             ? {
                 isValid: true,
-                value,
+                value: option.value,
               }
             : previous,
         defaultReturn,

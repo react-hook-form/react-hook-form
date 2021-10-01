@@ -1,5 +1,5 @@
 import React from 'react';
-import useForm from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 function Reset() {
   const { register, reset } = useForm<{
@@ -19,11 +19,11 @@ function Reset() {
   }>();
   return (
     <>
-      <input name="firstName" ref={register} />
-      <input name="array[1]" ref={register} />
-      <input name="objectData.test" ref={register} />
-      <input name="lastName" ref={register} />
-      <input name="deepNest.level1.level2.data" ref={register} />
+      <input {...register('firstName')} />
+      <input {...register('array.1')} />
+      <input {...register('objectData.test')} />
+      <input {...register('lastName')} />
+      <input {...register('deepNest.level1.level2.data')} />
       <button
         type="button"
         onClick={() =>

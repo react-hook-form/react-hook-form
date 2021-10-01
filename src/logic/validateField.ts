@@ -1,35 +1,32 @@
-import getRadioValue from './getRadioValue';
-import isNullOrUndefined from '../utils/isNullOrUndefined';
-import isRadioInput from '../utils/isRadioInput';
-import getValueAndMessage from './getValueAndMessage';
+import { INPUT_VALIDATION_RULES } from '../constants';
+import { Field, FieldError, InternalFieldErrors, Message } from '../types';
+import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
-import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
-import displayNativeError from './displayNativeError';
-import isObject from '../utils/isObject';
+import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
-import getFieldsValue from './getFieldValue';
+import isMessage from '../utils/isMessage';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
+import isRadioInput from '../utils/isRadioInput';
 import isRegex from '../utils/isRegex';
-import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
-import isEmptyString from '../utils/isEmptyString';
-import {
-  PATTERN_ATTRIBUTE,
-  RADIO_INPUT,
-  REQUIRED_ATTRIBUTE,
-} from '../constants';
-import {
-  Field,
-  FieldErrors,
-  FieldValues,
-  FieldName,
-  ValidatePromiseResult,
-} from '../types';
+import isString from '../utils/isString';
 
-export default async <FormValues extends FieldValues>(
-  {
+import appendErrors from './appendErrors';
+import getCheckboxValue from './getCheckboxValue';
+import getRadioValue from './getRadioValue';
+import getValidateError from './getValidateError';
+import getValueAndMessage from './getValueAndMessage';
+
+export default async (
+  field: Field,
+  inputValue: any,
+  validateAllFieldCriteria: boolean,
+  shouldUseNativeValidation?: boolean,
+): Promise<InternalFieldErrors> => {
+  const {
     ref,
-    ref: { type, value, name, checked },
-    options,
+    refs,
     required,
     maxLength,
     minLength,
@@ -37,168 +34,215 @@ export default async <FormValues extends FieldValues>(
     max,
     pattern,
     validate,
-  }: Field,
-  fields: FieldValues,
-  nativeValidation?: boolean,
-): Promise<FieldErrors<FormValues>> => {
-  const error: FieldErrors<FormValues> = {};
-  const isRadio = isRadioInput(type);
-  const isCheckBox = isCheckBoxInput(type);
-  const isEmpty = isEmptyString(value);
-  const nativeError = displayNativeError.bind(null, nativeValidation, ref);
-  const typedName = name as FieldName<FormValues>;
+    name,
+    valueAsNumber,
+    mount,
+    disabled,
+  } = field._f;
+  if (!mount || disabled) {
+    return {};
+  }
+  const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
+  const setCustomValidty = (message?: string | boolean) => {
+    if (shouldUseNativeValidation && inputRef.reportValidity) {
+      inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
+      inputRef.reportValidity();
+    }
+  };
+  const error: InternalFieldErrors = {};
+  const isRadio = isRadioInput(ref);
+  const isCheckBox = isCheckBoxInput(ref);
+  const isRadioOrCheckbox = isRadio || isCheckBox;
+  const isEmpty =
+    ((valueAsNumber || isFileInput(ref)) && !ref.value) ||
+    inputValue === '' ||
+    (Array.isArray(inputValue) && !inputValue.length);
+  const appendErrorsCurry = appendErrors.bind(
+    null,
+    name,
+    validateAllFieldCriteria,
+    error,
+  );
+  const getMinMaxMessage = (
+    exceedMax: boolean,
+    maxLengthMessage: Message,
+    minLengthMessage: Message,
+    maxType = INPUT_VALIDATION_RULES.maxLength,
+    minType = INPUT_VALIDATION_RULES.minLength,
+  ) => {
+    const message = exceedMax ? maxLengthMessage : minLengthMessage;
+    error[name] = {
+      type: exceedMax ? maxType : minType,
+      message,
+      ref,
+      ...appendErrorsCurry(exceedMax ? maxType : minType, message),
+    };
+  };
 
   if (
     required &&
-    ((isCheckBox && !checked) ||
-      (!isCheckBox && !isRadio && isEmpty) ||
-      (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
-      (type !== RADIO_INPUT && isNullOrUndefined(value)))
+    ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
+      (isBoolean(inputValue) && !inputValue) ||
+      (isCheckBox && !getCheckboxValue(refs).isValid) ||
+      (isRadio && !getRadioValue(refs).isValid))
   ) {
-    error[typedName] = {
-      type: REQUIRED_ATTRIBUTE,
-      message: isString(required) ? required : '',
-      ref: isRadio ? fields[typedName].options[0].ref : ref,
-    };
-    nativeError(required);
-    return error;
+    const { value, message } = isMessage(required)
+      ? { value: !!required, message: required }
+      : getValueAndMessage(required);
+
+    if (value) {
+      error[name] = {
+        type: INPUT_VALIDATION_RULES.required,
+        message,
+        ref: inputRef,
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
+      };
+      if (!validateAllFieldCriteria) {
+        setCustomValidty(message);
+        return error;
+      }
+    }
   }
 
-  if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
+  if (!isEmpty && (!isNullOrUndefined(min) || !isNullOrUndefined(max))) {
     let exceedMax;
     let exceedMin;
-    const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
-    const { value: minValue, message: minMessage } = getValueAndMessage(min);
+    const maxOutput = getValueAndMessage(max);
+    const minOutput = getValueAndMessage(min);
 
-    if (type === 'number') {
-      const valueNumber = parseFloat(value);
-      if (!isNullOrUndefined(maxValue)) {
-        exceedMax = valueNumber > maxValue;
+    if (!isNaN(inputValue)) {
+      const valueNumber =
+        (ref as HTMLInputElement).valueAsNumber || parseFloat(inputValue);
+      if (!isNullOrUndefined(maxOutput.value)) {
+        exceedMax = valueNumber > maxOutput.value;
       }
-      if (!isNullOrUndefined(minValue)) {
-        exceedMin = valueNumber < minValue;
+      if (!isNullOrUndefined(minOutput.value)) {
+        exceedMin = valueNumber < minOutput.value;
       }
     } else {
-      if (isString(maxValue)) {
-        exceedMax = new Date(value) > new Date(maxValue);
+      const valueDate =
+        (ref as HTMLInputElement).valueAsDate || new Date(inputValue);
+      if (isString(maxOutput.value)) {
+        exceedMax = valueDate > new Date(maxOutput.value);
       }
-      if (isString(minValue)) {
-        exceedMin = new Date(value) < new Date(minValue);
+      if (isString(minOutput.value)) {
+        exceedMin = valueDate < new Date(minOutput.value);
       }
     }
 
     if (exceedMax || exceedMin) {
-      const message = exceedMax ? maxMessage : minMessage;
-      error[typedName] = {
-        type: exceedMax ? 'max' : 'min',
-        message,
-        ref,
-      };
-      nativeError(message);
-      return error;
+      getMinMaxMessage(
+        !!exceedMax,
+        maxOutput.message,
+        minOutput.message,
+        INPUT_VALIDATION_RULES.max,
+        INPUT_VALIDATION_RULES.min,
+      );
+      if (!validateAllFieldCriteria) {
+        setCustomValidty(error[name]!.message);
+        return error;
+      }
     }
   }
 
-  if (isString(value) && !isEmpty && (maxLength || minLength)) {
-    const {
-      value: maxLengthValue,
-      message: maxLengthMessage,
-    } = getValueAndMessage(maxLength);
-    const {
-      value: minLengthValue,
-      message: minLengthMessage,
-    } = getValueAndMessage(minLength);
-    const inputLength = value.toString().length;
-    const exceedMax = maxLength && inputLength > maxLengthValue;
-    const exceedMin = minLength && inputLength < minLengthValue;
+  if ((maxLength || minLength) && !isEmpty && isString(inputValue)) {
+    const maxLengthOutput = getValueAndMessage(maxLength);
+    const minLengthOutput = getValueAndMessage(minLength);
+    const exceedMax =
+      !isNullOrUndefined(maxLengthOutput.value) &&
+      inputValue.length > maxLengthOutput.value;
+    const exceedMin =
+      !isNullOrUndefined(minLengthOutput.value) &&
+      inputValue.length < minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
-      const message = exceedMax ? maxLengthMessage : minLengthMessage;
-      error[typedName] = {
-        type: exceedMax ? 'maxLength' : 'minLength',
-        message,
-        ref,
-      };
-      nativeError(message);
-      return error;
+      getMinMaxMessage(
+        exceedMax,
+        maxLengthOutput.message,
+        minLengthOutput.message,
+      );
+      if (!validateAllFieldCriteria) {
+        setCustomValidty(error[name]!.message);
+        return error;
+      }
     }
   }
 
-  if (pattern && !isEmpty) {
-    const { value: patternValue, message: patternMessage } = getValueAndMessage(
-      pattern,
-    );
+  if (pattern && !isEmpty && isString(inputValue)) {
+    const { value: patternValue, message } = getValueAndMessage(pattern);
 
-    if (isRegex(patternValue) && !patternValue.test(value)) {
-      error[typedName] = {
-        type: PATTERN_ATTRIBUTE,
-        message: patternMessage,
+    if (isRegex(patternValue) && !inputValue.match(patternValue)) {
+      error[name] = {
+        type: INPUT_VALIDATION_RULES.pattern,
+        message,
         ref,
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
-      nativeError(patternMessage);
-      return error;
+      if (!validateAllFieldCriteria) {
+        setCustomValidty(message);
+        return error;
+      }
     }
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fields, ref);
-    const validateRef = isRadio && options ? options[0].ref : ref;
-
     if (isFunction(validate)) {
-      const result = await validate(fieldValue);
-      const errorObject = getValidateFunctionErrorObject(
-        result,
-        validateRef,
-        nativeError,
-      );
+      const result = await validate(inputValue);
+      const validateError = getValidateError(result, inputRef);
 
-      if (errorObject) {
-        error[typedName] = errorObject;
-        return error;
+      if (validateError) {
+        error[name] = {
+          ...validateError,
+          ...appendErrorsCurry(
+            INPUT_VALIDATION_RULES.validate,
+            validateError.message,
+          ),
+        };
+        if (!validateAllFieldCriteria) {
+          setCustomValidty(validateError.message);
+          return error;
+        }
       }
     } else if (isObject(validate)) {
-      const validationResult = await new Promise(
-        (resolve): ValidatePromiseResult => {
-          const values = Object.entries(validate);
-          values.reduce(async (previous, [key, validate], index): Promise<
-            ValidatePromiseResult
-          > => {
-            if (!isEmptyObject(await previous)) {
-              return resolve(previous);
-            }
-            const lastChild = values.length - 1 === index;
+      let validationResult = {} as FieldError;
 
-            if (isFunction(validate)) {
-              const result = await validate(fieldValue);
-              const errorObject = getValidateFunctionErrorObject(
-                result,
-                validateRef,
-                nativeError,
-                key,
-              );
+      for (const key in validate) {
+        if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
+          break;
+        }
 
-              if (errorObject) {
-                return lastChild ? resolve(errorObject) : errorObject;
-              }
-            }
+        const validateError = getValidateError(
+          await validate[key](inputValue),
+          inputRef,
+          key,
+        );
 
-            return lastChild ? resolve(previous) : previous;
-          }, {});
-        },
-      );
+        if (validateError) {
+          validationResult = {
+            ...validateError,
+            ...appendErrorsCurry(key, validateError.message),
+          };
+
+          setCustomValidty(validateError.message);
+
+          if (validateAllFieldCriteria) {
+            error[name] = validationResult;
+          }
+        }
+      }
 
       if (!isEmptyObject(validationResult)) {
-        error[typedName] = {
-          ref: validateRef,
-          ...(validationResult as { type: string; message?: string }),
+        error[name] = {
+          ref: inputRef,
+          ...validationResult,
         };
-        return error;
+        if (!validateAllFieldCriteria) {
+          return error;
+        }
       }
     }
   }
 
-  if (nativeValidation) {
-    ref.setCustomValidity('');
-  }
+  setCustomValidty(true);
   return error;
 };

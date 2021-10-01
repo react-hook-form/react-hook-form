@@ -1,41 +1,37 @@
-import getRadioValue from './getRadioValue';
-import getMultipleSelectValue from './getMultipleSelectValue';
-import isRadioInput from '../utils/isRadioInput';
+import { Field } from '../types';
 import isCheckBox from '../utils/isCheckBoxInput';
-import isUndefined from '../utils/isUndefined';
+import isFileInput from '../utils/isFileInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
-import isEmptyString from '../utils/isEmptyString';
-import { FieldsRefs, Ref, FieldValues } from '../types';
+import isRadioInput from '../utils/isRadioInput';
+import isUndefined from '../utils/isUndefined';
 
-export default function getFieldValue<FormValues extends FieldValues>(
-  fields: FieldsRefs<FormValues>,
-  ref: Ref,
-) {
-  const { type, name, options, selectedOptions, checked, value, files } = ref;
+import getCheckboxValue from './getCheckboxValue';
+import getFieldValueAs from './getFieldValueAs';
+import getMultipleSelectValue from './getMultipleSelectValue';
+import getRadioValue from './getRadioValue';
 
-  if (type === 'file') {
-    return files;
+export default function getFieldValue(_f: Field['_f']) {
+  const ref = _f.ref;
+
+  if (_f.refs ? _f.refs.every((ref) => ref.disabled) : ref.disabled) {
+    return;
   }
 
-  if (isRadioInput(type)) {
-    const field = fields[name];
-    return field ? getRadioValue(field.options).value : '';
+  if (isFileInput(ref)) {
+    return ref.files;
   }
 
-  if (isMultipleSelect(type)) {
-    return getMultipleSelectValue(selectedOptions);
+  if (isRadioInput(ref)) {
+    return getRadioValue(_f.refs).value;
   }
 
-  if (isCheckBox(type)) {
-    if (checked) {
-      return ref.attributes && ref.attributes.value
-        ? isUndefined(value) || isEmptyString(value)
-          ? true
-          : value
-        : true;
-    }
-    return false;
+  if (isMultipleSelect(ref)) {
+    return getMultipleSelectValue(ref.selectedOptions);
   }
 
-  return value;
+  if (isCheckBox(ref)) {
+    return getCheckboxValue(_f.refs).value;
+  }
+
+  return getFieldValueAs(isUndefined(ref.value) ? _f.ref.value : ref.value, _f);
 }
