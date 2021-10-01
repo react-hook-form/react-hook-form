@@ -4,6 +4,7 @@ import { useForm, NestedValue } from 'react-hook-form';
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
+  const [data, setData] = React.useState({});
   const {
     register,
     handleSubmit,
@@ -33,13 +34,16 @@ const Basic: React.FC = (props: any) => {
     mode: props.match.params.mode,
   });
   const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0);
-  const onValid = () => {};
   const onInvalid = () => setOnInvalidCalledTimes((prevCount) => prevCount + 1);
 
   renderCounter++;
 
   return (
-    <form onSubmit={handleSubmit(onValid, onInvalid)}>
+    <form
+      onSubmit={handleSubmit((data) => {
+        setData(data);
+      }, onInvalid)}
+    >
       <input
         placeholder="nest.nest1"
         {...register('nestItem.nest1', { required: true })}
@@ -155,6 +159,7 @@ const Basic: React.FC = (props: any) => {
       <div id="on-invalid-called-times">
         onInvalid callback called {onInvalidCalledTimes} times
       </div>
+      <pre>{JSON.stringify(data)}</pre>
     </form>
   );
 };
