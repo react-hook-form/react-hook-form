@@ -428,13 +428,6 @@ export function createFormControl<
       let isValid;
       const inputValue = target.type ? getFieldValue(field._f) : target.value;
       const isBlurEvent = event.type === EVENTS.BLUR;
-
-      if (isBlurEvent && field._f.onBlur) {
-        field._f.onBlur(event);
-      } else if (field._f.onChange) {
-        field._f.onChange(event);
-      }
-
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !formOptions.resolver &&
@@ -448,6 +441,12 @@ export function createFormControl<
           validationMode,
         );
       const isWatched = !isBlurEvent && isFieldWatched(name);
+
+      if (isBlurEvent && field._f.onBlur) {
+        field._f.onBlur(event);
+      } else if (field._f.onChange) {
+        field._f.onChange(event);
+      }
 
       set(_formValues, name, inputValue);
 
@@ -516,9 +515,7 @@ export function createFormControl<
         isValid = await _updateValid(true);
       }
 
-      if (field._f.deps) {
-        trigger(field._f.deps as FieldPath<TFieldValues>[]);
-      }
+      field._f.deps && trigger(field._f.deps as FieldPath<TFieldValues>[]);
 
       shouldRenderBaseOnError(false, name, isValid, error, fieldState);
     }
@@ -562,6 +559,7 @@ export function createFormControl<
 
   const _updateValid = async (skipRender?: boolean) => {
     let isValid = false;
+
     if (_proxyFormState.isValid) {
       isValid = formOptions.resolver
         ? isEmptyObject((await executeResolver()).errors)
@@ -574,6 +572,7 @@ export function createFormControl<
         });
       }
     }
+
     return isValid;
   };
 
