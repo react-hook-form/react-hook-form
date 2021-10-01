@@ -557,11 +557,10 @@ export function createFormControl<
     _stateFlags.mount && _updateValid();
   };
 
-  const _getIsDirty: GetIsDirty = (name, data) => {
-    name && data && set(_formValues, name, data);
-
-    return !deepEqual({ ...getValues() }, _defaultValues);
-  };
+  const _getIsDirty: GetIsDirty = (name, data) => (
+    name && data && set(_formValues, name, data),
+    !deepEqual(getValues(), _defaultValues)
+  );
 
   const _updateValid = async (skipRender?: boolean) => {
     let isValid = false;
