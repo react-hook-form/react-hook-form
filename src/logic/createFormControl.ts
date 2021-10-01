@@ -755,6 +755,7 @@ export function createFormControl<
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
     let isValid;
+    let validationResult;
 
     _subjects.state.next({
       isValidating: true,
@@ -764,36 +765,35 @@ export function createFormControl<
       const schemaResult = await executeResolverValidation(
         isUndefined(name) ? name : fieldNames,
       );
-      isValid = name
-        ? fieldNames.every((name) => !get(schemaResult, name))
-        : isEmptyObject(schemaResult);
-    } else {
-      if (name) {
-        isValid = (
-          await Promise.all(
-            fieldNames.map(async (fieldName) => {
-              const field = get(_fields, fieldName);
-              return await validateForm(
-                field && field._f ? { [fieldName]: field } : field,
-              );
-            }),
-          )
-        ).every(Boolean);
 
-        _updateValid();
-      } else {
-        isValid = await validateForm(_fields);
-      }
+      isValid = isEmptyObject(schemaResult);
+      validationResult = name
+        ? !fieldNames.some((name) => get(schemaResult, name))
+        : isValid;
+    } else if (name) {
+      validationResult = (
+        await Promise.all(
+          fieldNames.map(async (fieldName) => {
+            const field = get(_fields, fieldName);
+            return await validateForm(
+              field && field._f ? { [fieldName]: field } : field,
+            );
+          }),
+        )
+      ).every(Boolean);
+      _updateValid();
+    } else {
+      validationResult = isValid = await validateForm(_fields);
     }
 
     _subjects.state.next({
-      ...(isString(name) ? { name } : {}),
+      ...(!isString(name) || isValid !== _formState.isValid ? {} : { name }),
       errors: _formState.errors,
       isValid,
       isValidating: false,
     });
 
-    if (options.shouldFocus && !isValid) {
+    if (options.shouldFocus && !validationResult) {
       focusFieldBy(
         _fields,
         (key) => get(_formState.errors, key),
@@ -801,7 +801,7 @@ export function createFormControl<
       );
     }
 
-    return isValid;
+    return validationResult;
   };
 
   const getValues: UseFormGetValues<TFieldValues> = (

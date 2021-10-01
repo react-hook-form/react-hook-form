@@ -55,8 +55,34 @@ describe('basic form validation', () => {
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
     cy.get('input[name="checkboxArray"]').check('3');
+    cy.get('select[name="multiple"]').select(['optionA', 'optionB']);
 
     cy.get('p').should('have.length', 0);
+
+    cy.get('#submit').click();
+
+    cy.get('pre').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        nestItem: { nest1: 'ab' },
+        arrayItem: [{ test1: 'ab' }],
+        firstName: 'billa',
+        lastName: 'luo',
+        min: '11',
+        max: '19',
+        minDate: '2019-08-01',
+        maxDate: '2019-08-01',
+        minLength: 'bbi',
+        minRequiredLength: 'bi',
+        selectNumber: '1',
+        pattern: 'luo23',
+        radio: '1',
+        checkbox: true,
+        checkboxArray: ['3'],
+        multiple: ['optionA', 'optionB'],
+        validate: 'test',
+      }),
+    );
+    cy.get('#submit').click();
 
     cy.get('#resetForm').click();
     cy.get('input[name="firstName"]').should('not.have.value');
@@ -71,7 +97,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('33');
+    cy.get('#renderCount').contains('39');
 
     cy.get('#on-invalid-called-times').contains('1');
   });

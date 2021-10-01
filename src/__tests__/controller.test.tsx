@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps } from '../types';
+import { ControllerRenderProps, NestedValue } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 
@@ -1193,11 +1193,17 @@ describe('Controller', () => {
         test: string;
       };
       todos: string[];
+      nestedValue: NestedValue<{ test: string }>;
     };
 
     function App() {
       const { control } = useForm<FormValues>({
-        defaultValues: { firstName: '', deepNested: { test: '' }, todos: [] },
+        defaultValues: {
+          firstName: '',
+          deepNested: { test: '' },
+          todos: [],
+          nestedValue: { test: '' },
+        },
       });
 
       return (
@@ -1232,12 +1238,22 @@ describe('Controller', () => {
             control={control}
             name="todos"
           />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...{ ...field, value: field.value.test }} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="nestedValue"
+          />
         </form>
       );
     }
 
     render(<App />);
 
-    expect(screen.getAllByRole('textbox').length).toEqual(3);
+    expect(screen.getAllByRole('textbox').length).toEqual(4);
   });
 });

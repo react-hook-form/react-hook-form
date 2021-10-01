@@ -7,7 +7,6 @@ import isUndefined from '../utils/isUndefined';
 
 import getCheckboxValue from './getCheckboxValue';
 import getFieldValueAs from './getFieldValueAs';
-import getMultipleSelectValue from './getMultipleSelectValue';
 import getRadioValue from './getRadioValue';
 
 export default function getFieldValue(_f: Field['_f']) {
@@ -26,7 +25,7 @@ export default function getFieldValue(_f: Field['_f']) {
   }
 
   if (isMultipleSelect(ref)) {
-    return getMultipleSelectValue(ref.options);
+    return [...ref.selectedOptions].map(({ value }) => value);
   }
 
   if (isCheckBox(ref)) {
