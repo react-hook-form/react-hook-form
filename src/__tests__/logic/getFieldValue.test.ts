@@ -7,10 +7,6 @@ jest.mock('../../logic/getRadioValue', () => ({
   }),
 }));
 
-jest.mock('../../logic/getMultipleSelectValue', () => ({
-  default: () => 3,
-}));
-
 jest.mock('../../logic/getCheckboxValue', () => ({
   default: () => ({
     value: 'testValue',
@@ -28,19 +24,6 @@ describe('getFieldValue', () => {
         },
       }),
     ).toBe(2);
-  });
-
-  it('should return the correct select value when type is select-multiple', () => {
-    expect(
-      getFieldValue({
-        name: 'test',
-        ref: {
-          type: 'select-multiple',
-          name: 'test',
-          value: 'test',
-        },
-      }),
-    ).toBe(3);
   });
 
   it('should return the correct value when type is checkbox', () => {
