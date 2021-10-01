@@ -1,5 +1,2 @@
-export default (
-  options: HTMLOptionElement[] | HTMLOptionsCollection,
-): string[] =>
-  [...options]
-    .map(({ value }): string => value);
+export default (options: HTMLCollectionOf<HTMLOptionElement>): string[] =>
+  [...options].map(({ value }): string => value);
