@@ -10,6 +10,8 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useForm } from '../../useForm';
+import { FormProvider } from '../../useFormContext';
+import { useFormState } from '../../useFormState';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -414,6 +416,95 @@ describe('trigger', () => {
 
       await waitFor(() => {
         screen.getByText('yes');
+      });
+    });
+
+    it('should update isValid for the entire useForm scope', async () => {
+      const InputA = () => {
+        const { isValid } = useFormState({ name: 'name' });
+
+        return <p>{isValid ? 'test: valid' : 'test: invalid'}</p>;
+      };
+
+      const InputB = () => {
+        const { isValid } = useFormState({ name: 'email' });
+
+        return <p>{isValid ? 'test1: valid' : 'test1: invalid'}</p>;
+      };
+
+      function App() {
+        const methods = useForm({
+          resolver: async (data) => {
+            if (data.test && data.test1) {
+              return {
+                errors: {},
+                values: {
+                  test: '1',
+                  test1: '2',
+                },
+              };
+            } else {
+              return {
+                errors: {
+                  test: {
+                    message: 'test',
+                    type: 'test',
+                  },
+                },
+                values: {},
+              };
+            }
+          },
+          mode: 'onChange',
+        });
+
+        return (
+          <FormProvider {...methods}>
+            <form>
+              <input
+                onChange={(e) =>
+                  methods.setValue('test', e.target.value, {
+                    shouldValidate: true,
+                  })
+                }
+              />
+              <InputA />
+              <input
+                onChange={(e) =>
+                  methods.setValue('test1', e.target.value, {
+                    shouldValidate: true,
+                  })
+                }
+              />
+              <InputB />
+            </form>
+          </FormProvider>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(() => {
+        screen.getByText('test: invalid');
+        screen.getByText('test1: invalid');
+      });
+
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: { value: 'test' },
+      });
+
+      await waitFor(() => {
+        screen.getByText('test: invalid');
+        screen.getByText('test1: invalid');
+      });
+
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: 'test' },
+      });
+
+      await waitFor(() => {
+        screen.getByText('test: valid');
+        screen.getByText('test1: valid');
       });
     });
   });
