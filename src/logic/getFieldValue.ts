@@ -26,7 +26,7 @@ export default function getFieldValue(_f: Field['_f']) {
   }
 
   if (isMultipleSelect(ref)) {
-    return getMultipleSelectValue(ref.options);
+    return getMultipleSelectValue(ref.selectedOptions);
   }
 
   if (isCheckBox(ref)) {
