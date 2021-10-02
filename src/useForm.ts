@@ -36,7 +36,7 @@ export function useForm<
   });
 
   if (_formControl.current) {
-    _formControl.current.control._updateProps(props);
+    _formControl.current.control._options = props;
   } else {
     _formControl.current = {
       ...createFormControl(props),

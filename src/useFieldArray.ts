@@ -295,7 +295,7 @@ export const useFieldArray = <
     !get(control._formValues, name) && set(control._formValues, name, []);
 
     return () => {
-      if (control._shouldUnregister || shouldUnregister) {
+      if (control._options.shouldUnregister || shouldUnregister) {
         control.unregister(name as FieldPath<TFieldValues>);
       }
     };

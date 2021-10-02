@@ -93,12 +93,10 @@ export function createFormControl<
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
-  let formOptions = {
+  let _options = {
     ...defaultOptions,
     ...props,
   };
-  let timer = 0;
-  let validateCount: Record<InternalFieldName, number> = {};
   let _delayCallback: DelayCallback;
   let _formState: FormState<TFieldValues> = {
     isDirty: false,
@@ -113,8 +111,8 @@ export function createFormControl<
     errors: {} as FieldErrors<TFieldValues>,
   };
   let _fields = {};
-  let _defaultValues = formOptions.defaultValues || {};
-  let _formValues = formOptions.shouldUnregister
+  let _defaultValues = _options.defaultValues || {};
+  let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
   let _stateFlags = {
@@ -128,6 +126,8 @@ export function createFormControl<
     array: new Set(),
     watch: new Set(),
   } as Names;
+  let timer = 0;
+  let validateCount: Record<InternalFieldName, number> = {};
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -143,10 +143,10 @@ export function createFormControl<
     state: new Subject(),
   };
 
-  const validationMode = getValidationModes(formOptions.mode);
-  const reValidateMode = getValidationModes(formOptions.reValidateMode);
+  const validationMode = getValidationModes(_options.mode);
+  const reValidateMode = getValidationModes(_options.reValidateMode);
   const isValidateAllFieldCriteria =
-    formOptions.criteriaMode === VALIDATION_MODE.all;
+    _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
     <T extends Function>(callback: T, wait: number) =>
@@ -164,7 +164,7 @@ export function createFormControl<
     let isValid = false;
 
     if (_proxyFormState.isValid) {
-      isValid = formOptions.resolver
+      isValid = _options.resolver
         ? isEmptyObject((await executeResolver()).errors)
         : await executeBuildInValidation(_fields, true);
 
@@ -390,15 +390,15 @@ export function createFormControl<
   };
 
   const executeResolver = async (name?: InternalFieldName[]) =>
-    formOptions.resolver
-      ? await formOptions.resolver(
+    _options.resolver
+      ? await _options.resolver(
           { ..._formValues } as UnpackNestedValue<TFieldValues>,
-          formOptions.context,
+          _options.context,
           getResolverOptions(
             name || _names.mount,
             _fields,
-            formOptions.criteriaMode,
-            formOptions.shouldUseNativeValidation,
+            _options.criteriaMode,
+            _options.shouldUseNativeValidation,
           ),
         )
       : ({} as ResolverResult<TFieldValues>);
@@ -439,7 +439,7 @@ export function createFormControl<
             field,
             get(_formValues, _f.name),
             isValidateAllFieldCriteria,
-            formOptions.shouldUseNativeValidation,
+            _options.shouldUseNativeValidation,
           );
 
           if (fieldError[_f.name]) {
@@ -672,7 +672,7 @@ export function createFormControl<
       const isBlurEvent = event.type === EVENTS.BLUR;
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
-          !formOptions.resolver &&
+          !_options.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
         skipValidation(
@@ -723,7 +723,7 @@ export function createFormControl<
           isValidating: true,
         });
 
-      if (formOptions.resolver) {
+      if (_options.resolver) {
         const { errors } = await executeResolver([name]);
         error = get(errors, name);
 
@@ -750,7 +750,7 @@ export function createFormControl<
             field,
             get(_formValues, name) as Field,
             isValidateAllFieldCriteria,
-            formOptions.shouldUseNativeValidation,
+            _options.shouldUseNativeValidation,
           )
         )[name];
 
@@ -772,7 +772,7 @@ export function createFormControl<
       isValidating: true,
     });
 
-    if (formOptions.resolver) {
+    if (_options.resolver) {
       const schemaResult = await executeResolverValidation(
         isUndefined(name) ? name : fieldNames,
       );
@@ -900,7 +900,7 @@ export function createFormControl<
         !options.keepError && unset(_formState.errors, inputName);
         !options.keepDirty && unset(_formState.dirtyFields, inputName);
         !options.keepTouched && unset(_formState.touchedFields, inputName);
-        !formOptions.shouldUnregister &&
+        !_options.shouldUnregister &&
           !options.keepDefaultValue &&
           unset(_defaultValues, inputName);
       }
@@ -1002,7 +1002,7 @@ export function createFormControl<
             } else {
               const field = get(_fields, name, {}) as Field;
               const _shouldUnregister =
-                formOptions.shouldUnregister || options.shouldUnregister;
+                _options.shouldUnregister || options.shouldUnregister;
 
               if (field._f) {
                 field._f.mount = false;
@@ -1032,7 +1032,7 @@ export function createFormControl<
       });
 
       try {
-        if (formOptions.resolver) {
+        if (_options.resolver) {
           const { errors, values } = await executeResolver();
           _formState.errors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
@@ -1051,7 +1051,7 @@ export function createFormControl<
           await onValid(fieldValues, e);
         } else {
           onInvalid && (await onInvalid(_formState.errors, e));
-          formOptions.shouldFocusError &&
+          _options.shouldFocusError &&
             focusFieldBy(
               _fields,
               (key) => get(_formState.errors, key),
@@ -1158,7 +1158,6 @@ export function createFormControl<
       _updateFieldArray,
       _getFieldArray,
       _subjects,
-      _shouldUnregister: formOptions.shouldUnregister,
       _proxyFormState,
       get _fields() {
         return _fields;
@@ -1196,8 +1195,11 @@ export function createFormControl<
       set _formState(value) {
         _formState = value;
       },
-      _updateProps: (options) => {
-        formOptions = { ...defaultOptions, ...options };
+      get _options() {
+        return _options;
+      },
+      set _options(value) {
+        _options = value;
       },
     },
     trigger,

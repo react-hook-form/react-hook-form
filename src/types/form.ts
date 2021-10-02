@@ -315,7 +315,6 @@ export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object,
 > = {
-  _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: () => void;
   _names: Names;
@@ -324,7 +323,7 @@ export type Control<
     action: boolean;
     watch: boolean;
   };
-  _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
+  _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: () => void;
