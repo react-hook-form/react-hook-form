@@ -1092,6 +1092,8 @@ export function createFormControl<
     const cloneUpdatedValues = cloneObject(updatedValues);
 
     if (!keepStateOptions.keepValues) {
+      _formValues = props.shouldUnregister ? {} : cloneUpdatedValues;
+
       if (isWeb) {
         for (const name of _names.mount) {
           const field = get(_fields, name);
@@ -1108,8 +1110,6 @@ export function createFormControl<
           }
         }
       }
-
-      _formValues = props.shouldUnregister ? {} : cloneUpdatedValues;
     }
 
     if (!keepStateOptions.keepDefaultValues) {
@@ -1226,7 +1226,10 @@ export function createFormControl<
         return _options;
       },
       set _options(value) {
-        _options = value;
+        _options = {
+          ..._options,
+          ...value,
+        };
       },
     },
     trigger,
