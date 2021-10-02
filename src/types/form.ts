@@ -317,7 +317,7 @@ export type Control<
 > = {
   _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _removeFields: () => void;
+  _removeUnmountFields: () => void;
   _names: Names;
   _stateFlags: {
     mount: boolean;

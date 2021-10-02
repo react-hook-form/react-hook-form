@@ -69,7 +69,7 @@ export function useForm<
       control._stateFlags.watch = false;
       control._subjects.state.next({});
     }
-    control._removeFields();
+    control._removeUnmountFields();
   });
 
   _formControl.current.formState = getProxyFormState(
