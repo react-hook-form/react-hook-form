@@ -1092,6 +1092,23 @@ export function createFormControl<
     const cloneUpdatedValues = cloneObject(updatedValues);
 
     if (!keepStateOptions.keepValues) {
+      if (isWeb) {
+        for (const name of _names.mount) {
+          const field = get(_fields, name);
+          if (field && field._f) {
+            const fieldReference = Array.isArray(field._f.refs)
+              ? field._f.refs[0]
+              : field._f.ref;
+
+            try {
+              isHTMLElement(fieldReference) &&
+                fieldReference.closest('form')!.reset();
+              break;
+            } catch {}
+          }
+        }
+      }
+
       _formValues = props.shouldUnregister ? {} : cloneUpdatedValues;
     }
 
