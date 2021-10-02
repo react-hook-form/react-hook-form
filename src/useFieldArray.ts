@@ -45,7 +45,7 @@ export const useFieldArray = <
   } = props;
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-  >(mapIds(control._getFieldArrayValue(name), keyName));
+  >(mapIds(control._getFieldArray(name), keyName));
   const _fieldIds = React.useRef(fields);
 
   useSubscribe({
@@ -87,7 +87,7 @@ export const useFieldArray = <
   ) => {
     const appendValue = convertToArrayPayload(value);
     const updatedFieldArrayValuesWithKey = appendAt(
-      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(appendValue, keyName),
     );
     control._updateFieldArray(
@@ -114,7 +114,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValuesWithKey = prependAt(
-      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(convertToArrayPayload(value), keyName),
     );
     control._updateFieldArray(
@@ -134,7 +134,7 @@ export const useFieldArray = <
     const updatedFieldArrayValuesWithKey: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(
-      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       index,
     );
     control._updateFieldArray(
@@ -156,7 +156,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValuesWithKey = insertAt(
-      mapCurrentIds(control._getFieldArrayValue(name), _fieldIds, keyName),
+      mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       index,
       mapIds(convertToArrayPayload(value), keyName),
     );
@@ -176,7 +176,7 @@ export const useFieldArray = <
 
   const swap = (indexA: number, indexB: number) => {
     const updatedFieldArrayValuesWithKey = mapCurrentIds(
-      control._getFieldArrayValue(name),
+      control._getFieldArray(name),
       _fieldIds,
       keyName,
     );
@@ -196,7 +196,7 @@ export const useFieldArray = <
 
   const move = (from: number, to: number) => {
     const updatedFieldArrayValuesWithKey = mapCurrentIds(
-      control._getFieldArrayValue(name),
+      control._getFieldArray(name),
       _fieldIds,
       keyName,
     );
@@ -219,7 +219,7 @@ export const useFieldArray = <
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
     const updatedFieldArrayValuesWithKey = mapCurrentIds(
-      control._getFieldArrayValue(name),
+      control._getFieldArray(name),
       _fieldIds,
       keyName,
     );

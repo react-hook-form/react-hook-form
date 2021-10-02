@@ -317,7 +317,7 @@ export type Control<
 > = {
   _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _removeUnmountFields: () => void;
+  _removeUnmounted: () => void;
   _names: Names;
   _stateFlags: {
     mount: boolean;
@@ -325,7 +325,7 @@ export type Control<
     watch: boolean;
   };
   _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _getIsDirty: GetIsDirty;
+  _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: () => void;
   _fields: FieldRefs;
@@ -335,7 +335,7 @@ export type Control<
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   _updateFieldArray: BatchFieldArrayUpdate;
-  _getFieldArrayValue: <TFieldArrayValues>(
+  _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
   unregister: UseFormUnregister<TFieldValues>;
