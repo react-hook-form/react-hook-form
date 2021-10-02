@@ -36,7 +36,7 @@ export function useForm<
   });
 
   if (_formControl.current) {
-    _formControl.current.control._updateProps(props);
+    _formControl.current.control._options = props;
   } else {
     _formControl.current = {
       ...createFormControl(props),
@@ -69,7 +69,7 @@ export function useForm<
       control._stateFlags.watch = false;
       control._subjects.state.next({});
     }
-    control._removeFields();
+    control._removeUnmounted();
   });
 
   _formControl.current.formState = getProxyFormState(

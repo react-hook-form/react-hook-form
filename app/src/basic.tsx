@@ -100,8 +100,8 @@ const Basic: React.FC = (props: any) => {
       {errors.minRequiredLength && <p>minRequiredLength error</p>}
       <select {...register('selectNumber', { required: true })}>
         <option value="">Select</option>
-        <option value={1}>1</option>
-        <option value={2}>1</option>
+        <option value={'1'}>1</option>
+        <option value={'2'}>2</option>
       </select>
       {errors.selectNumber && <p>selectNumber error</p>}
       <input

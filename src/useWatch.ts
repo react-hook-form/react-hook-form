@@ -92,7 +92,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   );
 
   React.useEffect(() => {
-    control._removeFields();
+    control._removeUnmounted();
   });
 
   return value;

@@ -70,7 +70,7 @@ export function useController<
 
     return () => {
       const _shouldUnregisterField =
-        control._shouldUnregister || shouldUnregister;
+        control._options.shouldUnregister || shouldUnregister;
 
       if (
         isNameInFieldArray(control._names.array, name)
