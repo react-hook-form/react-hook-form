@@ -68,24 +68,6 @@ describe('reset', () => {
     });
   });
 
-  it('should reset the form if ref is HTMLElement and parent element is form', async () => {
-    const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
-    let methods: UseFormReturn<{ test: string }>;
-    const Component = () => {
-      methods = useForm<{ test: string }>();
-      return (
-        <form>
-          <input {...methods.register('test')} />
-        </form>
-      );
-    };
-    render(<Component />);
-
-    actComponent(() => methods.reset());
-
-    expect(mockReset).toHaveBeenCalled();
-  });
-
   it('should set array value of multiple checkbox inputs correctly', async () => {
     const Component = () => {
       const { register } = useForm<{
