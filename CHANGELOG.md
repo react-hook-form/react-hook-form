@@ -1,5 +1,33 @@
 # Changelog
 
+## [7.17.0] - 2021-10-02
+
+## Added
+
+- new type `FieldPathWithValue` to improve generic components type support
+
+```tsx
+type ExpectedType = { test: string };
+
+const Generic = <FormValues extends FieldValues>({
+  name,
+  control,
+}: {
+  name: FieldPathWithValue<FormValues, ExpectedType>;
+  control: Control<FormValues>;
+}) => {
+  const {
+    field: { value, ...fieldProps },
+  } = useController<FormValues, ExpectedType>({
+    name,
+    control,
+    defaultValue: { test: 'value' },
+  });
+
+  return <input type="text" value={value.test} {...fieldProps} />;
+};
+```
+
 ## [7.16.1] - 2021-09-27
 
 ## Changed
