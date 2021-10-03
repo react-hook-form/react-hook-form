@@ -27,6 +27,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     errors: false,
   });
   const _name = React.useRef(name);
+
   _name.current = name;
 
   useSubscribe({
