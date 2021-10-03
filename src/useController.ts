@@ -40,6 +40,7 @@ export function useController<
     name,
   });
   const _name = React.useRef(name);
+
   _name.current = name;
 
   useSubscribe({

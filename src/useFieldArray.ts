@@ -48,6 +48,9 @@ export const useFieldArray = <
   >(mapIds(control._getFieldArray(name), keyName));
   const _fieldIds = React.useRef(fields);
 
+  _fieldIds.current = fields;
+  control._names.array.add(name);
+
   useSubscribe({
     callback: ({ values, name: fieldArrayName }) => {
       if (fieldArrayName === name || !fieldArrayName) {
@@ -56,9 +59,6 @@ export const useFieldArray = <
     },
     subject: control._subjects.array,
   });
-
-  _fieldIds.current = fields;
-  control._names.array.add(name);
 
   const updateValues = React.useCallback(
     <
