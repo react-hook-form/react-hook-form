@@ -51,6 +51,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     disabled,
   } = props || {};
   const _name = React.useRef(name);
+
   _name.current = name;
 
   useSubscribe({
@@ -68,18 +69,18 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
               currentName.startsWith(name as InternalFieldName)),
         )
       ) {
-        const result = control._getWatch(
+        const fieldValues = control._getWatch(
           _name.current as InternalFieldName,
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
           true,
         );
 
         updateValue(
-          isObject(result)
-            ? { ...result }
-            : Array.isArray(result)
-            ? [...result]
-            : result,
+          isObject(fieldValues)
+            ? { ...fieldValues }
+            : Array.isArray(fieldValues)
+            ? [...fieldValues]
+            : fieldValues,
         );
       }
     },
