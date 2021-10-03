@@ -811,13 +811,13 @@ export function createFormControl<
       isValidating: false,
     });
 
-    if (options.shouldFocus && !validationResult) {
+    options.shouldFocus &&
+      !validationResult &&
       focusFieldBy(
         _fields,
         (key) => get(_formState.errors, key),
         name ? fieldNames : _names.mount,
       );
-    }
 
     return validationResult;
   };
@@ -1008,9 +1008,7 @@ export function createFormControl<
               const shouldUnregister =
                 _options.shouldUnregister || options.shouldUnregister;
 
-              if (field._f) {
-                field._f.mount = false;
-              }
+              field._f.mount = !field._f;
 
               shouldUnregister &&
                 !(
