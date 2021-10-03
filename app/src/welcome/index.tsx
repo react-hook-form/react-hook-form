@@ -223,8 +223,8 @@ const Component: React.FC = () => {
             <div style={S.title}>{title}</div>
             <div style={S.description}>{description}</div>
             <div>
-              {slugs.map((slug) => (
-                <Link to={slug} style={S.slug}>
+              {slugs.map((slug, index) => (
+                <Link key={index + slug} to={slug} style={S.slug}>
                   {slug}
                 </Link>
               ))}

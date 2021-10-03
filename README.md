@@ -319,6 +319,18 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/ozywuli"
+    ><img
+            src="https://avatars.githubusercontent.com/u/5769153?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/monkey0722"
+    ><img
+            src="https://avatars.githubusercontent.com/u/12868063?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ## Backers

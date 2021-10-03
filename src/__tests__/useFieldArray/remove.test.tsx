@@ -15,6 +15,8 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
+jest.useFakeTimers();
+
 describe('remove', () => {
   beforeEach(() => {
     mockGenerateId();
@@ -132,7 +134,7 @@ describe('remove', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
     });
 
     await waitFor(() => {
@@ -140,9 +142,7 @@ describe('remove', () => {
     });
 
     await actComponent(async () => {
-      await fireEvent.click(
-        screen.getAllByRole('button', { name: /remove/i })[1],
-      );
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
     });
 
     await waitFor(() => {
@@ -617,23 +617,19 @@ describe('remove', () => {
     render(<Component />);
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
     expect(screen.queryByTestId('nested-error')).toBeInTheDocument();
 
     await actComponent(async () => {
-      await fireEvent.click(
-        screen.getByRole('button', { name: /nested delete/i }),
-      );
+      fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
     });
 
     expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
 
     await actComponent(async () => {
-      await fireEvent.click(
-        screen.getByRole('button', { name: /nested append/i }),
-      );
+      fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
     });
 
     expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
@@ -1038,7 +1034,7 @@ describe('remove', () => {
       render(<Component />);
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
       });
 
       expect(output).toEqual({
@@ -1070,6 +1066,87 @@ describe('remove', () => {
           },
         ],
       });
+    });
+  });
+
+  it('should remove correct value with async reset', async () => {
+    let output = {};
+
+    function App() {
+      const { handleSubmit, control, reset } = useForm({
+        defaultValues: {
+          test: [
+            {
+              title: '',
+              description: '',
+            },
+            {
+              title: '',
+              description: '',
+            },
+          ],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      React.useEffect(() => {
+        setTimeout(() => {
+          reset({
+            test: [
+              {
+                title: 'title1',
+                description: 'description1',
+              },
+              {
+                title: 'title2',
+                description: 'description2',
+              },
+            ],
+          });
+        }, 2000);
+      }, [reset]);
+
+      return (
+        <form onSubmit={handleSubmit((data) => (output = data))}>
+          {fields.map((field, index) => (
+            <div
+              key={field.id}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <Controller
+                name={`test.${index}.title`}
+                control={control}
+                render={({ field }) => <input {...field} />}
+              />
+              <button type="button" onClick={() => remove(index)}>
+                remove
+              </button>
+            </div>
+          ))}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    actComponent(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(output).toEqual({
+      test: [{ title: 'title1', description: 'description1' }],
     });
   });
 });

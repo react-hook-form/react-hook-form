@@ -68,24 +68,6 @@ describe('reset', () => {
     });
   });
 
-  it('should reset the form if ref is HTMLElement and parent element is form', async () => {
-    const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
-    let methods: UseFormReturn<{ test: string }>;
-    const Component = () => {
-      methods = useForm<{ test: string }>();
-      return (
-        <form>
-          <input {...methods.register('test')} />
-        </form>
-      );
-    };
-    render(<Component />);
-
-    actComponent(() => methods.reset());
-
-    expect(mockReset).toHaveBeenCalled();
-  });
-
   it('should set array value of multiple checkbox inputs correctly', async () => {
     const Component = () => {
       const { register } = useForm<{
@@ -318,21 +300,21 @@ describe('reset', () => {
     render(<App />);
 
     await actComponent(async () => {
-      await fireEvent.change(screen.getByRole('textbox'), {
+      fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: 'test',
         },
       });
 
-      await fireEvent.blur(screen.getByRole('textbox'));
+      fireEvent.blur(screen.getByRole('textbox'));
 
-      await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
 
     expect(formState).toMatchSnapshot();
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     });
 
     expect(formState).toMatchSnapshot();
@@ -715,5 +697,57 @@ describe('reset', () => {
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('test');
+  });
+
+  it('should not update isMounted when isValid is subscribed', async () => {
+    const mounted: unknown[] = [];
+
+    const App = () => {
+      const { control, reset } = useForm();
+
+      mounted.push(control._stateFlags.mount);
+
+      React.useEffect(() => {
+        reset({});
+      }, [reset]);
+
+      return <form />;
+    };
+
+    render(<App />);
+
+    expect(mounted).toEqual([false, true]);
+  });
+
+  it('should update isMounted when isValid is subscribed', async () => {
+    const mounted: unknown[] = [];
+
+    const App = () => {
+      const {
+        control,
+        reset,
+        formState: { isValid },
+      } = useForm();
+
+      mounted.push(control._stateFlags.mount);
+
+      React.useEffect(() => {
+        reset({});
+      }, [reset]);
+
+      return (
+        <form>
+          <p>{isValid ? 'true' : 'false'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('false');
+    });
+
+    expect(mounted).toEqual([false, false, true]);
   });
 });

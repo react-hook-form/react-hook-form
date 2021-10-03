@@ -190,18 +190,18 @@ describe('useForm', () => {
       render(<Component />);
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('First name is required.');
       screen.getByText('Last name is required.');
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+        fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Last name is required.');
@@ -423,7 +423,7 @@ describe('useForm', () => {
       fireEvent.click(screen.getByRole('button', { name: 'setRadio1' }));
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
       });
 
       expect(result).toEqual({ test: null });
@@ -431,7 +431,7 @@ describe('useForm', () => {
       fireEvent.click(screen.getByRole('button', { name: 'setRadio2' }));
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
       });
 
       expect(result).toEqual({});
@@ -546,13 +546,13 @@ describe('useForm', () => {
         });
 
         await actComponent(async () => {
-          await fireEvent.click(screen.getByRole('button'));
+          fireEvent.click(screen.getByRole('button'));
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'test', value: 'test' },
           });
         });
@@ -568,13 +568,13 @@ describe('useForm', () => {
         });
 
         await actComponent(async () => {
-          await fireEvent.click(screen.getByRole('button'));
+          fireEvent.click(screen.getByRole('button'));
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'wrongName', value: '' },
           });
         });
@@ -590,7 +590,7 @@ describe('useForm', () => {
         fireEvent.input(input, { target: { name: 'test', value: 'test' } });
 
         await actComponent(async () => {
-          await fireEvent.click(screen.getByRole('button'));
+          fireEvent.click(screen.getByRole('button'));
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
@@ -616,7 +616,7 @@ describe('useForm', () => {
         );
 
         await actComponent(async () => {
-          await fireEvent.input(input, { target: { name: 'test', value: '' } });
+          fireEvent.input(input, { target: { name: 'test', value: '' } });
         });
 
         expect(screen.getByRole('alert').textContent).toBe('required');
@@ -628,7 +628,7 @@ describe('useForm', () => {
         methods.formState.touchedFields;
 
         await actComponent(async () => {
-          await fireEvent.click(screen.getByRole('button'));
+          fireEvent.click(screen.getByRole('button'));
         });
 
         fireEvent.blur(screen.getByRole('textbox'), {
@@ -673,13 +673,11 @@ describe('useForm', () => {
         });
 
         await actComponent(async () => {
-          await fireEvent.click(
-            screen.getByRole('button', { name: /submit/i }),
-          );
+          fireEvent.click(screen.getByRole('button', { name: /submit/i }));
         });
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { value: '' },
           });
         });
@@ -687,7 +685,7 @@ describe('useForm', () => {
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
         await actComponent(async () => {
-          await fireEvent.blur(screen.getByRole('textbox'));
+          fireEvent.blur(screen.getByRole('textbox'));
         });
 
         expect(screen.queryByRole('alert')).toBeInTheDocument();
@@ -769,7 +767,7 @@ describe('useForm', () => {
         render(<Component mode="onBlur" />);
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: {
               value: '',
             },
@@ -900,7 +898,7 @@ describe('useForm', () => {
         methods.formState.isValid;
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'test', value: 'test' },
           });
         });
@@ -909,7 +907,7 @@ describe('useForm', () => {
         expect(methods.formState.isValid).toBeTruthy();
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'test', value: '' },
           });
         });
@@ -939,7 +937,7 @@ describe('useForm', () => {
         methods.formState.isValid;
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'test', value: 'test' },
           });
         });
@@ -979,7 +977,7 @@ describe('useForm', () => {
         methods.formState.isValid;
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'test', value: 'test' },
           });
         });
@@ -1003,7 +1001,7 @@ describe('useForm', () => {
         expect(resolver).toHaveBeenCalled();
 
         await actComponent(async () => {
-          await fireEvent.input(screen.getByRole('textbox'), {
+          fireEvent.input(screen.getByRole('textbox'), {
             target: { name: 'test', value: 'test' },
           });
         });
@@ -1011,7 +1009,7 @@ describe('useForm', () => {
         expect(resolver.mock.calls).toMatchSnapshot();
 
         await actComponent(async () => {
-          await fireEvent.click(screen.getByText(/button/i));
+          fireEvent.click(screen.getByText(/button/i));
         });
         expect(resolver.mock.calls[1]).toMatchSnapshot();
       });
@@ -1211,13 +1209,13 @@ describe('useForm', () => {
       screen.getByRole('textbox').focus();
 
       await actComponent(async () => {
-        await fireEvent.blur(screen.getByRole('textbox'));
+        fireEvent.blur(screen.getByRole('textbox'));
       });
 
       expect(screen.queryByText('This is required.')).toBeInTheDocument();
 
       await actComponent(async () => {
-        await fireEvent.input(screen.getByRole('textbox'), {
+        fireEvent.input(screen.getByRole('textbox'), {
           target: {
             value: 'test',
           },
@@ -1291,7 +1289,7 @@ describe('useForm', () => {
       fireEvent.click(screen.getByLabelText('checkbox.0'));
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByLabelText('checkbox.0'));
+        fireEvent.click(screen.getByLabelText('checkbox.0'));
       });
 
       expect(errorsObject).toEqual({
@@ -1299,13 +1297,13 @@ describe('useForm', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByLabelText('checkbox.0'));
+        fireEvent.click(screen.getByLabelText('checkbox.0'));
       });
 
       expect(errorsObject).toEqual({});
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByLabelText('checkbox.0'));
+        fireEvent.click(screen.getByLabelText('checkbox.0'));
       });
 
       await actComponent(async () => {
@@ -1317,7 +1315,7 @@ describe('useForm', () => {
       });
 
       await actComponent(async () => {
-        await fireEvent.click(screen.getByLabelText('checkbox.0'));
+        fireEvent.click(screen.getByLabelText('checkbox.0'));
       });
 
       expect(errorsObject).toEqual({});
@@ -1483,6 +1481,20 @@ describe('useForm', () => {
       const secondRenderControl = control;
 
       expect(Object.is(firstRenderControl, secondRenderControl)).toBe(true);
+    });
+  });
+
+  describe('when input is not registered', () => {
+    it('trigger should not throw warn', async () => {
+      const { result } = renderHook(() =>
+        useForm<{
+          test: string;
+        }>(),
+      );
+
+      await act(async () =>
+        expect(await result.current.trigger('test')).toBeTruthy(),
+      );
     });
   });
 });

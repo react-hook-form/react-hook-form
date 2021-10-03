@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -40,7 +41,7 @@ describe('watch', () => {
     screen.getByText('test');
 
     await actComponent(async () => {
-      await fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
     });
 
     expect(screen.queryByText('test')).toBeNull();
@@ -454,5 +455,41 @@ describe('watch', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watched).toMatchSnapshot();
+  });
+
+  it('should flush additional render for shouldUnregister: true', async () => {
+    const watchedData: unknown[] = [];
+
+    const App = () => {
+      const { watch, reset, register } = useForm({
+        shouldUnregister: true,
+      });
+
+      React.useEffect(() => {
+        reset({
+          test: '1234',
+          data: '1234',
+        });
+      }, [reset]);
+
+      const result = watch();
+
+      watchedData.push(result);
+
+      return (
+        <div>
+          <input {...register('test')} />
+          {result.test && <p>{result.test}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('1234');
+    });
+
+    expect(watchedData).toEqual([{}, {}, { test: '1234' }]);
   });
 });

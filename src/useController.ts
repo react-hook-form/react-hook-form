@@ -6,7 +6,7 @@ import get from './utils/get';
 import { EVENTS } from './constants';
 import {
   Field,
-  FieldPath,
+  FieldPathWithValue,
   FieldValues,
   InternalFieldName,
   UseControllerProps,
@@ -14,13 +14,18 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
+import { useSubscribe } from './useSubscribe';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TResult = any,
+  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
+    TFieldValues,
+    TResult
+  >,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
-): UseControllerReturn<TFieldValues, TName> {
+  props: UseControllerProps<TFieldValues, TResult, TName>,
+): UseControllerReturn<TFieldValues, TResult, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
@@ -33,6 +38,16 @@ export function useController<
   const formState = useFormState({
     control: control || methods.control,
     name,
+  });
+  const _name = React.useRef(name);
+
+  _name.current = name;
+
+  useSubscribe({
+    subject: control._subjects.control,
+    callback: (data) =>
+      (!data.name || _name.current === data.name) &&
+      setInputStateValue(get(data.values, name)),
   });
 
   const registerProps = control.register(name, {
@@ -52,21 +67,15 @@ export function useController<
   );
 
   React.useEffect(() => {
-    const controllerSubscription = control._subjects.control.subscribe({
-      next: (data) =>
-        (!data.name || name === data.name) &&
-        setInputStateValue(get(data.values, name)),
-    });
     updateMounted(name, true);
 
     return () => {
-      controllerSubscription.unsubscribe();
       const _shouldUnregisterField =
-        control._shouldUnregister || shouldUnregister;
+        control._options.shouldUnregister || shouldUnregister;
 
       if (
         isNameInFieldArray(control._names.array, name)
-          ? _shouldUnregisterField && !control._isInAction
+          ? _shouldUnregisterField && !control._stateFlags.action
           : _shouldUnregisterField
       ) {
         control.unregister(name);

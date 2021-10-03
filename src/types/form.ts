@@ -31,9 +31,7 @@ export type NestedValue<TValue extends object = object> = {
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends Date | FileList | File
-  ? T
-  : T extends object
+  : T extends ReadonlyArray<any> | Record<any, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
@@ -158,13 +156,6 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
-
-export type UpdateValues<TFieldValues extends FieldValues> = <
-  T extends Partial<DefaultValues<TFieldValues>>,
->(
-  defaultValues: T,
-  name?: string,
-) => void;
 
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -324,15 +315,16 @@ export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object,
 > = {
-  _shouldUnregister?: boolean;
   _subjects: Subjects<TFieldValues>;
-  _removeFields: () => void;
+  _removeUnmounted: () => void;
   _names: Names;
-  _isMounted: boolean;
-  _updateProps: (props: UseFormProps<TFieldValues, TContext>) => void;
-  _updateValues: UpdateValues<TFieldValues>;
-  _isInAction: boolean;
-  _getIsDirty: GetIsDirty;
+  _stateFlags: {
+    mount: boolean;
+    action: boolean;
+    watch: boolean;
+  };
+  _options: UseFormProps<TFieldValues, TContext>;
+  _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: () => void;
   _fields: FieldRefs;
@@ -342,7 +334,7 @@ export type Control<
   _getWatch: WatchInternal<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   _updateFieldArray: BatchFieldArrayUpdate;
-  _getFieldArrayValue: <TFieldArrayValues>(
+  _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
   unregister: UseFormUnregister<TFieldValues>;
