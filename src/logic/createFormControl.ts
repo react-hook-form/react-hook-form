@@ -1008,7 +1008,9 @@ export function createFormControl<
               const shouldUnregister =
                 _options.shouldUnregister || options.shouldUnregister;
 
-              field._f.mount = !field._f;
+              if (field._f) {
+                field._f.mount = false;
+              }
 
               shouldUnregister &&
                 !(
