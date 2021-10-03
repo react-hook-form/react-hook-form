@@ -51,7 +51,6 @@ import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
-import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
@@ -549,9 +548,7 @@ export function createFormControl<
             ? ''
             : value;
 
-        if (isFileInput(fieldReference.ref) && !isString(fieldValue)) {
-          fieldReference.ref.files = fieldValue as FileList;
-        } else if (isMultipleSelect(fieldReference.ref)) {
+        if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach(
             (selectRef) =>
               (selectRef.selected = (
@@ -939,21 +936,18 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    if (!isUndefined(options.value)) {
-      set(_formValues, name, options.value);
-    }
+    !isUndefined(options.value) && set(_formValues, name, options.value);
 
-    if (field && isBoolean(options.disabled)) {
-      set(
-        _formValues,
-        name,
-        options.disabled
-          ? undefined
-          : get(_formValues, name, getFieldValue(field._f)),
-      );
-    }
-
-    !field && updateValidAndValue(name, true);
+    field
+      ? isBoolean(options.disabled) &&
+        set(
+          _formValues,
+          name,
+          options.disabled
+            ? undefined
+            : get(_formValues, name, getFieldValue(field._f)),
+        )
+      : updateValidAndValue(name, true);
 
     return isWindowUndefined
       ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
