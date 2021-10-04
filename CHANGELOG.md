@@ -73,6 +73,24 @@ const handleFullyReplacement = (): void => {
 };
 ```
 
+- Improved to not map types defined with `interface`.
+
+```tsx
+import { useForm } from 'react-hook-form';
+
+interface CustomValue {
+  custom: string;
+}
+
+type FormValues = {
+  fieldName: CustomValue;
+};
+
+const { formState: errors } = useForm<FormValues>({
+  defaultValues: { fieldName: { custom: 'value' } },
+});
+```
+
 ## [7.14.0] - 2021-08-27
 
 ## Added
