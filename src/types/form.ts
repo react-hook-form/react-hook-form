@@ -297,7 +297,6 @@ export type BatchFieldArrayUpdate = <
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
-  keyName: TKeyName,
   name: InternalFieldName,
   method: T,
   args: {
