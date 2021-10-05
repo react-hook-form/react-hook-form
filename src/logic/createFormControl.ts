@@ -214,16 +214,7 @@ export function createFormControl<
     }
 
     if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
-      set(
-        _formState.dirtyFields as TFieldValues,
-        name,
-        setFieldArrayDirtyFields(
-          values,
-          get(_defaultValues, name, []),
-          get(_formState.dirtyFields, name, []),
-        ),
-      );
-      unsetEmptyArray(_formState.dirtyFields, name);
+      updateFieldArrayDirty(name, values);
     }
 
     _subjects.state.next({
@@ -282,8 +273,7 @@ export function createFormControl<
     if (_proxyFormState.isDirty) {
       const isPreviousFormDirty = _formState.isDirty;
 
-      _formState.isDirty = _getDirty();
-      output.isDirty = _formState.isDirty;
+      _formState.isDirty = output.isDirty = _getDirty();
       isFieldDirty = isPreviousFormDirty !== output.isDirty;
     }
 
@@ -296,7 +286,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields as TFieldValues, name, true);
+        : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -304,7 +294,7 @@ export function createFormControl<
     }
 
     if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
+      set(_formState.touchedFields, name, isCurrentTouched);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
@@ -316,6 +306,19 @@ export function createFormControl<
 
     return isFieldDirty ? output : {};
   };
+
+  const updateFieldArrayDirty = (name: any, value: any) => (
+    set(
+      _formState.dirtyFields,
+      name,
+      setFieldArrayDirtyFields(
+        value,
+        get(_defaultValues, name, []),
+        get(_formState.dirtyFields, name, []),
+      ),
+    ),
+    unsetEmptyArray(_formState.dirtyFields, name)
+  );
 
   const shouldRenderByError = async (
     shouldSkipRender: boolean,
@@ -478,11 +481,10 @@ export function createFormControl<
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
     defaultValue,
-    isMounted,
     isGlobal,
   ) => {
     const fieldValues = {
-      ...(isMounted || _stateFlags.mount
+      ...(_stateFlags.mount
         ? _formValues
         : isUndefined(defaultValue)
         ? _defaultValues
@@ -491,19 +493,19 @@ export function createFormControl<
         : defaultValue),
     };
 
-    if (!names) {
-      isGlobal && (_names.watchAll = true);
-      return fieldValues;
+    if (names) {
+      const result = convertToArrayPayload(names).map(
+        (fieldName) => (
+          isGlobal && _names.watch.add(fieldName as InternalFieldName),
+          get(fieldValues, fieldName as InternalFieldName)
+        ),
+      );
+
+      return Array.isArray(names) ? result : result[0];
     }
 
-    const result = [];
-
-    for (const fieldName of convertToArrayPayload(names)) {
-      isGlobal && _names.watch.add(fieldName as InternalFieldName);
-      result.push(get(fieldValues, fieldName as InternalFieldName));
-    }
-
-    return Array.isArray(names) ? result : result[0];
+    isGlobal && (_names.watchAll = true);
+    return fieldValues;
   };
 
   const _getFieldArray = (name: InternalFieldName) =>
@@ -578,7 +580,7 @@ export function createFormControl<
     options: SetValueConfig,
   ) => {
     for (const fieldKey in value) {
-      const fieldValue = value[fieldKey];
+      const fieldValue: SetFieldValue<TFieldValues> = value[fieldKey];
       const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
       const field = get(_fields, fieldName);
 
@@ -586,17 +588,8 @@ export function createFormControl<
         !isPrimitive(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setValues(
-            fieldName,
-            fieldValue as SetFieldValue<TFieldValues>,
-            options,
-          )
-        : setFieldValue(
-            fieldName,
-            fieldValue as SetFieldValue<TFieldValues>,
-            options,
-            true,
-          );
+        ? setValues(fieldName, fieldValue, options)
+        : setFieldValue(fieldName, fieldValue, options, true);
     }
   };
 
@@ -620,15 +613,7 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        set(
-          _formState.dirtyFields as TFieldValues,
-          name,
-          setFieldArrayDirtyFields(
-            value,
-            get(_defaultValues, name, []),
-            get(_formState.dirtyFields, name, []),
-          ),
-        );
+        updateFieldArrayDirty(name, value);
 
         _subjects.state.next({
           name,
@@ -870,7 +855,6 @@ export function createFormControl<
       : _getWatch(
           name as InternalFieldName | InternalFieldName[],
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-          false,
           true,
         );
 
