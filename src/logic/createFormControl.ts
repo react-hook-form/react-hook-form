@@ -380,7 +380,7 @@ export function createFormControl<
   const executeResolver = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
-          _formValues as UnpackNestedValue<TFieldValues>,
+          { ..._formValues } as UnpackNestedValue<TFieldValues>,
           _options.context,
           getResolverOptions(
             name || _names.mount,
