@@ -15,7 +15,7 @@ const SetValue: React.FC = () => {
     age: string;
     trigger: string;
     checkbox: boolean;
-    checkboxArray: string;
+    checkboxArray: string[];
     radio: string;
     select: string;
     multiple: NestedValue<string[]>;

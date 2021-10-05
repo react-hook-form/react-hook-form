@@ -5,33 +5,36 @@ import * as yup from 'yup';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape(
-  {
-    firstName: yup.string().required(),
-    lastName: yup.string().max(5).required(),
-    min: yup.number().min(10),
-    max: yup.number().max(20),
-    minDate: yup.date().min('2019-08-01'),
-    maxDate: yup.date().max('2019-08-01'),
-    minLength: yup.string().min(2),
-    minRequiredLength: yup.string().min(2).required(),
-    selectNumber: yup.string().required(),
-    pattern: yup.string().matches(/\d+/),
-    radio: yup.string().required(),
-    checkbox: yup.string().required(),
-    exclusivelyRequiredOne: yup.string().when('exclusivelyRequiredTwo', {
-      is: '',
-      then: yup.string().required(),
-      otherwise: yup.string().length(0),
-    }),
-    exclusivelyRequiredTwo: yup.string().when('exclusivelyRequiredOne', {
-      is: '',
-      then: yup.string().required(),
-      otherwise: yup.string().length(0),
-    }),
-  },
-  [['exclusivelyRequiredOne', 'exclusivelyRequiredTwo']],
-);
+const validationSchema = yup
+  .object()
+  .shape(
+    {
+      firstName: yup.string().required(),
+      lastName: yup.string().max(5).required(),
+      min: yup.number().min(10),
+      max: yup.number().max(20),
+      minDate: yup.date().min('2019-08-01'),
+      maxDate: yup.date().max('2019-08-01'),
+      minLength: yup.string().min(2),
+      minRequiredLength: yup.string().min(2).required(),
+      selectNumber: yup.string().required(),
+      pattern: yup.string().matches(/\d+/),
+      radio: yup.string().required(),
+      checkbox: yup.string().required(),
+      exclusivelyRequiredOne: yup.string().when('exclusivelyRequiredTwo', {
+        is: '',
+        then: yup.string().required(),
+        otherwise: yup.string().length(0),
+      }),
+      exclusivelyRequiredTwo: yup.string().when('exclusivelyRequiredOne', {
+        is: '',
+        then: yup.string().required(),
+        otherwise: yup.string().length(0),
+      }),
+    },
+    [['exclusivelyRequiredOne', 'exclusivelyRequiredTwo']],
+  )
+  .required();
 
 const BasicSchemaValidation: React.FC = (props: any) => {
   const {
