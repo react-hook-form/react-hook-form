@@ -214,16 +214,7 @@ export function createFormControl<
     }
 
     if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
-      set(
-        _formState.dirtyFields as TFieldValues,
-        name,
-        setFieldArrayDirtyFields(
-          values,
-          get(_defaultValues, name, []),
-          get(_formState.dirtyFields, name, []),
-        ),
-      );
-      unsetEmptyArray(_formState.dirtyFields, name);
+      updateFieldArrayDirty(name, values);
     }
 
     _subjects.state.next({
@@ -282,8 +273,7 @@ export function createFormControl<
     if (_proxyFormState.isDirty) {
       const isPreviousFormDirty = _formState.isDirty;
 
-      _formState.isDirty = _getDirty();
-      output.isDirty = _formState.isDirty;
+      _formState.isDirty = output.isDirty = _getDirty();
       isFieldDirty = isPreviousFormDirty !== output.isDirty;
     }
 
@@ -296,7 +286,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields as TFieldValues, name, true);
+        : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -304,7 +294,7 @@ export function createFormControl<
     }
 
     if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
+      set(_formState.touchedFields, name, isCurrentTouched);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
@@ -316,6 +306,19 @@ export function createFormControl<
 
     return isFieldDirty ? output : {};
   };
+
+  const updateFieldArrayDirty = (name: any, value: any) => (
+    set(
+      _formState.dirtyFields,
+      name,
+      setFieldArrayDirtyFields(
+        value,
+        get(_defaultValues, name, []),
+        get(_formState.dirtyFields, name, []),
+      ),
+    ),
+    unsetEmptyArray(_formState.dirtyFields, name)
+  );
 
   const shouldRenderByError = async (
     shouldSkipRender: boolean,
@@ -377,7 +380,7 @@ export function createFormControl<
   const executeResolver = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
-          { ..._formValues } as UnpackNestedValue<TFieldValues>,
+          _formValues as UnpackNestedValue<TFieldValues>,
           _options.context,
           getResolverOptions(
             name || _names.mount,
@@ -610,15 +613,7 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        set(
-          _formState.dirtyFields as TFieldValues,
-          name,
-          setFieldArrayDirtyFields(
-            value,
-            get(_defaultValues, name, []),
-            get(_formState.dirtyFields, name, []),
-          ),
-        );
+        updateFieldArrayDirty(name, value);
 
         _subjects.state.next({
           name,
