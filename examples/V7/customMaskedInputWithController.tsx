@@ -30,7 +30,7 @@ const CustomMaskedInput = (props) => {
         onChange(e.target.value);
       }}
     >
-      <Input type="text" autoComplete="tel-national" />
+      {(inputProps) => <Input {...inputProps} type="text" autoComplete="tel-national" />}
     </MaskedInput>
   );
 };
@@ -40,31 +40,24 @@ const onSubmit = (data) => {
 };
 
 export default function App() {
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm({
+  const { handleSubmit, formState: { errors }, control } = useForm({
     reValidateMode: 'onSubmit',
+    defaultValues: {
+      ControlledMaskedInput: '7',
+    },
   });
-  const [tel, setTel] = React.useState('7');
   return (
     <div className="App">
+      <h1>Hello CodeSandbox</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <Controller
-            as={<CustomMaskedInput />}
-            value={tel}
-            onChange={([e]) => {
-              setTel(e);
-              return { value: e };
-            }}
+            render={({ field }) => <CustomMaskedInput {...field} />}
             rules={{
               validate: {
                 inputTelRequired: isNotFilledTel,
               },
             }}
-            defaultValue={tel}
             name="ControlledMaskedInput"
             control={control}
           />
