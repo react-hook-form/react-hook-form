@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { FieldStateErrors } from '..';
+import { ControllerFieldStateError } from '..';
 
 import { RegisterOptions } from './validator';
 import {
@@ -29,7 +29,7 @@ type ControllerFieldError<
     : TResult,
 > = FieldValuesAtPath extends NestedValue | Primitive
   ? FieldError
-  : FieldStateErrors<FieldValuesAtPath>;
+  : ControllerFieldStateError<FieldValuesAtPath>;
 
 export type ControllerFieldState<
   TFieldValues extends FieldValues = FieldValues,
