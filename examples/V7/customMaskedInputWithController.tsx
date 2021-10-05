@@ -30,7 +30,9 @@ const CustomMaskedInput = (props) => {
         onChange(e.target.value);
       }}
     >
-      {(inputProps) => <Input {...inputProps} type="text" autoComplete="tel-national" />}
+      {(inputProps) => (
+        <Input {...inputProps} type="text" autoComplete="tel-national" />
+      )}
     </MaskedInput>
   );
 };
@@ -40,7 +42,11 @@ const onSubmit = (data) => {
 };
 
 export default function App() {
-  const { handleSubmit, formState: { errors }, control } = useForm({
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = useForm({
     reValidateMode: 'onSubmit',
     defaultValues: {
       ControlledMaskedInput: '7',
