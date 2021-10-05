@@ -478,11 +478,10 @@ export function createFormControl<
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
     defaultValue,
-    isMounted,
     isGlobal,
   ) => {
     const fieldValues = {
-      ...(isMounted || _stateFlags.mount
+      ...(_stateFlags.mount
         ? _formValues
         : isUndefined(defaultValue)
         ? _defaultValues
@@ -491,19 +490,19 @@ export function createFormControl<
         : defaultValue),
     };
 
-    if (!names) {
-      isGlobal && (_names.watchAll = true);
-      return fieldValues;
+    if (names) {
+      const result = convertToArrayPayload(names).map(
+        (fieldName) => (
+          isGlobal && _names.watch.add(fieldName as InternalFieldName),
+          get(fieldValues, fieldName as InternalFieldName)
+        ),
+      );
+
+      return Array.isArray(names) ? result : result[0];
     }
 
-    const result = [];
-
-    for (const fieldName of convertToArrayPayload(names)) {
-      isGlobal && _names.watch.add(fieldName as InternalFieldName);
-      result.push(get(fieldValues, fieldName as InternalFieldName));
-    }
-
-    return Array.isArray(names) ? result : result[0];
+    isGlobal && (_names.watchAll = true);
+    return fieldValues;
   };
 
   const _getFieldArray = (name: InternalFieldName) =>
@@ -578,7 +577,7 @@ export function createFormControl<
     options: SetValueConfig,
   ) => {
     for (const fieldKey in value) {
-      const fieldValue = value[fieldKey];
+      const fieldValue: SetFieldValue<TFieldValues> = value[fieldKey];
       const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
       const field = get(_fields, fieldName);
 
@@ -586,17 +585,8 @@ export function createFormControl<
         !isPrimitive(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setValues(
-            fieldName,
-            fieldValue as SetFieldValue<TFieldValues>,
-            options,
-          )
-        : setFieldValue(
-            fieldName,
-            fieldValue as SetFieldValue<TFieldValues>,
-            options,
-            true,
-          );
+        ? setValues(fieldName, fieldValue, options)
+        : setFieldValue(fieldName, fieldValue, options, true);
     }
   };
 
@@ -870,7 +860,6 @@ export function createFormControl<
       : _getWatch(
           name as InternalFieldName | InternalFieldName[],
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-          false,
           true,
         );
 

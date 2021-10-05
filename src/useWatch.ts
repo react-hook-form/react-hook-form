@@ -69,10 +69,10 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
               currentName.startsWith(name as InternalFieldName)),
         )
       ) {
+        control._stateFlags.mount = true;
         const fieldValues = control._getWatch(
           _name.current as InternalFieldName,
           defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-          true,
         );
 
         updateValue(
