@@ -5,11 +5,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape({
-  lastName: yup.string().min(10).required(),
-  firstName: yup.string().min(10).required(),
-  requiredField: yup.string().required(),
-});
+const validationSchema = yup
+  .object()
+  .shape({
+    lastName: yup.string().min(10).required(),
+    firstName: yup.string().min(10).required(),
+    requiredField: yup.string().required(),
+  })
+  .required();
 
 const SetValueWithSchema: React.FC = () => {
   const {
