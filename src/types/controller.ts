@@ -5,13 +5,10 @@ import { ControllerFieldStateError } from '..';
 import { RegisterOptions } from './validator';
 import {
   Control,
-  FieldError,
   FieldPathValue,
   FieldPathWithValue,
   FieldValues,
   IsAny,
-  NestedValue,
-  Primitive,
   RefCallBack,
   UnpackNestedValue,
   UseFormStateReturn,
@@ -27,9 +24,7 @@ type ControllerFieldError<
   FieldValuesAtPath = IsAny<TResult> extends true
     ? FieldPathValue<TFieldValues, TName>
     : TResult,
-> = FieldValuesAtPath extends NestedValue | Primitive
-  ? FieldError
-  : ControllerFieldStateError<FieldValuesAtPath>;
+> = ControllerFieldStateError<FieldValuesAtPath>;
 
 export type ControllerFieldState<
   TFieldValues extends FieldValues = FieldValues,
