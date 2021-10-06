@@ -12,12 +12,7 @@ export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
   const _subscription = React.useRef(subject);
   const _unSubscribe = React.useRef<{ unsubscribe: TearDown }>();
 
-  if (disabled) {
-    if (_subscription.current) {
-      _unSubscribe.current && _unSubscribe.current.unsubscribe();
-      _subscription.current = _unSubscribe.current = undefined;
-    }
-  } else {
+  const updateSubscription = React.useCallback(() => {
     if (!_subscription.current) {
       _subscription.current = subject;
     }
@@ -27,12 +22,24 @@ export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
         next: callback,
       });
     }
-  }
+  }, [callback, subject]);
 
-  React.useEffect(
-    () => () => {
+  updateSubscription();
+
+  React.useEffect(() => {
+    const tearDown = () => {
       _unSubscribe.current && _unSubscribe.current.unsubscribe();
-    },
-    [],
-  );
+      _subscription.current = _unSubscribe.current = undefined;
+    };
+
+    if (disabled) {
+      tearDown();
+    } else {
+      updateSubscription();
+    }
+
+    return () => {
+      tearDown();
+    };
+  }, [disabled, updateSubscription]);
 }
