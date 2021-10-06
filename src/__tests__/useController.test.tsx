@@ -8,12 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import {
-  Control,
-  FieldPathWithValue,
-  FieldValues,
-  NestedValue,
-} from '../types';
+import { Control } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -36,98 +31,6 @@ describe('useController', () => {
     };
 
     render(<Component />);
-  });
-
-  it('should render generic component correctly', () => {
-    type ExpectedType = { test: string };
-
-    const Generic = <FormValues extends FieldValues>({
-      name,
-      control,
-    }: {
-      name: FieldPathWithValue<FormValues, ExpectedType>;
-      control: Control<FormValues>;
-    }) => {
-      const {
-        field: { value, ...fieldProps },
-        fieldState: { error },
-      } = useController<FormValues, ExpectedType>({
-        name,
-        control,
-        defaultValue: { test: 'value' },
-      });
-
-      if (error?.test?.message) {
-        return null;
-      }
-
-      return <input type="text" value={value.test} {...fieldProps} />;
-    };
-
-    const Component = () => {
-      const { control } = useForm<{
-        test: string;
-        key: ExpectedType[];
-      }>({
-        defaultValues: { test: 'test', key: [{ test: 'input value' }] },
-      });
-
-      return <Generic name="key.0" control={control} />;
-    };
-
-    render(<Component />);
-
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
-    expect(input).toBeInTheDocument();
-    expect(input?.value).toEqual('input value');
-  });
-
-  it('should be able to access values and error in generic components using NestedValue', () => {
-    type ExpectedType = NestedValue<{ test: string }>;
-
-    const Generic = <FormValues extends FieldValues>({
-      name,
-      control,
-    }: {
-      name: FieldPathWithValue<FormValues, ExpectedType>;
-      control: Control<FormValues>;
-    }) => {
-      const {
-        field: { value, ...fieldProps },
-        fieldState: { error },
-      } = useController<FormValues, ExpectedType>({
-        name,
-        control,
-        defaultValue: { test: 'value' },
-      });
-
-      if (error?.message) {
-        return <>There was an error</>;
-      }
-
-      return <input type="text" value={value.test} {...fieldProps} />;
-    };
-
-    const Component = () => {
-      const { control } = useForm<{
-        test: string;
-        key: ExpectedType[];
-      }>({
-        defaultValues: {
-          test: 'test',
-          key: [{ test: 'input value' }],
-        },
-      });
-
-      return <Generic name="key.0" control={control} />;
-    };
-
-    render(<Component />);
-
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
-
-    expect(input).toBeInTheDocument();
-    expect(input?.value).toEqual('input value');
   });
 
   it('should only subscribe to formState at each useController level', async () => {
@@ -606,12 +509,6 @@ describe('useController', () => {
   });
 
   it('should return defaultValues when component is not yet mounted', async () => {
-    type FormValues = {
-      test: {
-        deep: { test: string; test1: string }[];
-      };
-    };
-
     const defaultValues = {
       test: {
         deep: [
@@ -624,11 +521,15 @@ describe('useController', () => {
     };
 
     const App = () => {
-      const { control, getValues } = useForm<FormValues>({
+      const { control, getValues } = useForm<{
+        test: {
+          deep: { test: string; test1: string }[];
+        };
+      }>({
         defaultValues,
       });
 
-      const { field } = useController<FormValues, string>({
+      const { field } = useController({
         control,
         name: 'test.deep.0.test',
       });

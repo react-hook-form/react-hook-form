@@ -1256,4 +1256,126 @@ describe('Controller', () => {
 
     expect(screen.getAllByRole('textbox').length).toEqual(4);
   });
+
+  it('should not cause type error with any', () => {
+    function App() {
+      const { control } = useForm<any>({
+        defaultValues: {
+          firstName: '',
+          deepNested: { test: '' },
+          todos: [],
+          nestedValue: { test: '' },
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="firstName"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="deepNested.test"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.[0]?.message}</p>
+              </>
+            )}
+            control={control}
+            name="todos"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...{ ...field, value: field.value.test }} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="nestedValue"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getAllByRole('textbox').length).toEqual(4);
+  });
+
+  it('should not cause type error without generic type', () => {
+    function App() {
+      const { control } = useForm({
+        defaultValues: {
+          firstName: '',
+          deepNested: { test: '' },
+          todos: [],
+          nestedValue: { test: '' },
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="firstName"
+          />
+          <Controller
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <p>{fieldState.error?.message}</p>
+              </>
+            )}
+            control={control}
+            name="deepNested.test"
+          />
+          <Controller
+            render={({ field }) => (
+              <>
+                <input {...field} />
+              </>
+            )}
+            control={control}
+            name="todos"
+          />
+          <Controller
+            render={({ field }) => (
+              <>
+                <input {...{ ...field, value: field.value.test }} />
+              </>
+            )}
+            control={control}
+            name="nestedValue"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getAllByRole('textbox').length).toEqual(4);
+  });
 });

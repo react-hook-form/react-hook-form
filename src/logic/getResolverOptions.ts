@@ -17,7 +17,7 @@ export default <TFieldValues>(
   const fields: Record<InternalFieldName, Field['_f']> = {};
 
   for (const name of fieldsNames) {
-    const field = get(_fields, name) as Field;
+    const field: Field = get(_fields, name);
 
     field && set(fields, name, field._f);
   }

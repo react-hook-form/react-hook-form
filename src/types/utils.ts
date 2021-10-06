@@ -1,6 +1,8 @@
 import { FieldValues } from './fields';
 import { NestedValue } from './form';
 
+export type Noop = () => void;
+
 export type Primitive =
   | null
   | undefined
@@ -57,9 +59,11 @@ type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
 type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 type ArrayKey = number;
 
-type PathImpl<K extends string | number, V> = V extends Primitive
-  ? `${K}`
-  : `${K}` | `${K}.${Path<V>}`;
+type PathImpl<K extends string | number, V> = V extends
+  | ReadonlyArray<any>
+  | Record<any, unknown>
+  ? `${K}` | `${K}.${Path<V>}`
+  : `${K}`;
 
 export type Path<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
@@ -73,13 +77,15 @@ export type Path<T> = T extends ReadonlyArray<infer V>
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-type ArrayPathImpl<K extends string | number, V> = V extends Primitive
-  ? never
+type ArrayPathImpl<K extends string | number, V> = IsAny<V> extends true
+  ? `${K}` | `${K}.${ArrayPath<V>}`
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive
-    ? never
-    : `${K}` | `${K}.${ArrayPath<V>}`
-  : `${K}.${ArrayPath<V>}`;
+  ? U extends ReadonlyArray<any> | Record<any, unknown>
+    ? `${K}` | `${K}.${ArrayPath<V>}`
+    : never
+  : V extends Record<any, unknown>
+  ? `${K}.${ArrayPath<V>}`
+  : never;
 
 export type ArrayPath<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
@@ -160,13 +166,3 @@ export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
       Exclude<UnionKeys<T>, keyof T> | OptionalKeys<T>
     >
   : T;
-
-export type FieldPathWithValue<
-  TFieldValues extends FieldValues,
-  TResult = unknown,
-  FieldPaths extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
-  [key in FieldPaths]: FieldPathValue<TFieldValues, key> extends TResult
-    ? key
-    : never;
-}[FieldPaths];

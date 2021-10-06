@@ -89,4 +89,10 @@ describe('deepEqual', () => {
       ),
     ).toBeTruthy();
   });
+
+  it('should compare date time object valueOf', () => {
+    expect(
+      deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),
+    ).toBeTruthy();
+  });
 });

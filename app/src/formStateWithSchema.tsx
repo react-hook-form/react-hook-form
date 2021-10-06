@@ -5,13 +5,16 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(),
-  lastName: yup.string().max(5).required(),
-  select: yup.string().required(),
-  radio: yup.string().required(),
-  checkbox: yup.string().required(),
-});
+const validationSchema = yup
+  .object()
+  .shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().max(5).required(),
+    select: yup.string().required(),
+    radio: yup.string().required(),
+    checkbox: yup.string().required(),
+  })
+  .required();
 
 const FormStateWithSchema: React.FC = (props: any) => {
   const {

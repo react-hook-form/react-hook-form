@@ -6,7 +6,7 @@ import get from './utils/get';
 import { EVENTS } from './constants';
 import {
   Field,
-  FieldPathWithValue,
+  FieldPath,
   FieldValues,
   InternalFieldName,
   UseControllerProps,
@@ -18,14 +18,10 @@ import { useSubscribe } from './useSubscribe';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
-  props: UseControllerProps<TFieldValues, TResult, TName>,
-): UseControllerReturn<TFieldValues, TResult, TName> {
+  props: UseControllerProps<TFieldValues, TName>,
+): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
   const [value, setInputStateValue] = React.useState(
@@ -40,6 +36,7 @@ export function useController<
     name,
   });
   const _name = React.useRef(name);
+
   _name.current = name;
 
   useSubscribe({

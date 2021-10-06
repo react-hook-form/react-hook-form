@@ -750,4 +750,54 @@ describe('reset', () => {
 
     expect(mounted).toEqual([false, false, true]);
   });
+
+  it('should reset values but keep defaultValues', async () => {
+    const App = () => {
+      const { register, control, reset } = useForm({
+        defaultValues: {
+          test: 'test',
+          test1: 'test1',
+        },
+      });
+
+      return (
+        <>
+          <input {...register('test')} />
+          <Controller
+            control={control}
+            render={({ field }) => <input {...field} />}
+            name={'test1'}
+          />
+          <button
+            onClick={() => {
+              reset(
+                {
+                  test: 'changed1',
+                  test1: 'changed2',
+                },
+                { keepDefaultValues: true },
+              );
+            }}
+          >
+            reset
+          </button>
+          <p>{JSON.stringify(control._defaultValues)}</p>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('changed1');
+      expect(
+        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+      ).toEqual('changed2');
+      screen.getByText('{"test":"test","test1":"test1"}');
+    });
+  });
 });

@@ -48,6 +48,9 @@ export const useFieldArray = <
   >(mapIds(control._getFieldArray(name), keyName));
   const _fieldIds = React.useRef(fields);
 
+  _fieldIds.current = fields;
+  control._names.array.add(name);
+
   useSubscribe({
     callback: ({ values, name: fieldArrayName }) => {
       if (fieldArrayName === name || !fieldArrayName) {
@@ -56,9 +59,6 @@ export const useFieldArray = <
     },
     subject: control._subjects.array,
   });
-
-  _fieldIds.current = fields;
-  control._names.array.add(name);
 
   const updateValues = React.useCallback(
     <
@@ -91,7 +91,6 @@ export const useFieldArray = <
       mapIds(appendValue, keyName),
     );
     control._updateFieldArray(
-      keyName,
       name,
       appendAt,
       {
@@ -118,7 +117,6 @@ export const useFieldArray = <
       mapIds(convertToArrayPayload(value), keyName),
     );
     control._updateFieldArray(
-      keyName,
       name,
       prependAt,
       {
@@ -138,7 +136,6 @@ export const useFieldArray = <
       index,
     );
     control._updateFieldArray(
-      keyName,
       name,
       removeArrayAt,
       {
@@ -161,7 +158,6 @@ export const useFieldArray = <
       mapIds(convertToArrayPayload(value), keyName),
     );
     control._updateFieldArray(
-      keyName,
       name,
       insertAt,
       {
@@ -182,7 +178,6 @@ export const useFieldArray = <
     );
     swapArrayAt(updatedFieldArrayValuesWithKey, indexA, indexB);
     control._updateFieldArray(
-      keyName,
       name,
       swapArrayAt,
       {
@@ -202,7 +197,6 @@ export const useFieldArray = <
     );
     moveArrayAt(updatedFieldArrayValuesWithKey, from, to);
     control._updateFieldArray(
-      keyName,
       name,
       moveArrayAt,
       {
@@ -230,7 +224,6 @@ export const useFieldArray = <
     );
     _fieldIds.current = mapIds(updatedFieldArrayValues, keyName);
     control._updateFieldArray(
-      keyName,
       name,
       updateAt,
       {
@@ -252,7 +245,6 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = mapIds(convertToArrayPayload(value), keyName);
     control._updateFieldArray(
-      keyName,
       name,
       () => updatedFieldArrayValuesWithKey,
       {},

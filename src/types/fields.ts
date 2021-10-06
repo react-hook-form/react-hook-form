@@ -1,4 +1,4 @@
-import { IsFlatObject } from './utils';
+import { IsFlatObject, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
 export type InternalFieldName = string;
@@ -16,7 +16,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;
-  focus?: () => void;
+  focus?: Noop;
 };
 
 export type FieldValue<TFieldValues extends FieldValues> =

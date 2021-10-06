@@ -6,10 +6,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(),
-  lastName: yup.string().max(5).required(),
-});
+const validationSchema = yup
+  .object()
+  .shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().max(5).required(),
+  })
+  .required();
 
 const IsValid: React.FC = (props: any) => {
   const isBuildInValidation = props.match.params.mode === 'build-in';
