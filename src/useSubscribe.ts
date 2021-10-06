@@ -4,7 +4,7 @@ import { SubjectType, TearDown } from './utils/Subject';
 
 type Props<T> = {
   disabled?: boolean;
-  subject?: SubjectType<T>;
+  subject: SubjectType<T> | undefined;
   callback: (value: T) => void;
 };
 
