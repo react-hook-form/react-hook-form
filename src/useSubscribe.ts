@@ -1,38 +1,55 @@
 import * as React from 'react';
 
 import { SubjectType, TearDown } from './utils/Subject';
+import { Noop } from './types';
 
 type Props<T> = {
   disabled?: boolean;
-  subject?: SubjectType<T>;
+  subject: SubjectType<T>;
   callback: (value: T) => void;
 };
 
-export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
-  const _subscription = React.useRef(subject);
-  const _unSubscribe = React.useRef<{ unsubscribe: TearDown }>();
+type Unsubscribe = { unsubscribe: TearDown };
 
-  if (disabled) {
-    if (_subscription.current) {
-      _unSubscribe.current && _unSubscribe.current.unsubscribe();
-      _subscription.current = _unSubscribe.current = undefined;
-    }
-  } else {
-    if (!_subscription.current) {
-      _subscription.current = subject;
-    }
+type Payload<T> = {
+  _unsubscribe: React.MutableRefObject<Unsubscribe | undefined>;
+  props: Props<T>;
+};
 
-    if (!_unSubscribe.current && _subscription.current) {
-      _unSubscribe.current = _subscription.current.subscribe({
-        next: callback,
+const tearDown = (
+  _unsubscribe: React.MutableRefObject<Unsubscribe | undefined>,
+) => {
+  if (_unsubscribe.current) {
+    _unsubscribe.current.unsubscribe();
+    _unsubscribe.current = undefined;
+  }
+};
+
+const updateSubscriptionProps =
+  <T>({ _unsubscribe, props }: Payload<T>) =>
+  () => {
+    if (props.disabled) {
+      tearDown(_unsubscribe);
+    } else if (!_unsubscribe.current) {
+      _unsubscribe.current = props.subject.subscribe({
+        next: props.callback,
       });
     }
-  }
+  };
 
-  React.useEffect(
-    () => () => {
-      _unSubscribe.current && _unSubscribe.current.unsubscribe();
-    },
-    [],
-  );
+export function useSubscribe<T>(props: Props<T>) {
+  const _unsubscribe = React.useRef<Unsubscribe>();
+  const _updateSubscription = React.useRef<Noop>(() => {});
+
+  _updateSubscription.current = updateSubscriptionProps({
+    _unsubscribe,
+    props,
+  });
+
+  _updateSubscription.current();
+
+  React.useEffect(() => {
+    _updateSubscription.current();
+    return () => tearDown(_unsubscribe);
+  }, []);
 }
