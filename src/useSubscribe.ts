@@ -16,9 +16,7 @@ export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
   const updateSubscription = React.useCallback(() => {
     if (!_subscription.current) {
       _subscription.current = subject;
-    }
-
-    if (!_unSubscribe.current && _subscription.current) {
+    } else if (!_unSubscribe.current) {
       _unSubscribe.current = _subscription.current.subscribe({
         next: _callback.current,
       });
