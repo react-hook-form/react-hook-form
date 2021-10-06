@@ -11,6 +11,7 @@ type Props<T> = {
 export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
   const _subscription = React.useRef(subject);
   const _unSubscribe = React.useRef<{ unsubscribe: TearDown }>();
+  const _callback = React.useRef(callback);
 
   const updateSubscription = React.useCallback(() => {
     if (!_subscription.current) {
@@ -19,10 +20,10 @@ export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
 
     if (!_unSubscribe.current && _subscription.current) {
       _unSubscribe.current = _subscription.current.subscribe({
-        next: callback,
+        next: _callback.current,
       });
     }
-  }, [callback, subject]);
+  }, [subject]);
 
   updateSubscription();
 
