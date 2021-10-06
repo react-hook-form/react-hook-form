@@ -1047,12 +1047,15 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
+    const hasUpdatedFormValues = !isEmptyObject(formValues);
     const updatedValues = formValues || _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
 
-    if (!keepStateOptions.keepValues) {
-      _formValues = props.shouldUnregister ? {} : cloneUpdatedValues;
+    if (!keepStateOptions.keepDefaultValues) {
+      _defaultValues = updatedValues;
+    }
 
+    if (!keepStateOptions.keepValues) {
       if (isWeb) {
         for (const name of _names.mount) {
           const field = get(_fields, name);
@@ -1069,19 +1072,12 @@ export function createFormControl<
           }
         }
       }
-    }
 
-    if (!keepStateOptions.keepDefaultValues) {
-      _defaultValues = { ...updatedValues };
-    }
-
-    if (!keepStateOptions.keepValues) {
+      _formValues = props.shouldUnregister ? {} : cloneUpdatedValues;
       _fields = {};
 
       _subjects.control.next({
-        values: keepStateOptions.keepDefaultValues
-          ? _defaultValues
-          : { ...updatedValues },
+        values: hasUpdatedFormValues ? cloneUpdatedValues : _defaultValues,
       });
 
       _subjects.watch.next({});
