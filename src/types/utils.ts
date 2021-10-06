@@ -1,6 +1,8 @@
 import { FieldValues } from './fields';
 import { NestedValue } from './form';
 
+export type Noop = () => void;
+
 export type Primitive =
   | null
   | undefined
