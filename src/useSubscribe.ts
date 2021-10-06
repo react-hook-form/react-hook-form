@@ -33,8 +33,6 @@ export function useSubscribe<T>({ disabled, subject, callback }: Props<T>) {
 
     disabled ? tearDown() : updateSubscription();
 
-    return () => {
-      tearDown();
-    };
+    return () => tearDown();
   }, [disabled, updateSubscription]);
 }
