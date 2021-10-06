@@ -1,15 +1,17 @@
+import { Noop } from '../types';
+
 export type Observer<T> = {
   next: (value: T) => void;
 };
 
-export type TearDown = () => void;
+export type TearDown = Noop;
 
 export type SubjectType<T> = {
   next: (value: T) => void;
   subscribe: (value: Observer<T>) => {
     unsubscribe: TearDown;
   };
-  unsubscribe: () => void;
+  unsubscribe: Noop;
 };
 
 export class Subscription {

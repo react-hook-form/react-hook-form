@@ -19,6 +19,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  Noop,
   UnionLike,
 } from './utils';
 import { RegisterOptions } from './validator';
@@ -315,7 +316,7 @@ export type Control<
   TContext extends object = object,
 > = {
   _subjects: Subjects<TFieldValues>;
-  _removeUnmounted: () => void;
+  _removeUnmounted: Noop;
   _names: Names;
   _stateFlags: {
     mount: boolean;
@@ -325,7 +326,7 @@ export type Control<
   _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
-  _updateValid: () => void;
+  _updateValid: Noop;
   _fields: FieldRefs;
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;
