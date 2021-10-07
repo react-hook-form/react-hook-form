@@ -657,8 +657,8 @@ export function createFormControl<
         );
       const isWatched = isFieldWatched(name, isBlurEvent);
 
-      if (isBlurEvent && field._f.onBlur) {
-        field._f.onBlur(event);
+      if (isBlurEvent) {
+        field._f.onBlur && field._f.onBlur(event);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
