@@ -43,7 +43,7 @@ export function useController<
     subject: control._subjects.control,
     callback: (data) =>
       (!data.name || _name.current === data.name) &&
-      setInputStateValue(get(data.values, name)),
+      setInputStateValue(get(data.values, _name.current)),
   });
 
   const registerProps = control.register(name, {
