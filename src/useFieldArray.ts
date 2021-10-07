@@ -47,17 +47,20 @@ export const useFieldArray = <
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(mapIds(control._getFieldArray(name), keyName));
   const _fieldIds = React.useRef(fields);
+  const _name = React.useRef(name);
 
+  _name.current = name;
   _fieldIds.current = fields;
   control._names.array.add(name);
 
   useSubscribe({
     callback: ({ values, name: fieldArrayName }) => {
-      if (fieldArrayName === name || !fieldArrayName) {
-        setFields(mapIds(get(values, name), keyName));
+      if (fieldArrayName === _name.current || !fieldArrayName) {
+        setFields(mapIds(get(values, _name.current), keyName));
       }
     },
     subject: control._subjects.array,
+    skipEarlySubscription: true,
   });
 
   const updateValues = React.useCallback(

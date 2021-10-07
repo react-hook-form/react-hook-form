@@ -2347,4 +2347,99 @@ describe('useFieldArray', () => {
       (screen.getAllByRole('textbox')[3] as HTMLInputElement).value,
     ).toEqual('child of index 0');
   });
+
+  it('should update field array correctly when unmounted field', () => {
+    type FormValues = {
+      nest: {
+        value: string;
+        nested: {
+          value: string;
+        }[];
+      }[];
+    };
+
+    function Nested({
+      control,
+      register,
+      index,
+    }: {
+      control: Control<FormValues>;
+      register: UseFormRegister<FormValues>;
+      index: number;
+    }) {
+      const { fields } = useFieldArray({
+        control,
+        name: `nest.${index}.nested`,
+      });
+
+      return (
+        <>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`nest.${index}.nested.${i}.value`)}
+            />
+          ))}
+        </>
+      );
+    }
+
+    function App() {
+      const { control, register, setValue, getValues } = useForm<FormValues>({
+        defaultValues: {
+          nest: [
+            { value: '0', nested: [{ value: '0sub1' }, { value: '0sub2' }] },
+            { value: '1', nested: [{ value: '1sub1' }, { value: '1sub2' }] },
+            { value: '2', nested: [{ value: '2sub1' }, { value: '2sub2' }] },
+          ],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        control,
+        name: 'nest',
+      });
+
+      function handleAddInner() {
+        setValue(`nest.1.nested`, [
+          ...getValues(`nest.1.nested`),
+          { value: `1sub-new` },
+        ]);
+      }
+
+      return (
+        <>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <input {...register(`nest.${index}.value`)} />
+              <button type={'button'} onClick={() => remove(index)}>
+                remove{index}
+              </button>
+              <Nested index={index} {...{ control, register }} />
+            </div>
+          ))}
+
+          <button onClick={handleAddInner}>set</button>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getAllByRole('textbox').length).toEqual(9);
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove1' }));
+
+    actComponent(() => {
+      expect(screen.getAllByRole('textbox').length).toEqual(6);
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+
+    actComponent(() => {
+      expect(screen.getAllByRole('textbox').length).toEqual(7);
+      expect(
+        (screen.getAllByRole('textbox')[6] as HTMLInputElement).value,
+      ).toEqual('1sub-new');
+    });
+  });
 });
