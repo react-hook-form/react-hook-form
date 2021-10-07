@@ -1294,7 +1294,7 @@ describe('Controller', () => {
             render={({ field, fieldState }) => (
               <>
                 <input {...field} />
-                <p>{fieldState.error?.[0]?.message}</p>
+                <p>{fieldState.error?.message}</p>
               </>
             )}
             control={control}
