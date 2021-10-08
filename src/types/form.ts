@@ -20,6 +20,7 @@ import {
   FieldPathValue,
   FieldPathValues,
   Noop,
+  UnionLike,
 } from './utils';
 import { RegisterOptions } from './validator';
 
@@ -102,7 +103,7 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  DeepPartial<TFieldValues>,
+  DeepPartial<UnionLike<TFieldValues>>,
   true
 >;
 
