@@ -57,7 +57,7 @@ describe('useController', () => {
         defaultValue: { test: 'value' },
       });
 
-      if (error?.test?.message) {
+      if (error?.message) {
         return null;
       }
 
