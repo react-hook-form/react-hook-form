@@ -1,3 +1,4 @@
+import isFunction from './isFunction';
 import isObject from './isObject';
 
 export default function cloneObject<T extends unknown>(data: T): T {
@@ -11,6 +12,10 @@ export default function cloneObject<T extends unknown>(data: T): T {
   } else if (isArray || isObject(data)) {
     copy = isArray ? [] : {};
     for (const key in data) {
+      if (isFunction(data[key])) {
+        copy = data;
+        break;
+      }
       copy[key] = cloneObject(data[key]);
     }
   } else {
