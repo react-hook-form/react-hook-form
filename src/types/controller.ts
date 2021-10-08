@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import { FieldErrors } from '..';
-
 import { RegisterOptions } from './validator';
 import {
   Control,
@@ -10,31 +8,17 @@ import {
   FieldPathWithValue,
   FieldValues,
   IsAny,
-  NestedValue,
   Noop,
-  Primitive,
   RefCallBack,
   UnpackNestedValue,
   UseFormStateReturn,
 } from './';
 
-export type ControllerFieldState<
-  TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
-  FieldValuesAtPath = IsAny<TResult> extends true
-    ? FieldPathValue<TFieldValues, TName>
-    : TResult,
-> = {
+export type ControllerFieldState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
-  error?: FieldValuesAtPath extends NestedValue | Primitive
-    ? FieldError
-    : FieldErrors<FieldValuesAtPath>;
+  error?: FieldError;
 };
 
 export type ControllerRenderProps<
@@ -84,7 +68,7 @@ export type UseControllerReturn<
 > = {
   field: ControllerRenderProps<TFieldValues, TResult, TName>;
   formState: UseFormStateReturn<TFieldValues>;
-  fieldState: ControllerFieldState<TFieldValues, TResult, TName>;
+  fieldState: ControllerFieldState;
 };
 
 export type ControllerProps<
@@ -101,7 +85,7 @@ export type ControllerProps<
     formState,
   }: {
     field: ControllerRenderProps<TFieldValues, TResult, TName>;
-    fieldState: ControllerFieldState<TFieldValues, TResult, TName>;
+    fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues, TResult, TName>;
