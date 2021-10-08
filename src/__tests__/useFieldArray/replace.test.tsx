@@ -6,9 +6,9 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { mockGenerateId } from '../useFieldArray.test';
 
-type TestValue = {
+interface TestValue {
   x: string;
-};
+}
 
 interface DefaultValues {
   test: TestValue[];

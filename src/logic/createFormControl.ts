@@ -286,7 +286,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields, name, true);
+        : set(_formState.dirtyFields as TFieldValues, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -294,7 +294,7 @@ export function createFormControl<
     }
 
     if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields, name, isCurrentTouched);
+      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
@@ -309,7 +309,7 @@ export function createFormControl<
 
   const updateFieldArrayDirty = (name: any, value: any) => (
     set(
-      _formState.dirtyFields,
+      _formState.dirtyFields as TFieldValues,
       name,
       setFieldArrayDirtyFields(
         value,
