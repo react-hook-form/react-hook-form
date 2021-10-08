@@ -81,4 +81,22 @@ describe('clone', () => {
 
     expect(copy.items).toEqual([2]);
   });
+
+  it('should skip clone if a node contains function', () => {
+    function testFunction() {}
+
+    const test = {
+      data: {
+        testFunction,
+      },
+      other: 'string',
+    };
+
+    expect(cloneObject(test)).toEqual({
+      data: {
+        testFunction,
+      },
+      other: 'string',
+    });
+  });
 });
