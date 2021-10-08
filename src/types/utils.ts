@@ -10,6 +10,8 @@ Warning: all of these interfaces are empty.
 If you want type definitions for various properties, you need to add `--lib DOM` (via command line or tsconfig.json).
 */
 
+export type Noop = () => void;
+
 interface File extends Blob {
   readonly lastModified: number;
   readonly name: string;
