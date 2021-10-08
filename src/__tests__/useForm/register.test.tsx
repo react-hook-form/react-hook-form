@@ -1614,6 +1614,16 @@ describe('register', () => {
     render(<App />);
 
     await actComponent(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: 'value',
+        },
+      });
+    });
+
+    expect(onChange).toBeCalledTimes(0);
+
+    await actComponent(async () => {
       fireEvent.change(screen.getAllByRole('textbox')[0], {
         target: {
           value: 'value',
@@ -1646,6 +1656,16 @@ describe('register', () => {
     };
 
     render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: 'value',
+        },
+      });
+    });
+
+    expect(onBlur).toBeCalledTimes(0);
 
     await actComponent(async () => {
       fireEvent.blur(screen.getAllByRole('textbox')[0]);
