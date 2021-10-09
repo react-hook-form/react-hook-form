@@ -1126,8 +1126,10 @@ export function createFormControl<
     _stateFlags.watch = !!props.shouldUnregister;
   };
 
-  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
-    get(_fields, name)._f.ref.focus();
+  const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
+    const ref = get(_fields, name)._f;
+    (ref.focus || ref.refs[0]).focus();
+  };
 
   return {
     control: {
