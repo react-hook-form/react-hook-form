@@ -178,7 +178,17 @@ export type FieldPathWithValue<
   TResult = unknown,
   FieldPaths extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  [key in FieldPaths]: FieldPathValue<TFieldValues, key> extends TResult
-    ? key
+  [Key in FieldPaths]: FieldPathValue<TFieldValues, Key> extends TResult
+    ? Key
+    : never;
+}[FieldPaths];
+
+export type FieldPathWithArrayValue<
+  TFieldValues extends FieldValues,
+  TResult = unknown,
+  FieldPaths extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+> = {
+  [Key in FieldPaths]: FieldArrayPathValue<TFieldValues, Key> extends TResult
+    ? Key
     : never;
 }[FieldPaths];

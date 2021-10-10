@@ -1,12 +1,20 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './utils';
+import {
+  FieldArrayPath,
+  FieldArrayPathValue,
+  FieldPathWithArrayValue,
+} from './utils';
 
 export type FieldArrayName = string;
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TResult = any,
+  TFieldArrayName extends FieldPathWithArrayValue<
+    TFieldValues,
+    TResult
+  > = FieldPathWithArrayValue<TFieldValues, TResult>,
   TKeyName extends string = 'id',
 > = {
   name: TFieldArrayName;
@@ -17,7 +25,11 @@ export type UseFieldArrayProps<
 
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TResult = any,
+  TFieldArrayName extends FieldPathWithArrayValue<
+    TFieldValues,
+    TResult
+  > = FieldPathWithArrayValue<TFieldValues, TResult>,
   TKeyName extends string = 'id',
 > = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
@@ -38,7 +50,11 @@ export type FieldArrayMethodProps = {
 
 export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TResult = any,
+  TFieldArrayName extends FieldPathWithArrayValue<
+    TFieldValues,
+    TResult
+  > = FieldPathWithArrayValue<TFieldValues, TResult>,
   TKeyName extends string = 'id',
 > = {
   swap: (indexA: number, indexB: number) => void;
@@ -72,5 +88,5 @@ export type UseFieldArrayReturn<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => void;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+  fields: FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>[];
 };

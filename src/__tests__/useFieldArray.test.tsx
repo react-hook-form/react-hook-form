@@ -12,6 +12,7 @@ import { Controller } from '../controller';
 import * as generateId from '../logic/generateId';
 import {
   Control,
+  FieldPathWithArrayValue,
   FieldValues,
   SubmitHandler,
   UseFormRegister,
@@ -2441,5 +2442,83 @@ describe('useFieldArray', () => {
         (screen.getAllByRole('textbox')[6] as HTMLInputElement).value,
       ).toEqual('1sub-new');
     });
+  });
+
+  it('should render generic component correctly', () => {
+    type ExpectedType = {
+      test: string;
+    }[];
+
+    const Generic = <FormValues extends FieldValues>({
+      name,
+      control,
+    }: {
+      name: FieldPathWithArrayValue<FormValues, ExpectedType>;
+      control: Control<FormValues>;
+    }) => {
+      const { fields, append, prepend } = useFieldArray<
+        FormValues,
+        ExpectedType
+      >({
+        name,
+        control,
+      });
+
+      return (
+        <div>
+          {fields.map((field, index) => {
+            return (
+              <Controller
+                key={field.id}
+                render={({ field }) => <input {...field} />}
+                name={`key.${index}.test`}
+              />
+            );
+          })}
+
+          <button
+            onClick={() => {
+              append({
+                test: 'string',
+              });
+            }}
+          >
+            append
+          </button>
+
+          <button
+            onClick={() => {
+              prepend({
+                test: 'string',
+              });
+            }}
+          >
+            append
+          </button>
+        </div>
+      );
+    };
+
+    const Component = () => {
+      const { control } = useForm<{
+        key: ExpectedType;
+      }>({
+        defaultValues: {
+          key: [
+            {
+              test: '',
+            },
+          ],
+        },
+      });
+
+      return <Generic name="key" control={control} />;
+    };
+
+    render(<Component />);
+
+    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+    expect(input).toBeInTheDocument();
+    expect(input?.value).toEqual('input value');
   });
 });

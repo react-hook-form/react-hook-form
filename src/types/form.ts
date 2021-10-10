@@ -297,6 +297,7 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues,
+  TResult = any,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
@@ -307,7 +308,7 @@ export type BatchFieldArrayUpdate = <
     argB?: unknown;
   },
   updatedFieldArrayValues?: Partial<
-    FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+    FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>
   >[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,

@@ -550,10 +550,7 @@ describe('remove', () => {
       errors: DeepMap<Record<string, any>, FieldError>;
       index: number;
     }) => {
-      const { fields, append, remove } = useFieldArray<
-        FormValues,
-        'test.0.nested'
-      >({
+      const { fields, append, remove } = useFieldArray<FormValues>({
         name: `test.${index}.nested` as 'test.0.nested',
         control,
       });
