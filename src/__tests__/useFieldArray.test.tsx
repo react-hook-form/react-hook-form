@@ -2531,9 +2531,5 @@ describe('useFieldArray', () => {
     };
 
     render(<Component />);
-
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
-    expect(input).toBeInTheDocument();
-    expect(input?.value).toEqual('input value');
   });
 });
