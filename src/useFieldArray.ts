@@ -90,8 +90,8 @@ export const useFieldArray = <
 
   const append = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(value);
@@ -117,8 +117,8 @@ export const useFieldArray = <
 
   const prepend = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValuesWithKey = prependAt(
@@ -157,8 +157,8 @@ export const useFieldArray = <
   const insert = (
     index: number,
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const updatedFieldArrayValuesWithKey = insertAt(
@@ -219,7 +219,7 @@ export const useFieldArray = <
 
   const update = (
     index: number,
-    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
+    value: Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>,
   ) => {
     const updatedFieldArrayValuesWithKey = mapCurrentIds(
       control._getFieldArray(name),
@@ -247,8 +247,8 @@ export const useFieldArray = <
 
   const replace = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TResult, TFieldArrayName>>[],
   ) => {
     const updatedFieldArrayValuesWithKey: Partial<
       FieldArrayWithId<TFieldValues, TResult, TFieldArrayName, TKeyName>

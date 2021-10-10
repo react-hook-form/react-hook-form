@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -2447,14 +2448,17 @@ describe('useFieldArray', () => {
   it('should render generic component correctly', () => {
     type ExpectedType = {
       test: string;
+      test1: string;
     }[];
 
     const Generic = <FormValues extends FieldValues>({
       name,
       control,
+      register,
     }: {
       name: FieldPathWithArrayValue<FormValues, ExpectedType>;
       control: Control<FormValues>;
+      register: UseFormRegister<FieldValues>;
     }) => {
       const { fields, append, prepend } = useFieldArray<
         FormValues,
@@ -2463,6 +2467,10 @@ describe('useFieldArray', () => {
         name,
         control,
       });
+
+      useEffect(() => {
+        register('key.2.test1');
+      }, [register]);
 
       return (
         <div>
@@ -2500,7 +2508,7 @@ describe('useFieldArray', () => {
     };
 
     const Component = () => {
-      const { control } = useForm<{
+      const { control, register } = useForm<{
         key: ExpectedType;
       }>({
         defaultValues: {
@@ -2512,7 +2520,7 @@ describe('useFieldArray', () => {
         },
       });
 
-      return <Generic name="key" control={control} />;
+      return <Generic name="key" control={control} register={register} />;
     };
 
     render(<Component />);
