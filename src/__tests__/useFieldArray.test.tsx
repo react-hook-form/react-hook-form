@@ -14,6 +14,7 @@ import * as generateId from '../logic/generateId';
 import {
   Control,
   FieldPathWithArrayValue,
+  FieldPathWithValue,
   FieldValues,
   SubmitHandler,
   UseFormRegister,
@@ -2478,8 +2479,14 @@ describe('useFieldArray', () => {
             return (
               <Controller
                 key={field.id}
+                control={control}
                 render={({ field }) => <input {...field} />}
-                name={`key.${index}.test`}
+                name={
+                  `key.${index}.test` as FieldPathWithValue<
+                    FormValues,
+                    ExpectedType
+                  >
+                }
               />
             );
           })}
