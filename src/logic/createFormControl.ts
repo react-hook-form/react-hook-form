@@ -952,7 +952,7 @@ export function createFormControl<
                       ...field._f,
                       refs: [
                         ...compact(field._f.refs || []).filter(
-                          (ref) => isHTMLElement(ref) && document.contains(ref),
+                          (ref) => isHTMLElement(ref) && live(ref as Ref),
                         ),
                         fieldRef,
                       ],
