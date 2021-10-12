@@ -1110,7 +1110,15 @@ export function createFormControl<
         : false,
       dirtyFields: keepStateOptions.keepDirty
         ? _formState.dirtyFields
-        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
+        : ((keepStateOptions.keepDefaultValues && formValues
+            ? Object.entries(formValues).reduce(
+                (previous, [key, value]) => ({
+                  ...previous,
+                  [key]: value !== get(_defaultValues, key),
+                }),
+                {},
+              )
+            : {}) as FieldNamesMarkedBoolean<TFieldValues>),
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : ({} as FieldNamesMarkedBoolean<TFieldValues>),
