@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import convertToArrayPayload from './utils/convertToArrayPayload';
+import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import {
@@ -57,18 +57,8 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   useSubscribe({
     disabled,
     subject: control._subjects.watch,
-    callback: ({ name }) => {
-      if (
-        !_name.current ||
-        !name ||
-        convertToArrayPayload(_name.current).some(
-          (currentName) =>
-            name &&
-            currentName &&
-            (name.startsWith(currentName as InternalFieldName) ||
-              currentName.startsWith(name as InternalFieldName)),
-        )
-      ) {
+    callback: (formState) => {
+      if (shouldSubscribeByName(_name.current, formState.name)) {
         control._stateFlags.mount = true;
         const fieldValues = control._getWatch(
           _name.current as InternalFieldName,
