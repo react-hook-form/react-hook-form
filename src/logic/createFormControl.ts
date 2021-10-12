@@ -466,7 +466,9 @@ export function createFormControl<
       const field: Field = get(_fields, name);
 
       field &&
-        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
+        (field._f.refs
+          ? field._f.refs.every((ref) => !live(ref))
+          : !live(field._f.ref)) &&
         unregister(name as FieldPath<TFieldValues>);
     }
 
@@ -951,9 +953,7 @@ export function createFormControl<
                   ? {
                       ...field._f,
                       refs: [
-                        ...compact(field._f.refs || []).filter(
-                          (ref) => isHTMLElement(ref) && document.contains(ref),
-                        ),
+                        ...compact(field._f.refs || []).filter(live),
                         fieldRef,
                       ],
                       ref: { type: fieldRef.type, name },
