@@ -514,7 +514,7 @@ export function createFormControl<
     get(
       _stateFlags.mount ? _formValues : _defaultValues,
       name,
-      props.shouldUnregister ? get(_defaultValues, name) : [],
+      props.shouldUnregister ? get(_defaultValues, name, []) : [],
     );
 
   const setFieldValue = (
