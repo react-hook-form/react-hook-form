@@ -6,8 +6,10 @@ describe('shouldSubscribeByName', () => {
     expect(shouldSubscribeByName('test', undefined)).toBeTruthy();
     expect(shouldSubscribeByName(['test'], undefined)).toBeTruthy();
     expect(shouldSubscribeByName(['test'], 'test')).toBeTruthy();
+    expect(shouldSubscribeByName(['tes'], 'test')).toBeTruthy();
     expect(shouldSubscribeByName(['test1'], 'test')).toBeTruthy();
     expect(shouldSubscribeByName('test1', 'test')).toBeTruthy();
+    expect(shouldSubscribeByName('tes', 'test')).toBeTruthy();
 
     expect(shouldSubscribeByName('testXXX', 'data')).toBeFalsy();
     expect(shouldSubscribeByName(['testXXX'], 'data')).toBeFalsy();
