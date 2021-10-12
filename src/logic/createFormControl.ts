@@ -511,7 +511,11 @@ export function createFormControl<
   };
 
   const _getFieldArray = (name: InternalFieldName) =>
-    get(_stateFlags.mount ? _formValues : _defaultValues, name, []);
+    get(
+      _stateFlags.mount ? _formValues : _defaultValues,
+      name,
+      props.shouldUnregister ? get(_defaultValues, name) : [],
+    );
 
   const setFieldValue = (
     name: InternalFieldName,
