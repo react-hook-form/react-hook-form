@@ -1,4 +1,4 @@
-import Subject from '../../utils/Subject';
+import Subject from '../../utils/subject';
 
 describe('Subject', () => {
   it('should subscribe to all the correct observer', () => {

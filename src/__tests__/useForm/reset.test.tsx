@@ -254,6 +254,53 @@ describe('reset', () => {
     expect(screen.queryByText('dirty')).toBeNull();
   });
 
+  it('should update dirty and dirtyFields when keepDefaultValues and updatedValues is provided', async () => {
+    function App() {
+      const {
+        register,
+        reset,
+        formState: { isDirty, dirtyFields },
+      } = useForm({
+        defaultValues: {
+          firstName: 'test',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{JSON.stringify(dirtyFields)}</p>
+
+          <button
+            type="button"
+            onClick={() => {
+              reset(
+                {
+                  firstName: 'other',
+                },
+                {
+                  keepDefaultValues: true,
+                },
+              );
+            }}
+          >
+            test
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      screen.getByText('dirty');
+      screen.getByText('{"firstName":true}');
+    });
+  });
+
   it('should not reset if keepStateOption is specified', async () => {
     let formState = {};
 

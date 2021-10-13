@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SubjectType, Subscription } from '../utils/Subject';
+import { SubjectType, Subscription } from '../utils/subject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
@@ -32,7 +32,9 @@ export type NestedValue<TValue extends object = object> = {
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : T extends ReadonlyArray<any> | Record<any, unknown>
+  : T extends Date | FileList | File
+  ? T
+  : T extends object
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 

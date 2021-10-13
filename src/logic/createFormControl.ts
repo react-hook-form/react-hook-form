@@ -62,7 +62,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
-import Subject from '../utils/Subject';
+import Subject from '../utils/subject';
 import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
@@ -286,7 +286,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields, name, true);
+        : set(_formState.dirtyFields as TFieldValues, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -294,7 +294,7 @@ export function createFormControl<
     }
 
     if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields, name, isCurrentTouched);
+      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
@@ -309,7 +309,7 @@ export function createFormControl<
 
   const updateFieldArrayDirty = (name: any, value: any) => (
     set(
-      _formState.dirtyFields,
+      _formState.dirtyFields as TFieldValues,
       name,
       setFieldArrayDirtyFields(
         value,
@@ -466,7 +466,9 @@ export function createFormControl<
       const field: Field = get(_fields, name);
 
       field &&
-        (field._f.refs ? field._f.refs.every(live) : live(field._f.ref)) &&
+        (field._f.refs
+          ? field._f.refs.every((ref) => !live(ref))
+          : !live(field._f.ref)) &&
         unregister(name as FieldPath<TFieldValues>);
     }
 
@@ -509,7 +511,11 @@ export function createFormControl<
   };
 
   const _getFieldArray = (name: InternalFieldName) =>
-    get(_stateFlags.mount ? _formValues : _defaultValues, name, []);
+    get(
+      _stateFlags.mount ? _formValues : _defaultValues,
+      name,
+      props.shouldUnregister ? get(_defaultValues, name, []) : [],
+    );
 
   const setFieldValue = (
     name: InternalFieldName,
@@ -657,8 +663,8 @@ export function createFormControl<
         );
       const isWatched = isFieldWatched(name, isBlurEvent);
 
-      if (isBlurEvent && field._f.onBlur) {
-        field._f.onBlur(event);
+      if (isBlurEvent) {
+        field._f.onBlur && field._f.onBlur(event);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
@@ -951,9 +957,7 @@ export function createFormControl<
                   ? {
                       ...field._f,
                       refs: [
-                        ...compact(field._f.refs || []).filter(
-                          (ref) => isHTMLElement(ref) && document.contains(ref),
-                        ),
+                        ...compact(field._f.refs || []).filter(live),
                         fieldRef,
                       ],
                       ref: { type: fieldRef.type, name },
@@ -1073,7 +1077,11 @@ export function createFormControl<
         }
       }
 
-      _formValues = props.shouldUnregister ? {} : cloneUpdatedValues;
+      _formValues = props.shouldUnregister
+        ? keepStateOptions.keepDefaultValues
+          ? _defaultValues
+          : {}
+        : cloneUpdatedValues;
       _fields = {};
 
       _subjects.control.next({
@@ -1103,14 +1111,22 @@ export function createFormControl<
       isDirty: keepStateOptions.keepDirty
         ? _formState.isDirty
         : keepStateOptions.keepDefaultValues
-        ? deepEqual(formValues, _defaultValues)
+        ? !deepEqual(formValues, _defaultValues)
         : false,
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
       dirtyFields: keepStateOptions.keepDirty
         ? _formState.dirtyFields
-        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
+        : ((keepStateOptions.keepDefaultValues && formValues
+            ? Object.entries(formValues).reduce(
+                (previous, [key, value]) => ({
+                  ...previous,
+                  [key]: value !== get(_defaultValues, key),
+                }),
+                {},
+              )
+            : {}) as FieldNamesMarkedBoolean<TFieldValues>),
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : ({} as FieldNamesMarkedBoolean<TFieldValues>),
@@ -1126,8 +1142,10 @@ export function createFormControl<
     _stateFlags.watch = !!props.shouldUnregister;
   };
 
-  const setFocus: UseFormSetFocus<TFieldValues> = (name) =>
-    get(_fields, name)._f.ref.focus();
+  const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
+    const ref = get(_fields, name)._f;
+    (ref.focus || ref.refs[0]).focus();
+  };
 
   return {
     control: {

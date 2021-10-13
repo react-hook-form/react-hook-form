@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SubjectType, TearDown } from './utils/Subject';
+import { SubjectType, TearDown } from './utils/subject';
 import { Noop } from './types';
 
 type Props<T> = {

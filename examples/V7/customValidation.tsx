@@ -73,7 +73,7 @@ export default function App() {
           <p>Your age is invalid</p>
         )}
         {errors.age && errors.age.type === 'lessThanHundred' && (
-          <p>Your age should be greater than 200</p>
+          <p>Your age should be less than 200</p>
         )}
 
         <button type="submit">Submit</button>

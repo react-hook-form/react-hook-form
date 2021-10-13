@@ -206,6 +206,42 @@ describe('useWatch', () => {
     expect(submitData).toEqual({});
   });
 
+  it('should return defaultValue with shouldUnregister set to true and keepDefaultValues', () => {
+    const output: unknown[] = [];
+
+    function App() {
+      const { register, reset, control } = useForm({
+        defaultValues: { test: 'test' },
+        shouldUnregister: true,
+      });
+      const inputs = useWatch({ control });
+
+      output.push(inputs);
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepDefaultValues: true })}
+          >
+            Reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(output).toEqual([
+      { test: 'test' },
+      { test: 'test' },
+      { test: 'test' },
+    ]);
+  });
+
   describe('when disabled prop is used', () => {
     it('should be able to disabled subscription and started with true', async () => {
       type FormValues = {
