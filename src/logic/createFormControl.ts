@@ -62,7 +62,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
-import Subject from '../utils/Subject';
+import Subject from '../utils/subject';
 import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
