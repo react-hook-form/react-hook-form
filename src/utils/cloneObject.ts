@@ -1,7 +1,7 @@
 import isFunction from './isFunction';
 import isObject from './isObject';
 
-export default function cloneObject<T extends unknown>(data: T): T {
+export default function cloneObject<T>(data: T): T {
   let copy: any;
   const isArray = Array.isArray(data);
 
