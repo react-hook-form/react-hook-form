@@ -44,6 +44,16 @@ export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
   ? T
   : { [K in keyof T]?: DeepPartial<T[K]> };
 
+export type DeepPartialSkipArrayKey<T> = T extends
+  | Date
+  | FileList
+  | File
+  | NestedValue
+  ? T
+  : T extends ReadonlyArray<any>
+  ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+  : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
