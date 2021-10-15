@@ -1021,7 +1021,7 @@ export function createFormControl<
             errors: {} as FieldErrors<TFieldValues>,
             isSubmitting: true,
           });
-          await onValid(fieldValues, e);
+          return await onValid(fieldValues, e);
         } else {
           onInvalid && (await onInvalid(_formState.errors, e));
           _options.shouldFocusError &&
