@@ -26,9 +26,12 @@ test('should not throw type error with path name', () => {
 });
 
 test('should not throw type error with optional array fields', () => {
+  type Thing = { id: string; name: string };
+
   interface FormData {
     name: string;
     things?: Array<{ name: string }>;
+    items?: Array<Thing>;
   }
 
   function App() {
@@ -36,6 +39,7 @@ test('should not throw type error with optional array fields', () => {
       defaultValues: { name: 'test' },
     });
     const { fields, append } = useFieldArray({ control, name: 'things' });
+    const fieldArray = useFieldArray({ control, name: 'items' });
 
     return (
       <div className="App">
@@ -45,12 +49,12 @@ test('should not throw type error with optional array fields', () => {
 
         {fields.map((field, index) => (
           <div key={field.id}>
-            <input
-              {...register(`things.${index}.name`)}
-              defaultValue={field.name}
-            />
+            <input {...register(`things.${index}.name`)} />
           </div>
         ))}
+        {fieldArray.fields.map((item) => {
+          return <div key={item.id}>{item.name}</div>;
+        })}
       </div>
     );
   }
