@@ -1143,8 +1143,8 @@ export function createFormControl<
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
-    const ref = get(_fields, name)._f;
-    (ref.focus || ref.refs[0]).focus();
+    const field = get(_fields, name)._f;
+    (field.ref.focus ? field.ref : field.refs[0]).focus();
   };
 
   return {

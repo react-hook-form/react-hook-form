@@ -44,6 +44,16 @@ export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
   ? T
   : { [K in keyof T]?: DeepPartial<T[K]> };
 
+export type DeepPartialSkipArrayKey<T> = T extends
+  | Date
+  | FileList
+  | File
+  | NestedValue
+  ? T
+  : T extends ReadonlyArray<any>
+  ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+  : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
@@ -73,17 +83,15 @@ type PathImpl<K extends string | number, V> = V extends Primitive
   ? `${K}`
   : `${K}` | `${K}.${Path<V>}`;
 
-export type Path<T> =
-  | (T extends ReadonlyArray<infer V>
-      ? IsTuple<T> extends true
-        ? {
-            [K in TupleKey<T>]-?: PathImpl<K & string, T[K]>;
-          }[TupleKey<T>]
-        : PathImpl<ArrayKey, V>
-      : {
-          [K in keyof T]-?: PathImpl<K & string, T[K]>;
-        }[keyof T])
-  | { [K in keyof T]-?: K & string }[keyof T];
+export type Path<T> = T extends ReadonlyArray<infer V>
+  ? IsTuple<T> extends true
+    ? {
+        [K in TupleKey<T>]-?: PathImpl<K & string, T[K]>;
+      }[TupleKey<T>]
+    : PathImpl<ArrayKey, V>
+  : {
+      [K in keyof T]-?: PathImpl<K & string, T[K]>;
+    }[keyof T];
 
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
