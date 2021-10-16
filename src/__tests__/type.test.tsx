@@ -25,7 +25,7 @@ test('should not throw type error with path name', () => {
   test;
 });
 
-test('should not throw type error with nullable field array ', () => {
+test('should not throw type error with optional array fields', () => {
   interface FormData {
     name: string;
     things?: Array<{ name: string }>;
