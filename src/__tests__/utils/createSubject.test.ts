@@ -1,8 +1,8 @@
-import Subject from '../../utils/subject';
+import createSubject from '../../utils/createSubject';
 
-describe('Subject', () => {
+describe('createSubject', () => {
   it('should subscribe to all the correct observer', () => {
-    const subject = new Subject();
+    const subject = createSubject();
     const next = jest.fn();
 
     subject.subscribe({
@@ -20,7 +20,7 @@ describe('Subject', () => {
   });
 
   it('should unsubscribe observers', () => {
-    const subject = new Subject();
+    const subject = createSubject();
     const next = jest.fn();
 
     const tearDown = subject.subscribe({

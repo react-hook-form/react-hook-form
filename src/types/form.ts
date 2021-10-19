@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SubjectType, Subscription } from '../utils/subject';
+import { SubjectType, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
