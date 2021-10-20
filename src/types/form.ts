@@ -325,7 +325,7 @@ export type Control<
     action: boolean;
     watch: boolean;
   };
-  _options: UseFormProps<TFieldValues, TContext>;
+  _options: Pick<UseFormProps<TFieldValues, TContext>, 'shouldUnregister'>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: Noop;

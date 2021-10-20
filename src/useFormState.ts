@@ -35,6 +35,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
         ...formState,
       }),
     subject: control._subjects.state,
+    skipEarlySubscription: true,
   });
 
   return getProxyFormState(
