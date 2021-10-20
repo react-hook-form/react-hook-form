@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
+import { Controller } from '../controller';
 import { Control } from '../types';
+import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useFormState } from '../useFormState';
 
@@ -534,5 +536,61 @@ describe('useFormState', () => {
     });
 
     screen.getByText('error');
+  });
+
+  it('should not start early subscription and throw warning at strict mode', () => {
+    type FormValues = { test: { data: string }[] };
+
+    function FieldArray() {
+      const { reset, control } = useForm<FormValues>({
+        defaultValues: { test: [] },
+      });
+      const { fields, append } = useFieldArray({ control, name: 'test' });
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <Controller
+                control={control}
+                name={`test.${index}.data` as const}
+                render={({ field }) => <input {...field} />}
+              />
+            </div>
+          ))}
+          <button
+            onClick={() =>
+              append({
+                data: 'data',
+              })
+            }
+          >
+            add
+          </button>
+          <button onClick={() => reset({})}>reset</button>
+        </div>
+      );
+    }
+
+    const App = () => {
+      return (
+        <React.StrictMode>
+          <FieldArray />
+        </React.StrictMode>
+      );
+    };
+
+    render(<App />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'add' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'add' }));
+    });
   });
 });

@@ -1,4 +1,0 @@
-{
-  "sandboxes": ["/app"],
-  "buildCommand": "build"
-}

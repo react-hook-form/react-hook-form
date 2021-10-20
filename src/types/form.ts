@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SubjectType, Subscription } from '../utils/Subject';
+import { SubjectType, Subscription } from '../utils/subject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
@@ -325,7 +325,7 @@ export type Control<
     action: boolean;
     watch: boolean;
   };
-  _options: UseFormProps<TFieldValues, TContext>;
+  _options: Pick<UseFormProps<TFieldValues, TContext>, 'shouldUnregister'>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: Noop;
