@@ -710,7 +710,7 @@ export function createFormControl<
         const { errors } = await executeResolver([name]);
 
         if (shouldReturnFormErrors) {
-          _formState.errors = errors as FieldErrors<TFieldValues>;
+          trigger();
         } else {
           error = get(errors, name);
 
@@ -734,7 +734,7 @@ export function createFormControl<
         isValid = isEmptyObject(errors);
       } else {
         if (shouldReturnFormErrors) {
-          isValid = await executeBuildInValidation(_fields);
+          trigger();
         } else {
           error = (
             await validateField(
