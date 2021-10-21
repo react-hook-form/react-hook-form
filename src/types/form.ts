@@ -54,7 +54,7 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
-export type CriteriaMode = 'firstError' | 'all';
+export type CriteriaMode = 'firstError' | 'all' | 'formLevel';
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,

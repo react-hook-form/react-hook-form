@@ -146,6 +146,7 @@ export function createFormControl<
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
+  const shouldReturnFormErrors = _options.criteriaMode === 'formLevel';
 
   const debounce =
     <T extends Function>(callback: T, wait: number) =>
@@ -707,36 +708,45 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await executeResolver([name]);
-        error = get(errors, name);
 
-        if (isCheckBoxInput(target) && !error) {
-          const parentNodeName = getNodeParentName(name);
-          const parentField = get(_fields, parentNodeName);
+        if (shouldReturnFormErrors) {
+          _formState.errors = errors as FieldErrors<TFieldValues>;
+        } else {
+          error = get(errors, name);
 
-          if (
-            Array.isArray(parentField) &&
-            parentField.every(
-              (field: Field) => field._f && isCheckBoxInput(field._f.ref),
-            )
-          ) {
-            const parentError = get(errors, parentNodeName, {});
-            parentError.type && (error = parentError);
-            name = parentNodeName;
+          if (isCheckBoxInput(target) && !error) {
+            const parentNodeName = getNodeParentName(name);
+            const parentField = get(_fields, parentNodeName);
+
+            if (
+              Array.isArray(parentField) &&
+              parentField.every(
+                (field: Field) => field._f && isCheckBoxInput(field._f.ref),
+              )
+            ) {
+              const parentError = get(errors, parentNodeName, {});
+              parentError.type && (error = parentError);
+              name = parentNodeName;
+            }
           }
         }
 
         isValid = isEmptyObject(errors);
       } else {
-        error = (
-          await validateField(
-            field,
-            get(_formValues, name) as Field,
-            shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation,
-          )
-        )[name];
+        if (shouldReturnFormErrors) {
+          isValid = await executeBuildInValidation(_fields);
+        } else {
+          error = (
+            await validateField(
+              field,
+              get(_formValues, name) as Field,
+              shouldDisplayAllAssociatedErrors,
+              _options.shouldUseNativeValidation,
+            )
+          )[name];
 
-        isValid = await _updateValid(true);
+          isValid = await _updateValid(true);
+        }
       }
 
       field._f.deps && trigger(field._f.deps as FieldPath<TFieldValues>[]);
