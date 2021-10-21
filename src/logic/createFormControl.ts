@@ -1155,6 +1155,7 @@ export function createFormControl<
     control: {
       register,
       unregister,
+      trigger,
       _getWatch,
       _getDirty,
       _updateValid,
