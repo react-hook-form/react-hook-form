@@ -354,7 +354,7 @@ describe('swap', () => {
         result.current.swap(0, 1);
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });

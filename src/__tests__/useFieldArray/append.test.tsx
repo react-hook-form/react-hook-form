@@ -391,7 +391,7 @@ describe('append', () => {
         result.current.append({ value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });

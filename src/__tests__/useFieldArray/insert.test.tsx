@@ -536,7 +536,7 @@ describe('insert', () => {
         result.current.insert(0, { value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
 
     it('should insert update fields during async submit', () => {

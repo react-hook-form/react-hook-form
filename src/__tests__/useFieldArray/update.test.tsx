@@ -452,7 +452,7 @@ describe('update', () => {
         result.current.update(0, { value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });

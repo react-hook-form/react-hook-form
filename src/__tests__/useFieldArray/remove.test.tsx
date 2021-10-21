@@ -969,7 +969,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
 
     it('should remove the first index correctly', async () => {

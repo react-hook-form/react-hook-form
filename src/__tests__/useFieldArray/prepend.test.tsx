@@ -423,7 +423,7 @@ describe('prepend', () => {
         result.current.prepend({ value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });
