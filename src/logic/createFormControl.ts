@@ -51,6 +51,7 @@ import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
+import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
@@ -537,7 +538,9 @@ export function createFormControl<
             ? ''
             : value;
 
-        if (isMultipleSelect(fieldReference.ref)) {
+        if (isFileInput(fieldReference.ref) && !isString(fieldValue)) {
+          fieldReference.ref.files = fieldValue as FileList;
+        } else if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach(
             (selectRef) =>
               (selectRef.selected = (
