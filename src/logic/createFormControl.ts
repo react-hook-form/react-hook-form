@@ -734,7 +734,7 @@ export function createFormControl<
         isValid = isEmptyObject(errors);
       } else {
         if (shouldReturnFormErrors) {
-          trigger();
+          isValid = trigger();
         } else {
           error = (
             await validateField(
