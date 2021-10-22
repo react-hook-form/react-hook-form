@@ -26,11 +26,11 @@ export default function schemaErrorLookup(
     const field = get(_fields, fieldName);
     const foundError = get(errors, fieldName);
 
-    if (field) {
+    if (field && !Array.isArray(field) && name !== fieldName) {
       return { name };
     }
 
-    if (foundError && !field && foundError.type) {
+    if (foundError && foundError.type) {
       return {
         name: fieldName,
         error: foundError,
