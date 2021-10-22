@@ -18,7 +18,7 @@ describe('prepend', () => {
     mockGenerateId();
   });
 
-  it('should pre-append data into the fields', () => {
+  it('should pre-append data into the fields', async () => {
     let currentFields: any = [];
 
     const Component = () => {
@@ -58,15 +58,15 @@ describe('prepend', () => {
 
     render(<Component />);
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
     });
 
-    act(() => {
+    await actComponent(async () => {
       expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
     });
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
     });
 
@@ -199,15 +199,19 @@ describe('prepend', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    });
 
-    expect(errors.test).toBeUndefined();
+    expect(errors.test).toBeDefined();
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    });
 
     expect(errors.test).toHaveLength(2);
   });

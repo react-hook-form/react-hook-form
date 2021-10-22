@@ -262,17 +262,24 @@ describe('insert', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    });
 
     expect(errors.test[0]).toBeDefined();
-    expect(errors.test[1]).toBeUndefined();
+    expect(errors.test[1]).toBeDefined();
     expect(errors.test[2]).toBeDefined();
   });
 
@@ -311,18 +318,25 @@ describe('insert', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
+    });
 
     expect(errors.test[0]).toBeDefined();
-    expect(errors.test[1]).toBeUndefined();
-    expect(errors.test[2]).toBeUndefined();
+    expect(errors.test[1]).toBeDefined();
+    expect(errors.test[2]).toBeDefined();
     expect(errors.test[3]).toBeDefined();
   });
 

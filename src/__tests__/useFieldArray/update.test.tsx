@@ -189,7 +189,7 @@ describe('update', () => {
     );
   });
 
-  it('should update group input correctly', () => {
+  it('should update group input correctly', async () => {
     type FormValues = {
       test: {
         value: {
@@ -279,7 +279,9 @@ describe('update', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,

@@ -266,7 +266,7 @@ describe('watch', () => {
     ]);
   });
 
-  it('should watch correctly with useFieldArray with action and then fallback to onChange', () => {
+  it('should watch correctly with useFieldArray with action and then fallback to onChange', async () => {
     type FormValues = {
       names: {
         name: string;
@@ -314,21 +314,21 @@ describe('watch', () => {
 
     render(<Component />);
 
-    actComponent(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    actComponent(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    actComponent(() => {
+    await actComponent(async () => {
       fireEvent.change(screen.getAllByRole('textbox')[0], {
         target: { value: '123' },
       });
     });
 
-    actComponent(() => {
+    await actComponent(async () => {
       fireEvent.change(screen.getAllByRole('textbox')[1], {
         target: { value: '456' },
       });

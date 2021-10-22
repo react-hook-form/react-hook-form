@@ -511,19 +511,31 @@ describe('remove', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    });
 
     expect(errors.test).toHaveLength(2);
 
-    fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
+    });
 
     expect(errors.test).toBeUndefined();
   });
@@ -862,7 +874,7 @@ describe('remove', () => {
     });
   });
 
-  it("should not reset Controller's value during remove when Field Array name is already registered", () => {
+  it("should not reset Controller's value during remove when Field Array name is already registered", async () => {
     function Component() {
       const { control, handleSubmit } = useForm({
         defaultValues: {
@@ -906,13 +918,19 @@ describe('remove', () => {
 
     render(<Component />);
 
-    fireEvent.input(screen.getAllByRole('textbox')[0], {
-      target: { name: 'test[0].lastName', value: '111' },
+    await actComponent(async () => {
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: { name: 'test[0].lastName', value: '111' },
+      });
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    });
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    await actComponent(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    });
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
