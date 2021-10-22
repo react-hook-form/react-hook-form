@@ -1681,4 +1681,42 @@ describe('register', () => {
       }),
     );
   });
+
+  it('should not programmatically set input file value with FileList', async () => {
+    function App() {
+      const { register, watch } = useForm();
+      const moreDetail = watch('toggle');
+
+      return (
+        <form>
+          <input type="checkbox" {...register('toggle')} />
+
+          {moreDetail && (
+            <div>
+              <label>Interests</label>
+              <input
+                type="file"
+                {...register('Interests')}
+                placeholder={'test'}
+              />
+            </div>
+          )}
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      screen.getByPlaceholderText('test');
+    });
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('checkbox'));
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+  });
 });

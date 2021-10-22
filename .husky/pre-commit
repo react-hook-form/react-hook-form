@@ -1,2 +1,2 @@
-yarn lint:types
+yarn type
 yarn lint-staged
