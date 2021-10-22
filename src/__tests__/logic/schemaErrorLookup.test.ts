@@ -14,6 +14,7 @@ describe('errorsLookup', () => {
             },
           },
         },
+        {},
         'test.deep.whatever',
       ),
     ).toEqual({
@@ -32,6 +33,7 @@ describe('errorsLookup', () => {
             message: 'error',
           },
         },
+        {},
         'test.0.whatever',
       ),
     ).toEqual({
@@ -50,6 +52,7 @@ describe('errorsLookup', () => {
             message: 'error',
           },
         },
+        {},
         'test',
       ),
     ).toEqual({
@@ -80,6 +83,7 @@ describe('errorsLookup', () => {
             },
           },
         },
+        {},
         'test1.nested.deepNested.wahtever',
       ),
     ).toEqual({
@@ -97,6 +101,7 @@ describe('errorsLookup', () => {
             message: 'error',
           },
         },
+        {},
         'test1234',
       ),
     ).toEqual({ error: undefined, name: 'test1234' });
@@ -109,6 +114,7 @@ describe('errorsLookup', () => {
             message: 'error',
           },
         },
+        {},
         'testX.1.test',
       ),
     ).toEqual({
@@ -129,10 +135,73 @@ describe('errorsLookup', () => {
             },
           },
         },
+        {},
         'test.test2',
       ),
     ).toEqual({
       name: 'test.test2',
+    });
+  });
+
+  it('should prevent error from reported when field is identified', () => {
+    expect(
+      schemaErrorLookup(
+        {
+          test: {
+            test: {
+              type: 'test',
+              message: 'error',
+            },
+            test1: {
+              type: 'test',
+              message: 'error',
+            },
+          },
+        },
+        {
+          test: {
+            test1: {
+              _f: {
+                ref: {},
+                name: 'test',
+              },
+            },
+          },
+        },
+        'test.test1.whatever',
+      ),
+    ).toEqual({
+      name: 'test.test1.whatever',
+    });
+
+    expect(
+      schemaErrorLookup(
+        {
+          test: {
+            test: {
+              type: 'test',
+              message: 'error',
+            },
+            test1: {
+              type: 'test',
+              message: 'error',
+            },
+          },
+        },
+        {
+          test: {
+            test1: {
+              _f: {
+                ref: {},
+                name: 'test',
+              },
+            },
+          },
+        },
+        'test.testXYZ',
+      ),
+    ).toEqual({
+      name: 'test.testXYZ',
     });
   });
 });
