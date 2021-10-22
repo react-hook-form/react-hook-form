@@ -21,6 +21,7 @@ import {
   FieldArrayMethodProps,
   FieldArrayPath,
   FieldArrayWithId,
+  FieldErrors,
   FieldPath,
   FieldValues,
   UseFieldArrayProps,
@@ -271,11 +272,11 @@ export const useFieldArray = <
       }
     }
 
-    const errors = control._executeSchema(name as FieldPath<TFieldValues>);
+    const errors = control._executeSchema([name]);
 
     if (get(errors, name) && !get(control._formState.errors, name)) {
       control._subjects.state.next({
-        errors: control._formState.errors,
+        errors: control._formState.errors as FieldErrors<TFieldValues>,
       });
     }
 
