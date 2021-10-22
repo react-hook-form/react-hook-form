@@ -709,10 +709,12 @@ export function createFormControl<
         const { errors } = await executeResolver([name]);
         const previousErrorLookupResult = schemaErrorLookup(
           _formState.errors,
+          _fields,
           name,
         );
         const errorLookupResult = schemaErrorLookup(
           errors,
+          _fields,
           previousErrorLookupResult.name || name,
         );
 

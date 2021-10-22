@@ -268,7 +268,7 @@ describe('append', () => {
 
     expect(inputs).toHaveLength(3);
 
-    // expect(document.activeElement).toEqual(inputs[2]); no longer working
+    expect(document.activeElement).toEqual(inputs[2]);
   });
 
   it('should not focus if shouldFocus is false', () => {
