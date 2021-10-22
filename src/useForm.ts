@@ -73,7 +73,7 @@ export function useForm<
   });
 
   React.useEffect(
-    () =>
+    () => () =>
       Object.values(control._subjects).forEach((subject) =>
         subject.unsubscribe(),
       ),
