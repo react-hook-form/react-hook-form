@@ -279,7 +279,7 @@ describe('insert', () => {
     });
 
     expect(errors.test[0]).toBeDefined();
-    expect(errors.test[1]).toBeDefined();
+    expect(errors.test[1]).toBeUndefined();
     expect(errors.test[2]).toBeDefined();
   });
 
@@ -335,8 +335,8 @@ describe('insert', () => {
     });
 
     expect(errors.test[0]).toBeDefined();
-    expect(errors.test[1]).toBeDefined();
-    expect(errors.test[2]).toBeDefined();
+    expect(errors.test[1]).toBeUndefined();
+    expect(errors.test[2]).toBeUndefined();
     expect(errors.test[3]).toBeDefined();
   });
 

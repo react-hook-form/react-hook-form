@@ -203,7 +203,7 @@ describe('prepend', () => {
       fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
     });
 
-    expect(errors.test).toBeDefined();
+    expect(errors.test).toBeUndefined();
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
