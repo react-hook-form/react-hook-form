@@ -271,6 +271,14 @@ export const useFieldArray = <
       }
     }
 
+    const errors = control._executeSchema(name as FieldPath<TFieldValues>);
+
+    if (get(errors, name) && !get(control._formState.errors, name)) {
+      control._subjects.state.next({
+        errors: control._formState.errors,
+      });
+    }
+
     control._subjects.watch.next({
       name,
       values: control._formValues,
@@ -284,8 +292,6 @@ export const useFieldArray = <
     control._names.focus = '';
 
     control._proxyFormState.isValid && control._updateValid();
-
-    control.trigger(name as FieldPath<TFieldValues>);
   }, [fields, name, control, keyName]);
 
   React.useEffect(() => {

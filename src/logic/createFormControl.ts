@@ -392,7 +392,7 @@ export function createFormControl<
         )
       : ({} as ResolverResult<TFieldValues>);
 
-  const executeResolverValidation = async (names?: InternalFieldName[]) => {
+  const _executeSchema = async (names?: InternalFieldName[]) => {
     const { errors } = await executeResolver();
 
     if (names) {
@@ -755,7 +755,7 @@ export function createFormControl<
     });
 
     if (_options.resolver) {
-      const errors = await executeResolverValidation(
+      const errors = await _executeSchema(
         isUndefined(name) ? name : fieldNames,
       );
 
@@ -1155,7 +1155,7 @@ export function createFormControl<
     control: {
       register,
       unregister,
-      trigger,
+      _executeSchema,
       _getWatch,
       _getDirty,
       _updateValid,

@@ -338,7 +338,7 @@ export type Control<
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
-  trigger: UseFormTrigger<TFieldValues>;
+  _executeSchema: any;
   register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
 };
