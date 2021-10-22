@@ -1,9 +1,10 @@
-import { FieldError, FieldErrors } from '../types';
+import { FieldError, FieldErrors, FieldValues } from '../types';
 import get from '../utils/get';
 import isKey from '../utils/isKey';
 
 export default function schemaErrorLookup(
   errors: FieldErrors,
+  _fields: FieldValues,
   name: string,
 ): {
   error?: FieldError;
@@ -21,14 +22,21 @@ export default function schemaErrorLookup(
   const names = name.split('.');
 
   while (names.length) {
-    const name = names.join('.');
-    const foundError = get(errors, name);
-    if (foundError && foundError.type) {
+    const fieldName = names.join('.');
+    const field = get(_fields, fieldName);
+    const foundError = get(errors, fieldName);
+
+    if (field) {
+      return { name };
+    }
+
+    if (foundError && !field && foundError.type) {
       return {
-        name,
+        name: fieldName,
         error: foundError,
       };
     }
+
     names.pop();
   }
 
