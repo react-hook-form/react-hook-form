@@ -272,14 +272,16 @@ export const useFieldArray = <
       }
     }
 
-    const error = get(control._executeSchema([name]), name);
+    control._executeSchema([name]).then((result) => {
+      const error = get(result.errors, name);
 
-    if (error && !get(control._formState.errors, name)) {
-      set(control._formState.errors, error);
-      control._subjects.state.next({
-        errors: control._formState.errors as FieldErrors<TFieldValues>,
-      });
-    }
+      if (error && error.type && !get(control._formState.errors, name)) {
+        set(control._formState.errors, name, error);
+        control._subjects.state.next({
+          errors: control._formState.errors as FieldErrors<TFieldValues>,
+        });
+      }
+    });
 
     control._subjects.watch.next({
       name,
