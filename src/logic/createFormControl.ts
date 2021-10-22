@@ -52,6 +52,7 @@ import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
+import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
@@ -68,10 +69,10 @@ import unset from '../utils/unset';
 import focusFieldBy from './focusFieldBy';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
-import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
+import schemaErrorLookup from './schemaErrorLookup';
 import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
@@ -537,7 +538,9 @@ export function createFormControl<
             ? ''
             : value;
 
-        if (isMultipleSelect(fieldReference.ref)) {
+        if (isFileInput(fieldReference.ref) && !isString(fieldValue)) {
+          fieldReference.ref.files = fieldValue as FileList;
+        } else if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach(
             (selectRef) =>
               (selectRef.selected = (
@@ -704,23 +707,19 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await executeResolver([name]);
-        error = get(errors, name);
+        const previousErrorLookupResult = schemaErrorLookup(
+          _formState.errors,
+          _fields,
+          name,
+        );
+        const errorLookupResult = schemaErrorLookup(
+          errors,
+          _fields,
+          previousErrorLookupResult.name || name,
+        );
 
-        if (isCheckBoxInput(target) && !error) {
-          const parentNodeName = getNodeParentName(name);
-          const parentField = get(_fields, parentNodeName);
-
-          if (
-            Array.isArray(parentField) &&
-            parentField.every(
-              (field: Field) => field._f && isCheckBoxInput(field._f.ref),
-            )
-          ) {
-            const parentError = get(errors, parentNodeName, {});
-            parentError.type && (error = parentError);
-            name = parentNodeName;
-          }
-        }
+        error = errorLookupResult.error;
+        name = errorLookupResult.name;
 
         isValid = isEmptyObject(errors);
       } else {

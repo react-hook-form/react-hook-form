@@ -343,7 +343,7 @@ export type Control<
 };
 
 export type WatchObserver<TFieldValues> = (
-  value: UnpackNestedValue<TFieldValues>,
+  value: UnpackNestedValue<DeepPartial<TFieldValues>>,
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;

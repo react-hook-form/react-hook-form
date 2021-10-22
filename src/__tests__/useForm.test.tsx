@@ -1033,7 +1033,6 @@ describe('useForm', () => {
           await result.current.register('test1');
         });
 
-        // `trigger` called with a field name
         await act(async () => {
           result.current.trigger('test.sub');
         });
@@ -1061,7 +1060,6 @@ describe('useForm', () => {
           names: ['test.sub', 'test1'],
         });
 
-        // `trigger` called to validate all fields
         await act(async () => {
           result.current.trigger();
         });
@@ -1072,7 +1070,6 @@ describe('useForm', () => {
           names: ['test.sub', 'test1'],
         });
 
-        // `trigger` called to validate fields
         await act(async () => {
           result.current.trigger(['test.sub', 'test1']);
         });
@@ -1440,14 +1437,11 @@ describe('useForm', () => {
           await screen.getByText('Toggle').click();
         });
 
-      // Show input and Submit button
       await toggle();
 
       expect(screen.getByText('Submit')).toBeEnabled();
 
-      // Hide input and Submit button
       await toggle();
-      // Show input and Submit button again
       await toggle();
 
       expect(screen.getByText('Submit')).toBeEnabled();
