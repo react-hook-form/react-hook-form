@@ -18,7 +18,7 @@ describe('prepend', () => {
     mockGenerateId();
   });
 
-  it('should pre-append data into the fields', () => {
+  it('should pre-append data into the fields', async () => {
     let currentFields: any = [];
 
     const Component = () => {
@@ -58,15 +58,15 @@ describe('prepend', () => {
 
     render(<Component />);
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
     });
 
-    act(() => {
+    await actComponent(async () => {
       expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
     });
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
     });
 
@@ -199,7 +199,9 @@ describe('prepend', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    });
 
     expect(errors.test).toBeUndefined();
 
@@ -207,7 +209,9 @@ describe('prepend', () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    });
 
     expect(errors.test).toHaveLength(2);
   });
@@ -423,7 +427,7 @@ describe('prepend', () => {
         result.current.prepend({ value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });

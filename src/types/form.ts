@@ -334,11 +334,14 @@ export type Control<
   _proxyFormState: ReadFormState;
   _defaultValues: Partial<DefaultValues<TFieldValues>>;
   _getWatch: WatchInternal<TFieldValues>;
-  register: UseFormRegister<TFieldValues>;
   _updateFieldArray: BatchFieldArrayUpdate;
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
+  _executeSchema: (
+    names: InternalFieldName[],
+  ) => Promise<{ errors: FieldErrors }>;
+  register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
 };
 

@@ -168,7 +168,7 @@ export function createFormControl<
 
     if (_proxyFormState.isValid) {
       isValid = _options.resolver
-        ? isEmptyObject((await executeResolver()).errors)
+        ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuildInValidation(_fields, true);
 
       if (!shouldSkipRender && isValid !== _formState.isValid) {
@@ -378,7 +378,7 @@ export function createFormControl<
     }
   };
 
-  const executeResolver = async (name?: InternalFieldName[]) =>
+  const _executeSchema = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
           { ..._formValues } as UnpackNestedValue<TFieldValues>,
@@ -392,8 +392,8 @@ export function createFormControl<
         )
       : ({} as ResolverResult<TFieldValues>);
 
-  const executeResolverValidation = async (names?: InternalFieldName[]) => {
-    const { errors } = await executeResolver();
+  const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
+    const { errors } = await _executeSchema();
 
     if (names) {
       for (const name of names) {
@@ -706,7 +706,7 @@ export function createFormControl<
         });
 
       if (_options.resolver) {
-        const { errors } = await executeResolver([name]);
+        const { errors } = await _executeSchema([name]);
         const previousErrorLookupResult = schemaErrorLookup(
           _formState.errors,
           _fields,
@@ -751,7 +751,7 @@ export function createFormControl<
     });
 
     if (_options.resolver) {
-      const errors = await executeResolverValidation(
+      const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
 
@@ -1006,7 +1006,7 @@ export function createFormControl<
 
       try {
         if (_options.resolver) {
-          const { errors, values } = await executeResolver();
+          const { errors, values } = await _executeSchema();
           _formState.errors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
         } else {
@@ -1151,6 +1151,7 @@ export function createFormControl<
     control: {
       register,
       unregister,
+      _executeSchema,
       _getWatch,
       _getDirty,
       _updateValid,

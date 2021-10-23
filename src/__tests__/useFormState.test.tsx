@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  act as actComponent,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { Control } from '../types';
@@ -538,7 +544,7 @@ describe('useFormState', () => {
     screen.getByText('error');
   });
 
-  it('should not start early subscription and throw warning at strict mode', () => {
+  it('should not start early subscription and throw warning at strict mode', async () => {
     type FormValues = { test: { data: string }[] };
 
     function FieldArray() {
@@ -581,15 +587,15 @@ describe('useFormState', () => {
 
     render(<App />);
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'add' }));
     });
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     });
 
-    act(() => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'add' }));
     });
   });

@@ -144,7 +144,9 @@ describe('swap', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
@@ -153,7 +155,9 @@ describe('swap', () => {
     expect(errors.test[0]).toBeUndefined();
     expect(errors.test[1]).toBeDefined();
 
-    fireEvent.click(screen.getByRole('button', { name: /swap/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /swap/i }));
+    });
 
     expect(errors.test[0]).toBeDefined();
     expect(errors.test[1]).toBeUndefined();
@@ -354,7 +358,7 @@ describe('swap', () => {
         result.current.swap(0, 1);
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });
