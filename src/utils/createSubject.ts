@@ -12,6 +12,7 @@ export type Subscription = {
 };
 
 export type Subject<T> = {
+  readonly observers: Observer<T>[];
   next: (value: T) => void;
   subscribe: (value: Observer<T>) => {
     unsubscribe: TearDown;
@@ -58,10 +59,10 @@ function createSubscriber<T>(
 }
 
 export default function createSubject<T>(): Subject<T> {
-  let observers: Observer<T>[] = [];
+  let _observers: Observer<T>[] = [];
 
   const next = (value: T) => {
-    for (const observer of observers) {
+    for (const observer of _observers) {
       observer.next(value);
     }
   };
@@ -69,15 +70,18 @@ export default function createSubject<T>(): Subject<T> {
   const subscribe = (observer: Observer<T>) => {
     const subscription = createSubscription();
     const subscriber = createSubscriber(observer, subscription);
-    observers.push(subscriber);
+    _observers.push(subscriber);
     return subscription;
   };
 
   const unsubscribe = () => {
-    observers = [];
+    _observers = [];
   };
 
   return {
+    get observers() {
+      return _observers;
+    },
     next,
     subscribe,
     unsubscribe,
