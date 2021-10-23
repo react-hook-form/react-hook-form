@@ -333,7 +333,7 @@ describe('swap', () => {
         result.current.move(0, 1);
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });

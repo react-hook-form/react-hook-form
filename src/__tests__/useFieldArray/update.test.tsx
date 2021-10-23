@@ -189,7 +189,7 @@ describe('update', () => {
     );
   });
 
-  it('should update group input correctly', () => {
+  it('should update group input correctly', async () => {
     type FormValues = {
       test: {
         value: {
@@ -279,7 +279,9 @@ describe('update', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -452,7 +454,7 @@ describe('update', () => {
         result.current.update(0, { value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
   });
 });

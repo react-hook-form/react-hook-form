@@ -20,7 +20,6 @@ import {
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
-import isFunction from '../utils/isFunction';
 
 export const mockGenerateId = () => {
   let id = 0;
@@ -219,11 +218,11 @@ describe('useFieldArray', () => {
         target: { value: '12345' },
       });
 
-      await act(async () => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
-      await act(async () => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -271,7 +270,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() => screen.getByText('valid'));
 
-      await act(async () => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -364,7 +363,9 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Append Nest' }));
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Append Nest' }));
+      });
 
       await waitFor(() => screen.getByText('valid'));
 
@@ -377,7 +378,9 @@ describe('useFieldArray', () => {
         ],
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+      });
 
       expect(formData).toEqual({
         test: [],
@@ -386,7 +389,7 @@ describe('useFieldArray', () => {
   });
 
   describe('when component unMount', () => {
-    it('should keep field array values', () => {
+    it('should keep field array values', async () => {
       let getValues: any;
       const Component = () => {
         const [show, setShow] = React.useState(true);
@@ -415,9 +418,17 @@ describe('useFieldArray', () => {
 
       const button = screen.getByRole('button', { name: /append/i });
 
-      fireEvent.click(button);
-      fireEvent.click(button);
-      fireEvent.click(button);
+      await actComponent(async () => {
+        fireEvent.click(button);
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(button);
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(button);
+      });
 
       fireEvent.click(screen.getByRole('button', { name: 'setShow' }));
 
@@ -429,8 +440,11 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(3);
     });
 
-    it('should remove reset method when field array is removed', () => {
-      const { result, unmount } = renderHook(() => {
+    it('should remove reset method when field array is removed', async () => {
+      let controlTemp: any;
+      let fieldsTemp: unknown[] = [];
+
+      const App = () => {
         const { register, control } = useForm({
           defaultValues: {
             test: [{ value: 'default' }],
@@ -440,25 +454,38 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        return { register, control, fields, append };
-      });
+        controlTemp = control;
+        fieldsTemp = fields;
 
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.name = 'test[0].value';
+        return (
+          <form>
+            {fields.map((field) => {
+              return <input key={field.id} {...register('test.0.value')} />;
+            })}
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  value: 'test',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
 
-      const { ref } = result.current.register('test.0.value');
+      const { unmount } = render(<App />);
 
-      isFunction(ref) && ref(input);
-
-      act(() => {
-        result.current.append({ value: 'test' });
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
       });
 
       unmount();
 
-      expect(result.current.fields).toMatchSnapshot();
-      expect(result.current.control._names.array).toEqual(new Set(['test']));
+      expect(fieldsTemp).toMatchSnapshot();
+      expect(controlTemp._names.array).toEqual(new Set(['test']));
     });
 
     it('should unset field array values correctly on DOM removing', async () => {
@@ -655,7 +682,7 @@ describe('useFieldArray', () => {
   });
 
   describe('setError', () => {
-    it('should be able to set an field array error', () => {
+    it('should be able to set an field array error', async () => {
       const Component = () => {
         const {
           register,
@@ -697,15 +724,15 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      actComponent(() => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
-      actComponent(() => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
-      actComponent(() => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'delete' }));
       });
 
@@ -714,8 +741,10 @@ describe('useFieldArray', () => {
   });
 
   describe('with reset', () => {
-    it('should reset with field array', () => {
-      const { result } = renderHook(() => {
+    it('should reset with field array', async () => {
+      let fieldsTemp: unknown[] = [];
+
+      const App = () => {
         const { register, reset, control } = useForm({
           defaultValues: {
             test: [{ value: 'default' }],
@@ -725,19 +754,48 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        return { register, reset, fields, append };
+        fieldsTemp = fields;
+
+        return (
+          <form>
+            {fields.map((field, index) => {
+              return (
+                <input key={field.id} {...register(`test.${index}.value`)} />
+              );
+            })}
+
+            <button
+              type={'button'}
+              onClick={() => {
+                append({ value: 'test' });
+              }}
+            >
+              append
+            </button>
+
+            <button
+              type={'button'}
+              onClick={() => {
+                reset();
+              }}
+            >
+              reset
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
-      act(() => {
-        result.current.append({ value: 'test' });
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
       });
 
-      result.current.register('test.0.value');
-
-      act(() => {
-        result.current.reset();
-      });
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -853,7 +911,7 @@ describe('useFieldArray', () => {
   describe('with setValue', () => {
     it.each(['isDirty', 'dirtyFields'])(
       'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
-      (property) => {
+      async (property) => {
         let setValue: any;
         let formState: any;
         const Component = () => {
@@ -893,7 +951,7 @@ describe('useFieldArray', () => {
 
         render(<Component />);
 
-        actComponent(() => {
+        await actComponent(async () => {
           setValue(
             'test',
             [
@@ -994,7 +1052,7 @@ describe('useFieldArray', () => {
       },
     );
 
-    it('should set nested field array correctly', () => {
+    it('should set nested field array correctly', async () => {
       type FormValues = {
         test: {
           firstName: string;
@@ -1076,7 +1134,9 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+      });
 
       const input = screen.getByLabelText(
         'test.0.keyValue.0.name',
@@ -1721,7 +1781,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      actComponent(() => {
+      await actComponent(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
@@ -2221,7 +2281,7 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    await act(async () => {
+    await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Append' }));
     });
 
