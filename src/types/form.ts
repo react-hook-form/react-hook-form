@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SubjectType, Subscription } from '../utils/subject';
+import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
@@ -264,21 +264,21 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(
   data?: TData,
 ) => boolean;
 
-export type FormStateSubjectRef<TFieldValues> = SubjectType<
+export type FormStateSubjectRef<TFieldValues> = Subject<
   Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
 >;
 
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
-  watch: SubjectType<{
+  watch: Subject<{
     name?: InternalFieldName;
     type?: EventType;
     values?: FieldValues;
   }>;
-  control: SubjectType<{
+  control: Subject<{
     name?: InternalFieldName;
     values?: FieldValues;
   }>;
-  array: SubjectType<{
+  array: Subject<{
     name?: InternalFieldName;
     values?: FieldValues;
   }>;

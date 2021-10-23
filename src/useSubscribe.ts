@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { SubjectType, TearDown } from './utils/subject';
+import { Subject, TearDown } from './utils/createSubject';
 import { Noop } from './types';
 
 type Props<T> = {
   disabled?: boolean;
-  subject: SubjectType<T>;
+  subject: Subject<T>;
   callback: (value: T) => void;
   skipEarlySubscription?: boolean;
 };

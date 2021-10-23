@@ -44,6 +44,7 @@ import { set } from '../utils';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
+import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
@@ -63,7 +64,6 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
-import Subject from '../utils/subject';
 import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
@@ -136,10 +136,10 @@ export function createFormControl<
     errors: false,
   };
   const _subjects: Subjects<TFieldValues> = {
-    watch: new Subject(),
-    control: new Subject(),
-    array: new Subject(),
-    state: new Subject(),
+    watch: createSubject(),
+    control: createSubject(),
+    array: createSubject(),
+    state: createSubject(),
   };
 
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
