@@ -520,7 +520,7 @@ export function createFormControl<
 
   const setFieldValue = (
     name: InternalFieldName,
-    value: SetFieldValue<TFieldValues> | undefined,
+    value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
     shouldRender?: boolean,
   ) => {
@@ -577,18 +577,8 @@ export function createFormControl<
       }
     }
 
-    if (options.shouldReset) {
-      unset(_formState.dirtyFields, name);
-      unset(_formState.touchedFields, name);
-      unset(_formState.errors, name);
-
-      if (!isUndefined(value)) {
-        _defaultValues = value;
-      }
-      // const isDirty = _getDirty(name, value);
-    } else if (options.shouldDirty || options.shouldTouch) {
+    (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(name, fieldValue, options.shouldTouch);
-    }
 
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
