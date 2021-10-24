@@ -10,10 +10,9 @@ export type Subscription = {
 
 export type Subject<T> = {
   readonly observers: Observer<T>[];
-  next: (value: T) => void;
   subscribe: (value: Observer<T>) => Subscription;
   unsubscribe: Noop;
-};
+} & Observer<T>;
 
 export default function createSubject<T>(): Subject<T> {
   let _observers: Observer<T>[] = [];
