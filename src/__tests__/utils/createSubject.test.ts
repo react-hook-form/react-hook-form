@@ -13,6 +13,8 @@ describe('createSubject', () => {
       next,
     });
 
+    expect(subject.observers.length).toBe(2);
+
     subject.next(2);
 
     expect(next).toBeCalledTimes(2);
@@ -32,7 +34,11 @@ describe('createSubject', () => {
       next: next2,
     });
 
+    expect(subject.observers.length).toBe(2);
+
     subscription.unsubscribe();
+
+    expect(subject.observers.length).toBe(1);
 
     subject.next(2);
 
@@ -52,7 +58,11 @@ describe('createSubject', () => {
       next,
     });
 
+    expect(subject.observers.length).toBe(2);
+
     subject.unsubscribe();
+
+    expect(subject.observers.length).toBe(0);
 
     subject.next(2);
     subject.next(2);
