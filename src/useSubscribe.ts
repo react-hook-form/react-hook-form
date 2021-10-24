@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Subject, TearDown } from './utils/createSubject';
+import { Subject, Subscription } from './utils/createSubject';
 import { Noop } from './types';
 
 type Props<T> = {
@@ -10,15 +10,13 @@ type Props<T> = {
   skipEarlySubscription?: boolean;
 };
 
-type Unsubscribe = { unsubscribe: TearDown };
-
 type Payload<T> = {
-  _unsubscribe: React.MutableRefObject<Unsubscribe | undefined>;
+  _unsubscribe: React.MutableRefObject<Subscription | undefined>;
   props: Props<T>;
 };
 
 const tearDown = (
-  _unsubscribe: React.MutableRefObject<Unsubscribe | undefined>,
+  _unsubscribe: React.MutableRefObject<Subscription | undefined>,
 ) => {
   if (_unsubscribe.current) {
     _unsubscribe.current.unsubscribe();
@@ -39,7 +37,7 @@ const updateSubscriptionProps =
   };
 
 export function useSubscribe<T>(props: Props<T>) {
-  const _unsubscribe = React.useRef<Unsubscribe>();
+  const _unsubscribe = React.useRef<Subscription>();
   const _updateSubscription = React.useRef<Noop>(() => {});
 
   _updateSubscription.current = updateSubscriptionProps({
