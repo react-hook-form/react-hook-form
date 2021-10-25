@@ -386,6 +386,64 @@ describe('useFieldArray', () => {
         test: [],
       });
     });
+
+    it('should report field array error during user action', async () => {
+      const App = () => {
+        const {
+          register,
+          control,
+          formState: { errors },
+        } = useForm<{
+          test: { value: string }[];
+        }>({
+          resolver: (data) => {
+            return {
+              values: data,
+              errors: {
+                test: {
+                  type: 'test',
+                  message: 'minLength',
+                },
+              },
+            };
+          },
+          defaultValues: {
+            test: [{ value: '1' }],
+          },
+        });
+        const { fields, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {errors.test && <p>minLength</p>}
+
+            {fields.map((item, i) => (
+              <fieldset key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+                <button type={'button'} onClick={() => remove(i)}>
+                  delete
+                </button>
+              </fieldset>
+            ))}
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByText('minLength')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      await waitFor(async () => {
+        screen.getByText('minLength');
+      });
+    });
   });
 
   describe('when component unMount', () => {
