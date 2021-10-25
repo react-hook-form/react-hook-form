@@ -233,9 +233,23 @@ describe('useWatch', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    actComponent(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+    });
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
     expect(output).toEqual([
+      { test: 'test' },
+      { test: 'test' },
       { test: 'test' },
       { test: 'test' },
       { test: 'test' },
