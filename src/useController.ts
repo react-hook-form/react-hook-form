@@ -48,6 +48,7 @@ export function useController<
     callback: (data) =>
       (!data.name || _name.current === data.name) &&
       setInputStateValue(get(data.values, _name.current)),
+    skipEarlySubscription: true,
   });
 
   const registerProps = control.register(name, {
