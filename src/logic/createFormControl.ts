@@ -1079,7 +1079,7 @@ export function createFormControl<
 
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
-          ? _defaultValues
+          ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
       _fields = {};
