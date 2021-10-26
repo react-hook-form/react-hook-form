@@ -245,6 +245,18 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
+export type UseFormResetField<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  options?: Partial<{
+    keepDirty: boolean;
+    keepTouch: boolean;
+    keepError: boolean;
+    defaultValue: any;
+  }>,
+) => void;
+
 export type UseFormReset<TFieldValues extends FieldValues> = (
   values?: DefaultValues<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
@@ -365,6 +377,7 @@ export type UseFormReturn<
   setValue: UseFormSetValue<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
   formState: FormState<TFieldValues>;
+  resetField: UseFormResetField<TFieldValues>;
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;

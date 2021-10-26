@@ -30,6 +30,7 @@ import {
   UseFormRegister,
   UseFormRegisterReturn,
   UseFormReset,
+  UseFormResetField,
   UseFormReturn,
   UseFormSetError,
   UseFormSetFocus,
@@ -1047,6 +1048,36 @@ export function createFormControl<
       }
     };
 
+  const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
+    if (!options.keepTouch) {
+      unset(_formState.touchedFields, name);
+    }
+
+    if (!options.keepDirty) {
+      unset(_formState.dirtyFields, name);
+      _formState.isDirty = _getDirty(name, get(_defaultValues, name));
+    }
+
+    if (isUndefined(options.defaultValue)) {
+      setValue(name, get(_defaultValues, name));
+    } else {
+      setValue(name, options.defaultValue);
+      set(_defaultValues, name, options.defaultValue);
+    }
+
+    if (!options.keepError) {
+      unset(_formState.errors, name);
+      _updateValid();
+    }
+
+    _subjects.state.next({
+      errors: _formState.errors,
+      touchedFields: _formState.touchedFields,
+      isDirty: _formState.isDirty,
+      dirtyFields: _formState.dirtyFields,
+    });
+  };
+
   const reset: UseFormReset<TFieldValues> = (
     formValues,
     keepStateOptions = {},
@@ -1213,6 +1244,7 @@ export function createFormControl<
     setValue,
     getValues,
     reset,
+    resetField,
     clearErrors,
     unregister,
     setError,
