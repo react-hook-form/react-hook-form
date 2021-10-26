@@ -1049,6 +1049,13 @@ export function createFormControl<
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
+    if (isUndefined(options.defaultValue)) {
+      setValue(name, get(_defaultValues, name));
+    } else {
+      setValue(name, options.defaultValue);
+      set(_defaultValues, name, options.defaultValue);
+    }
+
     if (!options.keepTouch) {
       unset(_formState.touchedFields, name);
     }
@@ -1058,24 +1065,12 @@ export function createFormControl<
       _formState.isDirty = _getDirty(name, get(_defaultValues, name));
     }
 
-    if (isUndefined(options.defaultValue)) {
-      setValue(name, get(_defaultValues, name));
-    } else {
-      setValue(name, options.defaultValue);
-      set(_defaultValues, name, options.defaultValue);
-    }
-
     if (!options.keepError) {
       unset(_formState.errors, name);
-      _updateValid();
+      _proxyFormState.isValid && _updateValid();
     }
 
-    _subjects.state.next({
-      errors: _formState.errors,
-      touchedFields: _formState.touchedFields,
-      isDirty: _formState.isDirty,
-      dirtyFields: _formState.dirtyFields,
-    });
+    _subjects.state.next({ ..._formState });
   };
 
   const reset: UseFormReset<TFieldValues> = (
