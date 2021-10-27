@@ -44,6 +44,7 @@ import { set } from '../utils';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
+import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import getValidationModes from '../utils/getValidationModes';
@@ -63,7 +64,6 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
-import Subject from '../utils/subject';
 import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
@@ -136,10 +136,10 @@ export function createFormControl<
     errors: false,
   };
   const _subjects: Subjects<TFieldValues> = {
-    watch: new Subject(),
-    control: new Subject(),
-    array: new Subject(),
-    state: new Subject(),
+    watch: createSubject(),
+    control: createSubject(),
+    array: createSubject(),
+    state: createSubject(),
   };
 
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
@@ -168,7 +168,7 @@ export function createFormControl<
 
     if (_proxyFormState.isValid) {
       isValid = _options.resolver
-        ? isEmptyObject((await executeResolver()).errors)
+        ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuildInValidation(_fields, true);
 
       if (!shouldSkipRender && isValid !== _formState.isValid) {
@@ -378,7 +378,7 @@ export function createFormControl<
     }
   };
 
-  const executeResolver = async (name?: InternalFieldName[]) =>
+  const _executeSchema = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
           { ..._formValues } as UnpackNestedValue<TFieldValues>,
@@ -392,8 +392,8 @@ export function createFormControl<
         )
       : ({} as ResolverResult<TFieldValues>);
 
-  const executeResolverValidation = async (names?: InternalFieldName[]) => {
-    const { errors } = await executeResolver();
+  const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
+    const { errors } = await _executeSchema();
 
     if (names) {
       for (const name of names) {
@@ -706,7 +706,7 @@ export function createFormControl<
         });
 
       if (_options.resolver) {
-        const { errors } = await executeResolver([name]);
+        const { errors } = await _executeSchema([name]);
         const previousErrorLookupResult = schemaErrorLookup(
           _formState.errors,
           _fields,
@@ -751,7 +751,7 @@ export function createFormControl<
     });
 
     if (_options.resolver) {
-      const errors = await executeResolverValidation(
+      const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
 
@@ -776,9 +776,12 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      ...(!isString(name) || isValid !== _formState.isValid ? {} : { name }),
+      ...(!isString(name) ||
+      (_proxyFormState.isValid && isValid !== _formState.isValid)
+        ? {}
+        : { name }),
+      ...(_options.resolver ? { isValid } : {}),
       errors: _formState.errors,
-      isValid,
       isValidating: false,
     });
 
@@ -1006,7 +1009,7 @@ export function createFormControl<
 
       try {
         if (_options.resolver) {
-          const { errors, values } = await executeResolver();
+          const { errors, values } = await _executeSchema();
           _formState.errors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
         } else {
@@ -1079,7 +1082,7 @@ export function createFormControl<
 
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
-          ? _defaultValues
+          ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
       _fields = {};
@@ -1151,6 +1154,7 @@ export function createFormControl<
     control: {
       register,
       unregister,
+      _executeSchema,
       _getWatch,
       _getDirty,
       _updateValid,

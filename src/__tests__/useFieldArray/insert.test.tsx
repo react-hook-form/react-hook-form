@@ -262,14 +262,21 @@ describe('insert', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    });
 
     expect(errors.test[0]).toBeDefined();
     expect(errors.test[1]).toBeUndefined();
@@ -311,14 +318,21 @@ describe('insert', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     await actComponent(async () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
+    });
 
     expect(errors.test[0]).toBeDefined();
     expect(errors.test[1]).toBeUndefined();
@@ -536,7 +550,7 @@ describe('insert', () => {
         result.current.insert(0, { value: '1' });
       });
 
-      expect(resolver).not.toBeCalled();
+      expect(resolver).toBeCalled();
     });
 
     it('should insert update fields during async submit', () => {
