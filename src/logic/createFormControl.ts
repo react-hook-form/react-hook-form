@@ -776,9 +776,12 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      ...(!isString(name) || isValid !== _formState.isValid ? {} : { name }),
+      ...(!isString(name) ||
+      (_proxyFormState.isValid && isValid !== _formState.isValid)
+        ? {}
+        : { name }),
+      ...(_options.resolver ? { isValid } : {}),
       errors: _formState.errors,
-      isValid,
       isValidating: false,
     });
 
@@ -1079,7 +1082,7 @@ export function createFormControl<
 
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
-          ? _defaultValues
+          ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
       _fields = {};
