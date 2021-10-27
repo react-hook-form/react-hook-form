@@ -56,18 +56,15 @@ export function useController<
     value,
   });
 
-  const updateMounted = React.useCallback(
-    (name: InternalFieldName, value: boolean) => {
+  React.useEffect(() => {
+    const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 
       if (field) {
         field._f.mount = value;
       }
-    },
-    [control],
-  );
+    };
 
-  React.useEffect(() => {
     updateMounted(name, true);
 
     return () => {
@@ -84,7 +81,7 @@ export function useController<
         updateMounted(name, false);
       }
     };
-  }, [name, control, shouldUnregister, updateMounted]);
+  }, [name, control, shouldUnregister]);
 
   return {
     field: {
