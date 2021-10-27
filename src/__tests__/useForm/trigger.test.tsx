@@ -9,6 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Control, FieldPath } from '../../types';
+import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
@@ -859,6 +861,60 @@ describe('trigger', () => {
     await waitFor(() => {
       screen.getByText('firstName');
       screen.getByText('lastName');
+    });
+  });
+
+  it('should only trigger render on targeted input', async () => {
+    type FormValue = {
+      x: string;
+      y: string;
+    };
+
+    function Input({
+      name,
+      control,
+    }: {
+      name: FieldPath<FormValue>;
+      control: Control<FormValue>;
+    }) {
+      const renderCount = React.useRef(0);
+      renderCount.current += 1;
+
+      useController({
+        name,
+        control,
+      });
+
+      return <p>{renderCount.current}</p>;
+    }
+
+    function App() {
+      const { handleSubmit, control, trigger } = useForm<FormValue>();
+      const onSubmit = () => {};
+
+      return (
+        <div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Input name="x" control={control} />
+            <Input name="y" control={control} />
+
+            <button type="button" onClick={() => trigger('x')}>
+              Trigger Validation on X
+            </button>
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    actComponent(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(async () => {
+      screen.getByText('2');
+      screen.getByText('1');
     });
   });
 });
