@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Subject, TearDown } from './utils/createSubject';
+import { Subject, Subscription } from './utils/createSubject';
 import { Noop } from './types';
 
 type Props<T> = {
@@ -10,40 +10,38 @@ type Props<T> = {
   skipEarlySubscription?: boolean;
 };
 
-type Unsubscribe = { unsubscribe: TearDown };
-
 type Payload<T> = {
-  _unsubscribe: React.MutableRefObject<Unsubscribe | undefined>;
+  _subscription: React.MutableRefObject<Subscription | undefined>;
   props: Props<T>;
 };
 
 const tearDown = (
-  _unsubscribe: React.MutableRefObject<Unsubscribe | undefined>,
+  _subscription: React.MutableRefObject<Subscription | undefined>,
 ) => {
-  if (_unsubscribe.current) {
-    _unsubscribe.current.unsubscribe();
-    _unsubscribe.current = undefined;
+  if (_subscription.current) {
+    _subscription.current.unsubscribe();
+    _subscription.current = undefined;
   }
 };
 
 const updateSubscriptionProps =
-  <T>({ _unsubscribe, props }: Payload<T>) =>
+  <T>({ _subscription, props }: Payload<T>) =>
   () => {
     if (props.disabled) {
-      tearDown(_unsubscribe);
-    } else if (!_unsubscribe.current) {
-      _unsubscribe.current = props.subject.subscribe({
+      tearDown(_subscription);
+    } else if (!_subscription.current) {
+      _subscription.current = props.subject.subscribe({
         next: props.callback,
       });
     }
   };
 
 export function useSubscribe<T>(props: Props<T>) {
-  const _unsubscribe = React.useRef<Unsubscribe>();
+  const _subscription = React.useRef<Subscription>();
   const _updateSubscription = React.useRef<Noop>(() => {});
 
   _updateSubscription.current = updateSubscriptionProps({
-    _unsubscribe,
+    _subscription,
     props,
   });
 
@@ -51,6 +49,6 @@ export function useSubscribe<T>(props: Props<T>) {
 
   React.useEffect(() => {
     _updateSubscription.current();
-    return () => tearDown(_unsubscribe);
+    return () => tearDown(_subscription);
   }, []);
 }
