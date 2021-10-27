@@ -776,7 +776,10 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      ...(!isString(name) || isValid !== _formState.isValid ? {} : { name }),
+      ...(!isString(name) ||
+      (_proxyFormState.isValid && isValid !== _formState.isValid)
+        ? {}
+        : { name }),
       errors: _formState.errors,
       isValid,
       isValidating: false,
