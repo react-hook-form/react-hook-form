@@ -33,6 +33,7 @@ import UseWatchUseFieldArrayNested from './useWatchUseFieldArrayNested';
 import Test from './test';
 import Welcome from './welcome';
 import { UseFormState } from './useFormState';
+import SetValueAsyncStrictMode from './setValueStrictMode';
 
 const App: React.FC = () => {
   return (
@@ -75,6 +76,10 @@ const App: React.FC = () => {
       />
       <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
+      <Route
+        path="/setValueAsyncStrictMode"
+        component={SetValueAsyncStrictMode}
+      />
       <Route path="/setValueWithSchema" exact component={SetValueWithSchema} />
       <Route
         path="/SetValueCustomRegister"
