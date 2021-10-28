@@ -1065,7 +1065,9 @@ export function createFormControl<
 
     if (!options.keepDirty) {
       unset(_formState.dirtyFields, name);
-      _formState.isDirty = _getDirty(name, get(_defaultValues, name));
+      _formState.isDirty = options.defaultValue
+        ? _getDirty(name, get(_defaultValues, name))
+        : _getDirty();
     }
 
     if (!options.keepError) {
