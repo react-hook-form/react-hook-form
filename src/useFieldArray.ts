@@ -61,7 +61,6 @@ export const useFieldArray = <
       }
     },
     subject: control._subjects.array,
-    skipEarlySubscription: true,
   });
 
   const updateValues = React.useCallback(

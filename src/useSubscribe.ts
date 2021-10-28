@@ -7,7 +7,6 @@ type Props<T> = {
   disabled?: boolean;
   subject: Subject<T>;
   callback: (value: T) => void;
-  skipEarlySubscription?: boolean;
 };
 
 type Payload<T> = {
@@ -45,7 +44,7 @@ export function useSubscribe<T>(props: Props<T>) {
     props,
   });
 
-  !props.skipEarlySubscription && _updateSubscription.current();
+  _updateSubscription.current();
 
   React.useEffect(() => {
     _updateSubscription.current();

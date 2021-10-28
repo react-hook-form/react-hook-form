@@ -535,7 +535,7 @@ describe('reset', () => {
         defaultValues: { test: 'test', test1: 'test1' },
       });
       const resetData = () => {
-        reset({}, { keepDefaultValues: true });
+        reset(undefined, { keepDefaultValues: true });
       };
 
       return (
