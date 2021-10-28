@@ -10,14 +10,14 @@ export function generateWatchOutput(
 ) {
   const isArray = Array.isArray(names);
   if (isString(names)) {
-    _names.watch.add(names as InternalFieldName);
+    isGlobal && _names.watch.add(names as InternalFieldName);
     return get(formValues, names as InternalFieldName);
   }
 
   if (isArray) {
     return names.map(
       (fieldName) => (
-        _names.watch.add(fieldName as InternalFieldName),
+        isGlobal && _names.watch.add(fieldName as InternalFieldName),
         get(formValues, fieldName as InternalFieldName)
       ),
     );
