@@ -46,6 +46,8 @@ export function useSubscribe<T>(props: Props<T>) {
     props,
   });
 
+  _updateSubscription.current();
+
   React.useEffect(() => {
     _updateSubscription.current();
     return () => tearDown(_unsubscribe);

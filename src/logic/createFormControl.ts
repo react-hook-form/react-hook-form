@@ -67,6 +67,7 @@ import omit from '../utils/omit';
 import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
+import { generateWatchOutput } from './generateWatchOutput';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -495,19 +496,7 @@ export function createFormControl<
         : defaultValue),
     };
 
-    if (names) {
-      const result = convertToArrayPayload(names).map(
-        (fieldName) => (
-          isGlobal && _names.watch.add(fieldName as InternalFieldName),
-          get(fieldValues, fieldName as InternalFieldName)
-        ),
-      );
-
-      return Array.isArray(names) ? result : result[0];
-    }
-
-    isGlobal && (_names.watchAll = true);
-    return fieldValues;
+    return generateWatchOutput(names, _names, fieldValues, isGlobal);
   };
 
   const _getFieldArray = (name: InternalFieldName) =>
@@ -631,6 +620,7 @@ export function createFormControl<
     isFieldWatched(name) && _subjects.state.next({});
     _subjects.watch.next({
       name,
+      values: { ..._formValues },
     });
   };
 
