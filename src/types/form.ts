@@ -251,7 +251,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   name: TFieldName,
   options?: Partial<{
     keepDirty: boolean;
-    keepTouch: boolean;
+    keepTouched: boolean;
     keepError: boolean;
     defaultValue: any;
   }>,

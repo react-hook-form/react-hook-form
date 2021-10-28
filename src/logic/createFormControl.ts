@@ -1059,7 +1059,7 @@ export function createFormControl<
       set(_defaultValues, name, options.defaultValue);
     }
 
-    if (!options.keepTouch) {
+    if (!options.keepTouched) {
       unset(_formState.touchedFields, name);
     }
 

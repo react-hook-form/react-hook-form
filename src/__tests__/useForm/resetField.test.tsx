@@ -261,7 +261,7 @@ describe('resetField', () => {
             <button
               type={'button'}
               onClick={() => {
-                resetField('test', { keepTouch: true });
+                resetField('test', { keepTouched: true });
               }}
             >
               reset
