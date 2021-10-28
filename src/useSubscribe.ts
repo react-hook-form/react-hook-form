@@ -7,7 +7,6 @@ type Props<T> = {
   disabled?: boolean;
   subject: Subject<T>;
   callback: (value: T) => void;
-  skipEarlySubscription?: boolean;
 };
 
 type Unsubscribe = { unsubscribe: TearDown };
@@ -46,8 +45,6 @@ export function useSubscribe<T>(props: Props<T>) {
     _unsubscribe,
     props,
   });
-
-  !props.skipEarlySubscription && _updateSubscription.current();
 
   React.useEffect(() => {
     _updateSubscription.current();

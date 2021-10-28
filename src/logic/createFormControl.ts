@@ -137,7 +137,6 @@ export function createFormControl<
   };
   const _subjects: Subjects<TFieldValues> = {
     watch: createSubject(),
-    control: createSubject(),
     array: createSubject(),
     state: createSubject(),
   };
@@ -522,7 +521,6 @@ export function createFormControl<
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
-    shouldRender?: boolean,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -568,12 +566,6 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
         }
-
-        shouldRender &&
-          _subjects.control.next({
-            values: _formValues,
-            name,
-          });
       }
     }
 
@@ -598,7 +590,7 @@ export function createFormControl<
         (field && !field._f)) &&
       !isDateObject(fieldValue)
         ? setValues(fieldName, fieldValue, options)
-        : setFieldValue(fieldName, fieldValue, options, true);
+        : setFieldValue(fieldName, fieldValue, options);
     }
   };
 
@@ -633,7 +625,7 @@ export function createFormControl<
     } else {
       field && !field._f && !isNullOrUndefined(value)
         ? setValues(name, value, options)
-        : setFieldValue(name, value, options, true);
+        : setFieldValue(name, value, options);
     }
 
     isFieldWatched(name) && _subjects.state.next({});
@@ -1054,9 +1046,11 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
-    const hasUpdatedFormValues = !isEmptyObject(formValues);
     const updatedValues = formValues || _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
+    const values = !isEmptyObject(formValues)
+      ? cloneUpdatedValues
+      : _defaultValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1087,14 +1081,12 @@ export function createFormControl<
         : cloneUpdatedValues;
       _fields = {};
 
-      _subjects.control.next({
-        values: hasUpdatedFormValues ? cloneUpdatedValues : _defaultValues,
+      _subjects.watch.next({
+        values,
       });
 
-      _subjects.watch.next({});
-
       _subjects.array.next({
-        values: cloneUpdatedValues,
+        values,
       });
     }
 

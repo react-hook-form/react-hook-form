@@ -274,10 +274,6 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
     type?: EventType;
     values?: FieldValues;
   }>;
-  control: Subject<{
-    name?: InternalFieldName;
-    values?: FieldValues;
-  }>;
   array: Subject<{
     name?: InternalFieldName;
     values?: FieldValues;
