@@ -79,11 +79,10 @@ export function useController<
 
   return {
     field: {
-      onChange: (event: any) => {
-        const value = getControllerValue(event);
+      onChange: (event) => {
         registerProps.onChange({
           target: {
-            value,
+            value: getControllerValue(event),
             name: name as InternalFieldName,
           },
           type: EVENTS.CHANGE,

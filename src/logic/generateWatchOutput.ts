@@ -1,6 +1,6 @@
 import { FieldValues, InternalFieldName, Names } from '../types';
-import convertToArrayPayload from '../utils/convertToArrayPayload';
 import get from '../utils/get';
+import isString from '../utils/isString';
 
 export function generateWatchOutput(
   names: string | string[] | undefined,
@@ -8,15 +8,19 @@ export function generateWatchOutput(
   formValues?: FieldValues,
   isGlobal?: boolean,
 ) {
-  if (names) {
-    const result = convertToArrayPayload(names).map(
+  const isArray = Array.isArray(names);
+  if (isString(names)) {
+    _names.watch.add(names as InternalFieldName);
+    return get(formValues, names as InternalFieldName);
+  }
+
+  if (isArray) {
+    return names.map(
       (fieldName) => (
-        isGlobal && _names.watch.add(fieldName as InternalFieldName),
+        _names.watch.add(fieldName as InternalFieldName),
         get(formValues, fieldName as InternalFieldName)
       ),
     );
-
-    return Array.isArray(names) ? result : result[0];
   }
 
   isGlobal && (_names.watchAll = true);

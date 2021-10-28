@@ -3,7 +3,12 @@ import * as React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import { FieldValues, UseFormStateProps, UseFormStateReturn } from './types';
+import {
+  FieldValues,
+  InternalFieldName,
+  UseFormStateProps,
+  UseFormStateReturn,
+} from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
@@ -28,7 +33,10 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   useSubscribe({
     disabled,
     callback: (formState) =>
-      shouldSubscribeByName(_name.current, formState.name) &&
+      shouldSubscribeByName(
+        _name.current as InternalFieldName,
+        formState.name,
+      ) &&
       shouldRenderFormState(formState, _localProxyFormState.current) &&
       updateFormState({
         ...control._formState,
