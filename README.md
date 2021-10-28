@@ -359,18 +359,35 @@ Thanks go to all our backers! [[Become a backer](https://opencollective.com/reac
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-## Organizations
-
-Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
-
-<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
-</a>
-
 ## Contributors
 
 Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
+</a>
+
+## Helpers
+
+Thank you for helping and answering questions from the community.
+
+<a href="https://github.com/leapful">
+  <img src="https://avatars.githubusercontent.com/u/18494222?v=4" width="25" />
+</a>
+<a href="https://github.com/thanh-nguyen-95">
+  <img src="https://avatars.githubusercontent.com/u/44762180?v=4" width="25" />
+</a>
+<a href="https://github.com/slugmandrew">
+  <img src="https://avatars.githubusercontent.com/u/153625?v=4" width="25" />
+</a>
+<a href="https://github.com/lundn">
+  <img src="https://avatars.githubusercontent.com/u/4386964?v=4" width="25" />
+</a>
+
+## Organizations
+
+Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
 </a>
