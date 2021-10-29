@@ -444,6 +444,56 @@ describe('useFieldArray', () => {
         screen.getByText('minLength');
       });
     });
+
+    it('should not return schema error without user action', () => {
+      const App = () => {
+        const {
+          register,
+          control,
+          formState: { errors },
+        } = useForm<{
+          test: { value: string }[];
+        }>({
+          resolver: (data) => {
+            return {
+              values: data,
+              errors: {
+                test: {
+                  type: 'test',
+                  message: 'minLength',
+                },
+              },
+            };
+          },
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {errors.test && <p>minLength</p>}
+
+            {fields.map((item, i) => (
+              <fieldset key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+                <button type={'button'} onClick={() => remove(i)}>
+                  delete
+                </button>
+              </fieldset>
+            ))}
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByText('minLength')).toBeNull();
+    });
   });
 
   describe('when component unMount', () => {
