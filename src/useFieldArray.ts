@@ -49,6 +49,7 @@ export const useFieldArray = <
   >(mapIds(control._getFieldArray(name), keyName));
   const _fieldIds = React.useRef(fields);
   const _name = React.useRef(name);
+  const _actioned = React.useRef(false);
 
   _name.current = name;
   _fieldIds.current = fields;
@@ -75,6 +76,7 @@ export const useFieldArray = <
         updatedFieldArrayValuesWithKey,
         keyName,
       );
+      _actioned.current = true;
       set(control._formValues, name, updatedFieldArrayValues);
       setFields(updatedFieldArrayValuesWithKey);
       return updatedFieldArrayValues;
@@ -271,16 +273,18 @@ export const useFieldArray = <
       }
     }
 
-    control._executeSchema([name]).then((result) => {
-      const error = get(result.errors, name);
+    if (_actioned.current) {
+      control._executeSchema([name]).then((result) => {
+        const error = get(result.errors, name);
 
-      if (error && error.type && !get(control._formState.errors, name)) {
-        set(control._formState.errors, name, error);
-        control._subjects.state.next({
-          errors: control._formState.errors as FieldErrors<TFieldValues>,
-        });
-      }
-    });
+        if (error && error.type && !get(control._formState.errors, name)) {
+          set(control._formState.errors, name, error);
+          control._subjects.state.next({
+            errors: control._formState.errors as FieldErrors<TFieldValues>,
+          });
+        }
+      });
+    }
 
     control._subjects.watch.next({
       name,
