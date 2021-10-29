@@ -34,6 +34,7 @@ import Test from './test';
 import Welcome from './welcome';
 import { UseFormState } from './useFormState';
 import SetValueAsyncStrictMode from './setValueStrictMode';
+import './style.css';
 
 const App: React.FC = () => {
   return (

@@ -621,7 +621,6 @@ export function createFormControl<
     isFieldWatched(name) && _subjects.state.next({});
     _subjects.watch.next({
       name,
-      values: { ..._formValues },
     });
   };
 
@@ -893,7 +892,8 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    !isUndefined(options.value) && set(_formValues, name, options.value);
+    !isUndefined(options.value) &&
+      set(_formValues, name, get(_formValues, name, options.value));
 
     field
       ? isBoolean(options.disabled) &&

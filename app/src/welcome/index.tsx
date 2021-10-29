@@ -121,7 +121,7 @@ const items: Item[] = [
   {
     title: 'SetValue',
     description: 'Should set input value',
-    slugs: ['/setValue'],
+    slugs: ['/setValue', '/setValueAsyncStrictMode'],
   },
   {
     title: 'SetValueCustomRegister',
