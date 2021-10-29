@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { Subject, Subscription } from './utils/createSubject';
-import { Noop } from './types';
 
 type Props<T> = {
   disabled?: boolean;
@@ -35,7 +34,6 @@ const updateSubscriptionProps = <T>({ _subscription, props }: Payload<T>) => {
 
 export function useSubscribe<T>(props: Props<T>) {
   const _subscription = React.useRef<Subscription>();
-  const _updateSubscription = React.useRef<Noop>(() => {});
 
   updateSubscriptionProps({
     _subscription,
@@ -43,7 +41,6 @@ export function useSubscribe<T>(props: Props<T>) {
   });
 
   React.useEffect(() => {
-    _updateSubscription.current();
     return () => tearDown(_subscription);
   }, []);
 }

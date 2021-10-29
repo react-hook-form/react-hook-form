@@ -68,7 +68,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         const fieldValues = generateWatchOutput(
           _name.current as InternalFieldName | InternalFieldName[],
           control._names,
-          formState.values || control._formValues,
+          control._formValues,
         );
 
         updateValue(
