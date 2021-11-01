@@ -188,9 +188,7 @@ export type FieldPathWithValue<
   TResult = unknown,
   FieldPaths extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  [key in FieldPaths]: FieldPathValue<TFieldValues, key> extends
-    | TResult
-    | undefined
+  [key in FieldPaths]: FieldPathValue<TFieldValues, key> extends TResult
     ? key
     : never;
 }[FieldPaths];
