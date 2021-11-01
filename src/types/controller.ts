@@ -4,10 +4,9 @@ import { RegisterOptions } from './validator';
 import {
   Control,
   FieldError,
+  FieldPath,
   FieldPathValue,
-  FieldPathWithValue,
   FieldValues,
-  IsAny,
   Noop,
   RefCallBack,
   UnpackNestedValue,
@@ -23,28 +22,18 @@ export type ControllerFieldState = {
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
-  value: IsAny<TResult> extends true
-    ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
-    : UnpackNestedValue<TResult>;
+  value: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   name: TName;
   ref: RefCallBack;
 };
 
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   name: TName;
   rules?: Omit<
@@ -52,40 +41,30 @@ export type UseControllerProps<
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >;
   shouldUnregister?: boolean;
-  defaultValue?: IsAny<TResult> extends true
-    ? UnpackNestedValue<FieldPathValue<TFieldValues, TName>>
-    : UnpackNestedValue<TResult>;
+  defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   control?: Control<TFieldValues>;
 };
 
 export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  field: ControllerRenderProps<TFieldValues, TResult, TName>;
+  field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
   fieldState: ControllerFieldState;
 };
 
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   render: ({
     field,
     fieldState,
     formState,
   }: {
-    field: ControllerRenderProps<TFieldValues, TResult, TName>;
+    field: ControllerRenderProps<TFieldValues, TName>;
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
-} & UseControllerProps<TFieldValues, TResult, TName>;
+} & UseControllerProps<TFieldValues, TName>;

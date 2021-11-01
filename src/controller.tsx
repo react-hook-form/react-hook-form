@@ -1,15 +1,11 @@
-import { ControllerProps, FieldPathWithValue, FieldValues } from './types';
+import { ControllerProps, FieldPath, FieldValues } from './types';
 import { useController } from './useController';
 
 const Controller = <
   TFieldValues extends FieldValues = FieldValues,
-  TResult = any,
-  TName extends FieldPathWithValue<TFieldValues, TResult> = FieldPathWithValue<
-    TFieldValues,
-    TResult
-  >,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
-  props: ControllerProps<TFieldValues, TResult, TName>,
-) => props.render(useController<TFieldValues, TResult, TName>(props));
+  props: ControllerProps<TFieldValues, TName>,
+) => props.render(useController<TFieldValues, TName>(props));
 
 export { Controller };
