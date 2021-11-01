@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.18.1] - 2021-11-02
+
+- revert `FieldPathWithValue`
+
 ## [7.18.0] - 2021-10-28
 
 ## Added

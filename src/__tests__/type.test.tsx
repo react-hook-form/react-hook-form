@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { Controller } from '../controller';
 import { Path, UseFormReturn } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
@@ -77,6 +78,40 @@ test('should not throw type error with optional array fields', () => {
         {fieldArray.fields.map((item) => {
           return <div key={item.id}>{item.name}</div>;
         })}
+      </div>
+    );
+  }
+
+  App;
+});
+
+test('should work with optional field with Controller', () => {
+  type FormValues = {
+    firstName: string;
+    lastName?: string;
+  };
+
+  function App() {
+    const { control } = useForm<FormValues>();
+
+    return (
+      <div>
+        <Controller
+          name="firstName"
+          defaultValue=""
+          control={control}
+          render={({ field: { value, onChange } }) => {
+            return <input value={value} onChange={onChange} />;
+          }}
+        />
+        <Controller
+          name="lastName"
+          defaultValue=""
+          control={control}
+          render={({ field: { value, onChange } }) => {
+            return <input value={value} onChange={onChange} />;
+          }}
+        />
       </div>
     );
   }
