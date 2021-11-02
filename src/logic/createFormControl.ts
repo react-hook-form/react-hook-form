@@ -583,7 +583,7 @@ export function createFormControl<
   };
 
   const setValues = <
-    T extends string,
+    T extends InternalFieldName,
     K extends SetFieldValue<TFieldValues>,
     U,
   >(
