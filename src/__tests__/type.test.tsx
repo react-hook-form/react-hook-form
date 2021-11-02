@@ -27,21 +27,15 @@ test('should not throw type error with path name', () => {
 });
 
 test('all APIs except watch are compatible with a superset of FormFields', () => {
-  type FormFieldsSmall = {
-    gender: 'female' | 'male';
-    firstName: string;
-    lastName: string;
-  };
-
   type FormFieldsBig = {
     foo: string;
     bar: 'test1' | 'test2';
     test2: boolean;
-  } & FormFieldsSmall;
+  };
 
   function App() {
     const form = useForm<FormFieldsBig>();
-    const test: Omit<UseFormReturn<FormFieldsSmall>, 'watch'> = form;
+    const test: Omit<UseFormReturn<FormFieldsBig>, 'watch'> = form;
     test;
     return null;
   }
