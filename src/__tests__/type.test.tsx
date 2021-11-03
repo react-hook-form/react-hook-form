@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Controller } from '../controller';
-import { Path, UseFormReturn } from '../types';
+import { Path } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 
@@ -24,22 +24,6 @@ test('should not throw type error with path name', () => {
   ];
 
   test;
-});
-
-test('all APIs except watch are compatible with a superset of FormFields', () => {
-  type FormFieldsBig = {
-    foo: string;
-    bar: 'test1' | 'test2';
-    test2: boolean;
-  };
-
-  function App() {
-    const form = useForm<FormFieldsBig>();
-    const test: Omit<UseFormReturn<FormFieldsBig>, 'watch'> = form;
-    test;
-    return null;
-  }
-  App;
 });
 
 test('should not throw type error with optional array fields', () => {
