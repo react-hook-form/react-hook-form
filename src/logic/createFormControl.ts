@@ -752,7 +752,7 @@ export function createFormControl<
           }),
         )
       ).every(Boolean);
-      _updateValid();
+      !(!validationResult && !_formState.isValid) && _updateValid();
     } else {
       validationResult = isValid = await executeBuildInValidation(_fields);
     }
