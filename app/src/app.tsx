@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AutoUnregister from './autoUnregister';
 import Basic from './basic';
 import Watch from './watch';
@@ -38,101 +38,77 @@ import './style.css';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Route path="/basic/:mode" exact component={Basic} />
-      <Route
-        path="/validate-field-criteria"
-        exact
-        component={ValidateFieldCriteria}
-      />
-      <Route path="/controller/:mode" exact component={Controller} />
-      <Route
-        path="/re-validate-mode/:mode/:reValidateMode"
-        exact
-        component={ReValidateMode}
-      />
-      <Route
-        path="/manual-register-form"
-        exact
-        component={ManualRegisterForm}
-      />
-      <Route path="/watch" exact component={Watch} />
-      <Route
-        path="/basic-schema-validation/:mode"
-        exact
-        component={BasicSchemaValidation}
-      />
-      <Route path="/setError" exact component={SetError} />
-      <Route
-        path="/setValueWithTrigger"
-        exact
-        component={SetValueWithTrigger}
-      />
-      <Route path="/conditionalField" exact component={ConditionalField} />
-      <Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />
-      <Route
-        path="/UseFieldArrayUnregister"
-        exact
-        component={UseFieldArrayUnregister}
-      />
-      <Route path="/reset" exact component={Reset} />
-      <Route path="/setValue" exact component={SetValue} />
-      <Route
-        path="/setValueAsyncStrictMode"
-        component={SetValueAsyncStrictMode}
-      />
-      <Route path="/setValueWithSchema" exact component={SetValueWithSchema} />
-      <Route
-        path="/SetValueCustomRegister"
-        exact
-        component={SetValueCustomRegister}
-      />
-      <Route path="/formState/:mode" exact component={FormState} />
-      <Route
-        path="/formStateWithNestedFields/:mode"
-        exact
-        component={FormStateWithNestedFields}
-      />
-      <Route
-        path="/formStateWithSchema/:mode"
-        exact
-        component={FormStateWithSchema}
-      />
-      <Route path="/isValid/:mode/:defaultValues" exact component={IsValid} />
-      <Route path="/default-values" exact component={DefaultValues} />
-      <Route path="/trigger-validation" exact component={TriggerValidation} />
-      <Route
-        path="/watch-default-values"
-        exact
-        component={WatchDefaultValues}
-      />
-      <Route path="/watch-field-array/:mode" component={WatchFieldArray} />
-      <Route
-        path="/customSchemaValidation/:mode"
-        exact
-        component={CustomSchemaValidation}
-      />
-      <Route path="/autoUnregister" exact component={AutoUnregister} />
-      <Route path="/useWatch" exact component={UseWatch} />
-      <Route path="/useFormState" exact component={UseFormState} />
-      <Route
-        path="/useFieldArrayNested"
-        exact
-        component={UseFieldArrayNested}
-      />
-      <Route
-        path="/watchUseFieldArrayNested"
-        exact
-        component={WatchUseFieldArrayNested}
-      />
-      <Route
-        path="/useWatchUseFieldArrayNested"
-        exact
-        component={UseWatchUseFieldArrayNested}
-      />
-      <Route path="/test" exact component={Test} />
-      <Route path="/" exact component={Welcome} />
-    </Router>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/basic/:mode" element={<Basic />} />
+        <Route
+          path="/validate-field-criteria"
+          element={<ValidateFieldCriteria />}
+        />
+        <Route path="/controller/:mode" element={<Controller />} />
+        <Route
+          path="/re-validate-mode/:mode/:reValidateMode"
+          element={<ReValidateMode />}
+        />
+        <Route path="/manual-register-form" element={<ManualRegisterForm />} />
+        <Route path="/watch" element={<Watch />} />
+        <Route
+          path="/basic-schema-validation/:mode"
+          element={<BasicSchemaValidation />}
+        />
+        <Route path="/setError" element={<SetError />} />
+        <Route path="/setValueWithTrigger" element={<SetValueWithTrigger />} />
+        <Route path="/conditionalField" element={<ConditionalField />} />
+        <Route path="/UseFieldArray/:mode" element={<UseFieldArray />} />
+        <Route
+          path="/UseFieldArrayUnregister"
+          element={<UseFieldArrayUnregister />}
+        />
+        <Route path="/reset" element={<Reset />} />
+        <Route path="/setValue" element={<SetValue />} />
+        <Route
+          path="/setValueAsyncStrictMode"
+          element={<SetValueAsyncStrictMode />}
+        />
+        <Route path="/setValueWithSchema" element={<SetValueWithSchema />} />
+        <Route
+          path="/SetValueCustomRegister"
+          element={<SetValueCustomRegister />}
+        />
+        <Route path="/formState/:mode" element={<FormState />} />
+        <Route
+          path="/formStateWithNestedFields/:mode"
+          element={<FormStateWithNestedFields />}
+        />
+        <Route
+          path="/formStateWithSchema/:mode"
+          element={<FormStateWithSchema />}
+        />
+        <Route path="/isValid/:mode/:defaultValues" element={<IsValid />} />
+        <Route path="/default-values" element={<DefaultValues />} />
+        <Route path="/trigger-validation" element={<TriggerValidation />} />
+        <Route path="/watch-default-values" element={<WatchDefaultValues />} />
+        <Route path="/watch-field-array/:mode" element={<WatchFieldArray />} />
+        <Route
+          path="/customSchemaValidation/:mode"
+          element={<CustomSchemaValidation />}
+        />
+        <Route path="/autoUnregister" element={<AutoUnregister />} />
+        <Route path="/useWatch" element={<UseWatch />} />
+        <Route path="/useFormState" element={<UseFormState />} />
+        <Route path="/useFieldArrayNested" element={<UseFieldArrayNested />} />
+        <Route
+          path="/watchUseFieldArrayNested"
+          element={<WatchUseFieldArrayNested />}
+        />
+        <Route
+          path="/useWatchUseFieldArrayNested"
+          element={<UseWatchUseFieldArrayNested />}
+        />
+        <Route path="/test" element={<Test />} />
+        <Route path="/" element={<Welcome />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

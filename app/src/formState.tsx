@@ -1,16 +1,11 @@
 import React from 'react';
 import { useForm, ValidationMode } from 'react-hook-form';
-import { withRouter } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
-const FormState = (props: {
-  match: {
-    params: {
-      mode: keyof ValidationMode;
-    };
-  };
-}) => {
+const FormState = () => {
+  const { mode } = useParams();
   const {
     register,
     handleSubmit,
@@ -33,7 +28,7 @@ const FormState = (props: {
     checkbox: boolean;
     ['checkbox-checked']: boolean;
   }>({
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -92,4 +87,4 @@ const FormState = (props: {
   );
 };
 
-export default withRouter(FormState);
+export default FormState;
