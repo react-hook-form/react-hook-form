@@ -1,10 +1,16 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, ValidationMode } from 'react-hook-form';
 import { withRouter } from 'react-router';
 
 let renderCounter = 0;
 
-const FormStateWithNestedFields: React.FC = (props: any) => {
+const FormStateWithNestedFields = (props: {
+  match: {
+    params: {
+      mode: keyof ValidationMode;
+    };
+  };
+}) => {
   const {
     register,
     handleSubmit,
