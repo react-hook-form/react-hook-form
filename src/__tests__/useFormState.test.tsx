@@ -599,4 +599,30 @@ describe('useFormState', () => {
       fireEvent.click(screen.getByRole('button', { name: 'add' }));
     });
   });
+
+  it('should subscribe to exact form state update', () => {
+    const App = () => {
+      const { control, register } = useForm();
+      const { touchedFields } = useFormState({
+        name: 'test',
+        control,
+        exact: true,
+      });
+
+      return (
+        <div>
+          <input {...register('testData')} />
+          <p>{touchedFields.testData && 'touched'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.focus(screen.getByRole('textbox'));
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    expect(screen.queryByText('touched')).toBeNull();
+  });
 });
