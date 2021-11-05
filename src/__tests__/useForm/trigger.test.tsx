@@ -917,4 +917,48 @@ describe('trigger', () => {
       screen.getByText('1');
     });
   });
+
+  it('should skip additional validation when input validation already failed', async () => {
+    let count = 0;
+
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { isValid },
+      } = useForm({
+        mode: 'onChange',
+      });
+      const validate = () => {
+        count++;
+        return false;
+      };
+
+      return (
+        <form>
+          <p>{isValid ? 'valid' : 'invalid'}</p>
+          <input
+            {...register('test', {
+              validate,
+            })}
+          />
+          <button onClick={() => trigger('test')} type={'button'}>
+            submit
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('invalid');
+    });
+
+    await waitFor(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(count).toEqual(2);
+  });
 });

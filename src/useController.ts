@@ -14,7 +14,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
-import { useSubscribe } from './useSubscribe';
+import { useWatch } from './useWatch';
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
@@ -24,46 +24,37 @@ export function useController<
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
-  const [value, setInputStateValue] = React.useState(
-    get(
+  const value = useWatch({
+    control,
+    name,
+    defaultValue: get(
       control._formValues,
       name,
       get(control._defaultValues, name, props.defaultValue),
     ),
-  );
+  });
   const formState = useFormState({
-    control: control || methods.control,
+    control,
     name,
   });
   const _name = React.useRef(name);
 
   _name.current = name;
 
-  useSubscribe({
-    subject: control._subjects.control,
-    callback: (data) =>
-      (!data.name || _name.current === data.name) &&
-      setInputStateValue(get(data.values, _name.current)),
-    skipEarlySubscription: true,
-  });
-
   const registerProps = control.register(name, {
     ...props.rules,
     value,
   });
 
-  const updateMounted = React.useCallback(
-    (name: InternalFieldName, value: boolean) => {
+  React.useEffect(() => {
+    const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 
       if (field) {
         field._f.mount = value;
       }
-    },
-    [control],
-  );
+    };
 
-  React.useEffect(() => {
     updateMounted(name, true);
 
     return () => {
@@ -80,17 +71,14 @@ export function useController<
         updateMounted(name, false);
       }
     };
-  }, [name, control, shouldUnregister, updateMounted]);
+  }, [name, control, shouldUnregister]);
 
   return {
     field: {
-      onChange: (event: any) => {
-        const value = getControllerValue(event);
-        setInputStateValue(value);
-
+      onChange: (event) => {
         registerProps.onChange({
           target: {
-            value,
+            value: getControllerValue(event),
             name: name as InternalFieldName,
           },
           type: EVENTS.CHANGE,

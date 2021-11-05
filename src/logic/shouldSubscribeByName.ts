@@ -1,8 +1,12 @@
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 
-export default <T>(name?: T, signalName?: string) =>
+export default <T extends string | string[] | undefined>(
+  name?: T,
+  signalName?: string,
+) =>
   !name ||
   !signalName ||
+  name === signalName ||
   convertToArrayPayload(name).some(
     (currentName) =>
       currentName &&

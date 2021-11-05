@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { generateWatchOutput } from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
@@ -58,13 +59,16 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     disabled,
     subject: control._subjects.watch,
     callback: (formState) => {
-      if (shouldSubscribeByName(_name.current, formState.name)) {
-        control._stateFlags.mount = true;
-        const fieldValues = control._getWatch(
+      if (
+        shouldSubscribeByName(
           _name.current as InternalFieldName,
-          defaultValue as UnpackNestedValue<
-            DeepPartialSkipArrayKey<TFieldValues>
-          >,
+          formState.name,
+        )
+      ) {
+        const fieldValues = generateWatchOutput(
+          _name.current as InternalFieldName | InternalFieldName[],
+          control._names,
+          control._formValues,
         );
 
         updateValue(

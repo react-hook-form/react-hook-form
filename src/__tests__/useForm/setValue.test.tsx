@@ -16,6 +16,8 @@ import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
 
+jest.useFakeTimers();
+
 describe('setValue', () => {
   it('should not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
@@ -771,6 +773,57 @@ describe('setValue', () => {
       fireEvent.click(screen.getByRole('button'));
 
       screen.getByText('test');
+    });
+  });
+
+  describe('with strict mode', () => {
+    it('should be able to set input value async', async () => {
+      function sleep(ms: number) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      function App() {
+        const { control, setValue } = useForm();
+
+        React.useEffect(() => {
+          sleep(1000);
+          setValue('name', 'test');
+        }, [setValue]);
+
+        return (
+          <div className="App">
+            <form>
+              <Controller
+                defaultValue=""
+                name="name"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <div>
+                      <input />
+                      <p>{field.value}</p>
+                    </div>
+                  );
+                }}
+              />
+            </form>
+          </div>
+        );
+      }
+
+      render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>,
+      );
+
+      actComponent(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      await waitFor(async () => {
+        screen.getByText('test');
+      });
     });
   });
 
