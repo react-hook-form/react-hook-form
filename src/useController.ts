@@ -24,6 +24,7 @@ export function useController<
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
+  const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
     control,
     name,
@@ -32,6 +33,7 @@ export function useController<
       name,
       get(control._defaultValues, name, props.defaultValue),
     ),
+    exact: !isArrayField,
   });
   const formState = useFormState({
     control,
@@ -62,7 +64,7 @@ export function useController<
         control._options.shouldUnregister || shouldUnregister;
 
       if (
-        isNameInFieldArray(control._names.array, name)
+        isArrayField
           ? _shouldUnregisterField && !control._stateFlags.action
           : _shouldUnregisterField
       ) {
@@ -71,7 +73,7 @@ export function useController<
         updateMounted(name, false);
       }
     };
-  }, [name, control, shouldUnregister]);
+  }, [name, control, isArrayField, shouldUnregister]);
 
   return {
     field: {
