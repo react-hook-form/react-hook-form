@@ -349,6 +349,12 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/bkincart"
+    ><img
+            src="https://avatars.githubusercontent.com/u/22803185?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ## Backers
