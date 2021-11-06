@@ -3,6 +3,7 @@ import * as React from 'react';
 import { generateWatchOutput } from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import isObject from './utils/isObject';
+import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import {
   Control,
@@ -17,6 +18,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
+import { get } from './utils';
 
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -72,7 +74,11 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         );
 
         updateValue(
-          isObject(fieldValues)
+          isObject(fieldValues) &&
+            !(
+              isString(_name.current) &&
+              get(control._fields, _name.current as InternalFieldName, {})._f
+            )
             ? { ...fieldValues }
             : Array.isArray(fieldValues)
             ? [...fieldValues]
