@@ -893,6 +893,7 @@ export function createFormControl<
     _names.mount.add(name);
 
     !isUndefined(options.value) &&
+      !options.disabled &&
       set(_formValues, name, get(_formValues, name, options.value));
 
     field
