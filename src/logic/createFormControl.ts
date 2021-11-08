@@ -779,9 +779,7 @@ export function createFormControl<
   };
 
   const getValues: UseFormGetValues<TFieldValues> = (
-    fieldNames?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+    fieldNames?: FieldPath<TFieldValues> | Array<FieldPath<TFieldValues>>,
   ) => {
     const values = {
       ..._defaultValues,
@@ -828,7 +826,7 @@ export function createFormControl<
   const watch: UseFormWatch<TFieldValues> = (
     name?:
       | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
+      | Array<FieldPath<TFieldValues>>
       | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>

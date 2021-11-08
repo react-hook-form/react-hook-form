@@ -25,7 +25,7 @@ export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends
-  | ReadonlyArray<infer U>
+  | Array<infer U>
   | null
   | undefined
   ? U

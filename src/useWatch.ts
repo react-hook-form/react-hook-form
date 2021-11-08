@@ -12,7 +12,6 @@ import {
   FieldPathValue,
   FieldPathValues,
   FieldValues,
-  InternalFieldName,
   UnpackNestedValue,
   UseWatchProps,
 } from './types';
@@ -40,7 +39,7 @@ export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
 >(props: {
-  name: readonly [...TFieldNames];
+  name: [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
@@ -61,14 +60,9 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     disabled,
     subject: control._subjects.watch,
     callback: (formState) => {
-      if (
-        shouldSubscribeByName(
-          _name.current as InternalFieldName,
-          formState.name,
-        )
-      ) {
+      if (shouldSubscribeByName(_name.current, formState.name)) {
         const fieldValues = generateWatchOutput(
-          _name.current as InternalFieldName | InternalFieldName[],
+          _name.current,
           control._names,
           control._formValues,
         );
@@ -77,7 +71,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
           isObject(fieldValues) &&
             !(
               isString(_name.current) &&
-              get(control._fields, _name.current as InternalFieldName, {})._f
+              get(control._fields, _name.current, {})._f
             )
             ? { ...fieldValues }
             : Array.isArray(fieldValues)
@@ -89,9 +83,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   });
 
   const [value, updateValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? control._getWatch(name as InternalFieldName)
-      : defaultValue,
+    isUndefined(defaultValue) ? control._getWatch(name) : defaultValue,
   );
 
   React.useEffect(() => {
