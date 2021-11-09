@@ -12,7 +12,6 @@ type ComplexTestType = {
     }[];
     testName: string;
     innerTuple: [{ test: string }[], '2', 100];
-    simpleTupleDoesntMatch: [123, 'test', 234];
   };
   objArray: { test: string }[];
   tuple: ['test', { innerTest: string }[], 123];
@@ -29,13 +28,15 @@ test('should not throw type error with path name (Path<T> validation)', () => {
     'test.testArray.99999',
     'test.testArray.0.name',
     'test.testArray.99999.name',
+    'tupleOfTuples.0.0',
+    'tupleOfTuples.1.0',
     'tuple.2',
   ];
 
   test;
 });
 
-test('validates PathValue scenarios', () => {
+test('validate PathValue scenarios', () => {
   const pathVal: PathValue<ComplexTestType, 'test.testArray'> = [
     { name: 'foo' },
   ];
@@ -51,6 +52,12 @@ test('validates PathValue scenarios', () => {
   };
   pathValTest12345;
 
+  const pathValTest12345Value: PathValue<
+    ComplexTestType,
+    'test.testArray.12345.name'
+  > = 'foo';
+  pathValTest12345Value;
+
   const pathValTestFull: PathValue<ComplexTestType, 'test'> = {
     testArray: [
       {
@@ -59,7 +66,6 @@ test('validates PathValue scenarios', () => {
     ],
     testName: '234',
     innerTuple: [[{ test: '123' }, { test: '345' }], '2', 100],
-    simpleTupleDoesntMatch: [123, 'test', 234],
   };
   pathValTestFull;
 
@@ -69,11 +75,15 @@ test('validates PathValue scenarios', () => {
   ];
   pathValTestObjArray;
 
-  const pathValTupleMatch: PathValue<
-    ComplexTestType,
-    'test.simpleTupleDoesntMatch.0'
-  > = 123;
+  const pathValTupleMatch: PathValue<ComplexTestType, 'test.innerTuple.1'> =
+    '2';
   pathValTupleMatch;
+
+  const pathValTupleOfTuples: PathValue<
+    ComplexTestType,
+    'tupleOfTuples.1.1'
+  > = 333;
+  pathValTupleOfTuples;
 });
 
 test('all APIs except watch are compatible with a superset of FormFields', () => {

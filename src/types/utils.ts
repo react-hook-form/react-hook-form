@@ -40,10 +40,12 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
+/** Recursive Partial Type */
 export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
   ? T
   : { [K in keyof T]?: DeepPartial<T[K]> };
 
+/** Deep Partial save for Array parts (and Date/FileList/File/NestedValue types (why NestedValue's here)) */
 export type DeepPartialSkipArrayKey<T> = T extends
   | Date
   | FileList
@@ -66,21 +68,31 @@ export type DeepMap<T, TValue> = IsAny<T> extends true
   ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
   : TValue;
 
+/** Is object greater than 1 level deep? */
 export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue | Date | FileList>,
-  any[] | object
+  Array<unknown> | object
 > extends never
   ? true
   : false;
 
-type IsTuple<T extends Array<any>> = number extends T['length'] ? false : true;
-type TupleKey<T extends Array<any>> = Exclude<keyof T, keyof any[]>;
+/** Is a Tuple (vs an array) - Tuples have hard number lengths, whereas Arrays are open-ended*/
+type IsTuple<T extends Array<unknown>> = number extends T['length']
+  ? false
+  : true;
+
+/** String-based strict key values of the Tuple  */
+type TupleKey<T extends Array<unknown>> = Exclude<keyof T, keyof unknown[]>;
+
+/** Numeric (open-ended) key values of an array (any number) */
 type ArrayKey = number;
 
+/** Similar grammar to TS's Record<K, V>, returns string literal to represent object field or dot-notation path to sub-fields */
 type PathImpl<K extends string | number, V> = V extends Primitive
   ? `${K}`
   : `${K}` | `${K}.${Path<V>}`;
 
+/** Union of all possible object paths for given type, including Arrays (that's what ArrayKey is for)  */
 export type Path<T> = T extends Array<infer V>
   ? IsTuple<T> extends true
     ? {
@@ -91,8 +103,10 @@ export type Path<T> = T extends Array<infer V>
       [K in keyof T]-?: PathImpl<K & string, T[K]>;
     }[keyof T];
 
+/** Path based on RHF FieldValues  */
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
+/** Similar to PathImpl, but only allow string literal paths to array sub-elements */
 type ArrayPathImpl<K extends string | number, V> = V extends Primitive
   ? never
   : V extends Array<infer U>
@@ -101,6 +115,7 @@ type ArrayPathImpl<K extends string | number, V> = V extends Primitive
     : `${K}` | `${K}.${ArrayPath<V>}`
   : `${K}.${ArrayPath<V>}`;
 
+/** Union of all possible array paths for given type  */
 export type ArrayPath<T> = T extends Array<infer V>
   ? IsTuple<T> extends true
     ? {
@@ -114,20 +129,26 @@ export type ArrayPath<T> = T extends Array<infer V>
 export type FieldArrayPath<TFieldValues extends FieldValues> =
   ArrayPath<TFieldValues>;
 
+/** Extract the actual value out of the path */
 export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
-  ? P extends `${infer K}.${infer R}`
-    ? K extends keyof T
-      ? R extends Path<T[K]>
-        ? PathValue<T[K], R>
+  ? P extends `${infer K}.${infer Rest}`
+    ? // if using dot notation and pre-dot string is a valid prop of T
+      K extends keyof T
+      ? // If the property after the dot is a valid child path, recurse into it
+        Rest extends Path<T[K]>
+        ? PathValue<T[K], Rest>
         : never
-      : K extends `${ArrayKey}`
+      : // if the property after the dot is valid Array key (a number) and the child is an array, recurse with the array type in mind
+      K extends `${ArrayKey}`
       ? T extends Array<infer V>
-        ? PathValue<V, R & Path<V>>
+        ? PathValue<V, Rest & Path<V>>
         : never
       : never
-    : P extends keyof T
+    : // if supplied non-dot-notation path a property of T, then resolve the type
+    P extends keyof T
     ? T[P]
-    : P extends `${ArrayKey}`
+    : // if supplied non-dot-notation path an Array key and field is an array, resolve the value
+    P extends `${ArrayKey}`
     ? T extends Array<infer V>
       ? V
       : never
