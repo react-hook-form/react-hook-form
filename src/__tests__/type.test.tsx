@@ -1,29 +1,79 @@
 import * as React from 'react';
 
 import { Controller } from '../controller';
-import { Path, UseFormReturn } from '../types';
+import { Path, PathValue, UseFormReturn } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 
-test('should not throw type error with path name', () => {
-  type MissingCompanyNamePath = Path<{
-    test: {
-      test: {
-        name: string;
-      }[];
-      testName: string;
-    };
-  }>;
+type ComplexTestType = {
+  test: {
+    testArray: {
+      name: string;
+    }[];
+    testName: string;
+    innerTuple: [{ test: string }[], '2', 100];
+    simpleTupleDoesntMatch: [123, 'test', 234];
+  };
+  objArray: { test: string }[];
+  tuple: ['test', { innerTest: string }[], 123];
+  tupleOfTuples: [[string, number], [222, 333]];
+};
 
+test('should not throw type error with path name (Path<T> validation)', () => {
+  type MissingCompanyNamePath = Path<ComplexTestType>;
   const test: MissingCompanyNamePath[] = [
     'test',
-    'test.test',
     'test.testName',
-    'test.test.0',
-    'test.test.0.name',
+    'test.testArray',
+    'test.testArray.0',
+    'test.testArray.99999',
+    'test.testArray.0.name',
+    'test.testArray.99999.name',
+    'tuple.2',
   ];
 
   test;
+});
+
+test('validates PathValue scenarios', () => {
+  const pathVal: PathValue<ComplexTestType, 'test.testArray'> = [
+    { name: 'foo' },
+  ];
+  pathVal;
+
+  const pathValTest1: PathValue<ComplexTestType, 'test.testArray.0'> = {
+    name: 'foo',
+  };
+  pathValTest1;
+
+  const pathValTest12345: PathValue<ComplexTestType, 'test.testArray.12345'> = {
+    name: 'foo',
+  };
+  pathValTest12345;
+
+  const pathValTestFull: PathValue<ComplexTestType, 'test'> = {
+    testArray: [
+      {
+        name: '123',
+      },
+    ],
+    testName: '234',
+    innerTuple: [[{ test: '123' }, { test: '345' }], '2', 100],
+    simpleTupleDoesntMatch: [123, 'test', 234],
+  };
+  pathValTestFull;
+
+  const pathValTestObjArray: PathValue<ComplexTestType, 'objArray'> = [
+    { test: '123' },
+    { test: '345' },
+  ];
+  pathValTestObjArray;
+
+  const pathValTupleMatch: PathValue<
+    ComplexTestType,
+    'test.simpleTupleDoesntMatch.0'
+  > = 123;
+  pathValTupleMatch;
 });
 
 test('all APIs except watch are compatible with a superset of FormFields', () => {
