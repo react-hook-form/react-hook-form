@@ -68,7 +68,7 @@ export type DeepMap<T, TValue> = IsAny<T> extends true
   ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
   : TValue;
 
-/** Is object greater than 1 level deep? */
+/** Is object greater than 1 level deep (not counting NestedValues)? */
 export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue | Date | FileList>,
   Array<unknown> | object
@@ -92,7 +92,7 @@ type PathImpl<K extends string | number, V> = V extends Primitive
   ? `${K}`
   : `${K}` | `${K}.${Path<V>}`;
 
-/** Union of all possible object paths for given type, including Arrays (that's what ArrayKey is for)  */
+/** All dot-notation paths for a given type, including Array indexing */
 export type Path<T> = T extends Array<infer V>
   ? IsTuple<T> extends true
     ? {
@@ -103,10 +103,10 @@ export type Path<T> = T extends Array<infer V>
       [K in keyof T]-?: PathImpl<K & string, T[K]>;
     }[keyof T];
 
-/** Path based on RHF FieldValues  */
+/** Path<T> for RHF FieldValues  */
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-/** Similar to PathImpl, but only allow string literal paths to array sub-elements */
+/** Same concept as PathImpl, but only allow string literal paths to array sub-elements */
 type ArrayPathImpl<K extends string | number, V> = V extends Primitive
   ? never
   : V extends Array<infer U>
@@ -115,7 +115,7 @@ type ArrayPathImpl<K extends string | number, V> = V extends Primitive
     : `${K}` | `${K}.${ArrayPath<V>}`
   : `${K}.${ArrayPath<V>}`;
 
-/** Union of all possible array paths for given type  */
+/** All paths for arrays and tuples  */
 export type ArrayPath<T> = T extends Array<infer V>
   ? IsTuple<T> extends true
     ? {
