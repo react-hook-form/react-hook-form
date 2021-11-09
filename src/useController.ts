@@ -66,7 +66,7 @@ export function useController<
           ? _shouldUnregisterField && !control._stateFlags.action
           : _shouldUnregisterField
       ) {
-        control.unregister(name);
+        control.unregister(name, { keepDefaultValue: true });
       } else {
         updateMounted(name, false);
       }
