@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control } from '../types';
+import { Control, FieldPath } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -588,6 +588,62 @@ describe('useController', () => {
 
     await waitFor(async () => {
       screen.getByText('expected value');
+    });
+  });
+
+  it('should remount with input with defaultValue when shouldUnregister set to true', () => {
+    let data: string;
+
+    function Input<T>({
+      control,
+      name,
+    }: {
+      control: Control<T>;
+      name: FieldPath<T>;
+    }) {
+      const {
+        field: { value },
+      } = useController({
+        control,
+        name,
+        shouldUnregister: true,
+      });
+
+      data = value;
+
+      return null;
+    }
+
+    const App = () => {
+      const { control } = useForm<{
+        test: string;
+      }>({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const [toggle, setToggle] = React.useState(true);
+
+      return (
+        <div>
+          {toggle && <Input control={control} name={'test'} />}
+          <button onClick={() => setToggle(!toggle)}>toggle</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    act(() => {
+      expect(data).toEqual('test');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    act(() => {
+      expect(data).toEqual('test');
     });
   });
 });
