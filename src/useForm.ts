@@ -72,14 +72,6 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  React.useEffect(
-    () => () =>
-      Object.values(control._subjects).forEach((subject) =>
-        subject.unsubscribe(),
-      ),
-    [control],
-  );
-
   _formControl.current.formState = getProxyFormState(
     formState,
     control._proxyFormState,
