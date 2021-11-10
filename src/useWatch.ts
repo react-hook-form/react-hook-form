@@ -42,6 +42,10 @@ export function useWatch<
   control?: Control<TFieldValues>;
   disabled?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+>(): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
   const {
