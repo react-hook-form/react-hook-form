@@ -10,10 +10,15 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
+import * as generateId from '../../logic/generateId';
 import { Control, DeepMap, FieldError } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import { mockGenerateId } from '../useFieldArray.test';
+
+const mockGenerateId = () => {
+  let id = 0;
+  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
+};
 
 jest.useFakeTimers();
 
