@@ -885,6 +885,7 @@ export function createFormControl<
     _names.mount.add(name);
 
     !isUndefined(options.value) &&
+      !options.disabled &&
       set(_formValues, name, get(_formValues, name, options.value));
 
     field
@@ -976,7 +977,9 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = { ..._formValues };
+      let fieldValues: any = _options.shouldUnregister
+        ? cloneObject(_formValues)
+        : { ..._formValues };
 
       _subjects.state.next({
         isSubmitting: true,

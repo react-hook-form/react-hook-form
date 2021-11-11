@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { generateWatchOutput } from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import {
   Control,
@@ -38,14 +37,18 @@ export function useWatch<
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
 >(props: {
-  name: readonly [...TFieldNames];
+  name: TFieldNames;
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+>(): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
   const {
@@ -73,11 +76,11 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         const fieldValues = generateWatchOutput(
           _name.current as InternalFieldName | InternalFieldName[],
           control._names,
-          control._formValues,
+          formState.values || control._formValues,
         );
 
         updateValue(
-          isObject(fieldValues)
+          isUndefined(_name.current)
             ? { ...fieldValues }
             : Array.isArray(fieldValues)
             ? [...fieldValues]
