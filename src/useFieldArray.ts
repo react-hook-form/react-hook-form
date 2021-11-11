@@ -79,7 +79,6 @@ export const useFieldArray = <
       );
       _actioned.current = true;
       set(control._formValues, name, updatedFieldArrayValues);
-      setFields(updatedFieldArrayValuesWithKey);
       return updatedFieldArrayValues;
     },
     [control, name, keyName],
@@ -104,6 +103,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(
       name,
@@ -130,6 +130,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(name, 0, options);
   };
@@ -149,6 +150,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const insert = (
@@ -172,6 +174,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(name, index, options);
   };
@@ -193,6 +196,7 @@ export const useFieldArray = <
       updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const move = (from: number, to: number) => {
@@ -212,6 +216,7 @@ export const useFieldArray = <
       updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const update = (
@@ -240,6 +245,7 @@ export const useFieldArray = <
       true,
       false,
     );
+    setFields(_fieldIds.current);
   };
 
   const replace = (
@@ -258,6 +264,7 @@ export const useFieldArray = <
       true,
       false,
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   React.useEffect(() => {
