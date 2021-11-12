@@ -73,26 +73,22 @@ export function useController<
     };
   }, [name, control, shouldUnregister]);
 
+  const handleChange =
+    <U extends string>(type: U) =>
+    <T>(event?: T) => {
+      (type === EVENTS.CHANGE ? registerProps.onChange : registerProps.onBlur)({
+        target: {
+          value: type === EVENTS.CHANGE ? getControllerValue(event) : value,
+          name: name as InternalFieldName,
+        },
+        type,
+      });
+    };
+
   return {
     field: {
-      onChange: (event) => {
-        registerProps.onChange({
-          target: {
-            value: getControllerValue(event),
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.CHANGE,
-        });
-      },
-      onBlur: () => {
-        registerProps.onBlur({
-          target: {
-            value,
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.BLUR,
-        });
-      },
+      onChange: handleChange(EVENTS.CHANGE),
+      onBlur: () => handleChange(EVENTS.BLUR)(),
       name,
       value,
       ref: (elm) => {
