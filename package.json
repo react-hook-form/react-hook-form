@@ -134,5 +134,7 @@
     "type": "opencollective",
     "url": "https://opencollective.com/react-hook-form"
   },
-  "dependencies": {}
+  "engines" : {
+    "node": ">=14.16"
+  }
 }
