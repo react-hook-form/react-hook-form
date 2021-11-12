@@ -35,7 +35,7 @@
     "lint:fix": "yarn lint -- --fix",
     "type": "tsc --noEmit",
     "coverage": "jest --coverage --coverageReporters=text-lcov",
-    "test": "jest --config ./scripts/jest/jest.config.js",
+    "test": "jest --config ./scripts/jest/jest.config.cjs",
     "test:coverage": "yarn test -- --coverage",
     "test:watch": "yarn test -- --onlyChanged --watch",
     "test:web": "TEST_ENV=web yarn test",
