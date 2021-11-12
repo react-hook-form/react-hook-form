@@ -10,7 +10,7 @@ type Props<T> = {
 
 type Payload<T> = {
   _subscription: React.MutableRefObject<Subscription | undefined>;
-  props: Props<T>;
+  _props: React.MutableRefObject<Props<T>>;
 };
 
 const tearDown = (
@@ -22,25 +22,32 @@ const tearDown = (
   }
 };
 
-const updateSubscriptionProps = <T>({ _subscription, props }: Payload<T>) => {
-  if (props.disabled) {
+const updateSubscriptionProps = <T>({ _subscription, _props }: Payload<T>) => {
+  if (_props.current.disabled) {
     tearDown(_subscription);
   } else if (!_subscription.current) {
-    _subscription.current = props.subject.subscribe({
-      next: props.callback,
+    _subscription.current = _props.current.subject.subscribe({
+      next: _props.current.callback,
     });
   }
 };
 
 export function useSubscribe<T>(props: Props<T>) {
   const _subscription = React.useRef<Subscription>();
+  const _props = React.useRef(props);
+  _props.current = props;
 
   updateSubscriptionProps({
     _subscription,
-    props,
+    _props,
   });
 
   React.useEffect(() => {
+    updateSubscriptionProps({
+      _subscription,
+      _props,
+    });
+
     return () => tearDown(_subscription);
   }, []);
 }

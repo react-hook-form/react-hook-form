@@ -2619,7 +2619,7 @@ describe('useFieldArray', () => {
     let controlObj: any = {};
 
     const App = () => {
-      const { register, control, getValues } = useForm<FormValues>({
+      const { register, control } = useForm<FormValues>({
         mode: 'onChange',
         defaultValues: {
           items: [{ name: 'one' }, { name: 'two' }],
@@ -2652,9 +2652,7 @@ describe('useFieldArray', () => {
                   type="button"
                   onClick={() => {
                     setTimeout(() => {
-                      const { id, ...rest } = getValues(`items.${index}`);
                       insert(index + 1, {
-                        ...rest,
                         name: 'test',
                       });
                     });
