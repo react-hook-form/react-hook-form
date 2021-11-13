@@ -49,6 +49,17 @@ describe('isWatched', () => {
     ).toBeTruthy();
 
     expect(
+      isWatched('test.test.test', {
+        mount: new Set(),
+        unMount: new Set(),
+        array: new Set(),
+        watch: new Set(['testFail.test', 'test.test']),
+        focus: '',
+        watchAll: false,
+      }),
+    ).toBeTruthy();
+
+    expect(
       isWatched('test.0', {
         mount: new Set(),
         unMount: new Set(),
@@ -69,6 +80,17 @@ describe('isWatched', () => {
         watchAll: false,
       }),
     ).toBeTruthy();
+
+    expect(
+      isWatched('test.test.test', {
+        mount: new Set(),
+        unMount: new Set(),
+        array: new Set(),
+        watch: new Set(['testFail.test']),
+        focus: '',
+        watchAll: false,
+      }),
+    ).toBeFalsy();
   });
 
   it('should return falsy for blur event', () => {
