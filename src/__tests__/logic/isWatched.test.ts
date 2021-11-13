@@ -80,6 +80,19 @@ describe('isWatched', () => {
         watchAll: false,
       }),
     ).toBeTruthy();
+  });
+
+  it("should return false when watched with parent node that doesn't match child name", () => {
+    expect(
+      isWatched('test.test.test', {
+        mount: new Set(),
+        unMount: new Set(),
+        array: new Set(),
+        watch: new Set(['tesk.test']),
+        focus: '',
+        watchAll: false,
+      }),
+    ).toBeFalsy();
 
     expect(
       isWatched('test.test.test', {
