@@ -3,6 +3,7 @@ import * as React from 'react';
 import { generateWatchOutput } from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import isUndefined from './utils/isUndefined';
+import { CONTROL_DEFAULT } from './constants';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -49,7 +50,9 @@ export function useWatch<
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
   const {
-    control = methods.control,
+    control = methods
+      ? methods.control
+      : (CONTROL_DEFAULT as unknown as Control),
     name,
     defaultValue,
     disabled,

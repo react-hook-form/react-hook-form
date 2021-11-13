@@ -22,3 +22,31 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 };
+
+const noop = () => {};
+
+const subscribeNoop = {
+  next: noop,
+  subscribe: noop,
+};
+
+export const CONTROL_DEFAULT = {
+  register: noop,
+  _getWatch: noop,
+  _removeUnmounted: noop,
+  _updateFieldArray: noop,
+  _getFieldArray: noop,
+  _subjects: {
+    watch: subscribeNoop,
+    state: subscribeNoop,
+    array: subscribeNoop,
+  },
+  _proxyFormState: {},
+  _formValues: {},
+  _stateFlags: {},
+  _names: {
+    watch: new Set(),
+    array: new Set(),
+  },
+  _options: {},
+};

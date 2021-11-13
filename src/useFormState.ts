@@ -3,7 +3,9 @@ import * as React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
+import { CONTROL_DEFAULT } from './constants';
 import {
+  Control,
   FieldValues,
   InternalFieldName,
   UseFormStateProps,
@@ -16,7 +18,13 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
-  const { control = methods.control, disabled, name } = props || {};
+  const {
+    control = methods
+      ? methods.control
+      : (CONTROL_DEFAULT as unknown as Control<TFieldValues>),
+    disabled,
+    name,
+  } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,

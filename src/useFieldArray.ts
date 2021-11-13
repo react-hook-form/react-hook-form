@@ -16,7 +16,9 @@ import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import updateAt from './utils/update';
+import { CONTROL_DEFAULT } from './constants';
 import {
+  Control,
   FieldArray,
   FieldArrayMethodProps,
   FieldArrayPath,
@@ -39,7 +41,9 @@ export const useFieldArray = <
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
   const {
-    control = methods.control,
+    control = methods
+      ? methods.control
+      : (CONTROL_DEFAULT as unknown as Control<TFieldValues>),
     name,
     keyName = 'id' as TKeyName,
     shouldUnregister,
