@@ -8,6 +8,8 @@ export default (
   !isBlurEvent &&
   (_names.watchAll ||
     _names.watch.has(name) ||
-    [..._names.watch].some((watchName) =>
-      /^\.\w+/.test(name.slice(watchName.length)),
+    [..._names.watch].some(
+      (watchName) =>
+        name.startsWith(watchName) &&
+        /^\.\w+/.test(name.slice(watchName.length)),
     ));
