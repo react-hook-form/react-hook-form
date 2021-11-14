@@ -56,6 +56,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     name,
     defaultValue,
     disabled,
+    exact,
   } = props || {};
   const _name = React.useRef(name);
 
@@ -66,12 +67,11 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     subject: control._subjects.watch,
     callback: (formState) => {
       if (
-        formState.name && props && props.exact
-          ? _name.current === formState.name
-          : shouldSubscribeByName(
-              _name.current as InternalFieldName,
-              formState.name,
-            )
+        shouldSubscribeByName(
+          _name.current as InternalFieldName,
+          formState.name,
+          exact,
+        )
       ) {
         const fieldValues = generateWatchOutput(
           _name.current as InternalFieldName | InternalFieldName[],

@@ -16,7 +16,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
-  const { control = methods.control, disabled, name } = props || {};
+  const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
@@ -33,12 +33,11 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   useSubscribe({
     disabled,
     callback: (value) =>
-      (props && props.exact
-        ? _name.current === value.name
-        : shouldSubscribeByName(
-            _name.current as InternalFieldName,
-            value.name,
-          )) &&
+      shouldSubscribeByName(
+        _name.current as InternalFieldName,
+        value.name,
+        exact,
+      ) &&
       shouldRenderFormState(value, _localProxyFormState.current) &&
       updateFormState({
         ...control._formState,
