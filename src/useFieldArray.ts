@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
 import getFocusFieldName from './logic/getFocusFieldName';
+import isWatched from './logic/isWatched';
 import mapCurrentIds from './logic/mapCurrentIds';
 import mapIds from './logic/mapId';
 import appendAt from './utils/append';
@@ -269,16 +270,7 @@ export const useFieldArray = <
   React.useEffect(() => {
     control._stateFlags.action = false;
 
-    if (control._names.watchAll) {
-      control._subjects.state.next({});
-    } else {
-      for (const watchField of control._names.watch) {
-        if (name.startsWith(watchField)) {
-          control._subjects.state.next({});
-          break;
-        }
-      }
-    }
+    isWatched(name, control._names) && control._subjects.state.next({});
 
     if (_actioned.current) {
       control._executeSchema([name]).then((result) => {

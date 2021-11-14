@@ -1,6 +1,7 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, ValidationMode } from 'react-hook-form';
 import Joi from 'joi';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
@@ -40,7 +41,8 @@ const resolver = async (data: any) => {
   };
 };
 
-const BasicSchemaValidation: React.FC = (props: any) => {
+const BasicSchemaValidation: React.FC = () => {
+  const { mode } = useParams();
   const {
     register,
     handleSubmit,
@@ -62,7 +64,7 @@ const BasicSchemaValidation: React.FC = (props: any) => {
     validate: string;
   }>({
     resolver,
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
   });
   const onSubmit = () => {};
 

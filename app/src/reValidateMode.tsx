@@ -1,9 +1,12 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { useForm, ValidationMode } from 'react-hook-form';
 
+type ReValidateMode = 'onBlur' | 'onChange' | 'onSubmit' | undefined;
 let renderCounter = 0;
 
-const Basic: React.FC = (props: any) => {
+const Basic: React.FC = () => {
+  const { mode, reValidateMode } = useParams();
   const {
     register,
     handleSubmit,
@@ -12,8 +15,8 @@ const Basic: React.FC = (props: any) => {
     firstName: string;
     lastName: string;
   }>({
-    mode: props.match.params.mode,
-    reValidateMode: props.match.params.reValidateMode,
+    mode: mode as keyof ValidationMode,
+    reValidateMode: reValidateMode as keyof ReValidateMode,
   });
   const onSubmit = () => {};
 

@@ -256,6 +256,35 @@ describe('useWatch', () => {
     ]);
   });
 
+  it('should subscribe to exact input change', () => {
+    const App = () => {
+      const { control, register } = useForm();
+      const value = useWatch({
+        name: 'test',
+        control,
+        exact: true,
+        defaultValue: 'test',
+      });
+
+      return (
+        <div>
+          <input {...register('test.0.data')} />
+          <p>{value}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '1234',
+      },
+    });
+
+    screen.getByText('test');
+  });
+
   describe('when disabled prop is used', () => {
     it('should be able to disabled subscription and started with true', async () => {
       type FormValues = {

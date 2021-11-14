@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, ValidationMode } from 'react-hook-form';
 import ReactSelect from 'react-select';
 import {
   TextField,
@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   Radio,
 } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
 
 let renderCount = 0;
 
@@ -42,10 +43,11 @@ type Form = {
 
 const PureReactSelect = React.memo(ReactSelect);
 
-export default function Field(props: any) {
+export default function Field() {
+  const { mode } = useParams();
   const methods = useForm<Form>({
     defaultValues,
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
   });
   const {
     handleSubmit,
