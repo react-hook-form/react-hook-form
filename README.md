@@ -395,6 +395,9 @@ Thank you for helping and answering questions from the community.
 <a href="https://github.com/lundn">
   <img src="https://avatars.githubusercontent.com/u/4386964?v=4" width="25" />
 </a>
+<a href="https://github.com/ritikbanger">
+  <img src="https://avatars.githubusercontent.com/u/47841501?v=4" width="25" />
+</a>
 
 ## Organizations
 
