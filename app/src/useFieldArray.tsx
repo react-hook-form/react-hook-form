@@ -1,13 +1,14 @@
 import React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 
 let renderCount = 0;
 
 type FormValues = { data: { name: string }[] };
 
-const UseFieldArray: React.FC = (props: any) => {
-  const withoutFocus: boolean =
-    props.match.params.mode === 'defaultAndWithoutFocus';
+const UseFieldArray: React.FC = () => {
+  const { mode } = useParams();
+  const withoutFocus: boolean = mode === 'defaultAndWithoutFocus';
   const {
     control,
     handleSubmit,
@@ -15,14 +16,14 @@ const UseFieldArray: React.FC = (props: any) => {
     formState: { isDirty, touchedFields, isValid, dirtyFields, errors },
     reset,
   } = useForm<FormValues>({
-    ...(props.match.params.mode === 'default' || withoutFocus
+    ...(mode === 'default' || withoutFocus
       ? {
           defaultValues: {
             data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
           },
         }
       : {}),
-    mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
+    mode: mode === 'formState' ? 'onChange' : 'onSubmit',
   });
   const {
     fields,
@@ -45,13 +46,13 @@ const UseFieldArray: React.FC = (props: any) => {
 
   React.useEffect(() => {
     setTimeout(() => {
-      if (props.match.params.mode === 'asyncReset') {
+      if (mode === 'asyncReset') {
         reset({
           data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
         });
       }
     }, 10);
-  }, [reset, props.match.params.mode]);
+  }, [reset, mode]);
 
   renderCount++;
 
