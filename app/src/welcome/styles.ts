@@ -1,5 +1,4 @@
 export const page: object = {
-  background: '#081229',
   minHeight: '100vh',
   color: 'white',
   padding: '1rem',

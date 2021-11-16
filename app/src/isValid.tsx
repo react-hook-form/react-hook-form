@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { withRouter } from 'react-router';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
@@ -14,8 +14,9 @@ const validationSchema = yup
   })
   .required();
 
-const IsValid: React.FC = (props: any) => {
-  const isBuildInValidation = props.match.params.mode === 'build-in';
+const IsValid: React.FC = () => {
+  const { mode, defaultValues } = useParams();
+  const isBuildInValidation = mode === 'build-in';
   const [show, setShow] = React.useState(true);
   const {
     register,
@@ -34,7 +35,7 @@ const IsValid: React.FC = (props: any) => {
   }>({
     mode: 'onChange',
     ...(isBuildInValidation ? {} : { resolver: yupResolver(validationSchema) }),
-    ...(props.match.params.defaultValues === 'defaultValues'
+    ...(defaultValues === 'defaultValues'
       ? {
           defaultValues: {
             firstName: 'test',
@@ -103,4 +104,4 @@ const IsValid: React.FC = (props: any) => {
   );
 };
 
-export default withRouter(IsValid);
+export default IsValid;

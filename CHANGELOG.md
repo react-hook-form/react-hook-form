@@ -1,5 +1,33 @@
 # Changelog
 
+## [7.18.1] - 2021-11-02
+
+- revert `FieldPathWithValue`
+
+## [7.18.0] - 2021-10-28
+
+## Added
+
+- bring back `FieldPathWithValue`
+- schema errors parent object look up
+
+```tsx
+const validationSchema = object().shape({
+  questions: array().min(1, 'Array cannot be empty'),
+});
+
+// the above schema will be picked up by field array action
+// the logic applies to group error object eg checkboxes
+<button
+  type="button"
+  onClick={() => {
+    remove(questionIndex);
+  }}
+>
+  Remove
+</button>;
+```
+
 ## [7.17.0] - 2021-10-02
 
 ## Added

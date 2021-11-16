@@ -535,7 +535,7 @@ describe('reset', () => {
         defaultValues: { test: 'test', test1: 'test1' },
       });
       const resetData = () => {
-        reset({}, { keepDefaultValues: true });
+        reset(undefined, { keepDefaultValues: true });
       };
 
       return (
@@ -697,6 +697,52 @@ describe('reset', () => {
     });
 
     expect(submittedData).toEqual({});
+  });
+
+  it('should update controlled input correctly with shouldUnregister set to true', () => {
+    function App() {
+      const { register, reset, control } = useForm({
+        defaultValues: { uncontrolled: '', control: '' },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form>
+          <input {...register('uncontrolled')} />
+          <Controller
+            render={({ field }) => (
+              <input
+                ref={field.ref}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
+            name="control"
+            control={control}
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              reset({ uncontrolled: 'uncontrolled', control: 'control' });
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('uncontrolled');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('control');
   });
 
   it('should keep input values when keepValues is set to true', () => {

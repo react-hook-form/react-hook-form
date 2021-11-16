@@ -1,7 +1,7 @@
 import * as React from 'react';
 
+import { generateWatchOutput } from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import {
   Control,
@@ -23,6 +23,7 @@ export function useWatch<
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  exact?: boolean;
 }): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -32,16 +33,22 @@ export function useWatch<
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
 >(props: {
-  name: readonly [...TFieldNames];
+  name: TFieldNames;
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+>(): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
   const {
@@ -49,6 +56,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     name,
     defaultValue,
     disabled,
+    exact,
   } = props || {};
   const _name = React.useRef(name);
 
@@ -58,17 +66,21 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     disabled,
     subject: control._subjects.watch,
     callback: (formState) => {
-      if (shouldSubscribeByName(_name.current, formState.name)) {
-        control._stateFlags.mount = true;
-        const fieldValues = control._getWatch(
+      if (
+        shouldSubscribeByName(
           _name.current as InternalFieldName,
-          defaultValue as UnpackNestedValue<
-            DeepPartialSkipArrayKey<TFieldValues>
-          >,
+          formState.name,
+          exact,
+        )
+      ) {
+        const fieldValues = generateWatchOutput(
+          _name.current as InternalFieldName | InternalFieldName[],
+          control._names,
+          formState.values || control._formValues,
         );
 
         updateValue(
-          isObject(fieldValues)
+          isUndefined(_name.current)
             ? { ...fieldValues }
             : Array.isArray(fieldValues)
             ? [...fieldValues]

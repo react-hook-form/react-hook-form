@@ -3,7 +3,12 @@ import * as React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import { FieldValues, UseFormStateProps, UseFormStateReturn } from './types';
+import {
+  FieldValues,
+  InternalFieldName,
+  UseFormStateProps,
+  UseFormStateReturn,
+} from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
@@ -11,7 +16,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   props?: UseFormStateProps<TFieldValues>,
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
-  const { control = methods.control, disabled, name } = props || {};
+  const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
@@ -27,15 +32,18 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   useSubscribe({
     disabled,
-    callback: (formState) =>
-      shouldSubscribeByName(_name.current, formState.name) &&
-      shouldRenderFormState(formState, _localProxyFormState.current) &&
+    callback: (value) =>
+      shouldSubscribeByName(
+        _name.current as InternalFieldName,
+        value.name,
+        exact,
+      ) &&
+      shouldRenderFormState(value, _localProxyFormState.current) &&
       updateFormState({
         ...control._formState,
-        ...formState,
+        ...value,
       }),
     subject: control._subjects.state,
-    skipEarlySubscription: true,
   });
 
   return getProxyFormState(

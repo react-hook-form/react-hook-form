@@ -84,7 +84,7 @@ describe('errorsLookup', () => {
           },
         },
         {},
-        'test1.nested.deepNested.wahtever',
+        'test1.nested.deepNested.whatever',
       ),
     ).toEqual({
       error: { message: 'error', type: 'deepNested' },

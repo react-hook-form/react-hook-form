@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
 import getFocusFieldName from './logic/getFocusFieldName';
+import isWatched from './logic/isWatched';
 import mapCurrentIds from './logic/mapCurrentIds';
 import mapIds from './logic/mapId';
 import appendAt from './utils/append';
@@ -49,6 +50,7 @@ export const useFieldArray = <
   >(mapIds(control._getFieldArray(name), keyName));
   const _fieldIds = React.useRef(fields);
   const _name = React.useRef(name);
+  const _actioned = React.useRef(false);
 
   _name.current = name;
   _fieldIds.current = fields;
@@ -61,7 +63,6 @@ export const useFieldArray = <
       }
     },
     subject: control._subjects.array,
-    skipEarlySubscription: true,
   });
 
   const updateValues = React.useCallback(
@@ -76,8 +77,8 @@ export const useFieldArray = <
         updatedFieldArrayValuesWithKey,
         keyName,
       );
+      _actioned.current = true;
       set(control._formValues, name, updatedFieldArrayValues);
-      setFields(updatedFieldArrayValuesWithKey);
       return updatedFieldArrayValues;
     },
     [control, name, keyName],
@@ -102,6 +103,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(
       name,
@@ -128,6 +130,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(name, 0, options);
   };
@@ -147,6 +150,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const insert = (
@@ -170,6 +174,7 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
+    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(name, index, options);
   };
@@ -191,6 +196,7 @@ export const useFieldArray = <
       updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const move = (from: number, to: number) => {
@@ -210,6 +216,7 @@ export const useFieldArray = <
       updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const update = (
@@ -238,6 +245,7 @@ export const useFieldArray = <
       true,
       false,
     );
+    setFields(_fieldIds.current);
   };
 
   const replace = (
@@ -256,32 +264,26 @@ export const useFieldArray = <
       true,
       false,
     );
+    setFields(updatedFieldArrayValuesWithKey);
   };
 
   React.useEffect(() => {
     control._stateFlags.action = false;
 
-    if (control._names.watchAll) {
-      control._subjects.state.next({});
-    } else {
-      for (const watchField of control._names.watch) {
-        if (name.startsWith(watchField)) {
-          control._subjects.state.next({});
-          break;
+    isWatched(name, control._names) && control._subjects.state.next({});
+
+    if (_actioned.current) {
+      control._executeSchema([name]).then((result) => {
+        const error = get(result.errors, name);
+
+        if (error && error.type && !get(control._formState.errors, name)) {
+          set(control._formState.errors, name, error);
+          control._subjects.state.next({
+            errors: control._formState.errors as FieldErrors<TFieldValues>,
+          });
         }
-      }
+      });
     }
-
-    control._executeSchema([name]).then((result) => {
-      const error = get(result.errors, name);
-
-      if (error && error.type && !get(control._formState.errors, name)) {
-        set(control._formState.errors, name, error);
-        control._subjects.state.next({
-          errors: control._formState.errors as FieldErrors<TFieldValues>,
-        });
-      }
-    });
 
     control._subjects.watch.next({
       name,

@@ -8,12 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import {
-  Control,
-  FieldPathWithValue,
-  FieldValues,
-  NestedValue,
-} from '../types';
+import { Control, FieldPath } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -514,12 +509,6 @@ describe('useController', () => {
   });
 
   it('should return defaultValues when component is not yet mounted', async () => {
-    type FormValues = {
-      test: {
-        deep: { test: string; test1: string }[];
-      };
-    };
-
     const defaultValues = {
       test: {
         deep: [
@@ -532,11 +521,15 @@ describe('useController', () => {
     };
 
     const App = () => {
-      const { control, getValues } = useForm<FormValues>({
+      const { control, getValues } = useForm<{
+        test: {
+          deep: { test: string; test1: string }[];
+        };
+      }>({
         defaultValues,
       });
 
-      const { field } = useController<FormValues, string>({
+      const { field } = useController({
         control,
         name: 'test.deep.0.test',
       });
@@ -598,119 +591,59 @@ describe('useController', () => {
     });
   });
 
-  describe('When expected type is provided', () => {
-    it('should render generic component correctly', () => {
-      type ExpectedType = { test: string };
+  it('should remount with input with defaultValue when shouldUnregister set to true', () => {
+    let data: string;
 
-      const Generic = <FormValues extends FieldValues>({
-        name,
+    function Input<T>({
+      control,
+      name,
+    }: {
+      control: Control<T>;
+      name: FieldPath<T>;
+    }) {
+      const {
+        field: { value },
+      } = useController({
         control,
-      }: {
-        name: FieldPathWithValue<FormValues, ExpectedType>;
-        control: Control<FormValues>;
-      }) => {
-        const {
-          field: { value, ...fieldProps },
-          fieldState: { error },
-        } = useController<FormValues, ExpectedType>({
-          name,
-          control,
-          defaultValue: { test: 'value' },
-        });
-
-        if (error?.message) {
-          return null;
-        }
-
-        return <input type="text" value={value.test} {...fieldProps} />;
-      };
-
-      const GenericController = <FormValues extends FieldValues>({
         name,
-        control,
-      }: {
-        name: FieldPathWithValue<FormValues, ExpectedType>;
-        control: Control<FormValues>;
-      }) => {
-        return (
-          <Controller
-            render={({ field }) => <input {...field} />}
-            control={control}
-            name={name}
-          />
-        );
-      };
+        shouldUnregister: true,
+      });
 
-      const Component = () => {
-        const { control } = useForm<{
-          test: string;
-          key: ExpectedType[];
-          key1: ExpectedType[];
-        }>({
-          defaultValues: {
-            test: 'test',
-            key: [{ test: 'input value' }],
-            key1: [{ test: 'input value' }],
-          },
-        });
+      data = value;
 
-        return (
-          <div>
-            <Generic name="key.0" control={control} />
-            <GenericController name="key.1" control={control} />
-          </div>
-        );
-      };
+      return null;
+    }
 
-      render(<Component />);
+    const App = () => {
+      const { control } = useForm<{
+        test: string;
+      }>({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const [toggle, setToggle] = React.useState(true);
+
+      return (
+        <div>
+          {toggle && <Input control={control} name={'test'} />}
+          <button onClick={() => setToggle(!toggle)}>toggle</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    act(() => {
+      expect(data).toEqual('test');
     });
 
-    it('should be able to access values and error in generic components using NestedValue', () => {
-      type ExpectedType = NestedValue<{ test: string }>;
+    fireEvent.click(screen.getByRole('button'));
 
-      const Generic = <FormValues extends FieldValues>({
-        name,
-        control,
-      }: {
-        name: FieldPathWithValue<FormValues, ExpectedType>;
-        control: Control<FormValues>;
-      }) => {
-        const {
-          field: { value, ...fieldProps },
-          fieldState: { error },
-        } = useController<FormValues, ExpectedType>({
-          name,
-          control,
-          defaultValue: { test: 'value' },
-        });
+    fireEvent.click(screen.getByRole('button'));
 
-        if (error?.message) {
-          return <>There was an error</>;
-        }
-
-        return <input type="text" value={value.test} {...fieldProps} />;
-      };
-
-      const Component = () => {
-        const { control } = useForm<{
-          test: string;
-          key: ExpectedType[];
-        }>({
-          defaultValues: {
-            test: 'test',
-            key: [{ test: 'input value' }],
-          },
-        });
-
-        return <Generic name="key.0" control={control} />;
-      };
-
-      render(<Component />);
-
-      const input = screen.queryByRole('textbox') as HTMLInputElement | null;
-
-      expect(input).toBeInTheDocument();
-      expect(input?.value).toEqual('input value');
+    act(() => {
+      expect(data).toEqual('test');
     });
   });
 });

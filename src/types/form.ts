@@ -245,6 +245,18 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
+export type UseFormResetField<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  options?: Partial<{
+    keepDirty: boolean;
+    keepTouched: boolean;
+    keepError: boolean;
+    defaultValue: any;
+  }>,
+) => void;
+
 export type UseFormReset<TFieldValues extends FieldValues> = (
   values?: DefaultValues<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
@@ -272,10 +284,6 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
   watch: Subject<{
     name?: InternalFieldName;
     type?: EventType;
-    values?: FieldValues;
-  }>;
-  control: Subject<{
-    name?: InternalFieldName;
     values?: FieldValues;
   }>;
   array: Subject<{
@@ -365,6 +373,7 @@ export type UseFormReturn<
   setValue: UseFormSetValue<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
   formState: FormState<TFieldValues>;
+  resetField: UseFormResetField<TFieldValues>;
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
@@ -380,6 +389,7 @@ export type UseFormStateProps<TFieldValues> = Partial<{
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
+  exact?: boolean;
 }>;
 
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
@@ -392,6 +402,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
+  exact?: boolean;
 };
 
 export type FormProviderProps<

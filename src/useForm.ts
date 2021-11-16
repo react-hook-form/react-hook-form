@@ -48,11 +48,11 @@ export function useForm<
 
   useSubscribe({
     subject: control._subjects.state,
-    callback: (formState) => {
-      if (shouldRenderFormState(formState, control._proxyFormState, true)) {
+    callback: (value) => {
+      if (shouldRenderFormState(value, control._proxyFormState, true)) {
         control._formState = {
           ...control._formState,
-          ...formState,
+          ...value,
         };
 
         updateFormState({ ...control._formState });
@@ -71,14 +71,6 @@ export function useForm<
     }
     control._removeUnmounted();
   });
-
-  React.useEffect(
-    () => () =>
-      Object.values(control._subjects).forEach((subject) =>
-        subject.unsubscribe(),
-      ),
-    [control],
-  );
 
   _formControl.current.formState = getProxyFormState(
     formState,
