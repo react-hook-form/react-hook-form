@@ -990,7 +990,7 @@ property-expr@^2.0.4:
   resolved "https://registry.yarnpkg.com/property-expr/-/property-expr-2.0.4.tgz#37b925478e58965031bb612ec5b3260f8241e910"
   integrity sha512-sFPkHQjVKheDNnPvotjQmm3KD3uk1fWKUN7CrpdbwmUx3CrG3QiM8QpTSimvig5vTXmTvjz7+TDvXOI9+4rkcg==
 
-react-dom@^18.0.0-beta-96ca8d915-20211115:
+react-dom@^18.0.0@next:
   version "18.0.0-beta-96ca8d915-20211115"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.0.0-beta-96ca8d915-20211115.tgz#511a754eddbb760c83d85251249fe9c52522326e"
   integrity sha512-ISFQGQ0lHt+fz/Ch9K9coggTWzp9ScfuvzdshGJ73z5AI7mi9i6mVjVekMDnx0wiECjHP1s87rxNDQGGj9XnHw==
@@ -1079,7 +1079,7 @@ react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react@^18.0.0-beta-96ca8d915-20211115:
+react@^18.0.0@next:
   version "18.0.0-beta-96ca8d915-20211115"
   resolved "https://registry.yarnpkg.com/react/-/react-18.0.0-beta-96ca8d915-20211115.tgz#0b2a0cd808b85fdce987a0c254e0fab979a3828d"
   integrity sha512-Io6qvToVSO1UWNWbJSH16gbgYTkseSbfpQvLaB7JPutt0QVvjpUlEE0nfmww77CFdawxGkyfm/x4zvNTlMkHsw==
