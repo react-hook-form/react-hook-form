@@ -25,6 +25,24 @@ describe('setValue', () => {
     result.current.register('test1');
     result.current.setValue('test1', 'data');
   });
+  
+  it('should not setValue for unmounted state with shouldUnregister', () => {
+    const { result } = renderHook(() => useForm<{ testePDS: number }>());
+
+    result.current.register('testePDS');
+    result.current.setValue('testePDS', 311);
+    
+    await act(async () => {
+      await result.current.handleSubmit((data) => {
+        expect(data).toEqual({
+          testePDS: 311,
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+  });
 
   it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
     const { result } = renderHook(() =>
