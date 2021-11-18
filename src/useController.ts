@@ -7,8 +7,10 @@ import { EVENTS } from './constants';
 import {
   Field,
   FieldPath,
+  FieldPathValue,
   FieldValues,
   InternalFieldName,
+  UnpackNestedValue,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -34,7 +36,7 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
     exact: !isArrayField,
-  });
+  }) as UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   const formState = useFormState({
     control,
     name,

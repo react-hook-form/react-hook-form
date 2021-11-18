@@ -749,7 +749,7 @@ describe('register', () => {
           register,
           handleSubmit,
           formState: { errors },
-        } = useForm();
+        } = useForm<FormValues>();
 
         return (
           <form onSubmit={handleSubmit(setValue)}>

@@ -16,7 +16,6 @@ import {
   InternalFieldName,
   Names,
   Path,
-  PathValue,
   Ref,
   ResolverResult,
   SetFieldValue,
@@ -557,13 +556,17 @@ export function createFormControl<
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
-  const setValues = (
-    name: FieldPath<TFieldValues>,
-    value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
-    options: SetValueConfig,
+  const setValues = <
+    T extends InternalFieldName,
+    K extends SetFieldValue<TFieldValues>,
+    U,
+  >(
+    name: T,
+    value: K,
+    options: U,
   ) => {
     for (const fieldKey in value) {
-      const fieldValue: SetFieldValue<TFieldValues> = value[fieldKey];
+      const fieldValue = value[fieldKey];
       const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
       const field = get(_fields, fieldName);
 
