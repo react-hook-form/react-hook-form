@@ -233,7 +233,10 @@ export const useFieldArray = <
       index,
       value,
     );
-    _fieldIds.current = mapIds(updatedFieldArrayValues, keyName);
+    _fieldIds.current = mapIds<TFieldValues, TFieldArrayName, TKeyName>(
+      updatedFieldArrayValues,
+      keyName,
+    );
     control._updateFieldArray(
       name,
       updateAt,
@@ -253,9 +256,11 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
-    const updatedFieldArrayValuesWithKey: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = mapIds(convertToArrayPayload(value), keyName);
+    const updatedFieldArrayValuesWithKey = mapIds<
+      TFieldValues,
+      TFieldArrayName,
+      TKeyName
+    >(convertToArrayPayload(value) as Partial<TFieldValues>[], keyName);
     control._updateFieldArray(
       name,
       () => updatedFieldArrayValuesWithKey,
