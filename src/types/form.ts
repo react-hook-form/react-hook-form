@@ -389,6 +389,7 @@ export type UseFormStateProps<TFieldValues> = Partial<{
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
+  exact?: boolean;
 }>;
 
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
@@ -401,6 +402,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
+  exact?: boolean;
 };
 
 export type FormProviderProps<

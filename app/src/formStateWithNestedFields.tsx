@@ -1,10 +1,11 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { withRouter } from 'react-router';
+import { useForm, ValidationMode } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
-const FormStateWithNestedFields: React.FC = (props: any) => {
+const FormStateWithNestedFields = () => {
+  const { mode } = useParams();
   const {
     register,
     handleSubmit,
@@ -29,7 +30,7 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
       test2: string;
     };
   }>({
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
     defaultValues: {
       left: {
         test1: '',
@@ -103,4 +104,4 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
   );
 };
 
-export default withRouter(FormStateWithNestedFields);
+export default FormStateWithNestedFields;

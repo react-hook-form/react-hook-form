@@ -349,6 +349,18 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/bkincart"
+    ><img
+            src="https://avatars.githubusercontent.com/u/22803185?v=4"
+            width="45"
+            height="45"
+    /></a>
+    <a href="https://github.com/37108"
+    ><img
+            src="https://avatars.githubusercontent.com/u/36793907?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ## Backers
@@ -382,6 +394,9 @@ Thank you for helping and answering questions from the community.
 </a>
 <a href="https://github.com/lundn">
   <img src="https://avatars.githubusercontent.com/u/4386964?v=4" width="25" />
+</a>
+<a href="https://github.com/ritikbanger">
+  <img src="https://avatars.githubusercontent.com/u/47841501?v=4" width="25" />
 </a>
 
 ## Organizations

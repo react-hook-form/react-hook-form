@@ -73,6 +73,7 @@ import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
+import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 import skipValidation from './skipValidation';
@@ -153,15 +154,6 @@ export function createFormControl<
       clearTimeout(timer);
       timer = window.setTimeout(() => callback(...args), wait);
     };
-
-  const isFieldWatched = (
-    name: FieldPath<TFieldValues>,
-    isBlurEvent?: boolean,
-  ) =>
-    !isBlurEvent &&
-    (_names.watchAll ||
-      _names.watch.has(name) ||
-      _names.watch.has((name.match(/\w+/) || [])[0]));
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
     let isValid = false;
@@ -621,7 +613,7 @@ export function createFormControl<
         : setFieldValue(name, value, options);
     }
 
-    isFieldWatched(name) && _subjects.state.next({});
+    isWatched(name, _names) && _subjects.state.next({});
     _subjects.watch.next({
       name,
     });
@@ -649,7 +641,7 @@ export function createFormControl<
           validationModeAfterSubmit,
           validationModeBeforeSubmit,
         );
-      const isWatched = isFieldWatched(name, isBlurEvent);
+      const watched = isWatched(name, _names, isBlurEvent);
 
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
@@ -666,7 +658,7 @@ export function createFormControl<
         false,
       );
 
-      const shouldRender = !isEmptyObject(fieldState) || isWatched;
+      const shouldRender = !isEmptyObject(fieldState) || watched;
 
       !isBlurEvent &&
         _subjects.watch.next({
@@ -677,11 +669,11 @@ export function createFormControl<
       if (shouldSkipValidation) {
         return (
           shouldRender &&
-          _subjects.state.next({ name, ...(isWatched ? {} : fieldState) })
+          _subjects.state.next({ name, ...(watched ? {} : fieldState) })
         );
       }
 
-      !isBlurEvent && isWatched && _subjects.state.next({});
+      !isBlurEvent && watched && _subjects.state.next({});
 
       validateFields[name] = validateFields[name] ? +1 : 1;
 
@@ -896,6 +888,7 @@ export function createFormControl<
     _names.mount.add(name);
 
     !isUndefined(options.value) &&
+      !options.disabled &&
       set(_formValues, name, get(_formValues, name, options.value));
 
     field
@@ -987,7 +980,9 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = { ..._formValues };
+      let fieldValues: any = _options.shouldUnregister
+        ? cloneObject(_formValues)
+        : { ..._formValues };
 
       _subjects.state.next({
         isSubmitting: true,

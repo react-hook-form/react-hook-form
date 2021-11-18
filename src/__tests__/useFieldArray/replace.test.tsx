@@ -2,9 +2,14 @@ import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 
+import * as generateId from '../../logic/generateId';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import { mockGenerateId } from '../useFieldArray.test';
+
+const mockGenerateId = () => {
+  let id = 0;
+  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
+};
 
 interface TestValue {
   x: string;

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { useForm, NestedValue } from 'react-hook-form';
+import { useForm, NestedValue, ValidationMode } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
-const Basic: React.FC = (props: any) => {
+const Basic: React.FC = () => {
+  const { mode } = useParams();
   const [data, setData] = React.useState({});
   const {
     register,
@@ -31,7 +33,7 @@ const Basic: React.FC = (props: any) => {
     };
     arrayItem: { test1: string; test2: string }[];
   }>({
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
   });
   const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0);
   const onInvalid = () => setOnInvalidCalledTimes((prevCount) => prevCount + 1);

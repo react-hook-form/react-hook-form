@@ -21,7 +21,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 
-export const mockGenerateId = () => {
+const mockGenerateId = () => {
   let id = 0;
   jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
 };
@@ -2609,5 +2609,79 @@ describe('useFieldArray', () => {
         (screen.getAllByRole('textbox')[6] as HTMLInputElement).value,
       ).toEqual('1sub-new');
     });
+  });
+
+  it('should update field array correctly with async invocation', async () => {
+    type FormValues = {
+      items: { id: string; name: string }[];
+    };
+
+    let controlObj: any = {};
+
+    const App = () => {
+      const { register, control } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: {
+          items: [{ name: 'one' }, { name: 'two' }],
+        },
+      });
+
+      controlObj = control;
+
+      const { fields, remove, insert } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      return (
+        <form>
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTimeout(() => {
+                      remove(index);
+                    });
+                  }}
+                >
+                  remove
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTimeout(() => {
+                      insert(index + 1, {
+                        name: 'test',
+                      });
+                    });
+                  }}
+                >
+                  copy
+                </button>
+                <input
+                  {...register(`items.${index}.name` as const, {
+                    required: true,
+                  })}
+                />
+              </div>
+            );
+          })}
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: 'copy' })[0]);
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
+    });
+
+    expect(controlObj._fields.items.length).toEqual(2);
   });
 });
