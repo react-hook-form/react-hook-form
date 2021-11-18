@@ -592,7 +592,7 @@ describe('useController', () => {
   });
 
   it('should remount with input with defaultValue when shouldUnregister set to true', () => {
-    let data: string;
+    let data: unknown;
 
     function Input<T>({
       control,
