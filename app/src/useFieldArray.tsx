@@ -174,6 +174,18 @@ const UseFieldArray: React.FC = () => {
         remove
       </button>
 
+      <button
+        id="removeAsync"
+        type="button"
+        onClick={() =>
+          setTimeout(() => {
+            remove(1);
+          }, 90)
+        }
+      >
+        remove async
+      </button>
+
       <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
       </button>
