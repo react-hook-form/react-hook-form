@@ -37,7 +37,7 @@ export function useWatch<
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
+  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
