@@ -100,19 +100,27 @@ test('should work with optional field with Controller', () => {
 
 test('should useWatch return correct array types', () => {
   type FormValues = {
-    test: string;
-    data: number;
-    why: {
-      test: string;
-      hey: string;
+    testString: string;
+    testNumber: number;
+    testObject: {
+      testString: string;
+      test1String: string;
     };
   };
-  const { control } = useForm<FormValues>();
-  const output: [FormValues['test'], FormValues['data'], FormValues['why']] =
-    useWatch({
+
+  const App = () => {
+    const { control } = useForm<FormValues>();
+    const output: [
+      FormValues['testString'],
+      FormValues['testNumber'],
+      FormValues['testObject'],
+    ] = useWatch({
       control,
-      name: ['test', 'data', 'why'],
+      name: ['testString', 'testNumber', 'testObject'],
     });
 
-  output;
+    return output;
+  };
+
+  App;
 });
