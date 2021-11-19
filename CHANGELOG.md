@@ -5,9 +5,15 @@
 ## Added
 
 - new `exact` prop for `useWatch`
+- new `exact` prop for `useFormState`
 
 ```tsx
 useWatch({
+  name: 'test.test',
+  exact: true,
+});
+
+useFormState({
   name: 'test.test',
   exact: true,
 });
