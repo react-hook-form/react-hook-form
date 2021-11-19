@@ -333,7 +333,7 @@ export type Control<
     action: boolean;
     watch: boolean;
   };
-  _options: Pick<UseFormProps<TFieldValues, TContext>, 'shouldUnregister'>;
+  _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: Noop;
@@ -389,6 +389,7 @@ export type UseFormStateProps<TFieldValues> = Partial<{
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
+  exact?: boolean;
 }>;
 
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
@@ -401,6 +402,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
+  exact?: boolean;
 };
 
 export type FormProviderProps<

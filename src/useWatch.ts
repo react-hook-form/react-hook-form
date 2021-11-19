@@ -24,6 +24,7 @@ export function useWatch<
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  exact?: boolean;
 }): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -33,6 +34,7 @@ export function useWatch<
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -42,6 +44,7 @@ export function useWatch<
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -56,6 +59,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
     name,
     defaultValue,
     disabled,
+    exact,
   } = props || {};
   const _name = React.useRef(name);
 
@@ -69,6 +73,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         shouldSubscribeByName(
           _name.current as InternalFieldName,
           formState.name,
+          exact,
         )
       ) {
         const fieldValues = generateWatchOutput(

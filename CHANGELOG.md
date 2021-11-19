@@ -1,5 +1,47 @@
 # Changelog
 
+## [7.20.0] - 2021-11-19
+
+## Added
+
+- new `exact` prop for `useWatch`
+- new `exact` prop for `useFormState`
+
+```tsx
+useWatch({
+  name: 'test.test',
+  exact: true,
+});
+
+useFormState({
+  name: 'test.test',
+  exact: true,
+});
+```
+
+## Changed
+
+- `useWatch` subscription will occurred at `useEffect` instead before `render`
+
+## [7.19.0] - 2021-11-05
+
+## Added
+
+- new `resetField` API
+
+```tsx
+const { resetField } = useForm();
+
+resetField('test');
+
+resetField('test', {
+  keepError: true,
+  keepDirty: true,
+  keepTouched: true,
+  defaultValue: 'test1',
+});
+```
+
 ## [7.18.1] - 2021-11-02
 
 - revert `FieldPathWithValue`

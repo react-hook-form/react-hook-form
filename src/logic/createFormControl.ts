@@ -16,7 +16,6 @@ import {
   InternalFieldName,
   Names,
   Path,
-  PathValue,
   Ref,
   ResolverResult,
   SetFieldValue,
@@ -74,6 +73,7 @@ import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
+import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 import skipValidation from './skipValidation';
@@ -154,15 +154,6 @@ export function createFormControl<
       clearTimeout(timer);
       timer = window.setTimeout(() => callback(...args), wait);
     };
-
-  const isFieldWatched = (
-    name: FieldPath<TFieldValues>,
-    isBlurEvent?: boolean,
-  ) =>
-    !isBlurEvent &&
-    (_names.watchAll ||
-      _names.watch.has(name) ||
-      _names.watch.has((name.match(/\w+/) || [])[0]));
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
     let isValid = false;
@@ -565,13 +556,17 @@ export function createFormControl<
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
-  const setValues = (
-    name: FieldPath<TFieldValues>,
-    value: UnpackNestedValue<PathValue<TFieldValues, FieldPath<TFieldValues>>>,
-    options: SetValueConfig,
+  const setValues = <
+    T extends InternalFieldName,
+    K extends SetFieldValue<TFieldValues>,
+    U,
+  >(
+    name: T,
+    value: K,
+    options: U,
   ) => {
     for (const fieldKey in value) {
-      const fieldValue: SetFieldValue<TFieldValues> = value[fieldKey];
+      const fieldValue = value[fieldKey];
       const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
       const field = get(_fields, fieldName);
 
@@ -618,7 +613,7 @@ export function createFormControl<
         : setFieldValue(name, value, options);
     }
 
-    isFieldWatched(name) && _subjects.state.next({});
+    isWatched(name, _names) && _subjects.state.next({});
     _subjects.watch.next({
       name,
     });
@@ -646,7 +641,7 @@ export function createFormControl<
           validationModeAfterSubmit,
           validationModeBeforeSubmit,
         );
-      const isWatched = isFieldWatched(name, isBlurEvent);
+      const watched = isWatched(name, _names, isBlurEvent);
 
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
@@ -663,7 +658,7 @@ export function createFormControl<
         false,
       );
 
-      const shouldRender = !isEmptyObject(fieldState) || isWatched;
+      const shouldRender = !isEmptyObject(fieldState) || watched;
 
       !isBlurEvent &&
         _subjects.watch.next({
@@ -674,11 +669,11 @@ export function createFormControl<
       if (shouldSkipValidation) {
         return (
           shouldRender &&
-          _subjects.state.next({ name, ...(isWatched ? {} : fieldState) })
+          _subjects.state.next({ name, ...(watched ? {} : fieldState) })
         );
       }
 
-      !isBlurEvent && isWatched && _subjects.state.next({});
+      !isBlurEvent && watched && _subjects.state.next({});
 
       validateFields[name] = validateFields[name] ? +1 : 1;
 

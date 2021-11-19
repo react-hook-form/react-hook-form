@@ -592,7 +592,7 @@ describe('useController', () => {
   });
 
   it('should remount with input with defaultValue when shouldUnregister set to true', () => {
-    let data: string;
+    let data: unknown;
 
     function Input<T>({
       control,
@@ -645,5 +645,48 @@ describe('useController', () => {
     act(() => {
       expect(data).toEqual('test');
     });
+  });
+
+  it('should always get the latest value for onBlur event', async () => {
+    const watchResults: unknown[] = [];
+
+    const App = () => {
+      const { control, watch } = useForm();
+      const { field } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      watchResults.push(watch());
+
+      return (
+        <button
+          onClick={() => {
+            field.onChange('updated value');
+            field.onBlur();
+          }}
+        >
+          test
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button'), {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    expect(watchResults).toEqual([
+      {},
+      {
+        test: 'updated value',
+      },
+    ]);
   });
 });

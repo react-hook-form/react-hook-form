@@ -7,8 +7,10 @@ import { EVENTS } from './constants';
 import {
   Field,
   FieldPath,
+  FieldPathValue,
   FieldValues,
   InternalFieldName,
+  UnpackNestedValue,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -24,6 +26,7 @@ export function useController<
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, control = methods.control, shouldUnregister } = props;
+  const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
     control,
     name,
@@ -32,7 +35,8 @@ export function useController<
       name,
       get(control._defaultValues, name, props.defaultValue),
     ),
-  });
+    exact: !isArrayField,
+  }) as UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   const formState = useFormState({
     control,
     name,
@@ -62,7 +66,7 @@ export function useController<
         control._options.shouldUnregister || shouldUnregister;
 
       if (
-        isNameInFieldArray(control._names.array, name)
+        isArrayField
           ? _shouldUnregisterField && !control._stateFlags.action
           : _shouldUnregisterField
       ) {
@@ -71,7 +75,7 @@ export function useController<
         updateMounted(name, false);
       }
     };
-  }, [name, control, shouldUnregister]);
+  }, [name, control, isArrayField, shouldUnregister]);
 
   return {
     field: {
@@ -87,7 +91,7 @@ export function useController<
       onBlur: () => {
         registerProps.onBlur({
           target: {
-            value,
+            value: get(control._formValues, name),
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
