@@ -135,6 +135,6 @@
     "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
-    "node": ">=12.22"
+    "node": ">=12.0"
   }
 }
