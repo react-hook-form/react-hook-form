@@ -4,6 +4,7 @@ import { Controller } from '../controller';
 import { Path } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { useWatch } from '../useWatch';
 
 test('should not throw type error with path name', () => {
   type MissingCompanyNamePath = Path<{
@@ -95,4 +96,23 @@ test('should work with optional field with Controller', () => {
   }
 
   App;
+});
+
+test('should useWatch return correct array types', () => {
+  type FormValues = {
+    test: string;
+    data: number;
+    why: {
+      test: string;
+      hey: string;
+    };
+  };
+  const { control } = useForm<FormValues>();
+  const output: [FormValues['test'], FormValues['data'], FormValues['why']] =
+    useWatch({
+      control,
+      name: ['test', 'data', 'why'],
+    });
+
+  output;
 });
