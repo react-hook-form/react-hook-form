@@ -1,5 +1,24 @@
 # Changelog
 
+## [7.19.0] - 2021-11-05
+
+## Added
+
+- new `resetField` API
+
+```tsx
+const { resetField } = useForm();
+
+resetField('test');
+
+resetField('test', {
+  keepError: true,
+  keepDirty: true,
+  keepTouched: true,
+  defaultValue: 'test1',
+});
+```
+
 ## [7.18.1] - 2021-11-02
 
 - revert `FieldPathWithValue`
