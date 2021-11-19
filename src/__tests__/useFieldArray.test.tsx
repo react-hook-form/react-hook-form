@@ -2682,6 +2682,6 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
     });
 
-    expect(controlObj._fields.items.length).toEqual(3);
+    expect(controlObj._fields.items.length).toEqual(2);
   });
 });
