@@ -2674,14 +2674,14 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
+    actComponent(() => {
       fireEvent.click(screen.getAllByRole('button', { name: 'copy' })[0]);
     });
 
-    await actComponent(async () => {
+    actComponent(() => {
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
     });
 
-    expect(controlObj._fields.items.length).toEqual(2);
+    expect(controlObj._fields.items.length).toEqual(3);
   });
 });

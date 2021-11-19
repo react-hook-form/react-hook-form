@@ -95,6 +95,7 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(appendValue, keyName),
     );
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       appendAt,
@@ -103,7 +104,6 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
-    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(
       name,
@@ -122,6 +122,7 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(convertToArrayPayload(value), keyName),
     );
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       prependAt,
@@ -130,7 +131,6 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
-    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(name, 0, options);
   };
@@ -142,6 +142,7 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       index,
     );
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       removeArrayAt,
@@ -150,7 +151,6 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
-    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const insert = (
@@ -165,6 +165,7 @@ export const useFieldArray = <
       index,
       mapIds(convertToArrayPayload(value), keyName),
     );
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       insertAt,
@@ -174,7 +175,6 @@ export const useFieldArray = <
       },
       updateValues(updatedFieldArrayValuesWithKey),
     );
-    setFields(updatedFieldArrayValuesWithKey);
 
     control._names.focus = getFocusFieldName(name, index, options);
   };
@@ -186,6 +186,7 @@ export const useFieldArray = <
       keyName,
     );
     swapArrayAt(updatedFieldArrayValuesWithKey, indexA, indexB);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       swapArrayAt,
@@ -196,7 +197,6 @@ export const useFieldArray = <
       updateValues(updatedFieldArrayValuesWithKey),
       false,
     );
-    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const move = (from: number, to: number) => {
@@ -237,6 +237,7 @@ export const useFieldArray = <
       updatedFieldArrayValues,
       keyName,
     );
+    setFields(_fieldIds.current);
     control._updateFieldArray(
       name,
       updateAt,
@@ -248,7 +249,6 @@ export const useFieldArray = <
       true,
       false,
     );
-    setFields(_fieldIds.current);
   };
 
   const replace = (
@@ -261,6 +261,7 @@ export const useFieldArray = <
       TFieldArrayName,
       TKeyName
     >(convertToArrayPayload(value) as Partial<TFieldValues>[], keyName);
+    setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       () => updatedFieldArrayValuesWithKey,
@@ -269,7 +270,6 @@ export const useFieldArray = <
       true,
       false,
     );
-    setFields(updatedFieldArrayValuesWithKey);
   };
 
   React.useEffect(() => {
