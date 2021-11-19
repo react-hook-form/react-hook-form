@@ -1,5 +1,22 @@
 # Changelog
 
+## [7.20.0] - 2021-11-19
+
+## Added
+
+- new `exact` prop for `useWatch`
+
+```tsx
+useWatch({
+  name: 'test.test',
+  exact: true,
+});
+```
+
+## Changed
+
+- `useWatch` subscription will occurred at `useEffect` instead before `render`
+
 ## [7.19.0] - 2021-11-05
 
 ## Added
