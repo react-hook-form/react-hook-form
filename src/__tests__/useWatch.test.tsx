@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
   screen,
@@ -193,13 +193,13 @@ describe('useWatch', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
+    await act(async () => {
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: 'test' },
       });
     });
 
-    await actComponent(async () => {
+    await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
 
@@ -233,17 +233,17 @@ describe('useWatch', () => {
 
     render(<App />);
 
-    actComponent(() => {
+    act(() => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    actComponent(() => {
+    act(() => {
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: 'test' },
       });
     });
 
-    actComponent(() => {
+    act(() => {
       fireEvent.click(screen.getByRole('button'));
     });
 
@@ -283,6 +283,52 @@ describe('useWatch', () => {
     });
 
     screen.getByText('test');
+  });
+
+  it('should return root object subscription', () => {
+    function App() {
+      const { register, control } = useForm({
+        defaultValues: { field: { firstName: 'value' } },
+      });
+      const field = useWatch({ control, name: 'field' });
+
+      return (
+        <div>
+          <form>
+            <input {...register('field.firstName')} placeholder="First Name" />
+            <p>{field.firstName}</p>
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123',
+        },
+      });
+    });
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '234',
+        },
+      });
+    });
+
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '345',
+        },
+      });
+    });
+
+    screen.getByText('345');
   });
 
   describe('when disabled prop is used', () => {
@@ -335,7 +381,7 @@ describe('useWatch', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: 'what',
@@ -347,7 +393,7 @@ describe('useWatch', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: 'what12345',
@@ -359,7 +405,7 @@ describe('useWatch', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '12345',
@@ -419,7 +465,7 @@ describe('useWatch', () => {
 
       render(<WatchApp />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: 'what',
@@ -431,7 +477,7 @@ describe('useWatch', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: 'what12345',
@@ -483,11 +529,11 @@ describe('useWatch', () => {
         target: { value: 'test' },
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.input(childInput, { target: { value: 'test1' } });
       });
     });
@@ -638,7 +684,7 @@ describe('useWatch', () => {
 
       screen.getByText('test');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -1026,7 +1072,7 @@ describe('useWatch', () => {
 
       screen.getByText('firstName');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: { value: '123' },
         });
@@ -1284,7 +1330,7 @@ describe('useWatch', () => {
 
       screen.getByText('test');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 

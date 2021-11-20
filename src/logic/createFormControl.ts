@@ -40,7 +40,6 @@ import {
   WatchInternal,
   WatchObserver,
 } from '../types';
-import { set } from '../utils';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
@@ -64,10 +63,11 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import omit from '../utils/omit';
+import set from '../utils/set';
 import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
-import { generateWatchOutput } from './generateWatchOutput';
+import generateWatchOutput from './generateWatchOutput';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
