@@ -2,7 +2,7 @@ import { FieldValues, InternalFieldName, Names } from '../types';
 import get from '../utils/get';
 import isString from '../utils/isString';
 
-export function generateWatchOutput(
+export default function generateWatchOutput(
   names: string | string[] | undefined,
   _names: Names,
   formValues?: FieldValues,
