@@ -1,8 +1,10 @@
 import * as React from 'react';
 
-import { generateWatchOutput } from './logic/generateWatchOutput';
+import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
+import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
+import objectHasFunction from './utils/objectHasFunction';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -39,7 +41,7 @@ export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
 >(props: {
-  name: TFieldNames;
+  name: readonly [...TFieldNames];
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
@@ -80,7 +82,8 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
         );
 
         updateValue(
-          isUndefined(_name.current)
+          isUndefined(_name.current) ||
+            (isObject(fieldValues) && !objectHasFunction(fieldValues))
             ? { ...fieldValues }
             : Array.isArray(fieldValues)
             ? [...fieldValues]

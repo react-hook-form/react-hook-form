@@ -91,7 +91,7 @@ export function useController<
       onBlur: () => {
         registerProps.onBlur({
           target: {
-            value,
+            value: get(control._formValues, name),
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
