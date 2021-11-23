@@ -68,6 +68,7 @@ import unset from '../utils/unset';
 
 import focusFieldBy from './focusFieldBy';
 import generateWatchOutput from './generateWatchOutput';
+import getDirtyFields from './getDirtyFields';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -75,7 +76,6 @@ import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
-import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import validateField from './validateField';
@@ -207,7 +207,7 @@ export function createFormControl<
     }
 
     if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
-      updateFieldArrayDirty(name, values);
+      _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
     }
 
     _subjects.state.next({
@@ -299,19 +299,6 @@ export function createFormControl<
 
     return isFieldDirty ? output : {};
   };
-
-  const updateFieldArrayDirty = (name: any, value: any) => (
-    set(
-      _formState.dirtyFields as TFieldValues,
-      name,
-      setFieldArrayDirtyFields(
-        value,
-        get(_defaultValues, name, []),
-        get(_formState.dirtyFields, name, []),
-      ),
-    ),
-    unsetEmptyArray(_formState.dirtyFields, name)
-  );
 
   const shouldRenderByError = async (
     shouldSkipRender: boolean,
@@ -599,7 +586,7 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        updateFieldArrayDirty(name, value);
+        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
 
         _subjects.state.next({
           name,
