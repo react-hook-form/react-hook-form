@@ -34,6 +34,8 @@ describe('useFieldArrayNested', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         test: [
           {
+            firstName: false,
+            lastName: false,
             keyValue: [
               { name: true },
               { name: true },
@@ -76,12 +78,7 @@ describe('useFieldArrayNested', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         test: [
           {
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
+            keyValue: [{ name: true }, { name: true }],
             firstName: true,
             lastName: true,
           },
@@ -128,29 +125,11 @@ describe('useFieldArrayNested', () => {
         test: [
           {
             firstName: true,
-            lastName: true,
             keyValue: [{ name: true }, { name: true }],
-          },
-          {
-            firstName: true,
             lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
           },
-          {
-            firstName: true,
-            lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
-          },
+          { firstName: true },
+          { firstName: true, keyValue: [] },
           {
             firstName: true,
             lastName: true,
@@ -212,29 +191,11 @@ describe('useFieldArrayNested', () => {
         test: [
           {
             firstName: true,
-            lastName: true,
             keyValue: [{ name: true }, { name: true }, { name: true }],
-          },
-          {
-            firstName: true,
             lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
           },
-          {
-            firstName: true,
-            lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
-          },
+          { firstName: true, keyValue: [] },
+          { firstName: true, keyValue: [] },
           {
             firstName: true,
             lastName: true,
@@ -284,8 +245,19 @@ describe('useFieldArrayNested', () => {
       '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
     );
 
-    cy.get('#dirty-nested-2').contains(
-      '{"test":[{"keyValue":[{"name":true},{"name":true}],"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
+    cy.get('#dirty-nested-2').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }],
+            lastName: true,
+          },
+          { firstName: true, keyValue: [] },
+          { firstName: true, keyValue: [] },
+          { firstName: true, lastName: true, keyValue: [] },
+        ],
+      }),
     );
 
     cy.get('#submit').click();
@@ -305,8 +277,16 @@ describe('useFieldArrayNested', () => {
     cy.get('#remove').click();
     cy.get('#remove').click();
 
-    cy.get('#dirty-nested-0').contains(
-      '{"test":[{"keyValue":[{"name":true},{"name":true}],"firstName":true,"lastName":true}]}',
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }],
+            lastName: true,
+          },
+        ],
+      }),
     );
 
     cy.get('#submit').click();
