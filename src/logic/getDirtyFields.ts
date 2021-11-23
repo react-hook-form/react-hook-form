@@ -10,11 +10,13 @@ function markFieldsDirty<U>(data: U, fields: Record<string, any> = {}) {
 
   if (isObject(data) || isParentNodeArray) {
     for (const key in data) {
-      const isArray = Array.isArray(data[key]);
       const value = data[key];
 
-      if (isArray || (isObject(value) && !objectHasFunction(value))) {
-        fields[key] = isArray ? [] : {};
+      if (
+        Array.isArray(value) ||
+        (isObject(value) && !objectHasFunction(value))
+      ) {
+        fields[key] = Array.isArray(value) ? [] : {};
         markFieldsDirty(data[key], fields[key]);
       } else if (!isNullOrUndefined(value)) {
         fields[key] = true;
@@ -34,15 +36,17 @@ function getDirtyFieldsFromDefaultValues<T>(
 
   if (isObject(data) || isParentNodeArray) {
     for (const key in data) {
-      const isArray = Array.isArray(data[key]);
       const value = data[key];
 
-      if (isArray || (isObject(value) && !objectHasFunction(value))) {
+      if (
+        Array.isArray(value) ||
+        (isObject(value) && !objectHasFunction(value))
+      ) {
         if (
           isUndefined(formValues) ||
           isPrimitive(dirtyFieldsFromValues[key])
         ) {
-          dirtyFieldsFromValues[key] = isArray
+          dirtyFieldsFromValues[key] = Array.isArray(value)
             ? markFieldsDirty(data[key], [])
             : { ...markFieldsDirty(data[key]) };
         } else {
