@@ -61,12 +61,9 @@ function getDirtyFieldsFromDefaultValues<T>(
   return dirtyFieldsFromValues;
 }
 
-export default function getDirtyFields<T>(defaultValues: T, formValues: T) {
-  const dirtyFieldsFromValues = markFieldsDirty(formValues);
-
-  return getDirtyFieldsFromDefaultValues(
+export default <T>(defaultValues: T, formValues: T) =>
+  getDirtyFieldsFromDefaultValues(
     defaultValues,
     formValues,
-    dirtyFieldsFromValues,
+    markFieldsDirty(formValues),
   );
-}
