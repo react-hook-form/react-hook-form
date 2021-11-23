@@ -335,7 +335,9 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
 
-    expect(touched).toEqual({});
+    expect(touched).toEqual({
+      test: [],
+    });
   });
 
   it('should remove specific field if isValid is true', async () => {
