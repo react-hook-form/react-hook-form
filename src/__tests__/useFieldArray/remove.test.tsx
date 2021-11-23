@@ -544,7 +544,7 @@ describe('remove', () => {
       fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
     });
 
-    expect(errors.test).toBeUndefined();
+    expect(errors.test).toEqual([]);
   });
 
   it('should remove nested field array error', async () => {
