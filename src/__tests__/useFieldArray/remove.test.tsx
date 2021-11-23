@@ -789,7 +789,7 @@ describe('remove', () => {
 
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [undefined, { value: true }] },
+      test: { data: [{ value: false }, { value: true }] },
     });
 
     act(() => {
@@ -797,7 +797,9 @@ describe('remove', () => {
     });
 
     expect(result.current.formState.isDirty).toBeFalsy();
-    expect(result.current.formState.dirtyFields).toEqual({});
+    expect(result.current.formState.dirtyFields).toEqual({
+      test: { data: [{ value: false }] },
+    });
   });
 
   it('should remove Controller by index without error', () => {

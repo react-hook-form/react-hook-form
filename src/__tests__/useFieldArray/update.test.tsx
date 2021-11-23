@@ -70,7 +70,7 @@ describe('update', () => {
     await waitFor(() => screen.getByText('dirty'));
 
     expect(dirtyInputs).toEqual({
-      test: [{ value: true }],
+      test: [{ value: true }, { value: false }, { value: false }],
     });
   });
 

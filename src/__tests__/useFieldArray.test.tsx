@@ -1073,7 +1073,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }],
+            test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1135,7 +1135,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }],
+            test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1152,7 +1152,13 @@ describe('useFieldArray', () => {
         expect(formState.dirtyFields).toEqual({
           test: [
             {
-              name: undefined,
+              name: false,
+            },
+            {
+              name: false,
+            },
+            {
+              name: false,
             },
           ],
         });
