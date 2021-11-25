@@ -95,4 +95,10 @@ describe('deepEqual', () => {
       deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),
     ).toBeTruthy();
   });
+
+  it('should compare Number object', () => {
+    expect(deepEqual(new Number(10), new Number(10))).toBeTruthy();
+    expect(deepEqual(new Number(10), new Number(20))).toBeFalsy();
+    expect(deepEqual(new Number(10), null)).toBeFalsy();
+  });
 });
