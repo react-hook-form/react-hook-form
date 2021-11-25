@@ -501,9 +501,7 @@ export function createFormControl<
             ? ''
             : value;
 
-        if (isFileInput(fieldReference.ref) && !isString(fieldValue)) {
-          fieldReference.ref.files = fieldValue as FileList;
-        } else if (isMultipleSelect(fieldReference.ref)) {
+        if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach(
             (selectRef) =>
               (selectRef.selected = (
@@ -528,7 +526,7 @@ export function createFormControl<
                 (radioRef.checked = radioRef.value === fieldValue),
             );
           }
-        } else {
+        } else if (!isFileInput(fieldReference.ref)) {
           fieldReference.ref.value = fieldValue;
         }
       }
