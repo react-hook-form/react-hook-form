@@ -9,7 +9,7 @@ export default function deepEqual(object1: any, object2: any) {
   }
 
   if (!isNaN(object1) || !isNaN(object2)) {
-    return object1.toString() === object2.toString();
+    return +object1 === +object2;
   }
 
   if (isDateObject(object1) && isDateObject(object2)) {

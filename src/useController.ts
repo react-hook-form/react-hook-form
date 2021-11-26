@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import getControllerValue from './logic/getControllerValue';
+import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
 import { EVENTS } from './constants';
@@ -82,7 +82,7 @@ export function useController<
       onChange: (event) => {
         registerProps.onChange({
           target: {
-            value: getControllerValue(event),
+            value: getEventValue(event),
             name: name as InternalFieldName,
           },
           type: EVENTS.CHANGE,
