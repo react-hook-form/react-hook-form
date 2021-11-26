@@ -69,6 +69,7 @@ import unset from '../utils/unset';
 import focusFieldBy from './focusFieldBy';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
+import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -609,7 +610,9 @@ export function createFormControl<
     if (field) {
       let error;
       let isValid;
-      const fieldValue = target.type ? getFieldValue(field._f) : target.value;
+      const fieldValue = target.type
+        ? getFieldValue(field._f)
+        : getEventValue(event);
       const isBlurEvent = event.type === EVENTS.BLUR;
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
