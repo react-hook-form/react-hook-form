@@ -1,5 +1,6 @@
 import { FieldValues } from '../types';
 
+import cloneObject from './cloneObject';
 import isKey from './isKey';
 import isObject from './isObject';
 import stringToPath from './stringToPath';
@@ -10,6 +11,7 @@ export default function set(
   value?: unknown,
 ) {
   let index = -1;
+  const tempObject = cloneObject(object);
   const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
   const lastIndex = length - 1;
@@ -27,8 +29,8 @@ export default function set(
           ? []
           : {};
     }
-    object[key] = newValue;
-    object = object[key];
+    tempObject[key] = newValue;
+    object = tempObject[key];
   }
   return object;
 }
