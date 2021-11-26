@@ -41,6 +41,10 @@ export default function deepEqual(objectA: any, objectB: any) {
     }
 
     for (i = length; i-- !== 0; ) {
+      if (!Object.prototype.hasOwnProperty.call(objectB, keys[i])) {
+        return false;
+      }
+
       const key = keys[i];
 
       if (keys[i] === 'ref') {
