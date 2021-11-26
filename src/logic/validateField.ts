@@ -43,7 +43,7 @@ export default async (
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
-  const setCustomValidty = (message?: string | boolean) => {
+  const setCustomValidity = (message?: string | boolean) => {
     if (shouldUseNativeValidation && inputRef.reportValidity) {
       inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
       inputRef.reportValidity();
@@ -98,7 +98,7 @@ export default async (
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
-        setCustomValidty(message);
+        setCustomValidity(message);
         return error;
       }
     }
@@ -139,7 +139,7 @@ export default async (
         INPUT_VALIDATION_RULES.min,
       );
       if (!validateAllFieldCriteria) {
-        setCustomValidty(error[name]!.message);
+        setCustomValidity(error[name]!.message);
         return error;
       }
     }
@@ -162,7 +162,7 @@ export default async (
         minLengthOutput.message,
       );
       if (!validateAllFieldCriteria) {
-        setCustomValidty(error[name]!.message);
+        setCustomValidity(error[name]!.message);
         return error;
       }
     }
@@ -179,7 +179,7 @@ export default async (
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {
-        setCustomValidty(message);
+        setCustomValidity(message);
         return error;
       }
     }
@@ -199,7 +199,7 @@ export default async (
           ),
         };
         if (!validateAllFieldCriteria) {
-          setCustomValidty(validateError.message);
+          setCustomValidity(validateError.message);
           return error;
         }
       }
@@ -223,7 +223,7 @@ export default async (
             ...appendErrorsCurry(key, validateError.message),
           };
 
-          setCustomValidty(validateError.message);
+          setCustomValidity(validateError.message);
 
           if (validateAllFieldCriteria) {
             error[name] = validationResult;
@@ -243,6 +243,6 @@ export default async (
     }
   }
 
-  setCustomValidty(true);
+  setCustomValidity(true);
   return error;
 };
