@@ -1,5 +1,18 @@
 # Changelog
 
+## [7.20.3] - 2021-11-26
+
+## Changed
+
+- register `onChange` will share same logic with `useController` for non standard event payload
+
+```tsx
+const { onChange } = register('test');
+onChange('stringIsValid'); // this is only valid use case for JS
+```
+
+- empty node in `formState` will no longer gets unset
+
 ## [7.20.0] - 2021-11-19
 
 ## Added
