@@ -1,45 +1,59 @@
-import isObject from '../utils/isObject';
-
 import isDateObject from './isDateObject';
-import isPrimitive from './isPrimitive';
+import { isObjectType } from './isObject';
 
-export default function deepEqual(object1: any, object2: any) {
-  if (isPrimitive(object1) || isPrimitive(object2)) {
-    return object1 === object2;
+export default function deepEqual(objectA: any, objectB: any) {
+  if (objectA === objectB) {
+    return true;
   }
 
-  if (isDateObject(object1) && isDateObject(object2)) {
-    return object1.getTime() === object2.getTime();
+  if (isDateObject(objectA) && isDateObject(objectB)) {
+    return objectA.getTime() === objectB.getTime();
   }
 
-  const keys1 = Object.keys(object1);
-  const keys2 = Object.keys(object2);
-
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
-
-  for (const key of keys1) {
-    const val1 = object1[key];
-
-    if (!keys2.includes(key)) {
+  if (objectA && objectB && isObjectType(objectA) && isObjectType(objectB)) {
+    if (objectA.constructor !== objectB.constructor) {
       return false;
     }
 
-    if (key !== 'ref') {
-      const val2 = object2[key];
+    let length, i, keys;
 
-      if (
-        (isDateObject(val1) && isDateObject(val2)) ||
-        (isObject(val1) && isObject(val2)) ||
-        (Array.isArray(val1) && Array.isArray(val2))
-          ? !deepEqual(val1, val2)
-          : val1 !== val2
-      ) {
+    if (Array.isArray(objectA)) {
+      length = objectA.length;
+
+      if (length != objectB.length) {
+        return false;
+      }
+
+      for (i = length; i-- !== 0; ) {
+        if (!deepEqual(objectA[i], objectB[i])) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    keys = Object.keys(objectA);
+    length = keys.length;
+
+    if (length !== Object.keys(objectB).length) {
+      return false;
+    }
+
+    for (i = length; i-- !== 0; ) {
+      const key = keys[i];
+
+      if (keys[i] === 'ref') {
+        continue;
+      }
+
+      if (!deepEqual(objectA[key], objectB[key])) {
         return false;
       }
     }
+
+    return true;
   }
 
-  return true;
+  return objectA !== objectA && objectB !== objectB;
 }
