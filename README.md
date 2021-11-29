@@ -398,6 +398,15 @@ Thank you for helping and answering questions from the community.
 <a href="https://github.com/ritikbanger">
   <img src="https://avatars.githubusercontent.com/u/47841501?v=4" width="25" />
 </a>
+<a href="https://github.com/fahadsohail482">
+  <img src="https://avatars.githubusercontent.com/u/46647496?v=4" width="25" />
+</a>
+<a href="https://github.com/getTobiasNielsen">
+  <img src="https://avatars.githubusercontent.com/u/54803528?v=4" width="25" />
+</a>
+<a href="https://github.com/jfreedman0212">
+  <img src="https://avatars.githubusercontent.com/u/31392256?v=4" width="25" />
+</a>
 
 ## Organizations
 
