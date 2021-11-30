@@ -78,6 +78,7 @@ import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
+import unsetEmptyArray from './unsetEmptyArray';
 import validateField from './validateField';
 
 const defaultOptions = {
@@ -192,6 +193,7 @@ export function createFormControl<
     if (Array.isArray(get(_formState.errors, name))) {
       const errors = method(get(_formState.errors, name), args.argA, args.argB);
       shouldSetValues && set(_formState.errors, name, errors);
+      unsetEmptyArray(_formState.errors, name);
     }
 
     if (_proxyFormState.touchedFields && get(_formState.touchedFields, name)) {
@@ -202,6 +204,7 @@ export function createFormControl<
       );
       shouldSetValues &&
         set(_formState.touchedFields as TFieldValues, name, touchedFields);
+      unsetEmptyArray(_formState.touchedFields, name);
     }
 
     if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
