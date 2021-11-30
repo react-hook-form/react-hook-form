@@ -241,15 +241,8 @@ describe('useFieldArrayNested', () => {
     cy.get('#nest-remove-all-1').click();
     cy.get('#nest-remove-all-0').click();
 
-    cy.get('#touched-nested-2').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        test: [
-          { firstName: true, keyValue: [] },
-          { firstName: true },
-          { firstName: true },
-          { keyValue: [] },
-        ],
-      }),
+    cy.get('#touched-nested-2').contains(
+      '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
     );
 
     cy.get('#dirty-nested-2').should(($state) =>

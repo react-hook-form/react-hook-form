@@ -8,6 +8,7 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 
@@ -360,5 +361,61 @@ describe('handleSubmit', () => {
       expect(onValidCallback).not.toBeCalledTimes(1);
       expect(onInvalidCallback).toBeCalledTimes(1);
     });
+  });
+
+  it('should be able to submit correctly when errors contains empty array object', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const { register, control, handleSubmit } = useForm({
+        defaultValues: {
+          test: [{ name: '1234' }],
+        },
+        mode: 'onChange',
+      });
+      const { fields, remove } = useFieldArray({ control, name: 'test' });
+
+      return (
+        <form
+          onSubmit={handleSubmit(() => {
+            onSubmit();
+          })}
+        >
+          {fields.map((field, index) => {
+            return (
+              <input
+                key={field.id}
+                {...register(`test.${index}.name`, { required: true })}
+              />
+            );
+          })}
+
+          <button type={'button'} onClick={() => remove(0)}>
+            remove
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(onSubmit).toBeCalled();
   });
 });
