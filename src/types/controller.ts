@@ -66,5 +66,5 @@ export type ControllerProps<
     field: ControllerRenderProps<TFieldValues, TName>;
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
-  }) => React.ReactElement;
+  }) => React.ReactNode;
 } & UseControllerProps<TFieldValues, TName>;
