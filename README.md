@@ -21,7 +21,7 @@
 
 Version 7 | [Version 6](/docs/README.V6.md)
 
-English | <a href="./docs/README.V7.ja-JP.md">日本語</a>
+English | <a href="./docs/README.V7.ja-JP.md">日本語</a> | <a href="./docs/README.zh-CN.md">中文</a>
 
 ## Features
 
