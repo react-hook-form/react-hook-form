@@ -892,30 +892,34 @@ export function createFormControl<
         )
       : updateValidAndValue(name, true);
 
-    const constrainedProps = {
-      required: !!options.required,
-      ...(options.min
-        ? { min: isObject(options.min) ? options.min.value : +options.min }
-        : {}),
-      ...(options.max
-        ? { max: isObject(options.max) ? options.max.value : +options.max }
-        : {}),
-      ...(options.minLength
-        ? {
-            minLength: isObject(options.minLength)
-              ? options.minLength.value
-              : +options.minLength,
-          }
-        : {}),
-      ...(options.maxLength
-        ? {
-            maxLength: isObject(options.maxLength)
-              ? options.maxLength.value
-              : +options.maxLength,
-          }
-        : {}),
-      ...(isRegex(options.pattern) ? { pattern: options.pattern.source } : {}),
-    };
+    const constrainedProps = _options.shouldUseNativeValidation
+      ? {
+          required: !!options.required,
+          ...(options.min
+            ? { min: isObject(options.min) ? options.min.value : +options.min }
+            : {}),
+          ...(options.max
+            ? { max: isObject(options.max) ? options.max.value : +options.max }
+            : {}),
+          ...(options.minLength
+            ? {
+                minLength: isObject(options.minLength)
+                  ? options.minLength.value
+                  : +options.minLength,
+              }
+            : {}),
+          ...(options.maxLength
+            ? {
+                maxLength: isObject(options.maxLength)
+                  ? options.maxLength.value
+                  : +options.maxLength,
+              }
+            : {}),
+          ...(isRegex(options.pattern)
+            ? { pattern: options.pattern.source }
+            : {}),
+        }
+      : {};
 
     return isWindowUndefined
       ? ({
