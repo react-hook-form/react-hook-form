@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import getFormNode from './__tests__/logic/getFormNode';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
@@ -71,6 +72,16 @@ export function useForm<
     }
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    if (!props.shouldUseNativeValidation) {
+      const formNode = getFormNode(_formControl.current!.control);
+
+      if (formNode && formNode.reset) {
+        formNode.novalidate = true;
+      }
+    }
+  }, [props.shouldUseNativeValidation]);
 
   _formControl.current.formState = getProxyFormState(
     formState,

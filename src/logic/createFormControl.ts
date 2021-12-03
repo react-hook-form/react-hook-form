@@ -1,3 +1,4 @@
+import getFormNode from '../__tests__/logic/getFormNode';
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
@@ -1053,19 +1054,10 @@ export function createFormControl<
 
     if (!keepStateOptions.keepValues) {
       if (isWeb) {
-        for (const name of _names.mount) {
-          const field = get(_fields, name);
-          if (field && field._f) {
-            const fieldReference = Array.isArray(field._f.refs)
-              ? field._f.refs[0]
-              : field._f.ref;
+        const formNode = getFormNode({ _fields, _names });
 
-            try {
-              isHTMLElement(fieldReference) &&
-                fieldReference.closest('form')!.reset();
-              break;
-            } catch {}
-          }
+        if (formNode && formNode.reset) {
+          formNode.reset();
         }
       }
 
