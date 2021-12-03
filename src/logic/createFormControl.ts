@@ -56,7 +56,7 @@ import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isPrimitive from '../utils/isPrimitive';
-import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
+import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
@@ -913,18 +913,18 @@ export function createFormControl<
               ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) || ref
               : ref
             : ref;
-          const isRadioOrCheckbox = isRadioOrCheckboxFunction(fieldRef);
+          const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
 
           if (
             fieldRef === field._f.ref ||
-            (isRadioOrCheckbox &&
+            (radioOrCheckbox &&
               compact(field._f.refs).find((option) => option === fieldRef))
           ) {
             return;
           }
 
           set(_fields, name, {
-            _f: isRadioOrCheckbox
+            _f: radioOrCheckbox
               ? {
                   ...field._f,
                   refs: [...compact(field._f.refs).filter(live), fieldRef],
