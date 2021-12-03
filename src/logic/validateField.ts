@@ -1,5 +1,11 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { Field, FieldError, InternalFieldErrors, Message } from '../types';
+import {
+  Field,
+  FieldError,
+  InternalFieldErrors,
+  Message,
+  NativeFieldValue,
+} from '../types';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -18,9 +24,9 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
-export default async (
+export default async <T extends NativeFieldValue>(
   field: Field,
-  inputValue: any,
+  inputValue: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
 ): Promise<InternalFieldErrors> => {
@@ -110,9 +116,10 @@ export default async (
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNaN(inputValue)) {
+    if (!isNaN(inputValue as number)) {
       const valueNumber =
-        (ref as HTMLInputElement).valueAsNumber || parseFloat(inputValue);
+        (ref as HTMLInputElement).valueAsNumber ||
+        parseFloat(inputValue as string);
       if (!isNullOrUndefined(maxOutput.value)) {
         exceedMax = valueNumber > maxOutput.value;
       }
@@ -121,7 +128,7 @@ export default async (
       }
     } else {
       const valueDate =
-        (ref as HTMLInputElement).valueAsDate || new Date(inputValue);
+        (ref as HTMLInputElement).valueAsDate || new Date(inputValue as string);
       if (isString(maxOutput.value)) {
         exceedMax = valueDate > new Date(maxOutput.value);
       }
