@@ -861,7 +861,7 @@ export function createFormControl<
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
-    const field = get(_fields, name);
+    let field = get(_fields, name);
 
     set(_fields, name, {
       _f: {
@@ -906,42 +906,35 @@ export function createFormControl<
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
           register(name, options);
-          let field: Field = get(_fields, name);
+          field = get(_fields, name);
+
           const fieldRef = isUndefined(ref.value)
             ? ref.querySelectorAll
               ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) || ref
               : ref
             : ref;
-
           const isRadioOrCheckbox = isRadioOrCheckboxFunction(fieldRef);
 
           if (
             fieldRef === field._f.ref ||
             (isRadioOrCheckbox &&
-              compact(field._f.refs || []).find(
-                (option) => option === fieldRef,
-              ))
+              compact(field._f.refs).find((option) => option === fieldRef))
           ) {
             return;
           }
 
-          field = {
+          set(_fields, name, {
             _f: isRadioOrCheckbox
               ? {
                   ...field._f,
-                  refs: [
-                    ...compact(field._f.refs || []).filter(live),
-                    fieldRef,
-                  ],
+                  refs: [...compact(field._f.refs).filter(live), fieldRef],
                   ref: { type: fieldRef.type, name },
                 }
               : {
                   ...field._f,
                   ref: fieldRef,
                 },
-          };
-
-          set(_fields, name, field);
+          });
 
           (!options || !options.disabled) &&
             updateValidAndValue(name, false, fieldRef);
