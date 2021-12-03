@@ -936,20 +936,18 @@ export function createFormControl<
                 },
           });
 
-          (!options || !options.disabled) &&
-            updateValidAndValue(name, false, fieldRef);
+          !options.disabled && updateValidAndValue(name, false, fieldRef);
         } else {
           field = get(_fields, name, {});
-          const shouldUnregister =
-            _options.shouldUnregister || options.shouldUnregister;
 
           if (field._f) {
             field._f.mount = false;
           }
 
-          shouldUnregister &&
-            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
-            _names.unMount.add(name);
+          _options.shouldUnregister ||
+            (options.shouldUnregister &&
+              !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+              _names.unMount.add(name));
         }
       },
     };
