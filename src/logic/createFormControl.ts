@@ -4,6 +4,7 @@ import {
   ChangeHandler,
   DeepPartial,
   DelayCallback,
+  EventType,
   Field,
   FieldError,
   FieldErrors,
@@ -691,7 +692,7 @@ export function createFormControl<
         error = (
           await validateField(
             field,
-            get(_formValues, name) as Field,
+            get(_formValues, name),
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
           )
@@ -817,13 +818,17 @@ export function createFormControl<
   ) =>
     isFunction(name)
       ? _subjects.watch.subscribe({
-          next: (info: any) =>
+          next: (info) =>
             name(
               _getWatch(
                 undefined,
                 defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
               ),
-              info,
+              info as {
+                name?: FieldPath<TFieldValues>;
+                type?: EventType;
+                value?: unknown;
+              },
             ),
         })
       : _getWatch(
