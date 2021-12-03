@@ -916,30 +916,27 @@ export function createFormControl<
           const isRadioOrCheckbox = isRadioOrCheckboxFunction(fieldRef);
 
           if (
-            fieldRef === field._f.ref ||
-            (isRadioOrCheckbox &&
-              compact(field._f.refs).find((option) => option === fieldRef))
+            isRadioOrCheckbox
+              ? !compact(field._f.refs).find((option) => option === fieldRef)
+              : fieldRef !== field._f.ref
           ) {
-            return;
+            set(_fields, name, {
+              _f: isRadioOrCheckbox
+                ? {
+                    ...field._f,
+                    refs: [...compact(field._f.refs).filter(live), fieldRef],
+                    ref: { type: fieldRef.type, name },
+                  }
+                : {
+                    ...field._f,
+                    ref: fieldRef,
+                  },
+            });
+
+            (!options || !options.disabled) &&
+              updateValidAndValue(name, false, fieldRef);
           }
-
-          set(_fields, name, {
-            _f: isRadioOrCheckbox
-              ? {
-                  ...field._f,
-                  refs: [...compact(field._f.refs).filter(live), fieldRef],
-                  ref: { type: fieldRef.type, name },
-                }
-              : {
-                  ...field._f,
-                  ref: fieldRef,
-                },
-          });
-
-          (!options || !options.disabled) &&
-            updateValidAndValue(name, false, fieldRef);
         } else {
-          const field: Field = get(_fields, name, {});
           const shouldUnregister =
             _options.shouldUnregister || options.shouldUnregister;
 
