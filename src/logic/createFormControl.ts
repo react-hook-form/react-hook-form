@@ -927,7 +927,7 @@ export function createFormControl<
             _f: isRadioOrCheckbox
               ? {
                   ...field._f,
-                  refs: [...compact(field._f.refs), fieldRef],
+                  refs: [...compact(field._f.refs).filter(live), fieldRef],
                   ref: { type: fieldRef.type, name },
                 }
               : {
@@ -936,7 +936,8 @@ export function createFormControl<
                 },
           });
 
-          !options.disabled && updateValidAndValue(name, false, fieldRef);
+          (!options || !options.disabled) &&
+            updateValidAndValue(name, false, fieldRef);
         } else {
           const field: Field = get(_fields, name, {});
           const shouldUnregister =
