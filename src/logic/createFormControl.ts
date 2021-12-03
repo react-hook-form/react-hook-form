@@ -939,7 +939,7 @@ export function createFormControl<
           (!options || !options.disabled) &&
             updateValidAndValue(name, false, fieldRef);
         } else {
-          const field: Field = get(_fields, name, {});
+          field = get(_fields, name, {});
           const shouldUnregister =
             _options.shouldUnregister || options.shouldUnregister;
 
