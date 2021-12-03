@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import getFormNode from './__tests__/logic/getFormNode';
 import { createFormControl } from './logic/createFormControl';
+import getFormNode from './logic/getFormNode';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import {

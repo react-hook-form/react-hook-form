@@ -1,6 +1,6 @@
-import { Control } from '../../types';
-import get from '../../utils/get';
-import isHTMLElement from '../../utils/isHTMLElement';
+import { Control } from '../types';
+import get from '../utils/get';
+import isHTMLElement from '../utils/isHTMLElement';
 
 export default function getFormNode<T>({
   _fields,
@@ -13,9 +13,11 @@ export default function getFormNode<T>({
         ? field._f.refs[0]
         : field._f.ref;
 
-      if (isHTMLElement(fieldReference)) {
-        return fieldReference.closest('form');
-      }
+      try {
+        if (isHTMLElement(fieldReference)) {
+          return fieldReference.closest('form');
+        }
+      } catch {}
     }
   }
 

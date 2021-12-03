@@ -1,4 +1,3 @@
-import getFormNode from '../__tests__/logic/getFormNode';
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
@@ -72,6 +71,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getFormNode from './getFormNode';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import hasValidation from './hasValidation';
@@ -891,16 +891,12 @@ export function createFormControl<
 
     return {
       ...(isBoolean(options.disabled) ? { disabled: options.disabled } : {}),
-      ...(_options.shouldUseNativeValidation
-        ? {
-            required: !!options.required,
-            min: getRuleValue(options.min),
-            max: getRuleValue(options.max),
-            minLength: getRuleValue<number>(options.minLength) as number,
-            maxLength: getRuleValue(options.maxLength) as number,
-            pattern: getRuleValue(options.pattern) as string,
-          }
-        : {}),
+      required: !!options.required,
+      min: getRuleValue(options.min),
+      max: getRuleValue(options.max),
+      minLength: getRuleValue<number>(options.minLength) as number,
+      maxLength: getRuleValue(options.maxLength) as number,
+      pattern: getRuleValue(options.pattern) as string,
       name,
       onChange,
       onBlur: onChange,
