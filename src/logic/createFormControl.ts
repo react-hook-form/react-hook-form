@@ -889,7 +889,6 @@ export function createFormControl<
       : updateValidAndValue(name, true);
 
     return {
-      name: name as InternalFieldName,
       ...(isBoolean(options.disabled) ? { disabled: options.disabled } : {}),
       ...(_options.shouldUseNativeValidation
         ? {
@@ -901,6 +900,7 @@ export function createFormControl<
             pattern: getRuleValue(options.pattern) as string,
           }
         : {}),
+      name,
       onChange,
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
