@@ -944,10 +944,9 @@ export function createFormControl<
             field._f.mount = false;
           }
 
-          _options.shouldUnregister ||
-            (options.shouldUnregister &&
-              !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
-              _names.unMount.add(name));
+          (_options.shouldUnregister || options.shouldUnregister) &&
+            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+            _names.unMount.add(name);
         }
       },
     };
