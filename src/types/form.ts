@@ -157,6 +157,7 @@ export type UseFormRegisterReturn = {
   minLength?: number;
   pattern?: string;
   required?: boolean;
+  disabled?: boolean;
 };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <

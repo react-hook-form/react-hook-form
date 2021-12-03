@@ -37,6 +37,9 @@ import {
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
+  ValidationRule,
+  ValidationValue,
+  ValidationValueMessage,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -607,7 +610,7 @@ export function createFormControl<
     });
   };
 
-  const handleChange: ChangeHandler = async (event) => {
+  const onChange: ChangeHandler = async (event) => {
     const target = event.target;
     let name = target.name;
     const field: Field = get(_fields, name);
@@ -864,6 +867,19 @@ export function createFormControl<
     !options.keepIsValid && _updateValid();
   };
 
+  const getRuleValue = <T extends ValidationValue>(
+    rule?: ValidationRule<T> | ValidationValueMessage<T>,
+  ) =>
+    isUndefined(rule)
+      ? undefined
+      : isRegex(rule)
+      ? rule.source
+      : isObject(rule)
+      ? isRegex(rule.value)
+        ? rule.value.source
+        : +rule.value
+      : +rule;
+
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     const field = get(_fields, name);
 
@@ -892,48 +908,25 @@ export function createFormControl<
         )
       : updateValidAndValue(name, true);
 
-    const constrainedProps = _options.shouldUseNativeValidation
+    const fieldProps = _options.shouldUseNativeValidation
       ? {
+          name: name as InternalFieldName,
           required: !!options.required,
-          ...(options.min
-            ? { min: isObject(options.min) ? options.min.value : +options.min }
-            : {}),
-          ...(options.max
-            ? { max: isObject(options.max) ? options.max.value : +options.max }
-            : {}),
-          ...(options.minLength
-            ? {
-                minLength: isObject(options.minLength)
-                  ? options.minLength.value
-                  : +options.minLength,
-              }
-            : {}),
-          ...(options.maxLength
-            ? {
-                maxLength: isObject(options.maxLength)
-                  ? options.maxLength.value
-                  : +options.maxLength,
-              }
-            : {}),
-          ...(isRegex(options.pattern)
-            ? { pattern: options.pattern.source }
-            : {}),
+          min: getRuleValue(options.min),
+          max: getRuleValue(options.max),
+          minLength: getRuleValue<number>(options.minLength) as number,
+          maxLength: getRuleValue(options.maxLength) as number,
+          pattern: getRuleValue(options.pattern) as string,
+          disabled: options.disabled,
         }
-      : {};
+      : { name: name as InternalFieldName, disabled: options.disabled };
 
     return isWindowUndefined
-      ? ({
-          name: name as InternalFieldName,
-          ...constrainedProps,
-        } as UseFormRegisterReturn)
+      ? (fieldProps as UseFormRegisterReturn)
       : {
-          name,
-          ...constrainedProps,
-          ...(isBoolean(options.disabled)
-            ? { disabled: options.disabled }
-            : {}),
-          onChange: handleChange,
-          onBlur: handleChange,
+          ...fieldProps,
+          onChange,
+          onBlur: onChange,
           ref: (ref: HTMLInputElement | null): void => {
             if (ref) {
               register(name, options);
