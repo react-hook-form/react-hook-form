@@ -4,4 +4,4 @@ exports[`useForm with SSR should not output error 1`] = `"<div data-reactroot=\\
 
 exports[`useForm with SSR should not pass down constrained API for server side rendering 1`] = `"<div data-reactroot=\\"\\"><input name=\\"test\\"/></div>"`;
 
-exports[`useForm with SSR should pass down constrained API for server side rendering 1`] = `"<div data-reactroot=\\"\\"><input name=\\"test\\" required=\\"\\" min=\\"2\\" max=\\"2\\" minLength=\\"2\\" maxLength=\\"2\\"/></div>"`;
+exports[`useForm with SSR should pass down constrained API for server side rendering 1`] = `"<div data-reactroot=\\"\\"><input required=\\"\\" min=\\"2\\" max=\\"2\\" minLength=\\"2\\" maxLength=\\"2\\" name=\\"test\\"/></div>"`;
