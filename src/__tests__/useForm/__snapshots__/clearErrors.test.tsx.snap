@@ -7,7 +7,6 @@ Object {
       "message": "",
       "ref": <input
         name="test.data"
-        required=""
         type="text"
       />,
       "type": "required",
