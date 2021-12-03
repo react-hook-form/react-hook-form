@@ -56,8 +56,10 @@ import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
+import isRegex from '../utils/isRegex';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
@@ -890,10 +892,39 @@ export function createFormControl<
         )
       : updateValidAndValue(name, true);
 
+    const constrainedProps = {
+      required: !!options.required,
+      ...(options.min
+        ? { min: isObject(options.min) ? options.min.value : +options.min }
+        : {}),
+      ...(options.max
+        ? { max: isObject(options.max) ? options.max.value : +options.max }
+        : {}),
+      ...(options.minLength
+        ? {
+            minLength: isObject(options.minLength)
+              ? options.minLength.value
+              : +options.minLength,
+          }
+        : {}),
+      ...(options.maxLength
+        ? {
+            maxLength: isObject(options.maxLength)
+              ? options.maxLength.value
+              : +options.maxLength,
+          }
+        : {}),
+      ...(isRegex(options.pattern) ? { pattern: options.pattern.source } : {}),
+    };
+
     return isWindowUndefined
-      ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
+      ? ({
+          name: name as InternalFieldName,
+          ...constrainedProps,
+        } as UseFormRegisterReturn)
       : {
           name,
+          ...constrainedProps,
           ...(isBoolean(options.disabled)
             ? { disabled: options.disabled }
             : {}),

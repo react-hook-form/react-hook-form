@@ -151,6 +151,12 @@ export type UseFormRegisterReturn = {
   onBlur: ChangeHandler;
   ref: RefCallBack;
   name: InternalFieldName;
+  min?: string | number;
+  max?: string | number;
+  maxLength?: number;
+  minLength?: number;
+  pattern?: string;
+  required?: boolean;
 };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <
