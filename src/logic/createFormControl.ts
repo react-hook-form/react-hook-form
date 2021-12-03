@@ -28,7 +28,6 @@ import {
   UseFormHandleSubmit,
   UseFormProps,
   UseFormRegister,
-  UseFormRegisterReturn,
   UseFormReset,
   UseFormResetField,
   UseFormReturn,
@@ -58,7 +57,7 @@ import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isPrimitive from '../utils/isPrimitive';
-import isRadioOrCheckboxFunction from '../utils/isRadioOrCheckbox';
+import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
@@ -74,6 +73,7 @@ import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
+import getRuleValue from './getRuleValue';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
@@ -87,8 +87,6 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
-
-const isWindowUndefined = typeof window === 'undefined';
 
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
@@ -606,7 +604,7 @@ export function createFormControl<
     });
   };
 
-  const handleChange: ChangeHandler = async (event) => {
+  const onChange: ChangeHandler = async (event) => {
     const target = event.target;
     let name = target.name;
     const field: Field = get(_fields, name);
@@ -868,7 +866,7 @@ export function createFormControl<
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
-    const field = get(_fields, name);
+    let field = get(_fields, name);
 
     set(_fields, name, {
       _f: {
@@ -895,75 +893,68 @@ export function createFormControl<
         )
       : updateValidAndValue(name, true);
 
-    return isWindowUndefined
-      ? ({ name: name as InternalFieldName } as UseFormRegisterReturn)
-      : {
-          name,
-          ...(isBoolean(options.disabled)
-            ? { disabled: options.disabled }
-            : {}),
-          onChange: handleChange,
-          onBlur: handleChange,
-          ref: (ref: HTMLInputElement | null): void => {
-            if (ref) {
-              register(name, options);
-              let field: Field = get(_fields, name);
-              const fieldRef = isUndefined(ref.value)
-                ? ref.querySelectorAll
-                  ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) ||
-                    ref
-                  : ref
-                : ref;
+    return {
+      ...(isBoolean(options.disabled) ? { disabled: options.disabled } : {}),
+      ...(_options.shouldUseNativeValidation
+        ? {
+            required: !!options.required,
+            min: getRuleValue(options.min),
+            max: getRuleValue(options.max),
+            minLength: getRuleValue<number>(options.minLength) as number,
+            maxLength: getRuleValue(options.maxLength) as number,
+            pattern: getRuleValue(options.pattern) as string,
+          }
+        : {}),
+      name,
+      onChange,
+      onBlur: onChange,
+      ref: (ref: HTMLInputElement | null): void => {
+        if (ref) {
+          register(name, options);
+          field = get(_fields, name);
 
-              const isRadioOrCheckbox = isRadioOrCheckboxFunction(fieldRef);
+          const fieldRef = isUndefined(ref.value)
+            ? ref.querySelectorAll
+              ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) || ref
+              : ref
+            : ref;
+          const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
 
-              if (
-                fieldRef === field._f.ref ||
-                (isRadioOrCheckbox &&
-                  compact(field._f.refs || []).find(
-                    (option) => option === fieldRef,
-                  ))
-              ) {
-                return;
-              }
+          if (
+            fieldRef === field._f.ref ||
+            (radioOrCheckbox &&
+              compact(field._f.refs).find((option) => option === fieldRef))
+          ) {
+            return;
+          }
 
-              field = {
-                _f: isRadioOrCheckbox
-                  ? {
-                      ...field._f,
-                      refs: [
-                        ...compact(field._f.refs || []).filter(live),
-                        fieldRef,
-                      ],
-                      ref: { type: fieldRef.type, name },
-                    }
-                  : {
-                      ...field._f,
-                      ref: fieldRef,
-                    },
-              };
+          set(_fields, name, {
+            _f: radioOrCheckbox
+              ? {
+                  ...field._f,
+                  refs: [...compact(field._f.refs).filter(live), fieldRef],
+                  ref: { type: fieldRef.type, name },
+                }
+              : {
+                  ...field._f,
+                  ref: fieldRef,
+                },
+          });
 
-              set(_fields, name, field);
+          !options.disabled && updateValidAndValue(name, false, fieldRef);
+        } else {
+          field = get(_fields, name, {});
 
-              (!options || !options.disabled) &&
-                updateValidAndValue(name, false, fieldRef);
-            } else {
-              const field: Field = get(_fields, name, {});
-              const shouldUnregister =
-                _options.shouldUnregister || options.shouldUnregister;
+          if (field._f) {
+            field._f.mount = false;
+          }
 
-              if (field._f) {
-                field._f.mount = false;
-              }
-
-              shouldUnregister &&
-                !(
-                  isNameInFieldArray(_names.array, name) && _stateFlags.action
-                ) &&
-                _names.unMount.add(name);
-            }
-          },
-        };
+          (_options.shouldUnregister || options.shouldUnregister) &&
+            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+            _names.unMount.add(name);
+        }
+      },
+    };
   };
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
