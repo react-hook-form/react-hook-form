@@ -19,11 +19,16 @@
 
 </div>
 
-Version 7 | [Version 6](/docs/README.V6.md)
+<p align="center">
+  <a href="https://react-hook-form.com/get-started">Get started</a> | 
+  <a href="https://react-hook-form.com/api">API</a> |
+  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">Examples</a> |
+  <a href="https://react-hook-form.com">Demo</a> |
+  <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
+  <a href="https://react-hook-form.com/faqs">FAQs</a>
+</p>
 
-English | <a href="./docs/README.V7.ja-JP.md">日本語</a>
-
-## Features
+### Features
 
 - Built with performance, UX and DX in mind
 - Embraces native form validation
@@ -32,20 +37,11 @@ English | <a href="./docs/README.V7.ja-JP.md">日本語</a>
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
 - Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) or custom
 
-## Install
+### Install
 
     npm install react-hook-form
 
-## Links
-
-- [Get started](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
-- [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.com)
-- [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQs](https://react-hook-form.com/faqs)
-
-## Quickstart
+### Quickstart
 
 ```jsx
 import React from 'react';
@@ -76,7 +72,7 @@ function App() {
   <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
 </a>
 
-## Sponsors
+### Sponsors
 
 Thanks go to these kind and lovely sponsors (companies and individuals)!
 
@@ -363,7 +359,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     /></a>
 </p>
 
-## Backers
+### Backers
 
 Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
@@ -371,7 +367,7 @@ Thanks go to all our backers! [[Become a backer](https://opencollective.com/reac
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-## Contributors
+### Contributors
 
 Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 
@@ -379,7 +375,7 @@ Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
 </a>
 
-## Helpers
+### Helpers
 
 Thank you for helping and answering questions from the community.
 
@@ -408,7 +404,7 @@ Thank you for helping and answering questions from the community.
   <img src="https://avatars.githubusercontent.com/u/31392256?v=4" width="25" />
 </a>
 
-## Organizations
+### Organizations
 
 Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
 
