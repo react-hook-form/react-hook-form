@@ -79,9 +79,14 @@ type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
 type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 type ArrayKey = number;
 
-type PathImpl<K extends string | number, V> = V extends Primitive
+type PathImpl<K extends string | number, V> = V extends
+  | Primitive
+  | Date
+  | FileList
+  | File
+  | NestedValue
   ? `${K}`
-  : `${K}` | `${K}.${Path<V>}`;
+  : `${K}.${Path<V>}`;
 
 export type Path<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
