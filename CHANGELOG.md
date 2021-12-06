@@ -1,5 +1,19 @@
 # Changelog
 
+## [7.21.0] - 2021-12-06
+
+## Changed
+
+- `shouldUseNativeValidation` will pass down validation props both at client and server render
+
+```tsx
+const { register } = useForm()
+
+<input {...register('name', { required: true })} />
+
+<input name="name" required /> // both client and server render
+```
+
 ## [7.20.3] - 2021-11-26
 
 ## Changed
