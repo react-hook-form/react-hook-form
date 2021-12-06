@@ -20,28 +20,28 @@
 </div>
 
 <p align="center">
-  <a href="https://react-hook-form.com/get-started">Get started</a> | 
+  <a href="https://react-hook-form.com/get-started">开始</a> | 
   <a href="https://react-hook-form.com/api">API</a> |
-  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">Examples</a> |
+  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">示例</a> |
   <a href="https://react-hook-form.com">Demo</a> |
-  <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
-  <a href="https://react-hook-form.com/faqs">FAQs</a>
+  <a href="https://react-hook-form.com/form-builder">表单生成器</a> |
+  <a href="https://react-hook-form.com/faqs">常见问题</a>
 </p>
 
 ### Features
 
-- Built with performance, UX and DX in mind
-- Embraces native form validation
-- Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
-- [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
-- Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) or custom
+- 以性能和开发体验为基础构建
+- 支持浏览器原生校验
+- [UI库](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)开箱即用
+- [小巧](https://bundlephobia.com/result?p=react-hook-form@latest)无[依赖](./package.json)
+- 遵循 HTML 标准进行[校验](https://react-hook-form.com/get-started#Applyvalidation)
+- 支持[Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator)或自定义
 
-### Install
+### 安装
 
     npm install react-hook-form
 
-### Quickstart
+### 快速开始
 
 ```jsx
 import React from 'react';
@@ -72,9 +72,9 @@ function App() {
   <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
 </a>
 
-### Sponsors
+### 赞助者
 
-Thanks go to these kind and lovely sponsors (companies and individuals)!
+感谢所有可爱及热情的（公司/个人）赞助者
 
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="94" height="94" />
@@ -359,25 +359,25 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     /></a>
 </p>
 
-### Backers
+### 支持者
 
-Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+感谢所有支持者! [[成为支持者](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-### Contributors
+### 贡献者
 
-Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
+感谢这些出色的人！ [[成为贡献者](../CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
 </a>
 
-### Helpers
+### 帮助者
 
-Thank you for helping and answering questions from the community.
+感谢您帮助及回答社区中的问题
 
 <a href="https://github.com/leapful">
   <img src="https://avatars.githubusercontent.com/u/18494222?v=4" width="25" />
@@ -407,9 +407,9 @@ Thank you for helping and answering questions from the community.
   <img src="https://avatars.githubusercontent.com/u/44376?v=4" width="25" />
 </a>
 
-### Organizations
+## 组织机构
 
-Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
+感谢这些精彩的组织！ [[捐助](https://opencollective.com/react-hook-form/contribute)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
