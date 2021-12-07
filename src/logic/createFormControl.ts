@@ -531,6 +531,12 @@ export function createFormControl<
           }
         } else if (!isFileInput(fieldReference.ref)) {
           fieldReference.ref.value = fieldValue;
+
+          if (!fieldReference.ref.type) {
+            _subjects.watch.next({
+              name,
+            });
+          }
         }
       }
     }
