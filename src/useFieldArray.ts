@@ -95,6 +95,13 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(appendValue, keyName),
     );
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+    control._names.focus = getFocusFieldName(
+      name,
+      fieldArrayValues.length - 1,
+      options,
+    );
+
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
@@ -102,13 +109,7 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      updateValues(updatedFieldArrayValuesWithKey),
-    );
-
-    control._names.focus = getFocusFieldName(
-      name,
-      updatedFieldArrayValuesWithKey.length - appendValue.length,
-      options,
+      fieldArrayValues,
     );
   };
 
@@ -122,6 +123,9 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(convertToArrayPayload(value), keyName),
     );
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+    control._names.focus = getFocusFieldName(name, 0, options);
+
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
@@ -129,10 +133,8 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      updateValues(updatedFieldArrayValuesWithKey),
+      fieldArrayValues,
     );
-
-    control._names.focus = getFocusFieldName(name, 0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -142,6 +144,8 @@ export const useFieldArray = <
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       index,
     );
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
@@ -149,7 +153,7 @@ export const useFieldArray = <
       {
         argA: index,
       },
-      updateValues(updatedFieldArrayValuesWithKey),
+      fieldArrayValues,
     );
   };
 
@@ -165,6 +169,9 @@ export const useFieldArray = <
       index,
       mapIds(convertToArrayPayload(value), keyName),
     );
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+    control._names.focus = getFocusFieldName(name, index, options);
+
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
@@ -173,10 +180,8 @@ export const useFieldArray = <
         argA: index,
         argB: fillEmptyArray(value),
       },
-      updateValues(updatedFieldArrayValuesWithKey),
+      fieldArrayValues,
     );
-
-    control._names.focus = getFocusFieldName(name, index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -186,6 +191,8 @@ export const useFieldArray = <
       keyName,
     );
     swapArrayAt(updatedFieldArrayValuesWithKey, indexA, indexB);
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
@@ -194,7 +201,7 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      updateValues(updatedFieldArrayValuesWithKey),
+      fieldArrayValues,
       false,
     );
   };
@@ -206,6 +213,9 @@ export const useFieldArray = <
       keyName,
     );
     moveArrayAt(updatedFieldArrayValuesWithKey, from, to);
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+    setFields(updatedFieldArrayValuesWithKey);
+
     control._updateFieldArray(
       name,
       moveArrayAt,
@@ -213,10 +223,9 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      updateValues(updatedFieldArrayValuesWithKey),
+      fieldArrayValues,
       false,
     );
-    setFields(updatedFieldArrayValuesWithKey);
   };
 
   const update = (
@@ -237,6 +246,8 @@ export const useFieldArray = <
       updatedFieldArrayValues,
       keyName,
     );
+    const fieldArrayValues = updateValues(_fieldIds.current);
+
     setFields(_fieldIds.current);
     control._updateFieldArray(
       name,
@@ -245,7 +256,7 @@ export const useFieldArray = <
         argA: index,
         argB: value,
       },
-      updateValues(_fieldIds.current),
+      fieldArrayValues,
       true,
       false,
     );
@@ -261,12 +272,14 @@ export const useFieldArray = <
       TFieldArrayName,
       TKeyName
     >(convertToArrayPayload(value) as Partial<TFieldValues>[], keyName);
+    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
+
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
       () => updatedFieldArrayValuesWithKey,
       {},
-      updateValues(updatedFieldArrayValuesWithKey),
+      fieldArrayValues,
       true,
       false,
     );

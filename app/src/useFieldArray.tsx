@@ -186,6 +186,95 @@ const UseFieldArray: React.FC = () => {
         remove async
       </button>
 
+      <button
+        id="appendAsync"
+        type="button"
+        onClick={() =>
+          setTimeout(() => {
+            append({
+              name: 'appendAsync',
+            });
+          }, 90)
+        }
+      >
+        append async
+      </button>
+
+      <button
+        id="prependAsync"
+        type="button"
+        onClick={() =>
+          setTimeout(() => {
+            prepend({
+              name: 'prependAsync',
+            });
+          }, 90)
+        }
+      >
+        prepend async
+      </button>
+
+      <button
+        id="insertAsync"
+        type="button"
+        onClick={() =>
+          setTimeout(() => {
+            insert(1, {
+              name: 'insertAsync',
+            });
+          }, 90)
+        }
+      >
+        insert async
+      </button>
+
+      <button
+        id="swapAsync"
+        type="button"
+        onClick={() =>
+          setTimeout(() => {
+            swap(0, 1);
+          }, 90)
+        }
+      >
+        swap async
+      </button>
+
+      <button id="moveAsync" onClick={() => move(1, 0)} type="button">
+        move async
+      </button>
+
+      <button
+        id="updateAsync"
+        onClick={() =>
+          setTimeout(() => {
+            update(0, {
+              name: 'updateAsync',
+            });
+          }, 90)
+        }
+        type="button"
+      >
+        update async
+      </button>
+
+      <button
+        id="replaceAsync"
+        type="button"
+        onClick={() =>
+          setTimeout(() => {
+            replace([
+              { name: `${renderCount}. lorem` },
+              { name: `${renderCount}. ipsum` },
+              { name: `${renderCount}. dolor` },
+              { name: `${renderCount}. sit amet` },
+            ]);
+          }, 90)
+        }
+      >
+        replace async
+      </button>
+
       <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
       </button>

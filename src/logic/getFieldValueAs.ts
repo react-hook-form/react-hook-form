@@ -1,8 +1,9 @@
-import { Field } from '../types';
+import { Field, NativeFieldValue } from '../types';
+import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 
-export default (
-  value: any,
+export default <T extends NativeFieldValue>(
+  value: T,
   { valueAsNumber, valueAsDate, setValueAs }: Field['_f'],
 ) =>
   isUndefined(value)
@@ -11,7 +12,7 @@ export default (
     ? value === ''
       ? NaN
       : +value
-    : valueAsDate
+    : valueAsDate && isString(value)
     ? new Date(value)
     : setValueAs
     ? setValueAs(value)
