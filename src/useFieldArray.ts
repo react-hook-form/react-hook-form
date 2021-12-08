@@ -91,7 +91,7 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const appendValue = cloneObject(convertToArrayPayload(value));
+    const appendValue = convertToArrayPayload(cloneObject(value));
     const updatedFieldArrayValuesWithKey = appendAt(
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       mapIds(appendValue, keyName),
@@ -122,7 +122,7 @@ export const useFieldArray = <
   ) => {
     const updatedFieldArrayValuesWithKey = prependAt(
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
-      mapIds(cloneObject(convertToArrayPayload(value)), keyName),
+      mapIds(convertToArrayPayload(cloneObject(value)), keyName),
     );
     const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._names.focus = getFocusFieldName(name, 0, options);
@@ -168,7 +168,7 @@ export const useFieldArray = <
     const updatedFieldArrayValuesWithKey = insertAt(
       mapCurrentIds(control._getFieldArray(name), _fieldIds, keyName),
       index,
-      mapIds(cloneObject(convertToArrayPayload(value)), keyName),
+      mapIds(convertToArrayPayload(cloneObject(value)), keyName),
     );
     const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
     control._names.focus = getFocusFieldName(name, index, options);
