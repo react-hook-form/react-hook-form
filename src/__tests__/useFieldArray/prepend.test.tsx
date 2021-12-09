@@ -10,6 +10,8 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import * as generateId from '../../logic/generateId';
+import { Control, FieldPath } from '../../types';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
@@ -382,6 +384,89 @@ describe('prepend', () => {
 
     expect(inputs).toHaveLength(3);
     expect(document.activeElement).toEqual(document.body);
+  });
+
+  it('should append nested field value without its reference', () => {
+    type FormValues = {
+      test: { name: { deep: string } }[];
+    };
+
+    function Input({
+      name,
+      control,
+    }: {
+      name: FieldPath<FormValues>;
+      control: Control<FormValues>;
+    }) {
+      const { field } = useController({
+        name: name as 'test.0.name.deep',
+        control,
+      });
+
+      return <input type="text" {...field} />;
+    }
+
+    function FieldArray({
+      control,
+      name,
+      itemDefaultValue,
+    }: {
+      control: Control<FormValues>;
+      name: FieldPath<FormValues>;
+      itemDefaultValue: { name: { deep: string } };
+    }) {
+      const { fields, prepend } = useFieldArray({
+        control,
+        name: name as 'test',
+      });
+
+      return (
+        <>
+          {fields.map((item, index) => (
+            <Input
+              key={item.id}
+              name={`test.${index}.name.deep`}
+              control={control}
+            />
+          ))}
+          <button type="button" onClick={() => prepend(itemDefaultValue)}>
+            Append
+          </button>
+        </>
+      );
+    }
+
+    function App() {
+      const { control } = useForm<FormValues>({
+        defaultValues: {
+          test: [],
+        },
+      });
+
+      return (
+        <form>
+          <FieldArray
+            name="test"
+            control={control}
+            itemDefaultValue={{ name: { deep: '' } }}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '1234' },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('');
   });
 
   describe('with resolver', () => {

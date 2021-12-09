@@ -674,17 +674,13 @@ describe('useFieldArray', () => {
       render(<Component />);
 
       const addChild = async () =>
-        await actComponent(
-          async () => await screen.getByText('Add child').click(),
-        );
+        await actComponent(async () => screen.getByText('Add child').click());
 
       await addChild();
 
       expect(screen.getByText('Remove child')).toBeInTheDocument();
 
-      await actComponent(
-        async () => await screen.getByText('Remove child').click(),
-      );
+      await actComponent(async () => screen.getByText('Remove child').click());
 
       expect(screen.queryByText('Remove child')).toBeNull();
 
