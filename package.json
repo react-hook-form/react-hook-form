@@ -3,11 +3,11 @@
   "description": "Performant, flexible and extensible forms library for React Hooks",
   "version": "7.21.1",
   "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.mjs",
+  "module": "dist/index.esm.js",
   "umd:main": "dist/index.umd.js",
   "unpkg": "dist/index.umd.js",
   "jsdelivr": "dist/index.umd.js",
-  "jsnext:main": "dist/index.esm.mjs",
+  "jsnext:main": "dist/index.esm.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "sideEffects": true,
@@ -18,7 +18,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.esm.mjs",
+      "import": "./dist/index.esm.js",
       "require": "./dist/index.cjs.js"
     }
   },
@@ -26,7 +26,7 @@
     "clean": "rimraf dist",
     "prebuild": "yarn clean",
     "build": "yarn build:modern",
-    "postbuild": "rimraf dist/__tests__; node ./scripts/rollup/assert-esm-exports.mjs",
+    "postbuild": "rimraf dist/__tests__",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx}\"",
@@ -135,6 +135,6 @@
     "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=12.0"
   }
 }

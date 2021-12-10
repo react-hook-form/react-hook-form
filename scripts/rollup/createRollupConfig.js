@@ -6,10 +6,7 @@ import typescript from 'rollup-plugin-typescript2';
 
 export function createRollupConfig(options, callback) {
   const name = options.name;
-  // A file with the extension ".mjs" will always be treated as ESM, even when pkg.type is "commonjs" (the default)
-  // https://nodejs.org/docs/latest/api/packages.html#packages_determining_module_system
-  const extName = options.format === 'esm' ? 'mjs' : 'js';
-  const outputName = 'dist/' + [name, options.format, extName].join('.');
+  const outputName = 'dist/' + [name, options.format, 'js'].join('.');
 
   const config = {
     input: options.input,
