@@ -1,7 +1,13 @@
 import * as React from 'react';
 
 import { Controller } from '../controller';
-import { Path } from '../types';
+import {
+  FieldErrors,
+  FieldPath,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
@@ -98,7 +104,7 @@ test('should work with optional field with Controller', () => {
   App;
 });
 
-test('should useWatch return correct array types', () => {
+test('should work with useWatch return correct array types', () => {
   type FormValues = {
     testString: string;
     testNumber: number;
@@ -123,4 +129,27 @@ test('should useWatch return correct array types', () => {
   };
 
   App;
+});
+
+test('should type errors correctly with Path generic', () => {
+  interface InputProps<T extends FieldValues = FieldValues> {
+    name: FieldPath<T>;
+    register: UseFormRegister<T>;
+    errors: FieldErrors<T>;
+  }
+
+  function Input<T extends FieldValues = FieldValues>({
+    name,
+    register,
+    errors,
+  }: InputProps<T>) {
+    return (
+      <>
+        <input {...register(name)} />
+        {errors[name] ? errors[name].message : 'no error'}
+      </>
+    );
+  }
+
+  Input;
 });

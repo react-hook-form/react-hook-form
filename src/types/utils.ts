@@ -155,30 +155,3 @@ export type FieldPathValues<
     TPath[K] & FieldPath<TFieldValues>
   >;
 };
-
-type UnionKeys<T> = T extends any ? keyof T : never;
-
-type UnionValues<T, K> = T extends any
-  ? K extends keyof T
-    ? T[K]
-    : never
-  : never;
-
-type OptionalKeys<T> = T extends any
-  ? { [K in keyof T]-?: {} extends Pick<T, K> ? K : never }[keyof T]
-  : never;
-
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-export type UnionLike<T> = [T] extends [Date | FileList | File | NestedValue]
-  ? T
-  : [T] extends [ReadonlyArray<any>]
-  ? { [K in keyof T]: UnionLike<T[K]> }
-  : [T] extends [object]
-  ? PartialBy<
-      {
-        [K in UnionKeys<T>]: UnionLike<UnionValues<T, K>>;
-      },
-      Exclude<UnionKeys<T>, keyof T> | OptionalKeys<T>
-    >
-  : T;
