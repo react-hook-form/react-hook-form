@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "declaration": true,
     "noEmit": true,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
     "noUnusedLocals": true,

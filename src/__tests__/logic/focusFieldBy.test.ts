@@ -1,10 +1,6 @@
 import focusFieldBy from '../../logic/focusFieldBy';
 import get from '../../utils/get';
 
-jest.mock('../../utils/isHTMLElement', () => ({
-  default: () => true,
-}));
-
 describe('focusFieldBy', () => {
   it('should focus on the first error it encounter', () => {
     const focus = jest.fn();

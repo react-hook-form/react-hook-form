@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import omit from './utils/omit';
 import { FieldValues, FormProviderProps, UseFormReturn } from './types';
