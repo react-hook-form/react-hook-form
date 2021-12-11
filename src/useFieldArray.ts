@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import focusFieldBy from './logic/focusFieldBy';
 import getFocusFieldName from './logic/getFocusFieldName';

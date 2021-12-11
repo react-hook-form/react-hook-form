@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';

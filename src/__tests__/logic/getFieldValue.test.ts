@@ -2,12 +2,14 @@ import getFieldValue from '../../logic/getFieldValue';
 import { Field } from '../../types';
 
 jest.mock('../../logic/getRadioValue', () => ({
+  __esModule: true,
   default: () => ({
     value: 2,
   }),
 }));
 
 jest.mock('../../logic/getCheckboxValue', () => ({
+  __esModule: true,
   default: () => ({
     value: 'testValue',
   }),
