@@ -1,5 +1,34 @@
 # Changelog
 
+## [7.22.0] - 2021-12-14
+
+## Changed
+
+- Browser native reset API will no longer be invoked when `reset` provided with value
+
+```tsx
+const onSubmit = (data) => {};
+
+React.useEffect(() => {
+  if (formState.isSubmitSuccessful) {
+    reset({ something: '' });
+  }
+}, [formState, reset]);
+
+handleSubmit(onSubmit);
+```
+
+to
+
+```tsx
+const onSubmit = (data) => {
+  setSubmittedData(data);
+  reset(data); // no longer need to have useEffect
+};
+
+handleSubmit(onSubmit);
+```
+
 ## [7.21.0] - 2021-12-06
 
 ## Changed
