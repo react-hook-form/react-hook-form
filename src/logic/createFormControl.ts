@@ -479,10 +479,12 @@ export function createFormControl<
   };
 
   const _getFieldArray = (name: InternalFieldName) =>
-    get(
-      _stateFlags.mount ? _formValues : _defaultValues,
-      name,
-      props.shouldUnregister ? get(_defaultValues, name, []) : [],
+    compact(
+      get(
+        _stateFlags.mount ? _formValues : _defaultValues,
+        name,
+        props.shouldUnregister ? get(_defaultValues, name, []) : [],
+      ),
     );
 
   const setFieldValue = (
@@ -1054,9 +1056,10 @@ export function createFormControl<
   ) => {
     const updatedValues = formValues || _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
-    const values = !isEmptyObject(formValues)
-      ? cloneUpdatedValues
-      : _defaultValues;
+    const values =
+      formValues && !isEmptyObject(formValues)
+        ? cloneUpdatedValues
+        : _defaultValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
