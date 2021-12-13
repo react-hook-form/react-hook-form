@@ -1066,7 +1066,7 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (isWeb) {
+      if (isWeb && isUndefined(formValues)) {
         for (const name of _names.mount) {
           const field = get(_fields, name);
           if (field && field._f) {

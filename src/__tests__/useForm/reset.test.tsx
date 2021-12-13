@@ -965,4 +965,91 @@ describe('reset', () => {
 
     expect(tempFields).toEqual([]);
   });
+
+  it('should reset the form after submitted', async () => {
+    function App() {
+      const {
+        register,
+        control,
+        handleSubmit,
+        reset,
+        formState: { isDirty, dirtyFields },
+      } = useForm({
+        defaultValues: {
+          something: 'anything',
+          test: [{ firstName: 'Bill', lastName: 'Luo' }],
+        },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            reset({ ...data });
+          })}
+        >
+          <p>is dirty? {isDirty ? 'yes' : 'no'}</p>
+          <p>{JSON.stringify(dirtyFields)}</p>
+          <input {...register('something')} />
+          <ul>
+            {fields.map((item, index) => {
+              return (
+                <li key={item.id}>
+                  <input
+                    defaultValue={`${item.firstName}`}
+                    {...register(`test.${index}.firstName`)}
+                  />
+
+                  <Controller
+                    render={({ field }) => <input {...field} />}
+                    name={`test.${index}.lastName`}
+                    control={control}
+                    defaultValue={item.lastName}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+
+          <button>Submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: '1' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: '2' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[2], {
+      target: { value: '3' },
+    });
+
+    screen.getByText(/yes/i);
+    screen.getByText(
+      `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
+    );
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    screen.getByText(/no/i);
+
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('1');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('2');
+    expect(
+      (screen.getAllByRole('textbox')[2] as HTMLInputElement).value,
+    ).toEqual('3');
+  });
 });
