@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -490,52 +490,43 @@ describe('useForm', () => {
   });
 
   describe('handleChangeRef', () => {
-    let Component: React.FC<{
+    const Component = ({
+      name = 'test',
+      resolver,
+      mode,
+      rules = { required: 'required' },
+    }: {
       name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
       rules?: RegisterOptions;
-    }>;
-    let methods: UseFormReturn<{ test: string }>;
-
-    beforeEach(() => {
-      Component = ({
-        name = 'test',
+    }) => {
+      const internationalMethods = useForm<{ test: string }>({
         resolver,
         mode,
-        rules = { required: 'required' },
-      }: {
-        name?: string;
-        resolver?: any;
-        mode?: 'onBlur' | 'onSubmit' | 'onChange';
-        rules?: RegisterOptions;
-      }) => {
-        const internationalMethods = useForm<{ test: string }>({
-          resolver,
-          mode,
-        });
-        const {
-          register,
-          handleSubmit,
-          formState: { errors, isValid },
-        } = internationalMethods;
-        methods = internationalMethods;
+      });
+      const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid },
+      } = internationalMethods;
+      methods = internationalMethods;
 
-        return (
-          <div>
-            <input
-              type="text"
-              {...register(name as 'test', resolver ? {} : rules)}
-            />
-            <span role="alert">
-              {errors?.test?.message && errors.test.message}
-            </span>
-            <button onClick={handleSubmit(() => {})}>button</button>
-            <p>{isValid ? 'valid' : 'invalid'}</p>
-          </div>
-        );
-      };
-    });
+      return (
+        <div>
+          <input
+            type="text"
+            {...register(name as 'test', resolver ? {} : rules)}
+          />
+          <span role="alert">
+            {errors?.test?.message && errors.test.message}
+          </span>
+          <button onClick={handleSubmit(() => {})}>button</button>
+          <p>{isValid ? 'valid' : 'invalid'}</p>
+        </div>
+      );
+    };
+    let methods: UseFormReturn<{ test: string }>;
 
     describe('onSubmit mode', () => {
       it('should not contain error if value is valid', async () => {
