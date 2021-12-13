@@ -19,6 +19,8 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
+jest.useFakeTimers();
+
 describe('reset', () => {
   it('should reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
@@ -892,5 +894,75 @@ describe('reset', () => {
       ).toEqual('changed2');
       screen.getByText('{"test":"test","test1":"test1"}');
     });
+  });
+
+  it('should reset field array async', () => {
+    let tempFields: unknown[] = [];
+
+    function App() {
+      const { control, reset } = useForm<{
+        names: {
+          test: string;
+        }[];
+      }>({
+        defaultValues: {
+          names: [],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'names',
+      });
+
+      tempFields = fields;
+
+      return (
+        <form>
+          <button
+            type="button"
+            onClick={() => {
+              setTimeout(() => {
+                reset();
+              }, 100);
+            }}
+          >
+            reset
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              append({
+                test: '1',
+              })
+            }
+          >
+            append
+          </button>
+          <ul>
+            {fields.map((item, index) => (
+              <Controller
+                key={item.id}
+                render={({ field }) => <input {...field} />}
+                name={`names.${index}.test`}
+                control={control}
+              />
+            ))}
+          </ul>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    actComponent(() => {
+      jest.advanceTimersByTime(100);
+    });
+
+    expect(tempFields).toEqual([]);
   });
 });
