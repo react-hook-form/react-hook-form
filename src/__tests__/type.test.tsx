@@ -153,3 +153,22 @@ test('should type errors correctly with Path generic', () => {
 
   Input;
 });
+
+test('should allow unpackedValue and deep partial unpackValue for reset', () => {
+  type Type1 = { name: string };
+  type Type2 = { name: string };
+
+  type Forms = {
+    test: Type1;
+    test1: Type2;
+  };
+
+  type FormMapKey = keyof Forms;
+
+  const Test = <K extends FormMapKey>() => {
+    const { reset, getValues } = useForm<Forms[K]>();
+    reset(getValues());
+  };
+
+  Test;
+});
