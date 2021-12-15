@@ -42,5 +42,9 @@ describe('useFieldArray', () => {
     cy.get('#field3').should('have.value', '16. sit amet');
 
     cy.get('#removeAsync').click();
+
+    cy.get('#resetAsync').click();
+
+    cy.get('ul > li').should('not.exist');
   });
 });
