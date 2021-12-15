@@ -165,8 +165,8 @@ test('should allow unpackedValue and deep partial unpackValue for reset', () => 
 
   type FormMapKey = keyof Forms;
 
-  const Test = <K extends FormMapKey>() => {
-    const { reset, getValues } = useForm<Forms[K]>();
+  const Test = <T extends FormMapKey>() => {
+    const { reset, getValues } = useForm<Forms[T]>();
     reset(getValues());
   };
 
