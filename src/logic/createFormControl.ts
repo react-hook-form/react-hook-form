@@ -1065,20 +1065,6 @@ export function createFormControl<
       _defaultValues = updatedValues;
     }
 
-    _names = {
-      mount: new Set(),
-      unMount: new Set(),
-      array: new Set(),
-      watch: new Set(),
-      watchAll: false,
-      focus: '',
-    };
-
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
-
-    _stateFlags.watch = !!props.shouldUnregister;
-
     if (!keepStateOptions.keepValues) {
       if (isWeb && isUndefined(formValues)) {
         for (const name of _names.mount) {
@@ -1102,6 +1088,7 @@ export function createFormControl<
           ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
+
       _fields = {};
 
       _subjects.array.next({
@@ -1112,6 +1099,20 @@ export function createFormControl<
         values,
       });
     }
+
+    _names = {
+      mount: new Set(),
+      unMount: new Set(),
+      array: new Set(),
+      watch: new Set(),
+      watchAll: false,
+      focus: '',
+    };
+
+    _stateFlags.mount =
+      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+
+    _stateFlags.watch = !!props.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
