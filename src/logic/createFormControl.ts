@@ -1088,13 +1088,14 @@ export function createFormControl<
           ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
+
       _fields = {};
 
-      _subjects.watch.next({
+      _subjects.array.next({
         values,
       });
 
-      _subjects.array.next({
+      _subjects.watch.next({
         values,
       });
     }
