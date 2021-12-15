@@ -2,7 +2,10 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
+import { Controller } from '../../controller';
 import { useForm } from '../../useForm';
+import { FormProvider, useFormContext } from '../../useFormContext';
+import { useFormState } from '../../useFormState';
 
 describe('getValues', () => {
   it('should return defaultValues before inputs mounted', () => {
@@ -250,6 +253,101 @@ describe('getValues', () => {
         firstName: '1234',
         lastName: 'test',
       },
+    });
+  });
+
+  it('should return mounted input value after async reset', async () => {
+    let updatedValue: unknown;
+
+    type FormValues = {
+      firstName: string;
+    };
+
+    function Form() {
+      const { handleSubmit, reset, getValues } = useFormContext();
+      const { isDirty, isValid } = useFormState();
+
+      return (
+        <form
+          onSubmit={handleSubmit(async (data) => {
+            await Promise.resolve();
+            reset(data);
+          })}
+        >
+          <button
+            type={'button'}
+            onClick={() => {
+              updatedValue = getValues();
+            }}
+          >
+            getValues
+          </button>
+          <button type="submit" disabled={!isDirty || !isValid}>
+            submit
+          </button>
+
+          <Controller
+            name="firstName"
+            rules={{ required: true }}
+            render={({ field }) => <input {...field} />}
+          />
+        </form>
+      );
+    }
+
+    function App() {
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'test',
+        },
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <Form />
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test1' },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(screen.getByRole('button', { name: 'submit' })).toHaveAttribute(
+      'disabled',
+      '',
+    );
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test2' },
+      });
+    });
+
+    expect(screen.getByRole('button', { name: 'submit' })).not.toHaveAttribute(
+      'disabled',
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
+    });
+
+    expect(updatedValue).toEqual({
+      firstName: 'test2',
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test3' },
+      });
     });
   });
 });

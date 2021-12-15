@@ -1108,6 +1108,11 @@ export function createFormControl<
       focus: '',
     };
 
+    _stateFlags.mount =
+      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+
+    _stateFlags.watch = !!props.shouldUnregister;
+
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
@@ -1140,10 +1145,6 @@ export function createFormControl<
       isSubmitting: false,
       isSubmitSuccessful: false,
     });
-
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
-    _stateFlags.watch = !!props.shouldUnregister;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
