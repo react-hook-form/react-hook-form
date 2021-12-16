@@ -283,14 +283,15 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
     const updateValue = convertToArrayPayload(value) as Partial<TFieldValues>[];
-    const updatedFieldArrayValuesWithKey = mapCurrentIds(updateValue, keyName);
+    const updatedFieldArrayValuesWithKey = mapCurrentIds(
+      updateValue,
+      keyName,
+    ) as Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[];
     const fieldArrayValues = updateValues(
-      // @ts-ignore
       updatedFieldArrayValuesWithKey,
       updateValue[0][keyName],
     );
 
-    // @ts-ignore
     setFields(updatedFieldArrayValuesWithKey);
     control._updateFieldArray(
       name,
