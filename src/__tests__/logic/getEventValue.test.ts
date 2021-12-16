@@ -11,11 +11,14 @@ test('getEventValue should return correct value', () => {
       target: { checked: true, type: 'checkbox', value: 'test' },
     }),
   ).toEqual(true);
-  expect(getEventValue({ target: { value: 'test' }, type: 'test' })).toEqual(
-    'test',
-  );
   expect(getEventValue({ data: 'test' })).toEqual({ data: 'test' });
   expect(getEventValue('test')).toEqual('test');
   expect(getEventValue(undefined)).toEqual(undefined);
   expect(getEventValue(null)).toEqual(null);
+});
+
+test('getEventValue should return correct value if CustomEvent is received', () => {
+  const customEvent = new CustomEvent('event', { detail: { value: 'test' } });
+
+  expect(getEventValue(customEvent)).toEqual('test');
 });
