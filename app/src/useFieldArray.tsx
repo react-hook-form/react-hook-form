@@ -306,6 +306,20 @@ const UseFieldArray: React.FC = () => {
         reset
       </button>
 
+      <button
+        id="resetAsync"
+        type="button"
+        onClick={() => {
+          setTimeout(() => {
+            reset({
+              data: [],
+            });
+          }, 100);
+        }}
+      >
+        reset async
+      </button>
+
       <button id="submit">Submit</button>
 
       <div id="renderCount">{renderCount}</div>

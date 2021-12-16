@@ -1088,13 +1088,14 @@ export function createFormControl<
           ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
+
       _fields = {};
 
-      _subjects.watch.next({
+      _subjects.array.next({
         values,
       });
 
-      _subjects.array.next({
+      _subjects.watch.next({
         values,
       });
     }
@@ -1107,6 +1108,11 @@ export function createFormControl<
       watchAll: false,
       focus: '',
     };
+
+    _stateFlags.mount =
+      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+
+    _stateFlags.watch = !!props.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
@@ -1140,10 +1146,6 @@ export function createFormControl<
       isSubmitting: false,
       isSubmitSuccessful: false,
     });
-
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
-    _stateFlags.watch = !!props.shouldUnregister;
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
