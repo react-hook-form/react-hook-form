@@ -45,7 +45,7 @@ export const useFieldArray = <
     keyName = 'id' as TKeyName,
     shouldUnregister,
   } = props;
-  const _shouldOmitKey = React.useRef(
+  const _shouldKeepKeyName = React.useRef(
     get(control._getFieldArray(name)[0], keyName),
   );
   const [fields, setFields] = React.useState<
@@ -75,12 +75,12 @@ export const useFieldArray = <
       >[],
     >(
       updatedFieldArrayValuesWithKey: T,
-      hasKey: boolean = _shouldOmitKey.current,
+      hasKey: boolean = _shouldKeepKeyName.current,
     ) => {
       const updatedFieldArrayValues = hasKey
         ? updatedFieldArrayValuesWithKey
         : omitKeys(updatedFieldArrayValuesWithKey, keyName);
-      hasKey && (_shouldOmitKey.current = true);
+      hasKey && (_shouldKeepKeyName.current = true);
       _actioned.current = true;
       set(control._formValues, name, updatedFieldArrayValues);
       return updatedFieldArrayValues;
