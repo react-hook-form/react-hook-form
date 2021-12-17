@@ -1,15 +1,34 @@
 import { FieldValues } from '../fields';
 
 import {
+  ArrayKey,
+  AsKey,
   AsKeyList,
   EvaluateKeyList,
+  IsTuple,
   JoinKeyList,
   KeyList,
-  Keys,
   PathString,
   SplitPathString,
   Traversable,
+  TupleKey,
 } from './internal';
+
+type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
+  ? AsKey<K>
+  : never;
+
+type Keys<T, U = unknown> = T extends Traversable
+  ? T extends ReadonlyArray<any>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
+        }[TupleKey<T>]
+      : CheckKeyConstraint<T, ArrayKey, U>
+    : {
+        [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
+      }[keyof T]
+  : never;
 
 type ValidKeyListPrefixTailRecursive<
   T,
@@ -30,9 +49,9 @@ type ValidKeyListPrefix<
   KL extends KeyList,
 > = ValidKeyListPrefixTailRecursive<T, KL, []>;
 
-type PreviousSuggestion<KL extends KeyList> = JoinKeyList<DropLastElement<KL>>;
+type SuggestParentPath<KL extends KeyList> = JoinKeyList<DropLastElement<KL>>;
 
-type NextKeySuggestions<
+type SuggestChildPaths<
   T,
   KL extends KeyList,
   U,
@@ -50,10 +69,10 @@ type CompletePathString<
   _VKLP extends KeyList = ValidKeyListPrefix<T, SplitPathString<PS>>,
   _VPS extends PathString = JoinKeyList<_VKLP>,
 > =
-  | NextKeySuggestions<T, _VKLP, U>
+  | SuggestChildPaths<T, _VKLP, U>
   | (PS extends _VPS
       ?
-          | PreviousSuggestion<_VKLP>
+          | SuggestParentPath<_VKLP>
           | (EvaluateKeyList<T, _VKLP> extends U ? PS : never)
       : _VPS);
 

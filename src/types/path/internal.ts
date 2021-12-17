@@ -52,19 +52,3 @@ export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
       : never
     : never
   : T;
-
-type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
-  ? AsKey<K>
-  : never;
-
-export type Keys<T, U = unknown> = T extends Traversable
-  ? T extends ReadonlyArray<any>
-    ? IsTuple<T> extends true
-      ? {
-          [K in TupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
-        }[TupleKey<T>]
-      : CheckKeyConstraint<T, ArrayKey, U>
-    : {
-        [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
-      }[keyof T]
-  : never;
