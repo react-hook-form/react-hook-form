@@ -3,8 +3,8 @@ import { Primitive } from '../utils';
 
 import {
   ArrayKey,
+  EvaluateKeyList,
   IsTuple,
-  KeyListValue,
   SplitPathString,
   TupleKey,
 } from './internal';
@@ -46,7 +46,7 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V>
 export type FieldArrayPath<TFieldValues extends FieldValues> =
   ArrayPath<TFieldValues>;
 
-export type PathValue<T, P extends Path<T> | ArrayPath<T>> = KeyListValue<
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> = EvaluateKeyList<
   T,
   SplitPathString<P>
 >;

@@ -38,15 +38,15 @@ export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
   ? JoinKeyListTailRecursive<AsKeyList<R>, AsKey<K>>
   : never;
 
-export type KeyListValue<T, KL extends KeyList> = KL extends [
+export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
   infer K,
   ...infer R
 ]
   ? K extends keyof T
-    ? KeyListValue<T[K], AsKeyList<R>>
+    ? EvaluateKeyList<T[K], AsKeyList<R>>
     : K extends `${ArrayKey}`
     ? T extends ReadonlyArray<infer V>
-      ? KeyListValue<V, AsKeyList<R>>
+      ? EvaluateKeyList<V, AsKeyList<R>>
       : never
     : never
   : T;
