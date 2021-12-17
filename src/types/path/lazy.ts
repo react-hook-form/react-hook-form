@@ -1,3 +1,5 @@
+import { FieldValues } from '../fields';
+
 import {
   AsKeyList,
   EvaluateKeyList,
@@ -55,14 +57,23 @@ type CompletePathString<
           | (EvaluateKeyList<T, _VKLP> extends U ? PS : never)
       : _VPS);
 
-export type LazyPath<T, PS extends PathString> = CompletePathString<
+export type LazyPath<T, TPathString extends PathString> = CompletePathString<
   T,
-  PS,
+  TPathString,
   unknown
 >;
 
-export type LazyArrayPath<T, PS extends PathString> = CompletePathString<
+export type LazyFieldPath<
+  TFieldValues extends FieldValues,
+  TPathString extends PathString,
+> = LazyPath<TFieldValues, TPathString>;
+
+export type LazyArrayPath<
   T,
-  PS,
-  ReadonlyArray<any>
->;
+  TPathString extends PathString,
+> = CompletePathString<T, TPathString, ReadonlyArray<any>>;
+
+export type LazyFieldArrayPath<
+  TFieldValues extends FieldValues,
+  TPathString extends PathString,
+> = LazyArrayPath<TFieldValues, TPathString>;
