@@ -1,4 +1,4 @@
-import { Primitive } from '../utils';
+export type Traversable = object | ReadonlyArray<any>;
 
 export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
   ? false
@@ -57,14 +57,14 @@ type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
   ? AsKey<K>
   : never;
 
-export type Keys<T, U = unknown> = T extends Primitive
-  ? never
-  : T extends ReadonlyArray<any>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
-      }[TupleKey<T>]
-    : CheckKeyConstraint<T, ArrayKey, U>
-  : {
-      [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
-    }[keyof T];
+export type Keys<T, U = unknown> = T extends Traversable
+  ? T extends ReadonlyArray<any>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
+        }[TupleKey<T>]
+      : CheckKeyConstraint<T, ArrayKey, U>
+    : {
+        [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
+      }[keyof T]
+  : never;
