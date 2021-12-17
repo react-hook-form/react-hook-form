@@ -1,3 +1,5 @@
+import { Primitive } from '../utils';
+
 export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
   ? false
   : true;
@@ -12,7 +14,7 @@ export type ArrayKey = number;
 export type PathString = string;
 
 export type Key = string;
-export type AsKey<T> = Extract<T, Key>;
+export type AsKey<T> = T extends ArrayKey ? `${T}` : Extract<T, Key>;
 
 export type KeyList = Key[];
 export type AsKeyList<T> = Extract<T, KeyList>;
@@ -50,3 +52,19 @@ export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
       : never
     : never
   : T;
+
+type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
+  ? AsKey<K>
+  : never;
+
+export type Keys<T, U = unknown> = T extends Primitive
+  ? never
+  : T extends ReadonlyArray<any>
+  ? IsTuple<T> extends true
+    ? {
+        [K in TupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
+      }[TupleKey<T>]
+    : CheckKeyConstraint<T, ArrayKey, U>
+  : {
+      [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
+    }[keyof T];
