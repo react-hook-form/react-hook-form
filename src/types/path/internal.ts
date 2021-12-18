@@ -1,25 +1,90 @@
+/**
+ * Type alias to `string` which describes a lodash-like path through an object.
+ * E.g. `'foo.bar.0.baz'`
+ */
+export type PathString = string;
+
+/**
+ * Type which can be traversed through with a {@link PathString}.
+ * I.e. objects, arrays, and tuples
+ */
 export type Traversable = object | ReadonlyArray<any>;
 
+/**
+ * Type to query whether an array type T is a tuple type.
+ * @typeParam T - type which may be an array or tuple
+ * @example
+ * ```
+ * IsTuple<[number]> = true
+ * IsTuple<number[]> = false
+ * ```
+ */
 export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
   ? false
   : true;
 
+/**
+ * Type which given a tuple type returns its own keys, i.e. only its indices.
+ * @typeParam T - tuple type
+ * @example
+ * ```
+ * TupleKeys<[number, string]> = '0' | '1'
+ * ```
+ */
 export type TupleKey<T extends ReadonlyArray<any>> = Exclude<
   keyof T,
   keyof any[]
 >;
 
+/**
+ * Type which can be used to index an array or tuple type.
+ */
 export type ArrayKey = number;
 
-export type PathString = string;
-
+/**
+ * Type which can be used to index an object.
+ */
 export type Key = string;
+
+/**
+ * Type to assert that a type is a {@link Key}.
+ * @typeParam T - type which may be a {@link Key}
+ */
 export type AsKey<T> = Extract<T, Key>;
+
+/**
+ * Type to convert a type to a {@link Key}.
+ * @typeParam T - type which may be converted to a {@link Key}
+ */
 export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
 
+/**
+ * Type which describes a path through an object
+ * as a list of individual {@link Key}s.
+ */
 export type KeyList = Key[];
+
+/**
+ * Type to assert that a type is a {@link KeyList}.
+ * @typeParam T - type which may be a {@link KeyList}
+ */
 export type AsKeyList<T> = Extract<T, KeyList>;
 
+/**
+ * Type to split a {@link PathString} into a {@link KeyList}.
+ * The individual {@link Key}s may be empty strings.
+ * @typeParam PS  - {@link PathString} which should be split into its
+ *                  individual {@link Key}s
+ * @typeParam _KL - implementation detail to enable tail call optimisation;
+ *                  accumulates the {@link Key}s which have been split from
+ *                  the {@link PathString}
+ * @example
+ * ```
+ * SplitPathString<'foo'> = ['foo']
+ * SplitPathString<'foo.bar.0.baz'> = ['foo', 'bar', '0', 'baz']
+ * SplitPathString<'.'> = ['', '']
+ * ```
+ */
 export type SplitPathString<
   PS extends PathString,
   _KL extends KeyList = [],
@@ -27,17 +92,44 @@ export type SplitPathString<
   ? SplitPathString<R, [..._KL, K]>
   : [..._KL, PS];
 
-type JoinKeyListHelper<KL extends KeyList, PS extends PathString> = KL extends [
+/**
+ * Type to implement {@link JoinKeyList} tail-recursively.
+ * @typeParam KL - remaining {@link Key}s which needs to be joined
+ * @typeParam PS - accumulator of the already joined {@link Key}s
+ */
+type JoinKeyListImpl<KL extends KeyList, PS extends PathString> = KL extends [
   infer K,
   ...infer R
 ]
-  ? JoinKeyListHelper<AsKeyList<R>, `${PS}.${AsKey<K>}`>
+  ? JoinKeyListImpl<AsKeyList<R>, `${PS}.${AsKey<K>}`>
   : PS;
 
+/**
+ * Type to join a {@link KeyList} to a {@link PathString}.
+ * @typeParam KL - {@link KeyList} which should be joined.
+ * @example
+ * ```
+ * JoinKeyList<['foo']> = 'foo'
+ * JoinKeyList<['foo', 'bar', '0', 'baz']> = 'foo.bar.0.baz'
+ * JoinKeyList<[]> = never
+ * ```
+ */
 export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
-  ? JoinKeyListHelper<AsKeyList<R>, AsKey<K>>
+  ? JoinKeyListImpl<AsKeyList<R>, AsKey<K>>
   : never;
 
+/**
+ * Type to evaluate a deeply nested type within a type.
+ * @typeParam T  - type which should traversed
+ * @typeParam KL - path to the deeply nested type
+ * @example
+ * ```
+ * EvaluateKeyList<{foo: {bar: string}}, ['foo', 'bar']> = string
+ * EvaluateKeyList<[number, string], ['1']> = string
+ * EvaluateKeyList<number, []> = number
+ * EvaluateKeyList<number, ['foo']> = never
+ * ```
+ */
 export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
   infer K,
   ...infer R
