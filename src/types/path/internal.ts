@@ -119,9 +119,9 @@ export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
   : never;
 
 /**
- * Type to evaluate a deeply nested type within a type.
- * @typeParam T  - type which should traversed
- * @typeParam KL - path to the deeply nested type
+ * Type to evaluate the type which the given path points to.
+ * @typeParam T  - deeply nested type which is indexed by the path
+ * @typeParam KL - path into the deeply nested type
  * @example
  * ```
  * EvaluateKeyList<{foo: {bar: string}}, ['foo', 'bar']> = string
