@@ -643,7 +643,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     act(() => {
-      expect(data).toEqual('test');
+      expect(data).toBeUndefined();
     });
   });
 
