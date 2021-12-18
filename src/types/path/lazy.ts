@@ -30,24 +30,19 @@ type Keys<T, U = unknown> = T extends Traversable
       }[keyof T]
   : never;
 
-type ValidKeyListPrefixTailRecursive<
-  T,
-  KL extends KeyList,
-  VKL extends KeyList,
-> = KL extends [infer K, ...infer R]
-  ? K extends Keys<T>
-    ? ValidKeyListPrefixTailRecursive<
-        EvaluateKeyList<T, AsKeyList<[K]>>,
-        AsKeyList<R>,
-        AsKeyList<[...VKL, K]>
-      >
-    : VKL
-  : VKL;
-
 type ValidKeyListPrefix<
   T,
   KL extends KeyList,
-> = ValidKeyListPrefixTailRecursive<T, KL, []>;
+  _VKL extends KeyList = [],
+> = KL extends [infer K, ...infer R]
+  ? K extends Keys<T>
+    ? ValidKeyListPrefix<
+        EvaluateKeyList<T, AsKeyList<[K]>>,
+        AsKeyList<R>,
+        AsKeyList<[..._VKL, K]>
+      >
+    : _VKL
+  : _VKL;
 
 type SuggestParentPath<KL extends KeyList> = JoinKeyList<DropLastElement<KL>>;
 

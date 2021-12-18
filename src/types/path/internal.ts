@@ -20,25 +20,22 @@ export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
 export type KeyList = Key[];
 export type AsKeyList<T> = Extract<T, KeyList>;
 
-type SplitPathStringTailRecursive<
+export type SplitPathString<
   PS extends PathString,
-  KL extends KeyList,
+  _KL extends KeyList = [],
 > = PS extends `${infer K}.${infer R}`
-  ? SplitPathStringTailRecursive<R, [...KL, K]>
-  : [...KL, PS];
+  ? SplitPathString<R, [..._KL, K]>
+  : [..._KL, PS];
 
-export type SplitPathString<PS extends PathString> =
-  SplitPathStringTailRecursive<PS, []>;
-
-type JoinKeyListTailRecursive<
-  KL extends KeyList,
-  PS extends PathString,
-> = KL extends [infer K, ...infer R]
-  ? JoinKeyListTailRecursive<AsKeyList<R>, `${PS}.${AsKey<K>}`>
+type JoinKeyListHelper<KL extends KeyList, PS extends PathString> = KL extends [
+  infer K,
+  ...infer R
+]
+  ? JoinKeyListHelper<AsKeyList<R>, `${PS}.${AsKey<K>}`>
   : PS;
 
 export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
-  ? JoinKeyListTailRecursive<AsKeyList<R>, AsKey<K>>
+  ? JoinKeyListHelper<AsKeyList<R>, AsKey<K>>
   : never;
 
 export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
