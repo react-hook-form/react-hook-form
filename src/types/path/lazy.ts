@@ -2,7 +2,6 @@ import { FieldValues } from '../fields';
 
 import {
   ArrayKey,
-  AsKey,
   AsKeyList,
   EvaluateKeyList,
   IsTuple,
@@ -10,12 +9,13 @@ import {
   KeyList,
   PathString,
   SplitPathString,
+  ToKey,
   Traversable,
   TupleKey,
 } from './internal';
 
 type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
-  ? AsKey<K>
+  ? ToKey<K>
   : never;
 
 type Keys<T, U = unknown> = T extends Traversable

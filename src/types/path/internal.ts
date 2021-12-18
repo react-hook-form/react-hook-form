@@ -14,7 +14,8 @@ export type ArrayKey = number;
 export type PathString = string;
 
 export type Key = string;
-export type AsKey<T> = T extends ArrayKey ? `${T}` : Extract<T, Key>;
+export type AsKey<T> = Extract<T, Key>;
+export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
 
 export type KeyList = Key[];
 export type AsKeyList<T> = Extract<T, KeyList>;
