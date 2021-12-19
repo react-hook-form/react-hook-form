@@ -9,7 +9,7 @@ import {
   SplitPathString,
   ToKey,
   TupleKey,
-} from '../../../types/path/internal';
+} from '../../../types/path/common';
 import {
   expectTypesEqual,
   HundredPathString,

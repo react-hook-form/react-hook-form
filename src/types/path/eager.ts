@@ -7,7 +7,7 @@ import {
   IsTuple,
   SplitPathString,
   TupleKey,
-} from './internal';
+} from './common';
 
 /**
  * Helper type for recursively constructing paths through a type.

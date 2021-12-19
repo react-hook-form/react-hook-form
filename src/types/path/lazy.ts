@@ -13,7 +13,7 @@ import {
   ToKey,
   Traversable,
   TupleKey,
-} from './internal';
+} from './common';
 
 /**
  * Type to check whether a type's property matches the constraint type
@@ -45,7 +45,7 @@ type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
  * Keys<string[], string> = `${number}`
  * ```
  */
-type Keys<T, U = unknown> = T extends Traversable
+export type Keys<T, U = unknown> = T extends Traversable
   ? T extends ReadonlyArray<any>
     ? IsTuple<T> extends true
       ? {
@@ -71,7 +71,7 @@ type Keys<T, U = unknown> = T extends Traversable
  * ValidKeyListPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
  * ```
  */
-type ValidKeyListPrefix<
+export type ValidKeyListPrefix<
   T,
   KL extends KeyList,
   _VKL extends KeyList = [],
@@ -95,7 +95,9 @@ type ValidKeyListPrefix<
  * SuggestParentPath<['foo']> = never
  * ```
  */
-type SuggestParentPath<KL extends KeyList> = JoinKeyList<DropLastElement<KL>>;
+export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
+  DropLastElement<KL>
+>;
 
 /**
  * Type, which given a type and a path into the type, returns all paths as
@@ -115,7 +117,7 @@ type SuggestParentPath<KL extends KeyList> = JoinKeyList<DropLastElement<KL>>;
  * SuggestChildPaths<{foo: {bar: string[]}}, ['foo'], string> = 'foo.bar'
  * ```
  */
-type SuggestChildPaths<
+export type SuggestChildPaths<
   T,
   KL extends KeyList,
   U,
@@ -131,7 +133,10 @@ type SuggestChildPaths<
  * DropLastElement<[]> = []
  * ```
  */
-type DropLastElement<T extends ReadonlyArray<any>> = T extends [...infer R, any]
+export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
+  ...infer R,
+  any,
+]
   ? R
   : [];
 
@@ -162,7 +167,7 @@ type DropLastElement<T extends ReadonlyArray<any>> = T extends [...infer R, any]
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-type CompletePathString<
+export type CompletePathString<
   T,
   PS extends PathString,
   U,
