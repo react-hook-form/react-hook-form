@@ -86,6 +86,22 @@ export type ValidKeyListPrefix<
   : _VKL;
 
 /**
+ * Type to drop the last element from a tuple type
+ * @typeParam T - tuple whose last element should be dropped
+ * @example
+ * ```
+ * DropLastElement<[0, 1, 2]> = [0, 1]
+ * DropLastElement<[]> = []
+ * ```
+ */
+export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
+  ...infer R,
+  any,
+]
+  ? R
+  : [];
+
+/**
  * Type, which given a path, returns the parent path as a {@link PathString}
  * @typeParam KL - path represented as a {@link KeyList}
  * @example
@@ -125,22 +141,6 @@ export type SuggestChildPaths<
 > = [_K] extends [never] ? never : JoinKeyList<AsKeyList<[...KL, _K]>>;
 
 /**
- * Type to drop the last element from a tuple type
- * @typeParam T - tuple whose last element should be dropped
- * @example
- * ```
- * DropLastElement<[0, 1, 2]> = [0, 1]
- * DropLastElement<[]> = []
- * ```
- */
-export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
-  ...infer R,
-  any,
-]
-  ? R
-  : [];
-
-/**
  * Type which given a type and a {@link PathString} into returns
  *  - its parent/predecessor {@link PathString}
  *  - the {@link PathString} itself, if it exists within the type,
@@ -158,16 +158,16 @@ export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
  *                    only once
  * @example
  * ```
- * CompletePathString<{foo: {bar: string}}, 'foo', string> = 'foo.bar'
- * CompletePathString<{foo: {bar: string}}, 'foo.ba', string>
+ * SuggestPath<{foo: {bar: string}}, 'foo', string> = 'foo.bar'
+ * SuggestPath<{foo: {bar: string}}, 'foo.ba', string>
  *   = 'foo' | 'foo.bar'
- * CompletePathString<{foo: {bar: string}}, 'foo.bar', string>
+ * SuggestPath<{foo: {bar: string}}, 'foo.bar', string>
  *   = 'foo' | 'foo.bar'
- * CompletePathString<{foo: {bar: {baz: string}}}, 'foo.bar', string>
+ * SuggestPath<{foo: {bar: {baz: string}}}, 'foo.bar', string>
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type CompletePathString<
+export type SuggestPath<
   T,
   PS extends PathString,
   U,
@@ -200,7 +200,7 @@ export type CompletePathString<
  *   = 'foo' | 'foo.bar' | 'foo.bar.baz'
  * ```
  */
-export type LazyPath<T, TPathString extends PathString> = CompletePathString<
+export type LazyPath<T, TPathString extends PathString> = SuggestPath<
   T,
   TPathString,
   unknown
@@ -236,10 +236,11 @@ export type LazyFieldPath<
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type LazyArrayPath<
+export type LazyArrayPath<T, TPathString extends PathString> = SuggestPath<
   T,
-  TPathString extends PathString,
-> = CompletePathString<T, TPathString, ReadonlyArray<any>>;
+  TPathString,
+  ReadonlyArray<any>
+>;
 
 /**
  * See {@link LazyArrayPath}
