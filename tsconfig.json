@@ -25,6 +25,8 @@
     "cypress",
     "src/*.test.ts",
     "src/*.test.tsx",
+    "src/*.test-d.ts",
+    "src/*.test-d.tsx",
     "src/__mocks__"
   ]
 }
