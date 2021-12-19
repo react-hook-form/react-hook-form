@@ -13,26 +13,22 @@ import { HundredTuple, InfiniteType, type } from '../__fixtures__';
 describe('Keys', () => {
   it('should return the keys of an object', () => {
     type Actual = Keys<{ foo: string; bar: number }>;
-    type Expected = 'foo' | 'bar';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'bar'>(type<Actual>());
   });
 
   it('should return the keys of a tuple', () => {
     type Actual = Keys<[number, string]>;
-    type Expected = '0' | '1';
-    expectType<Expected>(type<Actual>());
+    expectType<'0' | '1'>(type<Actual>());
   });
 
   it('should return the keys of an array', () => {
     type Actual = Keys<string[]>;
-    type Expected = `${number}`;
-    expectType<Expected>(type<Actual>());
+    expectType<`${number}`>(type<Actual>());
   });
 
   it('should only return the keys of string properties', () => {
     type Actual = Keys<{ foo: string; bar: number }, string>;
-    type Expected = 'foo';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo'>(type<Actual>());
   });
 });
 
@@ -42,8 +38,7 @@ describe('ValidKeyListPrefix', () => {
       InfiniteType<string>,
       ['foo', 'bar', '0', 'baz', '42']
     >;
-    type Expected = ['foo', 'bar', '0', 'baz', '42'];
-    expectType<Expected>(type<Actual>());
+    expectType<['foo', 'bar', '0', 'baz', '42']>(type<Actual>());
   });
 
   it('should return the longest valid prefix', () => {
@@ -51,56 +46,48 @@ describe('ValidKeyListPrefix', () => {
       InfiniteType<string>,
       ['foo', 'bar', '0', 'ba', '42']
     >;
-    type Expected = ['foo', 'bar', '0'];
-    expectType<Expected>(type<Actual>());
+    expectType<['foo', 'bar', '0']>(type<Actual>());
   });
 
   it('should return an empty tuple when the path is an empty tuple', () => {
     type Actual = ValidKeyListPrefix<InfiniteType<string>, []>;
-    type Expected = [];
-    expectType<Expected>(type<Actual>());
+    expectType<[]>(type<Actual>());
   });
 
   it('should be implemented tail recursively', () => {
     type Actual = ValidKeyListPrefix<InfiniteType<string>, HundredTuple<'foo'>>;
-    type Expected = HundredTuple<'foo'>;
-    expectType<Expected>(type<Actual>());
+    expectType<HundredTuple<'foo'>>(type<Actual>());
   });
 });
 
 describe('DropLastElement', () => {
   it('should remove the last element from a tuple', () => {
     type Actual = DropLastElement<[0, 1, 2]>;
-    type Expected = [0, 1];
-    expectType<Expected>(type<Actual>());
+    expectType<[0, 1]>(type<Actual>());
   });
 
   it('should return the empty tuple when passed the empty tuple', () => {
     type Actual = DropLastElement<[]>;
-    type Expected = [];
-    expectType<Expected>(type<Actual>());
+    expectType<[]>(type<Actual>());
   });
 });
 
 describe('SuggestParentPath', () => {
   it('should evaluate to the parent path', () => {
     type Actual = SuggestParentPath<['foo', 'bar', 'baz']>;
-    type Expected = 'foo.bar';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo.bar'>(type<Actual>());
   });
 
   it('should evaluate to the never if there is no parent path', () => {
     type Actual = SuggestParentPath<['foo']>;
-    type Expected = never;
-    expectType<Expected>(type<Actual>());
+    expectType<never>(type<Actual>());
   });
 });
 
 describe('SuggestChildPaths', () => {
   it('should suggest paths when the current path is empty', () => {
     type Actual = SuggestChildPaths<InfiniteType<string>, [], unknown>;
-    type Expected = 'foo' | 'bar' | 'baz' | 'value';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'bar' | 'baz' | 'value'>(type<Actual>());
   });
 
   it('should suggest paths when the current path is not empty', () => {
@@ -109,73 +96,66 @@ describe('SuggestChildPaths', () => {
       ['foo', 'foo'],
       unknown
     >;
-    type Expected =
-      | 'foo.foo.foo'
-      | 'foo.foo.bar'
-      | 'foo.foo.baz'
-      | 'foo.foo.value';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'>(
+      type<Actual>(),
+    );
   });
 
   it('should suggest only matching or traversable paths', () => {
     type Actual = SuggestChildPaths<InfiniteType<string>, ['foo'], number>;
-    type Expected = 'foo.foo' | 'foo.bar' | 'foo.baz';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo.foo' | 'foo.bar' | 'foo.baz'>(type<Actual>());
   });
 
   it('should suggest paths into a tuple', () => {
     type Actual = SuggestChildPaths<InfiniteType<string>, ['bar'], unknown>;
-    type Expected = `bar.0`;
-    expectType<Expected>(type<Actual>());
+    expectType<`bar.0`>(type<Actual>());
   });
 
   it('should suggest paths into an array', () => {
     type Actual = SuggestChildPaths<InfiniteType<string>, ['baz'], unknown>;
-    type Expected = `baz.${number}`;
-    expectType<Expected>(type<Actual>());
+    expectType<`baz.${number}`>(type<Actual>());
   });
 
   it('should evaluate to never if the path does not exist', () => {
     type Actual = SuggestChildPaths<InfiniteType<string>, ['foobar'], unknown>;
-    type Expected = never;
-    expectType<Expected>(type<Actual>());
+    expectType<never>(type<Actual>());
   });
 });
 
 describe('SuggestPath', () => {
   it('should suggest all top level paths when the path string is empty', () => {
     type Actual = SuggestPath<InfiniteType<string>, '', unknown>;
-    type Expected = 'foo' | 'bar' | 'baz' | 'value';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'bar' | 'baz' | 'value'>(type<Actual>());
   });
 
   it('should not suggest the current path if it is invalid', () => {
     type Actual = SuggestPath<InfiniteType<string>, 'foo.foobar', unknown>;
-    type Expected = 'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
+      type<Actual>(),
+    );
   });
 
   it('should suggest the current path if it is valid', () => {
     type Actual = SuggestPath<InfiniteType<string>, 'foo', unknown>;
-    type Expected = 'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
+      type<Actual>(),
+    );
   });
 
   it('should suggest the current path and the parent path', () => {
     type Actual = SuggestPath<InfiniteType<string>, 'foo.value', unknown>;
-    type Expected = 'foo' | 'foo.value';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'foo.value'>(type<Actual>());
   });
 
   it('should not suggest the current path if it has the wrong value', () => {
     type Actual = SuggestPath<InfiniteType<string>, 'foo.value', number>;
-    type Expected = 'foo';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo'>(type<Actual>());
   });
 
   it('should not suggest paths which point to the wrong type', () => {
     type Actual = SuggestPath<InfiniteType<string>, 'foo.foo', number>;
-    type Expected = 'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz';
-    expectType<Expected>(type<Actual>());
+    expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(
+      type<Actual>(),
+    );
   });
 });
