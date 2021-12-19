@@ -17,11 +17,8 @@ jobs:
         run: |
           yarn lint
           yarn type
-
       - name: Test
-        run: |
-          yarn test --ci
-          yarn test:types
+        run: yarn test --ci
 
       - name: Build
         run: yarn build
