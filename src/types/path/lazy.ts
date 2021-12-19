@@ -3,6 +3,7 @@ import { FieldValues } from '../fields';
 import {
   ArrayKey,
   AsKeyList,
+  EvaluateKey,
   EvaluateKeyList,
   IsTuple,
   JoinKeyList,
@@ -77,7 +78,7 @@ type ValidKeyListPrefix<
 > = KL extends [infer K, ...infer R]
   ? K extends Keys<T>
     ? ValidKeyListPrefix<
-        EvaluateKeyList<T, AsKeyList<[K]>>,
+        EvaluateKey<T, K>,
         AsKeyList<R>,
         AsKeyList<[..._VKL, K]>
       >

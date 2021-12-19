@@ -119,6 +119,24 @@ export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
   : never;
 
 /**
+ * Type to evaluate the type which the given key points to.
+ * @typeParam T - type which is indexed by the key
+ * @typeParam K - key into the type
+ * @example
+ * ```
+ * EvaluateKey<{foo: string}, 'foo'> = string
+ * EvaluateKey<[number, string], '1'> = string
+ * ```
+ */
+export type EvaluateKey<T, K extends Key> = K extends keyof T
+  ? T[K]
+  : K extends `${ArrayKey}`
+  ? T extends ReadonlyArray<infer V>
+    ? V
+    : never
+  : never;
+
+/**
  * Type to evaluate the type which the given path points to.
  * @typeParam T  - deeply nested type which is indexed by the path
  * @typeParam KL - path into the deeply nested type
@@ -134,11 +152,5 @@ export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
   infer K,
   ...infer R
 ]
-  ? K extends keyof T
-    ? EvaluateKeyList<T[K], AsKeyList<R>>
-    : K extends `${ArrayKey}`
-    ? T extends ReadonlyArray<infer V>
-      ? EvaluateKeyList<V, AsKeyList<R>>
-      : never
-    : never
+  ? EvaluateKeyList<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
   : T;

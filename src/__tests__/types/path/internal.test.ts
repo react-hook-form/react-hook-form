@@ -2,6 +2,7 @@ import {
   ArrayKey,
   AsKey,
   AsKeyList,
+  EvaluateKey,
   EvaluateKeyList,
   IsTuple,
   JoinKeyList,
@@ -130,6 +131,30 @@ test('JoinKeyList should be implemented tail recursively', () => {
   expectTypesEqual<Expected, Actual>(true);
 });
 
+test('EvaluateKey should traverse an object', () => {
+  type Actual = EvaluateKey<{ foo: number; bar: string }, 'foo'>;
+  type Expected = number;
+  expectTypesEqual<Expected, Actual>(true);
+});
+
+test('EvaluateKey should traverse a tuple', () => {
+  type Actual = EvaluateKey<[boolean, string], '1'>;
+  type Expected = string;
+  expectTypesEqual<Expected, Actual>(true);
+});
+
+test('EvaluateKey should traverse an array', () => {
+  type Actual = EvaluateKey<boolean[], '42'>;
+  type Expected = boolean;
+  expectTypesEqual<Expected, Actual>(true);
+});
+
+test('EvaluateKey should evaluate to never if the key is not valid', () => {
+  type Actual = EvaluateKey<{ foo: string }, 'foobar'>;
+  type Expected = never;
+  expectTypesEqual<Expected, Actual>(true);
+});
+
 test('EvaluateKeyList should traverse an object', () => {
   type Actual = EvaluateKeyList<InfiniteType<number>, ['foo', 'foo', 'value']>;
   type Expected = number;
@@ -138,6 +163,12 @@ test('EvaluateKeyList should traverse an object', () => {
 
 test('EvaluateKeyList should traverse a tuple', () => {
   type Actual = EvaluateKeyList<InfiniteType<boolean>, ['bar', '0', 'value']>;
+  type Expected = boolean;
+  expectTypesEqual<Expected, Actual>(true);
+});
+
+test('EvaluateKeyList should traverse an array', () => {
+  type Actual = EvaluateKeyList<InfiniteType<boolean>, ['baz', '42', 'value']>;
   type Expected = boolean;
   expectTypesEqual<Expected, Actual>(true);
 });
