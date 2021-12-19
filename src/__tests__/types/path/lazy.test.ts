@@ -6,7 +6,7 @@ import {
   SuggestPath,
   ValidKeyListPrefix,
 } from '../../../types/path/lazy';
-import { expectTypesEqual, InfiniteType } from '../__fixtures__';
+import { expectTypesEqual, HundredTuple, InfiniteType } from '../__fixtures__';
 
 describe('Keys', () => {
   it('should return the keys of an object', () => {
@@ -56,6 +56,12 @@ describe('ValidKeyListPrefix', () => {
   it('should return an empty tuple when the path is an empty tuple', () => {
     type Actual = ValidKeyListPrefix<InfiniteType<string>, []>;
     type Expected = [];
+    expectTypesEqual<Actual, Expected>(true);
+  });
+
+  it('should be implemented tail recursively', () => {
+    type Actual = ValidKeyListPrefix<InfiniteType<string>, HundredTuple<'foo'>>;
+    type Expected = HundredTuple<'foo'>;
     expectTypesEqual<Actual, Expected>(true);
   });
 });
