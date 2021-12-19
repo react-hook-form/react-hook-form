@@ -16,7 +16,7 @@ Here is a quick guide to doing code contributions to the library.
 	
 4. If you've added a code that should be tested, ensure the test suite still passes.
 
-	> yarn test
+	> yarn test && yarn tsd
 	
 5. Try to write some unit tests to cover as much of your code as possible.
 
