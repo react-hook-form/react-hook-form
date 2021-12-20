@@ -137,7 +137,7 @@ export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
  * EvaluateKey<[number, string], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = K extends keyof T
+export type EvaluateKey<T, K extends Key> = [K] extends [keyof T]
   ? T[K]
   : K extends `${ArrayKey}`
   ? T extends ReadonlyArray<infer V>
@@ -157,9 +157,8 @@ export type EvaluateKey<T, K extends Key> = K extends keyof T
  * EvaluateKeyList<number, ['foo']> = never
  * ```
  */
-export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
-  infer K,
-  ...infer R
+export type EvaluateKeyList<T, KL extends KeyList> = [KL] extends [
+  [infer K, ...infer R],
 ]
   ? EvaluateKeyList<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
   : T;

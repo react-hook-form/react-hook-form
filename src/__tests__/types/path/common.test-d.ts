@@ -17,6 +17,7 @@ import {
   HundredPathString,
   HundredTuple,
   InfiniteType,
+  Nested,
 } from '../__fixtures__';
 
 /** {@link IsTuple} */ {
@@ -104,6 +105,11 @@ import {
     const actual = _ as SplitPathString<HundredPathString<'foo'>>;
     expectType<HundredTuple<'foo'>>(actual);
   }
+
+  /** it should work on unions */ {
+    const actual = _ as SplitPathString<'foo.bar' | 'bar.foo'>;
+    expectType<['foo', 'bar'] | ['bar', 'foo']>(actual);
+  }
 }
 
 /** {@link JoinKeyList} */ {
@@ -126,6 +132,11 @@ import {
     const actual = _ as JoinKeyList<HundredTuple<'foo'>>;
     expectType<HundredPathString<'foo'>>(actual);
   }
+
+  /** it should work on unions */ {
+    const actual = _ as JoinKeyList<['foo', 'bar'] | ['bar', 'foo']>;
+    expectType<'foo.bar' | 'bar.foo'>(actual);
+  }
 }
 
 /** {@link EvaluateKey} */ {
@@ -146,6 +157,29 @@ import {
 
   /** it should evaluate to never if the key is not valid */ {
     const actual = _ as EvaluateKey<{ foo: string }, 'foobar'>;
+    expectType<never>(actual);
+  }
+
+  /** it should work on path unions */ {
+    const actual = _ as EvaluateKey<
+      { foo: number; bar: string },
+      'foo' | 'bar'
+    >;
+    expectType<number | string>(actual);
+  }
+
+  /** it should evaluate to never if one of the keys doesn't exist */ {
+    const actual = _ as EvaluateKey<{ foo: number }, 'foo' | 'bar'>;
+    expectType<never>(actual);
+  }
+
+  /** it should work on type unions */ {
+    const actual = _ as EvaluateKey<{ foo: number } | { foo: string }, 'foo'>;
+    expectType<number | string>(actual);
+  }
+
+  /** it should evaluate to never if the key doesn't exist in one of the types */ {
+    const actual = _ as EvaluateKey<{ foo: number } | { bar: string }, 'foo'>;
     expectType<never>(actual);
   }
 }
@@ -186,5 +220,37 @@ import {
       HundredTuple<'foo'>
     >;
     expectType<InfiniteType<string>>(actual);
+  }
+
+  /** it should work on path unions */ {
+    const actual = _ as EvaluateKeyList<
+      InfiniteType<number>,
+      ['foo', 'foo'] | ['foo', 'value']
+    >;
+    expectType<number | InfiniteType<number>>(actual);
+  }
+
+  /** it should evaluate to never if one of the paths doesn't exist */ {
+    const actual = _ as EvaluateKeyList<
+      InfiniteType<number>,
+      ['foo', 'foo'] | ['foo', 'foobar']
+    >;
+    expectType<never>(actual);
+  }
+
+  /** it should work on type unions */ {
+    const actual = _ as EvaluateKeyList<
+      InfiniteType<number> | InfiniteType<string>,
+      ['foo', 'value']
+    >;
+    expectType<number | string>(actual);
+  }
+
+  /** it should evaluate to never if the path doesn't exist in one of the types */ {
+    const actual = _ as EvaluateKeyList<
+      InfiniteType<number> | Nested<string>,
+      ['foo', 'value']
+    >;
+    expectType<never>(actual);
   }
 }
