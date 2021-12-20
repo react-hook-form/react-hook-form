@@ -160,6 +160,11 @@ import {
     expectType<never>(actual);
   }
 
+  /** it should evaluate to never if the key is out of bounds */ {
+    const actual = _ as EvaluateKey<[string], '1'>;
+    expectType<never>(actual);
+  }
+
   /** it should work on path unions */ {
     const actual = _ as EvaluateKey<
       { foo: number; bar: string },
@@ -180,6 +185,11 @@ import {
 
   /** it should evaluate to never if the key doesn't exist in one of the types */ {
     const actual = _ as EvaluateKey<{ foo: number } | { bar: string }, 'foo'>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to never if the key is out of bounds in one of the types */ {
+    const actual = _ as EvaluateKey<[] | [number], '0'>;
     expectType<never>(actual);
   }
 }
@@ -233,7 +243,7 @@ import {
   /** it should evaluate to never if one of the paths doesn't exist */ {
     const actual = _ as EvaluateKeyList<
       InfiniteType<number>,
-      ['foo', 'foo'] | ['foo', 'foobar']
+      ['foo', 'value'] | ['foo', 'foobar']
     >;
     expectType<never>(actual);
   }

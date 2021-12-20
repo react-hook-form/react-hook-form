@@ -137,12 +137,14 @@ export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
  * EvaluateKey<[number, string], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = [K] extends [keyof T]
+export type EvaluateKey<T, K extends Key> = [T] extends [ReadonlyArray<any>]
+  ? IsTuple<T> extends true
+    ? [K] extends [keyof T]
+      ? T[K]
+      : never
+    : T[number]
+  : [K] extends [keyof T]
   ? T[K]
-  : K extends `${ArrayKey}`
-  ? T extends ReadonlyArray<infer V>
-    ? V
-    : never
   : never;
 
 /**
