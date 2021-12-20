@@ -71,13 +71,24 @@ export type KeyList = Key[];
 export type AsKeyList<T> = Extract<T, KeyList>;
 
 /**
+ * Type to implement {@link SplitPathString} tail recursively.
+ * @typeParam PS - remaining {@link PathString} which should be split into its
+ *                 individual {@link Key}s
+ * @typeParam KL - accumulator of the {@link Key}s which have been split from
+ *                 the original {@link PathString} already
+ */
+type SplitPathStringImpl<
+  PS extends PathString,
+  KL extends KeyList,
+> = PS extends `${infer K}.${infer R}`
+  ? SplitPathStringImpl<R, [...KL, K]>
+  : [...KL, PS];
+
+/**
  * Type to split a {@link PathString} into a {@link KeyList}.
  * The individual {@link Key}s may be empty strings.
  * @typeParam PS  - {@link PathString} which should be split into its
  *                  individual {@link Key}s
- * @typeParam _KL - implementation detail to enable tail call optimisation;
- *                  accumulates the {@link Key}s which have been split from
- *                  the {@link PathString}
  * @example
  * ```
  * SplitPathString<'foo'> = ['foo']
@@ -85,12 +96,10 @@ export type AsKeyList<T> = Extract<T, KeyList>;
  * SplitPathString<'.'> = ['', '']
  * ```
  */
-export type SplitPathString<
-  PS extends PathString,
-  _KL extends KeyList = [],
-> = PS extends `${infer K}.${infer R}`
-  ? SplitPathString<R, [..._KL, K]>
-  : [..._KL, PS];
+export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
+  PS,
+  []
+>;
 
 /**
  * Type to implement {@link JoinKeyList} tail-recursively.

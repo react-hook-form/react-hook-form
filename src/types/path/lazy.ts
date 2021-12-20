@@ -7,6 +7,7 @@ import {
   EvaluateKeyList,
   IsTuple,
   JoinKeyList,
+  Key,
   KeyList,
   PathString,
   SplitPathString,
@@ -58,32 +59,42 @@ export type Keys<T, U = unknown> = T extends Traversable
   : never;
 
 /**
+ * Type to implement {@link ValidKeyListPrefix} tail recursively.
+ * @typeParam T   - type which the path should be checked against
+ * @typeParam KL  - path which should exist within the given type
+ * @typeParam VKL - accumulates the prefix of {@link Key}s which have been
+ *                  confirmed to exist already
+ */
+type ValidKeyListPrefixImpl<
+  T,
+  KL extends KeyList,
+  VKL extends KeyList,
+> = KL extends [infer K, ...infer R]
+  ? K extends Keys<T>
+    ? ValidKeyListPrefixImpl<
+        EvaluateKey<T, K>,
+        AsKeyList<R>,
+        AsKeyList<[...VKL, K]>
+      >
+    : VKL
+  : VKL;
+
+/**
  * Type to find the longest path prefix which is still valid,
  * i.e. exists within the given type.
- * @typeParam T    - type which the path should be checked against
- * @typeParam KL   - path which should exist within the given type
- * @typeParam _VKL - implementation detail to enable tail call optimisation;
- *                   accumulates the {@link Key}s which have been confirmed to
- *                   exist the given type
+ * @typeParam T  - type which the path should be checked against
+ * @typeParam KL - path which should exist within the given type
  * @example
  * ```
  * ValidKeyListPrefix<{foo: {bar: string}}, ['foo', 'bar']> = ['foo', 'bar']
  * ValidKeyListPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
  * ```
  */
-export type ValidKeyListPrefix<
+export type ValidKeyListPrefix<T, KL extends KeyList> = ValidKeyListPrefixImpl<
   T,
-  KL extends KeyList,
-  _VKL extends KeyList = [],
-> = KL extends [infer K, ...infer R]
-  ? K extends Keys<T>
-    ? ValidKeyListPrefix<
-        EvaluateKey<T, K>,
-        AsKeyList<R>,
-        AsKeyList<[..._VKL, K]>
-      >
-    : _VKL
-  : _VKL;
+  KL,
+  []
+>;
 
 /**
  * Type to drop the last element from a tuple type
@@ -116,6 +127,18 @@ export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
 >;
 
 /**
+ * Type to implement {@link SuggestChildPaths} without having to compute the
+ * keys more than once.
+ * @typeParam KL - the current path into the type as a {@link KeyList}
+ * @typeParam K  - the possible keys at that path
+ */
+type SuggestChildPathsImpl<KL extends KeyList, K extends Key> = [K] extends [
+  never,
+]
+  ? never
+  : JoinKeyList<AsKeyList<[...KL, K]>>;
+
+/**
  * Type, which given a type and a path into the type, returns all paths as
  * {@link PathString}s which can be used to index the type at that path.
  * Filters out paths whose value doesn't match the constraint type or
@@ -123,8 +146,6 @@ export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
  * @typeParam T  - type which is indexed by the path
  * @typeParam KL - the current path into the type as a {@link KeyList}
  * @typeParam U  - constraint type
- * @typeParam _K - implementation detail to evaluate the intermediate type only
- *                 once
  * @example
  * ```
  * SuggestChildPaths<{foo: string, bar: string}, [], string> = 'foo' | 'bar'
@@ -133,12 +154,26 @@ export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
  * SuggestChildPaths<{foo: {bar: string[]}}, ['foo'], string> = 'foo.bar'
  * ```
  */
-export type SuggestChildPaths<
-  T,
-  KL extends KeyList,
-  U,
-  _K = Keys<EvaluateKeyList<T, KL>, U | Traversable>,
-> = [_K] extends [never] ? never : JoinKeyList<AsKeyList<[...KL, _K]>>;
+export type SuggestChildPaths<T, KL extends KeyList, U> = SuggestChildPathsImpl<
+  KL,
+  Keys<EvaluateKeyList<T, KL>, U | Traversable>
+>;
+
+/**
+ * Type to implement {@link SuggestPaths} without having to compute the valid
+ * path prefix more than once.
+ * @typeParam T    - type which is indexed by the path
+ * @typeParam KL   - the current path into the type as a {@link KeyList}
+ * @typeParam U    - constraint type
+ * @typeParam VKLP - the valid path prefix for the given path
+ */
+type SuggestPathsImpl<T, KL extends KeyList, U, VKLP extends KeyList> =
+  | SuggestChildPaths<T, VKLP, U>
+  | (KL extends VKLP
+      ?
+          | SuggestParentPath<VKLP>
+          | (EvaluateKeyList<T, VKLP> extends U ? JoinKeyList<VKLP> : never)
+      : JoinKeyList<VKLP>);
 
 /**
  * Type which given a type and a {@link KeyList} into it returns
@@ -152,10 +187,6 @@ export type SuggestChildPaths<
  * @typeParam T     - type which is indexed by the path
  * @typeParam KL    - the current path into the type as a {@link KeyList}
  * @typeParam U     - constraint type
- * @typeParam _VKLP - implementation detail to evaluate the intermediate type
- *                    only once
- * @typeParam _VPS  - implementation detail to evaluate the intermediate type
- *                    only once
  * @example
  * ```
  * SuggestPaths<{foo: {bar: string}}, ['foo'], string> = 'foo.bar'
@@ -167,19 +198,12 @@ export type SuggestChildPaths<
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type SuggestPaths<
+export type SuggestPaths<T, KL extends KeyList, U> = SuggestPathsImpl<
   T,
-  KL extends KeyList,
+  KL,
   U,
-  _VKLP extends KeyList = ValidKeyListPrefix<T, KL>,
-  _VPS extends PathString = JoinKeyList<_VKLP>,
-> =
-  | SuggestChildPaths<T, _VKLP, U>
-  | (KL extends _VKLP
-      ?
-          | SuggestParentPath<_VKLP>
-          | (EvaluateKeyList<T, _VKLP> extends U ? _VPS : never)
-      : _VPS);
+  ValidKeyListPrefix<T, KL>
+>;
 
 /**
  * Type which wraps {@link SuggestPaths} to enable type inference at
