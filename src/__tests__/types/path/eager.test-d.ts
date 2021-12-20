@@ -26,18 +26,20 @@ import { _, Depth3Type } from '../__fixtures__';
 }
 
 /** {@link ArrayPath} */ {
-  /** it should evaluate to all paths to an array */ {
-    const actual = _ as ArrayPath<{ foo: { bar: string[]; baz: string[] } }>;
-    expectType<'foo.bar' | 'foo.baz'>(actual);
+  /** it should evaluate to all paths pointing to a non-primitive array */ {
+    const actual = _ as ArrayPath<{
+      foo: Array<{ bar: string[]; baz: string[] }>;
+    }>;
+    expectType<'foo'>(actual);
   }
 
   /** it should include paths through tuples */ {
-    const actual = _ as ArrayPath<{ foo: [string[], number[]] }>;
+    const actual = _ as ArrayPath<{ foo: [object[], object[]] }>;
     expectType<'foo' | 'foo.0' | 'foo.1'>(actual);
   }
 
   /** it should include paths through arrays */ {
-    const actual = _ as ArrayPath<{ foo: string[][] }>;
+    const actual = _ as ArrayPath<{ foo: string[][][] }>;
     expectType<'foo' | `foo.${number}`>(actual);
   }
 }
