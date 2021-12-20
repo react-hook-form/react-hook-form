@@ -7,7 +7,6 @@ import {
   EvaluateKeyList,
   IsTuple,
   JoinKeyList,
-  Key,
   KeyList,
   PathString,
   SplitPathString,
@@ -127,18 +126,6 @@ export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
 >;
 
 /**
- * Type to implement {@link SuggestChildPaths} without having to compute the
- * keys more than once.
- * @typeParam KL - the current path into the type as a {@link KeyList}
- * @typeParam K  - the possible keys at that path
- */
-type SuggestChildPathsImpl<KL extends KeyList, K extends Key> = [K] extends [
-  never,
-]
-  ? never
-  : JoinKeyList<AsKeyList<[...KL, K]>>;
-
-/**
  * Type, which given a type and a path into the type, returns all paths as
  * {@link PathString}s which can be used to index the type at that path.
  * Filters out paths whose value doesn't match the constraint type or
@@ -154,9 +141,8 @@ type SuggestChildPathsImpl<KL extends KeyList, K extends Key> = [K] extends [
  * SuggestChildPaths<{foo: {bar: string[]}}, ['foo'], string> = 'foo.bar'
  * ```
  */
-export type SuggestChildPaths<T, KL extends KeyList, U> = SuggestChildPathsImpl<
-  KL,
-  Keys<EvaluateKeyList<T, KL>, U | Traversable>
+export type SuggestChildPaths<T, KL extends KeyList, U> = JoinKeyList<
+  [...KL, Keys<EvaluateKeyList<T, KL>, U | Traversable>]
 >;
 
 /**
