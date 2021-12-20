@@ -126,6 +126,16 @@ export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
 >;
 
 /**
+ * Type to implement {@link SuggestChildPaths}.
+ * @typeParam KL  - the current path as a {@link KeyList}
+ * @typeParam TKL - the type at that path
+ * @typeParam U   - constraint type
+ */
+type SuggestChildPathsImpl<KL extends KeyList, TKL, U> = JoinKeyList<
+  [...KL, Keys<TKL, U | Traversable>]
+>;
+
+/**
  * Type, which given a type and a path into the type, returns all paths as
  * {@link PathString}s which can be used to index the type at that path.
  * Filters out paths whose value doesn't match the constraint type or
@@ -141,8 +151,10 @@ export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
  * SuggestChildPaths<{foo: {bar: string[]}}, ['foo'], string> = 'foo.bar'
  * ```
  */
-export type SuggestChildPaths<T, KL extends KeyList, U> = JoinKeyList<
-  [...KL, Keys<EvaluateKeyList<T, KL>, U | Traversable>]
+export type SuggestChildPaths<T, KL extends KeyList, U> = SuggestChildPathsImpl<
+  KL,
+  EvaluateKeyList<T, KL>,
+  U
 >;
 
 /**
