@@ -192,6 +192,11 @@ import {
     const actual = _ as EvaluateKey<[] | [number], '0'>;
     expectType<never>(actual);
   }
+
+  /** it should evaluate to any if the type is any */ {
+    const actual = _ as EvaluateKey<any, string>;
+    expectType<any>(actual);
+  }
 }
 
 /** {@link EvaluateKeyList} */ {
@@ -262,5 +267,10 @@ import {
       ['foo', 'value']
     >;
     expectType<never>(actual);
+  }
+
+  /** it should evaluate to any if the type is any */ {
+    const actual = _ as EvaluateKeyList<any, [string]>;
+    expectType<any>(actual);
   }
 }

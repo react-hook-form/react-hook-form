@@ -2,6 +2,8 @@
  * Type alias to `string` which describes a lodash-like path through an object.
  * E.g. `'foo.bar.0.baz'`
  */
+import { IsAny } from '../utils';
+
 export type PathString = string;
 
 /**
@@ -166,7 +168,11 @@ type NeverToken = { [NEVER_TOKEN]: never };
  * CheckNever<number | NeverToken> = never
  * ```
  */
-type CheckNever<T> = NeverToken extends T ? never : T;
+type CheckNever<T> = IsAny<T> extends true
+  ? T
+  : NeverToken extends T
+  ? never
+  : T;
 
 /**
  * Type to implement {@link EvaluateKeyList}.
