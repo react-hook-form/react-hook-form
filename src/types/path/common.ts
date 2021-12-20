@@ -148,6 +148,39 @@ export type EvaluateKey<T, K extends Key> = [T] extends [ReadonlyArray<any>]
   : never;
 
 /**
+ * Unique symbol for {@link NeverToken}
+ */
+declare const NEVER_TOKEN: unique symbol;
+
+/**
+ * Type to mark unions which contain never.
+ */
+type NeverToken = { [NEVER_TOKEN]: never };
+
+/**
+ * Type which evaluates to never if a {@link NeverToken} is port of the type.
+ * @typeParam T - type which may contain a {@link NeverToken}
+ * @example
+ * ```
+ * CheckNever<number> = number
+ * CheckNever<number | NeverToken> = never
+ * ```
+ */
+type CheckNever<T> = NeverToken extends T ? never : T;
+
+/**
+ * Type to implement {@link EvaluateKeyList}.
+ * Replaces never with {@link NeverToken}s to handle never correctly for unions.
+ * @typeParam T  - deeply nested type which is indexed by the path
+ * @typeParam KL - path into the deeply nested type
+ */
+type EvaluateKeyListImpl<T, KL extends KeyList> = [T] extends [never]
+  ? NeverToken
+  : KL extends [infer K, ...infer R]
+  ? EvaluateKeyListImpl<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
+  : T;
+
+/**
  * Type to evaluate the type which the given path points to.
  * @typeParam T  - deeply nested type which is indexed by the path
  * @typeParam KL - path into the deeply nested type
@@ -159,8 +192,6 @@ export type EvaluateKey<T, K extends Key> = [T] extends [ReadonlyArray<any>]
  * EvaluateKeyList<number, ['foo']> = never
  * ```
  */
-export type EvaluateKeyList<T, KL extends KeyList> = [KL] extends [
-  [infer K, ...infer R],
-]
-  ? EvaluateKeyList<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
-  : T;
+export type EvaluateKeyList<T, KL extends KeyList> = CheckNever<
+  EvaluateKeyListImpl<T, KL>
+>;
