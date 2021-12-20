@@ -4,3 +4,7 @@ export interface InfiniteType<T> {
   baz: Array<InfiniteType<T>>;
   value: T;
 }
+
+export interface Nested<T> {
+  nested: T;
+}

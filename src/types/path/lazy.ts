@@ -141,7 +141,7 @@ export type SuggestChildPaths<
 > = [_K] extends [never] ? never : JoinKeyList<AsKeyList<[...KL, _K]>>;
 
 /**
- * Type which given a type and a {@link PathString} into returns
+ * Type which given a type and a {@link KeyList} into it returns
  *  - its parent/predecessor {@link PathString}
  *  - the {@link PathString} itself, if it exists within the type,
  *    and the type, that it points to, matches the constraint type
@@ -150,7 +150,7 @@ export type SuggestChildPaths<
  * In case the path does not exist it returns all of the above for the last
  * valid path (see {@link ValidKeyListPrefix}).
  * @typeParam T     - type which is indexed by the path
- * @typeParam PS    - the current path into the type as a {@link PathString}
+ * @typeParam KL    - the current path into the type as a {@link KeyList}
  * @typeParam U     - constraint type
  * @typeParam _VKLP - implementation detail to evaluate the intermediate type
  *                    only once
@@ -158,28 +158,54 @@ export type SuggestChildPaths<
  *                    only once
  * @example
  * ```
- * SuggestPath<{foo: {bar: string}}, 'foo', string> = 'foo.bar'
- * SuggestPath<{foo: {bar: string}}, 'foo.ba', string>
+ * SuggestPaths<{foo: {bar: string}}, ['foo'], string> = 'foo.bar'
+ * SuggestPaths<{foo: {bar: string}}, ['foo', 'ba'], string>
  *   = 'foo' | 'foo.bar'
- * SuggestPath<{foo: {bar: string}}, 'foo.bar', string>
+ * SuggestPaths<{foo: {bar: string}}, ['foo', 'bar'], string>
  *   = 'foo' | 'foo.bar'
- * SuggestPath<{foo: {bar: {baz: string}}}, 'foo.bar', string>
+ * SuggestPaths<{foo: {bar: {baz: string}}}, ['foo', 'bar'], string>
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type SuggestPath<
+export type SuggestPaths<
   T,
-  PS extends PathString,
+  KL extends KeyList,
   U,
-  _VKLP extends KeyList = ValidKeyListPrefix<T, SplitPathString<PS>>,
+  _VKLP extends KeyList = ValidKeyListPrefix<T, KL>,
   _VPS extends PathString = JoinKeyList<_VKLP>,
 > =
   | SuggestChildPaths<T, _VKLP, U>
-  | (PS extends _VPS
+  | (KL extends _VKLP
       ?
           | SuggestParentPath<_VKLP>
-          | (EvaluateKeyList<T, _VKLP> extends U ? PS : never)
+          | (EvaluateKeyList<T, _VKLP> extends U ? _VPS : never)
       : _VPS);
+
+/**
+ * Type which wraps {@link SuggestPaths} to enable type inference at
+ * function call sites. Splits the {@link PathString} before passing it to
+ * {@link SuggestPaths}.
+ * @typeParam T  - type which is indexed by the path
+ * @typeParam PS - the current path into the type as a {@link PathString}
+ * @typeParam U  - constraint type
+ * @example
+ * ```
+ * AutoCompletePath<{foo: {bar: string}}, 'foo', string> = 'foo.bar'
+ * AutoCompletePath<{foo: {bar: string}}, 'foo.ba', string>
+ *   = 'foo' | 'foo.bar'
+ * AutoCompletePath<{foo: {bar: string}}, 'foo.bar', string>
+ *   = 'foo' | 'foo.bar'
+ * AutoCompletePath<{foo: {bar: {baz: string}}}, 'foo.bar', string>
+ *   = 'foo' | 'foo.bar.baz'
+ * ```
+ */
+export type AutoCompletePath<
+  T,
+  PS extends PathString,
+  U,
+> = PS extends SuggestPaths<T, SplitPathString<PS>, U>
+  ? PS | SuggestPaths<T, SplitPathString<PS>, U>
+  : SuggestPaths<T, SplitPathString<PS>, U>;
 
 /**
  * Type which given a type and a {@link PathString} into returns
@@ -200,7 +226,7 @@ export type SuggestPath<
  *   = 'foo' | 'foo.bar' | 'foo.bar.baz'
  * ```
  */
-export type LazyPath<T, TPathString extends PathString> = SuggestPath<
+export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
   TPathString,
   unknown
@@ -236,7 +262,7 @@ export type LazyFieldPath<
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type LazyArrayPath<T, TPathString extends PathString> = SuggestPath<
+export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
   TPathString,
   ReadonlyArray<any>

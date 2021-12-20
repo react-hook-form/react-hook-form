@@ -1,14 +1,16 @@
 import { expectType } from 'tsd';
 
+import { PathString } from '../../../types';
 import {
+  AutoCompletePath,
   DropLastElement,
   Keys,
   SuggestChildPaths,
   SuggestParentPath,
-  SuggestPath,
+  SuggestPaths,
   ValidKeyListPrefix,
 } from '../../../types/path/lazy';
-import { _, HundredTuple, InfiniteType } from '../__fixtures__';
+import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link Keys} */ {
   /** it should return the keys of an object */ {
@@ -122,40 +124,84 @@ import { _, HundredTuple, InfiniteType } from '../__fixtures__';
   }
 }
 
-/** {@link SuggestPath} */ {
-  /** it should suggest all top level paths when the path string is empty */ {
-    type Actual = SuggestPath<InfiniteType<string>, '', unknown>;
+/** {@link SuggestPaths} */
+{
+  /** it should suggest all top level paths when the path is empty */
+  {
+    type Actual = SuggestPaths<InfiniteType<string>, [], unknown>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(_ as Actual);
   }
 
-  /** it should not suggest the current path if it is invalid */ {
-    type Actual = SuggestPath<InfiniteType<string>, 'foo.foobar', unknown>;
+  /** it should not suggest the current path if it is invalid */
+  {
+    type Actual = SuggestPaths<
+      InfiniteType<string>,
+      ['foo', 'foobar'],
+      unknown
+    >;
     expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
       _ as Actual,
     );
   }
 
-  /** it should suggest the current path if it is valid */ {
-    type Actual = SuggestPath<InfiniteType<string>, 'foo', unknown>;
+  /** it should suggest the current path if it is valid */
+  {
+    type Actual = SuggestPaths<InfiniteType<string>, ['foo'], unknown>;
     expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
       _ as Actual,
     );
   }
 
-  /** it should suggest the current path and the parent path */ {
-    type Actual = SuggestPath<InfiniteType<string>, 'foo.value', unknown>;
+  /** it should suggest the current path and the parent path */
+  {
+    type Actual = SuggestPaths<InfiniteType<string>, ['foo', 'value'], unknown>;
     expectType<'foo' | 'foo.value'>(_ as Actual);
   }
 
-  /** it should not suggest the current path if it has the wrong value */ {
-    type Actual = SuggestPath<InfiniteType<string>, 'foo.value', number>;
+  /** it should not suggest the current path if it has the wrong value */
+  {
+    type Actual = SuggestPaths<InfiniteType<string>, ['foo', 'value'], number>;
     expectType<'foo'>(_ as Actual);
   }
 
-  /** it should not suggest paths which point to the wrong type */ {
-    type Actual = SuggestPath<InfiniteType<string>, 'foo.foo', number>;
+  /** it should not suggest paths which point to the wrong type */
+  {
+    type Actual = SuggestPaths<InfiniteType<string>, ['foo', 'foo'], number>;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(
       _ as Actual,
     );
+  }
+}
+
+/** {@link AutoCompletePath} */ {
+  /** TS should be able to infer the generic */ {
+    const fn = <P extends PathString>(
+      path: AutoCompletePath<InfiniteType<string>, P, unknown>,
+    ) => path;
+
+    const actual = fn('foo.bar');
+    expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
+  }
+
+  /** TS should be able to infer the generic from an object property */ {
+    interface FnProps<P extends PathString> {
+      path: AutoCompletePath<InfiniteType<string>, P, unknown>;
+    }
+    const fn = <P extends PathString>({ path }: FnProps<P>) => path;
+
+    const actual = fn({ path: 'foo.bar' });
+    expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
+  }
+
+  /** TS should be able to infer the generic from a nested object property */ {
+    interface FnProps<P extends PathString> {
+      path: AutoCompletePath<InfiniteType<string>, P, unknown>;
+    }
+    const fn = <P extends PathString>({
+      nested: { path },
+    }: Nested<FnProps<P>>) => path;
+
+    const actual = fn({ nested: { path: 'foo.bar' } });
+    expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
   }
 }
