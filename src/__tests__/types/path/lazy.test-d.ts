@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { PathString } from '../../../types';
+import { LazyArrayPath, PathString } from '../../../types';
 import {
   AutoCompletePath,
   DropLastElement,
@@ -265,6 +265,28 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
     }: Nested<FnProps<P>>) => path;
 
     const actual = fn({ nested: { path: 'foo.bar' } });
+    expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
+  }
+}
+
+/** {@link LazyArrayPath} */ {
+  /** it should not accept primitive arrays */ {
+    const actual = _ as LazyArrayPath<InfiniteType<number[]>, 'foo.value'>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should accept non-primitive arrays */ {
+    const actual = _ as LazyArrayPath<InfiniteType<number[]>, 'foo.baz'>;
+    expectType<'foo' | 'foo.baz' | `foo.baz.${number}`>(actual);
+  }
+
+  /** it should not accept primitive tuples */ {
+    const actual = _ as LazyArrayPath<InfiniteType<[number]>, 'foo.value'>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should accept non-primitive tuples */ {
+    const actual = _ as LazyArrayPath<InfiniteType<number[]>, 'foo.bar'>;
     expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
   }
 }
