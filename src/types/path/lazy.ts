@@ -169,17 +169,11 @@ export type SuggestChildPaths<T, KL extends KeyList, U> = SuggestChildPathsImpl<
  */
 type SuggestPathsImpl<T, KL extends KeyList, U, VKLP extends KeyList> =
   | SuggestChildPaths<T, VKLP, U>
-  | (KL extends VKLP
-      ?
-          | SuggestParentPath<VKLP>
-          | (EvaluateKeyList<T, VKLP> extends U ? JoinKeyList<VKLP> : never)
-      : JoinKeyList<VKLP>);
+  | (KL extends VKLP ? SuggestParentPath<VKLP> : JoinKeyList<VKLP>);
 
 /**
  * Type which given a type and a {@link KeyList} into it returns
  *  - its parent/predecessor {@link PathString}
- *  - the {@link PathString} itself, if it exists within the type,
- *    and the type, that it points to, matches the constraint type
  *  - all its child/successor paths that point to a type which is either
  *    traversable or matches the constraint type.
  * In case the path does not exist it returns all of the above for the last
@@ -193,7 +187,7 @@ type SuggestPathsImpl<T, KL extends KeyList, U, VKLP extends KeyList> =
  * SuggestPaths<{foo: {bar: string}}, ['foo', 'ba'], string>
  *   = 'foo' | 'foo.bar'
  * SuggestPaths<{foo: {bar: string}}, ['foo', 'bar'], string>
- *   = 'foo' | 'foo.bar'
+ *   = 'foo'
  * SuggestPaths<{foo: {bar: {baz: string}}}, ['foo', 'bar'], string>
  *   = 'foo' | 'foo.bar.baz'
  * ```
@@ -206,9 +200,26 @@ export type SuggestPaths<T, KL extends KeyList, U> = SuggestPathsImpl<
 >;
 
 /**
- * Type which wraps {@link SuggestPaths} to enable type inference at
- * function call sites. Splits the {@link PathString} before passing it to
- * {@link SuggestPaths}.
+ * Type to implement {@link AutoCompletePath} without having to compute the
+ * type which the path points to more than once.
+ * @typeParam T  - type which is indexed by the path
+ * @typeParam PS - the current path into the type as a {@link PathString}
+ * @typeParam U  - constraint type
+ * @typeParam PV - the type at the given path
+ */
+type AutoCompletePathImpl<T, PS extends PathString, U, PV> =
+  | SuggestPaths<T, SplitPathString<PS>, U>
+  | (PV extends U ? PS : never);
+
+/**
+ * Type which given a type and a {@link PathString} into it returns
+ *  - its parent/predecessor {@link PathString}
+ *  - the {@link PathString} itself, if it exists within the type and matches
+ *    the constraint type
+ *  - all its child/successor paths that point to a type which is either
+ *    traversable or matches the constraint type
+ * In case the path does not exist it returns all of the above for the last
+ * valid path.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
  * @typeParam U  - constraint type
@@ -227,17 +238,15 @@ export type AutoCompletePath<
   T,
   PS extends PathString,
   U,
-> = PS extends SuggestPaths<T, SplitPathString<PS>, U>
-  ? PS | SuggestPaths<T, SplitPathString<PS>, U>
-  : SuggestPaths<T, SplitPathString<PS>, U>;
+> = AutoCompletePathImpl<T, PS, U, EvaluateKeyList<T, SplitPathString<PS>>>;
 
 /**
- * Type which given a type and a {@link PathString} into returns
+ * Type which given a type and a {@link PathString} into it returns
  *  - its parent/predecessor {@link PathString}
  *  - the {@link PathString} itself, if it exists within the type
  *  - all its child/successor paths that point to a type which is traversable
  * In case the path does not exist it returns all of the above for the last
- * valid path (see {@link ValidKeyListPrefix}).
+ * valid path.
  * @typeParam T           - type which is indexed by the path
  * @typeParam TPathString - the current path into the type as a
  *                          {@link PathString}
@@ -265,14 +274,14 @@ export type LazyFieldPath<
 > = LazyPath<TFieldValues, TPathString>;
 
 /**
- * Type which given a type and a {@link PathString} into returns
+ * Type which given a type and a {@link PathString} into it returns
  *  - its parent/predecessor {@link PathString}
  *  - the {@link PathString} itself, if it exists within the type,
  *    and the type, that it points to, is an array type
  *  - all its child/successor paths that point to a type which is either
  *    traversable or is an array type.
  * In case the path does not exist it returns all of the above for the last
- * valid path (see {@link ValidKeyListPrefix}).
+ * valid path.
  * @typeParam T           - type which is indexed by the path
  * @typeParam TPathString - the current path into the type as a
  *                          {@link PathString}

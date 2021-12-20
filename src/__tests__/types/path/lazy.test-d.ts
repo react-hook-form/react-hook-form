@@ -126,46 +126,27 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link SuggestPaths} */
 {
-  /** it should suggest all top level paths when the path is empty */
-  {
+  /** it should suggest all top level paths when the path is empty */ {
     type Actual = SuggestPaths<InfiniteType<string>, [], unknown>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(_ as Actual);
   }
 
-  /** it should not suggest the current path if it is invalid */
-  {
-    type Actual = SuggestPaths<
-      InfiniteType<string>,
-      ['foo', 'foobar'],
-      unknown
-    >;
-    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
-      _ as Actual,
-    );
+  /** it should suggest the sibling paths if the path is valid */ {
+    type Actual = SuggestPaths<InfiniteType<string>, ['fo'], unknown>;
+    expectType<'foo' | 'bar' | 'baz' | 'value'>(_ as Actual);
   }
 
-  /** it should suggest the current path if it is valid */
-  {
+  /** it should suggest the child paths if the path is valid */ {
     type Actual = SuggestPaths<InfiniteType<string>, ['foo'], unknown>;
-    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
-      _ as Actual,
-    );
+    expectType<'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(_ as Actual);
   }
 
-  /** it should suggest the current path and the parent path */
-  {
+  /** it should suggest the parent path */ {
     type Actual = SuggestPaths<InfiniteType<string>, ['foo', 'value'], unknown>;
-    expectType<'foo' | 'foo.value'>(_ as Actual);
-  }
-
-  /** it should not suggest the current path if it has the wrong value */
-  {
-    type Actual = SuggestPaths<InfiniteType<string>, ['foo', 'value'], number>;
     expectType<'foo'>(_ as Actual);
   }
 
-  /** it should not suggest paths which point to the wrong type */
-  {
+  /** it should not suggest paths which point to the wrong type */ {
     type Actual = SuggestPaths<InfiniteType<string>, ['foo', 'foo'], number>;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(
       _ as Actual,
@@ -174,6 +155,49 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 }
 
 /** {@link AutoCompletePath} */ {
+  /** it should suggest all top level paths when the path is empty */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, '', unknown>;
+    expectType<'foo' | 'bar' | 'baz' | 'value'>(_ as Actual);
+  }
+
+  /** it should not suggest the current path if it is invalid */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, 'foo.foobar', unknown>;
+    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
+      _ as Actual,
+    );
+  }
+
+  /** it should suggest the current path if it is valid */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, 'foo', unknown>;
+    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(
+      _ as Actual,
+    );
+  }
+
+  /** it should suggest the current path and the parent path */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, 'foo.value', unknown>;
+    expectType<'foo' | 'foo.value'>(_ as Actual);
+  }
+
+  /** it should not suggest the current path if it has the wrong value */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, 'foo.value', number>;
+    expectType<'foo'>(_ as Actual);
+  }
+
+  /** it should suggest paths which point to the correct type */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, 'foo.foo', string>;
+    expectType<
+      'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'
+    >(_ as Actual);
+  }
+
+  /** it should not suggest paths which point to the wrong type */ {
+    type Actual = AutoCompletePath<InfiniteType<string>, 'foo.foo', number>;
+    expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(
+      _ as Actual,
+    );
+  }
+
   /** TS should be able to infer the generic */ {
     const fn = <P extends PathString>(
       path: AutoCompletePath<InfiniteType<string>, P, unknown>,
