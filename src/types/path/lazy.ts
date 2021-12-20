@@ -5,14 +5,12 @@ import {
   AsKeyList,
   EvaluateKey,
   EvaluateKeyList,
-  IsTuple,
   JoinKeyList,
   KeyList,
   PathString,
   SplitPathString,
   ToKey,
   Traversable,
-  TupleKey,
 } from './common';
 
 /**
@@ -32,6 +30,19 @@ type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
   ? ToKey<K>
   : never;
 
+export type ContainsTuple<T> = (
+  T extends ReadonlyArray<any> ? (_: T['length']) => void : never
+) extends (_: infer I) => void
+  ? number extends I
+    ? false
+    : true
+  : false;
+
+export type ContainsTupleKey<T> = keyof {
+  [K in keyof T as ToKey<K>]-?: Extract<K, number | `${number}`>;
+} &
+  (T extends ReadonlyArray<any> ? Exclude<keyof T, keyof any[]> : never);
+
 /**
  * Type to find all properties of a type that match the constraint type
  * and return their keys. Converts the keys to {@link Key}s.
@@ -45,13 +56,15 @@ type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
  * Keys<string[], string> = `${number}`
  * ```
  */
-export type Keys<T, U = unknown> = T extends Traversable
-  ? T extends ReadonlyArray<any>
-    ? IsTuple<T> extends true
-      ? {
-          [K in TupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
-        }[TupleKey<T>]
-      : CheckKeyConstraint<T, ArrayKey, U>
+export type Keys<T, U = unknown> = [T] extends [Traversable]
+  ? ContainsTuple<T> extends true
+    ? {
+        [K in ContainsTupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
+      }[ContainsTupleKey<T>]
+    : any[] extends T
+    ? T extends ReadonlyArray<any>
+      ? CheckKeyConstraint<T, ArrayKey, U>
+      : CheckKeyConstraint<T, keyof T, U>
     : {
         [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
       }[keyof T]

@@ -32,6 +32,33 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
     const actual = _ as Keys<{ foo: string; bar: number }, string>;
     expectType<'foo'>(actual);
   }
+
+  /** it should return the overlapping keys of a union of objects */ {
+    const actual = _ as Keys<
+      { foo: string; bar: number } | { bar: number; baz: string }
+    >;
+    expectType<'bar'>(actual);
+  }
+
+  /** it should return the keys of the tuple when given a tuple and an array */ {
+    const actual = _ as Keys<number[] | [number]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return the overlapping keys when given a tuple and an object */ {
+    const actual = _ as Keys<{ 0: string; 1: number } | [number]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return the overlapping keys when given a tuple and an object */ {
+    const actual = _ as Keys<{ foo: string } | [number]>;
+    expectType<never>(actual);
+  }
+
+  /** it should return the numeric keys when given an array and an object */ {
+    const actual = _ as Keys<{ 0: string; foo: number } | number[]>;
+    expectType<'0'>(actual);
+  }
 }
 
 /** {@link ValidKeyListPrefix} */ {
