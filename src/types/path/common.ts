@@ -2,8 +2,6 @@
  * Type alias to `string` which describes a lodash-like path through an object.
  * E.g. `'foo.bar.0.baz'`
  */
-import { IsAny } from '../utils';
-
 export type PathString = string;
 
 /**
@@ -139,52 +137,15 @@ export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
  * EvaluateKey<[number, string], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = [T] extends [ReadonlyArray<any>]
+export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
-    ? [K] extends [keyof T]
+    ? K extends keyof T
       ? T[K]
-      : never
+      : undefined
     : T[number]
-  : [K] extends [keyof T]
+  : K extends keyof T
   ? T[K]
-  : never;
-
-/**
- * Unique symbol for {@link NeverToken}
- */
-declare const NEVER_TOKEN: unique symbol;
-
-/**
- * Type to mark unions which contain never.
- */
-type NeverToken = { [NEVER_TOKEN]: never };
-
-/**
- * Type which evaluates to never if a {@link NeverToken} is port of the type.
- * @typeParam T - type which may contain a {@link NeverToken}
- * @example
- * ```
- * CheckNever<number> = number
- * CheckNever<number | NeverToken> = never
- * ```
- */
-type CheckNever<T> = IsAny<T> extends true
-  ? T
-  : NeverToken extends T
-  ? never
-  : T;
-
-/**
- * Type to implement {@link EvaluateKeyList}.
- * Replaces never with {@link NeverToken}s to handle never correctly for unions.
- * @typeParam T  - deeply nested type which is indexed by the path
- * @typeParam KL - path into the deeply nested type
- */
-type EvaluateKeyListImpl<T, KL extends KeyList> = [T] extends [never]
-  ? NeverToken
-  : KL extends [infer K, ...infer R]
-  ? EvaluateKeyListImpl<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
-  : T;
+  : undefined;
 
 /**
  * Type to evaluate the type which the given path points to.
@@ -198,6 +159,9 @@ type EvaluateKeyListImpl<T, KL extends KeyList> = [T] extends [never]
  * EvaluateKeyList<number, ['foo']> = never
  * ```
  */
-export type EvaluateKeyList<T, KL extends KeyList> = CheckNever<
-  EvaluateKeyListImpl<T, KL>
->;
+export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
+  infer K,
+  ...infer R
+]
+  ? EvaluateKeyList<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
+  : T;

@@ -157,12 +157,12 @@ import {
 
   /** it should evaluate to never if the key is not valid */ {
     const actual = _ as EvaluateKey<{ foo: string }, 'foobar'>;
-    expectType<never>(actual);
+    expectType<undefined>(actual);
   }
 
   /** it should evaluate to never if the key is out of bounds */ {
     const actual = _ as EvaluateKey<[string], '1'>;
-    expectType<never>(actual);
+    expectType<undefined>(actual);
   }
 
   /** it should work on path unions */ {
@@ -175,7 +175,7 @@ import {
 
   /** it should evaluate to never if one of the keys doesn't exist */ {
     const actual = _ as EvaluateKey<{ foo: number }, 'foo' | 'bar'>;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should work on type unions */ {
@@ -185,12 +185,12 @@ import {
 
   /** it should evaluate to never if the key doesn't exist in one of the types */ {
     const actual = _ as EvaluateKey<{ foo: number } | { bar: string }, 'foo'>;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should evaluate to never if the key is out of bounds in one of the types */ {
     const actual = _ as EvaluateKey<[] | [number], '0'>;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should evaluate to any if the type is any */ {
@@ -226,7 +226,7 @@ import {
 
   /** it should evaluate to never if the path is not valid */ {
     const actual = _ as EvaluateKeyList<InfiniteType<string>, ['foobar']>;
-    expectType<never>(actual);
+    expectType<undefined>(actual);
   }
 
   /** it should be implemented tail recursively */ {
@@ -250,7 +250,7 @@ import {
       InfiniteType<number>,
       ['foo', 'value'] | ['foo', 'foobar']
     >;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should work on type unions */ {
@@ -266,7 +266,7 @@ import {
       InfiniteType<number> | Nested<string>,
       ['foo', 'value']
     >;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should evaluate to any if the type is any */ {

@@ -96,6 +96,23 @@ export type ValidKeyListPrefix<T, KL extends KeyList> = ValidKeyListPrefixImpl<
 >;
 
 /**
+ * Type to check whether a path through a type exists.
+ * @typeParam T  - type which the path should be checked against
+ * @typeParam KL - path which should exist within the given type
+ * @example
+ * ```
+ * IsKeyListValid<{foo: {bar: string}}, ['foo', 'bar']> = true
+ * IsKeyListValid<{foo: {bar: string}}, ['foo', 'ba']> = false
+ * ```
+ */
+export type IsKeyListValid<T, KL extends KeyList> = ValidKeyListPrefix<
+  T,
+  KL
+> extends KL
+  ? true
+  : false;
+
+/**
  * Type to drop the last element from a tuple type
  * @typeParam T - tuple whose last element should be dropped
  * @example
@@ -199,15 +216,19 @@ export type SuggestPaths<T, KL extends KeyList, U> = SuggestPathsImpl<
 
 /**
  * Type to implement {@link AutoCompletePath} without having to compute the
- * type which the path points to more than once.
+ * key list more than once.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
  * @typeParam U  - constraint type
- * @typeParam PV - the type at the given path
+ * @typeParam KL - the current path into the type as a {@link KeyList}
  */
-type AutoCompletePathImpl<T, PS extends PathString, U, PV> =
-  | SuggestPaths<T, SplitPathString<PS>, U>
-  | (PV extends U ? PS : never);
+type AutoCompletePathImpl<T, PS extends PathString, U, KL extends KeyList> =
+  | SuggestPaths<T, KL, U>
+  | (IsKeyListValid<T, KL> extends true
+      ? EvaluateKeyList<T, KL> extends U
+        ? PS
+        : never
+      : never);
 
 /**
  * Type which given a type and a {@link PathString} into it returns
@@ -236,7 +257,7 @@ export type AutoCompletePath<
   T,
   PS extends PathString,
   U,
-> = AutoCompletePathImpl<T, PS, U, EvaluateKeyList<T, SplitPathString<PS>>>;
+> = AutoCompletePathImpl<T, PS, U, SplitPathString<PS>>;
 
 /**
  * Type which given a type and a {@link PathString} into it returns
