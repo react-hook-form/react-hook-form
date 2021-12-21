@@ -2,13 +2,15 @@
  * Type alias to `string` which describes a lodash-like path through an object.
  * E.g. `'foo.bar.0.baz'`
  */
+import { IsAny, IsNever } from '../utils';
+
 export type PathString = string;
 
 /**
  * Type which can be traversed through with a {@link PathString}.
  * I.e. objects, arrays, and tuples
  */
-export type Traversable = object | ReadonlyArray<any>;
+export type Traversable = object;
 
 /**
  * Type to query whether an array type T is a tuple type.
@@ -247,11 +249,50 @@ export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
  * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
-export type Keys<T, U = unknown> = [T] extends [Traversable]
+export type Keys<T, U = unknown> = IsAny<T> extends true
+  ? Key
+  : [T] extends [Traversable]
   ? ContainsIndexable<T> extends true
     ? NumericKeys<T, U>
     : ObjectKeys<T, U>
   : never;
+
+/**
+ * Type to check whether a {@link Key} is present in a type.
+ * If a union of {@link Key}s is passed, all {@link Key}s have to be present
+ * in the type.
+ * @typeParam T - type which is introspected
+ * @typeParam K - key
+ * @example
+ * ```
+ * HasKey<{foo: string}, 'foo'> = true
+ * HasKey<{foo: string}, 'bar'> = false
+ * HasKey<{foo: string}, 'foo' | 'bar'> = false
+ * ```
+ */
+export type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
+
+/**
+ * Type which converts all keys of an object to {@link Key}s.
+ * @typeParam T - object type
+ * @example
+ * ```
+ * MapKeys<{0: string}> = {'0': string}
+ * ```
+ */
+type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
+
+/**
+ * Type to access a type by a key.
+ * Returns never if it can't be indexed by that key.
+ * @typeParam T - type which is indexed by the key
+ * @typeParam K - key into the type
+ * ```
+ * TryAccess<{foo: string}, 'foo'> = string
+ * TryAccess<string[], '1'> = never
+ * ```
+ */
+type TryAccess<T, K> = [K] extends [keyof T] ? T[K] : never;
 
 /**
  * Type to evaluate the type which the given key points to.
@@ -261,17 +302,54 @@ export type Keys<T, U = unknown> = [T] extends [Traversable]
  * ```
  * EvaluateKey<{foo: string}, 'foo'> = string
  * EvaluateKey<[number, string], '1'> = string
+ * EvaluateKey<string[], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
-  ? IsTuple<T> extends true
-    ? K extends keyof T
-      ? T[K]
-      : undefined
-    : T[number]
-  : K extends keyof T
-  ? T[K]
-  : undefined;
+export type EvaluateKey<T, K extends Key> = HasKey<T, K> extends true
+  ? T extends ReadonlyArray<any>
+    ? IsTuple<T> extends true
+      ? TryAccess<T, K>
+      : T[number]
+    : TryAccess<MapKeys<T>, K>
+  : never;
+
+/**
+ * Type which return the head of a tuple type.
+ * @typeParam T - tuple type
+ * @example
+ * ```
+ * Head<[]> = never
+ * Head<[1]> = 1
+ * ```
+ */
+type Head<T extends ReadonlyArray<any>> = T extends [infer H, ...unknown[]]
+  ? H
+  : never;
+
+/**
+ * Type which return the tail of a tuple type.
+ * @typeParam T - tuple type
+ * @example
+ * ```
+ * Tail<[]> = []
+ * Tail<[1]> = []
+ * Head<[1, 2]> = [2]
+ * ```
+ */
+type Tail<T extends ReadonlyArray<any>> = T extends [unknown, ...infer R]
+  ? R
+  : [];
+
+/**
+ * Type which returns true whenever the tuple type is empty.
+ * @typeParam T - tuple type
+ * @example
+ * ```
+ * IsEmpty<[]> = true
+ * IsEmpty<[1]> = never
+ * ```
+ */
+type IsEmpty<T extends ReadonlyArray<any>> = IsNever<Head<T>>;
 
 /**
  * Type to evaluate the type which the given path points to.
@@ -285,9 +363,6 @@ export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
  * EvaluatePath<number, ['foo']> = never
  * ```
  */
-export type EvaluatePath<T, PT extends PathTuple> = PT extends [
-  infer K,
-  ...infer R
-]
-  ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
-  : T;
+export type EvaluatePath<T, PT extends PathTuple> = IsEmpty<PT> extends true
+  ? T
+  : EvaluatePath<EvaluateKey<T, AsKey<Head<PT>>>, AsPathTuple<Tail<PT>>>;

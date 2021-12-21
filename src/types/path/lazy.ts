@@ -1,4 +1,5 @@
 import { FieldValues } from '../fields';
+import { IsNever } from '../utils';
 
 import {
   AsPathTuple,
@@ -103,9 +104,13 @@ export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
  * @typeParam TPT - the type at that path
  * @typeParam U   - constraint type
  */
-type SuggestChildPathsImpl<PT extends PathTuple, TPT, U> = JoinPathTuple<
-  [...PT, Keys<TPT, U | Traversable>]
->;
+type SuggestChildPathsImpl<
+  PT extends PathTuple,
+  TPT,
+  U,
+> = IsNever<TPT> extends true
+  ? never
+  : JoinPathTuple<[...PT, Keys<TPT, U | Traversable>]>;
 
 /**
  * Type, which given a type and a path into the type, returns all paths as

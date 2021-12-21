@@ -53,9 +53,26 @@ export type DeepPartialSkipArrayKey<T> = T extends
   ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
   : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
-export type IsAny<T> = boolean extends (T extends never ? true : false)
-  ? true
-  : false;
+/**
+ * Checks whether the type is any
+ * See {@link https://stackoverflow.com/a/49928360/3406963}
+ * @typeParam T - type which may be any
+ * ```
+ * IsAny<any> = true
+ * IsAny<string> = false
+ * ```
+ */
+export type IsAny<T> = 0 extends 1 & T ? true : false;
+
+/**
+ * Checks whether the type is never
+ * @typeParam T - type which may be never
+ * ```
+ * IsAny<never> = true
+ * IsAny<string> = false
+ * ```
+ */
+export type IsNever<T> = [T] extends [never] ? true : false;
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
