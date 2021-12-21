@@ -80,38 +80,32 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link NumericKeys} */ {
   /** it should return the numeric keys of an object */ {
-    const actual = _ as NumericKeys<
-      { 0: string; '1': string; foo: string },
-      unknown
-    >;
+    const actual = _ as NumericKeys<{ 0: string; '1': string; foo: string }>;
     expectType<'0' | '1'>(actual);
   }
 
   /** it should return the numeric keys of an array */ {
-    const actual = _ as NumericKeys<number[], unknown>;
+    const actual = _ as NumericKeys<number[]>;
     expectType<`${number}`>(actual);
   }
 
   /** it should return the numeric keys of a tuple */ {
-    const actual = _ as NumericKeys<[string, number], unknown>;
+    const actual = _ as NumericKeys<[string, number]>;
     expectType<'0' | '1'>(actual);
   }
 
   /** it should return the overlapping numeric keys of a tuple and array */ {
-    const actual = _ as NumericKeys<[number, string] | number[], unknown>;
+    const actual = _ as NumericKeys<[number, string] | number[]>;
     expectType<'0' | '1'>(actual);
   }
 
   /** it should return the overlapping numeric keys of an object and array */ {
-    const actual = _ as NumericKeys<
-      { 0: string; '1': string } | number[],
-      unknown
-    >;
+    const actual = _ as NumericKeys<{ 0: string; '1': string } | number[]>;
     expectType<'0' | '1'>(actual);
   }
 
   /** it should return the overlapping numeric keys of an object and tuple */ {
-    const actual = _ as NumericKeys<{ 1: string } | [number, string], unknown>;
+    const actual = _ as NumericKeys<{ 1: string } | [number, string]>;
     expectType<'1'>(actual);
   }
 
@@ -123,14 +117,13 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link ObjectKeys} */ {
   /** it should return the keys of an object */ {
-    const actual = _ as ObjectKeys<{ foo: string; bar: number }, unknown>;
+    const actual = _ as ObjectKeys<{ foo: string; bar: number }>;
     expectType<'foo' | 'bar'>(actual);
   }
 
   /** it should return the overlapping keys of a union of objects */ {
     const actual = _ as ObjectKeys<
-      { foo: string; bar: number } | { bar: number; baz: string },
-      unknown
+      { foo: string; bar: number } | { bar: number; baz: string }
     >;
     expectType<'bar'>(actual);
   }
@@ -141,7 +134,7 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
   }
 
   /** it should not return keys which contain dots */ {
-    const actual = _ as ObjectKeys<{ foo: string; 'foo.bar': number }, unknown>;
+    const actual = _ as ObjectKeys<{ foo: string; 'foo.bar': number }>;
     expectType<'foo'>(actual);
   }
 }

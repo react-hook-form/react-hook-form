@@ -90,7 +90,10 @@ type NumericObjectKeys<T extends Traversable> = {
  * NumericKeys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
-export type NumericKeys<T extends Traversable, U> = UnionToIntersection<
+export type NumericKeys<
+  T extends Traversable,
+  U = unknown,
+> = UnionToIntersection<
   T extends ReadonlyArray<any>
     ? IsTuple<T> extends true
       ? [CheckKeyConstraint<T, TupleKey<T>, U>]
@@ -109,7 +112,7 @@ export type NumericKeys<T extends Traversable, U> = UnionToIntersection<
  * ObjectKeys<{foo: string, bar: number}, string> = 'foo'
  * ```
  */
-export type ObjectKeys<T extends Traversable, U> = Exclude<
+export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
   CheckKeyConstraint<T, keyof T, U>,
   `${string}.${string}`
 >;
