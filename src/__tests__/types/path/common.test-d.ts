@@ -4,13 +4,19 @@ import {
   ArrayKey,
   AsKey,
   AsPathTuple,
+  CheckKeyConstraint,
+  ContainsIndexable,
   EvaluateKey,
   EvaluatePath,
   IsTuple,
   JoinPathTuple,
+  Keys,
+  NumericKeys,
+  ObjectKeys,
   SplitPathString,
   ToKey,
   TupleKey,
+  UnionToIntersection,
 } from '../../../types/path/common';
 import {
   _,
@@ -136,6 +142,176 @@ import {
   /** it should work on unions */ {
     const actual = _ as JoinPathTuple<['foo', 'bar'] | ['bar', 'foo']>;
     expectType<'foo.bar' | 'bar.foo'>(actual);
+  }
+}
+
+/** {@link CheckKeyConstraint} */ {
+  /** it should convert the keys to string literals */ {
+    const actual = _ as CheckKeyConstraint<string[], ArrayKey, unknown>;
+    expectType<`${ArrayKey}`>(actual);
+  }
+
+  /** it should remove the keys which don't match the constraint */ {
+    const actual = _ as CheckKeyConstraint<
+      { foo: string; bar: number },
+      'foo' | 'bar',
+      string
+    >;
+    expectType<'foo'>(actual);
+  }
+}
+
+/** {@link UnionToIntersection} */ {
+  /** it should intersect a union of objects */ {
+    const actual = _ as UnionToIntersection<{ foo: string } | { bar: number }>;
+    expectType<{ foo: string } & { bar: number }>(actual);
+  }
+
+  /** it should intersect wrapped unions */ {
+    const actual = _ as UnionToIntersection<[0 | 1] | [1 | 2]>[never];
+    expectType<1>(actual);
+  }
+}
+
+/** {@link ContainsIndexable} */ {
+  /** it should evaluate to true when an array is passed */ {
+    const actual = _ as ContainsIndexable<number[]>;
+    expectType<true>(actual);
+  }
+
+  /** it should evaluate to true when a tuple is passed */ {
+    const actual = _ as ContainsIndexable<[number]>;
+    expectType<true>(actual);
+  }
+
+  /** it should evaluate to false when a string is passed */ {
+    const actual = _ as ContainsIndexable<string>;
+    expectType<false>(actual);
+  }
+
+  /** it should evaluate to false when an object is passed */ {
+    const actual = _ as ContainsIndexable<{ foo: string }>;
+    expectType<false>(actual);
+  }
+
+  /** it should evaluate to true when an array is part of the union */ {
+    const actual = _ as ContainsIndexable<{ foo: string } | number[]>;
+    expectType<true>(actual);
+  }
+
+  /** it should evaluate to true when a tuple is part of the union */ {
+    const actual = _ as ContainsIndexable<{ foo: string } | [number]>;
+    expectType<true>(actual);
+  }
+}
+
+/** {@link NumericKeys} */ {
+  /** it should return the numeric keys of an object */ {
+    const actual = _ as NumericKeys<{ 0: string; '1': string; foo: string }>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the numeric keys of an array */ {
+    const actual = _ as NumericKeys<number[]>;
+    expectType<`${number}`>(actual);
+  }
+
+  /** it should return the numeric keys of a tuple */ {
+    const actual = _ as NumericKeys<[string, number]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the overlapping numeric keys of a tuple and array */ {
+    const actual = _ as NumericKeys<[number, string] | number[]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the overlapping numeric keys of an object and array */ {
+    const actual = _ as NumericKeys<{ 0: string; '1': string } | number[]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the overlapping numeric keys of an object and tuple */ {
+    const actual = _ as NumericKeys<{ 1: string } | [number, string]>;
+    expectType<'1'>(actual);
+  }
+
+  /** it should only return the keys of string properties */ {
+    const actual = _ as NumericKeys<{ 1: string; 2: number }, string>;
+    expectType<'1'>(actual);
+  }
+}
+
+/** {@link ObjectKeys} */ {
+  /** it should return the keys of an object */ {
+    const actual = _ as ObjectKeys<{ foo: string; bar: number }>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the overlapping keys of a union of objects */ {
+    const actual = _ as ObjectKeys<
+      { foo: string; bar: number } | { bar: number; baz: string }
+    >;
+    expectType<'bar'>(actual);
+  }
+
+  /** it should only return the keys of string properties */ {
+    const actual = _ as ObjectKeys<{ foo: string; bar: number }, string>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not return keys which contain dots */ {
+    const actual = _ as ObjectKeys<{ foo: string; 'foo.bar': number }>;
+    expectType<'foo'>(actual);
+  }
+}
+
+/** {@link Keys} */ {
+  /** it should return the keys of an object */ {
+    const actual = _ as Keys<{ foo: string; bar: number }>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the keys of a tuple */ {
+    const actual = _ as Keys<[number, string]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the keys of an array */ {
+    const actual = _ as Keys<string[]>;
+    expectType<`${number}`>(actual);
+  }
+
+  /** it should only return the keys of string properties */ {
+    const actual = _ as Keys<{ foo: string; bar: number }, string>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should return the overlapping keys of a union of objects */ {
+    const actual = _ as Keys<
+      { foo: string; bar: number } | { bar: number; baz: string }
+    >;
+    expectType<'bar'>(actual);
+  }
+
+  /** it should return the keys of the tuple when given a tuple and an array */ {
+    const actual = _ as Keys<number[] | [number]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return the overlapping keys when given a tuple and an object */ {
+    const actual = _ as Keys<{ 0: string; 1: number } | [number]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return the overlapping keys when given a tuple and an object */ {
+    const actual = _ as Keys<{ foo: string } | [number]>;
+    expectType<never>(actual);
+  }
+
+  /** it should return the numeric keys when given an array and an object */ {
+    const actual = _ as Keys<{ 0: string; foo: number } | number[]>;
+    expectType<'0'>(actual);
   }
 }
 

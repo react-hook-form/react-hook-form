@@ -1,142 +1,16 @@
 import { FieldValues } from '../fields';
 
 import {
-  ArrayKey,
   AsPathTuple,
   EvaluateKey,
   EvaluatePath,
-  IsTuple,
   JoinPathTuple,
+  Keys,
   PathString,
   PathTuple,
   SplitPathString,
-  ToKey,
   Traversable,
-  TupleKey,
 } from './common';
-
-/**
- * Type to check whether a type's property matches the constraint type
- * and return its key. Converts the key to a {@link Key}.
- * @typeParam T - type whose property should be checked
- * @typeParam K - key of the property
- * @typeParam U - constraint type
- * @example
- * ```
- * CheckKeyConstraint<{foo: string}, 'foo', string> = 'foo'
- * CheckKeyConstraint<{foo: string}, 'foo', number> = never
- * CheckKeyConstraint<string[], number, string> = `${number}`
- * ```
- */
-export type CheckKeyConstraint<T, K extends keyof T, U> = {
-  [Key in K]: T[Key] extends U ? ToKey<Key> : never;
-}[K];
-
-/**
- * Type to intersect a union type.
- * See https://fettblog.eu/typescript-union-to-intersection/
- * @typeParam U - union
- * @example
- * ```
- * UnionToIntersection<{ foo: string } | { bar: number }>
- *   = { foo: string; bar: number }
- * ```
- */
-export type UnionToIntersection<U> = (
-  U extends any ? (_: U) => any : never
-) extends (_: infer I) => any
-  ? I
-  : never;
-
-/**
- * Type which evaluates to true when the type is an array or tuple or is a union
- * which contains an array or tuple.
- * @typeParam T - type
- * @example
- * ```
- * ContainsIndexable<{foo: string}> = false
- * ContainsIndexable<{foo: string} | number[]> = true
- * ```
- */
-export type ContainsIndexable<T> = [Extract<T, ReadonlyArray<any>>] extends [
-  never,
-]
-  ? false
-  : true;
-
-/**
- * Type which extracts all numeric keys from an object.
- * @typeParam T - type
- * @example
- * ```
- * NumericObjectKeys<{0: string, '1': string, foo: string}> = '0' | '1'
- * ```
- */
-type NumericObjectKeys<T extends Traversable> = {
-  [K in keyof T]-?: Extract<keyof T, ArrayKey | `${ArrayKey}`>;
-}[keyof T];
-
-/**
- * Type which extracts all numeric keys from an object, tuple, or array
- * that match the constraint type.
- * If a union is passed, it evaluates to the overlapping numeric keys.
- * @typeParam T - type
- * @typeParam U - constraint type
- * @example
- * ```
- * NumericKeys<{0: string, '1': string, foo: string}> = '0' | '1'
- * NumericKeys<number[]> = `${number}`
- * NumericKeys<[string, number]> = '0' | '1'
- * NumericKeys<{0: string, '1': string} | [number] | number[]> = '0'
- * ```
- */
-export type NumericKeys<
-  T extends Traversable,
-  U = unknown,
-> = UnionToIntersection<
-  T extends ReadonlyArray<any>
-    ? IsTuple<T> extends true
-      ? [CheckKeyConstraint<T, TupleKey<T>, U>]
-      : [CheckKeyConstraint<T, ArrayKey, U>]
-    : [CheckKeyConstraint<T, NumericObjectKeys<T>, U>]
->[never];
-
-/**
- * Type which extracts all keys from an object that match the constraint type.
- * If a union is passed, it evaluates to the overlapping keys.
- * @typeParam T - object type
- * @typeParam U - constraint type
- * @example
- * ```
- * ObjectKeys<{foo: string, bar: string}, string> = 'foo' | 'bar'
- * ObjectKeys<{foo: string, bar: number}, string> = 'foo'
- * ```
- */
-export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
-  CheckKeyConstraint<T, keyof T, U>,
-  `${string}.${string}`
->;
-
-/**
- * Type to find all properties of a type that match the constraint type
- * and return their keys.
- * If a union is passed, it evaluates to the overlapping keys.
- * @typeParam T - type whose property should be checked
- * @typeParam U - constraint type
- * @example
- * ```
- * Keys<{foo: string, bar: string}, string> = 'foo' | 'bar'
- * Keys<{foo: string, bar: number}, string> = 'foo'
- * Keys<[string, number], string> = '0'
- * Keys<string[], string> = `${number}`
- * Keys<{0: string, '1': string} | [number] | number[]> = '0'
- * ```
- */
-export type Keys<T, U = unknown> = [T] extends [Traversable]
-  ? ContainsIndexable<T> extends true
-    ? NumericKeys<T, U>
-    : ObjectKeys<T, U>
-  : never;
 
 /**
  * Type to implement {@link ValidPathPrefix} tail recursively.
