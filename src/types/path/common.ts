@@ -323,9 +323,9 @@ type ValidPathPrefixImpl<
   PT extends PathTuple,
   VPT extends PathTuple,
 > = PT extends [infer K, ...infer R]
-  ? K extends Keys<T>
+  ? HasKey<T, AsKey<K>> extends true
     ? ValidPathPrefixImpl<
-        EvaluateKey<T, K>,
+        EvaluateKey<T, AsKey<K>>,
         AsPathTuple<R>,
         AsPathTuple<[...VPT, K]>
       >
