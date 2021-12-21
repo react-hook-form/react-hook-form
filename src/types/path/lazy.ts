@@ -5,12 +5,14 @@ import {
   AsKeyList,
   EvaluateKey,
   EvaluateKeyList,
+  IsTuple,
   JoinKeyList,
   KeyList,
   PathString,
   SplitPathString,
   ToKey,
   Traversable,
+  TupleKey,
 } from './common';
 
 /**
@@ -26,26 +28,96 @@ import {
  * CheckKeyConstraint<string[], number, string> = `${number}`
  * ```
  */
-type CheckKeyConstraint<T, K extends keyof T, U> = T[K] extends U
-  ? ToKey<K>
+export type CheckKeyConstraint<T, K extends keyof T, U> = {
+  [Key in K]: T[Key] extends U ? ToKey<Key> : never;
+}[K];
+
+/**
+ * Type to intersect a union type.
+ * See https://fettblog.eu/typescript-union-to-intersection/
+ * @typeParam U - union
+ * @example
+ * ```
+ * UnionToIntersection<{ foo: string } | { bar: number }>
+ *   = { foo: string; bar: number }
+ * ```
+ */
+export type UnionToIntersection<U> = (
+  U extends any ? (_: U) => any : never
+) extends (_: infer I) => any
+  ? I
   : never;
 
-export type ContainsTuple<T> = (
-  T extends ReadonlyArray<any> ? (_: T['length']) => void : never
-) extends (_: infer I) => void
-  ? number extends I
-    ? false
-    : true
-  : false;
+/**
+ * Type which evaluates to true when the type is an array or tuple or is a union
+ * which contains an array or tuple.
+ * @typeParam T - type
+ * @example
+ * ```
+ * ContainsIndexable<{foo: string}> = false
+ * ContainsIndexable<{foo: string} | number[]> = true
+ * ```
+ */
+export type ContainsIndexable<T> = [Extract<T, ReadonlyArray<any>>] extends [
+  never,
+]
+  ? false
+  : true;
 
-export type ContainsTupleKey<T> = keyof {
-  [K in keyof T as ToKey<K>]-?: Extract<K, number | `${number}`>;
-} &
-  (T extends ReadonlyArray<any> ? Exclude<keyof T, keyof any[]> : never);
+/**
+ * Type which extracts all numeric keys from an object.
+ * @typeParam T - type
+ * @example
+ * ```
+ * NumericObjectKeys<{0: string, '1': string, foo: string}> = '0' | '1'
+ * ```
+ */
+type NumericObjectKeys<T extends Traversable> = {
+  [K in keyof T]-?: Extract<keyof T, ArrayKey | `${ArrayKey}`>;
+}[keyof T];
+
+/**
+ * Type which extracts all numeric keys from an object, tuple, or array
+ * that match the constraint type.
+ * If a union is passed, it evaluates to the overlapping numeric keys.
+ * @typeParam T - type
+ * @typeParam U - constraint type
+ * @example
+ * ```
+ * NumericKeys<{0: string, '1': string, foo: string}> = '0' | '1'
+ * NumericKeys<number[]> = `${number}`
+ * NumericKeys<[string, number]> = '0' | '1'
+ * NumericKeys<{0: string, '1': string} | [number] | number[]> = '0'
+ * ```
+ */
+export type NumericKeys<T extends Traversable, U> = UnionToIntersection<
+  T extends ReadonlyArray<any>
+    ? IsTuple<T> extends true
+      ? [CheckKeyConstraint<T, TupleKey<T>, U>]
+      : [CheckKeyConstraint<T, ArrayKey, U>]
+    : [CheckKeyConstraint<T, NumericObjectKeys<T>, U>]
+>[never];
+
+/**
+ * Type which extracts all keys from an object that match the constraint type.
+ * If a union is passed, it evaluates to the overlapping keys.
+ * @typeParam T - object type
+ * @typeParam U - constraint type
+ * @example
+ * ```
+ * ObjectKeys<{foo: string, bar: string}, string> = 'foo' | 'bar'
+ * ObjectKeys<{foo: string, bar: number}, string> = 'foo'
+ * ```
+ */
+export type ObjectKeys<T extends Traversable, U> = Exclude<
+  CheckKeyConstraint<T, keyof T, U>,
+  `${string}.${string}`
+>;
 
 /**
  * Type to find all properties of a type that match the constraint type
- * and return their keys. Converts the keys to {@link Key}s.
+ * and return their keys.
+ * If a union is passed, it evaluates to the overlapping keys.
  * @typeParam T - type whose property should be checked
  * @typeParam U - constraint type
  * @example
@@ -54,20 +126,13 @@ export type ContainsTupleKey<T> = keyof {
  * Keys<{foo: string, bar: number}, string> = 'foo'
  * Keys<[string, number], string> = '0'
  * Keys<string[], string> = `${number}`
+ * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
 export type Keys<T, U = unknown> = [T] extends [Traversable]
-  ? ContainsTuple<T> extends true
-    ? {
-        [K in ContainsTupleKey<T>]-?: CheckKeyConstraint<T, K, U>;
-      }[ContainsTupleKey<T>]
-    : any[] extends T
-    ? T extends ReadonlyArray<any>
-      ? CheckKeyConstraint<T, ArrayKey, U>
-      : CheckKeyConstraint<T, keyof T, U>
-    : {
-        [K in keyof T]-?: CheckKeyConstraint<T, K, U>;
-      }[keyof T]
+  ? ContainsIndexable<T> extends true
+    ? NumericKeys<T, U>
+    : ObjectKeys<T, U>
   : never;
 
 /**
