@@ -15,10 +15,12 @@ import {
   Keys,
   NumericKeys,
   ObjectKeys,
+  PathString,
   SplitPathString,
   ToKey,
   TupleKey,
   UnionToIntersection,
+  ValidPathPrefix,
 } from '../../../types/path/common';
 import {
   _,
@@ -454,6 +456,45 @@ import {
   }
 }
 
+/** {@link ValidPathPrefix} */ {
+  /** it should return the entire path if it is valid */ {
+    const actual = _ as ValidPathPrefix<
+      InfiniteType<string>,
+      ['foo', 'bar', '0', 'baz', '42']
+    >;
+    expectType<['foo', 'bar', '0', 'baz', '42']>(actual);
+  }
+
+  /** it should return the longest valid prefix */ {
+    const actual = _ as ValidPathPrefix<
+      InfiniteType<string>,
+      ['foo', 'bar', '0', 'ba', '42'] | ['foo', 'ba']
+    >;
+    expectType<['foo', 'bar', '0'] | ['foo']>(actual);
+  }
+
+  /** it should return the longest valid prefix */ {
+    const actual = _ as ValidPathPrefix<
+      InfiniteType<string> | Nested<string>,
+      ['foo']
+    >;
+    expectType<[]>(actual);
+  }
+
+  /** it should return an empty tuple when the path is an empty tuple */ {
+    const actual = _ as ValidPathPrefix<InfiniteType<string>, []>;
+    expectType<[]>(actual);
+  }
+
+  /** it should be implemented tail recursively */ {
+    const actual = _ as ValidPathPrefix<
+      InfiniteType<string>,
+      HundredTuple<'foo'>
+    >;
+    expectType<HundredTuple<'foo'>>(actual);
+  }
+}
+
 /** {@link EvaluatePath} */ {
   /** it should traverse an object */ {
     const actual = _ as EvaluatePath<
@@ -534,5 +575,20 @@ import {
   /** it should evaluate to any if the type is any */ {
     const actual = _ as EvaluatePath<any, [string]>;
     expectType<any>(actual);
+  }
+
+  /** it should not create a union which is too complex to represent */ {
+    const makeSetter =
+      <T>() =>
+      <PS extends PathString>(
+        _: PS,
+        value: EvaluatePath<T, SplitPathString<PS>>,
+      ) =>
+        value;
+
+    const setter = makeSetter<{ foo: string }>();
+
+    const actual = setter('foo', 'bar');
+    expectType<string>(actual);
   }
 }

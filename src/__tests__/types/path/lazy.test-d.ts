@@ -7,40 +7,8 @@ import {
   SuggestChildPaths,
   SuggestParentPath,
   SuggestPaths,
-  ValidPathPrefix,
 } from '../../../types/path/lazy';
-import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
-
-/** {@link ValidPathPrefix} */ {
-  /** it should return the entire path if it is valid */ {
-    const actual = _ as ValidPathPrefix<
-      InfiniteType<string>,
-      ['foo', 'bar', '0', 'baz', '42']
-    >;
-    expectType<['foo', 'bar', '0', 'baz', '42']>(actual);
-  }
-
-  /** it should return the longest valid prefix */ {
-    const actual = _ as ValidPathPrefix<
-      InfiniteType<string>,
-      ['foo', 'bar', '0', 'ba', '42']
-    >;
-    expectType<['foo', 'bar', '0']>(actual);
-  }
-
-  /** it should return an empty tuple when the path is an empty tuple */ {
-    const actual = _ as ValidPathPrefix<InfiniteType<string>, []>;
-    expectType<[]>(actual);
-  }
-
-  /** it should be implemented tail recursively */ {
-    const actual = _ as ValidPathPrefix<
-      InfiniteType<string>,
-      HundredTuple<'foo'>
-    >;
-    expectType<HundredTuple<'foo'>>(actual);
-  }
-}
+import { _, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link DropLastElement} */ {
   /** it should remove the last element from a tuple */ {

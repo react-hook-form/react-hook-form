@@ -2,71 +2,16 @@ import { FieldValues } from '../fields';
 import { IsNever } from '../utils';
 
 import {
-  AsPathTuple,
-  EvaluateKey,
   EvaluatePath,
+  HasPath,
   JoinPathTuple,
   Keys,
   PathString,
   PathTuple,
   SplitPathString,
   Traversable,
+  ValidPathPrefix,
 } from './common';
-
-/**
- * Type to implement {@link ValidPathPrefix} tail recursively.
- * @typeParam T   - type which the path should be checked against
- * @typeParam PT  - path which should exist within the given type
- * @typeParam VPT - accumulates the prefix of {@link Key}s which have been
- *                  confirmed to exist already
- */
-type ValidPathPrefixImpl<
-  T,
-  PT extends PathTuple,
-  VPT extends PathTuple,
-> = PT extends [infer K, ...infer R]
-  ? K extends Keys<T>
-    ? ValidPathPrefixImpl<
-        EvaluateKey<T, K>,
-        AsPathTuple<R>,
-        AsPathTuple<[...VPT, K]>
-      >
-    : VPT
-  : VPT;
-
-/**
- * Type to find the longest path prefix which is still valid,
- * i.e. exists within the given type.
- * @typeParam T  - type which the path should be checked against
- * @typeParam PT - path which should exist within the given type
- * @example
- * ```
- * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'bar']> = ['foo', 'bar']
- * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
- * ```
- */
-export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
-  T,
-  PT,
-  []
->;
-
-/**
- * Type to check whether a path through a type exists.
- * @typeParam T  - type which the path should be checked against
- * @typeParam PT - path which should exist within the given type
- * @example
- * ```
- * IsPathValid<{foo: {bar: string}}, ['foo', 'bar']> = true
- * IsPathValid<{foo: {bar: string}}, ['foo', 'ba']> = false
- * ```
- */
-export type IsPathValid<T, PT extends PathTuple> = ValidPathPrefix<
-  T,
-  PT
-> extends PT
-  ? true
-  : false;
 
 /**
  * Type to drop the last element from a tuple type
@@ -183,7 +128,7 @@ export type SuggestPaths<
  */
 type AutoCompletePathImpl<T, PS extends PathString, U, PT extends PathTuple> =
   | SuggestPaths<T, PT, U>
-  | (IsPathValid<T, PT> extends true
+  | (HasPath<T, PT> extends true
       ? EvaluatePath<T, PT> extends U
         ? PS
         : never

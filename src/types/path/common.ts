@@ -1,9 +1,9 @@
+import { IsAny, IsNever } from '../utils';
+
 /**
  * Type alias to `string` which describes a lodash-like path through an object.
  * E.g. `'foo.bar.0.baz'`
  */
-import { IsAny, IsNever } from '../utils';
-
 export type PathString = string;
 
 /**
@@ -314,42 +314,56 @@ export type EvaluateKey<T, K extends Key> = HasKey<T, K> extends true
   : never;
 
 /**
- * Type which return the head of a tuple type.
- * @typeParam T - tuple type
- * @example
- * ```
- * Head<[]> = never
- * Head<[1]> = 1
- * ```
+ * Type to implement {@link ValidPathPrefix} tail recursively.
+ * @typeParam T   - type which the path should be checked against
+ * @typeParam PT  - path which should exist within the given type
+ * @typeParam VPT - accumulates the prefix of {@link Key}s which have been
+ *                  confirmed to exist already
  */
-type Head<T extends ReadonlyArray<any>> = T extends [infer H, ...unknown[]]
-  ? H
-  : never;
+type ValidPathPrefixImpl<
+  T,
+  PT extends PathTuple,
+  VPT extends PathTuple,
+> = PT extends [infer K, ...infer R]
+  ? K extends Keys<T>
+    ? ValidPathPrefixImpl<
+        EvaluateKey<T, K>,
+        AsPathTuple<R>,
+        AsPathTuple<[...VPT, K]>
+      >
+    : VPT
+  : VPT;
 
 /**
- * Type which return the tail of a tuple type.
- * @typeParam T - tuple type
+ * Type to find the longest path prefix which is still valid,
+ * i.e. exists within the given type.
+ * @typeParam T  - type which the path should be checked against
+ * @typeParam PT - path which should exist within the given type
  * @example
  * ```
- * Tail<[]> = []
- * Tail<[1]> = []
- * Head<[1, 2]> = [2]
+ * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'bar']> = ['foo', 'bar']
+ * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
  * ```
  */
-type Tail<T extends ReadonlyArray<any>> = T extends [unknown, ...infer R]
-  ? R
-  : [];
+export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
+  T,
+  PT,
+  []
+>;
 
 /**
- * Type which returns true whenever the tuple type is empty.
- * @typeParam T - tuple type
+ * Type to check whether a path through a type exists.
+ * @typeParam T  - type which the path should be checked against
+ * @typeParam PT - path which should exist within the given type
  * @example
  * ```
- * IsEmpty<[]> = true
- * IsEmpty<[1]> = never
+ * HasPath<{foo: {bar: string}}, ['foo', 'bar']> = true
+ * HasPath<{foo: {bar: string}}, ['foo', 'ba']> = false
  * ```
  */
-type IsEmpty<T extends ReadonlyArray<any>> = IsNever<Head<T>>;
+export type HasPath<T, PT extends PathTuple> = ValidPathPrefix<T, PT> extends PT
+  ? true
+  : false;
 
 /**
  * Type to evaluate the type which the given path points to.
@@ -363,6 +377,8 @@ type IsEmpty<T extends ReadonlyArray<any>> = IsNever<Head<T>>;
  * EvaluatePath<number, ['foo']> = never
  * ```
  */
-export type EvaluatePath<T, PT extends PathTuple> = IsEmpty<PT> extends true
-  ? T
-  : EvaluatePath<EvaluateKey<T, AsKey<Head<PT>>>, AsPathTuple<Tail<PT>>>;
+export type EvaluatePath<T, PT extends PathTuple> = HasPath<T, PT> extends false
+  ? never
+  : PT extends [infer K, ...infer R]
+  ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
+  : T;
