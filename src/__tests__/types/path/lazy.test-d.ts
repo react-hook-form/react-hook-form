@@ -139,17 +139,17 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
     const actual = _ as ObjectKeys<{ foo: string; bar: number }, string>;
     expectType<'foo'>(actual);
   }
+
+  /** it should not return keys which contain dots */ {
+    const actual = _ as ObjectKeys<{ foo: string; 'foo.bar': number }, unknown>;
+    expectType<'foo'>(actual);
+  }
 }
 
 /** {@link Keys} */ {
   /** it should return the keys of an object */ {
     const actual = _ as Keys<{ foo: string; bar: number }>;
     expectType<'foo' | 'bar'>(actual);
-  }
-
-  /** it should not return keys which contain dots */ {
-    const actual = _ as Keys<{ foo: string; 'foo.bar': number }>;
-    expectType<'foo'>(actual);
   }
 
   /** it should return the keys of a tuple */ {
