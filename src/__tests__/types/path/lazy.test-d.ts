@@ -245,16 +245,12 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link SuggestChildPaths} */ {
   /** it should suggest paths when the current path is empty */ {
-    const actual = _ as SuggestChildPaths<InfiniteType<string>, [], unknown>;
+    const actual = _ as SuggestChildPaths<InfiniteType<string>, []>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(actual);
   }
 
   /** it should suggest paths when the current path is not empty */ {
-    const actual = _ as SuggestChildPaths<
-      InfiniteType<string>,
-      ['foo', 'foo'],
-      unknown
-    >;
+    const actual = _ as SuggestChildPaths<InfiniteType<string>, ['foo', 'foo']>;
     expectType<'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'>(
       actual,
     );
@@ -270,29 +266,17 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
   }
 
   /** it should suggest paths into a tuple */ {
-    const actual = _ as SuggestChildPaths<
-      InfiniteType<string>,
-      ['bar'],
-      unknown
-    >;
+    const actual = _ as SuggestChildPaths<InfiniteType<string>, ['bar']>;
     expectType<`bar.0`>(actual);
   }
 
   /** it should suggest paths into an array */ {
-    const actual = _ as SuggestChildPaths<
-      InfiniteType<string>,
-      ['baz'],
-      unknown
-    >;
+    const actual = _ as SuggestChildPaths<InfiniteType<string>, ['baz']>;
     expectType<`baz.${number}`>(actual);
   }
 
   /** it should evaluate to never if the path does not exist */ {
-    const actual = _ as SuggestChildPaths<
-      InfiniteType<string>,
-      ['foobar'],
-      unknown
-    >;
+    const actual = _ as SuggestChildPaths<InfiniteType<string>, ['foobar']>;
     expectType<never>(actual);
   }
 }
@@ -300,26 +284,22 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 /** {@link SuggestPaths} */
 {
   /** it should suggest all top level paths when the path is empty */ {
-    const actual = _ as SuggestPaths<InfiniteType<string>, [], unknown>;
+    const actual = _ as SuggestPaths<InfiniteType<string>, []>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(actual);
   }
 
   /** it should suggest the sibling paths if the path is valid */ {
-    const actual = _ as SuggestPaths<InfiniteType<string>, ['fo'], unknown>;
+    const actual = _ as SuggestPaths<InfiniteType<string>, ['fo']>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(actual);
   }
 
   /** it should suggest the child paths if the path is valid */ {
-    const actual = _ as SuggestPaths<InfiniteType<string>, ['foo'], unknown>;
+    const actual = _ as SuggestPaths<InfiniteType<string>, ['foo']>;
     expectType<'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(actual);
   }
 
   /** it should suggest the parent path */ {
-    const actual = _ as SuggestPaths<
-      InfiniteType<string>,
-      ['foo', 'value'],
-      unknown
-    >;
+    const actual = _ as SuggestPaths<InfiniteType<string>, ['foo', 'value']>;
     expectType<'foo'>(actual);
   }
 
@@ -335,30 +315,22 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
 /** {@link AutoCompletePath} */ {
   /** it should suggest all top level paths when the path is empty */ {
-    const actual = _ as AutoCompletePath<InfiniteType<string>, '', unknown>;
+    const actual = _ as AutoCompletePath<InfiniteType<string>, ''>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(actual);
   }
 
   /** it should not suggest the current path if it is invalid */ {
-    const actual = _ as AutoCompletePath<
-      InfiniteType<string>,
-      'foo.foobar',
-      unknown
-    >;
+    const actual = _ as AutoCompletePath<InfiniteType<string>, 'foo.foobar'>;
     expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(actual);
   }
 
   /** it should suggest the current path if it is valid */ {
-    const actual = _ as AutoCompletePath<InfiniteType<string>, 'foo', unknown>;
+    const actual = _ as AutoCompletePath<InfiniteType<string>, 'foo'>;
     expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(actual);
   }
 
   /** it should suggest the current path and the parent path */ {
-    const actual = _ as AutoCompletePath<
-      InfiniteType<string>,
-      'foo.value',
-      unknown
-    >;
+    const actual = _ as AutoCompletePath<InfiniteType<string>, 'foo.value'>;
     expectType<'foo' | 'foo.value'>(actual);
   }
 
@@ -393,7 +365,7 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
   /** TS should be able to infer the generic */ {
     const fn = <P extends PathString>(
-      path: AutoCompletePath<InfiniteType<string>, P, unknown>,
+      path: AutoCompletePath<InfiniteType<string>, P>,
     ) => path;
 
     const actual = fn('foo.bar');
@@ -402,7 +374,7 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
   /** TS should be able to infer the generic from an object property */ {
     interface FnProps<P extends PathString> {
-      path: AutoCompletePath<InfiniteType<string>, P, unknown>;
+      path: AutoCompletePath<InfiniteType<string>, P>;
     }
     const fn = <P extends PathString>({ path }: FnProps<P>) => path;
 
@@ -412,7 +384,7 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
   /** TS should be able to infer the generic from a nested object property */ {
     interface FnProps<P extends PathString> {
-      path: AutoCompletePath<InfiniteType<string>, P, unknown>;
+      path: AutoCompletePath<InfiniteType<string>, P>;
     }
     const fn = <P extends PathString>({
       nested: { path },

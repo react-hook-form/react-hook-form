@@ -288,12 +288,11 @@ type SuggestPathsImpl<T, PT extends PathTuple, U, VPT extends PathTuple> =
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type SuggestPaths<T, PT extends PathTuple, U> = SuggestPathsImpl<
+export type SuggestPaths<
   T,
-  PT,
-  U,
-  ValidPathPrefix<T, PT>
->;
+  PT extends PathTuple,
+  U = unknown,
+> = SuggestPathsImpl<T, PT, U, ValidPathPrefix<T, PT>>;
 
 /**
  * Type to implement {@link AutoCompletePath} without having to compute the
@@ -337,7 +336,7 @@ type AutoCompletePathImpl<T, PS extends PathString, U, PT extends PathTuple> =
 export type AutoCompletePath<
   T,
   PS extends PathString,
-  U,
+  U = unknown,
 > = AutoCompletePathImpl<T, PS, U, SplitPathString<PS>>;
 
 /**
@@ -361,8 +360,7 @@ export type AutoCompletePath<
  */
 export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
-  TPathString,
-  unknown
+  TPathString
 >;
 
 /**
