@@ -3,7 +3,7 @@ import { Primitive } from '../utils';
 
 import {
   ArrayKey,
-  EvaluateKeyList,
+  EvaluatePath,
   IsTuple,
   SplitPathString,
   TupleKey,
@@ -87,7 +87,7 @@ export type FieldArrayPath<TFieldValues extends FieldValues> =
  * PathValue<[number, string], '1'> = string
  * ```
  */
-export type PathValue<T, P extends Path<T> | ArrayPath<T>> = EvaluateKeyList<
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> = EvaluatePath<
   T,
   SplitPathString<P>
 >;

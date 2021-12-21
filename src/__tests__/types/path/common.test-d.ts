@@ -3,11 +3,11 @@ import { expectType } from 'tsd';
 import {
   ArrayKey,
   AsKey,
-  AsKeyList,
+  AsPathTuple,
   EvaluateKey,
-  EvaluateKeyList,
+  EvaluatePath,
   IsTuple,
-  JoinKeyList,
+  JoinPathTuple,
   SplitPathString,
   ToKey,
   TupleKey,
@@ -73,14 +73,14 @@ import {
   }
 }
 
-/** {@link AsKeyList} */ {
-  /** it should behave like a noop type when a KeyList is passed */ {
-    const actual = _ as AsKeyList<['foo']>;
+/** {@link AsPathTuple} */ {
+  /** it should behave like a noop type when a PathTuple is passed */ {
+    const actual = _ as AsPathTuple<['foo']>;
     expectType<['foo']>(actual);
   }
 
-  /** it should evaluate to never if not a KeyList is passed */ {
-    const actual = _ as AsKeyList<[42]>;
+  /** it should evaluate to never if not a PathTuple is passed */ {
+    const actual = _ as AsPathTuple<[42]>;
     expectType<never>(actual);
   }
 }
@@ -112,29 +112,29 @@ import {
   }
 }
 
-/** {@link JoinKeyList} */ {
-  /** it should join the KeyList */ {
-    const actual = _ as JoinKeyList<['foo', 'bar', '0', 'baz']>;
+/** {@link JoinPathTuple} */ {
+  /** it should join the PathTuple */ {
+    const actual = _ as JoinPathTuple<['foo', 'bar', '0', 'baz']>;
     expectType<'foo.bar.0.baz'>(actual);
   }
 
-  /** it should join a KeyList of length 1 */ {
-    const actual = _ as JoinKeyList<['foo']>;
+  /** it should join a PathTuple of length 1 */ {
+    const actual = _ as JoinPathTuple<['foo']>;
     expectType<'foo'>(actual);
   }
 
-  /** it should evaluate to never when passed an empty KeyList */ {
-    const actual = _ as JoinKeyList<[]>;
+  /** it should evaluate to never when passed an empty PathTuple */ {
+    const actual = _ as JoinPathTuple<[]>;
     expectType<never>(actual);
   }
 
   /** it should be implemented tail recursively */ {
-    const actual = _ as JoinKeyList<HundredTuple<'foo'>>;
+    const actual = _ as JoinPathTuple<HundredTuple<'foo'>>;
     expectType<HundredPathString<'foo'>>(actual);
   }
 
   /** it should work on unions */ {
-    const actual = _ as JoinKeyList<['foo', 'bar'] | ['bar', 'foo']>;
+    const actual = _ as JoinPathTuple<['foo', 'bar'] | ['bar', 'foo']>;
     expectType<'foo.bar' | 'bar.foo'>(actual);
   }
 }
@@ -199,9 +199,9 @@ import {
   }
 }
 
-/** {@link EvaluateKeyList} */ {
+/** {@link EvaluatePath} */ {
   /** it should traverse an object */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<number>,
       ['foo', 'foo', 'value']
     >;
@@ -209,7 +209,7 @@ import {
   }
 
   /** it should traverse a tuple */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<boolean>,
       ['bar', '0', 'value']
     >;
@@ -217,7 +217,7 @@ import {
   }
 
   /** it should traverse an array */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<boolean>,
       ['baz', '42', 'value']
     >;
@@ -225,20 +225,17 @@ import {
   }
 
   /** it should evaluate to never if the path is not valid */ {
-    const actual = _ as EvaluateKeyList<InfiniteType<string>, ['foobar']>;
+    const actual = _ as EvaluatePath<InfiniteType<string>, ['foobar']>;
     expectType<undefined>(actual);
   }
 
   /** it should be implemented tail recursively */ {
-    const actual = _ as EvaluateKeyList<
-      InfiniteType<string>,
-      HundredTuple<'foo'>
-    >;
+    const actual = _ as EvaluatePath<InfiniteType<string>, HundredTuple<'foo'>>;
     expectType<InfiniteType<string>>(actual);
   }
 
   /** it should work on path unions */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<number>,
       ['foo', 'foo'] | ['foo', 'value']
     >;
@@ -246,7 +243,7 @@ import {
   }
 
   /** it should evaluate to never if one of the paths doesn't exist */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<number>,
       ['foo', 'value'] | ['foo', 'foobar']
     >;
@@ -254,7 +251,7 @@ import {
   }
 
   /** it should work on type unions */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<number> | InfiniteType<string>,
       ['foo', 'value']
     >;
@@ -262,7 +259,7 @@ import {
   }
 
   /** it should evaluate to never if the path doesn't exist in one of the types */ {
-    const actual = _ as EvaluateKeyList<
+    const actual = _ as EvaluatePath<
       InfiniteType<number> | Nested<string>,
       ['foo', 'value']
     >;
@@ -270,7 +267,7 @@ import {
   }
 
   /** it should evaluate to any if the type is any */ {
-    const actual = _ as EvaluateKeyList<any, [string]>;
+    const actual = _ as EvaluatePath<any, [string]>;
     expectType<any>(actual);
   }
 }

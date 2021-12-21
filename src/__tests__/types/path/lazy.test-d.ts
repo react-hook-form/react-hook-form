@@ -14,7 +14,7 @@ import {
   SuggestParentPath,
   SuggestPaths,
   UnionToIntersection,
-  ValidKeyListPrefix,
+  ValidPathPrefix,
 } from '../../../types/path/lazy';
 import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
 
@@ -188,9 +188,9 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
   }
 }
 
-/** {@link ValidKeyListPrefix} */ {
+/** {@link ValidPathPrefix} */ {
   /** it should return the entire path if it is valid */ {
-    const actual = _ as ValidKeyListPrefix<
+    const actual = _ as ValidPathPrefix<
       InfiniteType<string>,
       ['foo', 'bar', '0', 'baz', '42']
     >;
@@ -198,7 +198,7 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
   }
 
   /** it should return the longest valid prefix */ {
-    const actual = _ as ValidKeyListPrefix<
+    const actual = _ as ValidPathPrefix<
       InfiniteType<string>,
       ['foo', 'bar', '0', 'ba', '42']
     >;
@@ -206,12 +206,12 @@ import { _, HundredTuple, InfiniteType, Nested } from '../__fixtures__';
   }
 
   /** it should return an empty tuple when the path is an empty tuple */ {
-    const actual = _ as ValidKeyListPrefix<InfiniteType<string>, []>;
+    const actual = _ as ValidPathPrefix<InfiniteType<string>, []>;
     expectType<[]>(actual);
   }
 
   /** it should be implemented tail recursively */ {
-    const actual = _ as ValidKeyListPrefix<
+    const actual = _ as ValidPathPrefix<
       InfiniteType<string>,
       HundredTuple<'foo'>
     >;

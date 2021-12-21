@@ -62,30 +62,30 @@ export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
  * Type which describes a path through an object
  * as a list of individual {@link Key}s.
  */
-export type KeyList = Key[];
+export type PathTuple = Key[];
 
 /**
- * Type to assert that a type is a {@link KeyList}.
- * @typeParam T - type which may be a {@link KeyList}
+ * Type to assert that a type is a {@link PathTuple}.
+ * @typeParam T - type which may be a {@link PathTuple}
  */
-export type AsKeyList<T> = Extract<T, KeyList>;
+export type AsPathTuple<T> = Extract<T, PathTuple>;
 
 /**
  * Type to implement {@link SplitPathString} tail recursively.
  * @typeParam PS - remaining {@link PathString} which should be split into its
  *                 individual {@link Key}s
- * @typeParam KL - accumulator of the {@link Key}s which have been split from
+ * @typeParam PT - accumulator of the {@link Key}s which have been split from
  *                 the original {@link PathString} already
  */
 type SplitPathStringImpl<
   PS extends PathString,
-  KL extends KeyList,
+  PT extends PathTuple,
 > = PS extends `${infer K}.${infer R}`
-  ? SplitPathStringImpl<R, [...KL, K]>
-  : [...KL, PS];
+  ? SplitPathStringImpl<R, [...PT, K]>
+  : [...PT, PS];
 
 /**
- * Type to split a {@link PathString} into a {@link KeyList}.
+ * Type to split a {@link PathString} into a {@link PathTuple}.
  * The individual {@link Key}s may be empty strings.
  * @typeParam PS  - {@link PathString} which should be split into its
  *                  individual {@link Key}s
@@ -102,29 +102,32 @@ export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
 >;
 
 /**
- * Type to implement {@link JoinKeyList} tail-recursively.
- * @typeParam KL - remaining {@link Key}s which needs to be joined
+ * Type to implement {@link JoinPathTuple} tail-recursively.
+ * @typeParam PT - remaining {@link Key}s which needs to be joined
  * @typeParam PS - accumulator of the already joined {@link Key}s
  */
-type JoinKeyListImpl<KL extends KeyList, PS extends PathString> = KL extends [
-  infer K,
-  ...infer R
-]
-  ? JoinKeyListImpl<AsKeyList<R>, `${PS}.${AsKey<K>}`>
+type JoinPathTupleImpl<
+  PT extends PathTuple,
+  PS extends PathString,
+> = PT extends [infer K, ...infer R]
+  ? JoinPathTupleImpl<AsPathTuple<R>, `${PS}.${AsKey<K>}`>
   : PS;
 
 /**
- * Type to join a {@link KeyList} to a {@link PathString}.
- * @typeParam KL - {@link KeyList} which should be joined.
+ * Type to join a {@link PathTuple} to a {@link PathString}.
+ * @typeParam PT - {@link PathTuple} which should be joined.
  * @example
  * ```
- * JoinKeyList<['foo']> = 'foo'
- * JoinKeyList<['foo', 'bar', '0', 'baz']> = 'foo.bar.0.baz'
- * JoinKeyList<[]> = never
+ * JoinPathTuple<['foo']> = 'foo'
+ * JoinPathTuple<['foo', 'bar', '0', 'baz']> = 'foo.bar.0.baz'
+ * JoinPathTuple<[]> = never
  * ```
  */
-export type JoinKeyList<KL extends KeyList> = KL extends [infer K, ...infer R]
-  ? JoinKeyListImpl<AsKeyList<R>, AsKey<K>>
+export type JoinPathTuple<PT extends PathTuple> = PT extends [
+  infer K,
+  ...infer R
+]
+  ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>>
   : never;
 
 /**
@@ -150,18 +153,18 @@ export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
 /**
  * Type to evaluate the type which the given path points to.
  * @typeParam T  - deeply nested type which is indexed by the path
- * @typeParam KL - path into the deeply nested type
+ * @typeParam PT - path into the deeply nested type
  * @example
  * ```
- * EvaluateKeyList<{foo: {bar: string}}, ['foo', 'bar']> = string
- * EvaluateKeyList<[number, string], ['1']> = string
- * EvaluateKeyList<number, []> = number
- * EvaluateKeyList<number, ['foo']> = never
+ * EvaluatePath<{foo: {bar: string}}, ['foo', 'bar']> = string
+ * EvaluatePath<[number, string], ['1']> = string
+ * EvaluatePath<number, []> = number
+ * EvaluatePath<number, ['foo']> = never
  * ```
  */
-export type EvaluateKeyList<T, KL extends KeyList> = KL extends [
+export type EvaluatePath<T, PT extends PathTuple> = PT extends [
   infer K,
   ...infer R
 ]
-  ? EvaluateKeyList<EvaluateKey<T, AsKey<K>>, AsKeyList<R>>
+  ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
   : T;

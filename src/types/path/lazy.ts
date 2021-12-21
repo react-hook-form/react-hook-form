@@ -2,13 +2,13 @@ import { FieldValues } from '../fields';
 
 import {
   ArrayKey,
-  AsKeyList,
+  AsPathTuple,
   EvaluateKey,
-  EvaluateKeyList,
+  EvaluatePath,
   IsTuple,
-  JoinKeyList,
-  KeyList,
+  JoinPathTuple,
   PathString,
+  PathTuple,
   SplitPathString,
   ToKey,
   Traversable,
@@ -139,57 +139,57 @@ export type Keys<T, U = unknown> = [T] extends [Traversable]
   : never;
 
 /**
- * Type to implement {@link ValidKeyListPrefix} tail recursively.
+ * Type to implement {@link ValidPathPrefix} tail recursively.
  * @typeParam T   - type which the path should be checked against
- * @typeParam KL  - path which should exist within the given type
- * @typeParam VKL - accumulates the prefix of {@link Key}s which have been
+ * @typeParam PT  - path which should exist within the given type
+ * @typeParam VPT - accumulates the prefix of {@link Key}s which have been
  *                  confirmed to exist already
  */
-type ValidKeyListPrefixImpl<
+type ValidPathPrefixImpl<
   T,
-  KL extends KeyList,
-  VKL extends KeyList,
-> = KL extends [infer K, ...infer R]
+  PT extends PathTuple,
+  VPT extends PathTuple,
+> = PT extends [infer K, ...infer R]
   ? K extends Keys<T>
-    ? ValidKeyListPrefixImpl<
+    ? ValidPathPrefixImpl<
         EvaluateKey<T, K>,
-        AsKeyList<R>,
-        AsKeyList<[...VKL, K]>
+        AsPathTuple<R>,
+        AsPathTuple<[...VPT, K]>
       >
-    : VKL
-  : VKL;
+    : VPT
+  : VPT;
 
 /**
  * Type to find the longest path prefix which is still valid,
  * i.e. exists within the given type.
  * @typeParam T  - type which the path should be checked against
- * @typeParam KL - path which should exist within the given type
+ * @typeParam PT - path which should exist within the given type
  * @example
  * ```
- * ValidKeyListPrefix<{foo: {bar: string}}, ['foo', 'bar']> = ['foo', 'bar']
- * ValidKeyListPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
+ * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'bar']> = ['foo', 'bar']
+ * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
  * ```
  */
-export type ValidKeyListPrefix<T, KL extends KeyList> = ValidKeyListPrefixImpl<
+export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
   T,
-  KL,
+  PT,
   []
 >;
 
 /**
  * Type to check whether a path through a type exists.
  * @typeParam T  - type which the path should be checked against
- * @typeParam KL - path which should exist within the given type
+ * @typeParam PT - path which should exist within the given type
  * @example
  * ```
- * IsKeyListValid<{foo: {bar: string}}, ['foo', 'bar']> = true
- * IsKeyListValid<{foo: {bar: string}}, ['foo', 'ba']> = false
+ * IsPathValid<{foo: {bar: string}}, ['foo', 'bar']> = true
+ * IsPathValid<{foo: {bar: string}}, ['foo', 'ba']> = false
  * ```
  */
-export type IsKeyListValid<T, KL extends KeyList> = ValidKeyListPrefix<
+export type IsPathValid<T, PT extends PathTuple> = ValidPathPrefix<
   T,
-  KL
-> extends KL
+  PT
+> extends PT
   ? true
   : false;
 
@@ -211,7 +211,7 @@ export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
 
 /**
  * Type, which given a path, returns the parent path as a {@link PathString}
- * @typeParam KL - path represented as a {@link KeyList}
+ * @typeParam PT - path represented as a {@link PathTuple}
  * @example
  * ```
  * SuggestParentPath<['foo', 'bar', 'baz']> = 'foo.bar'
@@ -219,18 +219,18 @@ export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
  * SuggestParentPath<['foo']> = never
  * ```
  */
-export type SuggestParentPath<KL extends KeyList> = JoinKeyList<
-  DropLastElement<KL>
+export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
+  DropLastElement<PT>
 >;
 
 /**
  * Type to implement {@link SuggestChildPaths}.
- * @typeParam KL  - the current path as a {@link KeyList}
- * @typeParam TKL - the type at that path
+ * @typeParam PT  - the current path as a {@link PathTuple}
+ * @typeParam TPT - the type at that path
  * @typeParam U   - constraint type
  */
-type SuggestChildPathsImpl<KL extends KeyList, TKL, U> = JoinKeyList<
-  [...KL, Keys<TKL, U | Traversable>]
+type SuggestChildPathsImpl<PT extends PathTuple, TPT, U> = JoinPathTuple<
+  [...PT, Keys<TPT, U | Traversable>]
 >;
 
 /**
@@ -239,7 +239,7 @@ type SuggestChildPathsImpl<KL extends KeyList, TKL, U> = JoinKeyList<
  * Filters out paths whose value doesn't match the constraint type or
  * aren't traversable.
  * @typeParam T  - type which is indexed by the path
- * @typeParam KL - the current path into the type as a {@link KeyList}
+ * @typeParam PT - the current path into the type as a {@link PathTuple}
  * @typeParam U  - constraint type
  * @example
  * ```
@@ -249,34 +249,34 @@ type SuggestChildPathsImpl<KL extends KeyList, TKL, U> = JoinKeyList<
  * SuggestChildPaths<{foo: {bar: string[]}}, ['foo'], string> = 'foo.bar'
  * ```
  */
-export type SuggestChildPaths<T, KL extends KeyList, U> = SuggestChildPathsImpl<
-  KL,
-  EvaluateKeyList<T, KL>,
-  U
->;
+export type SuggestChildPaths<
+  T,
+  PT extends PathTuple,
+  U = unknown,
+> = SuggestChildPathsImpl<PT, EvaluatePath<T, PT>, U>;
 
 /**
  * Type to implement {@link SuggestPaths} without having to compute the valid
  * path prefix more than once.
- * @typeParam T    - type which is indexed by the path
- * @typeParam KL   - the current path into the type as a {@link KeyList}
- * @typeParam U    - constraint type
- * @typeParam VKLP - the valid path prefix for the given path
+ * @typeParam T   - type which is indexed by the path
+ * @typeParam PT  - the current path into the type as a {@link PathTuple}
+ * @typeParam U   - constraint type
+ * @typeParam VPT - the valid path prefix for the given path
  */
-type SuggestPathsImpl<T, KL extends KeyList, U, VKLP extends KeyList> =
-  | SuggestChildPaths<T, VKLP, U>
-  | (KL extends VKLP ? SuggestParentPath<VKLP> : JoinKeyList<VKLP>);
+type SuggestPathsImpl<T, PT extends PathTuple, U, VPT extends PathTuple> =
+  | SuggestChildPaths<T, VPT, U>
+  | (PT extends VPT ? SuggestParentPath<VPT> : JoinPathTuple<VPT>);
 
 /**
- * Type which given a type and a {@link KeyList} into it returns
+ * Type which given a type and a {@link PathTuple} into it returns
  *  - its parent/predecessor {@link PathString}
  *  - all its child/successor paths that point to a type which is either
  *    traversable or matches the constraint type.
  * In case the path does not exist it returns all of the above for the last
- * valid path (see {@link ValidKeyListPrefix}).
- * @typeParam T     - type which is indexed by the path
- * @typeParam KL    - the current path into the type as a {@link KeyList}
- * @typeParam U     - constraint type
+ * valid path (see {@link ValidPathPrefix}).
+ * @typeParam T  - type which is indexed by the path
+ * @typeParam PT - the current path into the type as a {@link PathTuple}
+ * @typeParam U  - constraint type
  * @example
  * ```
  * SuggestPaths<{foo: {bar: string}}, ['foo'], string> = 'foo.bar'
@@ -288,11 +288,11 @@ type SuggestPathsImpl<T, KL extends KeyList, U, VKLP extends KeyList> =
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type SuggestPaths<T, KL extends KeyList, U> = SuggestPathsImpl<
+export type SuggestPaths<T, PT extends PathTuple, U> = SuggestPathsImpl<
   T,
-  KL,
+  PT,
   U,
-  ValidKeyListPrefix<T, KL>
+  ValidPathPrefix<T, PT>
 >;
 
 /**
@@ -301,12 +301,12 @@ export type SuggestPaths<T, KL extends KeyList, U> = SuggestPathsImpl<
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
  * @typeParam U  - constraint type
- * @typeParam KL - the current path into the type as a {@link KeyList}
+ * @typeParam PT - the current path into the type as a {@link PathTuple}
  */
-type AutoCompletePathImpl<T, PS extends PathString, U, KL extends KeyList> =
-  | SuggestPaths<T, KL, U>
-  | (IsKeyListValid<T, KL> extends true
-      ? EvaluateKeyList<T, KL> extends U
+type AutoCompletePathImpl<T, PS extends PathString, U, PT extends PathTuple> =
+  | SuggestPaths<T, PT, U>
+  | (IsPathValid<T, PT> extends true
+      ? EvaluatePath<T, PT> extends U
         ? PS
         : never
       : never);
