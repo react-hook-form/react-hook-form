@@ -397,14 +397,14 @@ import {
     expectType<boolean>(actual);
   }
 
-  /** it should evaluate to never if the key is not valid */ {
+  /** it should add undefined if the key is not valid */ {
     const actual = _ as EvaluateKey<{ foo: string }, 'foobar'>;
-    expectType<never>(actual);
+    expectType<undefined>(actual);
   }
 
-  /** it should evaluate to never if the key is out of bounds */ {
+  /** it should evaluate to undefined if the key is out of bounds */ {
     const actual = _ as EvaluateKey<[string], '1'>;
-    expectType<never>(actual);
+    expectType<undefined>(actual);
   }
 
   /** it should work on path unions */ {
@@ -415,9 +415,9 @@ import {
     expectType<number | string>(actual);
   }
 
-  /** it should evaluate to never if one of the keys doesn't exist */ {
+  /** it should add undefined if one of the keys doesn't exist */ {
     const actual = _ as EvaluateKey<{ foo: number }, 'foo' | 'bar'>;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should work on unions of object */ {
@@ -440,14 +440,14 @@ import {
     expectType<number | string>(actual);
   }
 
-  /** it should evaluate to never if the key doesn't exist in one of the types */ {
+  /** it should add undefined if the key doesn't exist in one of the types */ {
     const actual = _ as EvaluateKey<{ foo: number } | { bar: string }, 'foo'>;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
-  /** it should evaluate to never if the key is out of bounds in one of the types */ {
+  /** it should add undefined if the key is out of bounds in one of the types */ {
     const actual = _ as EvaluateKey<[] | [number], '0'>;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should evaluate to any if the type is any */ {
@@ -532,7 +532,7 @@ import {
 
   /** it should evaluate to never if the path is not valid */ {
     const actual = _ as EvaluatePath<InfiniteType<string>, ['foobar']>;
-    expectType<never>(actual);
+    expectType<undefined>(actual);
   }
 
   /** it should be implemented tail recursively */ {
@@ -548,12 +548,12 @@ import {
     expectType<number | InfiniteType<number>>(actual);
   }
 
-  /** it should evaluate to never if one of the paths doesn't exist */ {
+  /** it should add undefined if one of the paths doesn't exist */ {
     const actual = _ as EvaluatePath<
       InfiniteType<number>,
       ['foo', 'value'] | ['foo', 'foobar']
     >;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should work on type unions */ {
@@ -564,12 +564,12 @@ import {
     expectType<number | string>(actual);
   }
 
-  /** it should evaluate to never if the path doesn't exist in one of the types */ {
+  /** it should add undefined if the path doesn't exist in one of the types */ {
     const actual = _ as EvaluatePath<
       InfiniteType<number> | Nested<string>,
       ['foo', 'value']
     >;
-    expectType<never>(actual);
+    expectType<number | undefined>(actual);
   }
 
   /** it should evaluate to any if the type is any */ {

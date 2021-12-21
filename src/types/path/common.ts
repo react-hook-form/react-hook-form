@@ -284,15 +284,15 @@ type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
 
 /**
  * Type to access a type by a key.
- * Returns never if it can't be indexed by that key.
+ * Returns undefined if it can't be indexed by that key.
  * @typeParam T - type which is indexed by the key
  * @typeParam K - key into the type
  * ```
  * TryAccess<{foo: string}, 'foo'> = string
- * TryAccess<string[], '1'> = never
+ * TryAccess<string[], '1'> = undefined
  * ```
  */
-type TryAccess<T, K> = [K] extends [keyof T] ? T[K] : never;
+type TryAccess<T, K> = K extends keyof T ? T[K] : undefined;
 
 /**
  * Type to evaluate the type which the given key points to.
@@ -305,13 +305,11 @@ type TryAccess<T, K> = [K] extends [keyof T] ? T[K] : never;
  * EvaluateKey<string[], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = HasKey<T, K> extends true
-  ? T extends ReadonlyArray<any>
-    ? IsTuple<T> extends true
-      ? TryAccess<T, K>
-      : T[number]
-    : TryAccess<MapKeys<T>, K>
-  : never;
+export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
+  ? IsTuple<T> extends true
+    ? TryAccess<T, K>
+    : T[number]
+  : TryAccess<MapKeys<T>, K>;
 
 /**
  * Type to implement {@link ValidPathPrefix} tail recursively.
@@ -374,11 +372,12 @@ export type HasPath<T, PT extends PathTuple> = ValidPathPrefix<T, PT> extends PT
  * EvaluatePath<{foo: {bar: string}}, ['foo', 'bar']> = string
  * EvaluatePath<[number, string], ['1']> = string
  * EvaluatePath<number, []> = number
- * EvaluatePath<number, ['foo']> = never
+ * EvaluatePath<number, ['foo']> = undefined
  * ```
  */
-export type EvaluatePath<T, PT extends PathTuple> = HasPath<T, PT> extends false
-  ? never
-  : PT extends [infer K, ...infer R]
+export type EvaluatePath<T, PT extends PathTuple> = PT extends [
+  infer K,
+  ...infer R
+]
   ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
   : T;
