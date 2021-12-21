@@ -370,6 +370,16 @@ import {
     expectType<number>(actual);
   }
 
+  /** it should traverse an index signature */ {
+    const actual = _ as EvaluateKey<Record<string, number>, string>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse a numeric index signature */ {
+    const actual = _ as EvaluateKey<Record<number, string>, `${number}`>;
+    expectType<string>(actual);
+  }
+
   /** it should traverse an object with numeric keys */ {
     const actual = _ as EvaluateKey<{ 0: number }, '0'>;
     expectType<number>(actual);
@@ -451,6 +461,16 @@ import {
       ['foo', 'foo', 'value']
     >;
     expectType<number>(actual);
+  }
+
+  /** it should traverse an index signature */ {
+    const actual = _ as EvaluatePath<Record<string, number>, [string]>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse a numeric index signature */ {
+    const actual = _ as EvaluatePath<Record<number, string>, [`${number}`]>;
+    expectType<string>(actual);
   }
 
   /** it should traverse a tuple */ {
