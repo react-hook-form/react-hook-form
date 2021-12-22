@@ -180,6 +180,22 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
 
+  /** it should not suggest any child or parent paths for path unions */ {
+    const actual = _ as AutoCompletePath<
+      InfiniteType<string>,
+      'bar.0' | 'foo.foo'
+    >;
+    expectType<'bar.0' | 'foo.foo'>(actual);
+  }
+
+  /** it should not suggest invalid paths for path unions */ {
+    const actual = _ as AutoCompletePath<
+      InfiniteType<string>,
+      'bar.0' | 'foo.foobar'
+    >;
+    expectType<'bar.0'>(actual);
+  }
+
   /** TS should be able to infer the generic */ {
     const fn = <P extends PathString>(
       path: AutoCompletePath<InfiniteType<string>, P>,
