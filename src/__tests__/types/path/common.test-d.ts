@@ -156,11 +156,6 @@ import {
 }
 
 /** {@link CheckKeyConstraint} */ {
-  /** it should convert the keys to string literals */ {
-    const actual = _ as CheckKeyConstraint<string[], ArrayKey, unknown>;
-    expectType<`${ArrayKey}`>(actual);
-  }
-
   /** it should remove the keys which don't match the constraint */ {
     const actual = _ as CheckKeyConstraint<
       { foo: string; bar: number },
@@ -245,11 +240,6 @@ import {
     const actual = _ as NumericKeys<{ 1: string } | [number, string]>;
     expectType<'1'>(actual);
   }
-
-  /** it should only return the keys of string properties */ {
-    const actual = _ as NumericKeys<{ 1: string; 2: number }, string>;
-    expectType<'1'>(actual);
-  }
 }
 
 /** {@link ObjectKeys} */ {
@@ -263,11 +253,6 @@ import {
       { foo: string; bar: number } | { bar: number; baz: string }
     >;
     expectType<'bar'>(actual);
-  }
-
-  /** it should only return the keys of string properties */ {
-    const actual = _ as ObjectKeys<{ foo: string; bar: number }, string>;
-    expectType<'foo'>(actual);
   }
 
   /** it should not return keys which contain dots */ {
@@ -320,6 +305,21 @@ import {
   /** it should only return the keys of string properties */ {
     const actual = _ as Keys<{ foo: string; bar: number }, string>;
     expectType<'foo'>(actual);
+  }
+
+  /** it should only return the keys of string properties */ {
+    const actual = _ as Keys<{ 1: string; 2: number }, string>;
+    expectType<'1'>(actual);
+  }
+
+  /** it should return only the required keys when undefined is excluded */ {
+    const actual = _ as Keys<{ foo: string; bar?: string }, string>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should return the optional keys when undefined is included */ {
+    const actual = _ as Keys<{ foo: string; bar?: string }, string | undefined>;
+    expectType<'foo' | 'bar'>(actual);
   }
 
   /** it should return the overlapping keys of a union of objects */ {
