@@ -103,7 +103,7 @@ export type UseFormProps<
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   DeepPartial<TFieldValues>,
-  true
+  boolean
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
