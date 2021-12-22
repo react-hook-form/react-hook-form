@@ -20,7 +20,7 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
     expectType<never>(actual);
   }
 
-  /** it should be distributive on unions */ {
+  /** it should be distributive on path unions */ {
     const actual = _ as SuggestParentPath<
       ['foo', 'bar', 'baz'] | ['foo', 'baz', 'bar', '42']
     >;
@@ -64,10 +64,23 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
     const actual = _ as SuggestChildPaths<InfiniteType<string>, ['foobar']>;
     expectType<never>(actual);
   }
+
+  /** it should be distributive on path unions */ {
+    const actual = _ as SuggestChildPaths<
+      InfiniteType<string>,
+      ['foo', 'foo'] | ['foo', 'bar']
+    >;
+    expectType<
+      | 'foo.foo.foo'
+      | 'foo.foo.bar'
+      | 'foo.foo.baz'
+      | 'foo.foo.value'
+      | 'foo.bar.0'
+    >(actual);
+  }
 }
 
-/** {@link SuggestPaths} */
-{
+/** {@link SuggestPaths} */ {
   /** it should suggest all top level paths when the path is empty */ {
     const actual = _ as SuggestPaths<InfiniteType<string>, []>;
     expectType<'foo' | 'bar' | 'baz' | 'value'>(actual);
@@ -95,6 +108,25 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
       number
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
+  }
+
+  /** it should be distributive on path unions */ {
+    const actual = _ as SuggestPaths<
+      InfiniteType<string>,
+      ['bar', '0'] | ['foo', 'foo']
+    >;
+    expectType<
+      | 'bar'
+      | 'foo'
+      | 'bar.0.foo'
+      | 'bar.0.bar'
+      | 'bar.0.baz'
+      | 'bar.0.value'
+      | 'foo.foo.foo'
+      | 'foo.foo.bar'
+      | 'foo.foo.baz'
+      | 'foo.foo.value'
+    >(actual);
   }
 }
 

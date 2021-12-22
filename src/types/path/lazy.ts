@@ -62,7 +62,7 @@ export type SuggestChildPaths<
   T,
   PT extends PathTuple,
   U = unknown,
-> = SuggestChildPathsImpl<PT, EvaluatePath<T, PT>, U>;
+> = PT extends any ? SuggestChildPathsImpl<PT, EvaluatePath<T, PT>, U> : never;
 
 /**
  * Type to implement {@link SuggestPaths} without having to compute the valid
