@@ -343,8 +343,6 @@ export type Keys<T, U = unknown> = IsAny<T> extends true
   ? Key
   : IsNever<NonNullable<T>> extends true
   ? never
-  : unknown extends U
-  ? KeysImpl<NonNullable<T>>
   : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, U>;
 
 /**
