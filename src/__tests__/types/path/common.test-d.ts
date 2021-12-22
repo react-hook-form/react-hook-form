@@ -413,6 +413,16 @@ import {
     expectType<boolean>(actual);
   }
 
+  /** it should handle optional keys */ {
+    const actual = _ as EvaluateKey<{ foo?: number }, 'foo'>;
+    expectType<number | undefined>(actual);
+  }
+
+  /** it should handle optional indexes */ {
+    const actual = _ as EvaluateKey<[foo?: number], '0'>;
+    expectType<number | undefined>(actual);
+  }
+
   /** it should add undefined if the key is not valid */ {
     const actual = _ as EvaluateKey<{ foo: string }, 'foobar'>;
     expectType<undefined>(actual);
