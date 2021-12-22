@@ -89,22 +89,6 @@ export type UnionToIntersection<U> = (
   : never;
 
 /**
- * Type which evaluates to true when the type is an array or tuple or is a union
- * which contains an array or tuple.
- * @typeParam T - type
- * @example
- * ```
- * ContainsIndexable<{foo: string}> = false
- * ContainsIndexable<{foo: string} | number[]> = true
- * ```
- */
-export type ContainsIndexable<T> = IsNever<
-  Extract<T, ReadonlyArray<any>>
-> extends true
-  ? false
-  : true;
-
-/**
  * Type to implement {@link SplitPathString} tail recursively.
  * @typeParam PS - remaining {@link PathString} which should be split into its
  *                 individual {@link Key}s
@@ -287,6 +271,22 @@ export type CheckKeyConstraint<T, K extends Key, U> = K extends any
     ? K
     : never
   : never;
+
+/**
+ * Type which evaluates to true when the type is an array or tuple or is a union
+ * which contains an array or tuple.
+ * @typeParam T - type
+ * @example
+ * ```
+ * ContainsIndexable<{foo: string}> = false
+ * ContainsIndexable<{foo: string} | number[]> = true
+ * ```
+ */
+export type ContainsIndexable<T> = IsNever<
+  Extract<T, ReadonlyArray<any>>
+> extends true
+  ? false
+  : true;
 
 /**
  * Type to implement {@link Keys} for non-nullable values.
