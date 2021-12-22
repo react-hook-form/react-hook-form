@@ -213,7 +213,7 @@ export type NumericKeys<
 > = UnionToIntersection<
   T extends ReadonlyArray<any>
     ? IsTuple<T> extends true
-      ? [CheckKeyConstraint<T, TupleKey<T>, U>]
+      ? [CheckKeyConstraint<Required<T>, TupleKey<T>, U>]
       : [CheckKeyConstraint<T, ArrayKey, U>]
     : [CheckKeyConstraint<T, NumericObjectKeys<T>, U>]
 >[never];
@@ -230,7 +230,7 @@ export type NumericKeys<
  * ```
  */
 export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
-  CheckKeyConstraint<T, keyof T, U>,
+  CheckKeyConstraint<Required<T>, keyof T, U>,
   `${string}.${string}`
 >;
 

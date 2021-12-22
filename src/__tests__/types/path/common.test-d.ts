@@ -292,6 +292,21 @@ import {
     expectType<`${number}`>(actual);
   }
 
+  /** it should return the optional keys of an object */ {
+    const actual = _ as Keys<{ foo?: string; bar?: number }>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the optional keys of a tuple */ {
+    const actual = _ as Keys<[foo?: string, bar?: number]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the optional keys of a union of tuple and object */ {
+    const actual = _ as Keys<[foo?: string] | { 0?: string; 1?: string }>;
+    expectType<'0'>(actual);
+  }
+
   /** it should only return the keys of string properties */ {
     const actual = _ as Keys<{ foo: string; bar: number }, string>;
     expectType<'foo'>(actual);
