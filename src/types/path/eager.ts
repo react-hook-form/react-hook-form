@@ -6,7 +6,7 @@ import {
   EvaluatePath,
   IsTuple,
   SplitPathString,
-  TupleKey,
+  TupleKeys,
 } from './common';
 
 /**
@@ -28,8 +28,8 @@ type PathImpl<K extends string | number, V> = V extends Primitive
 export type Path<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKey<T>]-?: PathImpl<K & string, T[K]>;
-      }[TupleKey<T>]
+        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
+      }[TupleKeys<T>]
     : PathImpl<ArrayKey, V>
   : {
       [K in keyof T]-?: PathImpl<K & string, T[K]>;
@@ -64,8 +64,8 @@ type ArrayPathImpl<K extends string | number, V> = V extends Primitive
 export type ArrayPath<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKey<T>]-?: ArrayPathImpl<K & string, T[K]>;
-      }[TupleKey<T>]
+        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
+      }[TupleKeys<T>]
     : ArrayPathImpl<ArrayKey, V>
   : {
       [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;

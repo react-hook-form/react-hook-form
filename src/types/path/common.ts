@@ -26,19 +26,6 @@ export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
   : true;
 
 /**
- * Type which given a tuple type returns its own keys, i.e. only its indices.
- * @typeParam T - tuple type
- * @example
- * ```
- * TupleKeys<[number, string]> = '0' | '1'
- * ```
- */
-export type TupleKey<T extends ReadonlyArray<any>> = Exclude<
-  keyof T,
-  keyof any[]
->;
-
-/**
  * Type which can be used to index an array or tuple type.
  */
 export type ArrayKey = number;
@@ -230,6 +217,19 @@ export type EvaluatePath<T, PT extends PathTuple> = PT extends [
   : T;
 
 /**
+ * Type which given a tuple type returns its own keys, i.e. only its indices.
+ * @typeParam T - tuple type
+ * @example
+ * ```
+ * TupleKeys<[number, string]> = '0' | '1'
+ * ```
+ */
+export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
+  keyof T,
+  keyof any[]
+>;
+
+/**
  * Type which extracts all numeric keys from an object.
  * @typeParam T - type
  * @example
@@ -256,7 +256,7 @@ type NumericObjectKeys<T extends Traversable> = ToKey<
 export type NumericKeys<T extends Traversable> = UnionToIntersection<
   T extends ReadonlyArray<any>
     ? IsTuple<T> extends true
-      ? [TupleKey<T>]
+      ? [TupleKeys<T>]
       : [ToKey<ArrayKey>]
     : [NumericObjectKeys<T>]
 >[never];

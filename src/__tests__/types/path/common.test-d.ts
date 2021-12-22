@@ -19,7 +19,7 @@ import {
   PathString,
   SplitPathString,
   ToKey,
-  TupleKey,
+  TupleKeys,
   UnionToIntersection,
   ValidPathPrefix,
 } from '../../../types/path/common';
@@ -44,14 +44,14 @@ import {
   }
 }
 
-/** {@link TupleKey} */ {
+/** {@link TupleKeys} */ {
   /** it should evaluate to the own keys of the tuple */ {
-    const actual = _ as TupleKey<[string, number]>;
+    const actual = _ as TupleKeys<[string, number]>;
     expectType<'0' | '1'>(actual);
   }
 
   /** it should evaluate to never if an array type is passed */ {
-    const actual = _ as TupleKey<string[]>;
+    const actual = _ as TupleKeys<string[]>;
     expectType<never>(actual);
   }
 }
