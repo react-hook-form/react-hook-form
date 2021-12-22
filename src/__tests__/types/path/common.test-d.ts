@@ -466,6 +466,26 @@ import {
     expectType<number | undefined>(actual);
   }
 
+  /** it should add null if the type may be null */ {
+    const actual = _ as EvaluateKey<null | { foo: string }, 'foo'>;
+    expectType<string | null>(actual);
+  }
+
+  /** it should add undefined if the type may be undefined */ {
+    const actual = _ as EvaluateKey<undefined | { foo: string }, 'foo'>;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should evaluate to undefined if the type is not traversable */ {
+    const actual = _ as EvaluateKey<string, 'foo'>;
+    expectType<undefined>(actual);
+  }
+
+  /** it should evaluate to undefined if the key is non-numeric*/ {
+    const actual = _ as EvaluateKey<string[], 'foo'>;
+    expectType<undefined>(actual);
+  }
+
   /** it should work on unions of object */ {
     const actual = _ as EvaluateKey<{ foo: number } | { foo: string }, 'foo'>;
     expectType<number | string>(actual);
@@ -658,6 +678,32 @@ import {
       ['foo', 'value'] | ['foo', 'foobar']
     >;
     expectType<number | undefined>(actual);
+  }
+
+  /** it should add null if the path contains a nullable */ {
+    const actual = _ as EvaluatePath<
+      { foo: null | { bar: string } },
+      ['foo', 'bar']
+    >;
+    expectType<string | null>(actual);
+  }
+
+  /** it should add undefined if the path contains an options */ {
+    const actual = _ as EvaluatePath<{ foo?: { bar: string } }, ['foo', 'bar']>;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should add undefined if the path contains an undefineable */ {
+    const actual = _ as EvaluatePath<
+      { foo: undefined | { bar: string } },
+      ['foo', 'bar']
+    >;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should evaluate to undefined if the type is not traversable */ {
+    const actual = _ as EvaluatePath<string, ['foo']>;
+    expectType<undefined>(actual);
   }
 
   /** it should work on type unions */ {

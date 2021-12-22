@@ -160,15 +160,38 @@ type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
 
 /**
  * Type to access a type by a key.
- * Returns undefined if it can't be indexed by that key.
+ *  - Returns undefined if it can't be indexed by that key.
+ *  - Returns null if the type is null.
+ *  - Returns undefined if the type is not traversable.
  * @typeParam T - type which is indexed by the key
  * @typeParam K - key into the type
  * ```
  * TryAccess<{foo: string}, 'foo'> = string
- * TryAccess<string[], '1'> = undefined
+ * TryAccess<{foo: string}, 'bar'> = undefined
+ * TryAccess<null, 'foo'> = null
+ * TryAccess<string, 'foo'> = undefined
  * ```
  */
-type TryAccess<T, K> = K extends keyof T ? T[K] : undefined;
+type TryAccess<T, K> = K extends keyof T
+  ? T[K]
+  : T extends null
+  ? null
+  : undefined;
+
+/**
+ * Type to access an array type by a key.
+ * Returns undefined if the key is non-numeric.
+ * @typeParam T - type which is indexed by the key
+ * @typeParam K - key into the type
+ * ```
+ * TryAccessArray<string[], '0'> = string
+ * TryAccessArray<string[], 'foo'> = undefined
+ * ```
+ */
+type TryAccessArray<
+  T extends ReadonlyArray<any>,
+  K extends Key,
+> = K extends `${ArrayKey}` ? T[number] : undefined;
 
 /**
  * Type to evaluate the type which the given key points to.
@@ -184,7 +207,7 @@ type TryAccess<T, K> = K extends keyof T ? T[K] : undefined;
 export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
     ? TryAccess<T, K>
-    : T[number]
+    : TryAccessArray<T, K>
   : TryAccess<MapKeys<T>, K>;
 
 /**
