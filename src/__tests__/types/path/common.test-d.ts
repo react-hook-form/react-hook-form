@@ -9,6 +9,7 @@ import {
   EvaluateKey,
   EvaluatePath,
   HasKey,
+  HasPath,
   IsTuple,
   JoinPathTuple,
   Key,
@@ -468,17 +469,17 @@ import {
   /** it should return the longest valid prefix */ {
     const actual = _ as ValidPathPrefix<
       InfiniteType<string>,
-      ['foo', 'bar', '0', 'ba', '42'] | ['foo', 'ba']
+      ['foo', 'bar', '0', 'ba', '42']
     >;
-    expectType<['foo', 'bar', '0'] | ['foo']>(actual);
+    expectType<['foo', 'bar', '0']>(actual);
   }
 
-  /** it should return the longest valid prefix */ {
+  /** it should return the longest common valid prefix */ {
     const actual = _ as ValidPathPrefix<
-      InfiniteType<string> | Nested<string>,
-      ['foo']
+      InfiniteType<string> | { foo: string },
+      ['foo', 'value']
     >;
-    expectType<[]>(actual);
+    expectType<['foo']>(actual);
   }
 
   /** it should return an empty tuple when the path is an empty tuple */ {
@@ -492,6 +493,64 @@ import {
       HundredTuple<'foo'>
     >;
     expectType<HundredTuple<'foo'>>(actual);
+  }
+
+  /** it should be distributive on path unions */ {
+    const actual = _ as ValidPathPrefix<
+      InfiniteType<string>,
+      ['foo', 'bar', '0', 'ba', '42'] | ['foo', 'ba']
+    >;
+    expectType<['foo', 'bar', '0'] | ['foo']>(actual);
+  }
+}
+
+/** {@link HasPath} */ {
+  /** it should return true if the path exists */ {
+    const actual = _ as HasPath<
+      InfiniteType<string>,
+      ['foo', 'bar', '0', 'baz', '42']
+    >;
+    expectType<true>(actual);
+  }
+
+  /** it should return false if the path doesn't exist */ {
+    const actual = _ as HasPath<
+      InfiniteType<string>,
+      ['foo', 'bar', '0', 'ba', '42']
+    >;
+    expectType<false>(actual);
+  }
+
+  /** it should return true if the path exist in both types */ {
+    const actual = _ as HasPath<
+      InfiniteType<string> | { foo: { bar: string } },
+      ['foo', 'bar']
+    >;
+    expectType<true>(actual);
+  }
+
+  /** it should return false if the path doesn't exist in both types */ {
+    const actual = _ as HasPath<
+      InfiniteType<string> | { foo: { bar: string } },
+      ['foo', 'value']
+    >;
+    expectType<false>(actual);
+  }
+
+  /** it should return false if either of the paths is invalid */ {
+    const actual = _ as HasPath<
+      InfiniteType<string>,
+      ['foo', 'bar'] | ['foo', 'ba']
+    >;
+    expectType<false>(actual);
+  }
+
+  /** it should return true if both of the path are valid */ {
+    const actual = _ as HasPath<
+      InfiniteType<string>,
+      ['foo', 'baz'] | ['foo', 'bar']
+    >;
+    expectType<true>(actual);
   }
 }
 
