@@ -481,7 +481,7 @@ import {
     expectType<undefined>(actual);
   }
 
-  /** it should evaluate to undefined if the key is non-numeric*/ {
+  /** it should evaluate to undefined if the key is non-numeric */ {
     const actual = _ as EvaluateKey<string[], 'foo'>;
     expectType<undefined>(actual);
   }
@@ -519,6 +519,21 @@ import {
   /** it should evaluate to any if the type is any */ {
     const actual = _ as EvaluateKey<any, string>;
     expectType<any>(actual);
+  }
+
+  /** it should access methods on primitives */ {
+    const actual = _ as EvaluateKey<string, 'toString'>;
+    expectType<() => string>(actual);
+  }
+
+  /** it should access methods on arrays */ {
+    const actual = _ as EvaluateKey<number[], 'toString'>;
+    expectType<() => string>(actual);
+  }
+
+  /** it should access methods on tuples */ {
+    const actual = _ as EvaluateKey<[number], 'toString'>;
+    expectType<() => string>(actual);
   }
 }
 
@@ -688,7 +703,7 @@ import {
     expectType<string | null>(actual);
   }
 
-  /** it should add undefined if the path contains an options */ {
+  /** it should add undefined if the path contains an optional */ {
     const actual = _ as EvaluatePath<{ foo?: { bar: string } }, ['foo', 'bar']>;
     expectType<string | undefined>(actual);
   }

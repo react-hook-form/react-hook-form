@@ -191,7 +191,7 @@ type TryAccess<T, K> = K extends keyof T
 type TryAccessArray<
   T extends ReadonlyArray<any>,
   K extends Key,
-> = K extends `${ArrayKey}` ? T[number] : undefined;
+> = K extends `${ArrayKey}` ? T[number] : TryAccess<T, K>;
 
 /**
  * Type to evaluate the type which the given key points to.
