@@ -29,6 +29,7 @@ import {
   HundredTuple,
   InfiniteType,
   Nested,
+  NullableInfiniteType,
 } from '../__fixtures__';
 
 /** {@link IsTuple} */ {
@@ -541,6 +542,14 @@ import {
   /** it should return the entire path if it is valid */ {
     const actual = _ as ValidPathPrefix<
       InfiniteType<string>,
+      ['foo', 'bar', '0', 'baz', '42']
+    >;
+    expectType<['foo', 'bar', '0', 'baz', '42']>(actual);
+  }
+
+  /** it should return the entire nullable path if it is valid */ {
+    const actual = _ as ValidPathPrefix<
+      NullableInfiniteType<string>,
       ['foo', 'bar', '0', 'baz', '42']
     >;
     expectType<['foo', 'bar', '0', 'baz', '42']>(actual);

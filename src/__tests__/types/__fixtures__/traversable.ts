@@ -7,6 +7,11 @@ interface Base<T, V> {
 
 export type InfiniteType<T> = Base<InfiniteType<T>, T>;
 
+export type NullableInfiniteType<T> =
+  | null
+  | undefined
+  | Partial<Base<NullableInfiniteType<T>, T>>;
+
 export type Depth3Type<T> = Base<Base<Base<never, T>, T>, T>;
 
 export interface Nested<T> {

@@ -41,7 +41,9 @@ type SuggestChildPathsImpl<
   U,
 > = IsNever<TPT> extends true
   ? never
-  : JoinPathTuple<[...PT, Keys<TPT, U | Traversable>]>;
+  : JoinPathTuple<
+      [...PT, Keys<TPT, U> | Keys<TPT, Traversable | undefined | null>]
+    >;
 
 /**
  * Type, which given a type and a path into the type, returns all paths as

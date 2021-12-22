@@ -7,7 +7,7 @@ import {
   SuggestParentPath,
   SuggestPaths,
 } from '../../../types/path/lazy';
-import { _, InfiniteType, Nested } from '../__fixtures__';
+import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
 
 /** {@link SuggestParentPath} */ {
   /** it should evaluate to the parent path */ {
@@ -36,6 +36,16 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
 
   /** it should suggest paths when the current path is not empty */ {
     const actual = _ as SuggestChildPaths<InfiniteType<string>, ['foo', 'foo']>;
+    expectType<'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'>(
+      actual,
+    );
+  }
+
+  /** it should suggest paths when the path is optional */ {
+    const actual = _ as SuggestChildPaths<
+      NullableInfiniteType<string>,
+      ['foo', 'foo']
+    >;
     expectType<'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'>(
       actual,
     );
@@ -110,6 +120,15 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
 
+  /** it should not suggest paths which point don't include null or undefined */ {
+    const actual = _ as SuggestPaths<
+      NullableInfiniteType<string>,
+      ['foo', 'foo'],
+      string
+    >;
+    expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
+  }
+
   /** it should be distributive on path unions */ {
     const actual = _ as SuggestPaths<
       InfiniteType<string>,
@@ -158,6 +177,33 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
       number
     >;
     expectType<'foo'>(actual);
+  }
+
+  /** it should suggest the current path if it has the correct value */ {
+    const actual = _ as AutoCompletePath<
+      InfiniteType<string>,
+      'foo.value',
+      string
+    >;
+    expectType<'foo' | 'foo.value'>(actual);
+  }
+
+  /** it should not suggest the current path if null and undefined are excluded */ {
+    const actual = _ as AutoCompletePath<
+      NullableInfiniteType<string>,
+      'foo.value',
+      string
+    >;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not suggest the current path if null and undefined are included */ {
+    const actual = _ as AutoCompletePath<
+      NullableInfiniteType<string>,
+      'foo.value',
+      string | null | undefined
+    >;
+    expectType<'foo' | 'foo.value'>(actual);
   }
 
   /** it should suggest paths which point to the correct type */ {
