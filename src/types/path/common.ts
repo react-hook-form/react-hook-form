@@ -237,9 +237,9 @@ export type EvaluatePath<T, PT extends PathTuple> = PT extends [
  * NumericObjectKeys<{0: string, '1': string, foo: string}> = '0' | '1'
  * ```
  */
-type NumericObjectKeys<T extends Traversable> = {
-  [K in keyof T]-?: Extract<keyof T, ArrayKey | `${ArrayKey}`>;
-}[keyof T];
+type NumericObjectKeys<T extends Traversable> = ToKey<
+  Extract<keyof T, ArrayKey | `${ArrayKey}`>
+>;
 
 /**
  * Type which extracts all numeric keys from an object, tuple, or array.
@@ -258,7 +258,7 @@ export type NumericKeys<T extends Traversable> = UnionToIntersection<
     ? IsTuple<T> extends true
       ? [TupleKey<T>]
       : [ToKey<ArrayKey>]
-    : [ToKey<NumericObjectKeys<T>>]
+    : [NumericObjectKeys<T>]
 >[never];
 
 /**
