@@ -5,6 +5,7 @@ import {
   EvaluatePath,
   HasPath,
   JoinPathTuple,
+  Key,
   Keys,
   PathString,
   PathTuple,
@@ -12,22 +13,6 @@ import {
   Traversable,
   ValidPathPrefix,
 } from './common';
-
-/**
- * Type to drop the last element from a tuple type
- * @typeParam T - tuple whose last element should be dropped
- * @example
- * ```
- * DropLastElement<[0, 1, 2]> = [0, 1]
- * DropLastElement<[]> = []
- * ```
- */
-export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
-  ...infer R,
-  any,
-]
-  ? R
-  : [];
 
 /**
  * Type, which given a path, returns the parent path as a {@link PathString}
@@ -40,7 +25,7 @@ export type DropLastElement<T extends ReadonlyArray<any>> = T extends [
  * ```
  */
 export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
-  DropLastElement<PT>
+  PT extends [...infer R, Key] ? R : []
 >;
 
 /**

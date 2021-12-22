@@ -3,24 +3,11 @@ import { expectType } from 'tsd';
 import { LazyArrayPath, PathString } from '../../../types';
 import {
   AutoCompletePath,
-  DropLastElement,
   SuggestChildPaths,
   SuggestParentPath,
   SuggestPaths,
 } from '../../../types/path/lazy';
 import { _, InfiniteType, Nested } from '../__fixtures__';
-
-/** {@link DropLastElement} */ {
-  /** it should remove the last element from a tuple */ {
-    const actual = _ as DropLastElement<[0, 1, 2]>;
-    expectType<[0, 1]>(actual);
-  }
-
-  /** it should return the empty tuple when passed the empty tuple */ {
-    const actual = _ as DropLastElement<[]>;
-    expectType<[]>(actual);
-  }
-}
 
 /** {@link SuggestParentPath} */ {
   /** it should evaluate to the parent path */ {
@@ -28,9 +15,16 @@ import { _, InfiniteType, Nested } from '../__fixtures__';
     expectType<'foo.bar'>(actual);
   }
 
-  /** it should evaluate to the never if there is no parent path */ {
+  /** it should evaluate to never if there is no parent path */ {
     const actual = _ as SuggestParentPath<['foo']>;
     expectType<never>(actual);
+  }
+
+  /** it should be distributive on unions */ {
+    const actual = _ as SuggestParentPath<
+      ['foo', 'bar', 'baz'] | ['foo', 'baz', 'bar', '42']
+    >;
+    expectType<'foo.bar' | 'foo.baz.bar'>(actual);
   }
 }
 
