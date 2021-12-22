@@ -294,4 +294,20 @@ import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as LazyArrayPath<InfiniteType<number[]>, 'foo.bar'>;
     expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
   }
+
+  /** it should accept non-primitive nullable arrays */ {
+    const actual = _ as LazyArrayPath<
+      { foo: { bar: object[] | null | undefined } },
+      'foo.bar'
+    >;
+    expectType<'foo' | `foo.bar` | `foo.bar.${number}`>(actual);
+  }
+
+  /** it should not accept non-primitive arrays with nullable values */ {
+    const actual = _ as LazyArrayPath<
+      { foo: { bar: Array<object | null | undefined> } },
+      'foo.bar'
+    >;
+    expectType<'foo' | `foo.bar.${number}`>(actual);
+  }
 }

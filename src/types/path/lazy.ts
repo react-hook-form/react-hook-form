@@ -230,7 +230,7 @@ export type LazyFieldPath<
 export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
   TPathString,
-  ReadonlyArray<Traversable>
+  ReadonlyArray<Traversable> | null | undefined
 >;
 
 /**
