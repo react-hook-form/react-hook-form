@@ -35,15 +35,9 @@ export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
  * @typeParam TPT - the type at that path
  * @typeParam U   - constraint type
  */
-type SuggestChildPathsImpl<
-  PT extends PathTuple,
-  TPT,
-  U,
-> = IsNever<TPT> extends true
-  ? never
-  : JoinPathTuple<
-      [...PT, Keys<TPT, U> | Keys<TPT, Traversable | undefined | null>]
-    >;
+type SuggestChildPathsImpl<PT extends PathTuple, TPT, U> = JoinPathTuple<
+  [...PT, Keys<TPT, U> | Keys<TPT, Traversable | undefined | null>]
+>;
 
 /**
  * Type, which given a type and a path into the type, returns all paths as
