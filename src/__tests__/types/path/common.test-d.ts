@@ -297,6 +297,16 @@ import {
     expectType<'foo' | 'bar'>(actual);
   }
 
+  /** it should return the keys of a nullable type */ {
+    const actual = _ as Keys<{ foo: string; bar: number } | null>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the keys of an undefinable type */ {
+    const actual = _ as Keys<{ foo: string; bar: number } | undefined>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
   /** it should return the optional keys of a tuple */ {
     const actual = _ as Keys<[foo?: string, bar?: number]>;
     expectType<'0' | '1'>(actual);
@@ -356,6 +366,16 @@ import {
 
   /** it should return never when given a string */ {
     const actual = _ as Keys<string>;
+    expectType<never>(actual);
+  }
+
+  /** it should return never when given undefined */ {
+    const actual = _ as Keys<undefined>;
+    expectType<never>(actual);
+  }
+
+  /** it should return never when given null */ {
+    const actual = _ as Keys<null>;
     expectType<never>(actual);
   }
 }

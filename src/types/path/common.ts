@@ -98,9 +98,9 @@ export type UnionToIntersection<U> = (
  * ContainsIndexable<{foo: string} | number[]> = true
  * ```
  */
-export type ContainsIndexable<T> = [Extract<T, ReadonlyArray<any>>] extends [
-  never,
-]
+export type ContainsIndexable<T> = IsNever<
+  Extract<T, ReadonlyArray<any>>
+> extends true
   ? false
   : true;
 
@@ -235,6 +235,19 @@ export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
 >;
 
 /**
+ * Type to implement {@link Keys} for non-nullable values.
+ * @typeParam T - non-nullable type whose property should be checked
+ * @typeParam U - constraint type
+ */
+type KeysImpl<T, U> = IsAny<T> extends true
+  ? Key
+  : [T] extends [Traversable]
+  ? ContainsIndexable<T> extends true
+    ? NumericKeys<T, U>
+    : ObjectKeys<T, U>
+  : never;
+
+/**
  * Type to find all properties of a type that match the constraint type
  * and return their keys.
  * If a union is passed, it evaluates to the overlapping keys.
@@ -249,13 +262,9 @@ export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
  * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
-export type Keys<T, U = unknown> = IsAny<T> extends true
-  ? Key
-  : [T] extends [Traversable]
-  ? ContainsIndexable<T> extends true
-    ? NumericKeys<T, U>
-    : ObjectKeys<T, U>
-  : never;
+export type Keys<T, U = unknown> = [T] extends [null | undefined]
+  ? never
+  : KeysImpl<NonNullable<T>, U>;
 
 /**
  * Type to check whether a {@link Key} is present in a type.
