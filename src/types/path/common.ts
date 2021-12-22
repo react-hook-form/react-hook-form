@@ -239,9 +239,7 @@ export type ObjectKeys<T extends Traversable, U = unknown> = Exclude<
  * @typeParam T - non-nullable type whose property should be checked
  * @typeParam U - constraint type
  */
-type KeysImpl<T, U> = IsAny<T> extends true
-  ? Key
-  : [T] extends [Traversable]
+type KeysImpl<T, U> = [T] extends [Traversable]
   ? ContainsIndexable<T> extends true
     ? NumericKeys<T, U>
     : ObjectKeys<T, U>
@@ -256,13 +254,18 @@ type KeysImpl<T, U> = IsAny<T> extends true
  * @example
  * ```
  * Keys<{foo: string, bar: string}, string> = 'foo' | 'bar'
+ * Keys<{foo?: string, bar?: string}> = 'foo' | 'bar'
  * Keys<{foo: string, bar: number}, string> = 'foo'
  * Keys<[string, number], string> = '0'
  * Keys<string[], string> = `${number}`
  * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
-export type Keys<T, U = unknown> = [T] extends [null | undefined]
+export type Keys<T, U = unknown> = IsAny<T> extends true
+  ? Key
+  : IsNever<T> extends true
+  ? Key
+  : IsNever<NonNullable<T>> extends true
   ? never
   : KeysImpl<NonNullable<T>, U>;
 
