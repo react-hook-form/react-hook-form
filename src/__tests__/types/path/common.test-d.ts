@@ -646,6 +646,16 @@ import {
     >;
     expectType<true>(actual);
   }
+
+  /** it should evaluate to true when any is encountered */ {
+    const actual = _ as HasPath<{ foo: any }, ['foo', 'bar', 'baz']>;
+    expectType<true>(actual);
+  }
+
+  /** it should evaluate to false when any is not encountered */ {
+    const actual = _ as HasPath<{ foo: any }, ['bar', 'baz']>;
+    expectType<false>(actual);
+  }
 }
 
 /** {@link EvaluatePath} */ {
@@ -752,8 +762,18 @@ import {
   }
 
   /** it should evaluate to any if the type is any */ {
-    const actual = _ as EvaluatePath<any, [string]>;
+    const actual = _ as EvaluatePath<any, ['foo']>;
     expectType<any>(actual);
+  }
+
+  /** it should evaluate to any if it encounters any */ {
+    const actual = _ as EvaluatePath<{ foo: any }, ['foo', 'bar', 'baz']>;
+    expectType<any>(actual);
+  }
+
+  /** it should not evaluate to any if it doesn't encounter any */ {
+    const actual = _ as EvaluatePath<{ foo: any }, ['bar', 'baz']>;
+    expectType<undefined>(actual);
   }
 
   /** it should not create a union which is too complex to represent */ {

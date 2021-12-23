@@ -188,6 +188,16 @@ import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
     expectType<'foo' | 'foo.value'>(actual);
   }
 
+  /** it should accept string when any is encountered */ {
+    const actual = _ as AutoCompletePath<{ foo: any }, 'foo.bar.baz', string>;
+    expectType<'foo.bar' | 'foo.bar.baz' | `foo.bar.baz.${string}`>(actual);
+  }
+
+  /** it should accept string when the type is any */ {
+    const actual = _ as AutoCompletePath<any, string, string>;
+    expectType<string>(actual);
+  }
+
   /** it should not suggest the current path if null and undefined are excluded */ {
     const actual = _ as AutoCompletePath<
       NullableInfiniteType<string>,
