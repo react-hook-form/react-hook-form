@@ -1,13 +1,7 @@
 import { FieldValues } from '../fields';
 import { Primitive } from '../utils';
 
-import {
-  ArrayKey,
-  EvaluatePath,
-  IsTuple,
-  SplitPathString,
-  TupleKeys,
-} from './common';
+import { ArrayKey, IsTuple, TupleKeys } from './common';
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -87,10 +81,25 @@ export type FieldArrayPath<TFieldValues extends FieldValues> =
  * PathValue<[number, string], '1'> = string
  * ```
  */
-export type PathValue<T, P extends Path<T> | ArrayPath<T>> = EvaluatePath<
-  T,
-  SplitPathString<P>
->;
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
+  ? P extends `${infer K}.${infer R}`
+    ? K extends keyof T
+      ? R extends Path<T[K]>
+        ? PathValue<T[K], R>
+        : never
+      : K extends `${ArrayKey}`
+      ? T extends ReadonlyArray<infer V>
+        ? PathValue<V, R & Path<V>>
+        : never
+      : never
+    : P extends keyof T
+    ? T[P]
+    : P extends `${ArrayKey}`
+    ? T extends ReadonlyArray<infer V>
+      ? V
+      : never
+    : never
+  : never;
 
 /**
  * See {@link PathValue}
