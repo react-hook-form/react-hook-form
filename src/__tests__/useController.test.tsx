@@ -591,7 +591,7 @@ describe('useController', () => {
     });
   });
 
-  it('should remount with input with defaultValue when shouldUnregister set to true', () => {
+  it('should remount with input with current formValue', () => {
     let data: unknown;
 
     function Input<T>({
@@ -643,7 +643,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     act(() => {
-      expect(data).toEqual('test');
+      expect(data).toBeUndefined();
     });
   });
 

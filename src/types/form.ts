@@ -103,7 +103,7 @@ export type UseFormProps<
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   DeepPartial<TFieldValues>,
-  true
+  boolean
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
@@ -264,7 +264,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
 ) => void;
 
 export type UseFormReset<TFieldValues extends FieldValues> = (
-  values?: DefaultValues<TFieldValues>,
+  values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
@@ -325,6 +325,7 @@ export type BatchFieldArrayUpdate = <
   >[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
+  shouldSetError?: boolean,
 ) => void;
 
 export type Control<

@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 
@@ -210,5 +211,70 @@ describe('replace', () => {
     });
 
     screen.getByText('{"test":[{"id":"whatever","test":"data"}]}');
+  });
+
+  it('should not replace errors state', async () => {
+    const App = () => {
+      const {
+        control,
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm({
+        defaultValues: {
+          test: [
+            {
+              firstName: '',
+            },
+          ],
+        },
+      });
+      const { fields, replace } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      React.useEffect(() => {
+        trigger();
+      }, [trigger]);
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.firstName` as const, {
+                required: 'This is required',
+              })}
+            />
+          ))}
+          <p>{errors.test?.[0].firstName?.message}</p>
+          <button
+            type={'button'}
+            onClick={() =>
+              replace([
+                {
+                  firstName: 'firstName',
+                },
+              ])
+            }
+          >
+            update
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('This is required');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(async () => {
+      screen.getByText('This is required');
+    });
   });
 });
