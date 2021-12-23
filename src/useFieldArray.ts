@@ -260,6 +260,7 @@ export const useFieldArray = <
       fieldArrayValues,
       true,
       false,
+      false,
     );
   };
 
@@ -282,6 +283,7 @@ export const useFieldArray = <
       {},
       fieldArrayValues,
       true,
+      false,
       false,
     );
   };

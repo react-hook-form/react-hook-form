@@ -181,6 +181,7 @@ export function createFormControl<
     values = [],
     shouldSetValues = true,
     shouldSetFields = true,
+    shouldSetError = true,
   ) => {
     _stateFlags.action = true;
 
@@ -189,7 +190,7 @@ export function createFormControl<
       shouldSetValues && set(_fields, name, fieldValues);
     }
 
-    if (Array.isArray(get(_formState.errors, name))) {
+    if (shouldSetError && Array.isArray(get(_formState.errors, name))) {
       const errors = method(get(_formState.errors, name), args.argA, args.argB);
       shouldSetValues && set(_formState.errors, name, errors);
       unsetEmptyArray(_formState.errors, name);

@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.22.1",
+  "version": "7.22.4",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -43,6 +43,9 @@
     "tsd": "tsd src/__tests__/types",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
+    "api-extractor": "api-extractor run --local",
+    "api-extractor:build": "yarn build:esm && yarn api-extractor",
+    "api-extractor:ci": "api-extractor run",
     "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "yarn && yarn lint:fix && yarn type && yarn test && yarn build",
     "bundlesize": "yarn build:modern && bundlesize",
@@ -66,6 +69,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.19.2",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@testing-library/jest-dom": "^5.16.1",
