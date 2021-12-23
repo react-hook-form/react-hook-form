@@ -8,6 +8,7 @@
     "jsx": "react",
     "skipLibCheck": true,
     "declaration": true,
+    "declarationMap": true,
     "noEmit": true,
     "esModuleInterop": true,
     "lib": ["dom", "dom.iterable", "esnext"],
