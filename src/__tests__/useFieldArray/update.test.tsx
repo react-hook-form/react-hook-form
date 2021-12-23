@@ -462,4 +462,67 @@ describe('update', () => {
       expect(resolver).toBeCalled();
     });
   });
+
+  it('should not update errors state', async () => {
+    const App = () => {
+      const {
+        control,
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm({
+        defaultValues: {
+          test: [
+            {
+              firstName: '',
+            },
+          ],
+        },
+      });
+      const { fields, update } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      React.useEffect(() => {
+        trigger();
+      }, [trigger]);
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.firstName` as const, {
+                required: 'This is required',
+              })}
+            />
+          ))}
+          <p>{errors.test?.[0].firstName?.message}</p>
+          <button
+            type={'button'}
+            onClick={() =>
+              update(0, {
+                firstName: 'firstName',
+              })
+            }
+          >
+            update
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(async () => {
+      screen.getByText('This is required');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(async () => {
+      screen.getByText('This is required');
+    });
+  });
 });
