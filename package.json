@@ -65,6 +65,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.19.2",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@testing-library/jest-dom": "^5.16.1",
