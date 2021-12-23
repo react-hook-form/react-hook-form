@@ -477,6 +477,11 @@ import {
     expectType<string | undefined>(actual);
   }
 
+  /** it should add null and undefined if the type may be null or undefined */ {
+    const actual = _ as EvaluateKey<null | undefined | { foo: string }, 'foo'>;
+    expectType<string | null | undefined>(actual);
+  }
+
   /** it should evaluate to undefined if the type is not traversable */ {
     const actual = _ as EvaluateKey<string, 'foo'>;
     expectType<undefined>(actual);
