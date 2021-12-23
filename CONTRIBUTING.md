@@ -12,31 +12,35 @@ Here is a quick guide to doing code contributions to the library.
 
 3. Install packages by running:
 
-	> yarn
+    > yarn
 	
 4. If you've added a code that should be tested, ensure the test suite still passes.
 
-	> yarn test
+    > yarn test
 	
 5. Try to write some unit tests to cover as much of your code as possible.
 
 6. Ensure your code lints without errors.
 
-	> yarn lint
+    > yarn lint
 	
 7. Ensure the automation suite passes.
 
-	> yarn start:app && yarn cypress
+    > yarn start:app && yarn cypress
 	
 8. Ensure build passes.
 
-	> yarn build
+    > yarn build
+
+9. Ensure exports are documented. (requires build)
+
+    > yarn api-extractor
 	
-9. Push your branch: `git push -u origin your-meaningful-branch-name`
+11. Push your branch: `git push -u origin your-meaningful-branch-name`
 
-10. Submit a pull request to the upstream react-hook-form repository.
+12. Submit a pull request to the upstream react-hook-form repository.
 
-11. Choose a descriptive title and describe your changes briefly.
+13. Choose a descriptive title and describe your changes briefly.
 
 ## Coding style
 

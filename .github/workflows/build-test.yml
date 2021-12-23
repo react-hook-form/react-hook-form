@@ -22,3 +22,6 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: API Extractor
+        run: yarn api-extractor:ci

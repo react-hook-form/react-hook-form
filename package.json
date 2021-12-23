@@ -42,6 +42,8 @@
     "test:native": "TEST_ENV=native yarn test",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
+    "api-extractor": "api-extractor run --local",
+    "api-extractor:ci": "api-extractor run",
     "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "yarn && yarn lint:fix && yarn type && yarn test && yarn build",
     "bundlesize": "yarn build:modern && bundlesize",
