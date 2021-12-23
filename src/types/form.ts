@@ -325,6 +325,7 @@ export type BatchFieldArrayUpdate = <
   >[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
+  shouldSetError?: boolean,
 ) => void;
 
 export type Control<
