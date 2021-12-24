@@ -75,6 +75,17 @@ export type UnionToIntersection<U> = (
   ? I
   : never;
 
+/**
+ * Type which appends a {@link Key} to the {@link PathTuple} only if it is not
+ * blank, i.e. not the empty string.
+ * @typeParam PT - path
+ * @typeParam K  - key
+ * @example
+ * ```
+ * AppendNonBlankKey<['foo'], 'bar'> = ['foo', 'bar']
+ * AppendNonBlankKey<['foo'], ''> = ['foo']
+ * ```
+ */
 type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
   ? PT
   : [...PT, K];
