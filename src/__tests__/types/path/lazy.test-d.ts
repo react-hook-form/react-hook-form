@@ -179,6 +179,28 @@ import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
     expectType<'foo'>(actual);
   }
 
+  /** it should not accept trailing dots */ {
+    const actual = _ as AutoCompletePath<InfiniteType<string>, 'foo.'>;
+    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(actual);
+  }
+
+  /** it should not accept leading dots */ {
+    const actual = _ as AutoCompletePath<InfiniteType<string>, '.foo'>;
+    expectType<'foo' | 'foo.foo' | 'foo.bar' | 'foo.baz' | 'foo.value'>(actual);
+  }
+
+  /** it should not accept repeated dots */ {
+    const actual = _ as AutoCompletePath<InfiniteType<string>, 'foo..foo'>;
+    expectType<
+      | 'foo'
+      | 'foo.foo'
+      | 'foo.foo.foo'
+      | 'foo.foo.bar'
+      | 'foo.foo.baz'
+      | 'foo.foo.value'
+    >(actual);
+  }
+
   /** it should suggest the current path if it has the correct value */ {
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
