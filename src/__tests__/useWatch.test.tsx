@@ -1081,6 +1081,27 @@ describe('useWatch', () => {
       screen.getByText('123');
     });
 
+    it('should fallback to inline defaultValue with reset API', () => {
+      const App = () => {
+        const { control, reset } = useForm();
+        const value = useWatch({
+          name: 'test',
+          defaultValue: 'yes',
+          control,
+        });
+
+        React.useEffect(() => {
+          reset({});
+        }, [reset]);
+
+        return <p>{value ? 'yes' : 'no'}</p>;
+      };
+
+      render(<App />);
+
+      screen.getByText('yes');
+    });
+
     describe('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
       it('should return current value with radio type', async () => {
