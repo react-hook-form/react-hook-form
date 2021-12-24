@@ -113,27 +113,34 @@ export type SuggestPaths<
 type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
 
 /**
+ * Type to check the current path against the constraint type.
+ * @typeParam T  - type which is indexed by the path
+ * @typeParam PS - the current path into the type as a {@link PathString}
+ * @typeParam PT - the current path into the type as a {@link PathTuple}
+ * @typeParam U  - constraint type
+ */
+type AutoCompletePathCheckConstraint<
+  T,
+  PS extends PathString,
+  PT extends PathTuple,
+  U,
+> = HasPath<T, PT> extends true
+  ? EvaluatePath<T, PT> extends U
+    ? Exclude<PS, ''>
+    : never
+  : never;
+
+/**
  * Type to implement {@link AutoCompletePath} without having to compute the
  * key list more than once.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
- * @typeParam U  - constraint type
  * @typeParam PT - the current path into the type as a {@link PathTuple}
- * @typeParam S  - flag whether paths need to be suggested
+ * @typeParam U  - constraint type
  */
-type AutoCompletePathImpl<
-  T,
-  PS extends PathString,
-  U,
-  PT extends PathTuple,
-  S extends boolean,
-> =
-  | (S extends true ? SuggestPaths<T, PT, U> : never)
-  | (HasPath<T, PT> extends true
-      ? EvaluatePath<T, PT> extends U
-        ? Exclude<PS, ''>
-        : never
-      : never);
+type AutoCompletePathImpl<T, PS extends PathString, PT extends PathTuple, U> =
+  | SuggestPaths<T, PT, U>
+  | AutoCompletePathCheckConstraint<T, PS, PT, U>;
 
 /**
  * Type which given a type and a {@link PathString} into it returns
@@ -168,9 +175,9 @@ export type AutoCompletePath<
   PS extends PathString,
   U = unknown,
 > = IsPathUnion<PS> extends false
-  ? AutoCompletePathImpl<T, PS, U, SplitPathString<PS>, true>
+  ? AutoCompletePathImpl<T, PS, SplitPathString<PS>, U>
   : PS extends any
-  ? AutoCompletePathImpl<T, PS, U, SplitPathString<PS>, false>
+  ? AutoCompletePathCheckConstraint<T, PS, SplitPathString<PS>, U>
   : never;
 
 /**
