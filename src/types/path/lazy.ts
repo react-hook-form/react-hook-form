@@ -127,8 +127,8 @@ type AutoCompletePathCheckConstraint<
   U,
 > = HasPath<T, PT> extends true
   ? EvaluatePath<T, PT> extends U
-    ? JoinPathTuple<PT> extends PS
-      ? Exclude<PS, ''>
+    ? PS extends JoinPathTuple<PT>
+      ? PS
       : JoinPathTuple<PT>
     : never
   : never;
