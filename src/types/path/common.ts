@@ -75,6 +75,10 @@ export type UnionToIntersection<U> = (
   ? I
   : never;
 
+type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
+  ? PT
+  : [...PT, K];
+
 /**
  * Type to implement {@link SplitPathString} tail recursively.
  * @typeParam PS - remaining {@link PathString} which should be split into its
@@ -86,8 +90,8 @@ type SplitPathStringImpl<
   PS extends PathString,
   PT extends PathTuple,
 > = PS extends `${infer K}.${infer R}`
-  ? SplitPathStringImpl<R, [...PT, K]>
-  : [...PT, PS];
+  ? SplitPathStringImpl<R, AppendNonBlankKey<PT, K>>
+  : AppendNonBlankKey<PT, PS>;
 
 /**
  * Type to split a {@link PathString} into a {@link PathTuple}.
@@ -98,7 +102,7 @@ type SplitPathStringImpl<
  * ```
  * SplitPathString<'foo'> = ['foo']
  * SplitPathString<'foo.bar.0.baz'> = ['foo', 'bar', '0', 'baz']
- * SplitPathString<'.'> = ['', '']
+ * SplitPathString<'.'> = []
  * ```
  */
 export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
@@ -273,7 +277,7 @@ export type NumericKeys<T extends Traversable> = UnionToIntersection<
  */
 export type ObjectKeys<T extends Traversable> = Exclude<
   ToKey<keyof T>,
-  `${string}.${string}`
+  `${string}.${string}` | ''
 >;
 
 /**

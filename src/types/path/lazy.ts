@@ -131,7 +131,7 @@ type AutoCompletePathImpl<
   | (S extends true ? SuggestPaths<T, PT, U> : never)
   | (HasPath<T, PT> extends true
       ? EvaluatePath<T, PT> extends U
-        ? PS
+        ? Exclude<PS, ''>
         : never
       : never);
 

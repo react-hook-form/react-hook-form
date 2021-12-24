@@ -108,9 +108,14 @@ import {
     expectType<['foo']>(actual);
   }
 
-  /** it should split a PathString containing only a "." */ {
+  /** it should return an empty tuple for a blank PathString */ {
+    const actual = _ as SplitPathString<''>;
+    expectType<[]>(actual);
+  }
+
+  /** it should return an empty tuple for a PathString containing only a "." */ {
     const actual = _ as SplitPathString<'.'>;
-    expectType<['', '']>(actual);
+    expectType<[]>(actual);
   }
 
   /** it should be implemented tail recursively */ {
@@ -121,6 +126,16 @@ import {
   /** it should work on unions */ {
     const actual = _ as SplitPathString<'foo.bar' | 'bar.foo'>;
     expectType<['foo', 'bar'] | ['bar', 'foo']>(actual);
+  }
+
+  /** it should split a PathString containing a number template */ {
+    const actual = _ as SplitPathString<`foo.bar.${number}.baz`>;
+    expectType<['foo', 'bar', `${number}`, 'baz']>(actual);
+  }
+
+  /** it should split a PathString containing a string template */ {
+    const actual = _ as SplitPathString<`foo.bar.${string}.baz`>;
+    expectType<['foo', 'bar', string, 'baz']>(actual);
   }
 }
 
@@ -258,6 +273,11 @@ import {
 
   /** it should not return keys which contain dots */ {
     const actual = _ as ObjectKeys<{ foo: string; 'foo.bar': number }>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not return blank keys */ {
+    const actual = _ as ObjectKeys<{ foo: string; '': number }>;
     expectType<'foo'>(actual);
   }
 }
