@@ -114,6 +114,7 @@ type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
 
 /**
  * Type to check the current path against the constraint type.
+ * Returns the path if it is valid and matches the constraint type.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
  * @typeParam PT - the current path into the type as a {@link PathTuple}
