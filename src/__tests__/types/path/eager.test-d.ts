@@ -35,6 +35,20 @@ import { _, Depth3Type } from '../__fixtures__';
     expectType<'foo' | `foo.${number}` | `foo.${number}.bar`>(actual);
   }
 
+  /** it should not include non-overlapping paths */ {
+    const actual = _ as Path<
+      { foo: { baz: string } } | { bar: { baz: string } }
+    >;
+    expectType<never>(actual);
+  }
+
+  /** it should include overlapping paths */ {
+    const actual = _ as Path<
+      { foo: { bar: string } } | { foo: { baz: string } }
+    >;
+    expectType<'foo'>(actual);
+  }
+
   /** it should not include keys containing dots */ {
     const actual = _ as Path<{ foo: { 'foo.bar': string } }>;
     expectType<'foo'>(actual);

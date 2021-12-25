@@ -356,6 +356,22 @@ import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
     >;
     expectType<'foo' | `foo.42` | `foo.42.bar`>(actual);
   }
+
+  /** it should not accept non-overlapping paths */ {
+    const actual = _ as AutoCompletePath<
+      { foo: { baz: string } } | { bar: { baz: string } },
+      'foo.baz'
+    >;
+    expectType<never>(actual);
+  }
+
+  /** it should suggest/accept only overlapping paths */ {
+    const actual = _ as AutoCompletePath<
+      { foo: { bar: string } } | { foo: { baz: string } },
+      'foo'
+    >;
+    expectType<'foo'>(actual);
+  }
 }
 
 /** {@link LazyArrayPath} */ {
