@@ -314,6 +314,48 @@ import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
     const actual = fn({ nested: { path: 'foo.bar' } });
     expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
   }
+
+  /** it should not suggest keys containing dots */ {
+    const actual = _ as AutoCompletePath<{ foo: { 'foo.bar': string } }, 'foo'>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not suggest blank keys */ {
+    const actual = _ as AutoCompletePath<{ foo: { '': string } }, 'foo'>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should suggest index signatures */ {
+    const actual = _ as AutoCompletePath<
+      { foo: Record<string, { bar: string }> },
+      `foo.${string}`
+    >;
+    expectType<'foo' | `foo.${string}` | `foo.${string}.bar`>(actual);
+  }
+
+  /** it should suggest the exact path through the index signature */ {
+    const actual = _ as AutoCompletePath<
+      { foo: Record<string, { bar: string }> },
+      'foo.42'
+    >;
+    expectType<'foo' | `foo.42` | `foo.42.bar`>(actual);
+  }
+
+  /** it should suggest numeric index signatures */ {
+    const actual = _ as AutoCompletePath<
+      { foo: Record<number, { bar: string }> },
+      `foo.${number}`
+    >;
+    expectType<'foo' | `foo.${number}` | `foo.${number}.bar`>(actual);
+  }
+
+  /** it should suggest the exact path through the numeric index signature */ {
+    const actual = _ as AutoCompletePath<
+      { foo: Record<number, { bar: string }> },
+      'foo.42'
+    >;
+    expectType<'foo' | `foo.42` | `foo.42.bar`>(actual);
+  }
 }
 
 /** {@link LazyArrayPath} */ {

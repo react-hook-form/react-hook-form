@@ -16,13 +16,43 @@ import { _, Depth3Type } from '../__fixtures__';
   }
 
   /** it should include paths through tuples */ {
-    const actual = _ as Path<{ foo: [string, number] }>;
-    expectType<'foo' | 'foo.0' | 'foo.1'>(actual);
+    const actual = _ as Path<{ foo: [string, { bar: string }] }>;
+    expectType<'foo' | 'foo.0' | 'foo.1' | 'foo.1.bar'>(actual);
   }
 
   /** it should include paths through arrays */ {
-    const actual = _ as Path<{ foo: string[] }>;
-    expectType<'foo' | `foo.${number}`>(actual);
+    const actual = _ as Path<{ foo: Array<{ bar: string }> }>;
+    expectType<'foo' | `foo.${number}` | `foo.${number}.bar`>(actual);
+  }
+
+  /** it should include index signatures */ {
+    const actual = _ as Path<{ foo: Record<string, { bar: string }> }>;
+    expectType<'foo' | `foo.${string}` | `foo.${string}.bar`>(actual);
+  }
+
+  /** it should include numeric index signatures */ {
+    const actual = _ as Path<{ foo: Record<number, { bar: string }> }>;
+    expectType<'foo' | `foo.${number}` | `foo.${number}.bar`>(actual);
+  }
+
+  /** it should not include keys containing dots */ {
+    const actual = _ as Path<{ foo: { 'foo.bar': string } }>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not include blank keys */ {
+    const actual = _ as Path<{ foo: { '': string } }>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should accept string when any is encountered */ {
+    const actual = _ as Path<{ foo: any }>;
+    expectType<'foo' | `foo.${string}`>(actual);
+  }
+
+  /** it should accept string when the type is any */ {
+    const actual = _ as Path<any>;
+    expectType<string>(actual);
   }
 
   /** it should return the numeric keys of an array */ {
