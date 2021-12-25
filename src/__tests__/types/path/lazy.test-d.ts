@@ -7,7 +7,7 @@ import {
   SuggestParentPath,
   SuggestPaths,
 } from '../../../types/path/lazy';
-import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
+import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
 
 /** {@link SuggestParentPath} */ {
   /** it should evaluate to the parent path */ {
@@ -305,11 +305,9 @@ import { _, InfiniteType, Nested, NullableInfiniteType } from '../__fixtures__';
 
   /** TS should be able to infer the generic from a nested object property */ {
     interface FnProps<P extends PathString> {
-      path: AutoCompletePath<InfiniteType<string>, P>;
+      nested: { path: AutoCompletePath<InfiniteType<string>, P> };
     }
-    const fn = <P extends PathString>({
-      nested: { path },
-    }: Nested<FnProps<P>>) => path;
+    const fn = <P extends PathString>({ nested: { path } }: FnProps<P>) => path;
 
     const actual = fn({ nested: { path: 'foo.bar' } });
     expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);

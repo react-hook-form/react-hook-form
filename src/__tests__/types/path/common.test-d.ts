@@ -28,7 +28,6 @@ import {
   HundredPathString,
   HundredTuple,
   InfiniteType,
-  Nested,
   NullableInfiniteType,
 } from '../__fixtures__';
 
@@ -775,7 +774,7 @@ import {
 
   /** it should add undefined if the path doesn't exist in one of the types */ {
     const actual = _ as EvaluatePath<
-      InfiniteType<number> | Nested<string>,
+      InfiniteType<number> | { other: string },
       ['foo', 'value']
     >;
     expectType<number | undefined>(actual);

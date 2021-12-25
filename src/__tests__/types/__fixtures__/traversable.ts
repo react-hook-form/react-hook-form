@@ -5,15 +5,15 @@ interface Base<T, V> {
   value: V;
 }
 
+type NullableBase<T, V> = null | undefined | Partial<Base<T, V>>;
+
 export type InfiniteType<T> = Base<InfiniteType<T>, T>;
 
-export type NullableInfiniteType<T> =
-  | null
-  | undefined
-  | Partial<Base<NullableInfiniteType<T>, T>>;
+export type NullableInfiniteType<T> = NullableBase<InfiniteType<T>, T>;
 
 export type Depth3Type<T> = Base<Base<Base<never, T>, T>, T>;
 
-export interface Nested<T> {
-  nested: T;
-}
+export type NullableDepth3Type<T> = NullableBase<
+  NullableBase<NullableBase<never, T>, T>,
+  T
+>;
