@@ -127,7 +127,7 @@
       "yarn lint:fix",
       "yarn prettier:fix"
     ],
-    "*.{md,json,yml}": [
+    "*.{json,yml}": [
       "prettier --write"
     ]
   },
