@@ -28,6 +28,7 @@
     "src/*.test.tsx",
     "src/*.test-d.ts",
     "src/*.test-d.tsx",
+    "src/__tests__",
     "src/__mocks__"
   ]
 }
