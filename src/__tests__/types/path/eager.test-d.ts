@@ -2,7 +2,7 @@ import { expectType } from 'tsd';
 
 import { ArrayPath, FieldPathValues, Path, PathValue } from '../../../types';
 import { Key } from '../../../types/path/common';
-import { _, Depth3Type } from '../__fixtures__';
+import { _, Depth3Type, NullableDepth2Type } from '../__fixtures__';
 
 /** {@link Path} */ {
   /** it should evaluate to never for an empty object */ {
@@ -47,6 +47,30 @@ import { _, Depth3Type } from '../__fixtures__';
       { foo: { bar: string } } | { foo: { baz: string } }
     >;
     expectType<'foo'>(actual);
+  }
+
+  /** it should work on nullable/optional types */ {
+    const actual = _ as Path<NullableDepth2Type<string>>;
+    expectType<
+      | 'foo'
+      | 'bar'
+      | 'baz'
+      | 'foo.bar'
+      | 'foo.baz'
+      | 'value'
+      | 'foo.foo'
+      | 'foo.value'
+      | 'bar.0'
+      | 'bar.0.foo'
+      | 'bar.0.bar'
+      | 'bar.0.baz'
+      | 'bar.0.value'
+      | `baz.${number}`
+      | `baz.${number}.bar`
+      | `baz.${number}.foo`
+      | `baz.${number}.baz`
+      | `baz.${number}.value`
+    >(actual);
   }
 
   /** it should not include keys containing dots */ {
