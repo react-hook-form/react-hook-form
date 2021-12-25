@@ -44,7 +44,7 @@ Here is a quick guide to doing code contributions to the library.
 
 ## Coding style
 
-Please follow the coding style of the project. React Hook Form uses eslint and prettier. If possible, enable their respective plugins in your editor to get real-time feedback. The linting can be run manually with the following command: `yarn lint:fix`
+Please follow the coding style of the project. React Hook Form uses eslint and prettier. If possible, enable their respective plugins in your editor to get real-time feedback. The linting can be run manually with the following command: `yarn lint:fix` and `yarn prettier`
 
 ## License
 
