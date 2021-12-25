@@ -2686,4 +2686,31 @@ describe('useFieldArray', () => {
 
     expect(controlObj._fields.items.length).toEqual(2);
   });
+
+  it('should avoid omit keyName when defaultValues contains keyName attribute', () => {
+    let getValuesMethod: Function = () => {};
+
+    const App = () => {
+      const { control, getValues } = useForm({
+        defaultValues: {
+          test: [{ id: '1234', test: 'data' }],
+        },
+      });
+
+      getValuesMethod = getValues;
+
+      useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return null;
+    };
+
+    render(<App />);
+
+    expect(getValuesMethod()).toEqual({
+      test: [{ id: '1234', test: 'data' }],
+    });
+  });
 });

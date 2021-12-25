@@ -19,7 +19,7 @@ jobs:
           yarn type
 
       - name: Test
-        run: | 
+        run: |
           yarn test --ci
           yarn tsd
 

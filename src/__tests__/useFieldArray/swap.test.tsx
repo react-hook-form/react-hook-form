@@ -366,4 +366,127 @@ describe('swap', () => {
       expect(resolver).toBeCalled();
     });
   });
+
+  it('should not omit keyName when provided', async () => {
+    type FormValues = {
+      test: {
+        test: string;
+        id: string;
+      }[];
+    };
+
+    const App = () => {
+      const [data, setData] = React.useState<unknown>([]);
+      const { control, register, handleSubmit } = useForm<FormValues>({
+        defaultValues: {
+          test: [
+            { id: '1234', test: 'data' },
+            { id: '4567', test: 'data1' },
+          ],
+        },
+      });
+
+      const { fields, swap } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form onSubmit={handleSubmit(setData)}>
+          {fields.map((field, index) => {
+            return <input key={field.id} {...register(`test.${index}.test`)} />;
+          })}
+          <button
+            type={'button'}
+            onClick={() => {
+              swap(0, 1);
+            }}
+          >
+            swap
+          </button>
+          <button>submit</button>
+          <p>{JSON.stringify(data)}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    screen.getByText(
+      '{"test":[{"id":"4567","test":"data1"},{"id":"1234","test":"data"}]}',
+    );
+  });
+
+  it('should not omit keyName when provided and defaultValue is empty', async () => {
+    type FormValues = {
+      test: {
+        test: string;
+        id: string;
+      }[];
+    };
+    let k = 0;
+
+    const App = () => {
+      const [data, setData] = React.useState<unknown>([]);
+      const { control, register, handleSubmit } = useForm<FormValues>();
+
+      const { fields, append, swap } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form onSubmit={handleSubmit(setData)}>
+          {fields.map((field, index) => {
+            return <input key={field.id} {...register(`test.${index}.test`)} />;
+          })}
+          <button
+            type={'button'}
+            onClick={() => {
+              swap(0, 1);
+            }}
+          >
+            swap
+          </button>
+
+          <button
+            type={'button'}
+            onClick={() => {
+              append({
+                id: 'whatever' + k,
+                test: '1234' + k,
+              });
+              k = 1;
+            }}
+          >
+            append
+          </button>
+          <button>submit</button>
+          <p>{JSON.stringify(data)}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    screen.getByText(
+      '{"test":[{"id":"whatever1","test":"12341"},{"id":"whatever0","test":"12340"}]}',
+    );
+  });
 });

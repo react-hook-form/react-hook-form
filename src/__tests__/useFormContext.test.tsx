@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { useController } from '../useController';
 import { useForm } from '../useForm';
@@ -11,18 +10,29 @@ import { useWatch } from '../useWatch';
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
     const mockRegister = jest.fn();
-    const { result } = renderHook(() => useFormContext(), {
-      /* eslint-disable-next-line react/display-name */
-      wrapper: (props: { children?: React.ReactNode }) => (
-        // @ts-ignore
-        <FormProvider register={mockRegister} {...props} />
-      ),
-    });
-    const { register } = result.current;
+    const Test = () => {
+      const { register } = useFormContext();
 
-    act(() => {
-      register('test');
-    });
+      React.useEffect(() => {
+        register('test');
+      }, [register]);
+
+      return null;
+    };
+
+    const App = () => {
+      const methods = useForm();
+
+      return (
+        <FormProvider {...methods} register={mockRegister}>
+          <form>
+            <Test />
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
 
     expect(mockRegister).toHaveBeenCalled();
   });
