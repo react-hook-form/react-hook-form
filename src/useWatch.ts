@@ -87,6 +87,8 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
             ? { ...fieldValues }
             : Array.isArray(fieldValues)
             ? [...fieldValues]
+            : isUndefined(fieldValues)
+            ? defaultValue
             : fieldValues,
         );
       }

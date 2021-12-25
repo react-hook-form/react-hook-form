@@ -500,7 +500,8 @@ export function createFormControl<
       const fieldReference = field._f;
 
       if (fieldReference) {
-        set(_formValues, name, getFieldValueAs(value, fieldReference));
+        !fieldReference.disabled &&
+          set(_formValues, name, getFieldValueAs(value, fieldReference));
 
         fieldValue =
           isWeb && isHTMLElement(fieldReference.ref) && isNullOrUndefined(value)
@@ -950,7 +951,7 @@ export function createFormControl<
                 },
           });
 
-          !options.disabled && updateValidAndValue(name, false, fieldRef);
+          updateValidAndValue(name, false, fieldRef);
         } else {
           field = get(_fields, name, {});
 

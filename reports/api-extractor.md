@@ -19,16 +19,16 @@ export const appendErrors: (
 ) => {};
 
 // Warning: (ae-forgotten-export) The symbol "IsTuple" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "TupleKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "TupleKeys" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ArrayPathImpl" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export type ArrayPath<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKey<T>]-?: ArrayPathImpl<K & string, T[K]>;
-      }[TupleKey<T>]
+        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
+      }[TupleKeys<T>]
     : ArrayPathImpl<ArrayKey, V>
   : {
       [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
@@ -270,11 +270,11 @@ export type FieldArrayMethodProps = {
 // @public (undocumented)
 export type FieldArrayName = string;
 
-// @public (undocumented)
+// @public
 export type FieldArrayPath<TFieldValues extends FieldValues> =
   ArrayPath<TFieldValues>;
 
-// @public (undocumented)
+// @public
 export type FieldArrayPathValue<
   TFieldValues extends FieldValues,
   TFieldArrayPath extends FieldArrayPath<TFieldValues>,
@@ -318,16 +318,16 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   boolean
 >;
 
-// @public (undocumented)
+// @public
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-// @public (undocumented)
+// @public
 export type FieldPathValue<
   TFieldValues extends FieldValues,
   TFieldPath extends FieldPath<TFieldValues>,
 > = PathValue<TFieldValues, TFieldPath>;
 
-// @public (undocumented)
+// @public
 export type FieldPathValues<
   TFieldValues extends FieldValues,
   TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[],
@@ -417,10 +417,8 @@ export type InternalFieldName = string;
 // @public (undocumented)
 export type InternalNameSet = Set<InternalFieldName>;
 
-// @public (undocumented)
-export type IsAny<T> = boolean extends (T extends never ? true : false)
-  ? true
-  : false;
+// @public
+export type IsAny<T> = 0 extends 1 & T ? true : false;
 
 // @public (undocumented)
 export type IsFlatObject<T extends object> = Extract<
@@ -429,6 +427,9 @@ export type IsFlatObject<T extends object> = Extract<
 > extends never
   ? true
   : false;
+
+// @public
+export type IsNever<T> = [T] extends [never] ? true : false;
 
 // @public (undocumented)
 export type KeepStateOptions = Partial<{
@@ -441,6 +442,34 @@ export type KeepStateOptions = Partial<{
   keepIsValid: boolean;
   keepSubmitCount: boolean;
 }>;
+
+// Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Traversable" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<
+  T,
+  TPathString,
+  ReadonlyArray<Traversable> | null | undefined
+>;
+
+// @public
+export type LazyFieldArrayPath<
+  TFieldValues extends FieldValues,
+  TPathString extends PathString,
+> = LazyArrayPath<TFieldValues, TPathString>;
+
+// @public
+export type LazyFieldPath<
+  TFieldValues extends FieldValues,
+  TPathString extends PathString,
+> = LazyPath<TFieldValues, TPathString>;
+
+// @public
+export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<
+  T,
+  TPathString
+>;
 
 // @public (undocumented)
 export type LiteralUnion<T extends U, U extends Primitive> =
@@ -488,18 +517,21 @@ export type Noop = () => void;
 
 // Warning: (ae-forgotten-export) The symbol "PathImpl" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export type Path<T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKey<T>]-?: PathImpl<K & string, T[K]>;
-      }[TupleKey<T>]
+        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
+      }[TupleKeys<T>]
     : PathImpl<ArrayKey, V>
   : {
       [K in keyof T]-?: PathImpl<K & string, T[K]>;
     }[keyof T];
 
-// @public (undocumented)
+// @public
+export type PathString = string;
+
+// @public
 export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
@@ -954,14 +986,14 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 // @public (undocumented)
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
-  <TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
-  ): FieldPathValue<TFieldValues, TFieldName>;
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
   (
     callback: WatchObserver<TFieldValues>,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -1075,7 +1107,7 @@ export type WatchObserver<TFieldValues> = (
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:195:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:193:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

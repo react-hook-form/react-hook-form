@@ -11,16 +11,14 @@ import {
   FieldValues,
   InternalFieldName,
 } from './fields';
-import { Resolver } from './resolvers';
 import {
-  DeepMap,
-  DeepPartial,
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
-  Noop,
-} from './utils';
+} from './path';
+import { Resolver } from './resolvers';
+import { DeepMap, DeepPartial, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -184,14 +182,14 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
-  <TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
-  ): FieldPathValue<TFieldValues, TFieldName>;
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
   (
     callback: WatchObserver<TFieldValues>,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
