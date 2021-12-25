@@ -1,6 +1,6 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './utils';
+import { FieldArrayPath, FieldArrayPathValue } from './path';
 
 export type FieldArrayName = string;
 

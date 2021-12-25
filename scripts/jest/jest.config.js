@@ -14,7 +14,7 @@ const web = {
     name: 'Web',
     color: 'cyan',
   },
-  testMatch: ['**/__tests__/**/*.[jt]s?(x)'],
+  testMatch: ['**/__tests__/**/*.(spec|test).ts?(x)'],
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
   testEnvironment: 'jsdom',
 };
