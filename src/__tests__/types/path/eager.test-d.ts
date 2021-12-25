@@ -1,6 +1,7 @@
 import { expectType } from 'tsd';
 
 import { ArrayPath, FieldPathValues, Path, PathValue } from '../../../types';
+import { Key } from '../../../types/path/common';
 import { _, Depth3Type } from '../__fixtures__';
 
 /** {@link Path} */ {
@@ -22,6 +23,175 @@ import { _, Depth3Type } from '../__fixtures__';
   /** it should include paths through arrays */ {
     const actual = _ as Path<{ foo: string[] }>;
     expectType<'foo' | `foo.${number}`>(actual);
+  }
+
+  /** it should return the numeric keys of an object */ {
+    const actual = _ as Path<{ 0: string; '1': string; foo: string }>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the numeric keys of an array */ {
+    const actual = _ as Path<number[]>;
+    expectType<`${number}`>(actual);
+  }
+
+  /** it should return the numeric keys of a tuple */ {
+    const actual = _ as Path<[string, number]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the overlapping numeric keys of a tuple and array */ {
+    const actual = _ as Path<[number, string] | number[]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the overlapping numeric keys of an object and array */ {
+    const actual = _ as Path<{ 0: string; '1': string } | number[]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the overlapping numeric keys of an object and tuple */ {
+    const actual = _ as Path<{ 1: string } | [number, string]>;
+    expectType<'1'>(actual);
+  }
+
+  /** it should return the keys of an object */ {
+    const actual = _ as Path<{ foo: string; bar: number }>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the overlapping keys of a union of objects */ {
+    const actual = _ as Path<
+      { foo: string; bar: number } | { bar: number; baz: string }
+    >;
+    expectType<'bar'>(actual);
+  }
+
+  /** it should not return keys which contain dots */ {
+    const actual = _ as Path<{ foo: string; 'foo.bar': number }>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not return blank keys */ {
+    const actual = _ as Path<{ foo: string; '': number }>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should return the keys of an object */ {
+    const actual = _ as Path<{ foo: string; bar: number }>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the keys of a tuple */ {
+    const actual = _ as Path<[number, string]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the keys of an array */ {
+    const actual = _ as Path<string[]>;
+    expectType<`${number}`>(actual);
+  }
+
+  /** it should return the optional keys of an object */ {
+    const actual = _ as Path<{ foo?: string; bar?: number }>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the keys of a nullable type */ {
+    const actual = _ as Path<{ foo: string; bar: number } | null>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the keys of an undefinable type */ {
+    const actual = _ as Path<{ foo: string; bar: number } | undefined>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the optional keys of a tuple */ {
+    const actual = _ as Path<[foo?: string, bar?: number]>;
+    expectType<'0' | '1'>(actual);
+  }
+
+  /** it should return the optional keys of a union of tuple and object */ {
+    const actual = _ as Path<[foo?: string] | { 0?: string; 1?: string }>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should only return the keys of string properties */ {
+    const actual = _ as Path<{ foo: string; bar: number }, string>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should only return the keys of string properties */ {
+    const actual = _ as Path<{ 1: string; 2: number }, string>;
+    expectType<'1'>(actual);
+  }
+
+  /** it should return only the required keys when undefined is excluded */ {
+    const actual = _ as Path<{ foo: string; bar?: string }, string>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should return the optional keys when undefined is included */ {
+    const actual = _ as Path<{ foo: string; bar?: string }, string | undefined>;
+    expectType<'foo' | 'bar'>(actual);
+  }
+
+  /** it should return the overlapping keys of a union of objects */ {
+    const actual = _ as Path<
+      { foo: string; bar: number } | { bar: number; baz: string }
+    >;
+    expectType<'bar'>(actual);
+  }
+
+  /** it should return the keys of the tuple when given a tuple and an array */ {
+    const actual = _ as Path<number[] | [number]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return the overlapping keys when given a tuple and an object */ {
+    const actual = _ as Path<{ 0: string; 1: number } | [number]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return the overlapping keys when given a tuple and an object */ {
+    const actual = _ as Path<{ foo: string } | [number]>;
+    expectType<never>(actual);
+  }
+
+  /** it should return the numeric keys when given an array and an object */ {
+    const actual = _ as Path<{ 0: string; foo: number } | number[]>;
+    expectType<'0'>(actual);
+  }
+
+  /** it should return {@link Key} when given any */ {
+    const actual = _ as Path<any>;
+    expectType<Key>(actual);
+  }
+
+  /** it should return {@link Key} when given never */ {
+    const actual = _ as Path<never>;
+    expectType<Key>(actual);
+  }
+
+  /** it should return never when given unknown */ {
+    const actual = _ as Path<unknown>;
+    expectType<never>(actual);
+  }
+
+  /** it should return never when given a string */ {
+    const actual = _ as Path<string>;
+    expectType<never>(actual);
+  }
+
+  /** it should return never when given undefined */ {
+    const actual = _ as Path<undefined>;
+    expectType<never>(actual);
+  }
+
+  /** it should return never when given null */ {
+    const actual = _ as Path<null>;
+    expectType<never>(actual);
   }
 }
 
