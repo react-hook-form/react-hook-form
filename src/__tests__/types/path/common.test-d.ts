@@ -546,6 +546,11 @@ import {
     expectType<any>(actual);
   }
 
+  /** it should evaluate to never if the type is never */ {
+    const actual = _ as EvaluateKey<never, string>;
+    expectType<never>(actual);
+  }
+
   /** it should access methods on primitives */ {
     const actual = _ as EvaluateKey<string, 'toString'>;
     expectType<() => string>(actual);

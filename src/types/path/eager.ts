@@ -1,33 +1,59 @@
 import { FieldValues } from '../fields';
-import { Primitive } from '../utils';
+import { IsAny, IsNever, Primitive } from '../utils';
 
-import { ArrayKey, IsTuple, TupleKeys } from './common';
+import {
+  ArrayKey,
+  EvaluateKey,
+  IsTuple,
+  JoinPathTuple,
+  Key,
+  Keys,
+  PathString,
+  PathTuple,
+  Traversable,
+  TupleKeys,
+} from './common';
 
-/**
- * Helper type for recursively constructing paths through a type.
- * See {@link Path}
- */
-type PathImpl<K extends string | number, V> = V extends Primitive
-  ? `${K}`
-  : `${K}` | `${K}.${Path<V>}`;
+/** WIP */
+type CollectPathsImpl<
+  PT extends PathTuple,
+  T,
+  U,
+  NXK extends Key,
+  RPS extends PathString,
+> = IsNever<NXK> extends true
+  ? RPS
+  : NXK extends any
+  ? CollectPaths<[...PT, NXK], EvaluateKey<T, NXK>, U, RPS>
+  : never;
 
-/**
- * Type which eagerly collects all paths through a type
- * @typeParam T - type which should be introspected
- * @example
- * ```
- * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
- * ```
- */
-export type Path<T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
-      }[TupleKeys<T>]
-    : PathImpl<ArrayKey, V>
-  : {
-      [K in keyof T]-?: PathImpl<K & string, T[K]>;
-    }[keyof T];
+/** WIP */
+type AddPath<
+  PS extends PathString,
+  PT extends PathTuple,
+  K extends Key,
+> = IsNever<K> extends true ? PS : PS | JoinPathTuple<[...PT, K]>;
+
+/** WIP */
+type CollectPaths<
+  PT extends PathTuple,
+  T,
+  U,
+  RPS extends PathString,
+> = IsAny<T> extends true
+  ? AddPath<RPS, PT, Key>
+  : IsNever<T> extends true
+  ? AddPath<RPS, PT, Key>
+  : CollectPathsImpl<
+      PT,
+      T,
+      U,
+      Keys<T, Traversable | undefined | null>,
+      AddPath<RPS, PT, Keys<T, U>>
+    >;
+
+/** WIP */
+export type Path<T> = CollectPaths<[], T, unknown, never>;
 
 /**
  * See {@link Path}
@@ -72,9 +98,9 @@ export type FieldArrayPath<TFieldValues extends FieldValues> =
   ArrayPath<TFieldValues>;
 
 /**
- * Type to evaluate the type which the given path points to.
- * @typeParam T - deeply nested type which is indexed by the path
- * @typeParam P - path into the deeply nested type
+ * Type to evaluate the type which the given Path points to.
+ * @typeParam T - deeply nested type which is indexed by the Path
+ * @typeParam P - Path into the deeply nested type
  * @example
  * ```
  * PathValue<{foo: {bar: string}}, 'foo.bar'> = string
