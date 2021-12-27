@@ -119,11 +119,11 @@ describe('useFieldArray', () => {
 
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '41' }],
+        data: [{ name: '26' }],
       }),
     );
 
-    cy.get('#renderCount').contains('54');
+    cy.get('#renderCount').contains('33');
   });
 
   it('should behaviour correctly with defaultValue', () => {
