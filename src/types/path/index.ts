@@ -11,9 +11,3 @@ export {
   Path,
   PathValue,
 } from './eager';
-export {
-  LazyArrayPath,
-  LazyFieldArrayPath,
-  LazyFieldPath,
-  LazyPath,
-} from './lazy';

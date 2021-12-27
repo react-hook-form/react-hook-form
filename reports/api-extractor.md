@@ -297,21 +297,6 @@ export type KeepStateOptions = Partial<{
     keepSubmitCount: boolean;
 }>;
 
-// Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "Traversable" needs to be exported by the entry point index.d.ts
-//
-// @public
-export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<T, TPathString, ReadonlyArray<Traversable> | null | undefined>;
-
-// @public
-export type LazyFieldArrayPath<TFieldValues extends FieldValues, TPathString extends PathString> = LazyArrayPath<TFieldValues, TPathString>;
-
-// @public
-export type LazyFieldPath<TFieldValues extends FieldValues, TPathString extends PathString> = LazyPath<TFieldValues, TPathString>;
-
-// @public
-export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<T, TPathString>;
-
 // @public (undocumented)
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
     _?: never;
