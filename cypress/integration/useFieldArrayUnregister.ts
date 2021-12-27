@@ -28,7 +28,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true },
           { name: true },
@@ -53,8 +53,8 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
-          { conditional: true },
+          { name: true },
+          { name: false },
           { name: true, conditional: true },
           { name: true },
         ],
@@ -78,10 +78,10 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
-          { name: true, conditional: true },
-          { name: true, conditional: true },
-          { name: true, conditional: true },
+          { name: true },
+          { name: true },
+          { name: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true },
         ],
@@ -107,11 +107,11 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
+          { name: true },
+          { name: true },
           { name: true, conditional: true },
-          { name: true, conditional: true },
-          { name: true, conditional: true },
-          { name: true, conditional: true },
-          { name: true, conditional: true },
+          { name: true },
+          { name: true },
           { name: true },
         ],
       }),

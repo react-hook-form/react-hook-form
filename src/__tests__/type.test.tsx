@@ -1,9 +1,16 @@
-import * as React from 'react';
+import React from 'react';
 
 import { Controller } from '../controller';
-import { Path, UseFormReturn } from '../types';
+import {
+  FieldErrors,
+  FieldPath,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { useWatch } from '../useWatch';
 
 test('should not throw type error with path name', () => {
   type MissingCompanyNamePath = Path<{
@@ -24,28 +31,6 @@ test('should not throw type error with path name', () => {
   ];
 
   test;
-});
-
-test('all APIs except watch are compatible with a superset of FormFields', () => {
-  type FormFieldsSmall = {
-    gender: 'female' | 'male';
-    firstName: string;
-    lastName: string;
-  };
-
-  type FormFieldsBig = {
-    foo: string;
-    bar: 'test1' | 'test2';
-    test2: boolean;
-  } & FormFieldsSmall;
-
-  function App() {
-    const form = useForm<FormFieldsBig>();
-    const test: Omit<UseFormReturn<FormFieldsSmall>, 'watch'> = form;
-    test;
-    return null;
-  }
-  App;
 });
 
 test('should not throw type error with optional array fields', () => {
@@ -117,4 +102,73 @@ test('should work with optional field with Controller', () => {
   }
 
   App;
+});
+
+test('should work with useWatch return correct array types', () => {
+  type FormValues = {
+    testString: string;
+    testNumber: number;
+    testObject: {
+      testString: string;
+      test1String: string;
+    };
+  };
+
+  const App = () => {
+    const { control } = useForm<FormValues>();
+    const output: [
+      FormValues['testString'],
+      FormValues['testNumber'],
+      FormValues['testObject'],
+    ] = useWatch({
+      control,
+      name: ['testString', 'testNumber', 'testObject'],
+    });
+
+    return output;
+  };
+
+  App;
+});
+
+test('should type errors correctly with Path generic', () => {
+  interface InputProps<T extends FieldValues = FieldValues> {
+    name: FieldPath<T>;
+    register: UseFormRegister<T>;
+    errors: FieldErrors<T>;
+  }
+
+  function Input<T extends FieldValues = FieldValues>({
+    name,
+    register,
+    errors,
+  }: InputProps<T>) {
+    return (
+      <>
+        <input {...register(name)} />
+        {errors[name] ? errors[name].message : 'no error'}
+      </>
+    );
+  }
+
+  Input;
+});
+
+test('should allow unpackedValue and deep partial unpackValue for reset', () => {
+  type Type1 = { name: string };
+  type Type2 = { name: string };
+
+  type Forms = {
+    test: Type1;
+    test1: Type2;
+  };
+
+  type FormMapKey = keyof Forms;
+
+  const Test = <T extends FormMapKey>() => {
+    const { reset, getValues } = useForm<Forms[T]>();
+    reset(getValues());
+  };
+
+  Test;
 });

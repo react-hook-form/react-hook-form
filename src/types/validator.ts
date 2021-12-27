@@ -1,6 +1,6 @@
 import { Message } from './errors';
 import { FieldValues, InternalFieldName } from './fields';
-import { FieldPath, FieldPathValue } from './utils';
+import { FieldPath, FieldPathValue } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
 
@@ -28,8 +28,8 @@ export type RegisterOptions<
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
   max: ValidationRule<number | string>;
-  maxLength: ValidationRule<number | string>;
-  minLength: ValidationRule<number | string>;
+  maxLength: ValidationRule<number>;
+  minLength: ValidationRule<number>;
   pattern: ValidationRule<RegExp>;
   validate:
     | Validate<FieldPathValue<TFieldValues, TFieldName>>

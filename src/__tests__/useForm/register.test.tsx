@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -749,7 +749,7 @@ describe('register', () => {
           register,
           handleSubmit,
           formState: { errors },
-        } = useForm();
+        } = useForm<FormValues>();
 
         return (
           <form onSubmit={handleSubmit(setValue)}>

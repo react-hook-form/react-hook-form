@@ -1,2 +1,2 @@
-export default (value: any): value is HTMLElement =>
+export default (value: unknown): value is HTMLElement =>
   value instanceof HTMLElement;

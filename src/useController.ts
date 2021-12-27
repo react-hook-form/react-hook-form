@@ -1,14 +1,16 @@
-import * as React from 'react';
+import React from 'react';
 
-import getControllerValue from './logic/getControllerValue';
+import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
 import { EVENTS } from './constants';
 import {
   Field,
   FieldPath,
+  FieldPathValue,
   FieldValues,
   InternalFieldName,
+  UnpackNestedValue,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -34,7 +36,7 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
     exact: !isArrayField,
-  });
+  }) as UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   const formState = useFormState({
     control,
     name,
@@ -63,15 +65,11 @@ export function useController<
       const _shouldUnregisterField =
         control._options.shouldUnregister || shouldUnregister;
 
-      if (
-        isArrayField
-          ? _shouldUnregisterField && !control._stateFlags.action
-          : _shouldUnregisterField
-      ) {
-        control.unregister(name, { keepDefaultValue: true });
-      } else {
-        updateMounted(name, false);
-      }
+      isArrayField
+        ? _shouldUnregisterField && !control._stateFlags.action
+        : _shouldUnregisterField
+        ? control.unregister(name)
+        : updateMounted(name, false);
     };
   }, [name, control, isArrayField, shouldUnregister]);
 
@@ -80,7 +78,7 @@ export function useController<
       onChange: (event) => {
         registerProps.onChange({
           target: {
-            value: getControllerValue(event),
+            value: getEventValue(event),
             name: name as InternalFieldName,
           },
           type: EVENTS.CHANGE,
@@ -89,7 +87,7 @@ export function useController<
       onBlur: () => {
         registerProps.onBlur({
           target: {
-            value,
+            value: get(control._formValues, name),
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,

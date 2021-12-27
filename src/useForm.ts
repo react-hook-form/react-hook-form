@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';

@@ -2,12 +2,12 @@ import { FieldValues, InternalFieldName, Names } from '../types';
 import get from '../utils/get';
 import isString from '../utils/isString';
 
-export function generateWatchOutput(
+export default (
   names: string | string[] | undefined,
   _names: Names,
   formValues?: FieldValues,
   isGlobal?: boolean,
-) {
+) => {
   const isArray = Array.isArray(names);
   if (isString(names)) {
     isGlobal && _names.watch.add(names as InternalFieldName);
@@ -25,4 +25,4 @@ export function generateWatchOutput(
 
   isGlobal && (_names.watchAll = true);
   return formValues;
-}
+};

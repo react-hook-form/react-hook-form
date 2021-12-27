@@ -1,5 +1,11 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { Field, FieldError, InternalFieldErrors, Message } from '../types';
+import {
+  Field,
+  FieldError,
+  InternalFieldErrors,
+  Message,
+  NativeFieldValue,
+} from '../types';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -18,9 +24,9 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
-export default async (
+export default async <T extends NativeFieldValue>(
   field: Field,
-  inputValue: any,
+  inputValue: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
 ): Promise<InternalFieldErrors> => {
@@ -43,7 +49,7 @@ export default async (
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
-  const setCustomValidty = (message?: string | boolean) => {
+  const setCustomValidity = (message?: string | boolean) => {
     if (shouldUseNativeValidation && inputRef.reportValidity) {
       inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
       inputRef.reportValidity();
@@ -98,7 +104,7 @@ export default async (
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
-        setCustomValidty(message);
+        setCustomValidity(message);
         return error;
       }
     }
@@ -110,9 +116,10 @@ export default async (
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNaN(inputValue)) {
+    if (!isNaN(inputValue as number)) {
       const valueNumber =
-        (ref as HTMLInputElement).valueAsNumber || parseFloat(inputValue);
+        (ref as HTMLInputElement).valueAsNumber ||
+        parseFloat(inputValue as string);
       if (!isNullOrUndefined(maxOutput.value)) {
         exceedMax = valueNumber > maxOutput.value;
       }
@@ -121,7 +128,7 @@ export default async (
       }
     } else {
       const valueDate =
-        (ref as HTMLInputElement).valueAsDate || new Date(inputValue);
+        (ref as HTMLInputElement).valueAsDate || new Date(inputValue as string);
       if (isString(maxOutput.value)) {
         exceedMax = valueDate > new Date(maxOutput.value);
       }
@@ -139,7 +146,7 @@ export default async (
         INPUT_VALIDATION_RULES.min,
       );
       if (!validateAllFieldCriteria) {
-        setCustomValidty(error[name]!.message);
+        setCustomValidity(error[name]!.message);
         return error;
       }
     }
@@ -162,7 +169,7 @@ export default async (
         minLengthOutput.message,
       );
       if (!validateAllFieldCriteria) {
-        setCustomValidty(error[name]!.message);
+        setCustomValidity(error[name]!.message);
         return error;
       }
     }
@@ -179,7 +186,7 @@ export default async (
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {
-        setCustomValidty(message);
+        setCustomValidity(message);
         return error;
       }
     }
@@ -199,7 +206,7 @@ export default async (
           ),
         };
         if (!validateAllFieldCriteria) {
-          setCustomValidty(validateError.message);
+          setCustomValidity(validateError.message);
           return error;
         }
       }
@@ -223,7 +230,7 @@ export default async (
             ...appendErrorsCurry(key, validateError.message),
           };
 
-          setCustomValidty(validateError.message);
+          setCustomValidity(validateError.message);
 
           if (validateAllFieldCriteria) {
             error[name] = validationResult;
@@ -243,6 +250,6 @@ export default async (
     }
   }
 
-  setCustomValidty(true);
+  setCustomValidity(true);
   return error;
 };

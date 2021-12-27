@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import { Subject, Subscription } from '../utils/createSubject';
 
@@ -11,17 +11,14 @@ import {
   FieldValues,
   InternalFieldName,
 } from './fields';
-import { Resolver } from './resolvers';
 import {
-  DeepMap,
-  DeepPartial,
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
-  Noop,
-  UnionLike,
-} from './utils';
+} from './path';
+import { Resolver } from './resolvers';
+import { DeepMap, DeepPartial, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -103,8 +100,8 @@ export type UseFormProps<
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
-  DeepPartial<UnionLike<TFieldValues>>,
-  true
+  DeepPartial<TFieldValues>,
+  boolean
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
@@ -151,6 +148,13 @@ export type UseFormRegisterReturn = {
   onBlur: ChangeHandler;
   ref: RefCallBack;
   name: InternalFieldName;
+  min?: string | number;
+  max?: string | number;
+  maxLength?: number;
+  minLength?: number;
+  pattern?: string;
+  required?: boolean;
+  disabled?: boolean;
 };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <
@@ -178,14 +182,14 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
-  <TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
-  ): FieldPathValue<TFieldValues, TFieldName>;
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName>;
   (
     callback: WatchObserver<TFieldValues>,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -258,7 +262,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
 ) => void;
 
 export type UseFormReset<TFieldValues extends FieldValues> = (
-  values?: DefaultValues<TFieldValues>,
+  values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
@@ -319,6 +323,7 @@ export type BatchFieldArrayUpdate = <
   >[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
+  shouldSetError?: boolean,
 ) => void;
 
 export type Control<
@@ -333,7 +338,7 @@ export type Control<
     action: boolean;
     watch: boolean;
   };
-  _options: Pick<UseFormProps<TFieldValues, TContext>, 'shouldUnregister'>;
+  _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: Noop;

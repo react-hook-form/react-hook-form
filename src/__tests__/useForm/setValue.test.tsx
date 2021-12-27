@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -176,6 +176,49 @@ describe('setValue', () => {
         persist: () => {},
       } as React.SyntheticEvent);
     });
+  });
+
+  it('should update nested controlled input', () => {
+    function App() {
+      const { setValue, control } = useForm({
+        defaultValues: {
+          test: {
+            deep: {
+              field: 'test',
+            },
+          },
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            name="test.deep.field"
+            control={control}
+            render={({ field }) => <input {...field} />}
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              setValue('test.deep', {
+                field: 'updateValue',
+              });
+            }}
+          >
+            setValue
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'updateValue',
+    );
   });
 
   it('should set object array value', () => {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -674,17 +674,13 @@ describe('useFieldArray', () => {
       render(<Component />);
 
       const addChild = async () =>
-        await actComponent(
-          async () => await screen.getByText('Add child').click(),
-        );
+        await actComponent(async () => screen.getByText('Add child').click());
 
       await addChild();
 
       expect(screen.getByText('Remove child')).toBeInTheDocument();
 
-      await actComponent(
-        async () => await screen.getByText('Remove child').click(),
-      );
+      await actComponent(async () => screen.getByText('Remove child').click());
 
       expect(screen.queryByText('Remove child')).toBeNull();
 
@@ -1073,7 +1069,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }],
+            test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1135,7 +1131,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }],
+            test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1152,7 +1148,13 @@ describe('useFieldArray', () => {
         expect(formState.dirtyFields).toEqual({
           test: [
             {
-              name: undefined,
+              name: false,
+            },
+            {
+              name: false,
+            },
+            {
+              name: false,
             },
           ],
         });
@@ -2674,14 +2676,41 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
+    actComponent(() => {
       fireEvent.click(screen.getAllByRole('button', { name: 'copy' })[0]);
     });
 
-    await actComponent(async () => {
+    actComponent(() => {
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
     });
 
     expect(controlObj._fields.items.length).toEqual(2);
+  });
+
+  it('should avoid omit keyName when defaultValues contains keyName attribute', () => {
+    let getValuesMethod: Function = () => {};
+
+    const App = () => {
+      const { control, getValues } = useForm({
+        defaultValues: {
+          test: [{ id: '1234', test: 'data' }],
+        },
+      });
+
+      getValuesMethod = getValues;
+
+      useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return null;
+    };
+
+    render(<App />);
+
+    expect(getValuesMethod()).toEqual({
+      test: [{ id: '1234', test: 'data' }],
+    });
   });
 });

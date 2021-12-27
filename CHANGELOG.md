@@ -1,5 +1,103 @@
 # Changelog
 
+## [7.22.0] - 2021-12-14
+
+## Changed
+
+- Browser native reset API will no longer be invoked when `reset` provided with value
+
+```tsx
+const onSubmit = (data) => {};
+
+React.useEffect(() => {
+  if (formState.isSubmitSuccessful) {
+    reset({ something: '' });
+  }
+}, [formState, reset]);
+
+handleSubmit(onSubmit);
+```
+
+to
+
+```tsx
+const onSubmit = (data) => {
+  setSubmittedData(data);
+  reset(data); // no longer need to have useEffect
+};
+
+handleSubmit(onSubmit);
+```
+
+## [7.21.0] - 2021-12-06
+
+## Changed
+
+- `shouldUseNativeValidation` will pass down validation props both at client and server render
+
+```tsx
+const { register } = useForm()
+
+<input {...register('name', { required: true })} />
+
+<input name="name" required /> // both client and server render
+```
+
+## [7.20.3] - 2021-11-26
+
+## Changed
+
+- register `onChange` will share same logic with `useController` for non standard event payload
+
+```tsx
+const { onChange } = register('test');
+onChange('stringIsValid'); // this is only valid use case for JS
+```
+
+- empty node in `formState` will no longer gets unset
+
+## [7.20.0] - 2021-11-19
+
+## Added
+
+- new `exact` prop for `useWatch`
+- new `exact` prop for `useFormState`
+
+```tsx
+useWatch({
+  name: 'test.test',
+  exact: true,
+});
+
+useFormState({
+  name: 'test.test',
+  exact: true,
+});
+```
+
+## Changed
+
+- `useWatch` subscription will occurred at `useEffect` instead before `render`
+
+## [7.19.0] - 2021-11-05
+
+## Added
+
+- new `resetField` API
+
+```tsx
+const { resetField } = useForm();
+
+resetField('test');
+
+resetField('test', {
+  keepError: true,
+  keepDirty: true,
+  keepTouched: true,
+  defaultValue: 'test1',
+});
+```
+
 ## [7.18.1] - 2021-11-02
 
 - revert `FieldPathWithValue`

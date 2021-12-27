@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
@@ -62,7 +62,7 @@ describe('Controller with React Native', () => {
 
     fireEvent.press(getByText('reset'));
 
-    expect(input.props.value).toBeUndefined();
+    expect(input.props.value).toEqual('');
     expect(queryByText('required')).toBeNull();
   });
 });

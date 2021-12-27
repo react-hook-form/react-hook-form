@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   act,
   fireEvent,
@@ -152,7 +152,7 @@ describe('Controller', () => {
   });
 
   it("should trigger component's onChange method and invoke setValue method", () => {
-    let fieldValues: any;
+    let fieldValues: unknown;
     const Component = () => {
       const { control, getValues } = useForm();
 

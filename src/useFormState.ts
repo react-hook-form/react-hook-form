@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';

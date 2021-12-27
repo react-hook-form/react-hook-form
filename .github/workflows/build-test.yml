@@ -17,8 +17,14 @@ jobs:
         run: |
           yarn lint
           yarn type
+
       - name: Test
-        run: yarn test --ci
+        run: |
+          yarn test --ci
+          yarn tsd
 
       - name: Build
         run: yarn build
+
+      - name: API Extractor
+        run: yarn api-extractor:ci
