@@ -1,5 +1,5 @@
 import { FieldValues } from '../fields';
-import { IsAny, IsNever, Primitive } from '../utils';
+import { IsNever, Primitive } from '../utils';
 
 import {
   ArrayKey,
@@ -8,52 +8,58 @@ import {
   JoinPathTuple,
   Key,
   Keys,
-  PathString,
   PathTuple,
-  Traversable,
   TupleKeys,
 } from './common';
 
 /** WIP */
-type CollectPathsImpl<
-  PT extends PathTuple,
-  T,
-  U,
-  NXK extends Key,
-  RPS extends PathString,
-> = IsNever<NXK> extends true
-  ? RPS
-  : NXK extends any
-  ? CollectPaths<[...PT, NXK], EvaluateKey<T, NXK>, U, RPS>
+interface PathMeta {
+  Path: PathTuple;
+  Type: unknown;
+}
+
+/** WIP */
+interface PathState {
+  Next: PathMeta;
+  Result: PathTuple;
+}
+
+/** WIP */
+type Last<T extends ReadonlyArray<any>> = T extends [...unknown[], infer L]
+  ? L
   : never;
 
 /** WIP */
-type AddPath<
-  PS extends PathString,
-  PT extends PathTuple,
-  K extends Key,
-> = IsNever<K> extends true ? PS : PS | JoinPathTuple<[...PT, K]>;
-
-/** WIP */
-type CollectPaths<
+type CreatePathMeta<
   PT extends PathTuple,
   T,
-  U,
-  RPS extends PathString,
-> = IsAny<T> extends true
-  ? AddPath<RPS, PT, Key>
-  : IsNever<T> extends true
-  ? AddPath<RPS, PT, Key>
-  : CollectPathsImpl<
-      PT,
-      T,
-      U,
-      Keys<T, Traversable | undefined | null>,
-      AddPath<RPS, PT, Keys<T, U>>
-    >;
+  K extends Key,
+> = Key extends Last<PT>
+  ? never
+  : IsNever<K> extends true
+  ? never
+  : K extends any
+  ? {
+      Path: [...PT, K];
+      Type: EvaluateKey<T, K>;
+    }
+  : never;
 
 /** WIP */
-export type Path<T> = CollectPaths<[], T, unknown, never>;
+type GetNext<PM extends PathMeta> = PM extends any
+  ? CreatePathMeta<PM['Path'], PM['Type'], Keys<PM['Type']>>
+  : never;
+
+/** WIP */
+type PathImpl<S extends PathState> = IsNever<S['Next']> extends true
+  ? S['Result']
+  : PathImpl<{
+      Next: GetNext<S['Next']>;
+      Result: S['Result'] | JoinPathTuple<S['Next']['Path']>;
+    }>;
+
+/** WIP */
+export type Path<T> = PathImpl<{ Next: { Path: []; Type: T }; Result: never }>;
 
 /**
  * See {@link Path}
