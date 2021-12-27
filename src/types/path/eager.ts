@@ -1,5 +1,5 @@
 import { FieldValues } from '../fields';
-import { IsNever, Primitive } from '../utils';
+import { IsAny, IsNever, Primitive } from '../utils';
 
 import {
   ArrayKey,
@@ -25,16 +25,13 @@ interface PathState {
 }
 
 /** WIP */
-type Last<T extends ReadonlyArray<any>> = T extends [...unknown[], infer L]
-  ? L
-  : never;
-
-/** WIP */
 type CreatePathMeta<
   PT extends PathTuple,
   T,
   K extends Key,
-> = Key extends Last<PT>
+> = IsAny<T> extends true
+  ? never
+  : IsNever<T> extends true
   ? never
   : IsNever<K> extends true
   ? never
@@ -51,11 +48,20 @@ type GetNext<PM extends PathMeta> = PM extends any
   : never;
 
 /** WIP */
+type GetResult<PM extends PathMeta> = PM extends any
+  ? IsAny<PM['Type']> extends true
+    ? JoinPathTuple<PM['Path']> | JoinPathTuple<[...PM['Path'], Key]>
+    : IsNever<PM['Type']> extends true
+    ? JoinPathTuple<PM['Path']> | JoinPathTuple<[...PM['Path'], Key]>
+    : JoinPathTuple<PM['Path']>
+  : never;
+
+/** WIP */
 type PathImpl<S extends PathState> = IsNever<S['Next']> extends true
   ? S['Result']
   : PathImpl<{
       Next: GetNext<S['Next']>;
-      Result: S['Result'] | JoinPathTuple<S['Next']['Path']>;
+      Result: S['Result'] | GetResult<S['Next']>;
     }>;
 
 /** WIP */
