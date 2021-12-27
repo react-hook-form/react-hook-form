@@ -11,16 +11,14 @@ import {
   FieldValues,
   InternalFieldName,
 } from './fields';
-import { Resolver } from './resolvers';
 import {
-  DeepMap,
-  DeepPartial,
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
-  Noop,
-} from './utils';
+} from './path';
+import { Resolver } from './resolvers';
+import { DeepMap, DeepPartial, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;

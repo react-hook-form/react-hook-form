@@ -2,16 +2,17 @@ import React from 'react';
 
 import { FieldValues } from '../types';
 
-export default <T, K>(
-  values: T[],
-  _fieldIds: React.MutableRefObject<K>,
-  keyName: string,
-) =>
-  values.map((value, index) => {
-    const output = _fieldIds.current[index as keyof K];
+import generateId from './generateId';
 
-    return {
-      ...value,
-      ...(output ? { [keyName]: (output as FieldValues)[keyName] } : {}),
-    };
-  });
+export default <T>(
+  values: T[],
+  keyName: string,
+  _fieldIds?: React.MutableRefObject<T[]>,
+) =>
+  values.map((value, index) => ({
+    ...value,
+    [keyName]:
+      _fieldIds && _fieldIds.current[index]
+        ? (_fieldIds.current[index] as FieldValues)[keyName]
+        : value[keyName as keyof T] || generateId(),
+  }));

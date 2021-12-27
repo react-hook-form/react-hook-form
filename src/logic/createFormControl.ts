@@ -245,9 +245,9 @@ export function createFormControl<
             shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
           )
         : setFieldValue(name, defaultValue);
-    }
 
-    _stateFlags.mount && _updateValid();
+      _stateFlags.mount && _updateValid();
+    }
   };
 
   const updateTouchAndDirty = (
