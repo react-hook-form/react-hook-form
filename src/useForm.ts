@@ -46,9 +46,8 @@ export function useForm<
 
   const control = _formControl.current.control;
 
-  useSubscribe({
-    subject: control._subjects.state,
-    callback: (value) => {
+  const callback = React.useCallback(
+    (value) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
         control._formState = {
           ...control._formState,
@@ -58,6 +57,12 @@ export function useForm<
         updateFormState({ ...control._formState });
       }
     },
+    [control],
+  );
+
+  useSubscribe({
+    subject: control._subjects.state,
+    callback,
   });
 
   React.useEffect(() => {
