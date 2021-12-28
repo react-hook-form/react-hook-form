@@ -73,20 +73,16 @@ export function useForm<
         };
 
         setIsSubmitted(control._formState.isSubmitted);
-        setIsSubmitting(value.isSubmitting || control._formState.isSubmitting);
-        setIsSubmitSuccessful(
-          value.isSubmitSuccessful || control._formState.isSubmitSuccessful,
-        );
-        setSubmitCount(value.submitCount || control._formState.submitCount);
-        setIsValidating(value.isValidating || control._formState.isValidating);
+        setIsSubmitting(control._formState.isSubmitting);
+        setIsSubmitSuccessful(control._formState.isSubmitSuccessful);
+        setSubmitCount(control._formState.submitCount);
+        setIsValidating(control._formState.isValidating);
         control._formState.errors &&
           setErrors({ ...control._formState.errors });
-        setIsValid(value.isValid || control._formState.isValid);
-        setIsDirty(value.isDirty || control._formState.isDirty);
-        setDirtyFields(value.dirtyFields || control._formState.dirtyFields);
-        setTouchedFields(
-          value.touchedFields || control._formState.touchedFields,
-        );
+        setIsValid(control._formState.isValid);
+        setIsDirty(control._formState.isDirty);
+        setDirtyFields(control._formState.dirtyFields);
+        setTouchedFields(control._formState.touchedFields);
 
         if (isEmptyObject(formState) || value.name) {
           updateState({});
