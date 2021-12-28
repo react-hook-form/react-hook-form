@@ -30,9 +30,8 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   _name.current = name;
 
-  useSubscribe({
-    disabled,
-    callback: (value) =>
+  const callback = React.useCallback(
+    (value) =>
       shouldSubscribeByName(
         _name.current as InternalFieldName,
         value.name,
@@ -43,6 +42,12 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
         ...control._formState,
         ...value,
       }),
+    [control, exact],
+  );
+
+  useSubscribe({
+    disabled,
+    callback,
     subject: control._subjects.state,
   });
 
