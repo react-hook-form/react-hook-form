@@ -49,7 +49,7 @@
     "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "yarn && yarn lint:fix && yarn type && yarn test && yarn build",
     "bundlesize": "yarn build:modern && bundlesize",
-    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
+    "start:app": "yarn build:esm && yarn link && yarn --cwd ./app link react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
   },
   "keywords": [
     "react",
