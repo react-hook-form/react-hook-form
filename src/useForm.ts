@@ -4,8 +4,6 @@ import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import isEmptyObject from './utils/isEmptyObject';
-import isUndefined from './utils/isUndefined';
-import omit from './utils/omit';
 import {
   FieldErrors,
   FieldNamesMarkedBoolean,
@@ -69,47 +67,29 @@ export function useForm<
     subject: control._subjects.state,
     callback: (value) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
-        const formState = omit(value as Record<string, any>, 'name');
         control._formState = {
           ...control._formState,
           ...value,
         };
 
-        if (formState) {
-          if (isEmptyObject(formState)) {
-            setIsSubmitted(control._formState.isSubmitted);
-            setIsSubmitting(control._formState.isSubmitting);
-            setIsSubmitSuccessful(control._formState.isSubmitSuccessful);
-            setSubmitCount(control._formState.submitCount);
-            setIsValidating(control._formState.isValidating);
-            setErrors(control._formState.errors);
-            setIsValid(control._formState.isValid);
-            setIsDirty(control._formState.isDirty);
-            setDirtyFields(control._formState.dirtyFields);
-            setTouchedFields(control._formState.touchedFields);
-          } else {
-            !isUndefined(value.isSubmitted) &&
-              setIsSubmitted(value.isSubmitted);
-            !isUndefined(value.isSubmitting) &&
-              setIsSubmitting(value.isSubmitting);
-            !isUndefined(value.isSubmitSuccessful) &&
-              setIsSubmitSuccessful(value.isSubmitSuccessful);
-            !isUndefined(value.submitCount) &&
-              setSubmitCount(value.submitCount);
-            !isUndefined(value.isValidating) &&
-              setIsValidating(value.isValidating);
-            !isUndefined(value.errors) && setErrors({ ...value.errors });
-            !isUndefined(value.isValid) && setIsValid(value.isValid);
-            !isUndefined(value.isDirty) && setIsDirty(value.isDirty);
-            !isUndefined(value.dirtyFields) &&
-              setDirtyFields(value.dirtyFields);
-            !isUndefined(value.touchedFields) &&
-              setTouchedFields(value.touchedFields);
-          }
+        setIsSubmitted(control._formState.isSubmitted);
+        setIsSubmitting(value.isSubmitting || control._formState.isSubmitting);
+        setIsSubmitSuccessful(
+          value.isSubmitSuccessful || control._formState.isSubmitSuccessful,
+        );
+        setSubmitCount(value.submitCount || control._formState.submitCount);
+        setIsValidating(value.isValidating || control._formState.isValidating);
+        control._formState.errors &&
+          setErrors({ ...control._formState.errors });
+        setIsValid(value.isValid || control._formState.isValid);
+        setIsDirty(value.isDirty || control._formState.isDirty);
+        setDirtyFields(value.dirtyFields || control._formState.dirtyFields);
+        setTouchedFields(
+          value.touchedFields || control._formState.touchedFields,
+        );
 
-          if (isEmptyObject(formState) || value.name) {
-            updateState({});
-          }
+        if (isEmptyObject(formState) || value.name) {
+          updateState({});
         }
       }
     },
