@@ -13,8 +13,6 @@ import { Controller } from '../../controller';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-jest.useFakeTimers();
-
 describe('formState', () => {
   describe('isValid', () => {
     it('should return isValid correctly with resolver', async () => {
@@ -346,16 +344,16 @@ describe('formState', () => {
   });
 
   it('should set isSubmitSuccessful to false when there is a promise reject', async () => {
+    const rejectPromiseFn = jest
+      .fn()
+      .mockRejectedValue(new Error('this is an error'));
+
     const App = () => {
       const {
         register,
         handleSubmit,
         formState: { isSubmitSuccessful, isSubmitted },
       } = useForm();
-
-      const rejectPromiseFn = jest
-        .fn()
-        .mockRejectedValue(new Error('this is an error'));
 
       return (
         <form>
@@ -630,6 +628,8 @@ describe('formState', () => {
     const message = 'required.';
 
     it('should only show error after 500ms with register', async () => {
+      jest.useFakeTimers();
+
       const App = () => {
         const {
           register,
@@ -664,71 +664,6 @@ describe('formState', () => {
 
         expect(screen.queryByText(message)).toBeNull();
       });
-
-      actComponent(() => {
-        jest.advanceTimersByTime(500);
-      });
-
-      await waitFor(async () => {
-        screen.getByText(message);
-      });
-    });
-
-    it('should only show error after 500ms with register and render formState instantly', async () => {
-      const App = () => {
-        const {
-          register,
-          formState: { errors, isValid },
-        } = useForm<{
-          test: string;
-        }>({
-          delayError: 500,
-          mode: 'onChange',
-        });
-
-        return (
-          <div>
-            {isValid ? 'valid' : 'inValid'}
-            <input
-              {...register('test', {
-                required: true,
-                maxLength: 4,
-              })}
-            />
-            {errors.test && <p>{message}</p>}
-          </div>
-        );
-      };
-
-      render(<App />);
-
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '123',
-          },
-        });
-
-        expect(screen.queryByText(message)).toBeNull();
-      });
-
-      await actComponent(async () => {
-        await waitFor(() => screen.getByText('valid'));
-      });
-
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '',
-          },
-        });
-      });
-
-      await actComponent(async () => {
-        await waitFor(() => screen.getByText('inValid'));
-      });
-
-      expect(screen.queryByText(message)).toBeNull();
 
       actComponent(() => {
         jest.advanceTimersByTime(500);
@@ -789,6 +724,8 @@ describe('formState', () => {
     });
 
     it('should prevent error from showing once input is validated', async () => {
+      jest.useFakeTimers();
+
       const App = () => {
         const {
           register,
@@ -839,6 +776,78 @@ describe('formState', () => {
       });
 
       expect(screen.queryByText(message)).toBeNull();
+    });
+  });
+
+  describe('when delayError is provided', () => {
+    it('should only show error after 500ms with register and render formState instantly', async () => {
+      jest.runOnlyPendingTimers();
+      jest.useFakeTimers();
+
+      const message = 'required.';
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors, isValid },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            {isValid ? 'valid' : 'inValid'}
+            <input
+              {...register('test', {
+                required: true,
+                maxLength: 4,
+              })}
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '123',
+          },
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
+      });
+
+      await actComponent(async () => {
+        await waitFor(() => screen.getByText('valid'));
+      });
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      await actComponent(async () => {
+        await waitFor(() => screen.getByText('inValid'));
+      });
+
+      // expect(screen.queryByText(message)).toBeNull();
+
+      actComponent(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      await waitFor(async () => {
+        screen.getByText(message);
+      });
     });
   });
 });
