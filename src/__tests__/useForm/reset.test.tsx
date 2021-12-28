@@ -407,10 +407,13 @@ describe('reset', () => {
       screen.getByText('invalid');
     });
 
-    fireEvent.click(screen.getByRole('button'));
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+      screen.getByText('invalid');
+    });
 
     await waitFor(() => {
-      screen.getByText('invalid');
+      screen.getByText('valid');
     });
   });
 
@@ -466,7 +469,9 @@ describe('reset', () => {
 
     render(<Component />);
 
-    screen.getByRole('button', { name: 'reset' }).click();
+    await actComponent(async () => {
+      screen.getByRole('button', { name: 'reset' }).click();
+    });
 
     await actComponent(async () => {
       screen.getByRole('button', { name: 'submit' }).click();
@@ -474,7 +479,9 @@ describe('reset', () => {
 
     await expect(data).toEqual({});
 
-    screen.getByRole('button', { name: 'reset with value' }).click();
+    await actComponent(async () => {
+      screen.getByRole('button', { name: 'reset with value' }).click();
+    });
 
     await actComponent(async () => {
       screen.getByRole('button', { name: 'submit' }).click();
@@ -816,6 +823,7 @@ describe('reset', () => {
 
   it('should update isMounted when isValid is subscribed', async () => {
     const mounted: unknown[] = [];
+    let tempControl: Control = {} as Control;
 
     const App = () => {
       const {
@@ -825,6 +833,7 @@ describe('reset', () => {
       } = useForm();
 
       mounted.push(control._stateFlags.mount);
+      tempControl = control;
 
       React.useEffect(() => {
         reset({});
@@ -843,7 +852,9 @@ describe('reset', () => {
       screen.getByText('false');
     });
 
-    expect(mounted).toEqual([false, false, true]);
+    expect(mounted).toEqual([false, false]);
+
+    expect(tempControl._stateFlags.mount).toBeTruthy();
   });
 
   it('should reset values but keep defaultValues', async () => {
