@@ -59,12 +59,17 @@ export const useFieldArray = <
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  useSubscribe({
-    callback: ({ values, name: fieldArrayName }) => {
+  const callback = React.useCallback(
+    ({ values, name: fieldArrayName }) => {
       if (fieldArrayName === _name.current || !fieldArrayName) {
         setFields(mapCurrentIds(get(values, _name.current, []), keyName));
       }
     },
+    [keyName],
+  );
+
+  useSubscribe({
+    callback,
     subject: control._subjects.array,
   });
 

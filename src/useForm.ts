@@ -63,9 +63,8 @@ export function useForm<
 
   const control = _formControl.current.control;
 
-  useSubscribe({
-    subject: control._subjects.state,
-    callback: (value) => {
+  const callback = React.useCallback(
+    (value) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
         control._formState = {
           ...control._formState,
@@ -84,11 +83,17 @@ export function useForm<
         setDirtyFields(control._formState.dirtyFields);
         setTouchedFields(control._formState.touchedFields);
 
-        if (isEmptyObject(formState) || value.name) {
+        if (isEmptyObject(value) || value.name) {
           updateState({});
         }
       }
     },
+    [control],
+  );
+
+  useSubscribe({
+    subject: control._subjects.state,
+    callback,
   });
 
   React.useEffect(() => {
