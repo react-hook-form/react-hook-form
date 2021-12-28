@@ -936,8 +936,10 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeTruthy();
 
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test', value: '' },
+        await actComponent(async () => {
+          fireEvent.input(screen.getByRole('textbox'), {
+            target: { name: 'test', value: '' },
+          });
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
@@ -976,8 +978,10 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeTruthy();
 
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test', value: '' },
+        await actComponent(async () => {
+          fireEvent.input(screen.getByRole('textbox'), {
+            target: { name: 'test', value: '' },
+          });
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
