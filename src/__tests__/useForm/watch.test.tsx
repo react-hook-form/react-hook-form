@@ -338,7 +338,7 @@ describe('watch', () => {
   });
 
   it('should have dirty marked when watch is enabled', () => {
-    function Component() {
+    function App() {
       const {
         register,
         formState: { isDirty },
@@ -358,7 +358,7 @@ describe('watch', () => {
       );
     }
 
-    render(<Component />);
+    render(<App />);
 
     screen.getByText('False');
 
