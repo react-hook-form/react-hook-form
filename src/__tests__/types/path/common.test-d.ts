@@ -18,6 +18,7 @@ import {
   ObjectKeys,
   PathString,
   SetKey,
+  SetPath,
   SplitPathString,
   ToKey,
   TupleKeys,
@@ -853,7 +854,7 @@ import {
     expectType<boolean>(actual);
   }
 
-  /** it should evaluate to never if the path is not valid */ {
+  /** it should evaluate to undefined if the path is not valid */ {
     const actual = _ as GetPath<InfiniteType<string>, ['foobar']>;
     expectType<undefined>(actual);
   }
@@ -940,6 +941,133 @@ import {
     const makeSetter =
       <T>() =>
       <PS extends PathString>(_: PS, value: GetPath<T, SplitPathString<PS>>) =>
+        value;
+
+    const setter = makeSetter<{ foo: string }>();
+
+    const actual = setter('foo', 'bar');
+    expectType<string>(actual);
+  }
+}
+
+/** {@link SetPath} */ {
+  /** it should traverse an object */ {
+    const actual = _ as SetPath<InfiniteType<number>, ['foo', 'foo', 'value']>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse an index signature */ {
+    const actual = _ as SetPath<Record<string, number>, [string]>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse a numeric index signature */ {
+    const actual = _ as SetPath<Record<number, string>, [`${number}`]>;
+    expectType<string>(actual);
+  }
+
+  /** it should traverse a tuple */ {
+    const actual = _ as SetPath<InfiniteType<boolean>, ['bar', '0', 'value']>;
+    expectType<boolean>(actual);
+  }
+
+  /** it should traverse an array */ {
+    const actual = _ as SetPath<InfiniteType<boolean>, ['baz', '42', 'value']>;
+    expectType<boolean>(actual);
+  }
+
+  /** it should evaluate to never if the path is not valid */ {
+    const actual = _ as SetPath<InfiniteType<string>, ['foobar']>;
+    expectType<never>(actual);
+  }
+
+  /** it should be implemented tail recursively */ {
+    const actual = _ as SetPath<InfiniteType<string>, HundredTuple<'foo'>>;
+    expectType<InfiniteType<string>>(actual);
+  }
+
+  /** it should work on path unions */ {
+    const actual = _ as SetPath<
+      InfiniteType<number>,
+      ['foo', 'foo'] | ['foo', 'value']
+    >;
+    expectType<number & InfiniteType<number>>(actual);
+  }
+
+  /** it should evaluate to never if one of the paths doesn't exist */ {
+    const actual = _ as SetPath<
+      InfiniteType<number>,
+      ['foo', 'value'] | ['foo', 'foobar']
+    >;
+    expectType<never>(actual);
+  }
+
+  /** it shouldn't add null if the path contains a nullable */ {
+    const actual = _ as SetPath<
+      { foo: null | { bar: string } },
+      ['foo', 'bar']
+    >;
+    expectType<string>(actual);
+  }
+
+  /** it shouldn't add undefined if the path contains an optional */ {
+    const actual = _ as SetPath<{ foo?: { bar: string } }, ['foo', 'bar']>;
+    expectType<string>(actual);
+  }
+
+  /** it should add undefined if the last key is optional */ {
+    const actual = _ as SetPath<{ foo: { bar?: string } }, ['foo', 'bar']>;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it shouldn't add undefined if the path contains an undefineable */ {
+    const actual = _ as SetPath<
+      { foo: undefined | { bar: string } },
+      ['foo', 'bar']
+    >;
+    expectType<string>(actual);
+  }
+
+  /** it should evaluate to undefined if the type is not traversable */ {
+    const actual = _ as SetPath<string, ['foo']>;
+    expectType<never>(actual);
+  }
+
+  /** it should work on type unions */ {
+    const actual = _ as SetPath<
+      InfiniteType<{ foo: string }> | InfiniteType<{ bar: string }>,
+      ['foo', 'value']
+    >;
+    expectType<{ foo: string } & { bar: string }>(actual);
+  }
+
+  /** it should be never if the path doesn't exist in one of the types */ {
+    const actual = _ as SetPath<
+      InfiniteType<number> | Nested<string>,
+      ['foo', 'value']
+    >;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to any if the type is any */ {
+    const actual = _ as SetPath<any, ['foo']>;
+    expectType<any>(actual);
+  }
+
+  /** it should evaluate to any if it encounters any */ {
+    const actual = _ as SetPath<{ foo: any }, ['foo', 'bar', 'baz']>;
+    expectType<any>(actual);
+  }
+
+  /** it should not evaluate to any if it doesn't encounter any */ {
+    const actual = _ as SetPath<{ foo: any }, ['bar', 'baz']>;
+    expectType<never>(actual);
+  }
+
+  /** it should not create a union which is too complex to represent */ {
+    const makeSetter =
+      <T>() =>
+      <PS extends PathString>(_: PS, value: SetPath<T, SplitPathString<PS>>) =>
         value;
 
     const setter = makeSetter<{ foo: string }>();

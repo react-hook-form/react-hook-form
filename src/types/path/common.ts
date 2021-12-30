@@ -222,15 +222,24 @@ export type GetKey<T, K extends Key> = T extends ReadonlyArray<any>
   : TryGet<MapKeys<T>, K>;
 
 /**
- * Type to evaluate the type which the given path points to.
+ * Type to evaluate the type which the given path points to. This type is the
+ * covariant equivalent of {@link SetKey}.
+ *  - If either T or PT is union, it will evaluate to the union of the types at
+ *    the given path(s).
+ *  - If T can be null or undefined, the resulting type will also include null
+ *    or undefined.
+ *  - If a path doesn't exist, or may be optional, the resulting type will
+ *    include undefined.
  * @typeParam T  - deeply nested type which is indexed by the path
  * @typeParam PT - path into the deeply nested type
  * @example
  * ```
  * GetPath<{foo: {bar: string}}, ['foo', 'bar']> = string
- * GetPath<[number, string], ['1']> = string
- * GetPath<number, []> = number
- * GetPath<number, ['foo']> = undefined
+ * GetPath<{foo: string, bar: number}, ['foo'] | ['bar']> = string | number
+ * GetPath<{foo: string} | {foo: number}, ['foo']> = string | number
+ * GetPath<null | {foo: string}, ['foo']> = null | string
+ * GetPath<{bar: string}, ['foo']> = undefined
+ * GetPath<{foo?: string}, ['foo']> = undefined | string
  * ```
  */
 export type GetPath<T, PT extends PathTuple> = PT extends [infer K, ...infer R]
@@ -300,6 +309,42 @@ type SetKeyImpl<T, K extends Key> = T extends ReadonlyArray<any>
  */
 export type SetKey<T, K extends Key> = UnionToIntersection<
   K extends any ? SetKeyImpl<NonNullable<T>, K> : never
+>[never];
+
+/**
+ * Type to implement {@link SetPath} tail-recursively.
+ * Wraps everything into a tuple.
+ * @typeParam T  - deeply nested type which is indexed by the path
+ * @typeParam PT - path into the deeply nested type
+ */
+type SetPathImpl<T, PT extends PathTuple> = PT extends [infer K, ...infer R]
+  ? SetPathImpl<SetKey<T, AsKey<K>>, AsPathTuple<R>>
+  : [T];
+
+/**
+ * Type to evaluate the type which the given path points to. This type is the
+ * contravariant equivalent of {@link GetPath}.
+ *  - If either T or PT is union, it will evaluate to the intersection of the
+ *    types at the given paths(s).
+ *  - If T can be null or undefined, the resulting type won't include null or
+ *    undefined.
+ *  - If a path doesn't exist, the resulting type will be never.
+ *  - Only if last kay is optional, the resulting type will include undefined.
+ * @typeParam T  - deeply nested type which is indexed by the path
+ * @typeParam PT - path into the deeply nested type
+ * @example
+ * ```
+ * SetPath<{foo: {bar: string}}, ['foo', 'bar']> = string
+ * SetPath<{foo: string, bar: number}, ['foo'] | ['bar']> = string & number
+ * SetPath<{foo: string} | {foo: number}, ['foo']> = string & number
+ * SetPath<null | {foo: string}, ['foo']> = string
+ * SetPath<{bar: string}, ['foo']> = never
+ * SetPath<{foo?: string}, ['foo']> = undefined | string
+ * SetPath<{foo?: {bar: string}}, ['foo', 'bar']> = string
+ * ```
+ */
+export type SetPath<T, PT extends PathTuple> = UnionToIntersection<
+  SetPathImpl<T, PT>
 >[never];
 
 /**
