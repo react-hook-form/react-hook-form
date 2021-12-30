@@ -17,6 +17,7 @@ import {
   NumericKeys,
   ObjectKeys,
   PathString,
+  SetKey,
   SplitPathString,
   ToKey,
   TupleKeys,
@@ -556,6 +557,157 @@ import {
 
   /** it should access methods on tuples */ {
     const actual = _ as GetKey<[number], 'toString'>;
+    expectType<() => string>(actual);
+  }
+}
+
+/** {@link SetKey} */ {
+  /** it should traverse an object */ {
+    const actual = _ as SetKey<{ foo: number; bar: string }, 'foo'>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse an index signature */ {
+    const actual = _ as SetKey<Record<string, number>, string>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse a numeric index signature */ {
+    const actual = _ as SetKey<Record<number, string>, `${number}`>;
+    expectType<string>(actual);
+  }
+
+  /** it should traverse an object with numeric keys */ {
+    const actual = _ as SetKey<{ 0: number }, '0'>;
+    expectType<number>(actual);
+  }
+
+  /** it should traverse a tuple */ {
+    const actual = _ as SetKey<[boolean, string], '1'>;
+    expectType<string>(actual);
+  }
+
+  /** it should traverse an array */ {
+    const actual = _ as SetKey<boolean[], '42'>;
+    expectType<boolean>(actual);
+  }
+
+  /** it should handle optional keys */ {
+    const actual = _ as SetKey<{ foo?: number }, 'foo'>;
+    expectType<number | undefined>(actual);
+  }
+
+  /** it should handle optional indexes */ {
+    const actual = _ as SetKey<[foo?: number], '0'>;
+    expectType<number | undefined>(actual);
+  }
+
+  /** it should evaluate to never if the key is not valid */ {
+    const actual = _ as SetKey<{ foo: string }, 'foobar'>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to never if the key is out of bounds */ {
+    const actual = _ as SetKey<[string], '1'>;
+    expectType<never>(actual);
+  }
+
+  /** it should work on path unions */ {
+    const actual = _ as SetKey<
+      { foo: { foo: string }; bar: { bar: string } },
+      'foo' | 'bar'
+    >;
+    expectType<{ foo: string } & { bar: string }>(actual);
+  }
+
+  /** it should evaluate to never if one of the keys doesn't exist */ {
+    const actual = _ as SetKey<{ foo: number }, 'foo' | 'bar'>;
+    expectType<never>(actual);
+  }
+
+  /** it shouldn't add null if the type may be null */ {
+    const actual = _ as SetKey<null | { foo: string }, 'foo'>;
+    expectType<string>(actual);
+  }
+
+  /** it shouldn't add undefined if the type may be undefined */ {
+    const actual = _ as SetKey<undefined | { foo: string }, 'foo'>;
+    expectType<string>(actual);
+  }
+
+  /** it shouldn't add null and undefined if the type may be null or undefined */ {
+    const actual = _ as SetKey<null | undefined | { foo: string }, 'foo'>;
+    expectType<string>(actual);
+  }
+
+  /** it should evaluate to never if the type is not traversable */ {
+    const actual = _ as SetKey<string, 'foo'>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to never if the key is non-numeric */ {
+    const actual = _ as SetKey<string[], 'foo'>;
+    expectType<never>(actual);
+  }
+
+  /** it should work on unions of object */ {
+    const actual = _ as SetKey<
+      { foo: { foo: string } } | { foo: { bar: string } },
+      'foo'
+    >;
+    expectType<{ foo: string } & { bar: string }>(actual);
+  }
+
+  /** it should work on unions of object and tuple */ {
+    const actual = _ as SetKey<{ 0: { foo: string } } | [{ bar: string }], '0'>;
+    expectType<{ foo: string } & { bar: string }>(actual);
+  }
+
+  /** it should work on unions of object and array */ {
+    const actual = _ as SetKey<
+      { 0: { foo: string } } | Array<{ bar: string }>,
+      '0'
+    >;
+    expectType<{ foo: string } & { bar: string }>(actual);
+  }
+
+  /** it should work on unions of tuple and array */ {
+    const actual = _ as SetKey<[{ foo: string }] | Array<{ bar: string }>, '0'>;
+    expectType<{ foo: string } & { bar: string }>(actual);
+  }
+
+  /** it should evaluate to never if the key doesn't exist in one of the types */ {
+    const actual = _ as SetKey<{ foo: number } | { bar: string }, 'foo'>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to never if the key is out of bounds in one of the types */ {
+    const actual = _ as SetKey<[] | [number], '0'>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to never if the type is null or undefined */ {
+    const actual = _ as SetKey<null | undefined, string>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to any if the type is any */ {
+    const actual = _ as SetKey<any, string>;
+    expectType<any>(actual);
+  }
+
+  /** it should access methods on primitives */ {
+    const actual = _ as SetKey<string, 'toString'>;
+    expectType<() => string>(actual);
+  }
+
+  /** it should access methods on arrays */ {
+    const actual = _ as SetKey<number[], 'toString'>;
+    expectType<() => string>(actual);
+  }
+
+  /** it should access methods on tuples */ {
+    const actual = _ as SetKey<[number], 'toString'>;
     expectType<() => string>(actual);
   }
 }
