@@ -168,13 +168,13 @@ type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
  * @typeParam T - type which is indexed by the key
  * @typeParam K - key into the type
  * ```
- * TryAccess<{foo: string}, 'foo'> = string
- * TryAccess<{foo: string}, 'bar'> = undefined
- * TryAccess<null, 'foo'> = null
- * TryAccess<string, 'foo'> = undefined
+ * TryGet<{foo: string}, 'foo'> = string
+ * TryGet<{foo: string}, 'bar'> = undefined
+ * TryGet<null, 'foo'> = null
+ * TryGet<string, 'foo'> = undefined
  * ```
  */
-type TryAccess<T, K> = K extends keyof T
+type TryGet<T, K> = K extends keyof T
   ? T[K]
   : T extends null
   ? null
@@ -186,14 +186,14 @@ type TryAccess<T, K> = K extends keyof T
  * @typeParam T - type which is indexed by the key
  * @typeParam K - key into the type
  * ```
- * TryAccessArray<string[], '0'> = string
- * TryAccessArray<string[], 'foo'> = undefined
+ * TryGetArray<string[], '0'> = string
+ * TryGetArray<string[], 'foo'> = undefined
  * ```
  */
-type TryAccessArray<
+type TryGetArray<
   T extends ReadonlyArray<any>,
   K extends Key,
-> = K extends `${ArrayKey}` ? T[number] : TryAccess<T, K>;
+> = K extends `${ArrayKey}` ? T[number] : TryGet<T, K>;
 
 /**
  * Type to evaluate the type which the given key points to.
@@ -201,16 +201,16 @@ type TryAccessArray<
  * @typeParam K - key into the type
  * @example
  * ```
- * EvaluateKey<{foo: string}, 'foo'> = string
- * EvaluateKey<[number, string], '1'> = string
- * EvaluateKey<string[], '1'> = string
+ * GetKey<{foo: string}, 'foo'> = string
+ * GetKey<[number, string], '1'> = string
+ * GetKey<string[], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
+export type GetKey<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
-    ? TryAccess<T, K>
-    : TryAccessArray<T, K>
-  : TryAccess<MapKeys<T>, K>;
+    ? TryGet<T, K>
+    : TryGetArray<T, K>
+  : TryGet<MapKeys<T>, K>;
 
 /**
  * Type to evaluate the type which the given path points to.
@@ -218,17 +218,14 @@ export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
  * @typeParam PT - path into the deeply nested type
  * @example
  * ```
- * EvaluatePath<{foo: {bar: string}}, ['foo', 'bar']> = string
- * EvaluatePath<[number, string], ['1']> = string
- * EvaluatePath<number, []> = number
- * EvaluatePath<number, ['foo']> = undefined
+ * GetPath<{foo: {bar: string}}, ['foo', 'bar']> = string
+ * GetPath<[number, string], ['1']> = string
+ * GetPath<number, []> = number
+ * GetPath<number, ['foo']> = undefined
  * ```
  */
-export type EvaluatePath<T, PT extends PathTuple> = PT extends [
-  infer K,
-  ...infer R
-]
-  ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
+export type GetPath<T, PT extends PathTuple> = PT extends [infer K, ...infer R]
+  ? GetPath<GetKey<T, AsKey<K>>, AsPathTuple<R>>
   : T;
 
 /**
@@ -305,7 +302,7 @@ export type ObjectKeys<T extends Traversable> = Exclude<
  * ```
  */
 export type CheckKeyConstraint<T, K extends Key, U> = K extends any
-  ? EvaluateKey<T, K> extends U
+  ? GetKey<T, K> extends U
     ? K
     : never
   : never;
@@ -389,7 +386,7 @@ type ValidPathPrefixImpl<
 > = PT extends [infer K, ...infer R]
   ? HasKey<T, AsKey<K>> extends true
     ? ValidPathPrefixImpl<
-        EvaluateKey<T, AsKey<K>>,
+        GetKey<T, AsKey<K>>,
         AsPathTuple<R>,
         AsPathTuple<[...VPT, K]>
       >
