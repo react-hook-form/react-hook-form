@@ -2,7 +2,7 @@ import { FieldValues } from '../fields';
 import { IsNever } from '../utils';
 
 import {
-  EvaluatePath,
+  GetPath,
   HasPath,
   JoinPathTuple,
   Key,
@@ -59,7 +59,7 @@ export type SuggestChildPaths<
   T,
   PT extends PathTuple,
   U = unknown,
-> = PT extends any ? SuggestChildPathsImpl<PT, EvaluatePath<T, PT>, U> : never;
+> = PT extends any ? SuggestChildPathsImpl<PT, GetPath<T, PT>, U> : never;
 
 /**
  * Type to implement {@link SuggestPaths} without having to compute the valid
@@ -126,7 +126,7 @@ type AutoCompletePathCheckConstraint<
   PT extends PathTuple,
   U,
 > = HasPath<T, PT> extends true
-  ? EvaluatePath<T, PT> extends U
+  ? GetPath<T, PT> extends U
     ? PS extends JoinPathTuple<PT>
       ? PS
       : JoinPathTuple<PT>
