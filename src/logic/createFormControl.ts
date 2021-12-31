@@ -924,47 +924,46 @@ export function createFormControl<
       ref: (ref: HTMLInputElement | null): void => {
         field = get(_fields, name);
 
-        if (field && field._f) {
-          if (ref) {
-            register(name, options);
+        if (ref) {
+          register(name, options);
 
-            const fieldRef = isUndefined(ref.value)
-              ? ref.querySelectorAll
-                ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) ||
-                  ref
-                : ref
-              : ref;
-            const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
-            const refs = field._f.refs || [];
+          const fieldRef = isUndefined(ref.value)
+            ? ref.querySelectorAll
+              ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) || ref
+              : ref
+            : ref;
+          const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
+          const refs = field._f.refs || [];
 
-            if (
-              radioOrCheckbox
-                ? refs.find((option: Ref) => option === fieldRef)
-                : fieldRef === field._f.ref
-            ) {
-              return;
-            }
-
-            set(_fields, name, {
-              _f: {
-                ...field._f,
-                ...(radioOrCheckbox
-                  ? {
-                      refs: refs.concat(fieldRef).filter(live),
-                      ref: { type: fieldRef.type, name },
-                    }
-                  : { ref: fieldRef }),
-              },
-            });
-
-            updateValidAndValue(name, false, null, fieldRef);
-          } else {
-            field._f.mount = false;
-
-            (_options.shouldUnregister || options.shouldUnregister) &&
-              !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
-              _names.unMount.add(name);
+          if (
+            radioOrCheckbox
+              ? refs.find((option: Ref) => option === fieldRef)
+              : fieldRef === field._f.ref
+          ) {
+            return;
           }
+
+          set(_fields, name, {
+            _f: {
+              ...field._f,
+              ...(radioOrCheckbox
+                ? {
+                    refs: refs.concat(fieldRef).filter(live),
+                    ref: { type: fieldRef.type, name },
+                  }
+                : { ref: fieldRef }),
+            },
+          });
+
+          updateValidAndValue(name, false, null, fieldRef);
+        } else {
+          if (field && field._f) {
+            field._f.mount = false;
+          }
+
+          (_options.shouldUnregister || options.shouldUnregister) &&
+            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+            _names.unMount.add(name);
         }
       },
     };
