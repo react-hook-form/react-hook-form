@@ -919,49 +919,51 @@ export function createFormControl<
       onChange,
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
-        if (ref) {
-          register(name, options);
-          field = get(_fields, name);
+        field = get(_fields, name);
 
-          const fieldRef = isUndefined(ref.value)
-            ? ref.querySelectorAll
-              ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) || ref
-              : ref
-            : ref;
-          const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
+        if (field) {
+          if (ref) {
+            register(name, options);
 
-          if (
-            fieldRef === field._f.ref ||
-            (radioOrCheckbox &&
-              compact(field._f.refs).find((option) => option === fieldRef))
-          ) {
-            return;
+            const fieldRef = isUndefined(ref.value)
+              ? ref.querySelectorAll
+                ? (ref.querySelectorAll('input,select,textarea')[0] as Ref) ||
+                  ref
+                : ref
+              : ref;
+            const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
+
+            if (
+              fieldRef === field._f.ref ||
+              (radioOrCheckbox &&
+                compact(field._f.refs).find((option) => option === fieldRef))
+            ) {
+              return;
+            }
+
+            set(_fields, name, {
+              _f: radioOrCheckbox
+                ? {
+                    ...field._f,
+                    refs: compact(field._f.refs).concat(fieldRef),
+                    ref: { type: fieldRef.type, name },
+                  }
+                : {
+                    ...field._f,
+                    ref: fieldRef,
+                  },
+            });
+
+            updateValidAndValue(name, false, fieldRef);
+          } else {
+            if (field._f) {
+              field._f.mount = false;
+            }
+
+            (_options.shouldUnregister || options.shouldUnregister) &&
+              !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+              _names.unMount.add(name);
           }
-
-          set(_fields, name, {
-            _f: radioOrCheckbox
-              ? {
-                  ...field._f,
-                  refs: [...compact(field._f.refs).filter(live), fieldRef],
-                  ref: { type: fieldRef.type, name },
-                }
-              : {
-                  ...field._f,
-                  ref: fieldRef,
-                },
-          });
-
-          updateValidAndValue(name, false, fieldRef);
-        } else {
-          field = get(_fields, name, {});
-
-          if (field._f) {
-            field._f.mount = false;
-          }
-
-          (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
-            _names.unMount.add(name);
         }
       },
     };
