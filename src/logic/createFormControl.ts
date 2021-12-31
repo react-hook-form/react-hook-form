@@ -238,7 +238,7 @@ export function createFormControl<
       const defaultValue = get(
         _formValues,
         name,
-        value || get(_defaultValues, name),
+        isUndefined(value) ? get(_defaultValues, name) : value,
       );
 
       isUndefined(defaultValue) ||
@@ -955,7 +955,7 @@ export function createFormControl<
             },
           });
 
-          updateValidAndValue(name, false, null, fieldRef);
+          updateValidAndValue(name, false, undefined, fieldRef);
         } else {
           if (field && field._f) {
             field._f.mount = false;
