@@ -228,7 +228,7 @@ export function createFormControl<
 
   const updateValidAndValue = (
     name: InternalFieldName,
-    shouldSkipSetValueAs?: boolean,
+    shouldSkipSetValueAs: boolean,
     value?: unknown,
     ref?: Ref,
   ) => {
@@ -922,10 +922,9 @@ export function createFormControl<
       onChange,
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
-        field = get(_fields, name);
-
         if (ref) {
           register(name, options);
+          field = get(_fields, name);
 
           const fieldRef = isUndefined(ref.value)
             ? ref.querySelectorAll
@@ -957,7 +956,9 @@ export function createFormControl<
 
           updateValidAndValue(name, false, undefined, fieldRef);
         } else {
-          if (field && field._f) {
+          field = get(_fields, name, {});
+
+          if (field._f) {
             field._f.mount = false;
           }
 
