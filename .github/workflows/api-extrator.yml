@@ -1,4 +1,4 @@
-name: Unit Test / Lint
+name: API Extrator
 
 on: [pull_request]
 
@@ -13,12 +13,8 @@ jobs:
       - name: Install deps and build (with cache)
         uses: bahmutov/npm-install@v1
 
-      - name: Lint
-        run: |
-          yarn lint
-          yarn type
+      - name: Build
+        run: yarn build
 
-      - name: Test
-        run: |
-          yarn test --ci
-          yarn tsd
+      - name: API Extractor
+        run: yarn api-extractor:ci
