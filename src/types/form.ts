@@ -242,8 +242,8 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
   > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
 ) => void;
 
-export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (
-  onValid: SubmitHandler<TFieldValues>,
+export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <T>(
+  onValid: SubmitHandler<T | TFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
