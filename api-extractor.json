@@ -2,8 +2,8 @@
  * Config file for API Extractor.  For more info, please visit: https://api-extractor.com
  */
 {
-  "newlineKind": "lf",
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "newlineKind": "lf",
 
   /**
    * Optionally specifies another JSON config file that this file extends from.  This provides a way for
