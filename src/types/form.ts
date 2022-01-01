@@ -259,7 +259,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   }>,
 ) => void;
 
-export type UseFormReset<TFieldValues extends FieldValues> = <_>(
+export type UseFormReset<TFieldValues extends FieldValues> = (
   values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
 ) => void;
