@@ -31,7 +31,7 @@ function checkReportMatchesApi(config) {
     exit(
       `The API Extractor report does not match the exported API.`,
       `Please run \`${API_EXTRACTOR_YARN_COMMAND}\` to generate an`,
-      `updated report.`,
+      `updated report and commit it.`,
     );
   }
 }
@@ -107,12 +107,21 @@ function loadExtractorConfig() {
 }
 
 /**
- * Prints an error message and exits the process with status code 1.
+ * Surrounds the message with control characters to display red text on a
+ * terminal.
+ * See {@link https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html}
+ * @param message {string}
+ */
+function red(message) {
+  return `\u001b[31m${message}\u001b[0m`;
+}
+
+/**
+ * Prints a failure reason and exits the process with status code 1.
  * @param message {string}
  */
 function exit(...message) {
-  const joinedMessage = message.join(' ');
   /* eslint-disable-next-line no-console */
-  console.error(`FAILURE REASON: ${joinedMessage}`);
+  console.log(`${red('FAILURE REASON')} ${message.join(' ')}`);
   process.exit(1);
 }
