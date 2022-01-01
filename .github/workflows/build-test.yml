@@ -22,9 +22,3 @@ jobs:
         run: |
           yarn test --ci
           yarn tsd
-
-      - name: Build
-        run: yarn build
-
-      - name: API Extractor
-        run: yarn api-extractor:ci
