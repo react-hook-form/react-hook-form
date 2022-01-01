@@ -228,13 +228,18 @@ export function createFormControl<
 
   const updateValidAndValue = (
     name: InternalFieldName,
-    shouldSkipSetValueAs?: boolean,
+    shouldSkipSetValueAs: boolean,
+    value?: unknown,
     ref?: Ref,
   ) => {
     const field: Field = get(_fields, name);
 
     if (field) {
-      const defaultValue = get(_formValues, name, get(_defaultValues, name));
+      const defaultValue = get(
+        _formValues,
+        name,
+        isUndefined(value) ? get(_defaultValues, name) : value,
+      );
 
       isUndefined(defaultValue) ||
       (ref && (ref as HTMLInputElement).defaultChecked) ||
@@ -526,7 +531,8 @@ export function createFormControl<
                         )
                       : fieldValue === checkboxRef.value),
                 )
-              : (fieldReference.refs[0].checked = !!fieldValue);
+              : fieldReference.refs[0] &&
+                (fieldReference.refs[0].checked = !!fieldValue);
           } else {
             fieldReference.refs.forEach(
               (radioRef: HTMLInputElement) =>
@@ -877,6 +883,7 @@ export function createFormControl<
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
+    const disabledIsDefined = isBoolean(options.disabled);
 
     set(_fields, name, {
       _f: {
@@ -888,12 +895,8 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    !isUndefined(options.value) &&
-      !options.disabled &&
-      set(_formValues, name, get(_formValues, name, options.value));
-
     field
-      ? isBoolean(options.disabled) &&
+      ? disabledIsDefined &&
         set(
           _formValues,
           name,
@@ -901,10 +904,10 @@ export function createFormControl<
             ? undefined
             : get(_formValues, name, getFieldValue(field._f)),
         )
-      : updateValidAndValue(name, true);
+      : updateValidAndValue(name, true, options.value);
 
     return {
-      ...(isBoolean(options.disabled) ? { disabled: options.disabled } : {}),
+      ...(disabledIsDefined ? { disabled: options.disabled } : {}),
       ...(_options.shouldUseNativeValidation
         ? {
             required: !!options.required,
@@ -929,29 +932,29 @@ export function createFormControl<
               : ref
             : ref;
           const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
+          const refs = field._f.refs || [];
 
           if (
-            fieldRef === field._f.ref ||
-            (radioOrCheckbox &&
-              compact(field._f.refs).find((option) => option === fieldRef))
+            radioOrCheckbox
+              ? refs.find((option: Ref) => option === fieldRef)
+              : fieldRef === field._f.ref
           ) {
             return;
           }
 
           set(_fields, name, {
-            _f: radioOrCheckbox
-              ? {
-                  ...field._f,
-                  refs: [...compact(field._f.refs).filter(live), fieldRef],
-                  ref: { type: fieldRef.type, name },
-                }
-              : {
-                  ...field._f,
-                  ref: fieldRef,
-                },
+            _f: {
+              ...field._f,
+              ...(radioOrCheckbox
+                ? {
+                    refs: refs.concat(fieldRef).filter(live),
+                    ref: { type: fieldRef.type, name },
+                  }
+                : { ref: fieldRef }),
+            },
           });
 
-          updateValidAndValue(name, false, fieldRef);
+          updateValidAndValue(name, false, undefined, fieldRef);
         } else {
           field = get(_fields, name, {});
 
