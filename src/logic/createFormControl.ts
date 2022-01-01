@@ -484,7 +484,7 @@ export function createFormControl<
     return generateWatchOutput(names, _names, fieldValues, isGlobal);
   };
 
-  const _getFieldArray = (name: InternalFieldName) =>
+  const _getFieldArray = (name: InternalFieldName): any[] =>
     compact(
       get(
         _stateFlags.mount ? _formValues : _defaultValues,
