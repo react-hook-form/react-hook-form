@@ -3,7 +3,7 @@ import { expectType } from 'tsd';
 import { useForm } from '../../useForm';
 
 /** {@link UseFormHandleSubmit} */ {
-  /** it should infer the correct defaultValues */ {
+  /** it should infer the correct defaultValues from useForm */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm({
       defaultValues: {
@@ -15,7 +15,7 @@ import { useForm } from '../../useForm';
     handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
   }
 
-  /** it should infer the correct defaultValues */ {
+  /** it should infer the correct defaultValues from useForm generic */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm<{
       test: string;
