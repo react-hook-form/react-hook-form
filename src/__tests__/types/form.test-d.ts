@@ -1,22 +1,27 @@
-import React from 'react';
 import { expectType } from 'tsd';
 
-import {
-  SubmitErrorHandler,
-  SubmitHandler,
-  UseFormHandleSubmit,
-} from '../../types';
-
-import { _ } from './__fixtures__';
+import { useForm } from '../../useForm';
 
 /** {@link UseFormHandleSubmit} */ {
-  /** it should infer the correct form values */ {
-    const actual = _ as UseFormHandleSubmit<{ test: string; test1: number }>;
-    expectType<
-      (
-        onValid: SubmitHandler<{ test: string; test1: number }>,
-        onInvalid?: SubmitErrorHandler<{ test: string; test1: number }>,
-      ) => (e?: React.BaseSyntheticEvent) => Promise<void>
-    >(actual);
+  /** it should infer the correct defaultValues */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { handleSubmit } = useForm({
+      defaultValues: {
+        test: '',
+        test1: 2,
+      },
+    });
+
+    handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
+  }
+
+  /** it should infer the correct defaultValues */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { handleSubmit } = useForm<{
+      test: string;
+      test1: number;
+    }>();
+
+    handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
   }
 }
