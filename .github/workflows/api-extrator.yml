@@ -14,7 +14,7 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Build
-        run: yarn build
+        run: yarn build:esm
 
       - name: API Extractor
         run: yarn api-extractor:ci
