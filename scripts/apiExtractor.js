@@ -111,7 +111,8 @@ function loadExtractorConfig() {
  * @param message {string}
  */
 function exit(...message) {
+  const joinedMessage = message.join(' ');
   /* eslint-disable-next-line no-console */
-  console.error(message.join(' '));
+  console.error(`FAILURE REASON: ${joinedMessage}`);
   process.exit(1);
 }
