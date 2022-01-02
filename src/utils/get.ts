@@ -3,7 +3,11 @@ import isNullOrUndefined from './isNullOrUndefined';
 import isObject from './isObject';
 import isUndefined from './isUndefined';
 
-export default <T>(obj: T, path: string, defaultValue?: unknown): any => {
+export default <T extends Record<string, any>, U = undefined>(
+  obj: T | undefined,
+  path: string,
+  defaultValue?: U,
+): any => {
   if (isObject(obj) && path) {
     const result = compact(path.split(/[,[\].]+?/)).reduce(
       (result, key) =>
