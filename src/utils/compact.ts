@@ -1,1 +1,1 @@
-export default (value: any[]) => (value || []).filter(Boolean);
+export default <TValue>(value: TValue[]) => value.filter(Boolean);
