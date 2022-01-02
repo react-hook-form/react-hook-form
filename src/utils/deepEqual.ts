@@ -1,45 +1,34 @@
-import isObject from '../utils/isObject';
-
 import isDateObject from './isDateObject';
-import isPrimitive from './isPrimitive';
 
-export default function deepEqual(object1: any, object2: any) {
-  if (isPrimitive(object1) || isPrimitive(object2)) {
-    return object1 === object2;
+function deepEqual(a: any, b: any): boolean {
+  if (a === b) {
+    return true;
   }
 
-  if (isDateObject(object1) && isDateObject(object2)) {
-    return object1.getTime() === object2.getTime();
+  if (isDateObject(a) && isDateObject(b)) {
+    return a.getTime() === b.getTime();
   }
 
-  const keys1 = Object.keys(object1);
-  const keys2 = Object.keys(object2);
+  if (!a || !b || (typeof a !== 'object' && typeof b !== 'object')) {
+    return a === b;
+  }
 
-  if (keys1.length !== keys2.length) {
+  if (a.prototype !== b.prototype) {
     return false;
   }
 
-  for (const key of keys1) {
-    const val1 = object1[key];
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
 
-    if (!keys2.includes(key)) {
-      return false;
-    }
-
-    if (key !== 'ref') {
-      const val2 = object2[key];
-
-      if (
-        (isDateObject(val1) && isDateObject(val2)) ||
-        (isObject(val1) && isObject(val2)) ||
-        (Array.isArray(val1) && Array.isArray(val2))
-          ? !deepEqual(val1, val2)
-          : val1 !== val2
-      ) {
-        return false;
-      }
-    }
+  if (keysA.length !== keysB.length) {
+    return false;
   }
 
-  return true;
+  if (keysA.some((keyA) => !(keyA in b))) {
+    return false;
+  }
+
+  return keysA.every((k) => deepEqual(a[k], b[k]));
 }
+
+export default deepEqual;
