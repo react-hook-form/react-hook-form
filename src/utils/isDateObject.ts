@@ -1,1 +1,1 @@
-export default (data: unknown) => data instanceof Date;
+export default (val: unknown): val is Date => val instanceof Date;
