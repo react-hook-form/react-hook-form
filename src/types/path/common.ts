@@ -415,12 +415,12 @@ export type ObjectKeys<T extends Traversable> = Exclude<
  *  - Constraint<1    , 1 | 2>  extends         Constraint<1    , 1    >
  *  - Constraint<1 | 2, 1    >  doesn't extend  Constraint<1    , 1    >
  *  - Constraint<1    , 1    >  doesn't extend  Constraint<1    , 1 | 2>
- * @typeParam Sub   - constrains a type to be a subtype
- * @typeParam Super - constrains a type to be a supertype
+ * @typeParam Super - constrains a type to be a subtype of this type
+ * @typeParam Sub   - constrains a type to be a supertype of this type
  */
-export type Constraint<Sub = unknown, Super = never> = [
-  Sub,
-  (_: Super) => void,
+export type Constraint<Super = unknown, Sub = never> = [
+  Super,
+  (_: Sub) => void,
 ];
 
 /**
