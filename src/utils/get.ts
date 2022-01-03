@@ -1,5 +1,5 @@
 import compact from './compact';
-import isObject from './isObject';
+import isPrimitive from './isPrimitive';
 
 export default <T extends Record<string, any>, U = undefined>(
   obj: T | undefined,
@@ -11,37 +11,28 @@ export default <T extends Record<string, any>, U = undefined>(
   }
 
   const pathKeys = compact(path.split(/[,[\].]+?/));
-  const pathKeysLastIndex = pathKeys.length - 1;
 
   let result: any = obj;
 
-  for (const [index, key] of pathKeys.entries()) {
-    const currentValue = result[key];
+  for (const key of pathKeys) {
+    result = result[key];
 
-    if (currentValue === null) {
-      return null;
+    if (isPrimitive(result)) {
+      if (result === null) {
+        return null;
+      }
+
+      if (result === undefined) {
+        /**
+         * By checking for obj[path] we can handle case like
+         * { 'betty.test.test1[0].test1': 'test' }
+         * TODO: probably this should be removed and just return the defaultValue
+         */
+        return obj[path] !== undefined ? obj[path] : defaultValue;
+      }
+
+      return result;
     }
-
-    if (currentValue === undefined) {
-      result = defaultValue;
-      break;
-    }
-
-    if (
-      index < pathKeysLastIndex &&
-      !isObject(currentValue) &&
-      !Array.isArray(currentValue)
-    ) {
-      result = defaultValue;
-      break;
-    }
-
-    result = currentValue;
-  }
-
-  // handle case like 'betty.test.test1[0].test1': 'test'
-  if (result === undefined && obj[path] !== undefined) {
-    return obj[path];
   }
 
   return result;

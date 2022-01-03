@@ -262,7 +262,7 @@ export type FormStateSubjectRef<TFieldValues> = Subject<Partial<FormState<TField
 }>;
 
 // @public (undocumented)
-export const get: <T extends Record<string | number | symbol, any> | undefined, U = undefined>(obj: T, path: string, defaultValue?: U | undefined) => any;
+export const get: <T extends Record<string, any>, U = undefined>(obj: T | undefined, path: string, defaultValue?: U | undefined) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
