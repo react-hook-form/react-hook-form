@@ -401,7 +401,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
       { foo: { bar: readonly object[] } },
       'foo.bar'
     >;
-    expectType<'foo' | `foo.bar.${number}`>(actual);
+    expectType<'foo' | `foo.bar` | `foo.bar.${number}`>(actual);
   }
 
   /** it should not accept tuples */ {

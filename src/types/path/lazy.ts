@@ -256,7 +256,7 @@ export type LazyFieldPath<
 export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
   TPathString,
-  Constraint<FieldValues[] | null | undefined, never[]>
+  Constraint<ReadonlyArray<FieldValues> | null | undefined, never[]>
 >;
 
 /**
