@@ -174,6 +174,30 @@ import {
   }
 }
 
+/** {@link Constraint} */ {
+  type Extends<A, B> = A extends B ? true : false;
+
+  /** it should extend if Super is a supertype */ {
+    const actual = _ as Extends<Constraint<1, 1 | 2>, Constraint<1, 1>>;
+    expectType<true>(actual);
+  }
+
+  /** it should extend if Sub is a subtype */ {
+    const actual = _ as Extends<Constraint<1, 1>, Constraint<1 | 2, 1>>;
+    expectType<true>(actual);
+  }
+
+  /** it shouldn't extend if Sub is a supertype */ {
+    const actual = _ as Extends<Constraint<1 | 2, 1>, Constraint<1, 1>>;
+    expectType<false>(actual);
+  }
+
+  /** it shouldn't extend if Super is a subtype */ {
+    const actual = _ as Extends<Constraint<1, 1>, Constraint<1, 1 | 2>>;
+    expectType<false>(actual);
+  }
+}
+
 /** {@link CheckKeyConstraint} */ {
   /** it should remove the keys which don't match the constraint */ {
     const actual = _ as CheckKeyConstraint<

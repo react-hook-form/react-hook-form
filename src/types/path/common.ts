@@ -408,12 +408,20 @@ export type ObjectKeys<T extends Traversable> = Exclude<
 >;
 
 /**
- * Type which represents a constraint
- * @typeParam Get - covariant constraint, i.e. the type when getting a property
- * @typeParam Set - contravariant constraint, i.e. the type when setting a
- *                  property
+ * Type which represents a constraint:
+ *  - 1 is a subtype of 1 | 2
+ *  - 1 | 2 is a supertype of 1
+ *  - Constraint<1    , 1    >  extends         Constraint<1 | 2, 1    >
+ *  - Constraint<1    , 1 | 2>  extends         Constraint<1    , 1    >
+ *  - Constraint<1 | 2, 1    >  doesn't extend  Constraint<1    , 1    >
+ *  - Constraint<1    , 1    >  doesn't extend  Constraint<1    , 1 | 2>
+ * @typeParam Sub   - constrains a type to be a subtype
+ * @typeParam Super - constrains a type to be a supertype
  */
-export type Constraint<Get = unknown, Set = never> = [Get, (_: Set) => void];
+export type Constraint<Sub = unknown, Super = never> = [
+  Sub,
+  (_: Super) => void,
+];
 
 /**
  * Type to check whether a type's property matches the constraint type
