@@ -4,7 +4,7 @@ import isObject from './isObject';
 import isUndefined from './isUndefined';
 
 export default <T>(obj: T, path: string, defaultValue?: unknown): any => {
-  if (!obj || !path || !isObject(obj)) {
+  if (!path || !isObject(obj)) {
     return defaultValue;
   }
 
