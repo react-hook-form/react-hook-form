@@ -408,20 +408,32 @@ export type ObjectKeys<T extends Traversable> = Exclude<
 >;
 
 /**
+ * Type which represents a constraint
+ * @typeParam Get - covariant constraint, i.e. the type when getting a property
+ * @typeParam Set - contravariant constraint, i.e. the type when setting a
+ *                  property
+ */
+export type Constraint<Get = unknown, Set = never> = [Get, (_: Set) => void];
+
+/**
  * Type to check whether a type's property matches the constraint type
  * and return its key. Converts the key to a {@link Key}.
  * @typeParam T - type whose property should be checked
  * @typeParam K - key of the property
- * @typeParam U - constraint type
+ * @typeParam C - constraint
  * @example
  * ```
- * CheckKeyConstraint<{foo: string}, 'foo', string> = 'foo'
- * CheckKeyConstraint<{foo: string}, 'foo', number> = never
- * CheckKeyConstraint<string[], number, string> = `${number}`
+ * CheckKeyConstraint<{foo: string}, 'foo', Constraint<string>> = 'foo'
+ * CheckKeyConstraint<{foo: string}, 'foo', Constraint<number>> = never
+ * CheckKeyConstraint<string[], number, Constraint<string>> = `${number}`
  * ```
  */
-export type CheckKeyConstraint<T, K extends Key, U> = K extends any
-  ? GetKey<T, K> extends U
+export type CheckKeyConstraint<
+  T,
+  K extends Key,
+  C extends Constraint,
+> = K extends any
+  ? Constraint<GetKey<T, K>, SetKey<T, K>> extends C
     ? K
     : never
   : never;
@@ -457,24 +469,24 @@ type KeysImpl<T> = [T] extends [Traversable]
  * and return their keys.
  * If a union is passed, it evaluates to the overlapping keys.
  * @typeParam T - type whose property should be checked
- * @typeParam U - constraint type
+ * @typeParam C - constraint
  * @example
  * ```
- * Keys<{foo: string, bar: string}, string> = 'foo' | 'bar'
+ * Keys<{foo: string, bar: string}, Constraint<string>> = 'foo' | 'bar'
  * Keys<{foo?: string, bar?: string}> = 'foo' | 'bar'
- * Keys<{foo: string, bar: number}, string> = 'foo'
+ * Keys<{foo: string, bar: number}, Constraint<string>> = 'foo'
  * Keys<[string, number], string> = '0'
- * Keys<string[], string> = `${number}`
+ * Keys<string[], Constraint<string>> = `${number}`
  * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
-export type Keys<T, U = unknown> = IsAny<T> extends true
+export type Keys<T, C extends Constraint = Constraint> = IsAny<T> extends true
   ? Key
   : IsNever<T> extends true
   ? Key
   : IsNever<NonNullable<T>> extends true
   ? never
-  : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, U>;
+  : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, C>;
 
 /**
  * Type to check whether a {@link Key} is present in a type.

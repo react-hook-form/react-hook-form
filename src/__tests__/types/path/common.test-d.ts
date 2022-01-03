@@ -5,6 +5,7 @@ import {
   AsKey,
   AsPathTuple,
   CheckKeyConstraint,
+  Constraint,
   ContainsIndexable,
   GetKey,
   GetPath,
@@ -178,7 +179,7 @@ import {
     const actual = _ as CheckKeyConstraint<
       { foo: string; bar: number },
       'foo' | 'bar',
-      string
+      Constraint<string>
     >;
     expectType<'foo'>(actual);
   }
@@ -326,22 +327,33 @@ import {
   }
 
   /** it should only return the keys of string properties */ {
-    const actual = _ as Keys<{ foo: string; bar: number }, string>;
+    const actual = _ as Keys<{ foo: 'foo'; bar: number }, Constraint<string>>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should only return the keys of properties which can be set to a string */ {
+    const actual = _ as Keys<
+      { foo: string; bar: 'bar' },
+      Constraint<string, string>
+    >;
     expectType<'foo'>(actual);
   }
 
   /** it should only return the keys of string properties */ {
-    const actual = _ as Keys<{ 1: string; 2: number }, string>;
+    const actual = _ as Keys<{ 1: string; 2: number }, Constraint<string>>;
     expectType<'1'>(actual);
   }
 
   /** it should return only the required keys when undefined is excluded */ {
-    const actual = _ as Keys<{ foo: string; bar?: string }, string>;
+    const actual = _ as Keys<{ foo: string; bar?: string }, Constraint<string>>;
     expectType<'foo'>(actual);
   }
 
   /** it should return the optional keys when undefined is included */ {
-    const actual = _ as Keys<{ foo: string; bar?: string }, string | undefined>;
+    const actual = _ as Keys<
+      { foo: string; bar?: string },
+      Constraint<string | undefined>
+    >;
     expectType<'foo' | 'bar'>(actual);
   }
 

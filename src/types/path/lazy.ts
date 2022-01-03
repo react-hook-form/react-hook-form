@@ -2,6 +2,7 @@ import { FieldValues } from '../fields';
 import { IsNever } from '../utils';
 
 import {
+  Constraint,
   GetPath,
   HasPath,
   JoinPathTuple,
@@ -36,7 +37,13 @@ export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
  * @typeParam U   - constraint type
  */
 type SuggestChildPathsImpl<PT extends PathTuple, TPT, U> = JoinPathTuple<
-  [...PT, Keys<TPT, U> | Keys<TPT, Traversable | undefined | null>]
+  [
+    ...PT,
+    (
+      | Keys<TPT, Constraint<U>>
+      | Keys<TPT, Constraint<Traversable | undefined | null>>
+    ),
+  ]
 >;
 
 /**
