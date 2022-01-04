@@ -409,21 +409,21 @@ export type ObjectKeys<T extends Traversable> = Exclude<
 
 /**
  * Type which represents a property access.
+ * @typeParam Get - the type when getting the property (covariant)
+ * @typeParam Set - the type required for setting the property (contravariant)
+ * @remarks
  * See {@link https://dmitripavlutin.com/typescript-covariance-contravariance/}
  * for an explanation of covariance and contravariance.
- * @typeParam Get - constrains a type to be a subtype of this type,
- *                  i.e. the type when getting the property
- * @typeParam Set - constrains a type to be a supertype of this type,
- *                  i.e. the type required for setting the property
- * @example
- * ```
- *  'abcd' is a subtype   of string
- *  string is a supertype of 'abcd'
- *  AccessPattern<'abcd', 'abcd'>  extends         AccessPattern<string, 'abcd'>
- *  AccessPattern<'abcd', string>  extends         AccessPattern<'abcd', 'abcd'>
- *  AccessPattern<string, 'abcd'>  doesn't extend  AccessPattern<'abcd', 'abcd'>
- *  AccessPattern<'abcd', 'abcd'>  doesn't extend  AccessPattern<'abcd', string>
- * ```
+ *
+ * Using it as a constraint:
+ *  - `'abcd'` is a subtype   of `string`
+ *  - `string` is a supertype of `'abcd'`
+ *
+ * Therefore,
+ *  - `AccessPattern<'abcd', 'abcd'>` extends        `AccessPattern<string, 'abcd'>`
+ *  - `AccessPattern<'abcd', string>` extends        `AccessPattern<'abcd', 'abcd'>`
+ *  - `AccessPattern<string, 'abcd'>` doesn't extend `AccessPattern<'abcd', 'abcd'>`
+ *  - `AccessPattern<'abcd', 'abcd'>` doesn't extend `AccessPattern<'abcd', string>`
  */
 export type AccessPattern<Get = unknown, Set = never> = (_: Set) => Get;
 
