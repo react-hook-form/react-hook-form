@@ -262,7 +262,7 @@ export type FormStateSubjectRef<TFieldValues> = Subject<Partial<FormState<TField
 }>;
 
 // @public (undocumented)
-export const get: <T extends Record<string, any>, U = undefined>(obj: T | undefined, path: string, defaultValue?: U | undefined) => any;
+export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
@@ -536,7 +536,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public (undocumented)
-export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <TSubmitFieldValues extends FieldValues = TFieldValues>(onValid: SubmitHandler<TSubmitFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = Partial<{
