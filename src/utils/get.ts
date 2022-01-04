@@ -1,13 +1,10 @@
 import compact from './compact';
 import isNullOrUndefined from './isNullOrUndefined';
+import isObject from './isObject';
 import isUndefined from './isUndefined';
 
-export default <T extends Record<string, any>, U = undefined>(
-  obj: T | undefined,
-  path: string,
-  defaultValue?: U,
-): any => {
-  if (!obj || !path) {
+export default <T>(obj: T, path: string, defaultValue?: unknown): any => {
+  if (!path || !isObject(obj)) {
     return defaultValue;
   }
 

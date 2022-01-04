@@ -262,7 +262,7 @@ export type FormStateSubjectRef<TFieldValues> = Subject<Partial<FormState<TField
 }>;
 
 // @public (undocumented)
-export const get: <T extends Record<string, any>, U = undefined>(obj: T | undefined, path: string, defaultValue?: U | undefined) => any;
+export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
@@ -296,21 +296,6 @@ export type KeepStateOptions = Partial<{
     keepIsValid: boolean;
     keepSubmitCount: boolean;
 }>;
-
-// Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "Traversable" needs to be exported by the entry point index.d.ts
-//
-// @public
-export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<T, TPathString, ReadonlyArray<Traversable> | null | undefined>;
-
-// @public
-export type LazyFieldArrayPath<TFieldValues extends FieldValues, TPathString extends PathString> = LazyArrayPath<TFieldValues, TPathString>;
-
-// @public
-export type LazyFieldPath<TFieldValues extends FieldValues, TPathString extends PathString> = LazyPath<TFieldValues, TPathString>;
-
-// @public
-export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<T, TPathString>;
 
 // @public (undocumented)
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
@@ -536,7 +521,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public (undocumented)
-export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <TSubmitFieldValues extends FieldValues = TFieldValues>(onValid: SubmitHandler<TSubmitFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = Partial<{
