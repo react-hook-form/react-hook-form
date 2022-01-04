@@ -412,7 +412,7 @@ export type ObjectKeys<T extends Traversable> = Exclude<
  * @typeParam Get - constrains a type to be a subtype of this type,
  *                  i.e. the type when getting the property
  * @typeParam Set - constrains a type to be a supertype of this type,
- *                  i.e. the type you required for setting the property
+ *                  i.e. the type required for setting the property
  * @example
  * ```
  *  'abcd' is a subtype   of string
