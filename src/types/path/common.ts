@@ -408,23 +408,22 @@ export type ObjectKeys<T extends Traversable> = Exclude<
 >;
 
 /**
- * Type which represents a constraint
- * @typeParam Super - constrains a type to be a subtype of this type
- * @typeParam Sub   - constrains a type to be a supertype of this type
+ * Type which represents a property access
+ * @typeParam Get - constrains a type to be a subtype of this type,
+ *                  i.e. the type when getting the property
+ * @typeParam Set - constrains a type to be a supertype of this type,
+ *                  i.e. the type you required for setting the property
  * @example
  * ```
- *  1 is a subtype of 1 | 2
- *  1 | 2 is a supertype of 1
- *  Constraint<1    , 1    >  extends         Constraint<1 | 2, 1    >
- *  Constraint<1    , 1 | 2>  extends         Constraint<1    , 1    >
- *  Constraint<1 | 2, 1    >  doesn't extend  Constraint<1    , 1    >
- *  Constraint<1    , 1    >  doesn't extend  Constraint<1    , 1 | 2>
+ *  'abcd' is a subtype   of string
+ *  string is a supertype of 'abcd'
+ *  AccessPattern<'abcd', 'abcd'>  extends         AccessPattern<string, 'abcd'>
+ *  AccessPattern<'abcd', string>  extends         AccessPattern<'abcd', 'abcd'>
+ *  AccessPattern<string, 'abcd'>  doesn't extend  AccessPattern<'abcd', 'abcd'>
+ *  AccessPattern<'abcd', 'abcd'>  doesn't extend  AccessPattern<'abcd', string>
  * ```
  */
-export type Constraint<Super = unknown, Sub = never> = [
-  Super,
-  (_: Sub) => void,
-];
+export type AccessPattern<Get = unknown, Set = never> = (_: Set) => Get;
 
 /**
  * Type to check whether a type's property matches the constraint type
@@ -434,17 +433,17 @@ export type Constraint<Super = unknown, Sub = never> = [
  * @typeParam C - constraint
  * @example
  * ```
- * CheckKeyConstraint<{foo: string}, 'foo', Constraint<string>> = 'foo'
- * CheckKeyConstraint<{foo: string}, 'foo', Constraint<number>> = never
- * CheckKeyConstraint<string[], number, Constraint<string>> = `${number}`
+ * CheckKeyConstraint<{foo: string}, 'foo', AccessPattern<string>> = 'foo'
+ * CheckKeyConstraint<{foo: string}, 'foo', AccessPattern<number>> = never
+ * CheckKeyConstraint<string[], number, AccessPattern<string>> = `${number}`
  * ```
  */
 export type CheckKeyConstraint<
   T,
   K extends Key,
-  C extends Constraint,
+  C extends AccessPattern,
 > = K extends any
-  ? Constraint<GetKey<T, K>, SetKey<T, K>> extends C
+  ? AccessPattern<GetKey<T, K>, SetKey<T, K>> extends C
     ? K
     : never
   : never;
@@ -483,15 +482,18 @@ type KeysImpl<T> = [T] extends [Traversable]
  * @typeParam C - constraint
  * @example
  * ```
- * Keys<{foo: string, bar: string}, Constraint<string>> = 'foo' | 'bar'
+ * Keys<{foo: string, bar: string}, AccessPattern<string>> = 'foo' | 'bar'
  * Keys<{foo?: string, bar?: string}> = 'foo' | 'bar'
- * Keys<{foo: string, bar: number}, Constraint<string>> = 'foo'
+ * Keys<{foo: string, bar: number}, AccessPattern<string>> = 'foo'
  * Keys<[string, number], string> = '0'
- * Keys<string[], Constraint<string>> = `${number}`
+ * Keys<string[], AccessPattern<string>> = `${number}`
  * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
  */
-export type Keys<T, C extends Constraint = Constraint> = IsAny<T> extends true
+export type Keys<
+  T,
+  C extends AccessPattern = AccessPattern,
+> = IsAny<T> extends true
   ? Key
   : IsNever<T> extends true
   ? Key

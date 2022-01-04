@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { LazyArrayPath, PathString } from '../../../types';
-import { Constraint } from '../../../types/path/common';
+import { AccessPattern } from '../../../types/path/common';
 import {
   AutoCompletePath,
   SuggestChildPaths,
@@ -56,7 +56,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as SuggestChildPaths<
       InfiniteType<string>,
       ['foo'],
-      Constraint<number>
+      AccessPattern<number>
     >;
     expectType<'foo.foo' | 'foo.bar' | 'foo.baz'>(actual);
   }
@@ -116,7 +116,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as SuggestPaths<
       InfiniteType<string>,
       ['foo', 'foo'],
-      Constraint<number>
+      AccessPattern<number>
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
@@ -125,7 +125,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as SuggestPaths<
       NullableInfiniteType<string>,
       ['foo', 'foo'],
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
@@ -175,7 +175,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.value',
-      Constraint<number>
+      AccessPattern<number>
     >;
     expectType<'foo'>(actual);
   }
@@ -206,7 +206,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.value',
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<'foo' | 'foo.value'>(actual);
   }
@@ -215,13 +215,13 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       { foo: any },
       'foo.bar.baz',
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<'foo.bar' | 'foo.bar.baz' | `foo.bar.baz.${string}`>(actual);
   }
 
   /** it should accept string when the type is any */ {
-    const actual = _ as AutoCompletePath<any, string, Constraint<string>>;
+    const actual = _ as AutoCompletePath<any, string, AccessPattern<string>>;
     expectType<string>(actual);
   }
 
@@ -229,7 +229,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       any,
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<any>(actual);
   }
@@ -238,7 +238,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       never,
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<never>(actual);
   }
@@ -247,7 +247,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       NullableInfiniteType<string>,
       'foo.value',
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<'foo'>(actual);
   }
@@ -256,7 +256,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       NullableInfiniteType<string>,
       'foo.value',
-      Constraint<string | null | undefined>
+      AccessPattern<string | null | undefined>
     >;
     expectType<'foo' | 'foo.value'>(actual);
   }
@@ -265,7 +265,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.foo',
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<
       'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'
@@ -276,7 +276,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.foo',
-      Constraint<number>
+      AccessPattern<number>
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }

@@ -1,11 +1,11 @@
 import { expectType } from 'tsd';
 
 import {
+  AccessPattern,
   ArrayKey,
   AsKey,
   AsPathTuple,
   CheckKeyConstraint,
-  Constraint,
   ContainsIndexable,
   GetKey,
   GetPath,
@@ -174,26 +174,38 @@ import {
   }
 }
 
-/** {@link Constraint} */ {
+/** {@link AccessPattern} */ {
   type Extends<A, B> = A extends B ? true : false;
 
   /** it should extend if it's a subtype */ {
-    const actual = _ as Extends<Constraint<1, 1>, Constraint<1 | 2, 1>>;
+    const actual = _ as Extends<
+      AccessPattern<'abcd', 'abcd'>,
+      AccessPattern<string, 'abcd'>
+    >;
     expectType<true>(actual);
   }
 
   /** it should extend if it's a supertype */ {
-    const actual = _ as Extends<Constraint<1, 1 | 2>, Constraint<1, 1>>;
+    const actual = _ as Extends<
+      AccessPattern<'abcd', string>,
+      AccessPattern<'abcd', 'abcd'>
+    >;
     expectType<true>(actual);
   }
 
   /** it shouldn't extend if it isn't a subtype */ {
-    const actual = _ as Extends<Constraint<1 | 2, 1>, Constraint<1, 1>>;
+    const actual = _ as Extends<
+      AccessPattern<string, 'abcd'>,
+      AccessPattern<'abcd', 'abcd'>
+    >;
     expectType<false>(actual);
   }
 
   /** it shouldn't extend if it isn't a supertype */ {
-    const actual = _ as Extends<Constraint<1, 1>, Constraint<1, 1 | 2>>;
+    const actual = _ as Extends<
+      AccessPattern<'abcd', 'abcd'>,
+      AccessPattern<'abcd', string>
+    >;
     expectType<false>(actual);
   }
 }
@@ -203,7 +215,7 @@ import {
     const actual = _ as CheckKeyConstraint<
       { foo: string; bar: number },
       'foo' | 'bar',
-      Constraint<string>
+      AccessPattern<string>
     >;
     expectType<'foo'>(actual);
   }
@@ -351,32 +363,38 @@ import {
   }
 
   /** it should only return the keys of string properties */ {
-    const actual = _ as Keys<{ foo: 'foo'; bar: number }, Constraint<string>>;
+    const actual = _ as Keys<
+      { foo: 'foo'; bar: number },
+      AccessPattern<string>
+    >;
     expectType<'foo'>(actual);
   }
 
   /** it should only return the keys of properties which can be set to a string */ {
     const actual = _ as Keys<
       { foo: string; bar: 'bar' },
-      Constraint<string, string>
+      AccessPattern<string, string>
     >;
     expectType<'foo'>(actual);
   }
 
   /** it should only return the keys of string properties */ {
-    const actual = _ as Keys<{ 1: string; 2: number }, Constraint<string>>;
+    const actual = _ as Keys<{ 1: string; 2: number }, AccessPattern<string>>;
     expectType<'1'>(actual);
   }
 
   /** it should return only the required keys when undefined is excluded */ {
-    const actual = _ as Keys<{ foo: string; bar?: string }, Constraint<string>>;
+    const actual = _ as Keys<
+      { foo: string; bar?: string },
+      AccessPattern<string>
+    >;
     expectType<'foo'>(actual);
   }
 
   /** it should return the optional keys when undefined is included */ {
     const actual = _ as Keys<
       { foo: string; bar?: string },
-      Constraint<string | undefined>
+      AccessPattern<string | undefined>
     >;
     expectType<'foo' | 'bar'>(actual);
   }
