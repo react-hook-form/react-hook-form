@@ -408,7 +408,9 @@ export type ObjectKeys<T extends Traversable> = Exclude<
 >;
 
 /**
- * Type which represents a property access
+ * Type which represents a property access.
+ * See {@link https://dmitripavlutin.com/typescript-covariance-contravariance/}
+ * for an explanation of covariance and contravariance.
  * @typeParam Get - constrains a type to be a subtype of this type,
  *                  i.e. the type when getting the property
  * @typeParam Set - constrains a type to be a supertype of this type,
