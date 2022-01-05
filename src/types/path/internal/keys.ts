@@ -1,7 +1,7 @@
 import { IsAny, IsNever } from '../../utils';
 
 import { KeyGetValue } from './pathGetValue';
-import { SetKey } from './setPath';
+import { KeySetValue } from './pathSetValue';
 import {
   AccessPattern,
   ArrayKey,
@@ -90,7 +90,7 @@ export type CheckKeyConstraint<
   K extends Key,
   C extends AccessPattern,
 > = K extends any
-  ? AccessPattern<KeyGetValue<T, K>, SetKey<T, K>> extends C
+  ? AccessPattern<KeyGetValue<T, K>, KeySetValue<T, K>> extends C
     ? K
     : never
   : never;

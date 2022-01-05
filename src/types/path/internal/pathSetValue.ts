@@ -38,11 +38,11 @@ type TrySetArray<
 > = K extends `${ArrayKey}` ? T[number] : TrySet<T, K>;
 
 /**
- * Type to implement {@link SetKey}. Wraps everything into a tuple.
+ * Type to implement {@link KeySetValue}. Wraps everything into a tuple.
  * @typeParam T - non-nullable type which is indexed by the key
  * @typeParam K - key into the type, mustn't be a union of keys
  */
-type SetKeyImpl<T, K extends Key> = T extends ReadonlyArray<any>
+type KeySetValueImpl<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
     ? [TrySet<T, K>]
     : [TrySetArray<T, K>]
@@ -50,7 +50,7 @@ type SetKeyImpl<T, K extends Key> = T extends ReadonlyArray<any>
 
 /**
  * Type to evaluate the type which the given key points to. This type is the
- * contravariant equivalent of {@link GetKey}.
+ * contravariant equivalent of {@link KeyGetValue}.
  *  - If either T or K is union, it will evaluate to the intersection of the
  *    types at the given key(s).
  *  - If T can be null or undefined, the resulting type won't include null or
@@ -61,31 +61,34 @@ type SetKeyImpl<T, K extends Key> = T extends ReadonlyArray<any>
  * @typeParam K - key into the type
  * @example
  * ```
- * SetKey<{foo: string}, 'foo'> = string
- * SetKey<{foo: string, bar: number}, 'foo' | 'bar'> = string & number
- * SetKey<{foo: string} | {foo: number}, 'foo'> = string & number
- * SetKey<null | {foo: string}, 'foo'> = string
- * SetKey<{bar: string}, 'foo'> = never
- * SetKey<{foo?: string}, 'foo'> = undefined | string
+ * KeySetValue<{foo: string}, 'foo'> = string
+ * KeySetValue<{foo: string, bar: number}, 'foo' | 'bar'> = string & number
+ * KeySetValue<{foo: string} | {foo: number}, 'foo'> = string & number
+ * KeySetValue<null | {foo: string}, 'foo'> = string
+ * KeySetValue<{bar: string}, 'foo'> = never
+ * KeySetValue<{foo?: string}, 'foo'> = undefined | string
  * ```
  */
-export type SetKey<T, K extends Key> = UnionToIntersection<
-  K extends any ? SetKeyImpl<NonNullable<T>, K> : never
+export type KeySetValue<T, K extends Key> = UnionToIntersection<
+  K extends any ? KeySetValueImpl<NonNullable<T>, K> : never
 >[never];
 
 /**
- * Type to implement {@link SetPath} tail-recursively.
+ * Type to implement {@link PathSetValue} tail-recursively.
  * Wraps everything into a tuple.
  * @typeParam T  - deeply nested type which is indexed by the path
  * @typeParam PT - path into the deeply nested type
  */
-type SetPathImpl<T, PT extends PathTuple> = PT extends [infer K, ...infer R]
-  ? SetPathImpl<SetKey<T, AsKey<K>>, AsPathTuple<R>>
+type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
+  infer K,
+  ...infer R
+]
+  ? PathSetValueImpl<KeySetValue<T, AsKey<K>>, AsPathTuple<R>>
   : [T];
 
 /**
  * Type to evaluate the type which the given path points to. This type is the
- * contravariant equivalent of {@link GetPath}.
+ * contravariant equivalent of {@link PathGetValue}.
  *  - If either T or PT is union, it will evaluate to the intersection of the
  *    types at the given paths(s).
  *  - If T can be null or undefined, the resulting type won't include null or
@@ -96,15 +99,15 @@ type SetPathImpl<T, PT extends PathTuple> = PT extends [infer K, ...infer R]
  * @typeParam PT - path into the deeply nested type
  * @example
  * ```
- * SetPath<{foo: {bar: string}}, ['foo', 'bar']> = string
- * SetPath<{foo: string, bar: number}, ['foo'] | ['bar']> = string & number
- * SetPath<{foo: string} | {foo: number}, ['foo']> = string & number
- * SetPath<null | {foo: string}, ['foo']> = string
- * SetPath<{bar: string}, ['foo']> = never
- * SetPath<{foo?: string}, ['foo']> = undefined | string
- * SetPath<{foo?: {bar: string}}, ['foo', 'bar']> = string
+ * PathSetValue<{foo: {bar: string}}, ['foo', 'bar']> = string
+ * PathSetValue<{foo: string, bar: number}, ['foo'] | ['bar']> = string & number
+ * PathSetValue<{foo: string} | {foo: number}, ['foo']> = string & number
+ * PathSetValue<null | {foo: string}, ['foo']> = string
+ * PathSetValue<{bar: string}, ['foo']> = never
+ * PathSetValue<{foo?: string}, ['foo']> = undefined | string
+ * PathSetValue<{foo?: {bar: string}}, ['foo', 'bar']> = string
  * ```
  */
-export type SetPath<T, PT extends PathTuple> = UnionToIntersection<
-  SetPathImpl<T, PT>
+export type PathSetValue<T, PT extends PathTuple> = UnionToIntersection<
+  PathSetValueImpl<T, PT>
 >[never];

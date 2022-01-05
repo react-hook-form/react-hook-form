@@ -4,8 +4,8 @@ import { PathString } from '../pathString';
 import { HasPath, ValidPathPrefix } from './hasPath';
 import { Keys } from './keys';
 import { PathGetValue } from './pathGetValue';
+import { PathSetValue } from './pathSetValue';
 import { JoinPathTuple, PathTuple, SplitPathString } from './pathTuple';
-import { SetPath } from './setPath';
 import { AccessPattern, Key, Traversable, UnionToIntersection } from './utils';
 
 /**
@@ -133,7 +133,7 @@ type AutoCompletePathCheckConstraint<
   PT extends PathTuple,
   C extends AccessPattern,
 > = HasPath<T, PT> extends true
-  ? AccessPattern<PathGetValue<T, PT>, SetPath<T, PT>> extends C
+  ? AccessPattern<PathGetValue<T, PT>, PathSetValue<T, PT>> extends C
     ? PS extends JoinPathTuple<PT>
       ? PS
       : JoinPathTuple<PT>

@@ -37,7 +37,7 @@ type TryGetArray<
 
 /**
  * Type to evaluate the type which the given key points to. This type is the
- * covariant equivalent of {@link SetKey}.
+ * covariant equivalent of {@link KeySetValue}.
  *  - If either T or K is union, it will evaluate to the union of the types at
  *    the given key(s).
  *  - If T can be null or undefined, the resulting type will also include null
@@ -64,7 +64,7 @@ export type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any>
 
 /**
  * Type to evaluate the type which the given path points to. This type is the
- * covariant equivalent of {@link SetKey}.
+ * covariant equivalent of {@link PathSetValue}.
  *  - If either T or PT is union, it will evaluate to the union of the types at
  *    the given path(s).
  *  - If T can be null or undefined, the resulting type will also include null
