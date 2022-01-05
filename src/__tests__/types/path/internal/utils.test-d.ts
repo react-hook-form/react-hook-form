@@ -7,7 +7,7 @@ import {
   IsTuple,
   ToKey,
   UnionToIntersection,
-} from '../../../../types/path/internal';
+} from '../../../../types/path/internal/utils';
 import { _ } from '../../__fixtures__';
 
 /** {@link AsKey} */ {

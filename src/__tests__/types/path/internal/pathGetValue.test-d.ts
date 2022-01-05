@@ -4,8 +4,8 @@ import { PathString } from '../../../../types';
 import {
   KeyGetValue,
   PathGetValue,
-  SplitPathString,
-} from '../../../../types/path/internal';
+} from '../../../../types/path/internal/pathGetValue';
+import { SplitPathString } from '../../../../types/path/internal/pathTuple';
 import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
 
 /** {@link KeyGetValue} */ {

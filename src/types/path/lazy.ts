@@ -1,6 +1,7 @@
 import { FieldValues } from '../fields';
 
-import * as Internal from './internal';
+import { AutoCompletePath } from './internal/autoCompletePath';
+import { AccessPattern } from './internal/utils';
 import { PathString } from './pathString';
 
 /**
@@ -22,10 +23,10 @@ import { PathString } from './pathString';
  *   = 'foo' | 'foo.bar' | 'foo.bar.baz'
  * ```
  */
-export type LazyPath<
+export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
-  TPathString extends PathString,
-> = Internal.AutoCompletePath<T, TPathString>;
+  TPathString
+>;
 
 /**
  * See {@link LazyPath}
@@ -57,13 +58,10 @@ export type LazyFieldPath<
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
-export type LazyArrayPath<
-  T,
-  TPathString extends PathString,
-> = Internal.AutoCompletePath<
+export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
   TPathString,
-  Internal.AccessPattern<ReadonlyArray<FieldValues> | null | undefined, never[]>
+  AccessPattern<ReadonlyArray<FieldValues> | null | undefined, never[]>
 >;
 
 /**

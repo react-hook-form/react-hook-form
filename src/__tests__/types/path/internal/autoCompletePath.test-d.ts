@@ -2,12 +2,12 @@ import { expectType } from 'tsd';
 
 import { PathString } from '../../../../types';
 import {
-  AccessPattern,
   AutoCompletePath,
   SuggestChildPaths,
   SuggestParentPath,
   SuggestPaths,
-} from '../../../../types/path/internal';
+} from '../../../../types/path/internal/autoCompletePath';
+import { AccessPattern } from '../../../../types/path/internal/utils';
 import { _, InfiniteType, NullableInfiniteType } from '../../__fixtures__';
 
 /** {@link SuggestParentPath} */ {

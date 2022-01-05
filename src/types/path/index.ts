@@ -1,7 +1,8 @@
 import { FieldValues } from '../fields';
 import { Primitive } from '../utils';
 
-import * as Internal from './internal';
+import { TupleKeys } from './internal/keys';
+import { ArrayKey, IsTuple } from './internal/utils';
 
 /** Re-export public API */
 export {
@@ -29,11 +30,11 @@ type PathImpl<K extends string | number, V> = V extends Primitive
  * ```
  */
 export type Path<T> = T extends ReadonlyArray<infer V>
-  ? Internal.IsTuple<T> extends true
+  ? IsTuple<T> extends true
     ? {
-        [K in Internal.TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
-      }[Internal.TupleKeys<T>]
-    : PathImpl<Internal.ArrayKey, V>
+        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
+      }[TupleKeys<T>]
+    : PathImpl<ArrayKey, V>
   : {
       [K in keyof T]-?: PathImpl<K & string, T[K]>;
     }[keyof T];
@@ -65,11 +66,11 @@ type ArrayPathImpl<K extends string | number, V> = V extends Primitive
  * ```
  */
 export type ArrayPath<T> = T extends ReadonlyArray<infer V>
-  ? Internal.IsTuple<T> extends true
+  ? IsTuple<T> extends true
     ? {
-        [K in Internal.TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
-      }[Internal.TupleKeys<T>]
-    : ArrayPathImpl<Internal.ArrayKey, V>
+        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
+      }[TupleKeys<T>]
+    : ArrayPathImpl<ArrayKey, V>
   : {
       [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
     }[keyof T];
@@ -96,14 +97,14 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
       ? R extends Path<T[K]>
         ? PathValue<T[K], R>
         : never
-      : K extends `${Internal.ArrayKey}`
+      : K extends `${ArrayKey}`
       ? T extends ReadonlyArray<infer V>
         ? PathValue<V, R & Path<V>>
         : never
       : never
     : P extends keyof T
     ? T[P]
-    : P extends `${Internal.ArrayKey}`
+    : P extends `${ArrayKey}`
     ? T extends ReadonlyArray<infer V>
       ? V
       : never
