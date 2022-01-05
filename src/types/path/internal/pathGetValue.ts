@@ -14,6 +14,7 @@ import { ArrayKey, AsKey, IsTuple, Key, MapKeys } from './utils';
  * TryGet<null, 'foo'> = null
  * TryGet<string, 'foo'> = undefined
  * ```
+ * @internal
  */
 type TryGet<T, K> = K extends keyof T
   ? T[K]
@@ -29,6 +30,7 @@ type TryGet<T, K> = K extends keyof T
  * TryGetArray<string[], '0'> = string
  * TryGetArray<string[], 'foo'> = undefined
  * ```
+ * @internal
  */
 type TryGetArray<
   T extends ReadonlyArray<any>,
@@ -54,6 +56,7 @@ type TryGetArray<
  * KeyGetValue<{bar: string}, 'foo'> = undefined
  * KeyGetValue<{foo?: string}, 'foo'> = undefined | string
  * ```
+ * @internal
  */
 export type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
@@ -80,6 +83,7 @@ export type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any>
  * PathGetValue<{bar: string}, ['foo']> = undefined
  * PathGetValue<{foo?: string}, ['foo']> = undefined | string
  * ```
+ * @internal
  */
 export type PathGetValue<T, PT extends PathTuple> = PT extends [
   infer K,

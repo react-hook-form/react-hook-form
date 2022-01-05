@@ -19,6 +19,7 @@ import {
  * ```
  * TupleKeys<[number, string]> = '0' | '1'
  * ```
+ * @internal
  */
 export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
   keyof T,
@@ -32,6 +33,7 @@ export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
  * ```
  * NumericObjectKeys<{0: string, '1': string, foo: string}> = '0' | '1'
  * ```
+ * @internal
  */
 type NumericObjectKeys<T extends Traversable> = ToKey<
   Extract<keyof T, ArrayKey | `${ArrayKey}`>
@@ -48,6 +50,7 @@ type NumericObjectKeys<T extends Traversable> = ToKey<
  * NumericKeys<[string, number]> = '0' | '1'
  * NumericKeys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
+ * @internal
  */
 export type NumericKeys<T extends Traversable> = UnionToIntersection<
   T extends ReadonlyArray<any>
@@ -66,6 +69,7 @@ export type NumericKeys<T extends Traversable> = UnionToIntersection<
  * ObjectKeys<{foo: string, bar: string}, string> = 'foo' | 'bar'
  * ObjectKeys<{foo: string, bar: number}, string> = 'foo'
  * ```
+ * @internal
  */
 export type ObjectKeys<T extends Traversable> = Exclude<
   ToKey<keyof T>,
@@ -84,6 +88,7 @@ export type ObjectKeys<T extends Traversable> = Exclude<
  * CheckKeyConstraint<{foo: string}, 'foo', AccessPattern<number>> = never
  * CheckKeyConstraint<string[], number, AccessPattern<string>> = `${number}`
  * ```
+ * @internal
  */
 export type CheckKeyConstraint<
   T,
@@ -104,6 +109,7 @@ export type CheckKeyConstraint<
  * ContainsIndexable<{foo: string}> = false
  * ContainsIndexable<{foo: string} | number[]> = true
  * ```
+ * @internal
  */
 export type ContainsIndexable<T> = IsNever<
   Extract<T, ReadonlyArray<any>>
@@ -114,6 +120,7 @@ export type ContainsIndexable<T> = IsNever<
 /**
  * Type to implement {@link Keys} for non-nullable values.
  * @typeParam T - non-nullable type whose property should be checked
+ * @internal
  */
 type KeysImpl<T> = [T] extends [Traversable]
   ? ContainsIndexable<T> extends true
@@ -136,6 +143,7 @@ type KeysImpl<T> = [T] extends [Traversable]
  * Keys<string[], AccessPattern<string>> = `${number}`
  * Keys<{0: string, '1': string} | [number] | number[]> = '0'
  * ```
+ * @internal
  */
 export type Keys<
   T,

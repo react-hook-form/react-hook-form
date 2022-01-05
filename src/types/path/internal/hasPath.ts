@@ -16,6 +16,7 @@ import { AsKey, Key } from './utils';
  * HasKey<{foo: string}, 'bar'> = false
  * HasKey<{foo: string}, 'foo' | 'bar'> = false
  * ```
+ * @internal
  */
 export type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
 
@@ -25,6 +26,7 @@ export type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
  * @typeParam PT  - path which should exist within the given type
  * @typeParam VPT - accumulates the prefix of keys which have been
  *                  confirmed to exist already
+ * @internal
  */
 type ValidPathPrefixImpl<
   T,
@@ -50,6 +52,7 @@ type ValidPathPrefixImpl<
  * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'bar']> = ['foo', 'bar']
  * ValidPathPrefix<{foo: {bar: string}}, ['foo', 'ba']> = ['foo']
  * ```
+ * @internal
  */
 export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
   T,
@@ -66,6 +69,7 @@ export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
  * HasPath<{foo: {bar: string}}, ['foo', 'bar']> = true
  * HasPath<{foo: {bar: string}}, ['foo', 'ba']> = false
  * ```
+ * @internal
  */
 export type HasPath<T, PT extends PathTuple> = ValidPathPrefix<T, PT> extends PT
   ? true

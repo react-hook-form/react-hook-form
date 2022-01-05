@@ -1,28 +1,33 @@
 /**
  * Type which can be traversed through with a path string.
  * I.e. objects, arrays, and tuples
+ * @internal
  */
 export type Traversable = object;
 
 /**
  * Type which can be used to index an array or tuple type.
+ * @internal
  */
 export type ArrayKey = number;
 
 /**
  * Type which can be used to index an object.
+ * @internal
  */
 export type Key = string;
 
 /**
  * Type to assert that a type is a key.
  * @typeParam T - type which may be a key
+ * @internal
  */
 export type AsKey<T> = Extract<T, Key>;
 
 /**
  * Type to convert a type to a key.
  * @typeParam T - type which may be converted to a key
+ * @internal
  */
 export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
 
@@ -33,6 +38,7 @@ export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
  * ```
  * MapKeys<{0: string}> = {'0': string}
  * ```
+ * @internal
  */
 export type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
 
@@ -44,6 +50,7 @@ export type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
  * IsTuple<[number]> = true
  * IsTuple<number[]> = false
  * ```
+ * @internal
  */
 export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
   ? false
@@ -58,6 +65,7 @@ export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
  * UnionToIntersection<{ foo: string } | { bar: number }>
  *   = { foo: string; bar: number }
  * ```
+ * @internal
  */
 export type UnionToIntersection<U> = (
   U extends any ? (_: U) => any : never
@@ -82,5 +90,6 @@ export type UnionToIntersection<U> = (
  *  - `AccessPattern<'abcd', string>` extends        `AccessPattern<'abcd', 'abcd'>`
  *  - `AccessPattern<string, 'abcd'>` doesn't extend `AccessPattern<'abcd', 'abcd'>`
  *  - `AccessPattern<'abcd', 'abcd'>` doesn't extend `AccessPattern<'abcd', string>`
+ * @internal
  */
 export type AccessPattern<Get = unknown, Set = never> = (_: Set) => Get;

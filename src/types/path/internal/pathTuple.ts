@@ -4,12 +4,14 @@ import { AsKey, Key } from './utils';
 
 /**
  * Type which describes a path through an object as a list of individual keys.
+ * @internal
  */
 export type PathTuple = Key[];
 
 /**
  * Type to assert that a type is a path tuple.
  * @typeParam T - type which may be a path tuple
+ * @internal
  */
 export type AsPathTuple<T> = Extract<T, PathTuple>;
 
@@ -23,6 +25,7 @@ export type AsPathTuple<T> = Extract<T, PathTuple>;
  * AppendNonBlankKey<['foo'], 'bar'> = ['foo', 'bar']
  * AppendNonBlankKey<['foo'], ''> = ['foo']
  * ```
+ * @internal
  */
 type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
   ? PT
@@ -34,6 +37,7 @@ type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
  *                 individual keys
  * @typeParam PT - accumulator of the keys which have been split from
  *                 the original path string already
+ * @internal
  */
 type SplitPathStringImpl<
   PS extends PathString,
@@ -52,6 +56,7 @@ type SplitPathStringImpl<
  * SplitPathString<'foo.bar.0.baz'> = ['foo', 'bar', '0', 'baz']
  * SplitPathString<'.'> = []
  * ```
+ * @internal
  */
 export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
   PS,
@@ -62,6 +67,7 @@ export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
  * Type to implement {@link JoinPathTuple} tail-recursively.
  * @typeParam PT - remaining keys which needs to be joined
  * @typeParam PS - accumulator of the already joined keys
+ * @internal
  */
 type JoinPathTupleImpl<
   PT extends PathTuple,
@@ -79,6 +85,7 @@ type JoinPathTupleImpl<
  * JoinPathTuple<['foo', 'bar', '0', 'baz']> = 'foo.bar.0.baz'
  * JoinPathTuple<[]> = never
  * ```
+ * @internal
  */
 export type JoinPathTuple<PT extends PathTuple> = PT extends [
   infer K,

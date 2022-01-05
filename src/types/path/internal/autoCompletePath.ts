@@ -17,6 +17,7 @@ import { AccessPattern, Key, Traversable, UnionToIntersection } from './utils';
  * SuggestParentPath<['foo', 'bar']> = 'foo'
  * SuggestParentPath<['foo']> = never
  * ```
+ * @internal
  */
 export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
   PT extends [...infer R, Key] ? R : []
@@ -27,6 +28,7 @@ export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
  * @typeParam PT  - the current path as a {@link PathTuple}
  * @typeParam TPT - the type at that path
  * @typeParam C   - constraint
+ * @internal
  */
 type SuggestChildPathsImpl<
   PT extends PathTuple,
@@ -56,6 +58,7 @@ type SuggestChildPathsImpl<
  * SuggestChildPaths<{foo: {bar: string}}, ['foo']> = 'foo.bar'
  * SuggestChildPaths<{foo: {bar: string[]}}, ['foo']> = 'foo.bar'
  * ```
+ * @internal
  */
 export type SuggestChildPaths<
   T,
@@ -70,6 +73,7 @@ export type SuggestChildPaths<
  * @typeParam PT  - the current path into the type as a tuple
  * @typeParam C   - constraint
  * @typeParam VPT - the valid path prefix for the given path
+ * @internal
  */
 type SuggestPathsImpl<
   T,
@@ -100,6 +104,7 @@ type SuggestPathsImpl<
  * SuggestPaths<{foo: {bar: {baz: string}}}, ['foo', 'bar'], AccessPattern<string>>
  *   = 'foo' | 'foo.bar.baz'
  * ```
+ * @internal
  */
 export type SuggestPaths<
   T,
@@ -116,6 +121,7 @@ export type SuggestPaths<
  * IsPathUnion<'foo' | 'foo'> = false
  * IsPathUnion<'foo' | 'foo.bar'> = true
  * ```
+ * @internal
  */
 type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
 
@@ -126,6 +132,7 @@ type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
  * @typeParam PS - the current path into the type as a string
  * @typeParam PT - the current path into the type as a tuple
  * @typeParam C  - constraint
+ * @internal
  */
 type AutoCompletePathCheckConstraint<
   T,
@@ -147,6 +154,7 @@ type AutoCompletePathCheckConstraint<
  * @typeParam PS - the current path into the type as a string
  * @typeParam PT - the current path into the type as a tuple
  * @typeParam C  - constraint
+ * @internal
  */
 type AutoCompletePathImpl<
   T,
@@ -182,6 +190,7 @@ type AutoCompletePathImpl<
  * AutoCompletePath<{foo: {bar: {baz: string}}}, 'foo.bar', AccessPattern<string>>
  *   = 'foo' | 'foo.bar.baz'
  * ```
+ * @internal
  */
 export type AutoCompletePath<
   T,

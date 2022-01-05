@@ -20,6 +20,7 @@ import {
  * TrySet<null, 'foo'> = never
  * TrySet<string, 'foo'> = never
  * ```
+ * @internal
  */
 type TrySet<T, K> = K extends keyof T ? T[K] : never;
 
@@ -31,6 +32,7 @@ type TrySet<T, K> = K extends keyof T ? T[K] : never;
  * TrySetArray<string[], '0'> = string
  * TrySetArray<string[], 'foo'> = never
  * ```
+ * @internal
  */
 type TrySetArray<
   T extends ReadonlyArray<any>,
@@ -41,6 +43,7 @@ type TrySetArray<
  * Type to implement {@link KeySetValue}. Wraps everything into a tuple.
  * @typeParam T - non-nullable type which is indexed by the key
  * @typeParam K - key into the type, mustn't be a union of keys
+ * @internal
  */
 type KeySetValueImpl<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
@@ -68,6 +71,7 @@ type KeySetValueImpl<T, K extends Key> = T extends ReadonlyArray<any>
  * KeySetValue<{bar: string}, 'foo'> = never
  * KeySetValue<{foo?: string}, 'foo'> = undefined | string
  * ```
+ * @internal
  */
 export type KeySetValue<T, K extends Key> = UnionToIntersection<
   K extends any ? KeySetValueImpl<NonNullable<T>, K> : never
@@ -78,6 +82,7 @@ export type KeySetValue<T, K extends Key> = UnionToIntersection<
  * Wraps everything into a tuple.
  * @typeParam T  - deeply nested type which is indexed by the path
  * @typeParam PT - path into the deeply nested type
+ * @internal
  */
 type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
   infer K,
@@ -107,6 +112,7 @@ type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
  * PathSetValue<{foo?: string}, ['foo']> = undefined | string
  * PathSetValue<{foo?: {bar: string}}, ['foo', 'bar']> = string
  * ```
+ * @internal
  */
 export type PathSetValue<T, PT extends PathTuple> = UnionToIntersection<
   PathSetValueImpl<T, PT>
