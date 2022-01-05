@@ -1,9 +1,9 @@
 import { IsNever } from '../../utils';
 import { PathString } from '../pathString';
 
-import { GetPath } from './getPath';
 import { HasPath, ValidPathPrefix } from './hasPath';
 import { Keys } from './keys';
+import { PathGetValue } from './pathGetValue';
 import { JoinPathTuple, PathTuple, SplitPathString } from './pathTuple';
 import { SetPath } from './setPath';
 import { AccessPattern, Key, Traversable, UnionToIntersection } from './utils';
@@ -61,7 +61,7 @@ export type SuggestChildPaths<
   T,
   PT extends PathTuple,
   C extends AccessPattern = AccessPattern,
-> = PT extends any ? SuggestChildPathsImpl<PT, GetPath<T, PT>, C> : never;
+> = PT extends any ? SuggestChildPathsImpl<PT, PathGetValue<T, PT>, C> : never;
 
 /**
  * Type to implement {@link SuggestPaths} without having to compute the valid
@@ -133,7 +133,7 @@ type AutoCompletePathCheckConstraint<
   PT extends PathTuple,
   C extends AccessPattern,
 > = HasPath<T, PT> extends true
-  ? AccessPattern<GetPath<T, PT>, SetPath<T, PT>> extends C
+  ? AccessPattern<PathGetValue<T, PT>, SetPath<T, PT>> extends C
     ? PS extends JoinPathTuple<PT>
       ? PS
       : JoinPathTuple<PT>

@@ -1,7 +1,7 @@
 import { IsNever } from '../../utils';
 
-import { GetKey } from './getPath';
 import { Keys } from './keys';
+import { KeyGetValue } from './pathGetValue';
 import { AsPathTuple, PathTuple } from './pathTuple';
 import { AsKey, Key } from './utils';
 
@@ -34,7 +34,7 @@ type ValidPathPrefixImpl<
 > = PT extends [infer K, ...infer R]
   ? HasKey<T, AsKey<K>> extends true
     ? ValidPathPrefixImpl<
-        GetKey<T, AsKey<K>>,
+        KeyGetValue<T, AsKey<K>>,
         AsPathTuple<R>,
         AsPathTuple<[...VPT, K]>
       >

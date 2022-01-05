@@ -48,15 +48,15 @@ type TryGetArray<
  * @typeParam K - key into the type
  * @example
  * ```
- * GetKey<{foo: string}, 'foo'> = string
- * GetKey<{foo: string, bar: number}, 'foo' | 'bar'> = string | number
- * GetKey<{foo: string} | {foo: number}, 'foo'> = string | number
- * GetKey<null | {foo: string}, 'foo'> = null | string
- * GetKey<{bar: string}, 'foo'> = undefined
- * GetKey<{foo?: string}, 'foo'> = undefined | string
+ * KeyGetValue<{foo: string}, 'foo'> = string
+ * KeyGetValue<{foo: string, bar: number}, 'foo' | 'bar'> = string | number
+ * KeyGetValue<{foo: string} | {foo: number}, 'foo'> = string | number
+ * KeyGetValue<null | {foo: string}, 'foo'> = null | string
+ * KeyGetValue<{bar: string}, 'foo'> = undefined
+ * KeyGetValue<{foo?: string}, 'foo'> = undefined | string
  * ```
  */
-export type GetKey<T, K extends Key> = T extends ReadonlyArray<any>
+export type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
     ? TryGet<T, K>
     : TryGetArray<T, K>
@@ -75,14 +75,17 @@ export type GetKey<T, K extends Key> = T extends ReadonlyArray<any>
  * @typeParam PT - path into the deeply nested type
  * @example
  * ```
- * GetPath<{foo: {bar: string}}, ['foo', 'bar']> = string
- * GetPath<{foo: string, bar: number}, ['foo'] | ['bar']> = string | number
- * GetPath<{foo: string} | {foo: number}, ['foo']> = string | number
- * GetPath<null | {foo: string}, ['foo']> = null | string
- * GetPath<{bar: string}, ['foo']> = undefined
- * GetPath<{foo?: string}, ['foo']> = undefined | string
+ * PathGetValue<{foo: {bar: string}}, ['foo', 'bar']> = string
+ * PathGetValue<{foo: string, bar: number}, ['foo'] | ['bar']> = string | number
+ * PathGetValue<{foo: string} | {foo: number}, ['foo']> = string | number
+ * PathGetValue<null | {foo: string}, ['foo']> = null | string
+ * PathGetValue<{bar: string}, ['foo']> = undefined
+ * PathGetValue<{foo?: string}, ['foo']> = undefined | string
  * ```
  */
-export type GetPath<T, PT extends PathTuple> = PT extends [infer K, ...infer R]
-  ? GetPath<GetKey<T, AsKey<K>>, AsPathTuple<R>>
+export type PathGetValue<T, PT extends PathTuple> = PT extends [
+  infer K,
+  ...infer R
+]
+  ? PathGetValue<KeyGetValue<T, AsKey<K>>, AsPathTuple<R>>
   : T;
