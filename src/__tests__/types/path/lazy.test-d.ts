@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { LazyArrayPath, PathString } from '../../../types';
-import { AccessPattern } from '../../../types/path/common';
+import { AccessPattern } from '../../../types/path/internal/utils';
 import {
   AutoCompletePath,
   SuggestChildPaths,

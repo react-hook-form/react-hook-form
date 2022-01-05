@@ -3,17 +3,19 @@ import { IsNever } from '../utils';
 
 import {
   AccessPattern,
+  Key,
+  Traversable,
+  UnionToIntersection,
+} from './internal/utils';
+import {
   GetPath,
   HasPath,
   JoinPathTuple,
-  Key,
   Keys,
   PathString,
   PathTuple,
   SetPath,
   SplitPathString,
-  Traversable,
-  UnionToIntersection,
   ValidPathPrefix,
 } from './common';
 
