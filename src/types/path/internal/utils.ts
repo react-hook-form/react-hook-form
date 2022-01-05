@@ -27,6 +27,16 @@ export type AsKey<T> = Extract<T, Key>;
 export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
 
 /**
+ * Type which converts all keys of an object to {@link Key}s.
+ * @typeParam T - object type
+ * @example
+ * ```
+ * MapKeys<{0: string}> = {'0': string}
+ * ```
+ */
+export type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
+
+/**
  * Type to query whether an array type T is a tuple type.
  * @typeParam T - type which may be an array or tuple
  * @example
