@@ -1,4 +1,4 @@
-export default <T>(fieldValues: T[], index: number, value: any) => {
+export default <T>(fieldValues: T[], index: number, value: T) => {
   fieldValues[index] = value;
   return fieldValues;
 };
