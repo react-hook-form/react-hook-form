@@ -1,12 +1,16 @@
 import { expectType } from 'tsd';
 
-import { HasKey, HasPath, ValidPathPrefix } from '../../../types/path/common';
+import {
+  HasKey,
+  HasPath,
+  ValidPathPrefix,
+} from '../../../../types/path/internal/hasPath';
 import {
   _,
   HundredTuple,
   InfiniteType,
   NullableInfiniteType,
-} from '../__fixtures__';
+} from '../../__fixtures__';
 
 /** {@link HasKey} */ {
   /** it should return true when the key exists */ {

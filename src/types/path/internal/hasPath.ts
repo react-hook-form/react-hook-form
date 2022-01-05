@@ -1,9 +1,9 @@
-import { IsNever } from '../utils';
+import { IsNever } from '../../utils';
 
-import { GetKey } from './internal/getPath';
-import { Keys } from './internal/keys';
-import { AsPathTuple, PathTuple } from './internal/pathTuple';
-import { AsKey, Key } from './internal/utils';
+import { GetKey } from './getPath';
+import { Keys } from './keys';
+import { AsPathTuple, PathTuple } from './pathTuple';
+import { AsKey, Key } from './utils';
 
 /**
  * Type to check whether a {@link Key} is present in a type.
