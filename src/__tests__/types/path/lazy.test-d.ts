@@ -1,6 +1,7 @@
 import { expectType } from 'tsd';
 
 import { LazyArrayPath, PathString } from '../../../types';
+import { AccessPattern } from '../../../types/path/common';
 import {
   AutoCompletePath,
   SuggestChildPaths,
@@ -55,7 +56,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as SuggestChildPaths<
       InfiniteType<string>,
       ['foo'],
-      number
+      AccessPattern<number>
     >;
     expectType<'foo.foo' | 'foo.bar' | 'foo.baz'>(actual);
   }
@@ -115,7 +116,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as SuggestPaths<
       InfiniteType<string>,
       ['foo', 'foo'],
-      number
+      AccessPattern<number>
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
@@ -124,7 +125,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as SuggestPaths<
       NullableInfiniteType<string>,
       ['foo', 'foo'],
-      string
+      AccessPattern<string>
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
@@ -174,7 +175,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.value',
-      number
+      AccessPattern<number>
     >;
     expectType<'foo'>(actual);
   }
@@ -205,28 +206,40 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.value',
-      string
+      AccessPattern<string>
     >;
     expectType<'foo' | 'foo.value'>(actual);
   }
 
   /** it should accept string when any is encountered */ {
-    const actual = _ as AutoCompletePath<{ foo: any }, 'foo.bar.baz', string>;
+    const actual = _ as AutoCompletePath<
+      { foo: any },
+      'foo.bar.baz',
+      AccessPattern<string>
+    >;
     expectType<'foo.bar' | 'foo.bar.baz' | `foo.bar.baz.${string}`>(actual);
   }
 
   /** it should accept string when the type is any */ {
-    const actual = _ as AutoCompletePath<any, string, string>;
+    const actual = _ as AutoCompletePath<any, string, AccessPattern<string>>;
     expectType<string>(actual);
   }
 
   /** it should evaluate to any when the path is any */ {
-    const actual = _ as AutoCompletePath<InfiniteType<string>, any, string>;
+    const actual = _ as AutoCompletePath<
+      InfiniteType<string>,
+      any,
+      AccessPattern<string>
+    >;
     expectType<any>(actual);
   }
 
   /** it should evaluate to never when the path is never */ {
-    const actual = _ as AutoCompletePath<InfiniteType<string>, never, string>;
+    const actual = _ as AutoCompletePath<
+      InfiniteType<string>,
+      never,
+      AccessPattern<string>
+    >;
     expectType<never>(actual);
   }
 
@@ -234,7 +247,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       NullableInfiniteType<string>,
       'foo.value',
-      string
+      AccessPattern<string>
     >;
     expectType<'foo'>(actual);
   }
@@ -243,7 +256,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       NullableInfiniteType<string>,
       'foo.value',
-      string | null | undefined
+      AccessPattern<string | null | undefined>
     >;
     expectType<'foo' | 'foo.value'>(actual);
   }
@@ -252,7 +265,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.foo',
-      string
+      AccessPattern<string>
     >;
     expectType<
       'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz' | 'foo.foo.value'
@@ -263,7 +276,7 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
     const actual = _ as AutoCompletePath<
       InfiniteType<string>,
       'foo.foo',
-      number
+      AccessPattern<number>
     >;
     expectType<'foo' | 'foo.foo.foo' | 'foo.foo.bar' | 'foo.foo.baz'>(actual);
   }
@@ -379,18 +392,21 @@ import { _, InfiniteType, NullableInfiniteType } from '../__fixtures__';
   }
 
   /** it should accept non-primitive arrays */ {
-    const actual = _ as LazyArrayPath<InfiniteType<number[]>, 'foo.baz'>;
-    expectType<'foo' | 'foo.baz' | `foo.baz.${number}`>(actual);
+    const actual = _ as LazyArrayPath<{ foo: { bar: object[] } }, 'foo.bar'>;
+    expectType<'foo' | `foo.bar` | `foo.bar.${number}`>(actual);
   }
 
-  /** it should not accept primitive tuples */ {
-    const actual = _ as LazyArrayPath<InfiniteType<[number]>, 'foo.value'>;
-    expectType<'foo'>(actual);
+  /** it should not accept non-primitive readonly arrays */ {
+    const actual = _ as LazyArrayPath<
+      { foo: { bar: readonly object[] } },
+      'foo.bar'
+    >;
+    expectType<'foo' | `foo.bar` | `foo.bar.${number}`>(actual);
   }
 
-  /** it should accept non-primitive tuples */ {
+  /** it should not accept tuples */ {
     const actual = _ as LazyArrayPath<InfiniteType<number[]>, 'foo.bar'>;
-    expectType<'foo' | 'foo.bar' | 'foo.bar.0'>(actual);
+    expectType<'foo' | 'foo.bar.0'>(actual);
   }
 
   /** it should accept non-primitive nullable arrays */ {

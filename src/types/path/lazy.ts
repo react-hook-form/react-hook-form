@@ -2,6 +2,7 @@ import { FieldValues } from '../fields';
 import { IsNever } from '../utils';
 
 import {
+  AccessPattern,
   GetPath,
   HasPath,
   JoinPathTuple,
@@ -9,6 +10,7 @@ import {
   Keys,
   PathString,
   PathTuple,
+  SetPath,
   SplitPathString,
   Traversable,
   UnionToIntersection,
@@ -33,10 +35,17 @@ export type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<
  * Type to implement {@link SuggestChildPaths}.
  * @typeParam PT  - the current path as a {@link PathTuple}
  * @typeParam TPT - the type at that path
- * @typeParam U   - constraint type
+ * @typeParam C   - constraint
  */
-type SuggestChildPathsImpl<PT extends PathTuple, TPT, U> = JoinPathTuple<
-  [...PT, Keys<TPT, U> | Keys<TPT, Traversable | undefined | null>]
+type SuggestChildPathsImpl<
+  PT extends PathTuple,
+  TPT,
+  C extends AccessPattern,
+> = JoinPathTuple<
+  [
+    ...PT,
+    Keys<TPT, C> | Keys<TPT, AccessPattern<Traversable | undefined | null>>,
+  ]
 >;
 
 /**
@@ -46,31 +55,38 @@ type SuggestChildPathsImpl<PT extends PathTuple, TPT, U> = JoinPathTuple<
  * aren't traversable.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PT - the current path into the type as a {@link PathTuple}
- * @typeParam U  - constraint type
+ * @typeParam C  - constraint
  * @example
  * ```
- * SuggestChildPaths<{foo: string, bar: string}, [], string> = 'foo' | 'bar'
- * SuggestChildPaths<{foo: string, bar: number}, [], string> = 'foo'
- * SuggestChildPaths<{foo: {bar: string}}, ['foo'], string> = 'foo.bar'
- * SuggestChildPaths<{foo: {bar: string[]}}, ['foo'], string> = 'foo.bar'
+ * SuggestChildPaths<{foo: string, bar: string}, [], AccessPattern<string>>
+ *   = 'foo' | 'bar'
+ * SuggestChildPaths<{foo: string, bar: number}, [], AccessPattern<string>>
+ *   = 'foo'
+ * SuggestChildPaths<{foo: {bar: string}}, ['foo']> = 'foo.bar'
+ * SuggestChildPaths<{foo: {bar: string[]}}, ['foo']> = 'foo.bar'
  * ```
  */
 export type SuggestChildPaths<
   T,
   PT extends PathTuple,
-  U = unknown,
-> = PT extends any ? SuggestChildPathsImpl<PT, GetPath<T, PT>, U> : never;
+  C extends AccessPattern = AccessPattern,
+> = PT extends any ? SuggestChildPathsImpl<PT, GetPath<T, PT>, C> : never;
 
 /**
  * Type to implement {@link SuggestPaths} without having to compute the valid
  * path prefix more than once.
  * @typeParam T   - type which is indexed by the path
  * @typeParam PT  - the current path into the type as a {@link PathTuple}
- * @typeParam U   - constraint type
+ * @typeParam C   - constraint
  * @typeParam VPT - the valid path prefix for the given path
  */
-type SuggestPathsImpl<T, PT extends PathTuple, U, VPT extends PathTuple> =
-  | SuggestChildPaths<T, VPT, U>
+type SuggestPathsImpl<
+  T,
+  PT extends PathTuple,
+  C extends AccessPattern,
+  VPT extends PathTuple,
+> =
+  | SuggestChildPaths<T, VPT, C>
   | (PT extends VPT ? SuggestParentPath<VPT> : JoinPathTuple<VPT>);
 
 /**
@@ -82,23 +98,23 @@ type SuggestPathsImpl<T, PT extends PathTuple, U, VPT extends PathTuple> =
  * valid path (see {@link ValidPathPrefix}).
  * @typeParam T  - type which is indexed by the path
  * @typeParam PT - the current path into the type as a {@link PathTuple}
- * @typeParam U  - constraint type
+ * @typeParam C  - constraint
  * @example
  * ```
  * SuggestPaths<{foo: {bar: string}}, ['foo'], string> = 'foo.bar'
- * SuggestPaths<{foo: {bar: string}}, ['foo', 'ba'], string>
+ * SuggestPaths<{foo: {bar: string}}, ['foo', 'ba'], AccessPattern<string>>
  *   = 'foo' | 'foo.bar'
- * SuggestPaths<{foo: {bar: string}}, ['foo', 'bar'], string>
+ * SuggestPaths<{foo: {bar: string}}, ['foo', 'bar'], AccessPattern<string>>
  *   = 'foo'
- * SuggestPaths<{foo: {bar: {baz: string}}}, ['foo', 'bar'], string>
+ * SuggestPaths<{foo: {bar: {baz: string}}}, ['foo', 'bar'], AccessPattern<string>>
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
 export type SuggestPaths<
   T,
   PT extends PathTuple,
-  U = unknown,
-> = SuggestPathsImpl<T, PT, U, ValidPathPrefix<T, PT>>;
+  C extends AccessPattern = AccessPattern,
+> = SuggestPathsImpl<T, PT, C, ValidPathPrefix<T, PT>>;
 
 /**
  * Type to test whether the path is a union of paths.
@@ -118,15 +134,15 @@ type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
  * @typeParam PT - the current path into the type as a {@link PathTuple}
- * @typeParam U  - constraint type
+ * @typeParam C  - constraint
  */
 type AutoCompletePathCheckConstraint<
   T,
   PS extends PathString,
   PT extends PathTuple,
-  U,
+  C extends AccessPattern,
 > = HasPath<T, PT> extends true
-  ? GetPath<T, PT> extends U
+  ? AccessPattern<GetPath<T, PT>, SetPath<T, PT>> extends C
     ? PS extends JoinPathTuple<PT>
       ? PS
       : JoinPathTuple<PT>
@@ -139,11 +155,14 @@ type AutoCompletePathCheckConstraint<
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
  * @typeParam PT - the current path into the type as a {@link PathTuple}
- * @typeParam U  - constraint type
+ * @typeParam C  - constraint
  */
-type AutoCompletePathImpl<T, PS extends PathString, PT extends PathTuple, U> =
-  | SuggestPaths<T, PT, U>
-  | AutoCompletePathCheckConstraint<T, PS, PT, U>;
+type AutoCompletePathImpl<
+  T,
+  PS extends PathString,
+  PT extends PathTuple,
+  C extends AccessPattern,
+> = SuggestPaths<T, PT, C> | AutoCompletePathCheckConstraint<T, PS, PT, C>;
 
 /**
  * Type which given a type and a {@link PathString} into it returns
@@ -161,26 +180,26 @@ type AutoCompletePathImpl<T, PS extends PathString, PT extends PathTuple, U> =
  *    which don't match the constraint type.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a {@link PathString}
- * @typeParam U  - constraint type
+ * @typeParam C  - constraint
  * @example
  * ```
- * AutoCompletePath<{foo: {bar: string}}, 'foo', string> = 'foo.bar'
- * AutoCompletePath<{foo: {bar: string}}, 'foo.ba', string>
+ * AutoCompletePath<{foo: {bar: string}}, 'foo', AccessPattern<string>> = 'foo.bar'
+ * AutoCompletePath<{foo: {bar: string}}, 'foo.ba', AccessPattern<string>>
  *   = 'foo' | 'foo.bar'
- * AutoCompletePath<{foo: {bar: string}}, 'foo.bar', string>
+ * AutoCompletePath<{foo: {bar: string}}, 'foo.bar', AccessPattern<string>>
  *   = 'foo' | 'foo.bar'
- * AutoCompletePath<{foo: {bar: {baz: string}}}, 'foo.bar', string>
+ * AutoCompletePath<{foo: {bar: {baz: string}}}, 'foo.bar', AccessPattern<string>>
  *   = 'foo' | 'foo.bar.baz'
  * ```
  */
 export type AutoCompletePath<
   T,
   PS extends PathString,
-  U = unknown,
+  C extends AccessPattern = AccessPattern,
 > = IsPathUnion<PS> extends false
-  ? AutoCompletePathImpl<T, PS, SplitPathString<PS>, U>
+  ? AutoCompletePathImpl<T, PS, SplitPathString<PS>, C>
   : PS extends any
-  ? AutoCompletePathCheckConstraint<T, PS, SplitPathString<PS>, U>
+  ? AutoCompletePathCheckConstraint<T, PS, SplitPathString<PS>, C>
   : never;
 
 /**
@@ -240,7 +259,7 @@ export type LazyFieldPath<
 export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<
   T,
   TPathString,
-  ReadonlyArray<Traversable> | null | undefined
+  AccessPattern<ReadonlyArray<FieldValues> | null | undefined, never[]>
 >;
 
 /**
