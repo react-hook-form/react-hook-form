@@ -5,13 +5,13 @@ import { ArrayKey, IsTuple } from './internal/utils';
 import { TupleKeys } from './common';
 
 /** Re-export public API */
-export { PathString } from './common';
 export {
   LazyArrayPath,
   LazyFieldArrayPath,
   LazyFieldPath,
   LazyPath,
 } from './lazy';
+export { PathString } from './pathString';
 
 /**
  * Helper type for recursively constructing paths through a type.

@@ -2,22 +2,18 @@ import { FieldValues } from '../fields';
 import { IsNever } from '../utils';
 
 import {
+  JoinPathTuple,
+  PathTuple,
+  SplitPathString,
+} from './internal/pathTuple';
+import {
   AccessPattern,
   Key,
   Traversable,
   UnionToIntersection,
 } from './internal/utils';
-import {
-  GetPath,
-  HasPath,
-  JoinPathTuple,
-  Keys,
-  PathString,
-  PathTuple,
-  SetPath,
-  SplitPathString,
-  ValidPathPrefix,
-} from './common';
+import { GetPath, HasPath, Keys, SetPath, ValidPathPrefix } from './common';
+import { PathString } from './pathString';
 
 /**
  * Type, which given a path, returns the parent path as a {@link PathString}
