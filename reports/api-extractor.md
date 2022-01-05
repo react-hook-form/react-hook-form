@@ -10,37 +10,20 @@ import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 
-// @internal
-type AccessPattern<Get = unknown, Set = never> = (_: Set) => Get;
-
 // @public (undocumented)
 export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: boolean, errors: InternalFieldErrors, type: string, message: ValidateResult) => {};
 
-// @internal
-type ArrayKey = number;
-
-// Warning: (ae-forgotten-export) The symbol "Internal" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "IsTuple" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "TupleKeys" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ArrayPathImpl" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type ArrayPath<T> = T extends ReadonlyArray<infer V> ? Internal.IsTuple<T> extends true ? {
-    [K in Internal.TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
-}[Internal.TupleKeys<T>] : ArrayPathImpl<Internal.ArrayKey, V> : {
+export type ArrayPath<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
+    [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
+}[TupleKeys<T>] : ArrayPathImpl<ArrayKey, V> : {
     [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
 }[keyof T];
-
-// @internal
-type AsKey<T> = Extract<T, Key>;
-
-// @internal
-type AsPathTuple<T> = Extract<T, PathTuple>;
-
-// Warning: (ae-forgotten-export) The symbol "IsPathUnion" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "AutoCompletePathImpl" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "AutoCompletePathCheckConstraint" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type AutoCompletePath<T, PS extends PathString, C extends AccessPattern = AccessPattern> = IsPathUnion<PS> extends false ? AutoCompletePathImpl<T, PS, SplitPathString<PS>, C> : PS extends any ? AutoCompletePathCheckConstraint<T, PS, SplitPathString<PS>, C> : never;
 
 // @public (undocumented)
 export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'>(name: InternalFieldName, method: T, args: {
@@ -53,12 +36,6 @@ export type ChangeHandler = (event: {
     target: any;
     type?: any;
 }) => Promise<void | boolean>;
-
-// @internal
-type CheckKeyConstraint<T, K extends Key, C extends AccessPattern> = K extends any ? AccessPattern<KeyGetValue<T, K>, KeySetValue<T, K>> extends C ? K : never : never;
-
-// @internal
-type ContainsIndexable<T> = IsNever<Extract<T, ReadonlyArray<any>>> extends true ? false : true;
 
 // @public (undocumented)
 export type Control<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
@@ -290,12 +267,6 @@ export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
 
-// @internal
-type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
-
-// @internal
-type HasPath<T, PT extends PathTuple> = ValidPathPrefix<T, PT> extends PT ? true : false;
-
 // @public (undocumented)
 export type InternalFieldErrors = Partial<Record<InternalFieldName, FieldError>>;
 
@@ -314,17 +285,6 @@ export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedV
 // @public
 export type IsNever<T> = [T] extends [never] ? true : false;
 
-// @internal
-type IsTuple<T extends ReadonlyArray<any>> = number extends T['length'] ? false : true;
-
-// Warning: (ae-forgotten-export) The symbol "JoinPathTupleImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type JoinPathTuple<PT extends PathTuple> = PT extends [
-infer K,
-...infer R
-] ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>> : never;
-
 // @public (undocumented)
 export type KeepStateOptions = Partial<{
     keepErrors: boolean;
@@ -337,27 +297,11 @@ export type KeepStateOptions = Partial<{
     keepSubmitCount: boolean;
 }>;
 
-// @internal
-type Key = string;
-
-// Warning: (ae-forgotten-export) The symbol "TryGet" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "TryGetArray" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 //
-// @internal
-type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any> ? IsTuple<T> extends true ? TryGet<T, K> : TryGetArray<T, K> : TryGet<MapKeys<T>, K>;
-
-// Warning: (ae-forgotten-export) The symbol "KeysImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type Keys<T, C extends AccessPattern = AccessPattern> = IsAny<T> extends true ? Key : IsNever<T> extends true ? Key : IsNever<NonNullable<T>> extends true ? never : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, C>;
-
-// Warning: (ae-forgotten-export) The symbol "KeySetValueImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type KeySetValue<T, K extends Key> = UnionToIntersection<K extends any ? KeySetValueImpl<NonNullable<T>, K> : never>[never];
-
 // @public
-export type LazyArrayPath<T, TPathString extends PathString> = Internal.AutoCompletePath<T, TPathString, Internal.AccessPattern<ReadonlyArray<FieldValues> | null | undefined, never[]>>;
+export type LazyArrayPath<T, TPathString extends PathString> = AutoCompletePath<T, TPathString, AccessPattern<ReadonlyArray<FieldValues> | null | undefined, never[]>>;
 
 // @public
 export type LazyFieldArrayPath<TFieldValues extends FieldValues, TPathString extends PathString> = LazyArrayPath<TFieldValues, TPathString>;
@@ -366,17 +310,12 @@ export type LazyFieldArrayPath<TFieldValues extends FieldValues, TPathString ext
 export type LazyFieldPath<TFieldValues extends FieldValues, TPathString extends PathString> = LazyPath<TFieldValues, TPathString>;
 
 // @public
-export type LazyPath<T, TPathString extends PathString> = Internal.AutoCompletePath<T, TPathString>;
+export type LazyPath<T, TPathString extends PathString> = AutoCompletePath<T, TPathString>;
 
 // @public (undocumented)
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
     _?: never;
 });
-
-// @internal
-type MapKeys<T> = {
-    [K in keyof T as ToKey<K>]: T[K];
-};
 
 // @public (undocumented)
 export type Message = string;
@@ -415,42 +354,20 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 // @public (undocumented)
 export type Noop = () => void;
 
-// Warning: (ae-forgotten-export) The symbol "NumericObjectKeys" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type NumericKeys<T extends Traversable> = UnionToIntersection<T extends ReadonlyArray<any> ? IsTuple<T> extends true ? [TupleKeys<T>] : [ToKey<ArrayKey>] : [NumericObjectKeys<T>]>[never];
-
-// @internal
-type ObjectKeys<T extends Traversable> = Exclude<ToKey<keyof T>, `${string}.${string}` | ''>;
-
 // Warning: (ae-forgotten-export) The symbol "PathImpl" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Path<T> = T extends ReadonlyArray<infer V> ? Internal.IsTuple<T> extends true ? {
-    [K in Internal.TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
-}[Internal.TupleKeys<T>] : PathImpl<Internal.ArrayKey, V> : {
+export type Path<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
+    [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
+}[TupleKeys<T>] : PathImpl<ArrayKey, V> : {
     [K in keyof T]-?: PathImpl<K & string, T[K]>;
 }[keyof T];
-
-// @internal
-type PathGetValue<T, PT extends PathTuple> = PT extends [
-infer K,
-...infer R
-] ? PathGetValue<KeyGetValue<T, AsKey<K>>, AsPathTuple<R>> : T;
-
-// Warning: (ae-forgotten-export) The symbol "PathSetValueImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type PathSetValue<T, PT extends PathTuple> = UnionToIntersection<PathSetValueImpl<T, PT>>[never];
 
 // @public
 export type PathString = string;
 
-// @internal
-type PathTuple = Key[];
-
 // @public
-export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any ? P extends `${infer K}.${infer R}` ? K extends keyof T ? R extends Path<T[K]> ? PathValue<T[K], R> : never : K extends `${Internal.ArrayKey}` ? T extends ReadonlyArray<infer V> ? PathValue<V, R & Path<V>> : never : never : P extends keyof T ? T[P] : P extends `${Internal.ArrayKey}` ? T extends ReadonlyArray<infer V> ? V : never : never : never;
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any ? P extends `${infer K}.${infer R}` ? K extends keyof T ? R extends Path<T[K]> ? PathValue<T[K], R> : never : K extends `${ArrayKey}` ? T extends ReadonlyArray<infer V> ? PathValue<V, R & Path<V>> : never : never : P extends keyof T ? T[P] : P extends `${ArrayKey}` ? T extends ReadonlyArray<infer V> ? V : never : never : never;
 
 // @public (undocumented)
 export type Primitive = null | undefined | string | number | boolean | symbol | bigint;
@@ -529,12 +446,6 @@ export type SetValueConfig = Partial<{
     shouldTouch: boolean;
 }>;
 
-// Warning: (ae-forgotten-export) The symbol "SplitPathStringImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type SplitPathString<PS extends PathString> = SplitPathStringImpl<PS, [
-]>;
-
 // @public (undocumented)
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
     watch: Subject<{
@@ -555,35 +466,10 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: Fiel
 // @public (undocumented)
 export type SubmitHandler<TFieldValues extends FieldValues> = (data: UnpackNestedValue<TFieldValues>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
 
-// Warning: (ae-forgotten-export) The symbol "SuggestChildPathsImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type SuggestChildPaths<T, PT extends PathTuple, C extends AccessPattern = AccessPattern> = PT extends any ? SuggestChildPathsImpl<PT, PathGetValue<T, PT>, C> : never;
-
-// @internal
-type SuggestParentPath<PT extends PathTuple> = JoinPathTuple<PT extends [...infer R, Key] ? R : []>;
-
-// Warning: (ae-forgotten-export) The symbol "SuggestPathsImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type SuggestPaths<T, PT extends PathTuple, C extends AccessPattern = AccessPattern> = SuggestPathsImpl<T, PT, C, ValidPathPrefix<T, PT>>;
-
-// @internal
-type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
-
-// @internal
-type Traversable = object;
-
 // @public (undocumented)
 export type TriggerConfig = Partial<{
     shouldFocus: boolean;
 }>;
-
-// @internal
-type TupleKeys<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
-
-// @internal
-type UnionToIntersection<U> = (U extends any ? (_: U) => any : never) extends (_: infer I) => any ? I : never;
 
 // @public (undocumented)
 export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File ? T : T extends object ? {
@@ -820,12 +706,6 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
     value: TValidationValue;
     message: Message;
 };
-
-// Warning: (ae-forgotten-export) The symbol "ValidPathPrefixImpl" needs to be exported by the entry point index.d.ts
-//
-// @internal
-type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<T, PT, [
-]>;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
