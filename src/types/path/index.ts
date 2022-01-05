@@ -1,8 +1,8 @@
 import { FieldValues } from '../fields';
 import { Primitive } from '../utils';
 
+import { TupleKeys } from './internal/keys';
 import { ArrayKey, IsTuple } from './internal/utils';
-import { TupleKeys } from './common';
 
 /** Re-export public API */
 export {

@@ -2,6 +2,7 @@ import { FieldValues } from '../fields';
 import { IsNever } from '../utils';
 
 import { GetPath } from './internal/getPath';
+import { Keys } from './internal/keys';
 import {
   JoinPathTuple,
   PathTuple,
@@ -14,7 +15,7 @@ import {
   Traversable,
   UnionToIntersection,
 } from './internal/utils';
-import { HasPath, Keys, ValidPathPrefix } from './common';
+import { HasPath, ValidPathPrefix } from './common';
 import { PathString } from './pathString';
 
 /**
