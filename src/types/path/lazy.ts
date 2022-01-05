@@ -7,13 +7,14 @@ import {
   PathTuple,
   SplitPathString,
 } from './internal/pathTuple';
+import { SetPath } from './internal/setPath';
 import {
   AccessPattern,
   Key,
   Traversable,
   UnionToIntersection,
 } from './internal/utils';
-import { HasPath, Keys, SetPath, ValidPathPrefix } from './common';
+import { HasPath, Keys, ValidPathPrefix } from './common';
 import { PathString } from './pathString';
 
 /**
