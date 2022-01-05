@@ -1,8 +1,11 @@
 import { expectType } from 'tsd';
 
 import { PathString } from '../../../../types';
-import { SplitPathString } from '../../../../types/path/internal/pathTuple';
-import { SetKey, SetPath } from '../../../../types/path/internal/setPath';
+import {
+  SetKey,
+  SetPath,
+  SplitPathString,
+} from '../../../../types/path/internal';
 import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
 
 /** {@link SetKey} */ {

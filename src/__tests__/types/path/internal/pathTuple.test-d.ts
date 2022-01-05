@@ -4,7 +4,7 @@ import {
   AsPathTuple,
   JoinPathTuple,
   SplitPathString,
-} from '../../../../types/path/internal/pathTuple';
+} from '../../../../types/path/internal';
 import { _, HundredPathString, HundredTuple } from '../../__fixtures__';
 
 /** {@link AsPathTuple} */ {

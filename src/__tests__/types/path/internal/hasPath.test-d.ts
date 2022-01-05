@@ -4,7 +4,7 @@ import {
   HasKey,
   HasPath,
   ValidPathPrefix,
-} from '../../../../types/path/internal/hasPath';
+} from '../../../../types/path/internal';
 import {
   _,
   HundredTuple,

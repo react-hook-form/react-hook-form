@@ -1,14 +1,15 @@
 import { expectType } from 'tsd';
 
 import {
+  AccessPattern,
   CheckKeyConstraint,
   ContainsIndexable,
+  Key,
   Keys,
   NumericKeys,
   ObjectKeys,
   TupleKeys,
-} from '../../../../types/path/internal/keys';
-import { AccessPattern, Key } from '../../../../types/path/internal/utils';
+} from '../../../../types/path/internal';
 import { _ } from '../../__fixtures__';
 
 /** {@link TupleKeys} */ {
