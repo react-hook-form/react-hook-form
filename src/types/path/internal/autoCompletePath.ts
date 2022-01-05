@@ -9,8 +9,8 @@ import { JoinPathTuple, PathTuple, SplitPathString } from './pathTuple';
 import { AccessPattern, Key, Traversable, UnionToIntersection } from './utils';
 
 /**
- * Type, which given a path, returns the parent path as a {@link PathString}
- * @typeParam PT - path represented as a {@link PathTuple}
+ * Type, which given a path, returns the parent path as a string
+ * @typeParam PT - path represented as a tuple
  * @example
  * ```
  * SuggestParentPath<['foo', 'bar', 'baz']> = 'foo.bar'
@@ -41,11 +41,11 @@ type SuggestChildPathsImpl<
 
 /**
  * Type, which given a type and a path into the type, returns all paths as
- * {@link PathString}s which can be used to index the type at that path.
+ * strings which can be used to index the type at that path.
  * Filters out paths whose value doesn't match the constraint type or
  * aren't traversable.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PT - the current path into the type as a {@link PathTuple}
+ * @typeParam PT - the current path into the type as a tuple
  * @typeParam C  - constraint
  * @example
  * ```
@@ -67,7 +67,7 @@ export type SuggestChildPaths<
  * Type to implement {@link SuggestPaths} without having to compute the valid
  * path prefix more than once.
  * @typeParam T   - type which is indexed by the path
- * @typeParam PT  - the current path into the type as a {@link PathTuple}
+ * @typeParam PT  - the current path into the type as a tuple
  * @typeParam C   - constraint
  * @typeParam VPT - the valid path prefix for the given path
  */
@@ -81,14 +81,14 @@ type SuggestPathsImpl<
   | (PT extends VPT ? SuggestParentPath<VPT> : JoinPathTuple<VPT>);
 
 /**
- * Type which given a type and a {@link PathTuple} into it returns
- *  - its parent/predecessor {@link PathString}.
+ * Type which given a type and a path tuple into it returns
+ *  - its parent/predecessor path string.
  *  - all its child/successor paths that point to a type which is either
  *    traversable or matches the constraint type.
- * In case the path does not exist it returns all of the above for the last
- * valid path (see {@link ValidPathPrefix}).
+ * In case the path does not exist it returns all of the above, but for the last
+ * valid path prefix.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PT - the current path into the type as a {@link PathTuple}
+ * @typeParam PT - the current path into the type as a tuple
  * @typeParam C  - constraint
  * @example
  * ```
@@ -123,8 +123,8 @@ type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
  * Type to check the current path against the constraint type.
  * Returns the path if it is valid and matches the constraint type.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PS - the current path into the type as a {@link PathString}
- * @typeParam PT - the current path into the type as a {@link PathTuple}
+ * @typeParam PS - the current path into the type as a string
+ * @typeParam PT - the current path into the type as a tuple
  * @typeParam C  - constraint
  */
 type AutoCompletePathCheckConstraint<
@@ -144,8 +144,8 @@ type AutoCompletePathCheckConstraint<
  * Type to implement {@link AutoCompletePath} without having to compute the
  * key list more than once.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PS - the current path into the type as a {@link PathString}
- * @typeParam PT - the current path into the type as a {@link PathTuple}
+ * @typeParam PS - the current path into the type as a string
+ * @typeParam PT - the current path into the type as a tuple
  * @typeParam C  - constraint
  */
 type AutoCompletePathImpl<
@@ -156,9 +156,9 @@ type AutoCompletePathImpl<
 > = SuggestPaths<T, PT, C> | AutoCompletePathCheckConstraint<T, PS, PT, C>;
 
 /**
- * Type which given a type and a {@link PathString} into it returns
- *  - its parent/predecessor {@link PathString}.
- *  - the {@link PathString} itself, if it exists within the type and matches
+ * Type which given a type and a path string into it returns
+ *  - its parent/predecessor path string.
+ *  - the path string itself, if it exists within the type and matches
  *    the constraint type.
  *  - all its child/successor paths that point to a type which is either
  *    traversable or matches the constraint type.
@@ -170,7 +170,7 @@ type AutoCompletePathImpl<
  *    Otherwise, the returned type may become to large, or it may accept paths
  *    which don't match the constraint type.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PS - the current path into the type as a {@link PathString}
+ * @typeParam PS - the current path into the type as a string
  * @typeParam C  - constraint
  * @example
  * ```

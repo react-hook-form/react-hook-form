@@ -74,7 +74,7 @@ export type ObjectKeys<T extends Traversable> = Exclude<
 
 /**
  * Type to check whether a type's property matches the constraint type
- * and return its key. Converts the key to a {@link Key}.
+ * and return its key. Converts the key to a string.
  * @typeParam T - type whose property should be checked
  * @typeParam K - key of the property
  * @typeParam C - constraint

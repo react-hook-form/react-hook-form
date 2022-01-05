@@ -6,9 +6,8 @@ import { AsPathTuple, PathTuple } from './pathTuple';
 import { AsKey, Key } from './utils';
 
 /**
- * Type to check whether a {@link Key} is present in a type.
- * If a union of {@link Key}s is passed, all {@link Key}s have to be present
- * in the type.
+ * Type to check whether a key is present in a type.
+ * If a union of keys is passed, all keys have to be present in the type.
  * @typeParam T - type which is introspected
  * @typeParam K - key
  * @example
@@ -24,7 +23,7 @@ export type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
  * Type to implement {@link ValidPathPrefix} tail recursively.
  * @typeParam T   - type which the path should be checked against
  * @typeParam PT  - path which should exist within the given type
- * @typeParam VPT - accumulates the prefix of {@link Key}s which have been
+ * @typeParam VPT - accumulates the prefix of keys which have been
  *                  confirmed to exist already
  */
 type ValidPathPrefixImpl<

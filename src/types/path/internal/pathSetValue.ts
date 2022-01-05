@@ -49,8 +49,8 @@ type KeySetValueImpl<T, K extends Key> = T extends ReadonlyArray<any>
   : [TrySet<MapKeys<T>, K>];
 
 /**
- * Type to evaluate the type which the given key points to. This type is the
- * contravariant equivalent of {@link KeyGetValue}.
+ * Type to evaluate the type which is required for setting the property which
+ * the given key points to.
  *  - If either T or K is union, it will evaluate to the intersection of the
  *    types at the given key(s).
  *  - If T can be null or undefined, the resulting type won't include null or
@@ -87,8 +87,8 @@ type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
   : [T];
 
 /**
- * Type to evaluate the type which the given path points to. This type is the
- * contravariant equivalent of {@link PathGetValue}.
+ * Type to evaluate the type which is required for setting the property which
+ * the given path points to.
  *  - If either T or PT is union, it will evaluate to the intersection of the
  *    types at the given paths(s).
  *  - If T can be null or undefined, the resulting type won't include null or

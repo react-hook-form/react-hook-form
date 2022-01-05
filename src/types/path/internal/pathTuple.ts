@@ -3,20 +3,19 @@ import { PathString } from '../pathString';
 import { AsKey, Key } from './utils';
 
 /**
- * Type which describes a path through an object
- * as a list of individual {@link Key}s.
+ * Type which describes a path through an object as a list of individual keys.
  */
 export type PathTuple = Key[];
 
 /**
- * Type to assert that a type is a {@link PathTuple}.
- * @typeParam T - type which may be a {@link PathTuple}
+ * Type to assert that a type is a path tuple.
+ * @typeParam T - type which may be a path tuple
  */
 export type AsPathTuple<T> = Extract<T, PathTuple>;
 
 /**
- * Type which appends a {@link Key} to the {@link PathTuple} only if it is not
- * blank, i.e. not the empty string.
+ * Type which appends a key to the path tuple only if it is not blank,
+ * i.e. not the empty string.
  * @typeParam PT - path
  * @typeParam K  - key
  * @example
@@ -31,10 +30,10 @@ type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
 
 /**
  * Type to implement {@link SplitPathString} tail recursively.
- * @typeParam PS - remaining {@link PathString} which should be split into its
- *                 individual {@link Key}s
- * @typeParam PT - accumulator of the {@link Key}s which have been split from
- *                 the original {@link PathString} already
+ * @typeParam PS - remaining path string which should be split into its
+ *                 individual keys
+ * @typeParam PT - accumulator of the keys which have been split from
+ *                 the original path string already
  */
 type SplitPathStringImpl<
   PS extends PathString,
@@ -44,10 +43,9 @@ type SplitPathStringImpl<
   : AppendNonBlankKey<PT, PS>;
 
 /**
- * Type to split a {@link PathString} into a {@link PathTuple}.
- * The individual {@link Key}s may be empty strings.
- * @typeParam PS  - {@link PathString} which should be split into its
- *                  individual {@link Key}s
+ * Type to split a path string into a path tuple.
+ * The individual keys may be empty strings.
+ * @typeParam PS  - path string which should be split into its individual keys
  * @example
  * ```
  * SplitPathString<'foo'> = ['foo']
@@ -62,8 +60,8 @@ export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
 
 /**
  * Type to implement {@link JoinPathTuple} tail-recursively.
- * @typeParam PT - remaining {@link Key}s which needs to be joined
- * @typeParam PS - accumulator of the already joined {@link Key}s
+ * @typeParam PT - remaining keys which needs to be joined
+ * @typeParam PS - accumulator of the already joined keys
  */
 type JoinPathTupleImpl<
   PT extends PathTuple,
@@ -73,8 +71,8 @@ type JoinPathTupleImpl<
   : PS;
 
 /**
- * Type to join a {@link PathTuple} to a {@link PathString}.
- * @typeParam PT - {@link PathTuple} which should be joined.
+ * Type to join a path tuple to a path string.
+ * @typeParam PT - path tuple which should be joined.
  * @example
  * ```
  * JoinPathTuple<['foo']> = 'foo'

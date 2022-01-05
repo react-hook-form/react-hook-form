@@ -1,5 +1,5 @@
 /**
- * Type which can be traversed through with a {@link PathString}.
+ * Type which can be traversed through with a path string.
  * I.e. objects, arrays, and tuples
  */
 export type Traversable = object;
@@ -15,19 +15,19 @@ export type ArrayKey = number;
 export type Key = string;
 
 /**
- * Type to assert that a type is a {@link Key}.
- * @typeParam T - type which may be a {@link Key}
+ * Type to assert that a type is a key.
+ * @typeParam T - type which may be a key
  */
 export type AsKey<T> = Extract<T, Key>;
 
 /**
- * Type to convert a type to a {@link Key}.
- * @typeParam T - type which may be converted to a {@link Key}
+ * Type to convert a type to a key.
+ * @typeParam T - type which may be converted to a key
  */
 export type ToKey<T> = T extends ArrayKey ? `${T}` : AsKey<T>;
 
 /**
- * Type which converts all keys of an object to {@link Key}s.
+ * Type which converts all keys of an object to keys.
  * @typeParam T - object type
  * @example
  * ```
