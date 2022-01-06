@@ -3,12 +3,12 @@ import { Primitive } from '../utils';
 
 import { TupleKeys } from './internal/keys';
 import { ArrayKey, IsTuple } from './internal/utils';
-import * as Branded from './branded';
-import * as Lazy from './lazy';
+import type * as Branded from './branded';
+import type * as Lazy from './lazy';
 
 /** Re-export public API */
-export { Branded, Lazy };
-export { PathString } from './pathString';
+export type { Branded, Lazy };
+export type { PathString } from './pathString';
 
 /**
  * Helper type for recursively constructing paths through a type.
