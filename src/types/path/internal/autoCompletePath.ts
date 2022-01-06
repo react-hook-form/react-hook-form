@@ -129,9 +129,20 @@ type IsPathUnion<PS extends PathString> = IsNever<UnionToIntersection<PS>>;
  * Type to check the current path against the constraint type.
  * Returns the path if it is valid and matches the constraint type.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PS - the current path into the type as a string
- * @typeParam PT - the current path into the type as a tuple
+ * @typeParam PS - the current path into the type as a string,
+ *                 mustn't be a union
+ * @typeParam PT - the current path into the type as a tuple,
+ *                 must be equal to SplitPathString<PS>
  * @typeParam C  - constraint
+ * @example
+ * ```
+ * AutoCompletePathCheckConstraint<{foo: {bar: string}}, 'foo', ['foo'], AccessPattern<string>>
+ *   = never
+ * AutoCompletePathCheckConstraint<{foo: {bar: string}}, 'foo.ba', ['foo', 'ba'], AccessPattern<string>>
+ *   = never
+ * AutoCompletePathCheckConstraint<{foo: {bar: string}}, 'foo.bar', ['foo', 'bar'], AccessPattern<string>>
+ *   = 'foo.bar'
+ * ```
  * @internal
  */
 type AutoCompletePathCheckConstraint<
@@ -149,11 +160,24 @@ type AutoCompletePathCheckConstraint<
 
 /**
  * Type to implement {@link AutoCompletePath} without having to compute the
- * key list more than once.
+ * path tuple more than once.
  * @typeParam T  - type which is indexed by the path
- * @typeParam PS - the current path into the type as a string
- * @typeParam PT - the current path into the type as a tuple
+ * @typeParam PS - the current path into the type as a string,
+ *                 mustn't be a union
+ * @typeParam PT - the current path into the type as a tuple,
+ *                 must be equal to SplitPathString<PS>
  * @typeParam C  - constraint
+ * @example
+ * ```
+ * AutoCompletePathImpl<{foo: {bar: string}}, 'foo', ['foo'], AccessPattern<string>>
+ *   = 'foo.bar'
+ * AutoCompletePathImpl<{foo: {bar: string}}, 'foo.ba', ['foo', 'ba'], AccessPattern<string>>
+ *   = 'foo' | 'foo.bar'
+ * AutoCompletePathImpl<{foo: {bar: string}}, 'foo.bar', ['foo', 'bar'], AccessPattern<string>>
+ *   = 'foo' | 'foo.bar'
+ * AutoCompletePathImpl<{foo: {bar: {baz: string}}}, 'foo.bar', ['foo', 'bar'], AccessPattern<string>>
+ *   = 'foo' | 'foo.bar.baz'
+ * ```
  * @internal
  */
 type AutoCompletePathImpl<
@@ -182,7 +206,8 @@ type AutoCompletePathImpl<
  * @typeParam C  - constraint
  * @example
  * ```
- * AutoCompletePath<{foo: {bar: string}}, 'foo', AccessPattern<string>> = 'foo.bar'
+ * AutoCompletePath<{foo: {bar: string}}, 'foo', AccessPattern<string>>
+ *   = 'foo.bar'
  * AutoCompletePath<{foo: {bar: string}}, 'foo.ba', AccessPattern<string>>
  *   = 'foo' | 'foo.bar'
  * AutoCompletePath<{foo: {bar: string}}, 'foo.bar', AccessPattern<string>>
