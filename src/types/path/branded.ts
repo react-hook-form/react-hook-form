@@ -30,8 +30,5 @@ export type TypedFieldArrayPath<
   TArrayValuesSet[]
 >;
 
-export type FieldArrayPath<TFieldValues extends FieldValues> = TypedFieldPath<
-  TFieldValues,
-  ReadonlyArray<FieldValues> | null | undefined,
-  never[]
->;
+export type FieldArrayPath<TFieldValues extends FieldValues> =
+  TypedFieldArrayPath<TFieldValues, FieldValues, never>;

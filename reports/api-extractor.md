@@ -187,7 +187,7 @@ export type FieldArrayName = string;
 export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
 
 // @public (undocumented)
-type FieldArrayPath_2<TFieldValues extends FieldValues> = TypedFieldPath<TFieldValues, ReadonlyArray<FieldValues> | null | undefined, never[]>;
+type FieldArrayPath_2<TFieldValues extends FieldValues> = TypedFieldArrayPath<TFieldValues, FieldValues, never>;
 
 // @public (undocumented)
 type FieldArrayPath_3<TFieldValues extends FieldValues, TPathString extends PathString> = TypedFieldArrayPath_2<TFieldValues, TPathString, FieldValues, never>;
