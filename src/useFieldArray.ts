@@ -332,15 +332,6 @@ export const useFieldArray = <
     };
   }, [name, control, keyName, shouldUnregister]);
 
-  const memoFields = React.useMemo(() => {
-    return fields.map((field, index) => {
-      return {
-        ...field,
-        [keyName]: ids[index] || generateId(),
-      };
-    }) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
-  }, [fields, ids, keyName]);
-
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),
     move: React.useCallback(move, [updateValues, name, control]),
@@ -350,6 +341,13 @@ export const useFieldArray = <
     insert: React.useCallback(insert, [updateValues, name, control]),
     update: React.useCallback(update, [updateValues, name, control]),
     replace: React.useCallback(replace, [updateValues, name, control]),
-    fields: memoFields,
+    fields: React.useMemo(() => {
+      return fields.map((field, index) => {
+        return {
+          ...field,
+          [keyName]: ids[index] || generateId(),
+        };
+      }) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+    }, [fields, ids, keyName]),
   };
 };
