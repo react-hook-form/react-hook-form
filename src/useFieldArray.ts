@@ -81,7 +81,6 @@ export const useFieldArray = <
     ) => {
       _actioned.current = true;
       set(control._formValues, name, updatedFieldArrayValues);
-      return updatedFieldArrayValues;
     },
     [control, name],
   );
@@ -97,13 +96,12 @@ export const useFieldArray = <
       control._getFieldArray(name),
       appendValue,
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValues);
+    updateValues(updatedFieldArrayValues);
     control._names.focus = getFocusFieldName(
       name,
-      fieldArrayValues.length - 1,
+      updatedFieldArrayValues.length - 1,
       options,
     );
-
     setIds((previous) => appendAt(previous, appendValue.map(generateId)));
     setFields(updatedFieldArrayValues);
     control._updateFieldArray(
@@ -112,7 +110,7 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      fieldArrayValues,
+      updatedFieldArrayValues,
     );
   };
 
@@ -127,9 +125,8 @@ export const useFieldArray = <
       control._getFieldArray(name),
       prependValue,
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValues);
+    updateValues(updatedFieldArrayValues);
     control._names.focus = getFocusFieldName(name, 0, options);
-
     setIds((previous) => prependAt(previous, prependValue.map(generateId)));
     setFields(updatedFieldArrayValues);
     control._updateFieldArray(
@@ -138,7 +135,7 @@ export const useFieldArray = <
       {
         argA: fillEmptyArray(value),
       },
-      fieldArrayValues,
+      updatedFieldArrayValues,
     );
   };
 
@@ -146,8 +143,7 @@ export const useFieldArray = <
     const updatedFieldArrayValuesWithKey: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
-    const fieldArrayValues = updateValues(updatedFieldArrayValuesWithKey);
-
+    updateValues(updatedFieldArrayValuesWithKey);
     setIds((previous) => {
       return removeArrayAt(previous, index);
     });
@@ -158,7 +154,7 @@ export const useFieldArray = <
       {
         argA: index,
       },
-      fieldArrayValues,
+      updatedFieldArrayValuesWithKey,
     );
   };
 
@@ -175,9 +171,8 @@ export const useFieldArray = <
       index,
       insertValue,
     );
-    const fieldArrayValues = updateValues(updatedFieldArrayValues);
+    updateValues(updatedFieldArrayValues);
     control._names.focus = getFocusFieldName(name, index, options);
-
     setIds((previous) =>
       insertAt(previous, index, insertValue.map(generateId)),
     );
@@ -189,15 +184,14 @@ export const useFieldArray = <
         argA: index,
         argB: fillEmptyArray(value),
       },
-      fieldArrayValues,
+      updatedFieldArrayValues,
     );
   };
 
   const swap = (indexA: number, indexB: number) => {
     const updatedFieldArrayValues = control._getFieldArray(name);
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
-    const fieldArrayValues = updateValues(updatedFieldArrayValues);
-
+    updateValues(updatedFieldArrayValues);
     setIds((previous) => {
       swapArrayAt(previous, indexA, indexB);
       return [...previous];
@@ -210,7 +204,7 @@ export const useFieldArray = <
         argA: indexA,
         argB: indexB,
       },
-      fieldArrayValues,
+      updatedFieldArrayValues,
       false,
     );
   };
@@ -218,8 +212,7 @@ export const useFieldArray = <
   const move = (from: number, to: number) => {
     const updatedFieldArrayValues = control._getFieldArray(name);
     moveArrayAt(updatedFieldArrayValues, from, to);
-    const fieldArrayValues = updateValues(updatedFieldArrayValues);
-
+    updateValues(updatedFieldArrayValues);
     setIds((previous) => {
       moveArrayAt(previous, from, to);
       return [...previous];
@@ -232,7 +225,7 @@ export const useFieldArray = <
         argA: from,
         argB: to,
       },
-      fieldArrayValues,
+      updatedFieldArrayValues,
       false,
     );
   };
@@ -242,14 +235,13 @@ export const useFieldArray = <
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
     const updatedValues = updateAt(control._getFieldArray(name), index, value);
-    const fieldArrayValues = updateValues(updatedValues);
-
-    setFields([...updatedValues]);
+    updateValues(updatedValues);
     setIds((ids) => {
       return [...updatedValues].map((item, i) =>
         !item || i === index ? generateId() : ids[i],
       );
     });
+    setFields([...updatedValues]);
     control._updateFieldArray(
       name,
       updateAt,
@@ -257,7 +249,7 @@ export const useFieldArray = <
         argA: index,
         argB: value,
       },
-      fieldArrayValues,
+      updatedValues,
       true,
       false,
       false,
@@ -270,19 +262,18 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
     const updateValue = convertToArrayPayload(value);
-    const fieldArrayValues = updateValues(
+    updateValues(
       updateValue as Partial<
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
       >[],
     );
-
     setIds([...updateValue.map(generateId)]);
     setFields([...updateValue]);
     control._updateFieldArray(
       name,
       () => updateValue,
       {},
-      fieldArrayValues,
+      updateValue as Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
       true,
       false,
       false,

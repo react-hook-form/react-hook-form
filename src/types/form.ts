@@ -4,7 +4,7 @@ import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
-import { FieldArrayWithId } from './fieldArray';
+import { FieldArray } from './fieldArray';
 import {
   FieldRefs,
   FieldValue,
@@ -308,7 +308,6 @@ export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 >(
   name: InternalFieldName,
   method: T,
@@ -317,7 +316,7 @@ export type BatchFieldArrayUpdate = <
     argB?: unknown;
   },
   updatedFieldArrayValues?: Partial<
-    FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+    FieldArray<TFieldValues, TFieldArrayName>
   >[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
