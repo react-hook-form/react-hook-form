@@ -160,7 +160,7 @@ type AutoCompletePathCheckConstraint<
 
 /**
  * Type to implement {@link AutoCompletePath} without having to compute the
- * key list more than once.
+ * path tuple more than once.
  * @typeParam T  - type which is indexed by the path
  * @typeParam PS - the current path into the type as a string,
  *                 mustn't be a union
