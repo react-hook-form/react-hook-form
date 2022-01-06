@@ -2,81 +2,33 @@ import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Control } from '../../src/types';
 
-type FormData = {
-  nest: {
-    test: {
-      value: string;
-      nestedArray: {
-        value: string;
-      }[];
-    }[];
-  };
-};
-const ChildComponent = ({
-  index,
-  control,
-}: {
-  control: Control<FormData>;
-  index: number;
-}) => {
-  const { fields } = useFieldArray<FormData>({
-    name: `nest.test.${index}.nestedArray` as const,
-    control,
-  });
-
-  return (
-    <div>
-      {fields.map((item, i) => (
-        <input
-          key={item.id}
-          {...control.register(
-            `nest.test.${index}.nestedArray.${i}.value` as const,
-          )}
-        />
-      ))}
-    </div>
-  );
-};
-
-const Component = () => {
-  const { register, control } = useForm({
+const App = () => {
+  const { register, control } = useForm<{
+    test: { value: string }[];
+  }>({
     defaultValues: {
-      nest: {
-        test: [
-          { value: '1', nestedArray: [{ value: '2' }] },
-          { value: '3', nestedArray: [{ value: '4' }] },
-        ],
-      },
+      test: [
+        {
+          value: 'bill',
+        },
+      ],
     },
   });
-  const { fields, remove, append } = useFieldArray({
-    name: 'nest.test',
+  const { fields, update } = useFieldArray({
+    name: 'test',
     control,
   });
 
   return (
     <div>
-      {fields.map((item, i) => (
-        <div key={item.id}>
-          <input {...register(`nest.test.${i}.value` as const)} />
-
-          <ChildComponent control={control} index={i} />
-
-          <button
-            type={'button'}
-            onClick={() => remove(i)}
-            data-testid={item.value}
-          >
-            remove
-          </button>
+      {fields.map((field, i) => (
+        <div key={field.id}>
+          <input {...register(`test.${i}.value` as const)} />
         </div>
       ))}
-
-      <button type={'button'} onClick={() => append({ value: 'test' })}>
-        append
-      </button>
+      <button onClick={() => update(0, { value: 'test' })}>update</button>
     </div>
   );
 };
 
-export default Component;
+export default App;

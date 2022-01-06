@@ -27,12 +27,12 @@ exports[`update should update field array with multiple values 1`] = `
 Array [
   Object {
     "firstName": "test1",
-    "id": "2",
+    "id": "4",
     "lastName": "test2",
   },
   Object {
     "firstName": "test3",
-    "id": "3",
+    "id": "5",
     "lastName": "test4",
   },
 ]
@@ -51,7 +51,7 @@ Array [
   ],
   Array [
     Object {
-      "id": "1",
+      "id": "2",
       "value": Object {
         "firstName": "firstName",
         "lastName": "lastName",
