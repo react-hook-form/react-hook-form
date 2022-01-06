@@ -6,32 +6,32 @@ declare const FORM_VALUES: unique symbol;
 declare const ACCESS_PATTERN: unique symbol;
 
 export type TypedFieldPath<
-  TFormValues extends FieldValues,
+  TFieldValues extends FieldValues,
   TValue,
   TValueSet = TValue,
 > = string & {
-  [FORM_VALUES]: TFormValues;
+  [FORM_VALUES]: TFieldValues;
   [ACCESS_PATTERN]: AccessPattern<TValue, TValueSet>;
 };
 
-export type FieldPath<TFormValues extends FieldValues> = TypedFieldPath<
-  TFormValues,
+export type FieldPath<TFieldValues extends FieldValues> = TypedFieldPath<
+  TFieldValues,
   unknown,
   never
 >;
 
 export type TypedFieldArrayPath<
-  TFormValues extends FieldValues,
+  TFieldValues extends FieldValues,
   TArrayValues extends FieldValues,
   TArrayValuesSet extends FieldValues = TArrayValues,
 > = TypedFieldPath<
-  TFormValues,
+  TFieldValues,
   ReadonlyArray<TArrayValues> | null | undefined,
   TArrayValuesSet[]
 >;
 
-export type FieldArrayPath<TFormValues extends FieldValues> = TypedFieldPath<
-  TFormValues,
+export type FieldArrayPath<TFieldValues extends FieldValues> = TypedFieldPath<
+  TFieldValues,
   ReadonlyArray<FieldValues> | null | undefined,
   never[]
 >;
