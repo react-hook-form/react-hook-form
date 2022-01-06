@@ -711,8 +711,8 @@ describe('useFieldArray', () => {
 
         return (
           <div>
-            {fields.map((_, i) => (
-              <input key={i.toString()} {...register(`test.${i}.value`)} />
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.value`)} />
             ))}
             <button type={'button'} onClick={() => append({ value: '' })}>
               append
