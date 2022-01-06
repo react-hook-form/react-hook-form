@@ -2,6 +2,7 @@ import { FieldValues } from '../fields';
 
 import { AutoCompletePath } from './internal/autoCompletePath';
 import { AccessPattern } from './internal/utils';
+import * as Branded from './branded';
 import { PathString } from './pathString';
 
 export type TypedFieldPath<
@@ -9,11 +10,15 @@ export type TypedFieldPath<
   TPathString extends PathString,
   TValue,
   TValueSet = TValue,
-> = AutoCompletePath<
-  TFieldValues,
-  TPathString,
-  AccessPattern<TValue, TValueSet>
->;
+> = TPathString extends Branded.FieldPath<any>
+  ? TPathString extends Branded.TypedFieldPath<TFieldValues, TValue, TValueSet>
+    ? TPathString
+    : never
+  : AutoCompletePath<
+      TFieldValues,
+      TPathString,
+      AccessPattern<TValue, TValueSet>
+    >;
 
 export type FieldPath<
   TFieldValues extends FieldValues,
