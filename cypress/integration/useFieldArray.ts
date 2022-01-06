@@ -123,7 +123,7 @@ describe('useFieldArray', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('56');
+    cy.get('#renderCount').contains('54');
   });
 
   it('should behaviour correctly with defaultValue', () => {
