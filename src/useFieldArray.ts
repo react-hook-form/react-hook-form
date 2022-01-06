@@ -224,12 +224,16 @@ export const useFieldArray = <
     index: number,
     value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    const updatedValues = updateAt(control._getFieldArray(name), index, value);
-    ids.current = [...updatedValues].map((item, i) =>
+    const updatedFieldArrayValues = updateAt(
+      control._getFieldArray(name),
+      index,
+      value,
+    );
+    ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
     );
-    setFields([...updatedValues]);
-    updateValues(updatedValues);
+    setFields([...updatedFieldArrayValues]);
+    updateValues(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       updateAt,
@@ -237,7 +241,7 @@ export const useFieldArray = <
         argA: index,
         argB: value,
       },
-      updatedValues,
+      updatedFieldArrayValues,
       true,
       false,
       false,
@@ -249,15 +253,15 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
-    const updatedValues = convertToArrayPayload(value);
-    ids.current = updatedValues.map(generateId);
-    updateValues([...updatedValues]);
-    setFields([...updatedValues]);
+    const updatedFieldArrayValues = convertToArrayPayload(value);
+    ids.current = updatedFieldArrayValues.map(generateId);
+    updateValues([...updatedFieldArrayValues]);
+    setFields([...updatedFieldArrayValues]);
     control._updateFieldArray(
       name,
-      () => updatedValues,
+      () => updatedFieldArrayValues,
       {},
-      [...updatedValues],
+      [...updatedFieldArrayValues],
       true,
       false,
       false,
