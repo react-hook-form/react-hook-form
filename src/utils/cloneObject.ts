@@ -1,26 +1,36 @@
 import isFunction from './isFunction';
-import isObject from './isObject';
+import isPrimitive from './isPrimitive';
 
-export default function cloneObject<T>(data: T): T {
-  let copy: any;
-  const isArray = Array.isArray(data);
+export default function cloneObject<T>(obj: T): T {
+  let clone: any;
 
-  if (data instanceof Date) {
-    copy = new Date(data);
-  } else if (data instanceof Set) {
-    copy = new Set(data);
-  } else if (isArray || isObject(data)) {
-    copy = isArray ? [] : {};
-    for (const key in data) {
-      if (isFunction(data[key])) {
-        copy = data;
-        break;
-      }
-      copy[key] = cloneObject(data[key]);
-    }
-  } else {
-    return data;
+  if (isPrimitive(obj)) {
+    return obj;
+  } else if (obj instanceof Date) {
+    clone = new Date(obj);
+    return clone;
+  } else if (obj instanceof Set) {
+    clone = new Set([...obj].map(cloneObject));
+    return clone;
   }
 
-  return copy;
+  clone = Object.assign({}, obj);
+
+  for (const key in clone) {
+    if (isFunction(clone[key])) {
+      clone = obj;
+      break;
+    }
+
+    clone[key] =
+      typeof clone[key] === 'object' ? cloneObject(clone[key]) : clone[key];
+  }
+
+  if (Array.isArray(obj)) {
+    clone.length = obj.length;
+    clone = Array.from(clone);
+    return clone;
+  }
+
+  return clone;
 }

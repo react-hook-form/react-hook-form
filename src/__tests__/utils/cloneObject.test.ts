@@ -92,11 +92,6 @@ describe('clone', () => {
       other: 'string',
     };
 
-    expect(cloneObject(test)).toEqual({
-      data: {
-        testFunction,
-      },
-      other: 'string',
-    });
+    expect(cloneObject(test).data).toBe(test.data);
   });
 });
