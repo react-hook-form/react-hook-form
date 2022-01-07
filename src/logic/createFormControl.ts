@@ -802,7 +802,6 @@ export function createFormControl<
 
     _subjects.state.next({
       errors: _formState.errors,
-      isValid: true,
     });
   };
 

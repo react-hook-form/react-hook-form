@@ -267,7 +267,7 @@ describe('clearErrors', () => {
     fireEvent.click(screen.getByRole('button', { name: 'clearError' }));
 
     await waitFor(() => {
-      screen.getByText('yes');
+      screen.getByText('no');
     });
   });
 });
