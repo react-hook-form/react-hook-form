@@ -1,5 +1,6 @@
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
+  _UseFormGetFieldState,
   BatchFieldArrayUpdate,
   ChangeHandler,
   DeepPartial,
@@ -793,6 +794,15 @@ export function createFormControl<
       : fieldNames.map((name) => get(values, name as InternalFieldName));
   };
 
+  const _getFieldState: _UseFormGetFieldState<TFieldValues> = (
+    name: FieldPath<TFieldValues>,
+  ) => ({
+    invalid: !!get(_formState.errors, name),
+    isDirty: !!get(_formState.dirtyFields, name),
+    isTouched: !!get(_formState.touchedFields, name),
+    error: get(_formState.errors, name),
+  });
+
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     name
       ? convertToArrayPayload(name).forEach((inputName) =>
@@ -1168,6 +1178,7 @@ export function createFormControl<
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,
+      _getFieldState,
       _subjects,
       _proxyFormState,
       get _fields() {
@@ -1228,5 +1239,6 @@ export function createFormControl<
     unregister,
     setError,
     setFocus,
+    _getFieldState,
   };
 }
