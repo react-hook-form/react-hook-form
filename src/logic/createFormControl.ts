@@ -1178,7 +1178,6 @@ export function createFormControl<
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,
-      _getFieldState,
       _subjects,
       _proxyFormState,
       get _fields() {

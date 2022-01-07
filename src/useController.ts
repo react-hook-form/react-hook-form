@@ -109,6 +109,11 @@ export function useController<
       },
     },
     formState,
-    fieldState: control._getFieldState(name),
+    fieldState: {
+      invalid: !!get(formState.errors, name),
+      isDirty: !!get(formState.dirtyFields, name),
+      isTouched: !!get(formState.touchedFields, name),
+      error: get(formState.errors, name),
+    },
   };
 }

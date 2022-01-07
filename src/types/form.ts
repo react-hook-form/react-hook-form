@@ -359,7 +359,6 @@ export type Control<
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
-  _getFieldState: _UseFormGetFieldState<TFieldValues>;
   _executeSchema: (
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
