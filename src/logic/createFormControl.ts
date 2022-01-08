@@ -800,17 +800,12 @@ export function createFormControl<
   ) => {
     const isFieldName = isString(formState);
     const fieldName = isFieldName ? formState : (name as string);
+    const stage = isFieldName ? _formState : formState;
     return {
-      invalid: !!get((isFieldName ? _formState : formState).errors, fieldName),
-      isDirty: !!get(
-        (isFieldName ? _formState : formState).dirtyFields,
-        fieldName,
-      ),
-      isTouched: !!get(
-        (isFieldName ? _formState : formState).touchedFields,
-        fieldName,
-      ),
-      error: get((isFieldName ? _formState : formState).errors, fieldName),
+      invalid: !!get(stage.errors, fieldName),
+      isDirty: get(stage.dirtyFields, fieldName),
+      isTouched: get(stage.touchedFields, fieldName),
+      error: get(stage.errors, fieldName),
     };
   };
 
