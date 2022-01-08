@@ -798,14 +798,19 @@ export function createFormControl<
     formState,
     name?,
   ) => {
-    const fieldName: string = isString(formState)
-      ? formState
-      : (name as string);
+    const isFieldName = isString(formState);
+    const fieldName = isFieldName ? formState : (name as string);
     return {
-      invalid: !!get((_formState || formState).errors, fieldName),
-      isDirty: !!get((_formState || formState).dirtyFields, fieldName),
-      isTouched: !!get((_formState || formState).touchedFields, fieldName),
-      error: get((_formState || formState).errors, fieldName),
+      invalid: !!get((isFieldName ? _formState : formState).errors, fieldName),
+      isDirty: !!get(
+        (isFieldName ? _formState : formState).dirtyFields,
+        fieldName,
+      ),
+      isTouched: !!get(
+        (isFieldName ? _formState : formState).touchedFields,
+        fieldName,
+      ),
+      error: get((isFieldName ? _formState : formState).errors, fieldName),
     };
   };
 
