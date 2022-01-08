@@ -591,4 +591,44 @@ describe('getFieldState', () => {
       });
     });
   });
+
+  describe('when field is not found', () => {
+    it('should return field state', async () => {
+      const App = () => {
+        const { control, _getFieldState, formState } = useForm<FormValues>({
+          defaultValues: {
+            nested: {
+              first: '',
+              last: '',
+            },
+          },
+        });
+
+        // @ts-expect-error expected to show type error for field name
+        const { isDirty } = _getFieldState(formState, 'nestedMissing');
+
+        // @ts-expect-error expected to show type error for field name
+        const { isTouched } = _getFieldState('nestedMissing');
+
+        return (
+          <form>
+            <NestedInput control={control} />
+            <p>{isDirty ? 'dirty' : 'notDirty'}</p>
+            <p>{isTouched ? 'touched' : 'notTouched'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: { value: ' test' },
+        });
+      });
+
+      screen.getByText('notDirty');
+      screen.getByText('notTouched');
+    });
+  });
 });
