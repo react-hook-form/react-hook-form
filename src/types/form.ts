@@ -180,15 +180,22 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
-export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues>,
->(
-  name: TFieldName,
-) => {
-  invalid: boolean;
-  isDirty: boolean;
-  isTouched: boolean;
-  error: FieldError;
+export type _UseFormGetFieldState<TFieldValues extends FieldValues> = {
+  <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): {
+    invalid: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
+    error: FieldError;
+  };
+  <TFieldName extends FieldPath<TFieldValues>>(
+    formState: FormState<TFieldValues>,
+    name: TFieldName,
+  ): {
+    invalid: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
+    error: FieldError;
+  };
 };
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
