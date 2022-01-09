@@ -29,7 +29,7 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends
 export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, method: T, args: {
     argA?: unknown;
     argB?: unknown;
-}, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], shouldSetValue?: boolean, shouldSetFields?: boolean, shouldSetError?: boolean) => void;
+}, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], shouldSetValue?: boolean, shouldSetFields?: boolean) => void;
 
 // @public (undocumented)
 export type ChangeHandler = (event: {
