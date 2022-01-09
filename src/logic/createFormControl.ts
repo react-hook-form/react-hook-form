@@ -181,7 +181,6 @@ export function createFormControl<
     values = [],
     shouldSetValues = true,
     shouldSetFields = true,
-    shouldSetError = true,
   ) => {
     _stateFlags.action = true;
 
@@ -192,7 +191,7 @@ export function createFormControl<
 
     if (
       _proxyFormState.errors &&
-      shouldSetError &&
+      shouldSetFields &&
       Array.isArray(get(_formState.errors, name))
     ) {
       const errors = method(get(_formState.errors, name), args.argA, args.argB);
@@ -211,7 +210,6 @@ export function createFormControl<
       );
       shouldSetValues &&
         set(_formState.touchedFields as TFieldValues, name, touchedFields);
-      unsetEmptyArray(_formState.touchedFields, name);
     }
 
     if (_proxyFormState.dirtyFields) {
