@@ -185,18 +185,25 @@ export function createFormControl<
   ) => {
     _stateFlags.action = true;
 
-    if (shouldSetFields && get(_fields, name)) {
+    if (shouldSetFields && Array.isArray(get(_fields, name))) {
       const fieldValues = method(get(_fields, name), args.argA, args.argB);
       shouldSetValues && set(_fields, name, fieldValues);
     }
 
-    if (shouldSetError && Array.isArray(get(_formState.errors, name))) {
+    if (
+      _proxyFormState.errors &&
+      shouldSetError &&
+      Array.isArray(get(_formState.errors, name))
+    ) {
       const errors = method(get(_formState.errors, name), args.argA, args.argB);
       shouldSetValues && set(_formState.errors, name, errors);
       unsetEmptyArray(_formState.errors, name);
     }
 
-    if (_proxyFormState.touchedFields && get(_formState.touchedFields, name)) {
+    if (
+      _proxyFormState.touchedFields &&
+      Array.isArray(get(_formState.touchedFields, name))
+    ) {
       const touchedFields = method(
         get(_formState.touchedFields, name),
         args.argA,
@@ -207,7 +214,7 @@ export function createFormControl<
       unsetEmptyArray(_formState.touchedFields, name);
     }
 
-    if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
+    if (_proxyFormState.dirtyFields) {
       _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
     }
 
