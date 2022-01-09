@@ -242,7 +242,7 @@ describe('useFieldArrayNested', () => {
     cy.get('#nest-remove-all-0').click();
 
     cy.get('#touched-nested-2').contains(
-      '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
+      '{"test":[{"firstName":true,"keyValue":[]},{"firstName":true},{"firstName":true},{"keyValue":[]}]}',
     );
 
     cy.get('#dirty-nested-2').should(($state) =>
