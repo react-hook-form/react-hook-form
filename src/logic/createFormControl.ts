@@ -208,8 +208,7 @@ export function createFormControl<
         args.argA,
         args.argB,
       );
-      shouldSetValues &&
-        set(_formState.touchedFields as TFieldValues, name, touchedFields);
+      shouldSetValues && set(_formState.touchedFields, name, touchedFields);
     }
 
     if (_proxyFormState.dirtyFields) {
