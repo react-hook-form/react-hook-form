@@ -416,6 +416,69 @@ describe('handleSubmit', () => {
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
 
+    expect(onSubmit).not.toBeCalled();
+  });
+
+  it('should be able to submit correctly when errors contains empty array object and errros state is subscribed', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const {
+        register,
+        control,
+        handleSubmit,
+        formState: { errors },
+      } = useForm({
+        defaultValues: {
+          test: [{ name: '1234' }],
+        },
+        mode: 'onChange',
+      });
+      const { fields, remove } = useFieldArray({ control, name: 'test' });
+
+      errors;
+
+      return (
+        <form
+          onSubmit={handleSubmit(() => {
+            onSubmit();
+          })}
+        >
+          {fields.map((field, index) => {
+            return (
+              <input
+                key={field.id}
+                {...register(`test.${index}.name`, { required: true })}
+              />
+            );
+          })}
+
+          <button type={'button'} onClick={() => remove(0)}>
+            remove
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '',
+        },
+      });
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    });
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
     expect(onSubmit).toBeCalled();
   });
 });
