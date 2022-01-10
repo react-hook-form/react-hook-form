@@ -5,13 +5,14 @@ export default <T>(
   from: number,
   to: number,
 ): (T | undefined)[] => {
-  if (Array.isArray(data)) {
-    if (isUndefined(data[to])) {
-      data[to] = undefined;
-    }
-    data.splice(to, 0, data.splice(from, 1)[0]);
-    return data;
+  if (!Array.isArray(data)) {
+    return [];
   }
 
-  return [];
+  if (isUndefined(data[to])) {
+    data[to] = undefined;
+  }
+  data.splice(to, 0, data.splice(from, 1)[0]);
+
+  return data;
 };
