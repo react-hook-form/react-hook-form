@@ -1,5 +1,6 @@
 import { FieldRefs, InternalFieldName } from '../types';
 import { get } from '../utils';
+import isFunction from '../utils/isFunction';
 import isObject from '../utils/isObject';
 import isUndefined from '../utils/isUndefined';
 import omit from '../utils/omit';
@@ -20,6 +21,7 @@ const focusFieldBy = (
         if (_f.ref.focus && isUndefined(_f.ref.focus())) {
           break;
         } else if (_f.refs) {
+          isFunction(_f.refs[0]?.scrollIntoView) && _f.refs[0].scrollIntoView();
           _f.refs[0].focus();
           break;
         }
