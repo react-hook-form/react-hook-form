@@ -348,7 +348,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { error } = _getFieldState(formState, 'test');
+          const { error } = _getFieldState('test', formState);
 
           return (
             <form>
@@ -378,7 +378,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { invalid } = _getFieldState(formState, 'test');
+          const { invalid } = _getFieldState('test', formState);
 
           return (
             <form>
@@ -408,7 +408,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { isTouched } = _getFieldState(formState, 'test');
+          const { isTouched } = _getFieldState('test', formState);
 
           return (
             <form>
@@ -436,7 +436,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { isDirty } = _getFieldState(formState, 'test');
+          const { isDirty } = _getFieldState('test', formState);
 
           return (
             <form>
@@ -471,7 +471,7 @@ describe('getFieldState', () => {
               },
             });
 
-          const { error } = _getFieldState(formState, 'nested');
+          const { error } = _getFieldState('nested', formState);
 
           return (
             <form>
@@ -505,7 +505,7 @@ describe('getFieldState', () => {
               },
             });
 
-          const { invalid } = _getFieldState(formState, 'nested');
+          const { invalid } = _getFieldState('nested', formState);
 
           return (
             <form>
@@ -538,7 +538,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { isTouched } = _getFieldState(formState, 'nested');
+          const { isTouched } = _getFieldState('nested', formState);
 
           return (
             <form>
@@ -569,7 +569,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { isDirty } = _getFieldState(formState, 'nested');
+          const { isDirty } = _getFieldState('nested', formState);
 
           return (
             <form>

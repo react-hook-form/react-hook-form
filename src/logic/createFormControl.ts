@@ -795,17 +795,15 @@ export function createFormControl<
   };
 
   const _getFieldState: _UseFormGetFieldState<TFieldValues> = (
+    name,
     formState,
-    name?,
   ) => {
-    const isFieldName = isString(formState);
-    const fieldName = isFieldName ? formState : (name as string);
-    const stage = isFieldName ? _formState : formState;
+    const stage = formState || _formState;
     return {
-      invalid: !!get(stage.errors, fieldName),
-      isDirty: get(stage.dirtyFields, fieldName),
-      isTouched: get(stage.touchedFields, fieldName),
-      error: get(stage.errors, fieldName),
+      invalid: !!get(stage.errors, name),
+      isDirty: get(stage.dirtyFields, name),
+      isTouched: get(stage.touchedFields, name),
+      error: get(stage.errors, name),
     };
   };
 

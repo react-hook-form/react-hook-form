@@ -43,4 +43,20 @@ import { useForm } from '../../useForm';
       error: FieldError;
     }>(_getFieldState('test'));
   }
+
+  /** it should return associated field state when formState is supplied */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { _getFieldState, formState } = useForm({
+      defaultValues: {
+        test: '',
+      },
+    });
+
+    expectType<{
+      invalid: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
+      error: FieldError;
+    }>(_getFieldState('test', formState));
+  }
 }
