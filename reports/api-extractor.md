@@ -514,19 +514,11 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: Field
 export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
 
 // @public (undocumented)
-export type _UseFormGetFieldState<TFieldValues extends FieldValues> = {
-    <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): {
-        invalid: boolean;
-        isDirty: boolean;
-        isTouched: boolean;
-        error: FieldError;
-    };
-    <TFieldName extends FieldPath<TFieldValues>>(formState: FormState<TFieldValues>, name: TFieldName): {
-        invalid: boolean;
-        isDirty: boolean;
-        isTouched: boolean;
-        error: FieldError;
-    };
+export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
+    invalid: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
+    error: FieldError;
 };
 
 // @public (undocumented)
@@ -721,7 +713,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:211:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:205:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
