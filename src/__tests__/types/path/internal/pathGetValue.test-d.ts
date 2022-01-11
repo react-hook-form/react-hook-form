@@ -49,14 +49,14 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<number | undefined>(actual);
   }
 
-  /** it should add undefined if the key is not valid */ {
+  /** it should add unknown if the key is not valid */ {
     const actual = _ as KeyGetValue<{ foo: string }, 'foobar'>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
-  /** it should evaluate to undefined if the key is out of bounds */ {
+  /** it should evaluate to unknown if the key is out of bounds */ {
     const actual = _ as KeyGetValue<[string], '1'>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should work on path unions */ {
@@ -67,9 +67,9 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<number | string>(actual);
   }
 
-  /** it should add undefined if one of the keys doesn't exist */ {
+  /** it should evaluate to unknown if one of the keys doesn't exist */ {
     const actual = _ as KeyGetValue<{ foo: number }, 'foo' | 'bar'>;
-    expectType<number | undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should add null if the type may be null */ {
@@ -87,14 +87,14 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<string | null | undefined>(actual);
   }
 
-  /** it should evaluate to undefined if the type is not traversable */ {
+  /** it should evaluate to unknown if the type is not traversable */ {
     const actual = _ as KeyGetValue<string, 'foo'>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
-  /** it should evaluate to undefined if the key is non-numeric */ {
+  /** it should evaluate to unknown if the key is non-numeric */ {
     const actual = _ as KeyGetValue<string[], 'foo'>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should work on unions of object */ {
@@ -117,14 +117,14 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<number | string>(actual);
   }
 
-  /** it should add undefined if the key doesn't exist in one of the types */ {
+  /** it should evaluate to unknown if the key doesn't exist in one of the types */ {
     const actual = _ as KeyGetValue<{ foo: number } | { bar: string }, 'foo'>;
-    expectType<number | undefined>(actual);
+    expectType<unknown>(actual);
   }
 
-  /** it should add undefined if the key is out of bounds in one of the types */ {
+  /** it should evaluate to unknown if the key is out of bounds in one of the types */ {
     const actual = _ as KeyGetValue<[] | [number], '0'>;
-    expectType<number | undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should evaluate to any if the type is any */ {
@@ -183,9 +183,9 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<boolean>(actual);
   }
 
-  /** it should evaluate to undefined if the path is not valid */ {
+  /** it should evaluate to unknown if the path is not valid */ {
     const actual = _ as PathGetValue<InfiniteType<string>, ['foobar']>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should be implemented tail recursively */ {
@@ -201,12 +201,12 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<number | InfiniteType<number>>(actual);
   }
 
-  /** it should add undefined if one of the paths doesn't exist */ {
+  /** it should evaluate to unknown if one of the paths doesn't exist */ {
     const actual = _ as PathGetValue<
       InfiniteType<number>,
       ['foo', 'value'] | ['foo', 'foobar']
     >;
-    expectType<number | undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should add null if the path contains a nullable */ {
@@ -230,9 +230,9 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<string | undefined>(actual);
   }
 
-  /** it should evaluate to undefined if the type is not traversable */ {
+  /** it should evaluate to unknown if the type is not traversable */ {
     const actual = _ as PathGetValue<string, ['foo']>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should work on type unions */ {
@@ -243,12 +243,12 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     expectType<number | string>(actual);
   }
 
-  /** it should add undefined if the path doesn't exist in one of the types */ {
+  /** it should evaluate to unknown if the path doesn't exist in one of the types */ {
     const actual = _ as PathGetValue<
       InfiniteType<number> | Nested<string>,
       ['foo', 'value']
     >;
-    expectType<number | undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should evaluate to any if the type is any */ {
@@ -263,7 +263,7 @@ import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
 
   /** it should not evaluate to any if it doesn't encounter any */ {
     const actual = _ as PathGetValue<{ foo: any }, ['bar', 'baz']>;
-    expectType<undefined>(actual);
+    expectType<unknown>(actual);
   }
 
   /** it should not create a union which is too complex to represent */ {

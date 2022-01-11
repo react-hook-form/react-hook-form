@@ -18,9 +18,9 @@ import { ArrayKey, AsKey, IsTuple, Key, MapKeys } from './utils';
  */
 type TryGet<T, K> = K extends keyof T
   ? T[K]
-  : T extends null
-  ? null
-  : undefined;
+  : T extends null | undefined
+  ? T
+  : unknown;
 
 /**
  * Type to access an array type by a key.
