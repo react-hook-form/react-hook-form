@@ -254,6 +254,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
   > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
 ) => void;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(
   onValid: SubmitHandler<TFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
@@ -332,7 +333,6 @@ export type BatchFieldArrayUpdate = <
   >[],
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
-  shouldSetError?: boolean,
 ) => void;
 
 export type Control<
