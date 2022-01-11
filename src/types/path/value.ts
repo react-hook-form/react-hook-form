@@ -12,7 +12,7 @@ export type FieldPathValue<
 > = TPathString extends Branded.FieldPath<any>
   ? TPathString extends Branded.TypedFieldPath<TFieldValues, infer Value, never>
     ? Value
-    : never
+    : unknown
   : PathGetValue<TFieldValues, SplitPathString<TPathString>>;
 
 export type FieldPathSetValue<
