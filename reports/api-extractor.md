@@ -503,7 +503,7 @@ type TypedFieldPath<TFieldValues extends FieldValues, TValue, TValueSet = TValue
 // Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-type TypedFieldPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TValue, TValueSet = TValue> = TPathString extends Branded.FieldPath<any> ? TPathString extends Branded.TypedFieldPath<TFieldValues, TValue, TValueSet> ? TPathString : never : AutoCompletePath<TFieldValues, TPathString, AccessPattern<TValue, TValueSet>>;
+type TypedFieldPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TValue, TValueSet = TValue> = TPathString extends Branded.FieldPath<any> ? never : AutoCompletePath<TFieldValues, TPathString, AccessPattern<TValue, TValueSet>>;
 
 // @public (undocumented)
 export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File ? T : T extends object ? {
