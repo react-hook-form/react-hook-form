@@ -27,11 +27,13 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     errors: false,
   });
   const _name = React.useRef(name);
+  const _mounted = React.useRef(true);
 
   _name.current = name;
 
   const callback = React.useCallback(
     (value) =>
+      _mounted.current &&
       shouldSubscribeByName(
         _name.current as InternalFieldName,
         value.name,
@@ -50,6 +52,13 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     callback,
     subject: control._subjects.state,
   });
+
+  React.useEffect(
+    () => () => {
+      _mounted.current = false;
+    },
+    [],
+  );
 
   return getProxyFormState(
     formState,
