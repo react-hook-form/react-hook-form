@@ -367,6 +367,33 @@ describe('register', () => {
   });
 
   describe('when defaultValue is provided', () => {
+    it('should check checkbox by default when value matches', async () => {
+      type FormValues = Partial<{
+        checkbox: string;
+      }>;
+
+      function Component() {
+        const { register } = useForm<FormValues>({
+          defaultValues: {
+            checkbox: 'A',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('checkbox')} type="checkbox" value="A" />
+            <button />
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(
+        true,
+      );
+    });
+
     it('should not check checkboxes when defaultValue is empty array', async () => {
       type FormValues = Partial<{
         checkbox: string[];

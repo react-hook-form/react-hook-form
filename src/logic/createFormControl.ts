@@ -536,7 +536,9 @@ export function createFormControl<
                       : fieldValue === checkboxRef.value),
                 )
               : fieldReference.refs[0] &&
-                (fieldReference.refs[0].checked = !!fieldValue);
+                (fieldReference.refs[0].checked = Array.isArray(fieldValue)
+                  ? fieldValue.includes(fieldReference.refs[0].value)
+                  : fieldValue === fieldReference.refs[0].value);
           } else {
             fieldReference.refs.forEach(
               (radioRef: HTMLInputElement) =>
