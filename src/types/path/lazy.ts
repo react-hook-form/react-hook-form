@@ -11,9 +11,7 @@ export type TypedFieldPath<
   TValue,
   TValueSet = TValue,
 > = TPathString extends Branded.FieldPath<any>
-  ? TPathString extends Branded.TypedFieldPath<TFieldValues, TValue, TValueSet>
-    ? TPathString
-    : never
+  ? never
   : AutoCompletePath<
       TFieldValues,
       TPathString,
