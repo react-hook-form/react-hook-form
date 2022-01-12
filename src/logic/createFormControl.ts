@@ -540,10 +540,11 @@ export function createFormControl<
                     )),
                 )
               : fieldReference.refs[0] &&
-                (fieldReference.refs[0].checked = _isCheckboxValuePresent(
-                  fieldReference.refs[0].value,
-                  fieldValue,
-                ));
+                (fieldReference.refs[0].checked =
+                  _isCheckboxValuePresent(
+                    fieldReference.refs[0].value,
+                    fieldValue,
+                  ) || fieldValue === true);
           } else {
             fieldReference.refs.forEach(
               (radioRef: HTMLInputElement) =>
