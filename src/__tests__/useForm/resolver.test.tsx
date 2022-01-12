@@ -125,7 +125,7 @@ describe('resolver', () => {
     });
   });
 
-  it('should be called with the shouldUseNativeValidation option to true', async () => {
+  it('should be called with the nativeValidation option to true', async () => {
     const test = jest.fn();
     const resolver = (a: any, b: any, c: any) => {
       test(a, b, c);
@@ -139,7 +139,7 @@ describe('resolver', () => {
       const { register, handleSubmit } = useForm({
         resolver: async (data, context, options) =>
           resolver(data, context, options),
-        shouldUseNativeValidation: true,
+        nativeValidation: true,
       });
 
       return (
@@ -157,7 +157,7 @@ describe('resolver', () => {
     });
 
     expect(test.mock.calls[0][2]).toEqual(
-      expect.objectContaining({ shouldUseNativeValidation: true }),
+      expect.objectContaining({ nativeValidation: true }),
     );
   });
 });

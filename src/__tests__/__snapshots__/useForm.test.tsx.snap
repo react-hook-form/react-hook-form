@@ -22,7 +22,7 @@ Array [
       "names": Array [
         "test",
       ],
-      "shouldUseNativeValidation": undefined,
+      "nativeValidation": undefined,
     },
   ],
   Array [
@@ -45,7 +45,7 @@ Array [
       "names": Array [
         "test",
       ],
-      "shouldUseNativeValidation": undefined,
+      "nativeValidation": undefined,
     },
   ],
 ]
@@ -72,12 +72,12 @@ Array [
     "names": Array [
       "test",
     ],
-    "shouldUseNativeValidation": undefined,
+    "nativeValidation": undefined,
   },
 ]
 `;
 
-exports[`useForm when shouldUnregister set to true with useFieldArray should remove and unregister inputs when inputs gets unmounted 1`] = `
+exports[`useForm when unregister set to true with useFieldArray should remove and unregister inputs when inputs gets unmounted 1`] = `
 Array [
   Object {
     "test": "bill",

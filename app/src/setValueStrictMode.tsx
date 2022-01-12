@@ -14,11 +14,11 @@ const SetValueAsyncStrictMode = () => {
     }, 10);
 
     setTimeout(() => {
-      setValue('firstName', 'B', { shouldDirty: true });
+      setValue('firstName', 'B', { dirty: true });
     }, 20);
 
     setTimeout(() => {
-      setValue('firstName', 'C', { shouldTouch: true });
+      setValue('firstName', 'C', { touch: true });
     }, 30);
 
     setTimeout(() => {

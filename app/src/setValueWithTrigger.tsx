@@ -47,7 +47,7 @@ const SetValueWithTrigger: React.FC = () => {
         onChange={(e) =>
           setValue('firstName', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -59,7 +59,7 @@ const SetValueWithTrigger: React.FC = () => {
         onChange={(e) =>
           setValue('lastName', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />

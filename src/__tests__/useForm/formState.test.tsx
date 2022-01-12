@@ -159,7 +159,7 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm({
           mode: 'onChange',
-          shouldUnregister: true,
+          unregister: true,
         });
         const test = watch('test');
 

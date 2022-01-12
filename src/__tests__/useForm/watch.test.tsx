@@ -420,12 +420,12 @@ describe('watch', () => {
     });
   });
 
-  it('should remove input value after input is unmounted with shouldUnregister: true', () => {
+  it('should remove input value after input is unmounted with unregister: true', () => {
     const watched: unknown[] = [];
     const App = () => {
       const [show, setShow] = React.useState(true);
       const { watch, register } = useForm({
-        shouldUnregister: true,
+        unregister: true,
       });
 
       watched.push(watch());
@@ -457,12 +457,12 @@ describe('watch', () => {
     expect(watched).toMatchSnapshot();
   });
 
-  it('should flush additional render for shouldUnregister: true', async () => {
+  it('should flush additional render for unregister: true', async () => {
     const watchedData: unknown[] = [];
 
     const App = () => {
       const { watch, reset, register } = useForm({
-        shouldUnregister: true,
+        unregister: true,
       });
 
       React.useEffect(() => {

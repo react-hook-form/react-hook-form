@@ -49,7 +49,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('firstName', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -60,7 +60,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('lastName', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -72,7 +72,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('min', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -84,7 +84,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('max', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -96,7 +96,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('minDate', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -108,7 +108,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('maxDate', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -119,7 +119,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('minLength', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -130,7 +130,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('minRequiredLength', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -140,7 +140,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('selectNumber', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       >
@@ -155,7 +155,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('pattern', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -168,7 +168,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('radio', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -180,7 +180,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('radio', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -192,7 +192,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('radio', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
@@ -203,7 +203,7 @@ const ManualRegisterForm: React.FC = () => {
         onChange={(e) =>
           setValue('checkbox', e.target.value, {
             shouldValidate: true,
-            shouldDirty: true,
+            dirty: true,
           })
         }
       />
