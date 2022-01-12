@@ -497,6 +497,11 @@ export function createFormControl<
       ),
     );
 
+  const _isCheckboxValuePresent = (cbValue: string, fieldValue: unknown) =>
+    Array.isArray(fieldValue)
+      ? !!(fieldValue as []).find((data: string) => data === cbValue)
+      : fieldValue === cbValue;
+
   const setFieldValue = (
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
@@ -529,16 +534,16 @@ export function createFormControl<
             fieldReference.refs.length > 1
               ? fieldReference.refs.forEach(
                   (checkboxRef) =>
-                    (checkboxRef.checked = Array.isArray(fieldValue)
-                      ? !!(fieldValue as []).find(
-                          (data: string) => data === checkboxRef.value,
-                        )
-                      : fieldValue === checkboxRef.value),
+                    (checkboxRef.checked = _isCheckboxValuePresent(
+                      checkboxRef.value,
+                      fieldValue,
+                    )),
                 )
               : fieldReference.refs[0] &&
-                (fieldReference.refs[0].checked = Array.isArray(fieldValue)
-                  ? fieldValue.includes(fieldReference.refs[0].value)
-                  : fieldValue === fieldReference.refs[0].value);
+                (fieldReference.refs[0].checked = _isCheckboxValuePresent(
+                  fieldReference.refs[0].value,
+                  fieldValue,
+                ));
           } else {
             fieldReference.refs.forEach(
               (radioRef: HTMLInputElement) =>
