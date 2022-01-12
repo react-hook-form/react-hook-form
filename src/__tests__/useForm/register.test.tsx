@@ -439,14 +439,9 @@ describe('register', () => {
               {...register('checkbox')}
               type="checkbox"
               value="A"
-              aria-label="Yes-checkbox"
+              aria-label="checkbox-A"
             />
-            <input
-              {...register('checkbox')}
-              type="checkbox"
-              value="B"
-              defaultChecked
-            />
+            <input {...register('checkbox')} type="checkbox" value="B" />
             <button />
           </form>
         );
@@ -455,7 +450,7 @@ describe('register', () => {
       render(<Component />);
 
       expect(
-        (screen.getByLabelText('Yes-checkbox') as HTMLInputElement).checked,
+        (screen.getByLabelText('checkbox-A') as HTMLInputElement).checked,
       ).toBe(false);
     });
   });
