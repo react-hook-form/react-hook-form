@@ -165,7 +165,7 @@ export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArr
 
 // @public (undocumented)
 export type FieldArrayMethodProps = {
-    shouldFocus?: boolean;
+    focus?: boolean;
     focusIndex?: number;
     focusName?: string;
 };
@@ -396,7 +396,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     valueAsDate: boolean;
     value: FieldPathValue<TFieldValues, TFieldName>;
     setValueAs: (value: any) => any;
-    shouldUnregister?: boolean;
+    unregister?: boolean;
     onChange?: (event: any) => void;
     onBlur?: (event: any) => void;
     disabled: boolean;
@@ -421,7 +421,7 @@ export interface ResolverOptions<TFieldValues> {
     // (undocumented)
     names?: FieldName<TFieldValues>[];
     // (undocumented)
-    shouldUseNativeValidation: boolean | undefined;
+    nativeValidation: boolean | undefined;
 }
 
 // @public (undocumented)
@@ -441,9 +441,9 @@ export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 // @public (undocumented)
 export type SetValueConfig = Partial<{
-    shouldValidate: boolean;
-    shouldDirty: boolean;
-    shouldTouch: boolean;
+    validate: boolean;
+    dirty: boolean;
+    touch: boolean;
 }>;
 
 // @public (undocumented)
@@ -468,7 +468,7 @@ export type SubmitHandler<TFieldValues extends FieldValues> = (data: UnpackNeste
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
-    shouldFocus: boolean;
+    focus: boolean;
 }>;
 
 // @public (undocumented)
@@ -483,7 +483,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues, TN
 export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     name: TName;
     rules?: Omit<RegisterOptions<TFieldValues, TName>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>;
-    shouldUnregister?: boolean;
+    unregister?: boolean;
     defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
     control?: Control<TFieldValues>;
 };
@@ -503,7 +503,7 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     name: TFieldArrayName;
     keyName?: TKeyName;
     control?: Control<TFieldValues>;
-    shouldUnregister?: boolean;
+    unregister?: boolean;
 };
 
 // @public (undocumented)
@@ -545,9 +545,9 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     defaultValues: DefaultValues<TFieldValues>;
     resolver: Resolver<TFieldValues, TContext>;
     context: TContext;
-    shouldFocusError: boolean;
-    shouldUnregister: boolean;
-    shouldUseNativeValidation: boolean;
+    focusError: boolean;
+    unregister: boolean;
+    nativeValidation: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
 }>;
@@ -601,7 +601,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 
 // @public (undocumented)
 export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues>, error: ErrorOption, options?: {
-    shouldFocus: boolean;
+    focus: boolean;
 }) => void;
 
 // @public (undocumented)
