@@ -22,7 +22,7 @@ const SetValueAsyncStrictMode = () => {
     }, 30);
 
     setTimeout(() => {
-      setValue('firstName', 'D', { shouldValidate: true });
+      setValue('firstName', 'D', { validate: true });
     }, 40);
   }, [register, setValue]);
 

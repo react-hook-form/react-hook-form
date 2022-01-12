@@ -512,7 +512,7 @@ describe('setValue', () => {
   });
 
   describe('with validation', () => {
-    it('should be called trigger method if shouldValidate variable is true', async () => {
+    it('should be called trigger method if validate variable is true', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
@@ -531,7 +531,7 @@ describe('setValue', () => {
 
       await act(async () =>
         result.current.setValue('test', 'abc', {
-          shouldValidate: true,
+          validate: true,
         }),
       );
 
@@ -560,7 +560,7 @@ describe('setValue', () => {
             <button
               onClick={() => {
                 setValue('test', 'bill', {
-                  shouldValidate: true,
+                  validate: true,
                 });
               }}
             >
@@ -601,7 +601,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test).toBeUndefined();
     });
 
-    it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
+    it('should be called trigger method if validate variable is true and field value is array', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string[];
@@ -623,7 +623,7 @@ describe('setValue', () => {
 
       await act(async () =>
         result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
-          shouldValidate: true,
+          validate: true,
         }),
       );
 
@@ -927,14 +927,14 @@ describe('setValue', () => {
     });
 
     await act(async () => {
-      result.current.setValue('test.data', 'test', { shouldValidate: true });
+      result.current.setValue('test.data', 'test', { validate: true });
     });
 
     expect(result.current.formState.isValid).toBeFalsy();
 
     await act(async () => {
       await result.current.setValue('test.data1', 'test', {
-        shouldValidate: true,
+        validate: true,
       });
     });
 

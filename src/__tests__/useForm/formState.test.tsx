@@ -129,7 +129,7 @@ describe('formState', () => {
 
       await act(async () => {
         result.current.register('issue', { required: true });
-        result.current.setValue('issue', '', { shouldValidate: true });
+        result.current.setValue('issue', '', { validate: true });
       });
 
       expect(result.current.formState.isValid).toBeFalsy();

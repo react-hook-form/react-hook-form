@@ -466,7 +466,7 @@ describe('trigger', () => {
               <input
                 onChange={(e) =>
                   methods.setValue('test', e.target.value, {
-                    shouldValidate: true,
+                    validate: true,
                   })
                 }
               />
@@ -474,7 +474,7 @@ describe('trigger', () => {
               <input
                 onChange={(e) =>
                   methods.setValue('test1', e.target.value, {
-                    shouldValidate: true,
+                    validate: true,
                   })
                 }
               />

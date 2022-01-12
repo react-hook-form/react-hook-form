@@ -32,11 +32,11 @@ const SetValue: React.FC = () => {
     register('lastName', { required: true });
     setValue('firstName', 'wrong', { dirty: true });
     setValue('age', '2', { dirty: true });
-    setValue('trigger', '', { dirty: true, shouldValidate: true });
+    setValue('trigger', '', { dirty: true, validate: true });
     setValue('checkbox', true, { dirty: true });
     setValue('checkboxArray', ['2', '3'], {
       dirty: true,
-      shouldValidate: true,
+      validate: true,
     });
     setValue('radio', 'radio', { dirty: true });
     setValue('select', 'a', { dirty: true });
@@ -54,7 +54,7 @@ const SetValue: React.FC = () => {
       { dirty: true },
     );
     setValue('nestedValue', [], {
-      shouldValidate: true,
+      validate: true,
       dirty: true,
     });
   }, [register, setValue]);

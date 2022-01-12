@@ -64,7 +64,7 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
 ) => any | Promise<any>;
 
 export type SetValueConfig = Partial<{
-  shouldValidate: boolean;
+  validate: boolean;
   dirty: boolean;
   touch: boolean;
 }>;

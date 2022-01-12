@@ -43,7 +43,7 @@ const SetValueCustomRegister: React.FC = () => {
         id="WithError"
         type="button"
         onClick={() =>
-          setValue('firstName', '', { shouldValidate: true, dirty: true })
+          setValue('firstName', '', { validate: true, dirty: true })
         }
       >
         WithError
@@ -53,7 +53,7 @@ const SetValueCustomRegister: React.FC = () => {
         type="button"
         onClick={() =>
           setValue('firstName', 'true', {
-            shouldValidate: true,
+            validate: true,
             dirty: true,
           })
         }

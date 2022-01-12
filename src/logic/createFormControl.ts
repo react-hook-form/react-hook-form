@@ -552,7 +552,7 @@ export function createFormControl<
     (options.dirty || options.touch) &&
       updateTouchAndDirty(name, fieldValue, options.touch);
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.validate && trigger(name as Path<TFieldValues>);
   };
 
   const setValues = <

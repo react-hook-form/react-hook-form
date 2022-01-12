@@ -225,13 +225,13 @@ describe('register', () => {
           <input
             placeholder={'inputA'}
             onChange={({ target: { value } }) =>
-              setValue('a', value, { dirty: true, shouldValidate: true })
+              setValue('a', value, { dirty: true, validate: true })
             }
           />
           <input
             placeholder={'inputB'}
             onChange={({ target: { value } }) =>
-              setValue('b', value, { dirty: true, shouldValidate: true })
+              setValue('b', value, { dirty: true, validate: true })
             }
           />
           <div>{String(isValid)}</div>
