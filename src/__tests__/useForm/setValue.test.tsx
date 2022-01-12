@@ -1340,4 +1340,47 @@ describe('setValue', () => {
       screen.getByText('dirty');
     });
   });
+
+  it('should update both dirty and touched state', () => {
+    const App = () => {
+      const {
+        register,
+        formState: { dirtyFields, touchedFields },
+        setValue,
+      } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <label>First Name</label>
+          <input type="text" {...register('firstName')} />
+          {dirtyFields.firstName && <p>dirty</p>}
+          {touchedFields.firstName && <p>touched</p>}
+
+          <button
+            type="button"
+            onClick={() =>
+              setValue('firstName', 'test', {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+              })
+            }
+          >
+            setValue
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    screen.getByText('dirty');
+    screen.getByText('touched');
+  });
 });
