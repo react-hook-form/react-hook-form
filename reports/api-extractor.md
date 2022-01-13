@@ -186,10 +186,10 @@ export type FieldArrayName = string;
 // @public
 export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
 
-// @public (undocumented)
+// @public
 type FieldArrayPath_2<TFieldValues extends FieldValues> = TypedFieldArrayPath<TFieldValues, FieldValues, never>;
 
-// @public (undocumented)
+// @public
 type FieldArrayPath_3<TFieldValues extends FieldValues, TPathString extends PathString> = TypedFieldArrayPath_2<TFieldValues, TPathString, FieldValues, never>;
 
 // @public
@@ -221,10 +221,10 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 // @public
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
-// @public (undocumented)
+// @public
 type FieldPath_2<TFieldValues extends FieldValues> = TypedFieldPath<TFieldValues, unknown, never>;
 
-// @public (undocumented)
+// @public
 type FieldPath_3<TFieldValues extends FieldValues, TPathString extends PathString> = TypedFieldPath_2<TFieldValues, TPathString, unknown, never>;
 
 // @public
@@ -488,13 +488,13 @@ export type TriggerConfig = Partial<{
     shouldFocus: boolean;
 }>;
 
-// @public (undocumented)
+// @public
 type TypedFieldArrayPath<TFieldValues extends FieldValues, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = TypedFieldPath<TFieldValues, ReadonlyArray<TArrayValues> | null | undefined, TArrayValuesSet[]>;
 
-// @public (undocumented)
+// @public
 type TypedFieldArrayPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = TypedFieldPath_2<TFieldValues, TPathString, ReadonlyArray<TArrayValues> | null | undefined, TArrayValuesSet[]>;
 
-// @public (undocumented)
+// @public
 type TypedFieldPath<TFieldValues extends FieldValues, TValue, TValueSet = TValue> = string & {
     [FORM_VALUES]: TFieldValues;
     [ACCESS_PATTERN]: AccessPattern<TValue, TValueSet>;
@@ -502,7 +502,7 @@ type TypedFieldPath<TFieldValues extends FieldValues, TValue, TValueSet = TValue
 
 // Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 type TypedFieldPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TValue, TValueSet = TValue> = TPathString extends Branded.FieldPath<any> ? never : AutoCompletePath<TFieldValues, TPathString, AccessPattern<TValue, TValueSet>>;
 
 // @public (undocumented)
@@ -754,7 +754,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:193:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/path/branded.ts:14:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
+// src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
