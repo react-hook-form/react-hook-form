@@ -33,19 +33,13 @@ import { useSubscribe } from './useSubscribe';
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName>,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName> => {
   const methods = useFormContext();
-  const {
-    control = methods.control,
-    name,
-    keyName = 'id' as TKeyName,
-    unregister,
-  } = props;
+  const { control = methods.control, name, unregister } = props;
   const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
+    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]
   >(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
@@ -72,11 +66,7 @@ export const useFieldArray = <
   });
 
   const updateValues = React.useCallback(
-    <
-      T extends Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >[],
-    >(
+    <T extends Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]>(
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
@@ -141,7 +131,7 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     setFields(updatedFieldArrayValues);
@@ -306,7 +296,7 @@ export const useFieldArray = <
       (control._options.unregister || unregister) &&
         control.unregister(name as FieldPath<TFieldValues>);
     };
-  }, [name, control, keyName, unregister]);
+  }, [name, control, unregister]);
 
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),
@@ -317,13 +307,9 @@ export const useFieldArray = <
     insert: React.useCallback(insert, [updateValues, name, control]),
     update: React.useCallback(update, [updateValues, name, control]),
     replace: React.useCallback(replace, [updateValues, name, control]),
-    fields: React.useMemo(
-      () =>
-        fields.map((field, index) => ({
-          ...field,
-          [keyName]: ids.current[index] || generateId(),
-        })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName],
-    ),
+    fields: fields.map((field, index) => ({
+      ...field,
+      id: ids.current[index] || generateId(),
+    })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
   };
 };
