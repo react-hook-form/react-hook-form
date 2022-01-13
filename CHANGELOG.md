@@ -1,5 +1,48 @@
 # Changelog
 
+## [7.23.0] - 2022-1-12
+
+## Changed
+
+- `useFieldArray` change `keyName` is no longer required when field value contains `id`
+
+```tsx
+const App = () => {
+  const { control, register, handleSubmit } = useForm<FormValues>({
+    defaultValues: {
+      test: [{ id: 'UUID5678', test: 'data' }], // id value will be retained
+    },
+  });
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'test',
+  });
+
+  return (
+    <form>
+      {fields.map((field, index) => {
+        return <input key={field.id} {...register(`test.${index}.test`)} />;
+      })}
+
+      <button
+        type={'button'}
+        onClick={() => {
+          append({
+            id: 'UUID1234', // id value will be retained
+            test: '1234',
+          });
+        }}
+      >
+        append
+      </button>
+    </form>
+  );
+};
+```
+
+- `useFormState` will no longer fire state update after hook unmount
+- `UseFormHandleSubmit` type will infer formValues
+
 ## [7.22.0] - 2021-12-14
 
 ## Changed
