@@ -7,10 +7,8 @@ export type FieldArrayName = string;
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 > = {
   name: TFieldArrayName;
-  keyName?: TKeyName;
   control?: Control<TFieldValues>;
   shouldUnregister?: boolean;
 };
@@ -18,8 +16,7 @@ export type UseFieldArrayProps<
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
-> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+> = FieldArray<TFieldValues, TFieldArrayName> & Record<'id', string>;
 
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
@@ -40,7 +37,6 @@ export type FieldArrayMethodProps = {
 export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 > = {
   swap: (indexA: number, indexB: number) => void;
   move: (indexA: number, indexB: number) => void;
@@ -73,5 +69,5 @@ export type UseFieldArrayReturn<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => void;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+  fields: FieldArrayWithId<TFieldValues, TFieldArrayName>[];
 };
