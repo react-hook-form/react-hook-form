@@ -27,3 +27,13 @@ export type FieldPathSetValue<
     ? Value
     : never
   : PathSetValue<TFieldValues, SplitPathString<TPathString>>;
+
+export type FieldPathValues<
+  TFieldValues extends FieldValues,
+  TPathString extends ReadonlyArray<PathString>,
+> = {
+  [Idx in keyof TPathString]: FieldPathValue<
+    TFieldValues,
+    TPathString[Idx] & PathString
+  >;
+};
