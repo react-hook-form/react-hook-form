@@ -150,7 +150,8 @@ declare namespace Either {
         TypedFieldPath_2 as TypedFieldPath,
         FieldPath_4 as FieldPath,
         TypedFieldArrayPath_3 as TypedFieldArrayPath,
-        FieldArrayPath_4 as FieldArrayPath
+        FieldArrayPath_4 as FieldArrayPath,
+        FieldPaths
     }
 }
 export { Either }
@@ -242,6 +243,11 @@ type FieldPath_3<TFieldValues extends FieldValues, TPathString extends PathStrin
 
 // @public
 type FieldPath_4<TFieldValues extends FieldValues, TPathString extends PathString> = Branded.FieldPath<TFieldValues> | Lazy.FieldPath<TFieldValues, TPathString>;
+
+// @public
+type FieldPaths<TFieldValues extends FieldValues, TPathStrings extends ReadonlyArray<PathString>> = {
+    [Idx in keyof TPathStrings]: FieldPath_4<TFieldValues, Extract<TPathStrings[Idx], PathString>>;
+};
 
 // @public
 export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;

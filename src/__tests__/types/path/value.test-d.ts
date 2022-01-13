@@ -52,10 +52,18 @@ import { _ } from '../__fixtures__';
 }
 
 /** {@link FieldPathValues} */ {
-  /** it should resolve all paths */ {
+  /** it should resolve string paths */ {
     const actual = _ as FieldPathValues<
       { foo: string; bar: number },
       ['foo', 'bar']
+    >;
+    expectType<[string, number]>(actual);
+  }
+
+  /** it should resolve branded paths */ {
+    const actual = _ as FieldPathValues<
+      {},
+      [Branded.TypedFieldPath<{}, string>, Branded.TypedFieldPath<{}, number>]
     >;
     expectType<[string, number]>(actual);
   }

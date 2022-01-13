@@ -4,6 +4,7 @@ import { Branded, PathString } from '../../../types';
 import {
   FieldArrayPath,
   FieldPath,
+  FieldPaths,
   TypedFieldArrayPath,
   TypedFieldPath,
 } from '../../../types/path/either';
@@ -94,5 +95,25 @@ import { _, InfiniteType } from '../__fixtures__';
 
     const actual = fn('foo.value');
     expectType<'foo.value'>(actual);
+  }
+}
+
+/** {@link FieldPaths} */ {
+  /** it should infer branded types */ {
+    const fn = <P extends ReadonlyArray<PathString>>(
+      path: FieldPaths<InfiniteType<number>, P>,
+    ): P => path as never;
+
+    const actual = fn(_ as [Branded.FieldPath<InfiniteType<number>>]);
+    expectType<[Branded.FieldPath<InfiniteType<number>>]>(actual);
+  }
+
+  /** it should infer string types */ {
+    const fn = <P extends ReadonlyArray<PathString>>(
+      path: FieldPaths<InfiniteType<number>, P>,
+    ): P => path as never;
+
+    const actual = fn(_ as ['foo.value']);
+    expectType<['foo.value']>(actual);
   }
 }
