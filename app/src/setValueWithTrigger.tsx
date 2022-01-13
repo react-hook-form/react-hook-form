@@ -46,8 +46,8 @@ const SetValueWithTrigger: React.FC = () => {
         placeholder="firstName"
         onChange={(e) =>
           setValue('firstName', e.target.value, {
-            shouldValidate: true,
-            shouldDirty: true,
+            validate: true,
+            dirty: true,
           })
         }
       />
@@ -58,8 +58,8 @@ const SetValueWithTrigger: React.FC = () => {
         placeholder="lastName"
         onChange={(e) =>
           setValue('lastName', e.target.value, {
-            shouldValidate: true,
-            shouldDirty: true,
+            validate: true,
+            dirty: true,
           })
         }
       />

@@ -64,13 +64,13 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
 ) => any | Promise<any>;
 
 export type SetValueConfig = Partial<{
-  shouldValidate: boolean;
-  shouldDirty: boolean;
-  shouldTouch: boolean;
+  validate: boolean;
+  dirty: boolean;
+  touch: boolean;
 }>;
 
 export type TriggerConfig = Partial<{
-  shouldFocus: boolean;
+  focus: boolean;
 }>;
 
 export type ChangeHandler = (event: {
@@ -92,9 +92,9 @@ export type UseFormProps<
   defaultValues: DefaultValues<TFieldValues>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
-  shouldFocusError: boolean;
-  shouldUnregister: boolean;
-  shouldUseNativeValidation: boolean;
+  focusError: boolean;
+  unregister: boolean;
+  nativeValidation: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
 }>;
@@ -223,7 +223,7 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (
   name: FieldPath<TFieldValues>,
   error: ErrorOption,
   options?: {
-    shouldFocus: boolean;
+    focus: boolean;
   },
 ) => void;
 

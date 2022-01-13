@@ -1005,7 +1005,7 @@ describe('Controller', () => {
     screen.getByText('false');
   });
 
-  it('should remove input value and reference with Controller and set shouldUnregister: true', () => {
+  it('should remove input value and reference with Controller and set unregister: true', () => {
     type FormValue = {
       test: string;
     };
@@ -1025,7 +1025,7 @@ describe('Controller', () => {
             <Controller
               control={control}
               name={'test'}
-              shouldUnregister
+              unregister
               render={({ field }) => <input {...field} />}
             />
           )}

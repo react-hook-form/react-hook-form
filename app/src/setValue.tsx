@@ -30,19 +30,19 @@ const SetValue: React.FC = () => {
 
   useEffect(() => {
     register('lastName', { required: true });
-    setValue('firstName', 'wrong', { shouldDirty: true });
-    setValue('age', '2', { shouldDirty: true });
-    setValue('trigger', '', { shouldDirty: true, shouldValidate: true });
-    setValue('checkbox', true, { shouldDirty: true });
+    setValue('firstName', 'wrong', { dirty: true });
+    setValue('age', '2', { dirty: true });
+    setValue('trigger', '', { dirty: true, validate: true });
+    setValue('checkbox', true, { dirty: true });
     setValue('checkboxArray', ['2', '3'], {
-      shouldDirty: true,
-      shouldValidate: true,
+      dirty: true,
+      validate: true,
     });
-    setValue('radio', 'radio', { shouldDirty: true });
-    setValue('select', 'a', { shouldDirty: true });
-    setValue('multiple', ['a', 'b'], { shouldDirty: true });
+    setValue('radio', 'radio', { dirty: true });
+    setValue('select', 'a', { dirty: true });
+    setValue('multiple', ['a', 'b'], { dirty: true });
     setValue('array', ['array.0', 'array.1', 'array.2'], {
-      shouldDirty: true,
+      dirty: true,
     });
     setValue(
       'object',
@@ -51,11 +51,11 @@ const SetValue: React.FC = () => {
         lastName: 'lastName',
         middleName: 'middleName',
       },
-      { shouldDirty: true },
+      { dirty: true },
     );
     setValue('nestedValue', [], {
-      shouldValidate: true,
-      shouldDirty: true,
+      validate: true,
+      dirty: true,
     });
   }, [register, setValue]);
 
@@ -124,12 +124,12 @@ const SetValue: React.FC = () => {
               lastName: 'lastName1',
               middleName: 'middleName1',
             },
-            { shouldDirty: true },
+            { dirty: true },
           );
           setValue('array', ['array[0]1', 'array[1]1', 'array[2]1'], {
-            shouldDirty: true,
+            dirty: true,
           });
-          setValue('nestedValue', ['a', 'b'], { shouldDirty: true });
+          setValue('nestedValue', ['a', 'b'], { dirty: true });
         }}
       >
         Set Multiple Values

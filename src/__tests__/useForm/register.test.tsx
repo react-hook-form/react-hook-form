@@ -225,13 +225,13 @@ describe('register', () => {
           <input
             placeholder={'inputA'}
             onChange={({ target: { value } }) =>
-              setValue('a', value, { shouldDirty: true, shouldValidate: true })
+              setValue('a', value, { dirty: true, validate: true })
             }
           />
           <input
             placeholder={'inputB'}
             onChange={({ target: { value } }) =>
-              setValue('b', value, { shouldDirty: true, shouldValidate: true })
+              setValue('b', value, { dirty: true, validate: true })
             }
           />
           <div>{String(isValid)}</div>
@@ -366,7 +366,7 @@ describe('register', () => {
     });
   });
 
-  it('should remove input value and reference with shouldUnregister: true', () => {
+  it('should remove input value and reference with unregister: true', () => {
     type FormValue = {
       test: string;
     };
@@ -382,7 +382,7 @@ describe('register', () => {
 
       return (
         <>
-          {show && <input {...register('test', { shouldUnregister: true })} />}
+          {show && <input {...register('test', { unregister: true })} />}
           <button onClick={() => setShow(false)}>hide</button>
         </>
       );
@@ -395,7 +395,7 @@ describe('register', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
-  it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {
+  it('should keep defaultValue with unregister: true when input unmounts', () => {
     type FormValue = {
       test: string;
     };
@@ -405,13 +405,13 @@ describe('register', () => {
         defaultValues: {
           test: 'bill',
         },
-        shouldUnregister: true,
+        unregister: true,
       });
       const [show, setShow] = React.useState(true);
 
       return (
         <>
-          {show && <input {...register('test', { shouldUnregister: true })} />}
+          {show && <input {...register('test', { unregister: true })} />}
           <button onClick={() => setShow(!show)}>hide</button>
         </>
       );
