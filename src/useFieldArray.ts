@@ -33,13 +33,19 @@ import { useSubscribe } from './useSubscribe';
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TKeyName extends string = 'id',
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName>,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName> => {
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
   const methods = useFormContext();
-  const { control = methods.control, name, shouldUnregister } = props;
+  const {
+    control = methods.control,
+    name,
+    keyName = 'id' as TKeyName,
+    unregister,
+  } = props;
   const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]
+    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
   >(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
@@ -66,7 +72,11 @@ export const useFieldArray = <
   });
 
   const updateValues = React.useCallback(
-    <T extends Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]>(
+    <
+      T extends Partial<
+        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      >[],
+    >(
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
@@ -131,7 +141,7 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     setFields(updatedFieldArrayValues);
@@ -293,10 +303,10 @@ export const useFieldArray = <
     !get(control._formValues, name) && set(control._formValues, name, []);
 
     return () => {
-      (control._options.shouldUnregister || shouldUnregister) &&
+      (control._options.unregister || unregister) &&
         control.unregister(name as FieldPath<TFieldValues>);
     };
-  }, [name, control, shouldUnregister]);
+  }, [name, control, keyName, unregister]);
 
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),
@@ -311,9 +321,9 @@ export const useFieldArray = <
       () =>
         fields.map((field, index) => ({
           ...field,
-          id: ids.current[index] || generateId(),
-        })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
-      [fields],
+          [keyName]: ids.current[index] || generateId(),
+        })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
+      [fields, keyName],
     ),
   };
 };

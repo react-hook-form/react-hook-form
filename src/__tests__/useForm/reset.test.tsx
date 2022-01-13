@@ -133,7 +133,7 @@ describe('reset', () => {
     });
   });
 
-  it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
+  it('should reset unmountFieldsState value when unregister set to false', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -657,7 +657,7 @@ describe('reset', () => {
     expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
 
-  it('should only return register input when reset is invoked with shouldUnregister:true', async () => {
+  it('should only return register input when reset is invoked with unregister:true', async () => {
     let submittedData = {};
 
     const App = () => {
@@ -665,7 +665,7 @@ describe('reset', () => {
         defaultValues: {
           test: 'bill',
         },
-        shouldUnregister: true,
+        unregister: true,
       });
 
       return (
@@ -708,11 +708,11 @@ describe('reset', () => {
     expect(submittedData).toEqual({});
   });
 
-  it('should update controlled input correctly with shouldUnregister set to true', () => {
+  it('should update controlled input correctly with unregister set to true', () => {
     function App() {
       const { register, reset, control } = useForm({
         defaultValues: { uncontrolled: '', control: '' },
-        shouldUnregister: true,
+        unregister: true,
       });
 
       return (

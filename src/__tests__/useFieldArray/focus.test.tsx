@@ -5,7 +5,7 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 describe('useFieldArray focus', () => {
-  it('should not focus any element when shouldFocus is set to false', () => {
+  it('should not focus any element when focus is set to false', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -26,19 +26,19 @@ describe('useFieldArray focus', () => {
           ))}
           <button
             type="button"
-            onClick={() => prepend({ value: '' }, { shouldFocus: false })}
+            onClick={() => prepend({ value: '' }, { focus: false })}
           >
             prepend
           </button>
           <button
             type="button"
-            onClick={() => append({ value: '' }, { shouldFocus: false })}
+            onClick={() => append({ value: '' }, { focus: false })}
           >
             append
           </button>
           <button
             type="button"
-            onClick={() => insert(1, { value: '' }, { shouldFocus: false })}
+            onClick={() => insert(1, { value: '' }, { focus: false })}
           >
             insert
           </button>

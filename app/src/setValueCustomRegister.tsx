@@ -28,14 +28,14 @@ const SetValueCustomRegister: React.FC = () => {
       <button
         id="TriggerDirty"
         type="button"
-        onClick={() => setValue('lastName', 'test', { shouldDirty: true })}
+        onClick={() => setValue('lastName', 'test', { dirty: true })}
       >
         TriggerDirty
       </button>
       <button
         id="TriggerNothing"
         type="button"
-        onClick={() => setValue('firstName', '', { shouldDirty: true })}
+        onClick={() => setValue('firstName', '', { dirty: true })}
       >
         TriggerNothing
       </button>
@@ -43,7 +43,7 @@ const SetValueCustomRegister: React.FC = () => {
         id="WithError"
         type="button"
         onClick={() =>
-          setValue('firstName', '', { shouldValidate: true, shouldDirty: true })
+          setValue('firstName', '', { validate: true, dirty: true })
         }
       >
         WithError
@@ -53,8 +53,8 @@ const SetValueCustomRegister: React.FC = () => {
         type="button"
         onClick={() =>
           setValue('firstName', 'true', {
-            shouldValidate: true,
-            shouldDirty: true,
+            validate: true,
+            dirty: true,
           })
         }
       >

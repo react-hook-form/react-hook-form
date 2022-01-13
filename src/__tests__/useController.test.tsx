@@ -442,7 +442,7 @@ describe('useController', () => {
           test: '',
         },
         mode: 'onChange',
-        shouldUseNativeValidation: true,
+        nativeValidation: true,
       });
 
       return (
@@ -606,7 +606,7 @@ describe('useController', () => {
       } = useController({
         control,
         name,
-        shouldUnregister: true,
+        unregister: true,
       });
 
       data = value;

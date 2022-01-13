@@ -196,7 +196,7 @@ describe('useFieldArray', () => {
       const App = () => {
         const [show, setShow] = React.useState(true);
         const { control, register } = useForm({
-          shouldUnregister: false,
+          unregister: false,
           defaultValues: {
             test: [{ name: 'test' }],
           },
@@ -759,7 +759,7 @@ describe('useFieldArray', () => {
       const App = () => {
         const [show, setShow] = React.useState(true);
         const { control } = useForm<FormValues>({
-          shouldUnregister: true,
+          unregister: true,
           defaultValues: {
             test: [{ name: 'test' }],
           },
@@ -902,7 +902,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
     });
 
-    it('should reset with field array with shouldUnregister set to false', () => {
+    it('should reset with field array with unregister set to false', () => {
       const { result } = renderHook(() => {
         const { register, reset, control } = useForm({
           defaultValues: {
@@ -1063,7 +1063,7 @@ describe('useFieldArray', () => {
               { name: 'default1' },
               { name: 'default2' },
             ],
-            { shouldDirty: true },
+            { dirty: true },
           );
         });
 
@@ -1125,7 +1125,7 @@ describe('useFieldArray', () => {
               { name: 'default1' },
               { name: 'default2' },
             ],
-            { shouldDirty: true },
+            { dirty: true },
           );
         });
 
@@ -1141,7 +1141,7 @@ describe('useFieldArray', () => {
           setValue(
             'test',
             [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
-            { shouldDirty: true },
+            { dirty: true },
           );
         });
 
@@ -1261,7 +1261,7 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
-    it('should remove correctly with nested field array and set shouldUnregister to false', () => {
+    it('should remove correctly with nested field array and set unregister to false', () => {
       type FormValues = {
         fieldArray: {
           value: string;
@@ -1700,7 +1700,7 @@ describe('useFieldArray', () => {
                 ],
               },
             ],
-            { shouldDirty: true },
+            { dirty: true },
           );
         }, [setValue]);
 
@@ -1812,7 +1812,7 @@ describe('useFieldArray', () => {
                           },
                         },
                       ],
-                      { shouldDirty: true },
+                      { dirty: true },
                     );
                   }}
                 >
@@ -2215,7 +2215,7 @@ describe('useFieldArray', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it('should unregister field array when shouldUnregister set to true', () => {
+  it('should unregister field array when unregister set to true', () => {
     type FormValues = {
       test: {
         value: string;
@@ -2235,7 +2235,7 @@ describe('useFieldArray', () => {
       const { fields } = useFieldArray({
         control,
         name: 'test',
-        shouldUnregister: true,
+        unregister: true,
       });
 
       return (

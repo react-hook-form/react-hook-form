@@ -10,7 +10,7 @@ export type UseFieldArrayProps<
 > = {
   name: TFieldArrayName;
   control?: Control<TFieldValues>;
-  shouldUnregister?: boolean;
+  unregister?: boolean;
 };
 
 export type FieldArrayWithId<
@@ -29,7 +29,7 @@ export type FieldArray<
   : never;
 
 export type FieldArrayMethodProps = {
-  shouldFocus?: boolean;
+  focus?: boolean;
   focusIndex?: number;
   focusName?: string;
 };

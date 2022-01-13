@@ -14,15 +14,15 @@ const SetValueAsyncStrictMode = () => {
     }, 10);
 
     setTimeout(() => {
-      setValue('firstName', 'B', { shouldDirty: true });
+      setValue('firstName', 'B', { dirty: true });
     }, 20);
 
     setTimeout(() => {
-      setValue('firstName', 'C', { shouldTouch: true });
+      setValue('firstName', 'C', { touch: true });
     }, 30);
 
     setTimeout(() => {
-      setValue('firstName', 'D', { shouldValidate: true });
+      setValue('firstName', 'D', { validate: true });
     }, 40);
   }, [register, setValue]);
 
