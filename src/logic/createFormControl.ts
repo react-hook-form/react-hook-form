@@ -657,13 +657,13 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
+      set(_formValues, name, fieldValue);
+
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
-
-      set(_formValues, name, fieldValue);
 
       const fieldState = updateTouchAndDirty(
         name,
