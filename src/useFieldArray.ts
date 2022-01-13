@@ -307,9 +307,13 @@ export const useFieldArray = <
     insert: React.useCallback(insert, [updateValues, name, control]),
     update: React.useCallback(update, [updateValues, name, control]),
     replace: React.useCallback(replace, [updateValues, name, control]),
-    fields: fields.map((field, index) => ({
-      ...field,
-      id: ids.current[index] || generateId(),
-    })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
+    fields: React.useMemo(
+      () =>
+        fields.map((field, index) => ({
+          ...field,
+          id: ids.current[index] || generateId(),
+        })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
+      [fields],
+    ),
   };
 };
