@@ -1358,9 +1358,9 @@ describe('setValue', () => {
             type="button"
             onClick={() =>
               setValue('firstName', 'test', {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true,
+                validate: true,
+                dirty: true,
+                touch: true,
               })
             }
           >
