@@ -41,14 +41,13 @@ export function useController<
     control,
     name,
   });
-  const _name = React.useRef(name);
 
-  _name.current = name;
-
-  const registerProps = control.register(name, {
-    ...props.rules,
-    value,
-  });
+  const _registerProps = React.useRef(
+    control.register(name, {
+      ...props.rules,
+      value,
+    }),
+  );
 
   React.useEffect(() => {
     const updateMounted = (name: InternalFieldName, value: boolean) => {
@@ -75,38 +74,44 @@ export function useController<
 
   return {
     field: {
-      onChange: (event) => {
-        registerProps.onChange({
-          target: {
-            value: getEventValue(event),
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.CHANGE,
-        });
-      },
-      onBlur: () => {
-        registerProps.onBlur({
+      name,
+      value,
+      onChange: React.useCallback(
+        (event) => {
+          _registerProps.current.onChange({
+            target: {
+              value: getEventValue(event),
+              name: name as InternalFieldName,
+            },
+            type: EVENTS.CHANGE,
+          });
+        },
+        [name],
+      ),
+      onBlur: React.useCallback(() => {
+        _registerProps.current.onBlur({
           target: {
             value: get(control._formValues, name),
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
         });
-      },
-      name,
-      value,
-      ref: (elm) => {
-        const field = get(control._fields, name);
+      }, [name, control]),
+      ref: React.useCallback(
+        (elm) => {
+          const field = get(control._fields, name);
 
-        if (elm && field && elm.focus) {
-          field._f.ref = {
-            focus: () => elm.focus(),
-            setCustomValidity: (message: string) =>
-              elm.setCustomValidity(message),
-            reportValidity: () => elm.reportValidity(),
-          };
-        }
-      },
+          if (elm && field && elm.focus) {
+            field._f.ref = {
+              focus: () => elm.focus(),
+              setCustomValidity: (message: string) =>
+                elm.setCustomValidity(message),
+              reportValidity: () => elm.reportValidity(),
+            };
+          }
+        },
+        [name, control],
+      ),
     },
     formState,
     fieldState: {
