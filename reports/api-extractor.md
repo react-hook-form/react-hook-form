@@ -180,7 +180,7 @@ export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldV
 export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
 
 // @public (undocumented)
-export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArray<TFieldValues, TFieldArrayName> & Record<'id', string>;
 
 // @public (undocumented)
 export type FieldElement<TFieldValues extends FieldValues = FieldValues> = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | CustomElement<TFieldValues>;
@@ -496,18 +496,17 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
 };
 
 // @public (undocumented)
-export const useFieldArray: <TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends ArrayPath<TFieldValues> = ArrayPath<TFieldValues>, TKeyName extends string = "id">(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>) => UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
+export const useFieldArray: <TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends ArrayPath<TFieldValues> = ArrayPath<TFieldValues>>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName>) => UseFieldArrayReturn<TFieldValues, TFieldArrayName>;
 
 // @public (undocumented)
-export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
+export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = {
     name: TFieldArrayName;
-    keyName?: TKeyName;
     control?: Control<TFieldValues>;
     unregister?: boolean;
 };
 
 // @public (undocumented)
-export type UseFieldArrayReturn<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
+export type UseFieldArrayReturn<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = {
     swap: (indexA: number, indexB: number) => void;
     move: (indexA: number, indexB: number) => void;
     prepend: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
@@ -516,7 +515,7 @@ export type UseFieldArrayReturn<TFieldValues extends FieldValues = FieldValues, 
     insert: (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
     update: (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>>) => void;
     replace: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[]) => void;
-    fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+    fields: FieldArrayWithId<TFieldValues, TFieldArrayName>[];
 };
 
 // @public (undocumented)
