@@ -145,6 +145,16 @@ export type DefaultValues<TFieldValues> = UnpackNestedValue<DeepPartial<TFieldVa
 // @public (undocumented)
 export type DelayCallback = (name: InternalFieldName, error: FieldError) => void;
 
+declare namespace Either {
+    export {
+        TypedFieldPath_2 as TypedFieldPath,
+        FieldPath_4 as FieldPath,
+        TypedFieldArrayPath_3 as TypedFieldArrayPath,
+        FieldArrayPath_4 as FieldArrayPath
+    }
+}
+export { Either }
+
 // @public (undocumented)
 export type EmptyObject = {
     [K in string | number]: never;
@@ -193,6 +203,9 @@ type FieldArrayPath_2<TFieldValues extends FieldValues> = TypedFieldArrayPath<TF
 type FieldArrayPath_3<TFieldValues extends FieldValues, TPathString extends PathString> = TypedFieldArrayPath_2<TFieldValues, TPathString, FieldValues, never>;
 
 // @public
+type FieldArrayPath_4<TFieldValues extends FieldValues, TPathString extends PathString> = Branded.FieldArrayPath<TFieldValues> | Lazy.FieldArrayPath<TFieldValues, TPathString>;
+
+// @public
 export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
 
 // @public (undocumented)
@@ -225,7 +238,10 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 type FieldPath_2<TFieldValues extends FieldValues> = TypedFieldPath<TFieldValues, unknown, never>;
 
 // @public
-type FieldPath_3<TFieldValues extends FieldValues, TPathString extends PathString> = TypedFieldPath_2<TFieldValues, TPathString, unknown, never>;
+type FieldPath_3<TFieldValues extends FieldValues, TPathString extends PathString> = TypedFieldPath_3<TFieldValues, TPathString, unknown, never>;
+
+// @public
+type FieldPath_4<TFieldValues extends FieldValues, TPathString extends PathString> = Branded.FieldPath<TFieldValues> | Lazy.FieldPath<TFieldValues, TPathString>;
 
 // @public
 export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;
@@ -321,7 +337,7 @@ export type KeepStateOptions = Partial<{
 
 declare namespace Lazy {
     export {
-        TypedFieldPath_2 as TypedFieldPath,
+        TypedFieldPath_3 as TypedFieldPath,
         FieldPath_3 as FieldPath,
         TypedFieldArrayPath_2 as TypedFieldArrayPath,
         FieldArrayPath_3 as FieldArrayPath
@@ -492,7 +508,10 @@ export type TriggerConfig = Partial<{
 type TypedFieldArrayPath<TFieldValues extends FieldValues, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = TypedFieldPath<TFieldValues, ReadonlyArray<TArrayValues> | null | undefined, TArrayValuesSet[]>;
 
 // @public
-type TypedFieldArrayPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = TypedFieldPath_2<TFieldValues, TPathString, ReadonlyArray<TArrayValues> | null | undefined, TArrayValuesSet[]>;
+type TypedFieldArrayPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = TypedFieldPath_3<TFieldValues, TPathString, ReadonlyArray<TArrayValues> | null | undefined, TArrayValuesSet[]>;
+
+// @public
+type TypedFieldArrayPath_3<TFieldValues extends FieldValues, TPathString extends PathString, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = Branded.TypedFieldArrayPath<TFieldValues, TArrayValues, TArrayValuesSet> | Lazy.TypedFieldArrayPath<TFieldValues, TPathString, TArrayValues, TArrayValuesSet>;
 
 // @public
 type TypedFieldPath<TFieldValues extends FieldValues, TValue, TValueSet = TValue> = string & {
@@ -500,10 +519,13 @@ type TypedFieldPath<TFieldValues extends FieldValues, TValue, TValueSet = TValue
     [ACCESS_PATTERN]: AccessPattern<TValue, TValueSet>;
 };
 
+// @public
+type TypedFieldPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TValue, TValueSet = TValue> = Branded.TypedFieldPath<TFieldValues, TValue, TValueSet> | Lazy.TypedFieldPath<TFieldValues, TPathString, TValue, TValueSet>;
+
 // Warning: (ae-forgotten-export) The symbol "AutoCompletePath" needs to be exported by the entry point index.d.ts
 //
 // @public
-type TypedFieldPath_2<TFieldValues extends FieldValues, TPathString extends PathString, TValue, TValueSet = TValue> = TPathString extends Branded.FieldPath<any> ? never : AutoCompletePath<TFieldValues, TPathString, AccessPattern<TValue, TValueSet>>;
+type TypedFieldPath_3<TFieldValues extends FieldValues, TPathString extends PathString, TValue, TValueSet = TValue> = TPathString extends Branded.FieldPath<any> ? never : AutoCompletePath<TFieldValues, TPathString, AccessPattern<TValue, TValueSet>>;
 
 // @public (undocumented)
 export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File ? T : T extends object ? {

@@ -4,10 +4,11 @@ import { Primitive } from '../utils';
 import { TupleKeys } from './internal/keys';
 import { ArrayKey, IsTuple } from './internal/utils';
 import type * as Branded from './branded';
+import type * as Either from './either';
 import type * as Lazy from './lazy';
 
 /** Re-export public API */
-export type { Branded, Lazy };
+export type { Branded, Either, Lazy };
 export type { PathString } from './pathString';
 
 /**
