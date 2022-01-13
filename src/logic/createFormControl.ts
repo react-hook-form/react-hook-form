@@ -181,33 +181,37 @@ export function createFormControl<
     values = [],
     shouldSetValues = true,
     shouldSetFields = true,
-    shouldSetError = true,
   ) => {
     _stateFlags.action = true;
 
-    if (shouldSetFields && get(_fields, name)) {
+    if (shouldSetFields && Array.isArray(get(_fields, name))) {
       const fieldValues = method(get(_fields, name), args.argA, args.argB);
       shouldSetValues && set(_fields, name, fieldValues);
     }
 
-    if (shouldSetError && Array.isArray(get(_formState.errors, name))) {
+    if (
+      _proxyFormState.errors &&
+      shouldSetFields &&
+      Array.isArray(get(_formState.errors, name))
+    ) {
       const errors = method(get(_formState.errors, name), args.argA, args.argB);
       shouldSetValues && set(_formState.errors, name, errors);
       unsetEmptyArray(_formState.errors, name);
     }
 
-    if (_proxyFormState.touchedFields && get(_formState.touchedFields, name)) {
+    if (
+      _proxyFormState.touchedFields &&
+      Array.isArray(get(_formState.touchedFields, name))
+    ) {
       const touchedFields = method(
         get(_formState.touchedFields, name),
         args.argA,
         args.argB,
       );
-      shouldSetValues &&
-        set(_formState.touchedFields as TFieldValues, name, touchedFields);
-      unsetEmptyArray(_formState.touchedFields, name);
+      shouldSetValues && set(_formState.touchedFields, name, touchedFields);
     }
 
-    if (_proxyFormState.dirtyFields || _proxyFormState.isDirty) {
+    if (_proxyFormState.dirtyFields) {
       _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
     }
 
@@ -258,8 +262,9 @@ export function createFormControl<
   const updateTouchAndDirty = (
     name: InternalFieldName,
     fieldValue: unknown,
-    isCurrentTouched?: boolean,
-    shouldRender = true,
+    isBlurEvent?: boolean,
+    shouldDirty?: boolean,
+    shouldRender?: boolean,
   ): Partial<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
@@ -276,7 +281,7 @@ export function createFormControl<
       isFieldDirty = isPreviousFormDirty !== output.isDirty;
     }
 
-    if (_proxyFormState.dirtyFields && !isCurrentTouched) {
+    if (_proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty)) {
       const isPreviousFieldDirty = get(_formState.dirtyFields, name);
       const isCurrentFieldPristine = deepEqual(
         get(_defaultValues, name),
@@ -292,13 +297,13 @@ export function createFormControl<
         isPreviousFieldDirty !== get(_formState.dirtyFields, name);
     }
 
-    if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
+    if (isBlurEvent && !isPreviousFieldTouched) {
+      set(_formState.touchedFields as TFieldValues, name, isBlurEvent);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
         (_proxyFormState.touchedFields &&
-          isPreviousFieldTouched !== isCurrentTouched);
+          isPreviousFieldTouched !== isBlurEvent);
     }
 
     isFieldDirty && shouldRender && _subjects.state.next(output);
@@ -552,7 +557,13 @@ export function createFormControl<
     }
 
     (options.shouldDirty || options.shouldTouch) &&
-      updateTouchAndDirty(name, fieldValue, options.shouldTouch);
+      updateTouchAndDirty(
+        name,
+        fieldValue,
+        options.shouldTouch,
+        options.shouldDirty,
+        true,
+      );
 
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
@@ -646,13 +657,13 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
+      set(_formValues, name, fieldValue);
+
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
-
-      set(_formValues, name, fieldValue);
 
       const fieldState = updateTouchAndDirty(
         name,
@@ -802,7 +813,6 @@ export function createFormControl<
 
     _subjects.state.next({
       errors: _formState.errors,
-      isValid: true,
     });
   };
 

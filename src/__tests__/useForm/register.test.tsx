@@ -1719,4 +1719,32 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('checkbox'));
   });
+
+  it('should set value before custom onChange', () => {
+    const test = jest.fn();
+
+    const App = () => {
+      const { register, getValues } = useForm();
+
+      return (
+        <input
+          {...register('test', {
+            onChange: () => {
+              test(getValues());
+            },
+          })}
+        />
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test' },
+    });
+
+    expect(test).toBeCalledWith({
+      test: 'test',
+    });
+  });
 });
