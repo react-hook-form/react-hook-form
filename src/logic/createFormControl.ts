@@ -263,8 +263,9 @@ export function createFormControl<
   const updateTouchAndDirty = (
     name: InternalFieldName,
     fieldValue: unknown,
-    isCurrentTouched?: boolean,
-    shouldRender = true,
+    isBlurEvent?: boolean,
+    shouldDirty?: boolean,
+    shouldRender?: boolean,
   ): Partial<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
@@ -281,7 +282,7 @@ export function createFormControl<
       isFieldDirty = isPreviousFormDirty !== output.isDirty;
     }
 
-    if (_proxyFormState.dirtyFields && !isCurrentTouched) {
+    if (_proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty)) {
       const isPreviousFieldDirty = get(_formState.dirtyFields, name);
       const isCurrentFieldPristine = deepEqual(
         get(_defaultValues, name),
@@ -297,13 +298,13 @@ export function createFormControl<
         isPreviousFieldDirty !== get(_formState.dirtyFields, name);
     }
 
-    if (isCurrentTouched && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isCurrentTouched);
+    if (isBlurEvent && !isPreviousFieldTouched) {
+      set(_formState.touchedFields as TFieldValues, name, isBlurEvent);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
         (_proxyFormState.touchedFields &&
-          isPreviousFieldTouched !== isCurrentTouched);
+          isPreviousFieldTouched !== isBlurEvent);
     }
 
     isFieldDirty && shouldRender && _subjects.state.next(output);
@@ -557,7 +558,13 @@ export function createFormControl<
     }
 
     (options.shouldDirty || options.shouldTouch) &&
-      updateTouchAndDirty(name, fieldValue, options.shouldTouch);
+      updateTouchAndDirty(
+        name,
+        fieldValue,
+        options.shouldTouch,
+        options.shouldDirty,
+        true,
+      );
 
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
@@ -651,13 +658,13 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
+      set(_formValues, name, fieldValue);
+
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
-
-      set(_formValues, name, fieldValue);
 
       const fieldState = updateTouchAndDirty(
         name,
