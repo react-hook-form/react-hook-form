@@ -1,7 +1,18 @@
 import { expectType } from 'tsd';
 
-import { FieldArrayPath } from '../../../types/path/lazy';
+import { Branded } from '../../../types';
+import { FieldArrayPath, FieldPath } from '../../../types/path/lazy';
 import { _, InfiniteType } from '../__fixtures__';
+
+/** {@link FieldPath} */ {
+  /** it should evaluate to never for branded paths */ {
+    const actual = _ as FieldPath<
+      { foo: string },
+      Branded.FieldPath<{ foo: string }>
+    >;
+    expectType<never>(actual);
+  }
+}
 
 /** {@link FieldArrayPath} */ {
   /** it should not accept primitive arrays */ {
