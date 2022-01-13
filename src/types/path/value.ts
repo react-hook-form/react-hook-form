@@ -6,6 +6,18 @@ import { SplitPathString } from './internal/pathTuple';
 import * as Branded from './branded';
 import { PathString } from './pathString';
 
+/**
+ * Type for getting the value of a path.
+ * @typeParam TFieldValues - the field values for which this path is valid
+ * @typeParam TPathString - the string representation of the path
+ * @example
+ * ```
+ * declare function get<T extends FieldValues, P extends PathString>(
+ *   obj: T,
+ *   path: Lazy.FieldPath<T, P>,
+ * ): FieldPathValue<T, P>
+ * ```
+ */
 export type FieldPathValue<
   TFieldValues extends FieldValues,
   TPathString extends PathString,
@@ -15,6 +27,19 @@ export type FieldPathValue<
     : unknown
   : PathGetValue<TFieldValues, SplitPathString<TPathString>>;
 
+/**
+ * Type for getting the value which required for setting a path.
+ * @typeParam TFieldValues - the field values for which this path is valid
+ * @typeParam TPathString - the string representation of the path
+ * @example
+ * ```
+ * declare function set<T extends FieldValues, P extends PathString>(
+ *   obj: T,
+ *   path: Lazy.FieldPath<T, P>,
+ *   value: FieldPathSetValue<T, P>
+ * ): void
+ * ```
+ */
 export type FieldPathSetValue<
   TFieldValues extends FieldValues,
   TPathString extends PathString,
@@ -28,12 +53,24 @@ export type FieldPathSetValue<
     : never
   : PathSetValue<TFieldValues, SplitPathString<TPathString>>;
 
+/**
+ * Type for getting the values of a tuple of paths.
+ * @typeParam TFieldValues - the field values for which the paths are valid
+ * @typeParam TPathStrings - the string representations of the paths
+ * @example
+ * ```
+ * declare function get<
+ *   T extends FieldValues,
+ *   P extends ReadonlyArray<Branded.FieldPath<T>>,
+ * >(obj: T, paths: P): FieldPathValues<T, P>
+ * ```
+ */
 export type FieldPathValues<
   TFieldValues extends FieldValues,
-  TPathString extends ReadonlyArray<PathString>,
+  TPathStrings extends ReadonlyArray<PathString>,
 > = {
-  [Idx in keyof TPathString]: FieldPathValue<
+  [Idx in keyof TPathStrings]: FieldPathValue<
     TFieldValues,
-    TPathString[Idx] & PathString
+    TPathStrings[Idx] & PathString
   >;
 };
