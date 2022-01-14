@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.24.0] - 2022-1-14
+
+- `useController` return prop: `onChange`, `onBlur` and `ref` will be memorized with `useCallback`
+
 ## [7.23.0] - 2022-1-12
 
 ## Changed
