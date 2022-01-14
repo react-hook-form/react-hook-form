@@ -1,8 +1,7 @@
 import { FieldValues } from '../fields';
 
-import { AutoCompletePath } from './internal/autoCompletePath';
-import { AccessPattern } from './internal/utils';
 import * as Branded from './branded';
+import * as Lazy from './lazy';
 import { PathString } from './pathString';
 
 /**
@@ -24,13 +23,9 @@ export type TypedFieldPath<
   TPathString extends PathString,
   TValue,
   TValueSet = TValue,
-> = TPathString extends Branded.FieldPath<any>
-  ? never
-  : AutoCompletePath<
-      TFieldValues,
-      TPathString,
-      AccessPattern<TValue, TValueSet>
-    >;
+> =
+  | Branded.TypedFieldPath<TFieldValues, TValue, TValueSet>
+  | Lazy.TypedFieldPath<TFieldValues, TPathString, TValue, TValueSet>;
 
 /**
  * Type which offers autocompletion of paths through a form.
@@ -47,7 +42,7 @@ export type TypedFieldPath<
 export type FieldPath<
   TFieldValues extends FieldValues,
   TPathString extends PathString,
-> = TypedFieldPath<TFieldValues, TPathString, unknown, never>;
+> = Branded.FieldPath<TFieldValues> | Lazy.FieldPath<TFieldValues, TPathString>;
 
 /**
  * Type which offers autocompletion of paths through a form which point to an array.
@@ -68,12 +63,14 @@ export type TypedFieldArrayPath<
   TPathString extends PathString,
   TArrayValues extends FieldValues,
   TArrayValuesSet extends FieldValues = TArrayValues,
-> = TypedFieldPath<
-  TFieldValues,
-  TPathString,
-  ReadonlyArray<TArrayValues> | null | undefined,
-  TArrayValuesSet[]
->;
+> =
+  | Branded.TypedFieldArrayPath<TFieldValues, TArrayValues, TArrayValuesSet>
+  | Lazy.TypedFieldArrayPath<
+      TFieldValues,
+      TPathString,
+      TArrayValues,
+      TArrayValuesSet
+    >;
 
 /**
  * Type which offers autocompletion of paths through a form which point to an array.
@@ -90,4 +87,28 @@ export type TypedFieldArrayPath<
 export type FieldArrayPath<
   TFieldValues extends FieldValues,
   TPathString extends PathString,
-> = TypedFieldArrayPath<TFieldValues, TPathString, FieldValues, never>;
+> =
+  | Branded.FieldArrayPath<TFieldValues>
+  | Lazy.FieldArrayPath<TFieldValues, TPathString>;
+
+/**
+ * Type which offers autocompletion for a tuple of paths through a form.
+ * @typeParam TFieldValues - the field values for which this path is valid
+ * @typeParam TPathStrings - the string representations of the paths
+ * @example
+ * ```
+ * declare function get<
+ *   T extends FieldValues,
+ *   P extends ReadonlyArray<PathString>,
+ * >(obj: T, paths: FieldPaths<T, P>): FieldPathValues<T, P>
+ * ```
+ */
+export type FieldPaths<
+  TFieldValues extends FieldValues,
+  TPathStrings extends ReadonlyArray<PathString>,
+> = {
+  [Idx in keyof TPathStrings]: FieldPath<
+    TFieldValues,
+    Extract<TPathStrings[Idx], PathString>
+  >;
+};
