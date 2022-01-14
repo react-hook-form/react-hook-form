@@ -6,7 +6,7 @@ import {
   FieldPathValue,
   FieldPathValues,
 } from '../../../types/path/value';
-import { _ } from '../__fixtures__';
+import { _ } from '../../__fixtures__';
 
 /** {@link FieldPathValue} */ {
   /** it should get the type of a branded path */ {

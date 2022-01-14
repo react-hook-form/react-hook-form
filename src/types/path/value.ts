@@ -1,5 +1,3 @@
-import { FieldValues } from '../fields';
-
 import { PathGetValue } from './internal/pathGetValue';
 import { PathSetValue } from './internal/pathSetValue';
 import { SplitPathString } from './internal/pathTuple';
@@ -14,12 +12,12 @@ import { PathString } from './pathString';
  * ```
  * declare function get<T extends FieldValues, P extends PathString>(
  *   obj: T,
- *   path: Either.FieldPath<T, P>,
+ *   path: Auto.FieldPath<T, P>,
  * ): FieldPathValue<T, P>
  * ```
  */
 export type FieldPathValue<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
 > = TPathString extends Branded.FieldPath<any>
   ? TPathString extends Branded.TypedFieldPath<TFieldValues, infer Value, never>
@@ -35,13 +33,13 @@ export type FieldPathValue<
  * ```
  * declare function set<T extends FieldValues, P extends PathString>(
  *   obj: T,
- *   path: Either.FieldPath<T, P>,
+ *   path: Auto.FieldPath<T, P>,
  *   value: FieldPathSetValue<T, P>
  * ): void
  * ```
  */
 export type FieldPathSetValue<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
 > = TPathString extends Branded.FieldPath<any>
   ? TPathString extends Branded.TypedFieldPath<
@@ -62,11 +60,11 @@ export type FieldPathSetValue<
  * declare function get<
  *   T extends FieldValues,
  *   P extends ReadonlyArray<PathString>,
- * >(obj: T, paths: Either.FieldPaths<T, P>): FieldPathValues<T, P>
+ * >(obj: T, paths: Auto.FieldPaths<T, P>): FieldPathValues<T, P>
  * ```
  */
 export type FieldPathValues<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathStrings extends ReadonlyArray<PathString>,
 > = {
   [Idx in keyof TPathStrings]: FieldPathValue<

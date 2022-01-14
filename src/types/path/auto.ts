@@ -19,7 +19,7 @@ import { PathString } from './pathString';
  * ```
  */
 export type TypedFieldPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
   TValue,
   TValueSet = TValue,
@@ -39,10 +39,9 @@ export type TypedFieldPath<
  * ): FieldPathValue<T, P>
  * ```
  */
-export type FieldPath<
-  TFieldValues extends FieldValues,
-  TPathString extends PathString,
-> = Branded.FieldPath<TFieldValues> | Lazy.FieldPath<TFieldValues, TPathString>;
+export type FieldPath<TFieldValues, TPathString extends PathString> =
+  | Branded.FieldPath<TFieldValues>
+  | Lazy.FieldPath<TFieldValues, TPathString>;
 
 /**
  * Type which offers autocompletion of paths through a form which point to an array.
@@ -59,7 +58,7 @@ export type FieldPath<
  * ```
  */
 export type TypedFieldArrayPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
   TArrayValues extends FieldValues,
   TArrayValuesSet extends FieldValues = TArrayValues,
@@ -84,10 +83,7 @@ export type TypedFieldArrayPath<
  * ): FieldPathValue<T, P>[never]
  * ```
  */
-export type FieldArrayPath<
-  TFieldValues extends FieldValues,
-  TPathString extends PathString,
-> =
+export type FieldArrayPath<TFieldValues, TPathString extends PathString> =
   | Branded.FieldArrayPath<TFieldValues>
   | Lazy.FieldArrayPath<TFieldValues, TPathString>;
 
@@ -104,7 +100,7 @@ export type FieldArrayPath<
  * ```
  */
 export type FieldPaths<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathStrings extends ReadonlyArray<PathString>,
 > = {
   [Idx in keyof TPathStrings]: FieldPath<

@@ -7,8 +7,9 @@ import {
   FieldPaths,
   TypedFieldArrayPath,
   TypedFieldPath,
-} from '../../../types/path/either';
-import { _, InfiniteType } from '../__fixtures__';
+} from '../../../types/path/auto';
+import { _ } from '../../__fixtures__';
+import { InfiniteType } from '../__fixtures__';
 
 /** {@link TypedFieldPath} */ {
   /** it should infer branded types */ {

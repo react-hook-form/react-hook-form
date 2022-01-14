@@ -8,7 +8,8 @@ import {
   SuggestPaths,
 } from '../../../../types/path/internal/autoCompletePath';
 import { AccessPattern } from '../../../../types/path/internal/utils';
-import { _, InfiniteType, NullableInfiniteType } from '../../__fixtures__';
+import { _ } from '../../../__fixtures__';
+import { InfiniteType, NullableInfiniteType } from '../../__fixtures__';
 
 /** {@link SuggestParentPath} */ {
   /** it should evaluate to the parent path */ {

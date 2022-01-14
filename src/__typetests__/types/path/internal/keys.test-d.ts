@@ -9,7 +9,7 @@ import {
   TupleKeys,
 } from '../../../../types/path/internal/keys';
 import { AccessPattern, Key } from '../../../../types/path/internal/utils';
-import { _ } from '../../__fixtures__';
+import { _ } from '../../../__fixtures__';
 
 /** {@link TupleKeys} */ {
   /** it should evaluate to the own keys of the tuple */ {
