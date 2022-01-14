@@ -337,7 +337,6 @@ export type KeepStateOptions = Partial<{
     keepDefaultValues: boolean;
     keepIsSubmitted: boolean;
     keepTouched: boolean;
-    keepIsValid: boolean;
     keepSubmitCount: boolean;
 }>;
 
@@ -780,7 +779,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:193:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:192:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
