@@ -601,6 +601,14 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: Field
 export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
 
 // @public (undocumented)
+export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
+    invalid: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
+    error: FieldError;
+};
+
+// @public (undocumented)
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
     (): UnpackNestedValue<TFieldValues>;
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): FieldPathValue<TFieldValues, TFieldName>;
@@ -657,6 +665,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
+    _getFieldState: _UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
     clearErrors: UseFormClearErrors<TFieldValues>;
     setValue: UseFormSetValue<TFieldValues>;
@@ -791,7 +800,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:192:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:204:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
