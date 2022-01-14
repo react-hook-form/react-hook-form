@@ -7,7 +7,7 @@ import {
   FieldPaths,
   TypedFieldArrayPath,
   TypedFieldPath,
-} from '../../../types/path/either';
+} from '../../../types/path/auto';
 import { _, InfiniteType } from '../__fixtures__';
 
 /** {@link TypedFieldPath} */ {

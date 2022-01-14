@@ -14,7 +14,7 @@ import { PathString } from './pathString';
  * ```
  * declare function get<T extends FieldValues, P extends PathString>(
  *   obj: T,
- *   path: Either.FieldPath<T, P>,
+ *   path: Auto.FieldPath<T, P>,
  * ): FieldPathValue<T, P>
  * ```
  */
@@ -35,7 +35,7 @@ export type FieldPathValue<
  * ```
  * declare function set<T extends FieldValues, P extends PathString>(
  *   obj: T,
- *   path: Either.FieldPath<T, P>,
+ *   path: Auto.FieldPath<T, P>,
  *   value: FieldPathSetValue<T, P>
  * ): void
  * ```
@@ -62,7 +62,7 @@ export type FieldPathSetValue<
  * declare function get<
  *   T extends FieldValues,
  *   P extends ReadonlyArray<PathString>,
- * >(obj: T, paths: Either.FieldPaths<T, P>): FieldPathValues<T, P>
+ * >(obj: T, paths: Auto.FieldPaths<T, P>): FieldPathValues<T, P>
  * ```
  */
 export type FieldPathValues<
