@@ -180,6 +180,18 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
+export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  formState?: FormState<TFieldValues>,
+) => {
+  invalid: boolean;
+  isDirty: boolean;
+  isTouched: boolean;
+  error: FieldError;
+};
+
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
@@ -370,6 +382,7 @@ export type UseFormReturn<
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
+  _getFieldState: _UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;
