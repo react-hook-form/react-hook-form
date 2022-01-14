@@ -37,8 +37,7 @@ import { _ } from '../__fixtures__';
   }
 
   /** it should report the error on the argument if there is a type mismatch */ {
-    type FooBar = { foo: string };
-    const path: Branded.TypedFieldPath<FooBar, number> = createPath(
+    const path: Branded.TypedFieldPath<{ foo: string }, number> = createPath(
       // @ts-expect-error this is an error if the test case fails
       'foo',
     );
