@@ -1,8 +1,7 @@
 import { expectType } from 'tsd';
 
 import { IsAny, IsNever, IsUnknown } from '../../types';
-
-import { _ } from './__fixtures__';
+import { _ } from '../__fixtures__';
 
 /** {@link IsAny} */ {
   /** it should evaluate to true for any */ {

@@ -2,7 +2,8 @@ import { expectType } from 'tsd';
 
 import { Branded } from '../../../types';
 import { FieldArrayPath, FieldPath } from '../../../types/path/lazy';
-import { _, InfiniteType } from '../__fixtures__';
+import { _ } from '../../__fixtures__';
+import { InfiniteType } from '../__fixtures__';
 
 /** {@link FieldPath} */ {
   /** it should evaluate to never for branded paths */ {

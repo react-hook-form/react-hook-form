@@ -5,7 +5,8 @@ import {
   JoinPathTuple,
   SplitPathString,
 } from '../../../../types/path/internal/pathTuple';
-import { _, HundredPathString, HundredTuple } from '../../__fixtures__';
+import { _ } from '../../../__fixtures__';
+import { HundredPathString, HundredTuple } from '../../__fixtures__';
 
 /** {@link AsPathTuple} */ {
   /** it should behave like a noop type when a PathTuple is passed */ {

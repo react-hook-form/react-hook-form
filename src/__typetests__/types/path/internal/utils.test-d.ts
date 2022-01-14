@@ -8,7 +8,7 @@ import {
   ToKey,
   UnionToIntersection,
 } from '../../../../types/path/internal/utils';
-import { _ } from '../../__fixtures__';
+import { _ } from '../../../__fixtures__';
 
 /** {@link AsKey} */ {
   /** it should behave like a noop type when a Key is passed */ {

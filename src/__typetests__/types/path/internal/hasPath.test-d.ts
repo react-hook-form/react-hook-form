@@ -5,8 +5,8 @@ import {
   HasPath,
   ValidPathPrefix,
 } from '../../../../types/path/internal/hasPath';
+import { _ } from '../../../__fixtures__';
 import {
-  _,
   HundredTuple,
   InfiniteType,
   NullableInfiniteType,

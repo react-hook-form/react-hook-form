@@ -6,7 +6,8 @@ import {
   PathSetValue,
 } from '../../../../types/path/internal/pathSetValue';
 import { SplitPathString } from '../../../../types/path/internal/pathTuple';
-import { _, HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
+import { _ } from '../../../__fixtures__';
+import { HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
 
 /** {@link KeySetValue} */ {
   /** it should traverse an object */ {
