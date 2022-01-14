@@ -880,7 +880,7 @@ export function createFormControl<
       ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
 
-    !options.keepIsValid && _updateValid();
+    _proxyFormState.isValid && _updateValid();
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
@@ -1118,8 +1118,7 @@ export function createFormControl<
       focus: '',
     };
 
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _stateFlags.mount = !_proxyFormState.isValid;
 
     _stateFlags.watch = !!props.unregister;
 

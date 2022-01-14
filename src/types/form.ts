@@ -135,7 +135,6 @@ export type KeepStateOptions = Partial<{
   keepDefaultValues: boolean;
   keepIsSubmitted: boolean;
   keepTouched: boolean;
-  keepIsValid: boolean;
   keepSubmitCount: boolean;
 }>;
 

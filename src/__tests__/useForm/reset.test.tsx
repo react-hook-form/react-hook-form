@@ -333,7 +333,6 @@ describe('reset', () => {
                   keepDirty: true,
                   keepIsSubmitted: true,
                   keepTouched: true,
-                  keepIsValid: true,
                   keepSubmitCount: true,
                 },
               );
@@ -367,54 +366,6 @@ describe('reset', () => {
     });
 
     expect(formState).toMatchSnapshot();
-  });
-
-  it('should keep isValid state when keep option is presented', async () => {
-    const App = () => {
-      const {
-        register,
-        reset,
-        formState: { isValid },
-      } = useForm({
-        mode: 'onChange',
-      });
-
-      return (
-        <>
-          <input {...register('test', { required: true })} />
-          {isValid ? 'valid' : 'invalid'}
-          <button
-            onClick={() => {
-              reset(
-                {
-                  test: 'test',
-                },
-                {
-                  keepIsValid: true,
-                },
-              );
-            }}
-          >
-            reset
-          </button>
-        </>
-      );
-    };
-
-    render(<App />);
-
-    await waitFor(() => {
-      screen.getByText('invalid');
-    });
-
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-      screen.getByText('invalid');
-    });
-
-    await waitFor(() => {
-      screen.getByText('valid');
-    });
   });
 
   it('should reset field array fine with empty value', async () => {
