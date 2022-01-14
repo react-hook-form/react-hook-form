@@ -582,6 +582,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     control: Control<TFieldValues, TContext>;
     register: UseFormRegister<TFieldValues>;
     setFocus: UseFormSetFocus<TFieldValues>;
+    getMountedFieldPaths: () => FieldPath<TFieldValues>[];
 };
 
 // @public (undocumented)

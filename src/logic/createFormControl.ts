@@ -1170,6 +1170,24 @@ export function createFormControl<
     (field.ref.focus ? field.ref : field.refs[0]).focus();
   };
 
+  const getMountedFieldPaths = (): FieldPath<TFieldValues>[] => {
+    const mountedFields: FieldPath<TFieldValues>[] = [];
+    const fieldsThatWereEverMounted = _names.mount as unknown as Set<
+      FieldPath<TFieldValues>
+    >;
+
+    fieldsThatWereEverMounted.forEach((fieldName) => {
+      const field = get(_fields, fieldName);
+      const fieldInfo = field._f;
+
+      if (fieldInfo.mount) {
+        mountedFields.push(fieldName);
+      }
+    });
+
+    return mountedFields;
+  };
+
   return {
     control: {
       register,
@@ -1241,5 +1259,6 @@ export function createFormControl<
     unregister,
     setError,
     setFocus,
+    getMountedFieldPaths,
   };
 }

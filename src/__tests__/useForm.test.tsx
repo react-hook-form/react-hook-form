@@ -1501,4 +1501,29 @@ describe('useForm', () => {
 
     expect(tempControl._subjects.state.observers.length).toBeFalsy();
   });
+
+  it('should add mounted components to getMountedFieldPaths', () => {
+    let getMountedFieldPaths: any;
+    const Component = () => {
+      const { register, getMountedFieldPaths: tempGetMountedFieldPaths } =
+        useForm<{
+          test: string;
+        }>();
+
+      getMountedFieldPaths = tempGetMountedFieldPaths;
+
+      return (
+        <div>
+          <input {...register('test', { required: true })} />
+        </div>
+      );
+    };
+    const { unmount } = render(<Component />);
+
+    expect(getMountedFieldPaths()).toEqual(['test']);
+
+    unmount();
+
+    expect(getMountedFieldPaths()).toEqual([]);
+  });
 });

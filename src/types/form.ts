@@ -382,6 +382,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
+  getMountedFieldPaths: () => FieldPath<TFieldValues>[];
 };
 
 export type UseFormStateProps<TFieldValues> = Partial<{
