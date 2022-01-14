@@ -26,7 +26,7 @@
     "clean": "rimraf dist",
     "prebuild": "yarn clean",
     "build": "yarn build:modern",
-    "postbuild": "rimraf dist/__tests__; node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
+    "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx}\"",
