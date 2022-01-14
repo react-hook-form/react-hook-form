@@ -1039,30 +1039,32 @@ export function createFormControl<
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
-    if (isUndefined(options.defaultValue)) {
-      setValue(name, get(_defaultValues, name));
-    } else {
-      setValue(name, options.defaultValue);
-      set(_defaultValues, name, options.defaultValue);
-    }
+    if (get(_fields, name)) {
+      if (isUndefined(options.defaultValue)) {
+        setValue(name, get(_defaultValues, name));
+      } else {
+        setValue(name, options.defaultValue);
+        set(_defaultValues, name, options.defaultValue);
+      }
 
-    if (!options.keepTouched) {
-      unset(_formState.touchedFields, name);
-    }
+      if (!options.keepTouched) {
+        unset(_formState.touchedFields, name);
+      }
 
-    if (!options.keepDirty) {
-      unset(_formState.dirtyFields, name);
-      _formState.isDirty = options.defaultValue
-        ? _getDirty(name, get(_defaultValues, name))
-        : _getDirty();
-    }
+      if (!options.keepDirty) {
+        unset(_formState.dirtyFields, name);
+        _formState.isDirty = options.defaultValue
+          ? _getDirty(name, get(_defaultValues, name))
+          : _getDirty();
+      }
 
-    if (!options.keepError) {
-      unset(_formState.errors, name);
-      _proxyFormState.isValid && _updateValid();
-    }
+      if (!options.keepError) {
+        unset(_formState.errors, name);
+        _proxyFormState.isValid && _updateValid();
+      }
 
-    _subjects.state.next({ ..._formState });
+      _subjects.state.next({ ..._formState });
+    }
   };
 
   const reset: UseFormReset<TFieldValues> = (
