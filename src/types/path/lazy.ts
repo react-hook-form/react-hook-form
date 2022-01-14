@@ -20,7 +20,7 @@ import { PathString } from './pathString';
  * ```
  */
 export type TypedFieldPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
   TValue,
   TValueSet = TValue,
@@ -45,7 +45,7 @@ export type TypedFieldPath<
  * ```
  */
 export type FieldPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
 > = TypedFieldPath<TFieldValues, TPathString, unknown, never>;
 
@@ -64,7 +64,7 @@ export type FieldPath<
  * ```
  */
 export type TypedFieldArrayPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
   TArrayValues extends FieldValues,
   TArrayValuesSet extends FieldValues = TArrayValues,
@@ -88,6 +88,6 @@ export type TypedFieldArrayPath<
  * ```
  */
 export type FieldArrayPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
 > = TypedFieldArrayPath<TFieldValues, TPathString, FieldValues, never>;

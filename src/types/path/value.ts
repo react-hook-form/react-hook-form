@@ -1,5 +1,3 @@
-import { FieldValues } from '../fields';
-
 import { PathGetValue } from './internal/pathGetValue';
 import { PathSetValue } from './internal/pathSetValue';
 import { SplitPathString } from './internal/pathTuple';
@@ -19,7 +17,7 @@ import { PathString } from './pathString';
  * ```
  */
 export type FieldPathValue<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
 > = TPathString extends Branded.FieldPath<any>
   ? TPathString extends Branded.TypedFieldPath<TFieldValues, infer Value, never>
@@ -41,7 +39,7 @@ export type FieldPathValue<
  * ```
  */
 export type FieldPathSetValue<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
 > = TPathString extends Branded.FieldPath<any>
   ? TPathString extends Branded.TypedFieldPath<
@@ -66,7 +64,7 @@ export type FieldPathSetValue<
  * ```
  */
 export type FieldPathValues<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathStrings extends ReadonlyArray<PathString>,
 > = {
   [Idx in keyof TPathStrings]: FieldPathValue<

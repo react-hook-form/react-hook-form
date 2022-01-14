@@ -1,15 +1,8 @@
-import {
-  Auto,
-  Branded,
-  FieldValues,
-  IsNever,
-  IsUnknown,
-  PathString,
-} from '../types';
+import { Auto, Branded, IsNever, IsUnknown, PathString } from '../types';
 import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
 
 export function createPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
   TValue,
   TValueSet,
@@ -28,9 +21,9 @@ export function createPath<
 }
 
 export function joinPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TPathString extends PathString,
-  TChildFieldValues extends FieldValues,
+  TChildFieldValues,
   TChildPathString extends PathString,
   TValue,
   TValueSet,
@@ -39,7 +32,7 @@ export function joinPath<
     TFieldValues,
     TPathString,
     TChildFieldValues,
-    never
+    NonNullable<TChildFieldValues>
   >,
   childPath: Auto.TypedFieldPath<
     TChildFieldValues,

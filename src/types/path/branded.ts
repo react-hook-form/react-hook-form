@@ -19,7 +19,7 @@ declare const ACCESS_PATTERN: unique symbol;
  * ```
  */
 export type TypedFieldPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TValue,
   TValueSet = TValue,
 > = string & {
@@ -38,7 +38,7 @@ export type TypedFieldPath<
  * ): FieldPathValue<T, P>
  * ```
  */
-export type FieldPath<TFieldValues extends FieldValues> = TypedFieldPath<
+export type FieldPath<TFieldValues> = TypedFieldPath<
   TFieldValues,
   unknown,
   never
@@ -58,7 +58,7 @@ export type FieldPath<TFieldValues extends FieldValues> = TypedFieldPath<
  * ```
  */
 export type TypedFieldArrayPath<
-  TFieldValues extends FieldValues,
+  TFieldValues,
   TArrayValues extends FieldValues,
   TArrayValuesSet extends FieldValues = TArrayValues,
 > = TypedFieldPath<
@@ -78,5 +78,8 @@ export type TypedFieldArrayPath<
  * ): FieldPathValue<T, P>[never]
  * ```
  */
-export type FieldArrayPath<TFieldValues extends FieldValues> =
-  TypedFieldArrayPath<TFieldValues, FieldValues, never>;
+export type FieldArrayPath<TFieldValues> = TypedFieldArrayPath<
+  TFieldValues,
+  FieldValues,
+  never
+>;
