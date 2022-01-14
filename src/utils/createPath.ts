@@ -4,8 +4,8 @@ import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
 export default function createPath<
   TFieldValues,
   TPathString extends PathString,
-  TValue,
-  TValueSet,
+  TValue = unknown,
+  TValueSet = never,
 >(
   path: Auto.TypedFieldPath<TFieldValues, TPathString, TValue, TValueSet>,
 ): Branded.TypedFieldPath<

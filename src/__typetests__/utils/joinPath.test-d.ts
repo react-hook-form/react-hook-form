@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { Branded } from '../../types';
+import { Branded, Lazy, PathString } from '../../types';
 import { joinPath } from '../../utils';
 import { _ } from '../__fixtures__';
 
@@ -19,6 +19,57 @@ import { _ } from '../__fixtures__';
       // @ts-expect-error this is an error if the test case fails
       _ as Branded.TypedFieldPath<{ foo: number }, string>,
     );
+  }
+
+  /** it should join lazy paths */ {
+    const fn = <T1, P1 extends PathString, T2, P2 extends PathString>(
+      path: Lazy.TypedFieldPath<T1, P1, T2>,
+      childPath: Lazy.TypedFieldPath<T2, P2, string>,
+    ) => {
+      const actual = joinPath(path, childPath);
+      expectType<Branded.TypedFieldPath<T1, string>>(actual);
+    };
+
+    fn(_, _);
+  }
+
+  /** it should report an error if the lazy paths don't match */ {
+    const fn = <T, P1 extends PathString, P2 extends PathString>(
+      path: Lazy.TypedFieldPath<T, P1, { bar: number }>,
+      childPath: Lazy.FieldPath<{ foo: number }, P2>,
+    ) => joinPath(path, childPath);
+
+    const path: Branded.TypedFieldPath<{ foo: { bar: number } }, number> = fn(
+      'foo',
+      // @ts-expect-error this is an error if the test case fails
+      // Ideally, the error would be reported on `joinPath`, but this is good enough
+      'bar',
+    );
+    path;
+  }
+
+  /** it should join a lazy path and a string literal */ {
+    const fn = <T, P extends PathString>(
+      path: Lazy.TypedFieldPath<T, P, { foo: string }>,
+    ) => {
+      const actual = joinPath(path, 'foo');
+      expectType<Branded.TypedFieldPath<T, string>>(actual);
+    };
+
+    fn(_);
+  }
+
+  /** it should work when the intermediary type can be undefined or null */ {
+    const fn = <T, P extends PathString>(
+      path: Lazy.TypedFieldPath<T, P, { foo: string } | undefined | null>,
+    ) => {
+      const actual = joinPath(path, 'foo');
+      expectType<Branded.TypedFieldPath<T, string | undefined | null, string>>(
+        actual,
+      );
+    };
+
+    fn(_);
   }
 
   /** it should infer the generics of the second argument from the context */ {

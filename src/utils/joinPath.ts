@@ -6,8 +6,8 @@ export default function joinPath<
   TPathString extends PathString,
   TChildFieldValues,
   TChildPathString extends PathString,
-  TValue,
-  TValueSet,
+  TValue = unknown,
+  TValueSet = never,
 >(
   path: Auto.TypedFieldPath<
     TFieldValues,
