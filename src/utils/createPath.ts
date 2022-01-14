@@ -1,6 +1,16 @@
 import { Auto, Branded, IsNever, IsUnknown, PathString } from '../types';
 import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
 
+/**
+ * Function for creating a {@link TypedFieldPath} from a path string.
+ * @param path - path string
+ * @example
+ * ```
+ * type FooBar = { foo: { bar: string }}
+ *
+ * const path: TypedFieldPath<FooBar, string> = createPath('foo.bar')
+ * ```
+ */
 export default function createPath<
   TFieldValues,
   TPathString extends PathString,

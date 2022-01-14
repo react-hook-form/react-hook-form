@@ -9,6 +9,7 @@ import type * as Lazy from './lazy';
 
 /** Re-export public API */
 export type { Auto, Branded, Lazy };
+export type { TypedFieldPath } from './branded';
 export type { PathString } from './pathString';
 
 /**
