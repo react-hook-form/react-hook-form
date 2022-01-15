@@ -491,15 +491,13 @@ describe('useForm', () => {
 
   describe('handleChangeRef', () => {
     const Component = ({
-      name = 'test',
       resolver,
       mode,
       rules = { required: 'required' },
     }: {
-      name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
-      rules?: RegisterOptions;
+      rules?: RegisterOptions<{ test: string }, 'test'>;
     }) => {
       const internationalMethods = useForm<{ test: string }>({
         resolver,
@@ -514,10 +512,7 @@ describe('useForm', () => {
 
       return (
         <div>
-          <input
-            type="text"
-            {...register(name as 'test', resolver ? {} : rules)}
-          />
+          <input type="text" {...register('test', resolver ? {} : rules)} />
           <span role="alert">
             {errors?.test?.message && errors.test.message}
           </span>
