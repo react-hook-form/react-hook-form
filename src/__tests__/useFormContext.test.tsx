@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import { useController } from '../useController';
+import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useFormState } from '../useFormState';
@@ -100,6 +101,47 @@ describe('FormProvider', () => {
         </div>
       );
     }
+
+    render(<App />);
+  });
+
+  it('should work correctly with field array', () => {
+    type FormValues = {
+      test: { name: string }[];
+    };
+
+    const Test = () => {
+      const context = useFormContext<FormValues>();
+
+      return (
+        <>
+          {context?.arrays?.test.map((field) => (
+            <input key={field.id} />
+          ))}
+        </>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm();
+      const testField = useFieldArray({
+        control: methods.control,
+        name: 'test',
+      });
+
+      return (
+        <FormProvider
+          {...methods}
+          arrays={{
+            test: testField,
+          }}
+        >
+          <form>
+            <Test />
+          </form>
+        </FormProvider>
+      );
+    };
 
     render(<App />);
   });
