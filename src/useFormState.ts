@@ -6,6 +6,7 @@ import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import {
   FieldValues,
   InternalFieldName,
+  PathString,
   ReadFormState,
   UseFormStateProps,
   UseFormStateReturn,
@@ -13,8 +14,11 @@ import {
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
-function useFormState<TFieldValues extends FieldValues = FieldValues>(
-  props?: UseFormStateProps<TFieldValues>,
+function useFormState<
+  TFieldValues extends FieldValues,
+  TFieldName extends PathString,
+>(
+  props?: UseFormStateProps<TFieldValues, TFieldName>,
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
