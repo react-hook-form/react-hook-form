@@ -9,10 +9,11 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import * as generateId from '../../logic/generateId';
-import { Control, FieldPath } from '../../types';
+import { Control, FieldArrayPath, TypedFieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { createPath } from '../../utils';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -518,11 +519,11 @@ describe('insert', () => {
       name,
       control,
     }: {
-      name: FieldPath<FormValues>;
+      name: TypedFieldPath<FormValues, string>;
       control: Control<FormValues>;
     }) {
       const { field } = useController({
-        name: name as 'test.0.name.deep',
+        name: name,
         control,
       });
 
@@ -535,12 +536,12 @@ describe('insert', () => {
       itemDefaultValue,
     }: {
       control: Control<FormValues>;
-      name: FieldPath<FormValues>;
+      name: FieldArrayPath<FormValues>;
       itemDefaultValue: { name: { deep: string } };
     }) {
       const { fields, insert } = useFieldArray({
         control,
-        name: name as 'test',
+        name: name,
       });
 
       return (
@@ -548,7 +549,7 @@ describe('insert', () => {
           {fields.map((item, index) => (
             <Input
               key={item.id}
-              name={`test.${index}.name.deep`}
+              name={createPath(`test.${index}.name.deep`)}
               control={control}
             />
           ))}
@@ -569,7 +570,7 @@ describe('insert', () => {
       return (
         <form>
           <FieldArray
-            name="test"
+            name={createPath('test')}
             control={control}
             itemDefaultValue={{ name: { deep: '' } }}
           />
