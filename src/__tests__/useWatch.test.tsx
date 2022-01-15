@@ -751,7 +751,7 @@ describe('useWatch', () => {
       }: {
         control: Control<FormValues>;
         register: UseFormReturn<FormValues>['register'];
-        remove: UseFieldArrayReturn['remove'];
+        remove: UseFieldArrayReturn<FormValues, 'labels'>['remove'];
         itemIndex: number;
       }) {
         const actualValue = useWatch({
@@ -980,7 +980,7 @@ describe('useWatch', () => {
       };
 
       function Watcher({ control }: { control: Control<FormValues> }) {
-        const testField = useWatch<FormValues>({
+        const testField = useWatch({
           name: 'test',
           control: control,
         });
@@ -1015,9 +1015,7 @@ describe('useWatch', () => {
         const { register, reset, control } = useForm<{
           test: string;
         }>();
-        const test = useWatch<{
-          test: string;
-        }>({ name: 'test', control });
+        const test = useWatch({ name: 'test', control });
 
         React.useEffect(() => {
           reset({ test: 'default' });
@@ -1233,9 +1231,7 @@ describe('useWatch', () => {
           const { register, reset, control } = useForm<{
             test: string;
           }>();
-          const test = useWatch<{
-            test: string;
-          }>({
+          const test = useWatch({
             name: 'test',
             control,
           });
@@ -1268,9 +1264,7 @@ describe('useWatch', () => {
           const { register, reset, control } = useForm<{
             test: string;
           }>();
-          const test = useWatch<{
-            test: string;
-          }>({ name: 'test', control });
+          const test = useWatch({ name: 'test', control });
 
           React.useEffect(() => {
             register('test');
@@ -1299,7 +1293,7 @@ describe('useWatch', () => {
               test: 'test',
             },
           });
-          const test = useWatch<{ test: string }>({
+          const test = useWatch({
             name: 'test',
             control,
           });
@@ -1330,8 +1324,12 @@ describe('useWatch', () => {
     it('should return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
-      const Component = ({ control }: { control: Control<FormValues> }) => {
-        const test = useWatch<{ test: string }>({ name: 'test', control });
+      const Component = ({
+        control,
+      }: {
+        control: Control<{ test: string }>;
+      }) => {
+        const test = useWatch({ name: 'test', control });
         return <div>{test === undefined ? 'no' : test}</div>;
       };
 
@@ -1369,8 +1367,12 @@ describe('useWatch', () => {
         return <input {...register('test')} />;
       };
 
-      const Component = ({ control }: { control: Control<FormValues> }) => {
-        const test = useWatch<{ test: string }>({ name: 'test', control });
+      const Component = ({
+        control,
+      }: {
+        control: Control<{ test: string }>;
+      }) => {
+        const test = useWatch({ name: 'test', control });
         return <div>{test === 'bill' ? 'no' : test}</div>;
       };
 
@@ -1464,7 +1466,7 @@ describe('useWatch', () => {
   describe('formContext', () => {
     it('should work with form context', async () => {
       const Component = () => {
-        const test = useWatch<{ test: string }>({ name: 'test' });
+        const test = useWatch<{ test: string }, 'test'>({ name: 'test' });
         return <div>{test}</div>;
       };
 
