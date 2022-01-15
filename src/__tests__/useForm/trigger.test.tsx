@@ -14,6 +14,7 @@ import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
+import { createPath } from '../../utils';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -895,8 +896,8 @@ describe('trigger', () => {
       return (
         <div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Input name="x" control={control} />
-            <Input name="y" control={control} />
+            <Input name={createPath('x')} control={control} />
+            <Input name={createPath('y')} control={control} />
 
             <button type="button" onClick={() => trigger('x')}>
               Trigger Validation on X
