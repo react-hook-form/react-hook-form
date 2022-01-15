@@ -56,13 +56,13 @@ describe('setError', () => {
       result.current.setError('input', input);
     });
     expect(result.current.formState.errors).toEqual(output);
-    expect(result.current.formState.isValid).toBeFalsy();
+    expect(result.current.formState.valid).toBeFalsy();
   });
 
   it('should update isValid with setError', async () => {
     const App = () => {
       const {
-        formState: { isValid },
+        formState: { valid },
         setError,
       } = useForm({
         mode: 'onChange',
@@ -78,7 +78,7 @@ describe('setError', () => {
           >
             setError
           </button>
-          {isValid ? 'yes' : 'no'}
+          {valid ? 'yes' : 'no'}
         </div>
       );
     };

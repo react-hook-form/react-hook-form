@@ -24,13 +24,13 @@ const FormStateWithSchema: React.FC = () => {
     handleSubmit,
     formState: {
       dirtyFields,
-      isSubmitted,
+      submitted,
       submitCount,
       touchedFields,
-      isDirty,
-      isSubmitting,
-      isSubmitSuccessful,
-      isValid,
+      dirty,
+      submitting,
+      submitSuccessful,
+      valid,
     },
     reset,
   } = useForm<{
@@ -76,14 +76,14 @@ const FormStateWithSchema: React.FC = () => {
       </button>
       <div id="state">
         {JSON.stringify({
-          isSubmitted,
+          submitted,
           submitCount,
-          isDirty,
-          isSubmitting,
-          isSubmitSuccessful,
-          isValid,
+          dirty,
+          submitting,
+          submitSuccessful,
+          valid,
           touched: Object.keys(touchedFields),
-          dirty: Object.keys(dirtyFields),
+          dirtyFields: Object.keys(dirtyFields),
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>

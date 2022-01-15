@@ -342,7 +342,7 @@ describe('trigger', () => {
       const App = () => {
         const {
           register,
-          formState: { isValid },
+          formState: { valid },
           trigger,
         } = useForm<{ test: string; test1: string }>({
           defaultValues: {
@@ -373,7 +373,7 @@ describe('trigger', () => {
 
         return (
           <div>
-            {isValid ? 'yes' : 'no'}
+            {valid ? 'yes' : 'no'}
             <input {...register('test')} />
             <input {...register('test1')} />
             <button
@@ -423,15 +423,15 @@ describe('trigger', () => {
 
     it('should update isValid for the entire useForm scope', async () => {
       const InputA = () => {
-        const { isValid } = useFormState({ name: 'name' });
+        const { valid } = useFormState({ name: 'name' });
 
-        return <p>{isValid ? 'test: valid' : 'test: invalid'}</p>;
+        return <p>{valid ? 'test: valid' : 'test: invalid'}</p>;
       };
 
       const InputB = () => {
-        const { isValid } = useFormState({ name: 'email' });
+        const { valid } = useFormState({ name: 'email' });
 
-        return <p>{isValid ? 'test1: valid' : 'test1: invalid'}</p>;
+        return <p>{valid ? 'test1: valid' : 'test1: invalid'}</p>;
       };
 
       function App() {
@@ -554,7 +554,7 @@ describe('trigger', () => {
       const {
         register,
         trigger,
-        formState: { isValid },
+        formState: { valid },
       } = useForm();
 
       React.useEffect(() => {
@@ -563,7 +563,7 @@ describe('trigger', () => {
 
       return (
         <div>
-          <p>{isValid ? 'yes' : 'no'}</p>
+          <p>{valid ? 'yes' : 'no'}</p>
           <button
             onClick={() => {
               trigger('test');
@@ -730,7 +730,7 @@ describe('trigger', () => {
       const [isValid, setIsValid] = React.useState(true);
       const { register, trigger, formState } = useForm();
 
-      formState.isValid;
+      formState.valid;
 
       return (
         <div>
@@ -925,7 +925,7 @@ describe('trigger', () => {
       const {
         register,
         trigger,
-        formState: { isValid },
+        formState: { valid },
       } = useForm({
         mode: 'onChange',
       });
@@ -936,7 +936,7 @@ describe('trigger', () => {
 
       return (
         <form>
-          <p>{isValid ? 'valid' : 'invalid'}</p>
+          <p>{valid ? 'valid' : 'invalid'}</p>
           <input
             {...register('test', {
               validate,

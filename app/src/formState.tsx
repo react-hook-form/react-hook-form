@@ -11,13 +11,13 @@ const FormState = () => {
     handleSubmit,
     formState: {
       dirtyFields,
-      isSubmitted,
+      submitted,
       submitCount,
       touchedFields,
-      isDirty,
-      isSubmitting,
-      isSubmitSuccessful,
-      isValid,
+      dirty,
+      submitting,
+      submitSuccessful,
+      valid,
     },
     reset,
   } = useForm<{
@@ -57,14 +57,14 @@ const FormState = () => {
       />
       <div id="state">
         {JSON.stringify({
-          isSubmitted,
+          submitted,
           submitCount,
-          isDirty,
-          isSubmitting,
-          isSubmitSuccessful,
-          isValid,
+          dirty,
+          submitting,
+          submitSuccessful,
+          valid,
           touched: Object.keys(touchedFields),
-          dirty: Object.keys(dirtyFields),
+          dirtyFields: Object.keys(dirtyFields),
         })}
       </div>
       <select {...register('select')} defaultValue="test">

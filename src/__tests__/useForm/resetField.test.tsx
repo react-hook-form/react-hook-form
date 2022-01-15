@@ -96,7 +96,7 @@ describe('resetField', () => {
       const {
         register,
         resetField,
-        formState: { dirtyFields, isDirty },
+        formState: { dirtyFields, dirty },
       } = useForm({
         defaultValues: {
           test: 'test',
@@ -107,7 +107,7 @@ describe('resetField', () => {
         <form>
           <input {...register('test')} />
           <p>{dirtyFields.test ? 'dirty' : 'notDirty'}</p>
-          <p>{isDirty ? 'formDirty' : 'formNotDirty'}</p>
+          <p>{dirty ? 'formDirty' : 'formNotDirty'}</p>
           <button
             type={'button'}
             onClick={() => {
@@ -146,7 +146,7 @@ describe('resetField', () => {
       const {
         register,
         resetField,
-        formState: { errors, isValid },
+        formState: { errors, valid },
       } = useForm({
         defaultValues: {
           test: 'test',
@@ -158,7 +158,7 @@ describe('resetField', () => {
         <form>
           <input {...register('test', { maxLength: 4 })} />
           <p>{errors.test ? 'error' : 'noError'}</p>
-          <p>{isValid ? 'valid' : 'NotValid'}</p>
+          <p>{valid ? 'valid' : 'NotValid'}</p>
           <button
             type={'button'}
             onClick={() => {
@@ -292,7 +292,7 @@ describe('resetField', () => {
         const {
           register,
           resetField,
-          formState: { dirtyFields, isDirty },
+          formState: { dirtyFields, dirty },
         } = useForm({
           defaultValues: {
             test: 'test',
@@ -303,7 +303,7 @@ describe('resetField', () => {
           <form>
             <input {...register('test')} />
             <p>{dirtyFields.test ? 'dirty' : 'notDirty'}</p>
-            <p>{isDirty ? 'formDirty' : 'formNotDirty'}</p>
+            <p>{dirty ? 'formDirty' : 'formNotDirty'}</p>
             <button
               type={'button'}
               onClick={() => {
@@ -342,7 +342,7 @@ describe('resetField', () => {
         const {
           register,
           resetField,
-          formState: { errors, isValid },
+          formState: { errors, valid },
         } = useForm({
           defaultValues: {
             test: 'test',
@@ -354,7 +354,7 @@ describe('resetField', () => {
           <form>
             <input {...register('test', { maxLength: 4 })} />
             <p>{errors.test ? 'error' : 'noError'}</p>
-            <p>{isValid ? 'valid' : 'NotValid'}</p>
+            <p>{valid ? 'valid' : 'NotValid'}</p>
             <button
               type={'button'}
               onClick={() => {

@@ -23,15 +23,15 @@ export function useForm<
     UseFormReturn<TFieldValues, TContext> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
-    isDirty: false,
-    isValidating: false,
+    dirty: false,
+    validating: false,
     dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
-    isSubmitted: false,
+    submitted: false,
     submitCount: 0,
     touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
+    submitting: false,
+    submitSuccessful: false,
+    valid: false,
     errors: {} as FieldErrors<TFieldValues>,
   });
 
@@ -67,7 +67,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (!control._stateFlags.mount) {
-      control._proxyFormState.isValid && control._updateValid();
+      control._proxyFormState.valid && control._updateValid();
       control._stateFlags.mount = true;
     }
     if (control._stateFlags.watch) {

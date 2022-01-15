@@ -223,7 +223,7 @@ describe('clearErrors', () => {
   it('should update isValid to true with setError', async () => {
     const App = () => {
       const {
-        formState: { isValid },
+        formState: { valid },
         setError,
         clearErrors,
       } = useForm({
@@ -247,7 +247,7 @@ describe('clearErrors', () => {
           >
             clearError
           </button>
-          {isValid ? 'yes' : 'no'}
+          {valid ? 'yes' : 'no'}
         </div>
       );
     };

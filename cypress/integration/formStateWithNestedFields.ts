@@ -4,14 +4,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -20,14 +20,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -35,14 +35,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -51,14 +51,14 @@ describe('form state with nested fields', () => {
     cy.get('input[name="left.test2"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -67,14 +67,14 @@ describe('form state with nested fields', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1'],
-        isSubmitted: true,
+        dirty: true,
+        dirtyFields: ['left.test1'],
+        submitted: true,
         submitCount: 1,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -82,14 +82,14 @@ describe('form state with nested fields', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: true,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: true,
         submitCount: 2,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: true,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: true,
+        valid: true,
       }),
     );
     cy.get('#renderCount').contains('13');
@@ -100,14 +100,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -115,28 +115,28 @@ describe('form state with nested fields', () => {
     cy.get('input[name="left.test1"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
     cy.get('input[name="left.test1"]').clear();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -145,14 +145,14 @@ describe('form state with nested fields', () => {
     cy.get('input[name="left.test2"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -161,14 +161,14 @@ describe('form state with nested fields', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1'],
-        isSubmitted: true,
+        dirty: true,
+        dirtyFields: ['left.test1'],
+        submitted: true,
         submitCount: 1,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -176,14 +176,14 @@ describe('form state with nested fields', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: true,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: true,
         submitCount: 2,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: true,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: true,
+        valid: true,
       }),
     );
     cy.get('#renderCount').contains('13');
@@ -194,14 +194,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -209,28 +209,28 @@ describe('form state with nested fields', () => {
     cy.get('input[name="left.test1"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
     cy.get('input[name="left.test1"]').clear();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -239,14 +239,14 @@ describe('form state with nested fields', () => {
     cy.get('input[name="left.test2"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -255,14 +255,14 @@ describe('form state with nested fields', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1'],
-        isSubmitted: true,
+        dirty: true,
+        dirtyFields: ['left.test1'],
+        submitted: true,
         submitCount: 1,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -270,14 +270,14 @@ describe('form state with nested fields', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: true,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: true,
         submitCount: 2,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: true,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: true,
+        valid: true,
       }),
     );
     cy.get('#renderCount').contains('13');
@@ -292,14 +292,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -308,14 +308,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -331,14 +331,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -348,14 +348,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('#renderCount').contains('8');
@@ -370,14 +370,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: true,
-        dirty: ['left.test1', 'left.test2'],
-        isSubmitted: false,
+        dirty: true,
+        dirtyFields: ['left.test1', 'left.test2'],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -385,14 +385,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -406,14 +406,14 @@ describe('form state with nested fields', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        dirty: [],
-        isSubmitted: false,
+        dirty: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['left.test1', 'left.test2'],
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 

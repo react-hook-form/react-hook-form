@@ -92,8 +92,8 @@ export const Controller: <TFieldValues extends FieldValues = FieldValues, TName 
 // @public (undocumented)
 export type ControllerFieldState = {
     invalid: boolean;
-    isTouched: boolean;
-    isDirty: boolean;
+    touched: boolean;
+    dirty: boolean;
     error?: FieldError;
 };
 
@@ -282,26 +282,26 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 
 // @public (undocumented)
 export type FormState<TFieldValues> = {
-    isDirty: boolean;
+    dirty: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
-    isSubmitted: boolean;
-    isSubmitSuccessful: boolean;
+    submitted: boolean;
+    submitSuccessful: boolean;
     submitCount: number;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
-    isSubmitting: boolean;
-    isValidating: boolean;
-    isValid: boolean;
+    submitting: boolean;
+    validating: boolean;
+    valid: boolean;
     errors: FieldErrors<TFieldValues>;
 };
 
 // @public (undocumented)
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-    isDirty: boolean;
-    isValidating: boolean;
+    dirty: boolean;
+    validating: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
     errors: boolean;
-    isValid: boolean;
+    valid: boolean;
 };
 
 // Warning: (ae-forgotten-export) The symbol "Subject" needs to be exported by the entry point index.d.ts
@@ -347,7 +347,7 @@ export type KeepStateOptions = Partial<{
     keepDirty: boolean;
     keepValues: boolean;
     keepDefaultValues: boolean;
-    keepIsSubmitted: boolean;
+    keepSubmitted: boolean;
     keepTouched: boolean;
     keepSubmitCount: boolean;
 }>;
@@ -603,8 +603,8 @@ export const useFormContext: <TFieldValues extends FieldValues>() => UseFormRetu
 // @public (undocumented)
 export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
     invalid: boolean;
-    isDirty: boolean;
-    isTouched: boolean;
+    dirty: boolean;
+    touched: boolean;
     error: FieldError;
 };
 
@@ -709,7 +709,7 @@ export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
 // @public (undocumented)
-export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: Omit<KeepStateOptions, 'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
+export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: Omit<KeepStateOptions, 'keepSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
     keepValue?: boolean;
     keepDefaultValue?: boolean;
     keepError?: boolean;

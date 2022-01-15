@@ -24,13 +24,13 @@ type FormInputs = {
 
 const SubForm = ({ control }: { control: Control<FormInputs> }) => {
   const {
-    isDirty,
+    dirty,
     dirtyFields,
     touchedFields,
-    isSubmitted,
-    isSubmitSuccessful,
+    submitted,
+    submitSuccessful,
     submitCount,
-    isValid,
+    valid,
   } = useFormState({
     control,
   });
@@ -38,13 +38,13 @@ const SubForm = ({ control }: { control: Control<FormInputs> }) => {
   return (
     <p id="state">
       {JSON.stringify({
-        isDirty,
+        dirty,
         touched: Object.keys(touchedFields),
-        dirty: Object.keys(dirtyFields),
-        isSubmitted,
-        isSubmitSuccessful,
+        dirtyFields: Object.keys(dirtyFields),
+        submitted,
+        submitSuccessful,
         submitCount,
-        isValid,
+        valid,
       })}
     </p>
   );

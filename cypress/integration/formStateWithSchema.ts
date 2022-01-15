@@ -4,14 +4,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -19,28 +19,28 @@ describe('form state with schema validation', () => {
     cy.get('input[name="firstName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
     cy.get('input[name="firstName"]').clear();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -49,14 +49,14 @@ describe('form state with schema validation', () => {
     cy.get('input[name="lastName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -65,14 +65,14 @@ describe('form state with schema validation', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName'],
-        isSubmitted: true,
+        dirtyFields: ['firstName'],
+        submitted: true,
         submitCount: 1,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -80,14 +80,14 @@ describe('form state with schema validation', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: true,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: true,
         submitCount: 2,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('select[name="select"]').select('1');
@@ -99,14 +99,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -114,28 +114,28 @@ describe('form state with schema validation', () => {
     cy.get('input[name="firstName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
     cy.get('input[name="firstName"]').clear();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -144,14 +144,14 @@ describe('form state with schema validation', () => {
     cy.get('input[name="lastName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -160,14 +160,14 @@ describe('form state with schema validation', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName'],
-        isSubmitted: true,
+        dirtyFields: ['firstName'],
+        submitted: true,
         submitCount: 1,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -175,14 +175,14 @@ describe('form state with schema validation', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: true,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: true,
         submitCount: 2,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: true,
-        isValid: true,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: true,
+        valid: true,
       }),
     );
     cy.get('#renderCount').contains('13');
@@ -193,14 +193,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -208,28 +208,28 @@ describe('form state with schema validation', () => {
     cy.get('input[name="firstName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
     cy.get('input[name="firstName"]').clear();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -238,14 +238,14 @@ describe('form state with schema validation', () => {
     cy.get('input[name="lastName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -254,14 +254,14 @@ describe('form state with schema validation', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName'],
-        isSubmitted: true,
+        dirtyFields: ['firstName'],
+        submitted: true,
         submitCount: 1,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -269,14 +269,14 @@ describe('form state with schema validation', () => {
     cy.get('#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: true,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: true,
         submitCount: 2,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: true,
-        isValid: true,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: true,
+        valid: true,
       }),
     );
     cy.get('#renderCount').contains('13');
@@ -291,14 +291,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -307,14 +307,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -322,27 +322,27 @@ describe('form state with schema validation', () => {
     cy.get('select[name="select"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['select'],
-        isSubmitted: false,
+        dirtyFields: ['select'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName', 'select'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('select[name="select"]').select('');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName', 'select'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -350,27 +350,27 @@ describe('form state with schema validation', () => {
     cy.get('input[name="checkbox"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['checkbox'],
-        isSubmitted: false,
+        dirtyFields: ['checkbox'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName', 'select', 'checkbox'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('input[name="checkbox"]').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName', 'select', 'checkbox'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -378,8 +378,8 @@ describe('form state with schema validation', () => {
     cy.get('input[name="checkbox-checked"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['checkbox-checked'],
-        isSubmitted: false,
+        dirtyFields: ['checkbox-checked'],
+        submitted: false,
         submitCount: 0,
         touched: [
           'firstName',
@@ -388,17 +388,17 @@ describe('form state with schema validation', () => {
           'checkbox',
           'checkbox-checked',
         ],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('input[name="checkbox-checked"]').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [
           'firstName',
@@ -407,10 +407,10 @@ describe('form state with schema validation', () => {
           'checkbox',
           'checkbox-checked',
         ],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -418,8 +418,8 @@ describe('form state with schema validation', () => {
     cy.get('input[name="radio"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['radio'],
-        isSubmitted: false,
+        dirtyFields: ['radio'],
+        submitted: false,
         submitCount: 0,
         touched: [
           'firstName',
@@ -429,18 +429,18 @@ describe('form state with schema validation', () => {
           'checkbox-checked',
           'radio',
         ],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
     cy.get('select[name="select"]').select('');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['radio'],
-        isSubmitted: false,
+        dirtyFields: ['radio'],
+        submitted: false,
         submitCount: 0,
         touched: [
           'firstName',
@@ -450,10 +450,10 @@ describe('form state with schema validation', () => {
           'checkbox-checked',
           'radio',
         ],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('#renderCount').contains('18');
@@ -468,14 +468,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -485,14 +485,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('#renderCount').contains('8');
@@ -507,14 +507,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: ['firstName', 'lastName'],
-        isSubmitted: false,
+        dirtyFields: ['firstName', 'lastName'],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: true,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: true,
+        dirty: true,
+        submitting: false,
+        submitSuccessful: false,
+        valid: true,
       }),
     );
 
@@ -522,14 +522,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: [],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
 
@@ -543,14 +543,14 @@ describe('form state with schema validation', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: [],
-        isSubmitted: false,
+        dirtyFields: [],
+        submitted: false,
         submitCount: 0,
         touched: ['firstName', 'lastName'],
-        isDirty: false,
-        isSubmitting: false,
-        isSubmitSuccessful: false,
-        isValid: false,
+        dirty: false,
+        submitting: false,
+        submitSuccessful: false,
+        valid: false,
       }),
     );
     cy.get('#renderCount').contains('13');

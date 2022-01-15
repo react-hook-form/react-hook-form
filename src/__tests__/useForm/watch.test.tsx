@@ -341,7 +341,7 @@ describe('watch', () => {
     function Component() {
       const {
         register,
-        formState: { isDirty },
+        formState: { dirty },
         watch,
       } = useForm<{
         lastName: string;
@@ -353,7 +353,7 @@ describe('watch', () => {
       return (
         <form>
           <input {...register('lastName')} />
-          <p>{isDirty ? 'True' : 'False'}</p>
+          <p>{dirty ? 'True' : 'False'}</p>
         </form>
       );
     }

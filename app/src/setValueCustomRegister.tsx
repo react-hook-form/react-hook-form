@@ -8,7 +8,7 @@ const SetValueCustomRegister: React.FC = () => {
     register,
     setValue,
     handleSubmit,
-    formState: { touchedFields, isDirty, errors },
+    formState: { touchedFields, dirty, errors },
   } = useForm<{
     firstName: string;
     lastName: string;
@@ -61,7 +61,7 @@ const SetValueCustomRegister: React.FC = () => {
         WithOutError
       </button>
 
-      <div id="dirty">{isDirty.toString()}</div>
+      <div id="dirty">{dirty.toString()}</div>
       <div id="touched">{Object.keys(touchedFields).map((touch) => touch)}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>

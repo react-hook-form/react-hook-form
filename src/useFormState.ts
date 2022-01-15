@@ -6,6 +6,7 @@ import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import {
   FieldValues,
   InternalFieldName,
+  ReadFormState,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
@@ -18,12 +19,12 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
-  const _localProxyFormState = React.useRef({
-    isDirty: false,
+  const _localProxyFormState = React.useRef<ReadFormState>({
+    dirty: false,
     dirtyFields: false,
     touchedFields: false,
-    isValidating: false,
-    isValid: false,
+    validating: false,
+    valid: false,
     errors: false,
   });
   const _name = React.useRef(name);

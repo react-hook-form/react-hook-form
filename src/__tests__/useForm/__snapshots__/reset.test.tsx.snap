@@ -2,8 +2,8 @@
 
 exports[`reset should not reset if keepStateOption is specified 1`] = `
 Object {
+  "dirty": true,
   "errors": Object {},
-  "isDirty": true,
   "touchedFields": Object {
     "test": true,
   },
@@ -12,8 +12,8 @@ Object {
 
 exports[`reset should not reset if keepStateOption is specified 2`] = `
 Object {
+  "dirty": true,
   "errors": Object {},
-  "isDirty": true,
   "touchedFields": Object {
     "test": true,
   },
