@@ -40,7 +40,7 @@ const SubForm = ({ control }: { control: Control<FormInputs> }) => {
       {JSON.stringify({
         dirty,
         touched: Object.keys(touchedFields),
-        dirty: Object.keys(dirtyFields),
+        dirtyFields: Object.keys(dirtyFields),
         submitted,
         submitSuccessful,
         submitCount,

@@ -325,7 +325,7 @@ const UseFieldArray: React.FC = () => {
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
       <div id="dirty">{dirty ? 'yes' : 'no'}</div>
-      <div id="valid">{valid ? 'yes' : 'no'}</div>
+      <div id="isValid">{valid ? 'yes' : 'no'}</div>
       <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
       <div id="touched">{JSON.stringify(touchedFields.data)}</div>
     </form>

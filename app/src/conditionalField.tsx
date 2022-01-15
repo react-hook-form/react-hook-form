@@ -92,7 +92,7 @@ const ConditionalField: React.FC = () => {
           submitSuccessful,
           valid,
           touched: Object.keys(touchedFields),
-          dirty: Object.keys(dirtyFields),
+          dirtyFields: Object.keys(dirtyFields),
         })}
       </div>
       <div id="result">{JSON.stringify(result)}</div>

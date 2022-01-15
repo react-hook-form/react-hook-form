@@ -88,7 +88,7 @@ const valid: React.FC = () => {
           <input {...register('age')} placeholder="age" />
         </>
       )}
-      <div id="valid">{JSON.stringify(valid)}</div>
+      <div id="isValid">{JSON.stringify(valid)}</div>
       <div id="renderCount">{renderCounter}</div>
 
       <button

@@ -83,7 +83,7 @@ const FormStateWithSchema: React.FC = () => {
           submitSuccessful,
           valid,
           touched: Object.keys(touchedFields),
-          dirty: Object.keys(dirtyFields),
+          dirtyFields: Object.keys(dirtyFields),
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>

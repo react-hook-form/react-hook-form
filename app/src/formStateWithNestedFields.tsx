@@ -86,7 +86,7 @@ const FormStateWithNestedFields = () => {
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
-          dirty: (
+          dirtyFields: (
             Object.keys(dirtyFields) as Array<keyof typeof touchedFields>
           ).flatMap((topLevelKey) =>
             Object.keys(dirtyFields[topLevelKey] || {}).map(
