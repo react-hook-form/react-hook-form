@@ -1,6 +1,6 @@
 import { Message } from './errors';
 import { FieldValues, InternalFieldName } from './fields';
-import { FieldPath, FieldPathValue } from './path';
+import { FieldPathValue, PathString } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
 
@@ -23,7 +23,7 @@ export type Validate<TFieldValue> = (
 
 export type RegisterOptions<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends PathString = never,
 > = Partial<{
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
