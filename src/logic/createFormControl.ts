@@ -780,9 +780,7 @@ export function createFormControl<
   };
 
   const getValues: UseFormGetValues<TFieldValues> = (
-    fieldNames?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+    fieldNames?: InternalFieldName | ReadonlyArray<InternalFieldName>,
   ) => {
     const values = {
       ..._defaultValues,
@@ -792,8 +790,8 @@ export function createFormControl<
     return isUndefined(fieldNames)
       ? values
       : isString(fieldNames)
-      ? get(values, fieldNames as InternalFieldName)
-      : fieldNames.map((name) => get(values, name as InternalFieldName));
+      ? get(values, fieldNames)
+      : fieldNames.map((name) => get(values, name));
   };
 
   const _getFieldState: _UseFormGetFieldState<TFieldValues> = (
@@ -837,8 +835,8 @@ export function createFormControl<
 
   const watch: UseFormWatch<TFieldValues> = (
     name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
+      | InternalFieldName
+      | ReadonlyArray<InternalFieldName>
       | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>

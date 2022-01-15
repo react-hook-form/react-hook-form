@@ -12,8 +12,8 @@ export type UseFieldArrayProps<
 };
 
 export type FieldArrayWithId<
-  TFieldValues extends FieldValues,
-  TFieldArrayName extends PathString,
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends PathString = never,
 > = FieldArray<TFieldValues, TFieldArrayName> & Record<'id', string>;
 
 export type FieldArray<
