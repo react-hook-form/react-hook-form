@@ -265,7 +265,7 @@ describe('getValues', () => {
 
     function Form() {
       const { handleSubmit, reset, getValues } = useFormContext();
-      const { isDirty, isValid } = useFormState();
+      const { dirty, valid } = useFormState();
 
       return (
         <form
@@ -282,7 +282,7 @@ describe('getValues', () => {
           >
             getValues
           </button>
-          <button type="submit" disabled={!isDirty || !isValid}>
+          <button type="submit" disabled={!dirty || !valid}>
             submit
           </button>
 

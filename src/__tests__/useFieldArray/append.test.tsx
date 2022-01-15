@@ -161,7 +161,7 @@ describe('append', () => {
     });
   });
 
-  it.each(['isDirty', 'dirtyFields'])(
+  it.each(['dirty', 'dirtyFields'])(
     'should be dirtyFields when value is appended with %s',
     () => {
       let isDirtyValue;
@@ -171,7 +171,7 @@ describe('append', () => {
         const {
           register,
           control,
-          formState: { isDirty, dirtyFields },
+          formState: { dirty, dirtyFields },
         } = useForm<{
           test: { test: string }[];
         }>();
@@ -180,7 +180,7 @@ describe('append', () => {
           name: 'test',
         });
 
-        isDirtyValue = isDirty;
+        isDirtyValue = dirty;
         dirtyValue = dirtyFields;
 
         return (
@@ -457,7 +457,7 @@ describe('append', () => {
         return { formState, append };
       });
 
-      result.current.formState.isValid;
+      result.current.formState.valid;
 
       await act(async () => {
         result.current.append({ value: '1' });

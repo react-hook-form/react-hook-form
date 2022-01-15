@@ -82,7 +82,7 @@ describe('update', () => {
       const {
         register,
         control,
-        formState: { isDirty, dirtyFields },
+        formState: { dirty, dirtyFields },
       } = useForm<{
         test: { test: string }[];
       }>({
@@ -93,7 +93,7 @@ describe('update', () => {
         name: 'test',
       });
 
-      isDirtyValue = isDirty;
+      isDirtyValue = dirty;
       dirtyValue = dirtyFields;
 
       return (
@@ -424,7 +424,7 @@ describe('update', () => {
         return { formState, update };
       });
 
-      result.current.formState.isValid;
+      result.current.formState.valid;
 
       await act(async () => {
         result.current.update(0, { value: '1' });

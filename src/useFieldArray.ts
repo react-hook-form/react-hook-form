@@ -286,7 +286,7 @@ export const useFieldArray = <
 
     control._names.focus = '';
 
-    control._proxyFormState.isValid && control._updateValid();
+    control._proxyFormState.valid && control._updateValid();
   }, [fields, name, control]);
 
   React.useEffect(() => {

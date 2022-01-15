@@ -708,7 +708,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is touched.</p>}
+              {fieldState.touched && <p>Input is touched.</p>}
             </>
           )}
           control={control}
@@ -739,7 +739,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is dirty.</p>}
+              {fieldState.touched && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -808,7 +808,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is dirty.</p>}
+              {fieldState.touched && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -900,7 +900,7 @@ describe('Controller', () => {
     const Component = () => {
       const {
         control,
-        formState: { isValid },
+        formState: { valid },
       } = useForm<{
         test: string;
         test1: string;
@@ -930,7 +930,7 @@ describe('Controller', () => {
             name={'test1'}
             control={control}
           />
-          {isValid ? 'true' : 'false'}
+          {valid ? 'true' : 'false'}
         </>
       );
     };
@@ -968,7 +968,7 @@ describe('Controller', () => {
     const Component = () => {
       const {
         control,
-        formState: { dirtyFields, isDirty },
+        formState: { dirtyFields, dirty },
       } = useForm<FormValues>({
         defaultValues: {
           test: '',
@@ -983,7 +983,7 @@ describe('Controller', () => {
             render={({ field }) => <input {...field} />}
           />
           <p>{JSON.stringify(dirtyFields)}</p>
-          <p>{isDirty ? 'true' : 'false'}</p>
+          <p>{dirty ? 'true' : 'false'}</p>
         </>
       );
     };
