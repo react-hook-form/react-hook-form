@@ -17,7 +17,6 @@ import {
   GetIsDirty,
   InternalFieldName,
   Names,
-  Path,
   Ref,
   ResolverResult,
   SetFieldValue,
@@ -558,7 +557,7 @@ export function createFormControl<
     (options.dirty || options.touch) &&
       updateTouchAndDirty(name, fieldValue, options.touch, options.dirty, true);
 
-    options.validate && trigger(name as Path<TFieldValues>);
+    options.validate && trigger(name as FieldPath<TFieldValues>);
   };
 
   const setValues = <
@@ -572,7 +571,7 @@ export function createFormControl<
   ) => {
     for (const fieldKey in value) {
       const fieldValue = value[fieldKey];
-      const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
+      const fieldName = `${name}.${fieldKey}` as FieldPath<TFieldValues>;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||

@@ -1,6 +1,6 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './path';
+import { FieldArrayPath, FieldPathValue } from './path';
 
 export type FieldArrayName = string;
 
@@ -21,7 +21,7 @@ export type FieldArrayWithId<
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends
+> = FieldPathValue<TFieldValues, TFieldArrayName> extends
   | ReadonlyArray<infer U>
   | null
   | undefined
