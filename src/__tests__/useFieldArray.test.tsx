@@ -298,7 +298,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields, append } = useFieldArray<FormValues>({
+        const { fields, append } = useFieldArray({
           name: `test.${index}.nestedArray` as const,
           control,
         });
@@ -954,7 +954,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormValues>({
+        const { fields } = useFieldArray({
           name: `test.${index}.nestedArray` as const,
           control,
         });
@@ -1281,7 +1281,7 @@ describe('useFieldArray', () => {
         arrayField: Partial<FieldValues>;
         control: Control<FormValues>;
       }) => {
-        const { fields, append, remove } = useFieldArray<FormValues>({
+        const { fields, append, remove } = useFieldArray({
           name: `fieldArray.${arrayIndex}.nestedFieldArray` as const,
           control,
         });
@@ -1401,7 +1401,7 @@ describe('useFieldArray', () => {
         control: Control<FormInputs>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormInputs>({
+        const { fields } = useFieldArray({
           name: `nest.test.${index}.nestedArray` as const,
           control,
         });
@@ -1483,7 +1483,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormValues>({
+        const { fields } = useFieldArray({
           name: `nest.test.${index}.nestedArray` as const,
           control,
         });
@@ -1573,7 +1573,7 @@ describe('useFieldArray', () => {
         control: Control<FormInputs>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormInputs>({
+        const { fields } = useFieldArray({
           name: `nest.${index}.nestedArray` as const,
           control,
         });
@@ -1653,7 +1653,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormValues>({
+        const { fields } = useFieldArray({
           name: `nest.${index}.nestedArray` as const,
           control,
         });
@@ -1737,7 +1737,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields, append } = useFieldArray<FormValues>({
+        const { fields, append } = useFieldArray({
           name: `nest.${index}.nestedArray.deepNest` as const,
           control,
         });
@@ -2143,7 +2143,7 @@ describe('useFieldArray', () => {
     const result: unknown[] = [];
 
     const Child = () => {
-      const { fields } = useFieldArray<FormValues>({
+      const { fields } = useFieldArray<FormValues, 'names'>({
         name: 'names',
       });
 
