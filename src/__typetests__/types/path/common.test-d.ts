@@ -30,7 +30,7 @@ import {
   InfiniteType,
   Nested,
   NullableInfiniteType,
-} from '../__fixtures__';
+} from '../../__fixtures__';
 
 /** {@link IsTuple} */ {
   /** it should evaluate to true if it's a tuple */ {

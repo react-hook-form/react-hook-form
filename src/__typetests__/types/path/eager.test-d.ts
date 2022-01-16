@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
 import { ArrayPath, FieldPathValues, Path, PathValue } from '../../../types';
-import { _, Depth3Type } from '../__fixtures__';
+import { _, Depth3Type } from '../../__fixtures__';
 
 /** {@link Path} */ {
   /** it should evaluate to never for an empty object */ {
