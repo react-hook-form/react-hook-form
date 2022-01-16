@@ -164,6 +164,16 @@ export type Field = {
 export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<infer U> | null | undefined ? U : never;
 
 // @public (undocumented)
+export type FieldArrayContextProps<TFieldValues> = {
+    arrays?: Record<FieldArrayPath<TFieldValues>, UseFieldArrayReturn<TFieldValues>>;
+};
+
+// @public (undocumented)
+export type FieldArrayContextReturn<TFieldValues> = {
+    arrays: Record<FieldArrayPath<TFieldValues>, FieldArrayWithId<TFieldValues>[]>;
+};
+
+// @public (undocumented)
 export type FieldArrayMethodProps = {
     shouldFocus?: boolean;
     focusIndex?: number;
@@ -228,7 +238,7 @@ export const FormProvider: <TFieldValues extends FieldValues, TContext extends o
 // @public (undocumented)
 export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
     children: React_2.ReactNode;
-} & UseFormReturn<TFieldValues, TContext>;
+} & UseFormReturn<TFieldValues, TContext> & FieldArrayContextProps<TFieldValues>;
 
 // @public (undocumented)
 export type FormState<TFieldValues> = {
@@ -511,7 +521,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues, TContext
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]) => void;
 
 // @public (undocumented)
-export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
+export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object> & FieldArrayContextReturn<TFieldValues>;
 
 // @public (undocumented)
 export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
@@ -713,7 +723,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:205:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:209:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
