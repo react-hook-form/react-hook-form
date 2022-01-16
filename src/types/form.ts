@@ -4,11 +4,7 @@ import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
-import {
-  FieldArray,
-  FieldArrayWithId,
-  UseFieldArrayReturn,
-} from './fieldArray';
+import { FieldArray, UseFieldArrayReturn } from './fieldArray';
 import {
   FieldRefs,
   FieldValue,
@@ -434,7 +430,7 @@ export type FieldArrayContextProps<TFieldValues> = {
 export type FieldArrayContextReturn<TFieldValues> = {
   arrays: Record<
     FieldArrayPath<TFieldValues>,
-    FieldArrayWithId<TFieldValues>[]
+    UseFieldArrayReturn<TFieldValues>
   >;
 };
 
