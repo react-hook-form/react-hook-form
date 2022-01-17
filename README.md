@@ -375,6 +375,12 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
             width="45"
             height="45"
     /></a>
+    <a href="https://github.com/alex-semenyuk"
+    ><img
+            src="https://avatars.githubusercontent.com/u/5480441?v=4"
+            width="45"
+            height="45"
+    /></a>
 </p>
 
 ### Backers
