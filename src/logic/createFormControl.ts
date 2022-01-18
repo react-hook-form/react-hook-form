@@ -811,8 +811,8 @@ export function createFormControl<
     formState,
   ) => ({
     invalid: !!get((formState || _formState).errors, name),
-    isDirty: get((formState || _formState).dirtyFields, name),
-    isTouched: get((formState || _formState).touchedFields, name),
+    isDirty: !!get((formState || _formState).dirtyFields, name),
+    isTouched: !!get((formState || _formState).touchedFields, name),
     error: get((formState || _formState).errors, name),
   });
 
