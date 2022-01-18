@@ -599,8 +599,9 @@ export function createFormControl<
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
+    const cloneValue = cloneObject(value);
 
-    set(_formValues, name, value);
+    set(_formValues, name, cloneValue);
 
     if (isFieldArray) {
       _subjects.array.next({
@@ -617,13 +618,13 @@ export function createFormControl<
         _subjects.state.next({
           name,
           dirtyFields: _formState.dirtyFields,
-          isDirty: _getDirty(name, value),
+          isDirty: _getDirty(name, cloneValue),
         });
       }
     } else {
-      field && !field._f && !isNullOrUndefined(value)
-        ? setValues(name, value, options)
-        : setFieldValue(name, value, options);
+      field && !field._f && !isNullOrUndefined(cloneValue)
+        ? setValues(name, cloneValue, options)
+        : setFieldValue(name, cloneValue, options);
     }
 
     isWatched(name, _names) && _subjects.state.next({});
