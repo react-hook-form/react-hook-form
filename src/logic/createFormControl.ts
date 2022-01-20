@@ -1,6 +1,5 @@
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
-  _UseFormGetFieldState,
   BatchFieldArrayUpdate,
   ChangeHandler,
   DeepPartial,
@@ -40,6 +39,7 @@ import {
   UseFormWatch,
   WatchInternal,
   WatchObserver,
+  _UseFormGetFieldState,
 } from '../types';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
@@ -66,7 +66,6 @@ import live from '../utils/live';
 import omit from '../utils/omit';
 import set from '../utils/set';
 import unset from '../utils/unset';
-
 import focusFieldBy from './focusFieldBy';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
@@ -909,7 +908,14 @@ export function createFormControl<
 
     set(_fields, name, {
       _f: {
-        ...(field && field._f ? field._f : { ref: { name } }),
+        ...(field && field._f
+          ? {
+              ref: field._f.ref,
+              name: field._f.name,
+              refs: field._f.refs,
+              mount: field._f.mount,
+            }
+          : { ref: { name } }),
         name,
         mount: true,
         ...options,
