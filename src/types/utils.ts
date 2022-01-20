@@ -39,7 +39,12 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
+export type DeepPartial<T> = T extends
+  | Date
+  | FileList
+  | File
+  | NestedValue
+  | unknown
   ? T
   : { [K in keyof T]?: DeepPartial<T[K]> };
 
