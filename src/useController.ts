@@ -64,9 +64,11 @@ export function useController<
       const _shouldUnregisterField =
         control._options.shouldUnregister || shouldUnregister;
 
-      isArrayField
-        ? _shouldUnregisterField && !control._stateFlags.action
-        : _shouldUnregisterField
+      (
+        isArrayField
+          ? _shouldUnregisterField && !control._stateFlags.action
+          : _shouldUnregisterField
+      )
         ? control.unregister(name)
         : updateMounted(name, false);
     };
