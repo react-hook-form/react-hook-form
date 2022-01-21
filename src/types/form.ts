@@ -180,7 +180,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
-export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <
+export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues>,
 >(
   name: TFieldName,
@@ -365,6 +365,7 @@ export type Control<
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues> = (
@@ -382,7 +383,7 @@ export type UseFormReturn<
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
-  _getFieldState: _UseFormGetFieldState<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;

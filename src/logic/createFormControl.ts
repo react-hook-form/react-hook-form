@@ -1,6 +1,5 @@
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
-  _UseFormGetFieldState,
   BatchFieldArrayUpdate,
   ChangeHandler,
   DeepPartial,
@@ -25,6 +24,7 @@ import {
   Subjects,
   UnpackNestedValue,
   UseFormClearErrors,
+  UseFormGetFieldState,
   UseFormGetValues,
   UseFormHandleSubmit,
   UseFormProps,
@@ -806,7 +806,7 @@ export function createFormControl<
       : fieldNames.map((name) => get(values, name as InternalFieldName));
   };
 
-  const _getFieldState: _UseFormGetFieldState<TFieldValues> = (
+  const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
   ) => ({
@@ -1186,6 +1186,7 @@ export function createFormControl<
     control: {
       register,
       unregister,
+      getFieldState,
       _executeSchema,
       _getWatch,
       _getDirty,
@@ -1253,6 +1254,6 @@ export function createFormControl<
     unregister,
     setError,
     setFocus,
-    _getFieldState,
+    getFieldState,
   };
 }
