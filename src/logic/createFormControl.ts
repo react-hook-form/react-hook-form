@@ -1186,6 +1186,7 @@ export function createFormControl<
     control: {
       register,
       unregister,
+      getFieldState,
       _executeSchema,
       _getWatch,
       _getDirty,

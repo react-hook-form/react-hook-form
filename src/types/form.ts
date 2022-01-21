@@ -365,6 +365,7 @@ export type Control<
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues> = (
