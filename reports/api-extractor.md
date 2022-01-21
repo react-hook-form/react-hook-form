@@ -63,6 +63,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext ext
     }>;
     register: UseFormRegister<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
+    getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
 // @public (undocumented)
