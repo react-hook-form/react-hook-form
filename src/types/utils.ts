@@ -70,6 +70,20 @@ export type DeepPartialSkipArrayKey<T> = T extends
 export type IsAny<T> = 0 extends 1 & T ? true : false;
 
 /**
+ * Checks whether the type is unknown
+ * @typeParam T - type which may be unknown
+ * ```
+ * IsUnknown<unknown> = true
+ * IsUnknown<string> = false
+ * ```
+ */
+export type IsUnknown<T> = IsAny<T> extends true
+  ? false
+  : unknown extends T
+  ? true
+  : false;
+
+/**
  * Checks whether the type is never
  * @typeParam T - type which may be never
  * ```
@@ -81,6 +95,8 @@ export type IsNever<T> = [T] extends [never] ? true : false;
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
+  : IsUnknown<T> extends true
+  ? unknown
   : T extends Date | FileList | File | NestedValue
   ? TValue
   : T extends object
