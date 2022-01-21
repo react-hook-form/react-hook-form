@@ -73,7 +73,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{_getFieldState('test')?.error?.message}</p>
+              <p>{getFieldState('test')?.error?.message}</p>
             </form>
           );
         };
@@ -213,7 +213,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{_getFieldState('nested')?.error?.message}</p>
+              <p>{getFieldState('nested')?.error?.message}</p>
             </form>
           );
         };

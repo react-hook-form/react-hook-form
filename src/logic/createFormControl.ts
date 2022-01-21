@@ -806,7 +806,7 @@ export function createFormControl<
       : fieldNames.map((name) => get(values, name as InternalFieldName));
   };
 
-  const _getFieldState: UseFormGetFieldState<TFieldValues> = (
+  const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
   ) => ({
@@ -1253,6 +1253,6 @@ export function createFormControl<
     unregister,
     setError,
     setFocus,
-    getFieldState: _getFieldState,
+    getFieldState,
   };
 }
