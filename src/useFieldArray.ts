@@ -254,8 +254,8 @@ export const useFieldArray = <
   ) => {
     const updatedFieldArrayValues = convertToArrayPayload(value);
     ids.current = updatedFieldArrayValues.map(generateId);
-    updateValues([...updatedFieldArrayValues]);
     setFields([...updatedFieldArrayValues]);
+    updateValues([...updatedFieldArrayValues]);
     control._updateFieldArray(
       name,
       () => updatedFieldArrayValues,
