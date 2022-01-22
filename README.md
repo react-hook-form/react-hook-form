@@ -31,11 +31,10 @@
 ### Features
 
 - Built with performance, UX and DX in mind
-- Embraces native form validation
+- Embraces native HTML form [validation](https://react-hook-form.com/get-started#Applyvalidation)
 - Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
 - [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
-- Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) or custom
+- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) and custom
 
 ### Install
 
@@ -57,7 +56,7 @@ function App() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('firstName')} /> {/* register an input */}
+      <input {...register('firstName')} />
       <input {...register('lastName', { required: true })} />
       {errors.lastName && <p>Last name is required.</p>}
       <input {...register('age', { pattern: /\d+/ })} />
