@@ -169,10 +169,10 @@ export const useFieldArray = <
       index,
       insertValue,
     );
-    updateValues(updatedFieldArrayValues);
     control._names.focus = getFocusFieldName(name, index, options);
     ids.current = insertAt(ids.current, index, insertValue.map(generateId));
     setFields(updatedFieldArrayValues);
+    updateValues(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       insertAt,
