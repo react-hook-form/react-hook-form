@@ -102,8 +102,8 @@ export const useFieldArray = <
       options,
     );
     ids.current = appendAt(ids.current, appendValue.map(generateId));
-    setFields(updatedFieldArrayValues);
     updateValues(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       appendAt,
@@ -127,8 +127,8 @@ export const useFieldArray = <
     );
     control._names.focus = getFocusFieldName(name, 0, options);
     ids.current = prependAt(ids.current, prependValue.map(generateId));
-    setFields(updatedFieldArrayValues);
     updateValues(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       prependAt,
@@ -144,8 +144,8 @@ export const useFieldArray = <
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
-    setFields(updatedFieldArrayValues);
     updateValues(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       removeArrayAt,
@@ -171,8 +171,8 @@ export const useFieldArray = <
     );
     control._names.focus = getFocusFieldName(name, index, options);
     ids.current = insertAt(ids.current, index, insertValue.map(generateId));
-    setFields(updatedFieldArrayValues);
     updateValues(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       insertAt,
@@ -188,8 +188,8 @@ export const useFieldArray = <
     const updatedFieldArrayValues = control._getFieldArray(name);
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
     swapArrayAt(ids.current, indexA, indexB);
-    setFields(updatedFieldArrayValues);
     updateValues(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       swapArrayAt,
@@ -206,8 +206,8 @@ export const useFieldArray = <
     const updatedFieldArrayValues = control._getFieldArray(name);
     moveArrayAt(updatedFieldArrayValues, from, to);
     moveArrayAt(ids.current, from, to);
-    setFields(updatedFieldArrayValues);
     updateValues(updatedFieldArrayValues);
+    setFields(updatedFieldArrayValues);
     control._updateFieldArray(
       name,
       moveArrayAt,
@@ -232,8 +232,8 @@ export const useFieldArray = <
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
     );
-    setFields([...updatedFieldArrayValues]);
     updateValues(updatedFieldArrayValues);
+    setFields([...updatedFieldArrayValues]);
     control._updateFieldArray(
       name,
       updateAt,
@@ -254,8 +254,8 @@ export const useFieldArray = <
   ) => {
     const updatedFieldArrayValues = convertToArrayPayload(value);
     ids.current = updatedFieldArrayValues.map(generateId);
-    setFields([...updatedFieldArrayValues]);
     updateValues([...updatedFieldArrayValues]);
+    setFields([...updatedFieldArrayValues]);
     control._updateFieldArray(
       name,
       () => updatedFieldArrayValues,
