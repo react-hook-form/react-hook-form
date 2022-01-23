@@ -497,7 +497,9 @@ export function createFormControl<
     return generateWatchOutput(names, _names, fieldValues, isGlobal);
   };
 
-  const _getFieldArray = (name: InternalFieldName): any[] =>
+  const _getFieldArray = <TFieldArrayValues>(
+    name: InternalFieldName,
+  ): Partial<TFieldArrayValues>[] =>
     compact(
       get(
         _stateFlags.mount ? _formValues : _defaultValues,
@@ -1226,6 +1228,9 @@ export function createFormControl<
       },
       get _formState() {
         return _formState;
+      },
+      set _formState(value) {
+        _formState = value;
       },
       get _options() {
         return _options;
