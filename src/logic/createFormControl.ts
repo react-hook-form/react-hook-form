@@ -181,18 +181,18 @@ export function createFormControl<
     method,
     args,
     shouldSetValues = true,
-    shouldSetFields = true,
+    shouldUpdateFieldsAndErrors = true,
   ) => {
     if (args && method) {
       _stateFlags.action = true;
-      if (shouldSetFields && Array.isArray(get(_fields, name))) {
+      if (shouldUpdateFieldsAndErrors && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
       }
 
       if (
         _proxyFormState.errors &&
-        shouldSetFields &&
+        shouldUpdateFieldsAndErrors &&
         Array.isArray(get(_formState.errors, name))
       ) {
         const errors = method(

@@ -332,7 +332,7 @@ export type BatchFieldArrayUpdate = <
     argB: unknown;
   }>,
   shouldSetValue?: boolean,
-  shouldSetFields?: boolean,
+  shouldUpdateFieldsAndErrors?: boolean,
 ) => void;
 
 export type Control<
