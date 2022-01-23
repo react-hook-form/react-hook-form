@@ -177,51 +177,58 @@ export function createFormControl<
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
     name,
+    values = [],
     method,
     args,
-    values = [],
     shouldSetValues = true,
     shouldSetFields = true,
   ) => {
-    _stateFlags.action = true;
+    if (args && method) {
+      _stateFlags.action = true;
+      if (shouldSetFields && Array.isArray(get(_fields, name))) {
+        const fieldValues = method(get(_fields, name), args.argA, args.argB);
+        shouldSetValues && set(_fields, name, fieldValues);
+      }
 
-    if (shouldSetFields && Array.isArray(get(_fields, name))) {
-      const fieldValues = method(get(_fields, name), args.argA, args.argB);
-      shouldSetValues && set(_fields, name, fieldValues);
+      if (
+        _proxyFormState.errors &&
+        shouldSetFields &&
+        Array.isArray(get(_formState.errors, name))
+      ) {
+        const errors = method(
+          get(_formState.errors, name),
+          args.argA,
+          args.argB,
+        );
+        shouldSetValues && set(_formState.errors, name, errors);
+        unsetEmptyArray(_formState.errors, name);
+      }
+
+      if (
+        _proxyFormState.touchedFields &&
+        Array.isArray(get(_formState.touchedFields, name))
+      ) {
+        const touchedFields = method(
+          get(_formState.touchedFields, name),
+          args.argA,
+          args.argB,
+        );
+        shouldSetValues && set(_formState.touchedFields, name, touchedFields);
+      }
+
+      if (_proxyFormState.dirtyFields) {
+        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+      }
+
+      _subjects.state.next({
+        isDirty: _getDirty(name, values),
+        dirtyFields: _formState.dirtyFields,
+        errors: _formState.errors,
+        isValid: _formState.isValid,
+      });
+    } else {
+      set(_formValues, name, values);
     }
-
-    if (
-      _proxyFormState.errors &&
-      shouldSetFields &&
-      Array.isArray(get(_formState.errors, name))
-    ) {
-      const errors = method(get(_formState.errors, name), args.argA, args.argB);
-      shouldSetValues && set(_formState.errors, name, errors);
-      unsetEmptyArray(_formState.errors, name);
-    }
-
-    if (
-      _proxyFormState.touchedFields &&
-      Array.isArray(get(_formState.touchedFields, name))
-    ) {
-      const touchedFields = method(
-        get(_formState.touchedFields, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSetValues && set(_formState.touchedFields, name, touchedFields);
-    }
-
-    if (_proxyFormState.dirtyFields) {
-      _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
-    }
-
-    _subjects.state.next({
-      isDirty: _getDirty(name, values),
-      dirtyFields: _formState.dirtyFields,
-      errors: _formState.errors,
-      isValid: _formState.isValid,
-    });
   };
 
   const updateErrors = (name: InternalFieldName, error: FieldError) => (
@@ -1204,9 +1211,6 @@ export function createFormControl<
       },
       get _formValues() {
         return _formValues;
-      },
-      set _formValues(value) {
-        _formValues = value;
       },
       get _stateFlags() {
         return _stateFlags;

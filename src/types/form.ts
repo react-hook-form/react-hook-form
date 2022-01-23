@@ -323,14 +323,14 @@ export type BatchFieldArrayUpdate = <
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
-  method: T,
-  args: {
-    argA?: unknown;
-    argB?: unknown;
-  },
   updatedFieldArrayValues?: Partial<
     FieldArray<TFieldValues, TFieldArrayName>
   >[],
+  method?: T,
+  args?: Partial<{
+    argA: unknown;
+    argB: unknown;
+  }>,
   shouldSetValue?: boolean,
   shouldSetFields?: boolean,
 ) => void;
