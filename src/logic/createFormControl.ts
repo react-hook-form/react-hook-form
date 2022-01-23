@@ -1206,9 +1206,6 @@ export function createFormControl<
       get _fields() {
         return _fields;
       },
-      set _fields(value) {
-        _fields = value;
-      },
       get _formValues() {
         return _formValues;
       },
