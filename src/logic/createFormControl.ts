@@ -1206,6 +1206,9 @@ export function createFormControl<
       get _fields() {
         return _fields;
       },
+      set _fields(value) {
+        _fields = value;
+      },
       get _formValues() {
         return _formValues;
       },
@@ -1234,7 +1237,10 @@ export function createFormControl<
         return _options;
       },
       set _options(value) {
-        _options = value;
+        _options = {
+          ..._options,
+          ...value,
+        };
       },
     },
     trigger,
