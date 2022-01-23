@@ -1221,9 +1221,6 @@ export function createFormControl<
       get _defaultValues() {
         return _defaultValues;
       },
-      set _defaultValues(value) {
-        _defaultValues = value;
-      },
       get _names() {
         return _names;
       },
