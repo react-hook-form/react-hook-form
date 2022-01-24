@@ -99,18 +99,6 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let _formState: FormState<TFieldValues> = {
-    isDirty: false,
-    isValidating: false,
-    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
-    isSubmitted: false,
-    submitCount: 0,
-    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    errors: {} as FieldErrors<TFieldValues>,
-  };
   let _fields = {};
   let _defaultValues = _options.defaultValues || {};
   let _formValues = _options.shouldUnregister
@@ -130,6 +118,19 @@ export function createFormControl<
   let delayErrorCallback: DelayCallback;
   let timer = 0;
   let validateFields: Record<InternalFieldName, number> = {};
+  let _formState: FormState<TFieldValues> = {
+    isDirty: false,
+    isValidating: false,
+    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
+    isSubmitted: false,
+    submitCount: 0,
+    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
+    isSubmitting: false,
+    isSubmitSuccessful: false,
+    isValid: false,
+    errors: {} as FieldErrors<TFieldValues>,
+  };
+  const _formStateMap = new WeakMap();
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -155,6 +156,11 @@ export function createFormControl<
       clearTimeout(timer);
       timer = window.setTimeout(() => callback(...args), wait);
     };
+
+  const _getFormState = () => _formStateMap.get(_formState) || _formState;
+
+  const _updateFormState = (value: FormState<TFieldValues>) =>
+    _formStateMap.set(_formState, value);
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
     let isValid = false;
@@ -231,12 +237,16 @@ export function createFormControl<
     }
   };
 
-  const updateErrors = (name: InternalFieldName, error: FieldError) => (
-    set(_formState.errors, name, error),
+  const updateErrors = (name: InternalFieldName, error: FieldError) => {
+    const currentState = _getFormState();
+    set(currentState.errors, name, error);
+    _updateFormState(currentState);
+
+    set(_formState.errors, name, error);
     _subjects.state.next({
       errors: _formState.errors,
-    })
-  );
+    });
+  };
 
   const updateValidAndValue = (
     name: InternalFieldName,
@@ -1241,6 +1251,8 @@ export function createFormControl<
           ...value,
         };
       },
+      _getFormState,
+      _updateFormState,
     },
     trigger,
     register,

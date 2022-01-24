@@ -348,6 +348,8 @@ export type Control<
     watch: boolean;
   };
   _options: UseFormProps<TFieldValues, TContext>;
+  _getFormState: () => FormState<TFieldValues>;
+  _updateFormState: (value: FormState<TFieldValues>) => void;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
   _updateValid: Noop;
