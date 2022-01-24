@@ -726,6 +726,7 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
+        _updateFormState({ ...(watched ? {} : fieldState) });
         return (
           shouldRender &&
           _subjects.state.next({ name, ...(watched ? {} : fieldState) })
