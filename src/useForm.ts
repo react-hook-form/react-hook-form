@@ -49,12 +49,13 @@ export function useForm<
   const callback = React.useCallback(
     (value) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
-        control._formState = {
-          ...control._formState,
+        const formState = {
+          ...control._getFormState(),
           ...value,
         };
 
-        updateFormState({ ...control._formState });
+        control._updateFormState(formState);
+        updateFormState({ ...formState });
       }
     },
     [control],

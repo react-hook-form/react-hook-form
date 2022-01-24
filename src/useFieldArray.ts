@@ -254,11 +254,12 @@ export const useFieldArray = <
     if (_actioned.current) {
       control._executeSchema([name]).then((result) => {
         const error = get(result.errors, name);
+        const formState = control._getFormState();
 
-        if (error && error.type && !get(control._formState.errors, name)) {
-          set(control._formState.errors, name, error);
+        if (error && error.type && !get(formState.errors, name)) {
+          set(formState.errors, name, error);
           control._subjects.state.next({
-            errors: control._formState.errors as FieldErrors<TFieldValues>,
+            errors: formState.errors as FieldErrors<TFieldValues>,
           });
         }
       });

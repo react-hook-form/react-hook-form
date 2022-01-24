@@ -125,7 +125,7 @@ describe('handleSubmit', () => {
 
     expect(callback).not.toBeCalled();
     expect(focus).toBeCalled();
-    expect(result.current.control._formState.errors?.test?.type).toBe(
+    expect(result.current.control._getFormState().errors?.test?.type).toBe(
       'required',
     );
   });
@@ -150,7 +150,7 @@ describe('handleSubmit', () => {
 
     expect(callback).not.toBeCalled();
     expect(mockFocus).not.toBeCalled();
-    expect(result.current.control._formState.errors?.test?.type).toBe(
+    expect(result.current.control._getFormState().errors?.test?.type).toBe(
       'required',
     );
   });

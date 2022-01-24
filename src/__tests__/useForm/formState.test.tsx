@@ -118,7 +118,7 @@ describe('formState', () => {
       });
     });
 
-    it('should return false when default value is not valid value', async () => {
+    it.only('should return false when default value is not valid value', async () => {
       const { result } = renderHook(() => {
         const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,

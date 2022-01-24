@@ -17,7 +17,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 ): UseFormStateReturn<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
-  const [formState, updateFormState] = React.useState(control._formState);
+  const [formState, updateFormState] = React.useState(control._getFormState());
   const _localProxyFormState = React.useRef({
     isDirty: false,
     dirtyFields: false,
@@ -41,7 +41,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
       ) &&
       shouldRenderFormState(value, _localProxyFormState.current) &&
       updateFormState({
-        ...control._formState,
+        ...control._getFormState(),
         ...value,
       }),
     [control, exact],
