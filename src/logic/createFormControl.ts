@@ -1082,6 +1082,7 @@ export function createFormControl<
             errors: {} as FieldErrors<TFieldValues>,
             isSubmitting: true,
           });
+          _updateFormState(formState);
           await onValid(fieldValues, e);
         } else {
           onInvalid && (await onInvalid(formState.errors, e));
