@@ -48,8 +48,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext ext
         watch: boolean;
     };
     _options: UseFormProps<TFieldValues, TContext>;
+    _getFormState: () => FormState<TFieldValues>;
+    _updateFormState: (value: Partial<FormState<TFieldValues>>) => FormState<TFieldValues>;
     _getDirty: GetIsDirty;
-    _formState: FormState<TFieldValues>;
     _updateValid: Noop;
     _fields: FieldRefs;
     _formValues: FieldValues;

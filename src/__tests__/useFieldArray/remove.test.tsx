@@ -146,13 +146,13 @@ describe('remove', () => {
       screen.getByText('notValid');
     });
 
-    // await actComponent(async () => {
-    //   fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
-    // });
-    //
-    // await waitFor(() => {
-    //   screen.getByText('isValid');
-    // });
+    await actComponent(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+    });
+
+    await waitFor(() => {
+      screen.getByText('isValid');
+    });
   });
 
   it('should remove field according index', () => {
