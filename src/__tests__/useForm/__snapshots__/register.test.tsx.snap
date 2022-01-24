@@ -19,7 +19,7 @@ Object {
 }
 `;
 
-exports[`register should remove input value and reference with unregister: true 1`] = `
+exports[`register should remove input value and reference with shouldUnregister: true 1`] = `
 Array [
   Object {
     "test": "bill",

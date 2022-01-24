@@ -86,7 +86,7 @@ import validateField from './validateField';
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
   reValidateMode: VALIDATION_MODE.onChange,
-  focusError: true,
+  shouldFocusError: true,
 } as const;
 
 export function createFormControl<
@@ -113,7 +113,9 @@ export function createFormControl<
   };
   let _fields = {};
   let _defaultValues = _options.defaultValues || {};
-  let _formValues = _options.unregister ? {} : cloneObject(_defaultValues);
+  let _formValues = _options.shouldUnregister
+    ? {}
+    : cloneObject(_defaultValues);
   let _stateFlags = {
     action: false,
     mount: false,
@@ -376,7 +378,7 @@ export function createFormControl<
             name || _names.mount,
             _fields,
             _options.criteriaMode,
-            _options.nativeValidation,
+            _options.shouldUseNativeValidation,
           ),
         )
       : ({} as ResolverResult<TFieldValues>);
@@ -417,7 +419,7 @@ export function createFormControl<
             field,
             get(_formValues, fieldReference.name),
             shouldDisplayAllAssociatedErrors,
-            _options.nativeValidation,
+            _options.shouldUseNativeValidation,
           );
 
           if (fieldError[fieldReference.name]) {
@@ -493,7 +495,7 @@ export function createFormControl<
       get(
         _stateFlags.mount ? _formValues : _defaultValues,
         name,
-        props.unregister ? get(_defaultValues, name, []) : [],
+        props.shouldUnregister ? get(_defaultValues, name, []) : [],
       ),
     );
 
@@ -555,10 +557,16 @@ export function createFormControl<
       }
     }
 
-    (options.dirty || options.touch) &&
-      updateTouchAndDirty(name, fieldValue, options.touch, options.dirty, true);
+    (options.shouldDirty || options.shouldTouch) &&
+      updateTouchAndDirty(
+        name,
+        fieldValue,
+        options.shouldTouch,
+        options.shouldDirty,
+        true,
+      );
 
-    options.validate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
   const setValues = <
@@ -602,7 +610,7 @@ export function createFormControl<
 
       if (
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
-        options.dirty
+        options.shouldDirty
       ) {
         _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
 
@@ -712,7 +720,7 @@ export function createFormControl<
             field,
             get(_formValues, name),
             shouldDisplayAllAssociatedErrors,
-            _options.nativeValidation,
+            _options.shouldUseNativeValidation,
           )
         )[name];
 
@@ -769,7 +777,7 @@ export function createFormControl<
       isValidating: false,
     });
 
-    options.focus &&
+    options.shouldFocus &&
       !validationResult &&
       focusFieldBy(
         _fields,
@@ -833,7 +841,7 @@ export function createFormControl<
       isValid: false,
     });
 
-    options && options.focus && ref && ref.focus && ref.focus();
+    options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
   const watch: UseFormWatch<TFieldValues> = (
@@ -878,7 +886,7 @@ export function createFormControl<
         !options.keepError && unset(_formState.errors, fieldName);
         !options.keepDirty && unset(_formState.dirtyFields, fieldName);
         !options.keepTouched && unset(_formState.touchedFields, fieldName);
-        !_options.unregister &&
+        !_options.shouldUnregister &&
           !options.keepDefaultValue &&
           unset(_defaultValues, fieldName);
       }
@@ -921,7 +929,7 @@ export function createFormControl<
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
-      ...(_options.nativeValidation
+      ...(_options.shouldUseNativeValidation
         ? {
             required: !!options.required,
             min: getRuleValue(options.min),
@@ -975,7 +983,7 @@ export function createFormControl<
             field._f.mount = false;
           }
 
-          (_options.unregister || options.unregister) &&
+          (_options.shouldUnregister || options.shouldUnregister) &&
             !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
             _names.unMount.add(name);
         }
@@ -990,7 +998,7 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = _options.unregister
+      let fieldValues: any = _options.shouldUnregister
         ? cloneObject(_formValues)
         : { ..._formValues };
 
@@ -1018,7 +1026,7 @@ export function createFormControl<
           await onValid(fieldValues, e);
         } else {
           onInvalid && (await onInvalid(_formState.errors, e));
-          _options.focusError &&
+          _options.shouldFocusError &&
             focusFieldBy(
               _fields,
               (key) => get(_formState.errors, key),
@@ -1103,7 +1111,7 @@ export function createFormControl<
         }
       }
 
-      _formValues = props.unregister
+      _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
           ? cloneObject(_defaultValues)
           : {}
@@ -1131,7 +1139,7 @@ export function createFormControl<
 
     _stateFlags.mount = !_proxyFormState.isValid;
 
-    _stateFlags.watch = !!props.unregister;
+    _stateFlags.watch = !!props.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount

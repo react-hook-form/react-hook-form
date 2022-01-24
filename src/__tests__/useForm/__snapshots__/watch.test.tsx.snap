@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`watch should remove input value after input is unmounted with unregister: true 1`] = `
+exports[`watch should remove input value after input is unmounted with shouldUnregister: true 1`] = `
 Array [
   Object {},
   Object {

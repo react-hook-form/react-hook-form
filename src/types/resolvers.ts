@@ -20,7 +20,7 @@ export interface ResolverOptions<TFieldValues> {
   criteriaMode?: CriteriaMode;
   fields: Record<InternalFieldName, Field['_f']>;
   names?: FieldName<TFieldValues>[];
-  nativeValidation: boolean | undefined;
+  shouldUseNativeValidation: boolean | undefined;
 }
 
 export type Resolver<

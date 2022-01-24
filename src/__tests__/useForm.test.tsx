@@ -159,7 +159,7 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeTruthy();
     });
 
-    it('should only validate input which are mounted even with unregister: false', async () => {
+    it('should only validate input which are mounted even with shouldUnregister: false', async () => {
       const Component = () => {
         const [show, setShow] = React.useState(true);
         const {
@@ -210,7 +210,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('when unregister set to true', () => {
+  describe('when shouldUnregister set to true', () => {
     describe('with useFieldArray', () => {
       type FormValues = {
         test: string;
@@ -230,7 +230,7 @@ describe('useForm', () => {
         const { fields } = useFieldArray({
           control,
           name: 'test2',
-          unregister: true,
+          shouldUnregister: true,
         });
 
         return (
@@ -251,7 +251,7 @@ describe('useForm', () => {
         const Component = () => {
           const [show, setShow] = React.useState(true);
           const { register, handleSubmit, control } = useForm<FormValues>({
-            unregister: true,
+            shouldUnregister: true,
             defaultValues: {
               test: 'bill',
               test1: 'bill1',
@@ -339,7 +339,7 @@ describe('useForm', () => {
           firstName: string;
           moreDetail: boolean;
         }>({
-          unregister: true,
+          shouldUnregister: true,
         });
         const moreDetail = watch('moreDetail');
 
@@ -390,7 +390,7 @@ describe('useForm', () => {
 
       const Component = () => {
         const { register, handleSubmit } = useForm({
-          unregister: true,
+          shouldUnregister: true,
         });
         const [radio1, setRadio1] = React.useState(true);
         const [radio2, setRadio2] = React.useState(true);

@@ -129,7 +129,7 @@ describe('formState', () => {
 
       await act(async () => {
         result.current.register('issue', { required: true });
-        result.current.setValue('issue', '', { validate: true });
+        result.current.setValue('issue', '', { shouldValidate: true });
       });
 
       expect(result.current.formState.isValid).toBeFalsy();
@@ -159,7 +159,7 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm({
           mode: 'onChange',
-          unregister: true,
+          shouldUnregister: true,
         });
         const test = watch('test');
 

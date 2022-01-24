@@ -99,7 +99,7 @@ const UseFieldArray: React.FC = () => {
           append(
             { name: renderCount.toString() },
             {
-              focus: !withoutFocus,
+              shouldFocus: !withoutFocus,
             },
           )
         }
@@ -114,7 +114,7 @@ const UseFieldArray: React.FC = () => {
           prepend(
             { name: renderCount.toString() },
             {
-              focus: !withoutFocus,
+              shouldFocus: !withoutFocus,
             },
           )
         }
@@ -162,7 +162,7 @@ const UseFieldArray: React.FC = () => {
             1,
             { name: renderCount.toString() },
             {
-              focus: !withoutFocus,
+              shouldFocus: !withoutFocus,
             },
           )
         }

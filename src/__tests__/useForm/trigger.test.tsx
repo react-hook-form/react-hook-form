@@ -466,7 +466,7 @@ describe('trigger', () => {
               <input
                 onChange={(e) =>
                   methods.setValue('test', e.target.value, {
-                    validate: true,
+                    shouldValidate: true,
                   })
                 }
               />
@@ -474,7 +474,7 @@ describe('trigger', () => {
               <input
                 onChange={(e) =>
                   methods.setValue('test1', e.target.value, {
-                    validate: true,
+                    shouldValidate: true,
                   })
                 }
               />
@@ -594,7 +594,7 @@ describe('trigger', () => {
       } = useForm<{
         test: string;
       }>({
-        unregister: true,
+        shouldUnregister: true,
       });
 
       return (
@@ -642,7 +642,7 @@ describe('trigger', () => {
             {...register('test', { required: true })}
             placeholder={'test'}
           />
-          <button onClick={() => trigger('test', { focus: true })}>
+          <button onClick={() => trigger('test', { shouldFocus: true })}>
             trigger
           </button>
         </>
@@ -676,7 +676,7 @@ describe('trigger', () => {
       return (
         <>
           <input {...register('test')} placeholder={'test'} />
-          <button onClick={() => trigger('test', { focus: true })}>
+          <button onClick={() => trigger('test', { shouldFocus: true })}>
             trigger
           </button>
         </>
@@ -709,7 +709,7 @@ describe('trigger', () => {
             {...register('test2', { required: true })}
             placeholder={'test2'}
           />
-          <button onClick={() => trigger(undefined, { focus: true })}>
+          <button onClick={() => trigger(undefined, { shouldFocus: true })}>
             trigger
           </button>
         </>

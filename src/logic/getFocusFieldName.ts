@@ -6,7 +6,7 @@ export default (
   index: number,
   options: FieldArrayMethodProps = {},
 ): string =>
-  options.focus || isUndefined(options.focus)
+  options.shouldFocus || isUndefined(options.shouldFocus)
     ? options.focusName ||
       `${name}.${isUndefined(options.focusIndex) ? index : options.focusIndex}.`
     : '';

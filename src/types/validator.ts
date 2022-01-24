@@ -38,7 +38,7 @@ export type RegisterOptions<
   valueAsDate: boolean;
   value: FieldPathValue<TFieldValues, TFieldName>;
   setValueAs: (value: any) => any;
-  unregister?: boolean;
+  shouldUnregister?: boolean;
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;
   disabled: boolean;

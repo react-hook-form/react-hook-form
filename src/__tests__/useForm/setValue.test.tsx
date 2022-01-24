@@ -19,7 +19,7 @@ import isFunction from '../../utils/isFunction';
 jest.useFakeTimers();
 
 describe('setValue', () => {
-  it('should not setValue for unmounted state with unregister', () => {
+  it('should not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
 
     result.current.register('test1');
@@ -257,7 +257,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set unmountFieldsState value when unregister is set to false', async () => {
+  it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -512,7 +512,7 @@ describe('setValue', () => {
   });
 
   describe('with validation', () => {
-    it('should be called trigger method if validate variable is true', async () => {
+    it('should be called trigger method if shouldValidate variable is true', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
@@ -531,7 +531,7 @@ describe('setValue', () => {
 
       await act(async () =>
         result.current.setValue('test', 'abc', {
-          validate: true,
+          shouldValidate: true,
         }),
       );
 
@@ -560,7 +560,7 @@ describe('setValue', () => {
             <button
               onClick={() => {
                 setValue('test', 'bill', {
-                  validate: true,
+                  shouldValidate: true,
                 });
               }}
             >
@@ -601,7 +601,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test).toBeUndefined();
     });
 
-    it('should be called trigger method if validate variable is true and field value is array', async () => {
+    it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string[];
@@ -623,7 +623,7 @@ describe('setValue', () => {
 
       await act(async () =>
         result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
-          validate: true,
+          shouldValidate: true,
         }),
       );
 
@@ -658,7 +658,7 @@ describe('setValue', () => {
 
   describe('with dirty', () => {
     it.each(['isDirty', 'dirtyFields'])(
-      'should be dirtyFields when %s is defined when dirty is true',
+      'should be dirtyFields when %s is defined when shouldDirty is true',
       (property) => {
         const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -668,7 +668,9 @@ describe('setValue', () => {
 
         result.current.register('test');
 
-        act(() => result.current.setValue('test', 'test', { dirty: true }));
+        act(() =>
+          result.current.setValue('test', 'test', { shouldDirty: true }),
+        );
 
         expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields).toEqual({ test: true });
@@ -681,7 +683,7 @@ describe('setValue', () => {
       ['isDirty', ['test1', '', 'test3'], [true, undefined, true]],
       ['dirty', ['test1', '', 'test3'], [true, undefined, true]],
     ])(
-      'should be dirtyFields when %s is defined when dirty is true with array fields',
+      'should be dirtyFields when %s is defined when shouldDirty is true with array fields',
       (property, values, dirtyFields) => {
         const { result } = renderHook(() =>
           useForm<{
@@ -703,7 +705,7 @@ describe('setValue', () => {
 
         act(() =>
           result.current.setValue('test', values, {
-            dirty: true,
+            shouldDirty: true,
           }),
         );
 
@@ -715,7 +717,7 @@ describe('setValue', () => {
     );
 
     it.each(['isDirty', 'dirtyFields'])(
-      'should not be dirtyFields when %s is defined when dirty is false',
+      'should not be dirtyFields when %s is defined when shouldDirty is false',
       (property) => {
         const { result } = renderHook(() =>
           useForm<{
@@ -727,7 +729,9 @@ describe('setValue', () => {
 
         result.current.register('test');
 
-        act(() => result.current.setValue('test', 'test', { dirty: false }));
+        act(() =>
+          result.current.setValue('test', 'test', { shouldDirty: false }),
+        );
 
         expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields).toEqual({});
@@ -748,7 +752,7 @@ describe('setValue', () => {
 
         result.current.register('test');
 
-        act(() => result.current.setValue('test', '1', { dirty: true }));
+        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
         expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
@@ -769,12 +773,14 @@ describe('setValue', () => {
 
         result.current.register('test');
 
-        act(() => result.current.setValue('test', '1', { dirty: true }));
+        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
         expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
 
-        act(() => result.current.setValue('test', 'default', { dirty: true }));
+        act(() =>
+          result.current.setValue('test', 'default', { shouldDirty: true }),
+        );
 
         expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
@@ -783,7 +789,7 @@ describe('setValue', () => {
   });
 
   describe('with touched', () => {
-    it('should update touched with touched config', () => {
+    it('should update touched with shouldTouched config', () => {
       const App = () => {
         const {
           setValue,
@@ -797,7 +803,7 @@ describe('setValue', () => {
             <input {...register('test')} />
             <button
               onClick={() => {
-                setValue('test', 'data', { touch: true });
+                setValue('test', 'data', { shouldTouch: true });
               }}
             >
               Test
@@ -927,14 +933,14 @@ describe('setValue', () => {
     });
 
     await act(async () => {
-      result.current.setValue('test.data', 'test', { validate: true });
+      result.current.setValue('test.data', 'test', { shouldValidate: true });
     });
 
     expect(result.current.formState.isValid).toBeFalsy();
 
     await act(async () => {
       await result.current.setValue('test.data1', 'test', {
-        validate: true,
+        shouldValidate: true,
       });
     });
 
@@ -1322,7 +1328,7 @@ describe('setValue', () => {
       });
 
       React.useEffect(() => {
-        setValue('test', '1234', { dirty: true });
+        setValue('test', '1234', { shouldDirty: true });
       }, [setValue]);
 
       return <p>{isDirty ? 'dirty' : 'not'}</p>;

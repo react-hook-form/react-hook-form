@@ -13,7 +13,7 @@ Array [
 ]
 `;
 
-exports[`useWatch fieldArray with unregister true should watch correct input update with single field array input 1`] = `
+exports[`useWatch fieldArray with shouldUnregister true should watch correct input update with single field array input 1`] = `
 Array [
   Array [
     Object {

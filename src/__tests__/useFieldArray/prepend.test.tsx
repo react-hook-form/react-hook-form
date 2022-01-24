@@ -320,7 +320,7 @@ describe('prepend', () => {
     );
   });
 
-  it('should focus if focus is true', () => {
+  it('should focus if shouldFocus is true', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -353,7 +353,7 @@ describe('prepend', () => {
     expect(document.activeElement).toEqual(inputs[0]);
   });
 
-  it('should not focus if focus is false', () => {
+  it('should not focus if shouldFocus is false', () => {
     const Component = () => {
       const { register, control } = useForm({
         defaultValues: {
@@ -369,7 +369,7 @@ describe('prepend', () => {
           ))}
           <button
             type="button"
-            onClick={() => prepend({ value: '' }, { focus: false })}
+            onClick={() => prepend({ value: '' }, { shouldFocus: false })}
           >
             prepend
           </button>

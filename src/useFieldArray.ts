@@ -37,7 +37,7 @@ export const useFieldArray = <
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName> => {
   const methods = useFormContext();
-  const { control = methods.control, name, unregister } = props;
+  const { control = methods.control, name, shouldUnregister } = props;
   const [fields, setFields] = React.useState<
     Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]
   >(control._getFieldArray(name));
@@ -293,10 +293,10 @@ export const useFieldArray = <
     !get(control._formValues, name) && set(control._formValues, name, []);
 
     return () => {
-      (control._options.unregister || unregister) &&
+      (control._options.shouldUnregister || shouldUnregister) &&
         control.unregister(name as FieldPath<TFieldValues>);
     };
-  }, [name, control, unregister]);
+  }, [name, control, shouldUnregister]);
 
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),

@@ -130,11 +130,11 @@ describe('handleSubmit', () => {
     );
   });
 
-  it('should not focus if focusError is false', async () => {
+  it('should not focus if shouldFocusError is false', async () => {
     const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
 
     const { result } = renderHook(() =>
-      useForm<{ test: string }>({ focusError: false }),
+      useForm<{ test: string }>({ shouldFocusError: false }),
     );
 
     result.current.register('test', { required: true });
