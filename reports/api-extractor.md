@@ -37,10 +37,10 @@ declare namespace Auto {
 export { Auto }
 
 // @public (undocumented)
-export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, method: T, args: {
-    argA?: unknown;
-    argB?: unknown;
-}, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], shouldSetValue?: boolean, shouldSetFields?: boolean) => void;
+export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], method?: T, args?: Partial<{
+    argA: unknown;
+    argB: unknown;
+}>, shouldSetValue?: boolean, shouldUpdateFieldsAndErrors?: boolean) => void;
 
 declare namespace Branded {
     export {
@@ -84,6 +84,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext ext
     }>;
     register: UseFormRegister<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
+    getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
 // @public (undocumented)
@@ -601,7 +602,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: Field
 export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
 
 // @public (undocumented)
-export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
+export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
@@ -665,7 +666,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
-    _getFieldState: _UseFormGetFieldState<TFieldValues>;
+    getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
     clearErrors: UseFormClearErrors<TFieldValues>;
     setValue: UseFormSetValue<TFieldValues>;
