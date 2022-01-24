@@ -121,12 +121,12 @@ describe('useForm', () => {
       });
 
       expect(formState.touchedFields.test).toBeDefined();
-      expect(formState.dirty).toBeFalsy();
+      expect(formState.isDirty).toBeFalsy();
 
       unmount();
 
       expect(formState.touchedFields.test).toBeDefined();
-      expect(formState.dirty).toBeFalsy();
+      expect(formState.isDirty).toBeFalsy();
     });
 
     it('should update dirtyFields during unregister', () => {
@@ -137,7 +137,7 @@ describe('useForm', () => {
         }>();
         formState = tempFormState;
 
-        formState.dirty;
+        formState.isDirty;
         formState.dirtyFields;
 
         return <input {...register('test', { required: true })} />;
@@ -151,12 +151,12 @@ describe('useForm', () => {
       });
 
       expect(formState.dirtyFields.test).toBeDefined();
-      expect(formState.dirty).toBeTruthy();
+      expect(formState.isDirty).toBeTruthy();
 
       unmount();
 
       expect(formState.dirtyFields.test).toBeDefined();
-      expect(formState.dirty).toBeTruthy();
+      expect(formState.isDirty).toBeTruthy();
     });
 
     it('should only validate input which are mounted even with unregister: false', async () => {
@@ -508,7 +508,7 @@ describe('useForm', () => {
       const {
         register,
         handleSubmit,
-        formState: { errors, valid },
+        formState: { errors, isValid },
       } = internationalMethods;
       methods = internationalMethods;
 
@@ -522,7 +522,7 @@ describe('useForm', () => {
             {errors?.test?.message && errors.test.message}
           </span>
           <button onClick={handleSubmit(() => {})}>button</button>
-          <p>{valid ? 'valid' : 'invalid'}</p>
+          <p>{isValid ? 'valid' : 'invalid'}</p>
         </div>
       );
     };
@@ -886,7 +886,7 @@ describe('useForm', () => {
 
         render(<Component resolver={resolver} mode="onChange" />);
 
-        methods.formState.valid;
+        methods.formState.isValid;
 
         await actComponent(async () => {
           fireEvent.input(screen.getByRole('textbox'), {
@@ -895,7 +895,7 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.valid).toBeTruthy();
+        expect(methods.formState.isValid).toBeTruthy();
 
         await actComponent(async () => {
           fireEvent.input(screen.getByRole('textbox'), {
@@ -905,7 +905,7 @@ describe('useForm', () => {
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
-        expect(methods.formState.valid).toBeFalsy();
+        expect(methods.formState.isValid).toBeFalsy();
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
@@ -925,7 +925,7 @@ describe('useForm', () => {
 
         render(<Component resolver={resolver} mode="onChange" />);
 
-        methods.formState.valid;
+        methods.formState.isValid;
 
         await actComponent(async () => {
           fireEvent.input(screen.getByRole('textbox'), {
@@ -934,7 +934,7 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.valid).toBeTruthy();
+        expect(methods.formState.isValid).toBeTruthy();
 
         await actComponent(async () => {
           fireEvent.input(screen.getByRole('textbox'), {
@@ -967,7 +967,7 @@ describe('useForm', () => {
 
         render(<Component resolver={resolver} mode="onChange" />);
 
-        methods.formState.valid;
+        methods.formState.isValid;
 
         await actComponent(async () => {
           fireEvent.input(screen.getByRole('textbox'), {
@@ -976,7 +976,7 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.valid).toBeTruthy();
+        expect(methods.formState.isValid).toBeTruthy();
 
         await actComponent(async () => {
           fireEvent.input(screen.getByRole('textbox'), {
@@ -986,7 +986,7 @@ describe('useForm', () => {
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.valid).toBeFalsy();
+        expect(methods.formState.isValid).toBeFalsy();
       });
 
       it("should call the resolver with the field being validated when an input's value change", async () => {
@@ -1420,7 +1420,7 @@ describe('useForm', () => {
           <>
             <button onClick={() => setToggle(!toggle)}>Toggle</button>
             {toggle && <input id="test" {...register('test')} />}
-            <button disabled={!formState.valid}>Submit</button>
+            <button disabled={!formState.isValid}>Submit</button>
           </>
         );
       };

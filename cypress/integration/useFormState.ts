@@ -20,7 +20,7 @@ describe('useFormState', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: true,
+        isDirty: true,
         touched: [
           'nestItem',
           'firstName',
@@ -34,7 +34,7 @@ describe('useFormState', () => {
           'maxDate',
           'minLength',
         ],
-        dirtyFields: [
+        dirty: [
           'firstName',
           'arrayItem',
           'nestItem',
@@ -47,10 +47,10 @@ describe('useFormState', () => {
           'maxDate',
           'minLength',
         ],
-        submitted: true,
-        submitSuccessful: false,
+        isSubmitted: true,
+        isSubmitSuccessful: false,
         submitCount: 0,
-        valid: false,
+        isValid: false,
       }),
     );
 
@@ -64,7 +64,7 @@ describe('useFormState', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: true,
+        isDirty: true,
         touched: [
           'nestItem',
           'firstName',
@@ -79,7 +79,7 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        dirtyFields: [
+        dirty: [
           'firstName',
           'arrayItem',
           'nestItem',
@@ -93,10 +93,10 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        submitted: true,
-        submitSuccessful: false,
+        isSubmitted: true,
+        isSubmitSuccessful: false,
         submitCount: 0,
-        valid: true,
+        isValid: true,
       }),
     );
 
@@ -104,7 +104,7 @@ describe('useFormState', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: true,
+        isDirty: true,
         touched: [
           'nestItem',
           'firstName',
@@ -119,7 +119,7 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        dirtyFields: [
+        dirty: [
           'firstName',
           'arrayItem',
           'nestItem',
@@ -133,10 +133,10 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        submitted: true,
-        submitSuccessful: true,
+        isSubmitted: true,
+        isSubmitSuccessful: true,
         submitCount: 1,
-        valid: true,
+        isValid: true,
       }),
     );
 
@@ -144,13 +144,13 @@ describe('useFormState', () => {
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirty: false,
+        isDirty: false,
         touched: [],
-        dirtyFields: [],
-        submitted: false,
-        submitSuccessful: false,
+        dirty: [],
+        isSubmitted: false,
+        isSubmitSuccessful: false,
         submitCount: 0,
-        valid: true,
+        isValid: true,
       }),
     );
 

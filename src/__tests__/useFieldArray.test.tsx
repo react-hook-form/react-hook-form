@@ -121,7 +121,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { valid, errors },
+          formState: { isValid, errors },
         } = useForm<{ test: { value: string }[] }>({
           defaultValues: {
             test: [{ value: 'test' }],
@@ -152,7 +152,7 @@ describe('useFieldArray', () => {
               append
             </button>
 
-            {!valid && <p>not valid</p>}
+            {!isValid && <p>not valid</p>}
             {errors.test && <p>errors</p>}
           </form>
         );
@@ -239,7 +239,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { valid },
+          formState: { isValid },
         } = useForm<{
           data: string;
           test: { value: string }[];
@@ -261,7 +261,7 @@ describe('useFieldArray', () => {
               <input key={field.id} {...register(`test.${i}.value` as const)} />
             ))}
             <button onClick={() => append({ value: '' })}>append</button>
-            <span>{valid && 'valid'}</span>
+            <span>{isValid && 'valid'}</span>
           </div>
         );
       };
@@ -325,7 +325,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { valid },
+          formState: { isValid },
         } = useForm<FormValues>({
           resolver: (data) => {
             formData = data;
@@ -356,7 +356,7 @@ describe('useFieldArray', () => {
                 </button>
               </fieldset>
             ))}
-            <span>{valid && 'valid'}</span>
+            <span>{isValid && 'valid'}</span>
           </form>
         );
       };
@@ -1013,7 +1013,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with setValue', () => {
-    it.each(['dirty', 'dirtyFields'])(
+    it.each(['isDirty', 'dirtyFields'])(
       'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
       async (property) => {
         let setValue: any;
@@ -1072,7 +1072,7 @@ describe('useFieldArray', () => {
             test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
-          expect(formState.dirty).toBeTruthy();
+          expect(formState.isDirty).toBeTruthy();
         }
       },
     );
@@ -1134,7 +1134,7 @@ describe('useFieldArray', () => {
             test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
-          expect(formState.dirty).toBeTruthy();
+          expect(formState.isDirty).toBeTruthy();
         }
 
         actComponent(() => {
@@ -1158,7 +1158,7 @@ describe('useFieldArray', () => {
             },
           ],
         });
-        expect(formState.dirty).toBeFalsy();
+        expect(formState.isDirty).toBeFalsy();
       },
     );
 

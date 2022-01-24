@@ -139,7 +139,7 @@ describe('getFieldState', () => {
           return (
             <form>
               <input {...register('test')} />
-              <p>{_getFieldState('test')?.touched ? 'touched' : ''}</p>
+              <p>{_getFieldState('test')?.isTouched ? 'touched' : ''}</p>
             </form>
           );
         };
@@ -171,7 +171,7 @@ describe('getFieldState', () => {
           return (
             <form>
               <input {...register('test')} />
-              <p>{_getFieldState('test')?.dirty ? 'dirty' : ''}</p>
+              <p>{_getFieldState('test')?.isDirty ? 'dirty' : ''}</p>
             </form>
           );
         };
@@ -285,7 +285,7 @@ describe('getFieldState', () => {
           return (
             <form>
               <NestedInput control={control} />
-              <p>{_getFieldState('nested')?.touched ? 'touched' : ''}</p>
+              <p>{_getFieldState('nested')?.isTouched ? 'touched' : ''}</p>
             </form>
           );
         };
@@ -320,7 +320,7 @@ describe('getFieldState', () => {
           return (
             <form>
               <NestedInput control={control} />
-              <p>{_getFieldState('nested')?.dirty ? 'dirty' : ''}</p>
+              <p>{_getFieldState('nested')?.isDirty ? 'dirty' : ''}</p>
             </form>
           );
         };
@@ -408,12 +408,12 @@ describe('getFieldState', () => {
             },
           });
 
-          const { touched } = _getFieldState('test', formState);
+          const { isTouched } = _getFieldState('test', formState);
 
           return (
             <form>
               <input {...register('test')} />
-              <p>{touched ? 'touched' : ''}</p>
+              <p>{isTouched ? 'touched' : ''}</p>
             </form>
           );
         };
@@ -436,12 +436,12 @@ describe('getFieldState', () => {
             },
           });
 
-          const { dirty } = _getFieldState('test', formState);
+          const { isDirty } = _getFieldState('test', formState);
 
           return (
             <form>
               <input {...register('test')} />
-              <p>{dirty ? 'dirty' : ''}</p>
+              <p>{isDirty ? 'dirty' : ''}</p>
             </form>
           );
         };
@@ -538,12 +538,12 @@ describe('getFieldState', () => {
             },
           });
 
-          const { touched } = _getFieldState('nested', formState);
+          const { isTouched } = _getFieldState('nested', formState);
 
           return (
             <form>
               <NestedInput control={control} />
-              <p>{touched ? 'touched' : ''}</p>
+              <p>{isTouched ? 'touched' : ''}</p>
             </form>
           );
         };
@@ -569,12 +569,12 @@ describe('getFieldState', () => {
             },
           });
 
-          const { dirty } = _getFieldState('nested', formState);
+          const { isDirty } = _getFieldState('nested', formState);
 
           return (
             <form>
               <NestedInput control={control} />
-              <p>{dirty ? 'dirty' : ''}</p>
+              <p>{isDirty ? 'dirty' : ''}</p>
             </form>
           );
         };
@@ -605,16 +605,16 @@ describe('getFieldState', () => {
         });
 
         // @ts-expect-error expected to show type error for field name
-        const { dirty } = _getFieldState(formState, 'nestedMissing');
+        const { isDirty } = _getFieldState(formState, 'nestedMissing');
 
         // @ts-expect-error expected to show type error for field name
-        const { touched } = _getFieldState('nestedMissing');
+        const { isTouched } = _getFieldState('nestedMissing');
 
         return (
           <form>
             <NestedInput control={control} />
-            <p>{dirty ? 'dirty' : 'notDirty'}</p>
-            <p>{touched ? 'touched' : 'notTouched'}</p>
+            <p>{isDirty ? 'dirty' : 'notDirty'}</p>
+            <p>{isTouched ? 'touched' : 'notTouched'}</p>
           </form>
         );
       };

@@ -13,7 +13,7 @@ const UseFieldArray: React.FC = () => {
     control,
     handleSubmit,
     register,
-    formState: { dirty, touchedFields, valid, dirtyFields, errors },
+    formState: { isDirty, touchedFields, isValid, dirtyFields, errors },
     reset,
   } = useForm<FormValues>({
     ...(mode === 'default' || withoutFocus
@@ -324,8 +324,8 @@ const UseFieldArray: React.FC = () => {
 
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
-      <div id="dirty">{dirty ? 'yes' : 'no'}</div>
-      <div id="isValid">{valid ? 'yes' : 'no'}</div>
+      <div id="dirty">{isDirty ? 'yes' : 'no'}</div>
+      <div id="isValid">{isValid ? 'yes' : 'no'}</div>
       <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
       <div id="touched">{JSON.stringify(touchedFields.data)}</div>
     </form>

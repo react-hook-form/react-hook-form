@@ -105,26 +105,26 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-  dirty: boolean;
-  validating: boolean;
+  isDirty: boolean;
+  isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   errors: boolean;
-  valid: boolean;
+  isValid: boolean;
 };
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues> = {
-  dirty: boolean;
+  isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
-  submitted: boolean;
-  submitSuccessful: boolean;
+  isSubmitted: boolean;
+  isSubmitSuccessful: boolean;
   submitCount: number;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
-  submitting: boolean;
-  validating: boolean;
-  valid: boolean;
+  isSubmitting: boolean;
+  isValidating: boolean;
+  isValid: boolean;
   errors: FieldErrors<TFieldValues>;
 };
 
@@ -133,7 +133,7 @@ export type KeepStateOptions = Partial<{
   keepDirty: boolean;
   keepValues: boolean;
   keepDefaultValues: boolean;
-  keepSubmitted: boolean;
+  keepIsSubmitted: boolean;
   keepTouched: boolean;
   keepSubmitCount: boolean;
 }>;
@@ -186,8 +186,8 @@ export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <
   formState?: FormState<TFieldValues>,
 ) => {
   invalid: boolean;
-  dirty: boolean;
-  touched: boolean;
+  isDirty: boolean;
+  isTouched: boolean;
   error: FieldError;
 };
 
@@ -245,7 +245,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
     | readonly FieldPath<TFieldValues>[],
   options?: Omit<
     KeepStateOptions,
-    | 'keepSubmitted'
+    | 'keepIsSubmitted'
     | 'keepSubmitCount'
     | 'keepValues'
     | 'keepDefaultValues'

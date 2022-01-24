@@ -54,7 +54,7 @@ describe('register', () => {
         const {
           register,
           watch,
-          formState: { dirty },
+          formState: { isDirty },
         } = useForm<{
           test: string;
         }>({
@@ -68,7 +68,7 @@ describe('register', () => {
         return (
           <form>
             <input type={type} {...register('test')} />
-            <span role="alert">{`${dirty}`}</span>
+            <span role="alert">{`${isDirty}`}</span>
             {test}
           </form>
         );
@@ -138,7 +138,7 @@ describe('register', () => {
       return (
         <div>
           <input {...register('test')} />
-          <span role="alert">{`${formState.valid}`}</span>
+          <span role="alert">{`${formState.isValid}`}</span>
         </div>
       );
     };
@@ -186,7 +186,7 @@ describe('register', () => {
         <div>
           <input {...register('test', { required: true })} />
           <input type="text" {...register('issue', { required: true })} />
-          <button disabled={!formState.valid}>submit</button>
+          <button disabled={!formState.isValid}>submit</button>
         </div>
       );
     };
@@ -205,7 +205,7 @@ describe('register', () => {
       const {
         register,
         setValue,
-        formState: { valid },
+        formState: { isValid },
       } = useForm({
         defaultValues: { a: 'default', b: '' },
         mode: 'onChange',
@@ -234,7 +234,7 @@ describe('register', () => {
               setValue('b', value, { dirty: true, validate: true })
             }
           />
-          <div>{String(valid)}</div>
+          <div>{String(isValid)}</div>
         </form>
       );
     }

@@ -38,8 +38,8 @@ import { useForm } from '../../useForm';
 
     expectType<{
       invalid: boolean;
-      dirty: boolean;
-      touched: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
       error: FieldError;
     }>(_getFieldState('test'));
   }
@@ -54,8 +54,8 @@ import { useForm } from '../../useForm';
 
     expectType<{
       invalid: boolean;
-      dirty: boolean;
-      touched: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
       error: FieldError;
     }>(_getFieldState('test', formState));
   }

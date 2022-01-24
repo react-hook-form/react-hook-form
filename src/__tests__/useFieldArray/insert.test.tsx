@@ -94,7 +94,7 @@ describe('insert', () => {
         return { formState, fields, append, insert };
       });
 
-      result.current.formState.dirty;
+      result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
       act(() => {
@@ -105,7 +105,7 @@ describe('insert', () => {
         result.current.insert(1, { value1: '3' });
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: false }, { value1: true }, { value: true }],
       });
@@ -129,7 +129,7 @@ describe('insert', () => {
         return { formState, fields, append, insert };
       });
 
-      result.current.formState.dirty;
+      result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
       act(() => {
@@ -140,7 +140,7 @@ describe('insert', () => {
         result.current.insert(1, [{ value1: '3' }, { value2: '4' }]);
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
           { value: false },
@@ -605,7 +605,7 @@ describe('insert', () => {
         return { formState, insert };
       });
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.insert(0, { value: '1' });

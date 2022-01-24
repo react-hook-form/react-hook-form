@@ -55,9 +55,9 @@ describe('FormProvider', () => {
     };
 
     const TestFormState = () => {
-      const { dirty } = useFormState();
+      const { isDirty } = useFormState();
 
-      return <div>{dirty ? 'yes' : 'no'}</div>;
+      return <div>{isDirty ? 'yes' : 'no'}</div>;
     };
 
     const Component = () => {

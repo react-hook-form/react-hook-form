@@ -54,7 +54,7 @@ describe('useController', () => {
     const Test1 = ({ control }: { control: Control<FormValues> }) => {
       const {
         field,
-        fieldState: { dirty, touched },
+        fieldState: { isDirty, isTouched },
       } = useController({
         name: 'test1',
         control,
@@ -65,8 +65,8 @@ describe('useController', () => {
       return (
         <div>
           <input {...field} />
-          {dirty && <p>dirty</p>}
-          {touched && <p>isTouched</p>}
+          {isDirty && <p>isDirty</p>}
+          {isTouched && <p>isTouched</p>}
         </div>
       );
     };
@@ -99,7 +99,7 @@ describe('useController', () => {
       });
     });
 
-    screen.getByText('dirty');
+    screen.getByText('isDirty');
 
     await act(async () => {
       fireEvent.blur(screen.getAllByRole('textbox')[1]);

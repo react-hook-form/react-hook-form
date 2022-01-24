@@ -662,15 +662,15 @@ describe('setValue', () => {
       (property) => {
         const { result } = renderHook(() => useForm<{ test: string }>());
 
-        result.current.formState[property as 'dirtyFields' | 'dirty'];
-        result.current.formState.dirty;
+        result.current.formState[property as 'dirtyFields' | 'isDirty'];
+        result.current.formState.isDirty;
         result.current.formState.dirtyFields;
 
         result.current.register('test');
 
         act(() => result.current.setValue('test', 'test', { dirty: true }));
 
-        expect(result.current.formState.dirty).toBeTruthy();
+        expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields).toEqual({ test: true });
       },
     );
@@ -693,8 +693,8 @@ describe('setValue', () => {
           }),
         );
 
-        result.current.formState[property as 'dirty' | 'dirtyFields'];
-        result.current.formState.dirty;
+        result.current.formState[property as 'isDirty' | 'dirtyFields'];
+        result.current.formState.isDirty;
         result.current.formState.dirtyFields;
 
         result.current.register('test.0');
@@ -707,7 +707,7 @@ describe('setValue', () => {
           }),
         );
 
-        expect(result.current.formState.dirty).toBeTruthy();
+        expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields).toEqual({
           test: dirtyFields,
         });
@@ -723,13 +723,13 @@ describe('setValue', () => {
           }>(),
         );
 
-        result.current.formState[property as 'dirty' | 'dirtyFields'];
+        result.current.formState[property as 'isDirty' | 'dirtyFields'];
 
         result.current.register('test');
 
         act(() => result.current.setValue('test', 'test', { dirty: false }));
 
-        expect(result.current.formState.dirty).toBeFalsy();
+        expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields).toEqual({});
       },
     );
@@ -742,15 +742,15 @@ describe('setValue', () => {
             defaultValues: { test: 'default' },
           }),
         );
-        result.current.formState[property as 'dirtyFields' | 'dirty'];
-        result.current.formState.dirty;
+        result.current.formState[property as 'dirtyFields' | 'isDirty'];
+        result.current.formState.isDirty;
         result.current.formState.dirtyFields;
 
         result.current.register('test');
 
         act(() => result.current.setValue('test', '1', { dirty: true }));
 
-        expect(result.current.formState.dirty).toBeTruthy();
+        expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
       },
     );
@@ -763,20 +763,20 @@ describe('setValue', () => {
             defaultValues: { test: 'default' },
           }),
         );
-        result.current.formState[property as 'dirty' | 'dirtyFields'];
-        result.current.formState.dirty;
+        result.current.formState[property as 'isDirty' | 'dirtyFields'];
+        result.current.formState.isDirty;
         result.current.formState.dirtyFields;
 
         result.current.register('test');
 
         act(() => result.current.setValue('test', '1', { dirty: true }));
 
-        expect(result.current.formState.dirty).toBeTruthy();
+        expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
 
         act(() => result.current.setValue('test', 'default', { dirty: true }));
 
-        expect(result.current.formState.dirty).toBeFalsy();
+        expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       },
     );
@@ -915,7 +915,7 @@ describe('setValue', () => {
       }),
     );
 
-    result.current.formState.valid;
+    result.current.formState.isValid;
 
     await act(async () => {
       await result.current.register('test.data', { required: true });
@@ -930,7 +930,7 @@ describe('setValue', () => {
       result.current.setValue('test.data', 'test', { validate: true });
     });
 
-    expect(result.current.formState.valid).toBeFalsy();
+    expect(result.current.formState.isValid).toBeFalsy();
 
     await act(async () => {
       await result.current.setValue('test.data1', 'test', {
@@ -938,7 +938,7 @@ describe('setValue', () => {
       });
     });
 
-    expect(result.current.formState.valid).toBeTruthy();
+    expect(result.current.formState.isValid).toBeTruthy();
   });
 
   it('should setValue with valueAs', async () => {
@@ -1314,7 +1314,7 @@ describe('setValue', () => {
     const App = () => {
       const {
         setValue,
-        formState: { dirty },
+        formState: { isDirty },
       } = useForm({
         defaultValues: {
           test: '',
@@ -1325,7 +1325,7 @@ describe('setValue', () => {
         setValue('test', '1234', { dirty: true });
       }, [setValue]);
 
-      return <p>{dirty ? 'dirty' : 'not'}</p>;
+      return <p>{isDirty ? 'dirty' : 'not'}</p>;
     };
 
     render(<App />);

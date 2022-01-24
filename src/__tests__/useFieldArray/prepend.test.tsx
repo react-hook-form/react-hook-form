@@ -111,7 +111,7 @@ describe('prepend', () => {
         return { register, formState, fields, prepend };
       });
 
-      result.current.formState.dirty;
+      result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
       act(() => {
@@ -126,7 +126,7 @@ describe('prepend', () => {
         result.current.prepend({ value: 'test2' });
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }, { value: true }],
       });
@@ -482,7 +482,7 @@ describe('prepend', () => {
         return { formState, prepend };
       });
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.prepend({ value: '1' });
