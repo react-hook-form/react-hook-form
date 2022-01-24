@@ -204,7 +204,11 @@ describe('getFieldState', () => {
           return (
             <form>
               <input {...register('test')} />
-              <p>{getFieldState('test')?.error === undefined ? 'error undefined' : ''}</p>
+              <p>
+                {getFieldState('test').error === undefined
+                  ? 'error undefined'
+                  : ''}
+              </p>
             </form>
           );
         };
@@ -383,7 +387,11 @@ describe('getFieldState', () => {
           return (
             <form>
               <NestedInput control={control} />
-              <p>{getFieldState('nested')?.error === undefined ? 'error undefined' : ''}</p>
+              <p>
+                {getFieldState('nested').error === undefined
+                  ? 'error undefined'
+                  : ''}
+              </p>
             </form>
           );
         };
