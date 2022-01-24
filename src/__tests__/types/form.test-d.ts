@@ -27,7 +27,7 @@ import { useForm } from '../../useForm';
   }
 }
 
-/** {@link _UseFormGetFieldState} */ {
+/** {@link UseFormGetFieldState} */ {
   /** it should return associated field state */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { getFieldState } = useForm({
@@ -40,7 +40,7 @@ import { useForm } from '../../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
-      error: FieldError;
+      error?: FieldError;
     }>(getFieldState('test'));
   }
 
@@ -56,7 +56,7 @@ import { useForm } from '../../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
-      error: FieldError;
+      error?: FieldError;
     }>(getFieldState('test', formState));
   }
 }
