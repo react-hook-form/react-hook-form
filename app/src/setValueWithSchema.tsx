@@ -51,8 +51,8 @@ const SetValueWithSchema: React.FC = () => {
         placeholder="firstName"
         onChange={(e) => {
           setValue('firstName', e.target.value, {
-            validate: true,
-            dirty: true,
+            shouldValidate: true,
+            shouldDirty: true,
           });
         }}
       />
@@ -63,8 +63,8 @@ const SetValueWithSchema: React.FC = () => {
         placeholder="lastName"
         onChange={(e) => {
           setValue('lastName', e.target.value, {
-            validate: true,
-            dirty: true,
+            shouldValidate: true,
+            shouldDirty: true,
           });
         }}
       />
@@ -74,8 +74,8 @@ const SetValueWithSchema: React.FC = () => {
         {...register('age')}
         onChange={(e) => {
           setValue('age', e.target.value, {
-            validate: true,
-            dirty: true,
+            shouldValidate: true,
+            shouldDirty: true,
           });
         }}
       />
@@ -88,8 +88,8 @@ const SetValueWithSchema: React.FC = () => {
         id="setValue"
         onClick={() => {
           setValue('requiredField', 'test123456789', {
-            validate: true,
-            dirty: true,
+            shouldValidate: true,
+            shouldDirty: true,
           });
         }}
       >

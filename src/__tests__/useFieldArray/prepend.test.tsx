@@ -112,7 +112,7 @@ describe('prepend', () => {
         return { register, formState, fields, prepend };
       });
 
-      result.current.formState.dirty;
+      result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
       act(() => {
@@ -127,7 +127,7 @@ describe('prepend', () => {
         result.current.prepend({ value: 'test2' });
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }, { value: true }],
       });
@@ -321,7 +321,7 @@ describe('prepend', () => {
     );
   });
 
-  it('should focus if focus is true', () => {
+  it('should focus if shouldFocus is true', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -354,7 +354,7 @@ describe('prepend', () => {
     expect(document.activeElement).toEqual(inputs[0]);
   });
 
-  it('should not focus if focus is false', () => {
+  it('should not focus if shouldFocus is false', () => {
     const Component = () => {
       const { register, control } = useForm({
         defaultValues: {
@@ -370,7 +370,7 @@ describe('prepend', () => {
           ))}
           <button
             type="button"
-            onClick={() => prepend({ value: '' }, { focus: false })}
+            onClick={() => prepend({ value: '' }, { shouldFocus: false })}
           >
             prepend
           </button>
@@ -483,7 +483,7 @@ describe('prepend', () => {
         return { formState, prepend };
       });
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.prepend({ value: '1' });

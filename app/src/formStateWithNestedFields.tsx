@@ -11,13 +11,13 @@ const FormStateWithNestedFields = () => {
     handleSubmit,
     formState: {
       dirtyFields,
-      submitted,
+      isSubmitted,
       submitCount,
       touchedFields,
-      dirty,
-      submitting,
-      submitSuccessful,
-      valid,
+      isDirty,
+      isSubmitting,
+      isSubmitSuccessful,
+      isValid,
     },
     reset,
   } = useForm<{
@@ -73,12 +73,12 @@ const FormStateWithNestedFields = () => {
       </div>
       <div id="state">
         {JSON.stringify({
-          dirty,
-          submitted,
+          isDirty,
+          isSubmitted,
           submitCount,
-          submitting,
-          submitSuccessful,
-          valid,
+          isSubmitting,
+          isSubmitSuccessful,
+          isValid,
           touched: (
             Object.keys(touchedFields) as Array<keyof typeof touchedFields>
           ).flatMap((topLevelKey) =>
@@ -86,7 +86,7 @@ const FormStateWithNestedFields = () => {
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
-          dirtyFields: (
+          dirty: (
             Object.keys(dirtyFields) as Array<keyof typeof touchedFields>
           ).flatMap((topLevelKey) =>
             Object.keys(dirtyFields[topLevelKey] || {}).map(

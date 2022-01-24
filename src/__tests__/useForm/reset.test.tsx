@@ -28,7 +28,7 @@ describe('reset', () => {
     result.current.register('test');
     result.current.setValue('test', 'data');
 
-    expect(result.current.formState.submitted).toBeFalsy();
+    expect(result.current.formState.isSubmitted).toBeFalsy();
     await act(async () => {
       await result.current.handleSubmit((data) => {
         expect(data).toEqual({
@@ -40,9 +40,9 @@ describe('reset', () => {
       } as React.SyntheticEvent);
     });
 
-    expect(result.current.formState.submitted).toBeTruthy();
+    expect(result.current.formState.isSubmitted).toBeTruthy();
     act(() => result.current.reset());
-    expect(result.current.formState.submitted).toBeFalsy();
+    expect(result.current.formState.isSubmitted).toBeFalsy();
   });
 
   it('should reset form value', () => {
@@ -133,7 +133,7 @@ describe('reset', () => {
     });
   });
 
-  it('should reset unmountFieldsState value when unregister set to false', () => {
+  it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -198,7 +198,7 @@ describe('reset', () => {
       const {
         register,
         reset,
-        formState: { dirty },
+        formState: { isDirty },
       } = useForm({
         defaultValues: {
           test: 'test1',
@@ -208,7 +208,7 @@ describe('reset', () => {
       return (
         <>
           <input {...register('test')} />
-          <p>{dirty ? 'dirty' : ''}</p>
+          <p>{isDirty ? 'dirty' : ''}</p>
           <button
             type={'button'}
             onClick={() =>
@@ -261,7 +261,7 @@ describe('reset', () => {
       const {
         register,
         reset,
-        formState: { dirty, dirtyFields },
+        formState: { isDirty, dirtyFields },
       } = useForm({
         defaultValues: {
           firstName: 'test',
@@ -271,7 +271,7 @@ describe('reset', () => {
       return (
         <form>
           <input {...register('firstName')} placeholder="First Name" />
-          <p>{dirty ? 'dirty' : 'pristine'}</p>
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
           <p>{JSON.stringify(dirtyFields)}</p>
 
           <button
@@ -311,14 +311,14 @@ describe('reset', () => {
         register,
         handleSubmit,
         reset,
-        formState: { touchedFields, errors, dirty },
+        formState: { touchedFields, errors, isDirty },
       } = useForm<{ test: string }>({
         defaultValues: {
           test: '',
         },
       });
 
-      formState = { touchedFields, errors, dirty: dirty };
+      formState = { touchedFields, errors, isDirty };
 
       return (
         <form onSubmit={handleSubmit(() => {})}>
@@ -331,7 +331,7 @@ describe('reset', () => {
                 {
                   keepErrors: true,
                   keepDirty: true,
-                  keepSubmitted: true,
+                  keepIsSubmitted: true,
                   keepTouched: true,
                   keepSubmitCount: true,
                 },
@@ -608,7 +608,7 @@ describe('reset', () => {
     expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
 
-  it('should only return register input when reset is invoked with unregister:true', async () => {
+  it('should only return register input when reset is invoked with shouldUnregister:true', async () => {
     let submittedData = {};
 
     const App = () => {
@@ -616,7 +616,7 @@ describe('reset', () => {
         defaultValues: {
           test: 'bill',
         },
-        unregister: true,
+        shouldUnregister: true,
       });
 
       return (
@@ -659,11 +659,11 @@ describe('reset', () => {
     expect(submittedData).toEqual({});
   });
 
-  it('should update controlled input correctly with unregister set to true', () => {
+  it('should update controlled input correctly with shouldUnregister set to true', () => {
     function App() {
       const { register, reset, control } = useForm({
         defaultValues: { uncontrolled: '', control: '' },
-        unregister: true,
+        shouldUnregister: true,
       });
 
       return (
@@ -780,7 +780,7 @@ describe('reset', () => {
       const {
         control,
         reset,
-        formState: { valid },
+        formState: { isValid },
       } = useForm();
 
       mounted.push(control._stateFlags.mount);
@@ -792,7 +792,7 @@ describe('reset', () => {
 
       return (
         <form>
-          <p>{valid ? 'true' : 'false'}</p>
+          <p>{isValid ? 'true' : 'false'}</p>
         </form>
       );
     };
@@ -935,7 +935,7 @@ describe('reset', () => {
         control,
         handleSubmit,
         reset,
-        formState: { dirty, dirtyFields },
+        formState: { isDirty, dirtyFields },
       } = useForm({
         defaultValues: {
           something: 'anything',
@@ -953,7 +953,7 @@ describe('reset', () => {
             reset({ ...data });
           })}
         >
-          <p>is dirty? {dirty ? 'yes' : 'no'}</p>
+          <p>is dirty? {isDirty ? 'yes' : 'no'}</p>
           <p>{JSON.stringify(dirtyFields)}</p>
           <input {...register('something')} />
           <ul>

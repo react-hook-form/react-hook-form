@@ -121,7 +121,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { valid, errors },
+          formState: { isValid, errors },
         } = useForm<{ test: { value: string }[] }>({
           defaultValues: {
             test: [{ value: 'test' }],
@@ -152,7 +152,7 @@ describe('useFieldArray', () => {
               append
             </button>
 
-            {!valid && <p>not valid</p>}
+            {!isValid && <p>not valid</p>}
             {errors.test && <p>errors</p>}
           </form>
         );
@@ -196,7 +196,7 @@ describe('useFieldArray', () => {
       const App = () => {
         const [show, setShow] = React.useState(true);
         const { control, register } = useForm({
-          unregister: false,
+          shouldUnregister: false,
           defaultValues: {
             test: [{ name: 'test' }],
           },
@@ -239,7 +239,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { valid },
+          formState: { isValid },
         } = useForm<{
           data: string;
           test: { value: string }[];
@@ -261,7 +261,7 @@ describe('useFieldArray', () => {
               <input key={field.id} {...register(`test.${i}.value` as const)} />
             ))}
             <button onClick={() => append({ value: '' })}>append</button>
-            <span>{valid && 'valid'}</span>
+            <span>{isValid && 'valid'}</span>
           </div>
         );
       };
@@ -325,7 +325,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { valid },
+          formState: { isValid },
         } = useForm<FormValues>({
           resolver: (data) => {
             formData = data;
@@ -356,7 +356,7 @@ describe('useFieldArray', () => {
                 </button>
               </fieldset>
             ))}
-            <span>{valid && 'valid'}</span>
+            <span>{isValid && 'valid'}</span>
           </form>
         );
       };
@@ -759,7 +759,7 @@ describe('useFieldArray', () => {
       const App = () => {
         const [show, setShow] = React.useState(true);
         const { control } = useForm<FormValues>({
-          unregister: true,
+          shouldUnregister: true,
           defaultValues: {
             test: [{ name: 'test' }],
           },
@@ -902,7 +902,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
     });
 
-    it('should reset with field array with unregister set to false', () => {
+    it('should reset with field array with shouldUnregister set to false', () => {
       const { result } = renderHook(() => {
         const { register, reset, control } = useForm({
           defaultValues: {
@@ -1013,7 +1013,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with setValue', () => {
-    it.each(['dirty', 'dirtyFields'])(
+    it.each(['isDirty', 'dirtyFields'])(
       'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
       async (property) => {
         let setValue: any;
@@ -1063,7 +1063,7 @@ describe('useFieldArray', () => {
               { name: 'default1' },
               { name: 'default2' },
             ],
-            { dirty: true },
+            { shouldDirty: true },
           );
         });
 
@@ -1072,7 +1072,7 @@ describe('useFieldArray', () => {
             test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
-          expect(formState.dirty).toBeTruthy();
+          expect(formState.isDirty).toBeTruthy();
         }
       },
     );
@@ -1125,7 +1125,7 @@ describe('useFieldArray', () => {
               { name: 'default1' },
               { name: 'default2' },
             ],
-            { dirty: true },
+            { shouldDirty: true },
           );
         });
 
@@ -1134,14 +1134,14 @@ describe('useFieldArray', () => {
             test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
-          expect(formState.dirty).toBeTruthy();
+          expect(formState.isDirty).toBeTruthy();
         }
 
         actComponent(() => {
           setValue(
             'test',
             [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
-            { dirty: true },
+            { shouldDirty: true },
           );
         });
 
@@ -1158,7 +1158,7 @@ describe('useFieldArray', () => {
             },
           ],
         });
-        expect(formState.dirty).toBeFalsy();
+        expect(formState.isDirty).toBeFalsy();
       },
     );
 
@@ -1261,7 +1261,7 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
-    it('should remove correctly with nested field array and set unregister to false', () => {
+    it('should remove correctly with nested field array and set shouldUnregister to false', () => {
       type FormValues = {
         fieldArray: {
           value: string;
@@ -1700,7 +1700,7 @@ describe('useFieldArray', () => {
                 ],
               },
             ],
-            { dirty: true },
+            { shouldDirty: true },
           );
         }, [setValue]);
 
@@ -1812,7 +1812,7 @@ describe('useFieldArray', () => {
                           },
                         },
                       ],
-                      { dirty: true },
+                      { shouldDirty: true },
                     );
                   }}
                 >
@@ -2215,7 +2215,7 @@ describe('useFieldArray', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it('should unregister field array when unregister set to true', () => {
+  it('should unregister field array when shouldUnregister set to true', () => {
     type FormValues = {
       test: {
         value: string;
@@ -2235,7 +2235,7 @@ describe('useFieldArray', () => {
       const { fields } = useFieldArray({
         control,
         name: 'test',
-        unregister: true,
+        shouldUnregister: true,
       });
 
       return (

@@ -14,7 +14,7 @@ const validationSchema = yup
   })
   .required();
 
-const valid: React.FC = () => {
+const IsValid: React.FC = () => {
   const { mode, defaultValues } = useParams();
   const isBuildInValidation = mode === 'build-in';
   const [show, setShow] = React.useState(true);
@@ -22,7 +22,7 @@ const valid: React.FC = () => {
     register,
     handleSubmit,
     unregister,
-    formState: { valid },
+    formState: { isValid },
   } = useForm<{
     firstName: string;
     lastName: string;
@@ -88,7 +88,7 @@ const valid: React.FC = () => {
           <input {...register('age')} placeholder="age" />
         </>
       )}
-      <div id="isValid">{JSON.stringify(valid)}</div>
+      <div id="isValid">{JSON.stringify(isValid)}</div>
       <div id="renderCount">{renderCounter}</div>
 
       <button
@@ -104,4 +104,4 @@ const valid: React.FC = () => {
   );
 };
 
-export default valid;
+export default IsValid;

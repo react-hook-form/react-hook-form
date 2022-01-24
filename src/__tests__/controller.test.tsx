@@ -11,6 +11,8 @@ import { Controller } from '../controller';
 import { ControllerRenderProps, NestedValue } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { FormProvider } from '../useFormContext';
+import { useWatch } from '../useWatch';
 
 function Input<TFieldValues>({
   onChange,
@@ -708,7 +710,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.touched && <p>Input is touched.</p>}
+              {fieldState.isTouched && <p>Input is touched.</p>}
             </>
           )}
           control={control}
@@ -739,7 +741,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.touched && <p>Input is dirty.</p>}
+              {fieldState.isTouched && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -808,7 +810,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.touched && <p>Input is dirty.</p>}
+              {fieldState.isTouched && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -900,7 +902,7 @@ describe('Controller', () => {
     const Component = () => {
       const {
         control,
-        formState: { valid },
+        formState: { isValid },
       } = useForm<{
         test: string;
         test1: string;
@@ -930,7 +932,7 @@ describe('Controller', () => {
             name={'test1'}
             control={control}
           />
-          {valid ? 'true' : 'false'}
+          {isValid ? 'true' : 'false'}
         </>
       );
     };
@@ -968,7 +970,7 @@ describe('Controller', () => {
     const Component = () => {
       const {
         control,
-        formState: { dirtyFields, dirty },
+        formState: { dirtyFields, isDirty },
       } = useForm<FormValues>({
         defaultValues: {
           test: '',
@@ -983,7 +985,7 @@ describe('Controller', () => {
             render={({ field }) => <input {...field} />}
           />
           <p>{JSON.stringify(dirtyFields)}</p>
-          <p>{dirty ? 'true' : 'false'}</p>
+          <p>{isDirty ? 'true' : 'false'}</p>
         </>
       );
     };
@@ -1005,7 +1007,7 @@ describe('Controller', () => {
     screen.getByText('false');
   });
 
-  it('should remove input value and reference with Controller and set unregister: true', () => {
+  it('should remove input value and reference with Controller and set shouldUnregister: true', () => {
     type FormValue = {
       test: string;
     };
@@ -1025,7 +1027,7 @@ describe('Controller', () => {
             <Controller
               control={control}
               name={'test'}
-              unregister
+              shouldUnregister
               render={({ field }) => <input {...field} />}
             />
           )}
@@ -1377,5 +1379,79 @@ describe('Controller', () => {
     render(<App />);
 
     expect(screen.getAllByRole('textbox').length).toEqual(4);
+  });
+
+  it('should unregister component within field array when field is unmounted', () => {
+    const getValueFn = jest.fn();
+
+    const Child = () => {
+      const { fields } = useFieldArray({
+        name: 'names',
+      });
+      const show = useWatch({ name: 'show' });
+
+      return (
+        <>
+          <Controller
+            name={'show'}
+            render={({ field }) => (
+              <input
+                {...field}
+                checked={field.value}
+                type="checkbox"
+                data-testid="checkbox"
+              />
+            )}
+          />
+
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              {show && (
+                <Controller
+                  shouldUnregister
+                  name={`names.${i}.firstName`}
+                  render={({ field }) => <input {...field} />}
+                />
+              )}
+            </div>
+          ))}
+        </>
+      );
+    };
+
+    function App() {
+      const methods = useForm({
+        defaultValues: { show: true, names: [{ firstName: '' }] },
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <Child />
+          <button
+            onClick={() => {
+              getValueFn(methods.getValues());
+            }}
+          >
+            getValues
+          </button>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(getValueFn).toBeCalledWith({
+      names: [{ firstName: '' }],
+      show: true,
+    });
+
+    fireEvent.click(screen.getByTestId('checkbox'));
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(getValueFn).toBeCalledWith({
+      show: false,
+    });
   });
 });

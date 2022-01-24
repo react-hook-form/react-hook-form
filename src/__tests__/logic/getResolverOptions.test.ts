@@ -51,7 +51,7 @@ describe('getFielfs', () => {
           "test.sub",
           "test1",
         ],
-        "nativeValidation": true,
+        "shouldUseNativeValidation": true,
       }
     `);
   });

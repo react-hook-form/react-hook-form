@@ -45,7 +45,7 @@ describe('remove', () => {
       });
 
       formState = tempFormState;
-      formState.dirty;
+      formState.isDirty;
 
       return (
         <form>
@@ -74,15 +74,15 @@ describe('remove', () => {
 
     render(<Component />);
 
-    expect(formState.dirty).toBeFalsy();
+    expect(formState.isDirty).toBeFalsy();
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    expect(formState.dirty).toBeTruthy();
+    expect(formState.isDirty).toBeTruthy();
 
     fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
 
-    expect(formState.dirty).toBeFalsy();
+    expect(formState.isDirty).toBeFalsy();
   });
 
   it('should update isValid formState when item removed', async () => {
@@ -105,7 +105,7 @@ describe('remove', () => {
 
       formState = tempFormState;
 
-      formState.valid;
+      formState.isValid;
 
       return (
         <form>
@@ -131,7 +131,7 @@ describe('remove', () => {
             append
           </button>
 
-          <p>{formState.valid ? 'isValid' : 'notValid'}</p>
+          <p>{formState.isValid ? 'isValid' : 'notValid'}</p>
         </form>
       );
     };
@@ -233,7 +233,7 @@ describe('remove', () => {
     expect(result.current.fields).toEqual([]);
   });
 
-  it.each(['dirty', 'dirtyFields'])(
+  it.each(['isDirty', 'dirtyFields'])(
     'should be dirtyFields when value is remove with %s',
     () => {
       const { result } = renderHook(() => {
@@ -250,7 +250,7 @@ describe('remove', () => {
         return { register, formState, fields, append, remove };
       });
 
-      result.current.formState.dirty;
+      result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
       act(() => {
@@ -265,7 +265,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }],
       });
@@ -274,7 +274,7 @@ describe('remove', () => {
         result.current.remove();
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }],
       });
@@ -348,7 +348,7 @@ describe('remove', () => {
         name: 'test',
       });
 
-      formState.valid;
+      formState.isValid;
 
       return (
         <form>
@@ -364,7 +364,7 @@ describe('remove', () => {
           <button type="button" onClick={() => remove(1)}>
             remove
           </button>
-          <p>{formState.valid ? 'valid' : 'notValid'}</p>
+          <p>{formState.isValid ? 'valid' : 'notValid'}</p>
         </form>
       );
     };
@@ -434,7 +434,7 @@ describe('remove', () => {
         control,
         name: 'test',
       });
-      isValid = formState.valid;
+      isValid = formState.isValid;
 
       return (
         <form>
@@ -781,13 +781,13 @@ describe('remove', () => {
     });
 
     result.current.formState.dirtyFields as Record<string, any>;
-    result.current.formState.dirty;
+    result.current.formState.isDirty;
 
     act(() => {
       result.current.append({ value: 'test' });
     });
 
-    expect(result.current.formState.dirty).toBeTruthy();
+    expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.dirtyFields).toEqual({
       test: { data: [{ value: false }, { value: true }] },
     });
@@ -796,7 +796,7 @@ describe('remove', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.formState.dirty).toBeFalsy();
+    expect(result.current.formState.isDirty).toBeFalsy();
     expect(result.current.formState.dirtyFields).toEqual({
       test: { data: [{ value: false }] },
     });
@@ -960,7 +960,7 @@ describe('remove', () => {
         return { formState, remove };
       });
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.remove(0);

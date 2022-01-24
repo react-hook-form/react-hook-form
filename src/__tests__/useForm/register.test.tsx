@@ -54,7 +54,7 @@ describe('register', () => {
         const {
           register,
           watch,
-          formState: { dirty },
+          formState: { isDirty },
         } = useForm<{
           test: string;
         }>({
@@ -68,7 +68,7 @@ describe('register', () => {
         return (
           <form>
             <input type={type} {...register('test')} />
-            <span role="alert">{`${dirty}`}</span>
+            <span role="alert">{`${isDirty}`}</span>
             {test}
           </form>
         );
@@ -138,7 +138,7 @@ describe('register', () => {
       return (
         <div>
           <input {...register('test')} />
-          <span role="alert">{`${formState.valid}`}</span>
+          <span role="alert">{`${formState.isValid}`}</span>
         </div>
       );
     };
@@ -186,7 +186,7 @@ describe('register', () => {
         <div>
           <input {...register('test', { required: true })} />
           <input type="text" {...register('issue', { required: true })} />
-          <button disabled={!formState.valid}>submit</button>
+          <button disabled={!formState.isValid}>submit</button>
         </div>
       );
     };
@@ -205,7 +205,7 @@ describe('register', () => {
       const {
         register,
         setValue,
-        formState: { valid },
+        formState: { isValid },
       } = useForm({
         defaultValues: { a: 'default', b: '' },
         mode: 'onChange',
@@ -225,16 +225,16 @@ describe('register', () => {
           <input
             placeholder={'inputA'}
             onChange={({ target: { value } }) =>
-              setValue('a', value, { dirty: true, validate: true })
+              setValue('a', value, { shouldDirty: true, shouldValidate: true })
             }
           />
           <input
             placeholder={'inputB'}
             onChange={({ target: { value } }) =>
-              setValue('b', value, { dirty: true, validate: true })
+              setValue('b', value, { shouldDirty: true, shouldValidate: true })
             }
           />
-          <div>{String(valid)}</div>
+          <div>{String(isValid)}</div>
         </form>
       );
     }
@@ -366,7 +366,7 @@ describe('register', () => {
     });
   });
 
-  it('should remove input value and reference with unregister: true', () => {
+  it('should remove input value and reference with shouldUnregister: true', () => {
     type FormValue = {
       test: string;
     };
@@ -382,7 +382,7 @@ describe('register', () => {
 
       return (
         <>
-          {show && <input {...register('test', { unregister: true })} />}
+          {show && <input {...register('test', { shouldUnregister: true })} />}
           <button onClick={() => setShow(false)}>hide</button>
         </>
       );
@@ -395,7 +395,7 @@ describe('register', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
-  it('should keep defaultValue with unregister: true when input unmounts', () => {
+  it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {
     type FormValue = {
       test: string;
     };
@@ -405,13 +405,13 @@ describe('register', () => {
         defaultValues: {
           test: 'bill',
         },
-        unregister: true,
+        shouldUnregister: true,
       });
       const [show, setShow] = React.useState(true);
 
       return (
         <>
-          {show && <input {...register('test', { unregister: true })} />}
+          {show && <input {...register('test', { shouldUnregister: true })} />}
           <button onClick={() => setShow(!show)}>hide</button>
         </>
       );

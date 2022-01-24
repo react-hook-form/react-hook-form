@@ -52,7 +52,7 @@ describe('useForm with SSR', () => {
       const { register } = useForm<{
         test: string;
       }>({
-        nativeValidation: true,
+        shouldUseNativeValidation: true,
       });
 
       return (

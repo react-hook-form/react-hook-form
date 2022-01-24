@@ -65,13 +65,13 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
 ) => any | Promise<any>;
 
 export type SetValueConfig = Partial<{
-  validate: boolean;
-  dirty: boolean;
-  touch: boolean;
+  shouldValidate: boolean;
+  shouldDirty: boolean;
+  shouldTouch: boolean;
 }>;
 
 export type TriggerConfig = Partial<{
-  focus: boolean;
+  shouldFocus: boolean;
 }>;
 
 export type ChangeHandler = (event: {
@@ -93,9 +93,9 @@ export type UseFormProps<
   defaultValues: DefaultValues<TFieldValues>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
-  focusError: boolean;
-  unregister: boolean;
-  nativeValidation: boolean;
+  shouldFocusError: boolean;
+  shouldUnregister: boolean;
+  shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
 }>;
@@ -106,26 +106,26 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-  dirty: boolean;
-  validating: boolean;
+  isDirty: boolean;
+  isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   errors: boolean;
-  valid: boolean;
+  isValid: boolean;
 };
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues> = {
-  dirty: boolean;
+  isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
-  submitted: boolean;
-  submitSuccessful: boolean;
+  isSubmitted: boolean;
+  isSubmitSuccessful: boolean;
   submitCount: number;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
-  submitting: boolean;
-  validating: boolean;
-  valid: boolean;
+  isSubmitting: boolean;
+  isValidating: boolean;
+  isValid: boolean;
   errors: FieldErrors<TFieldValues>;
 };
 
@@ -134,7 +134,7 @@ export type KeepStateOptions = Partial<{
   keepDirty: boolean;
   keepValues: boolean;
   keepDefaultValues: boolean;
-  keepSubmitted: boolean;
+  keepIsSubmitted: boolean;
   keepTouched: boolean;
   keepSubmitCount: boolean;
 }>;
@@ -180,15 +180,15 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
-export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <
+export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   TFieldName extends PathString,
 >(
   name: Auto.FieldPath<TFieldValues, TFieldName>,
   formState?: FormState<TFieldValues>,
 ) => {
   invalid: boolean;
-  dirty: boolean;
-  touched: boolean;
+  isDirty: boolean;
+  isTouched: boolean;
   error: FieldError;
 };
 
@@ -241,7 +241,7 @@ export type UseFormSetError<TFieldValues extends FieldValues> = <
   name: Auto.FieldPath<TFieldValues, TFieldName>,
   error: ErrorOption,
   options?: {
-    focus: boolean;
+    shouldFocus: boolean;
   },
 ) => void;
 
@@ -254,7 +254,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = <
     | readonly Auto.FieldPath<TFieldValues, TFieldName>[],
   options?: Omit<
     KeepStateOptions,
-    | 'keepSubmitted'
+    | 'keepIsSubmitted'
     | 'keepSubmitCount'
     | 'keepValues'
     | 'keepDefaultValues'
@@ -330,16 +330,16 @@ export type BatchFieldArrayUpdate = <
   TFieldArrayName extends PathString,
 >(
   name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>,
-  method: T,
-  args: {
-    argA?: unknown;
-    argB?: unknown;
-  },
   updatedFieldArrayValues?: Partial<
     FieldArray<TFieldValues, TFieldArrayName>
   >[],
+  method?: T,
+  args?: Partial<{
+    argA: unknown;
+    argB: unknown;
+  }>,
   shouldSetValue?: boolean,
-  shouldSetFields?: boolean,
+  shouldUpdateFieldsAndErrors?: boolean,
 ) => void;
 
 export type Control<
@@ -372,6 +372,7 @@ export type Control<
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues> = (
@@ -389,7 +390,7 @@ export type UseFormReturn<
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
-  _getFieldState: _UseFormGetFieldState<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;

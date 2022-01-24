@@ -16,8 +16,8 @@ import {
 
 export type ControllerFieldState = {
   invalid: boolean;
-  touched: boolean;
-  dirty: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
   error?: FieldError;
 };
 
@@ -41,7 +41,7 @@ export type UseControllerProps<
     RegisterOptions<TFieldValues, TName>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >;
-  unregister?: boolean;
+  shouldUnregister?: boolean;
   defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   control?: Control<TFieldValues>;
 };

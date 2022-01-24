@@ -7,7 +7,6 @@ import {
   FieldValues,
   InternalFieldName,
   PathString,
-  ReadFormState,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
@@ -23,12 +22,12 @@ function useFormState<
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
-  const _localProxyFormState = React.useRef<ReadFormState>({
-    dirty: false,
+  const _localProxyFormState = React.useRef({
+    isDirty: false,
     dirtyFields: false,
     touchedFields: false,
-    validating: false,
-    valid: false,
+    isValidating: false,
+    isValid: false,
     errors: false,
   });
   const _name = React.useRef(name);

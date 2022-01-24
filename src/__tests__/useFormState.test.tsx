@@ -23,13 +23,13 @@ describe('useFormState', () => {
         test: string;
       }>;
     }) => {
-      const { dirty, dirtyFields, touchedFields } = useFormState({
+      const { isDirty, dirtyFields, touchedFields } = useFormState({
         control,
       });
 
       return (
         <>
-          <div>{dirty ? 'isDirty' : ''}</div>
+          <div>{isDirty ? 'isDirty' : ''}</div>
           <div>{dirtyFields['test'] ? 'dirty field' : ''}</div>
           <div>{touchedFields['test'] ? 'isTouched' : ''}</div>
         </>
@@ -71,14 +71,14 @@ describe('useFormState', () => {
   it('should render correct isolated errors message', async () => {
     let count = 0;
     const Test = ({ control }: { control: Control }) => {
-      const { errors, valid } = useFormState({
+      const { errors, isValid } = useFormState({
         control,
       });
 
       return (
         <>
           <div>{errors['test'] ? 'error' : 'valid'}</div>
-          <div>{valid ? 'yes' : 'no'}</div>
+          <div>{isValid ? 'yes' : 'no'}</div>
         </>
       );
     };
@@ -130,7 +130,7 @@ describe('useFormState', () => {
     let test1Count = 0;
 
     const Test1 = ({ control }: { control: Control }) => {
-      const { dirty, dirtyFields } = useFormState({
+      const { isDirty, dirtyFields } = useFormState({
         control,
       });
 
@@ -141,7 +141,7 @@ describe('useFormState', () => {
           <div>
             {dirtyFields['test'] ? 'hasDirtyField' : 'notHasDirtyField'}
           </div>
-          <div>{dirty ? 'isDirty' : 'notDirty'}</div>
+          <div>{isDirty ? 'isDirty' : 'notDirty'}</div>
         </>
       );
     };
@@ -216,13 +216,13 @@ describe('useFormState', () => {
   it('should render correct submit state', async () => {
     let count = 0;
     const Test = ({ control }: { control: Control }) => {
-      const { submitted, submitCount } = useFormState({
+      const { isSubmitted, submitCount } = useFormState({
         control,
       });
 
       return (
         <>
-          <div>{submitted ? 'isSubmitted' : ''}</div>
+          <div>{isSubmitted ? 'isSubmitted' : ''}</div>
           <div>{submitCount}</div>
         </>
       );

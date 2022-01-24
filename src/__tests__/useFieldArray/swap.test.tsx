@@ -94,7 +94,7 @@ describe('swap', () => {
         };
       });
 
-      result.current.formState.dirty;
+      result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
       act(() => {
@@ -109,7 +109,7 @@ describe('swap', () => {
         result.current.swap(0, 1);
       });
 
-      expect(result.current.formState.dirty).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }, { value: true }],
       });
@@ -325,7 +325,7 @@ describe('swap', () => {
         return { formState, swap };
       });
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.swap(0, 1);

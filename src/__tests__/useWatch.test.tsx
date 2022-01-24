@@ -149,7 +149,7 @@ describe('useWatch', () => {
     expect(result.error).toBeUndefined();
   });
 
-  it('should remove input with unregister: true and deeply nested', async () => {
+  it('should remove input with shouldUnregister: true and deeply nested', async () => {
     type FormValue = {
       test: string;
     };
@@ -176,7 +176,7 @@ describe('useWatch', () => {
         defaultValues: {
           test: 'bill',
         },
-        unregister: true,
+        shouldUnregister: true,
       });
 
       return (
@@ -206,13 +206,13 @@ describe('useWatch', () => {
     expect(submitData).toEqual({});
   });
 
-  it('should return defaultValue with unregister set to true and keepDefaultValues', () => {
+  it('should return defaultValue with shouldUnregister set to true and keepDefaultValues', () => {
     const output: unknown[] = [];
 
     function App() {
       const { register, reset, control } = useForm({
         defaultValues: { test: 'test' },
-        unregister: true,
+        shouldUnregister: true,
       });
       const inputs = useWatch({ control });
 
@@ -840,7 +840,7 @@ describe('useWatch', () => {
           mode: 'onSubmit',
           reValidateMode: 'onChange',
           criteriaMode: 'all',
-          unregister: false,
+          shouldUnregister: false,
         });
 
         return (
@@ -863,7 +863,7 @@ describe('useWatch', () => {
       function FieldArray() {
         useFieldArray({
           name: 'arr',
-          unregister: false,
+          shouldUnregister: false,
         });
 
         return null;
@@ -875,7 +875,7 @@ describe('useWatch', () => {
     });
   });
 
-  describe('fieldArray with unregister true', () => {
+  describe('fieldArray with shouldUnregister true', () => {
     it('should watch correct input update with single field array input', () => {
       const watchData: unknown[] = [];
 
@@ -890,7 +890,7 @@ describe('useWatch', () => {
           defaultValues: {
             items: [{ prop: 'test' }, { prop: 'test1' }],
           },
-          unregister: true,
+          shouldUnregister: true,
         });
         const { control } = rhfProps;
 

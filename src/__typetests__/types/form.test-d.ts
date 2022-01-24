@@ -30,7 +30,7 @@ import { useForm } from '../../useForm';
 /** {@link _UseFormGetFieldState} */ {
   /** it should return associated field state */ {
     /* eslint-disable react-hooks/rules-of-hooks */
-    const { _getFieldState } = useForm({
+    const { getFieldState } = useForm({
       defaultValues: {
         test: '',
       },
@@ -38,15 +38,15 @@ import { useForm } from '../../useForm';
 
     expectType<{
       invalid: boolean;
-      dirty: boolean;
-      touched: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
       error: FieldError;
-    }>(_getFieldState('test'));
+    }>(getFieldState('test'));
   }
 
   /** it should return associated field state when formState is supplied */ {
     /* eslint-disable react-hooks/rules-of-hooks */
-    const { _getFieldState, formState } = useForm({
+    const { getFieldState, formState } = useForm({
       defaultValues: {
         test: '',
       },
@@ -54,9 +54,9 @@ import { useForm } from '../../useForm';
 
     expectType<{
       invalid: boolean;
-      dirty: boolean;
-      touched: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
       error: FieldError;
-    }>(_getFieldState('test', formState));
+    }>(getFieldState('test', formState));
   }
 }

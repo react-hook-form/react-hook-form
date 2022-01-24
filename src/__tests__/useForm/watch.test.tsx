@@ -341,7 +341,7 @@ describe('watch', () => {
     function Component() {
       const {
         register,
-        formState: { dirty },
+        formState: { isDirty },
         watch,
       } = useForm<{
         lastName: string;
@@ -353,7 +353,7 @@ describe('watch', () => {
       return (
         <form>
           <input {...register('lastName')} />
-          <p>{dirty ? 'True' : 'False'}</p>
+          <p>{isDirty ? 'True' : 'False'}</p>
         </form>
       );
     }
@@ -420,12 +420,12 @@ describe('watch', () => {
     });
   });
 
-  it('should remove input value after input is unmounted with unregister: true', () => {
+  it('should remove input value after input is unmounted with shouldUnregister: true', () => {
     const watched: unknown[] = [];
     const App = () => {
       const [show, setShow] = React.useState(true);
       const { watch, register } = useForm({
-        unregister: true,
+        shouldUnregister: true,
       });
 
       watched.push(watch());
@@ -457,12 +457,12 @@ describe('watch', () => {
     expect(watched).toMatchSnapshot();
   });
 
-  it('should flush additional render for unregister: true', async () => {
+  it('should flush additional render for shouldUnregister: true', async () => {
     const watchedData: unknown[] = [];
 
     const App = () => {
       const { watch, reset, register } = useForm({
-        unregister: true,
+        shouldUnregister: true,
       });
 
       React.useEffect(() => {

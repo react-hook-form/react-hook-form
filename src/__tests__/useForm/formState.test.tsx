@@ -21,7 +21,7 @@ describe('formState', () => {
       const Component = () => {
         const {
           register,
-          formState: { valid },
+          formState: { isValid },
         } = useForm<{ test: string }>({
           mode: 'onChange',
           resolver: async (data) => {
@@ -39,7 +39,7 @@ describe('formState', () => {
           },
         });
 
-        isValidValue = valid;
+        isValidValue = isValid;
         return <input {...register('test')} />;
       };
 
@@ -65,12 +65,12 @@ describe('formState', () => {
     it('should return true for onBlur mode by default', async () => {
       const App = () => {
         const {
-          formState: { valid },
+          formState: { isValid },
         } = useForm<{ test: string }>({
           mode: VALIDATION_MODE.onBlur,
         });
 
-        return <p>{valid ? 'valid' : 'invalid'}</p>;
+        return <p>{isValid ? 'valid' : 'invalid'}</p>;
       };
 
       render(<App />);
@@ -83,12 +83,12 @@ describe('formState', () => {
     it('should return true for onChange mode by default', async () => {
       const App = () => {
         const {
-          formState: { valid },
+          formState: { isValid },
         } = useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
         });
 
-        return <p>{valid ? 'valid' : 'invalid'}</p>;
+        return <p>{isValid ? 'valid' : 'invalid'}</p>;
       };
 
       render(<App />);
@@ -101,12 +101,12 @@ describe('formState', () => {
     it('should return true for all mode by default', async () => {
       const App = () => {
         const {
-          formState: { valid },
+          formState: { isValid },
         } = useForm<{ test: string }>({
           mode: VALIDATION_MODE.all,
         });
 
-        return <p>{valid ? 'valid' : 'invalid'}</p>;
+        return <p>{isValid ? 'valid' : 'invalid'}</p>;
       };
 
       render(<App />);
@@ -122,17 +122,17 @@ describe('formState', () => {
           mode: VALIDATION_MODE.onChange,
         });
 
-        methods.formState.valid;
+        methods.formState.isValid;
 
         return methods;
       });
 
       await act(async () => {
         result.current.register('issue', { required: true });
-        result.current.setValue('issue', '', { validate: true });
+        result.current.setValue('issue', '', { shouldValidate: true });
       });
 
-      expect(result.current.formState.valid).toBeFalsy();
+      expect(result.current.formState.isValid).toBeFalsy();
     });
 
     it('should return false when custom register with validation', async () => {
@@ -142,13 +142,13 @@ describe('formState', () => {
         }),
       );
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.register('issue', { required: true });
       });
 
-      expect(result.current.formState.valid).toBeFalsy();
+      expect(result.current.formState.isValid).toBeFalsy();
     });
 
     it('should update valid when toggle Controller', async () => {
@@ -156,16 +156,16 @@ describe('formState', () => {
         const {
           control,
           watch,
-          formState: { valid },
+          formState: { isValid },
         } = useForm({
           mode: 'onChange',
-          unregister: true,
+          shouldUnregister: true,
         });
         const test = watch('test');
 
         return (
           <div>
-            <p>{valid ? 'valid' : 'invalid'}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
             <Controller
               control={control}
               rules={{ required: true }}
@@ -275,7 +275,7 @@ describe('formState', () => {
         const {
           register,
           control,
-          formState: { valid },
+          formState: { isValid },
           reset,
         } = useForm<FormValues>({
           mode: 'onBlur',
@@ -296,7 +296,7 @@ describe('formState', () => {
               render={({ field }) => <input {...field} />}
             />
             <input {...register('foo1', { required: true })} />
-            {valid ? 'valid' : 'nope'}
+            {isValid ? 'valid' : 'nope'}
           </div>
         );
       }
@@ -311,7 +311,7 @@ describe('formState', () => {
         const {
           register,
           control,
-          formState: { valid },
+          formState: { isValid },
           reset,
         } = useForm<FormValues>({
           mode: 'onBlur',
@@ -332,7 +332,7 @@ describe('formState', () => {
               render={({ field }) => <input {...field} />}
             />
             <input {...register('foo1', { required: true })} />
-            {valid ? 'valid' : 'nope'}
+            {isValid ? 'valid' : 'nope'}
           </div>
         );
       }
@@ -352,15 +352,17 @@ describe('formState', () => {
       const {
         register,
         handleSubmit,
-        formState: { submitSuccessful, submitted },
+        formState: { isSubmitSuccessful, isSubmitted },
       } = useForm();
 
       return (
         <form>
           <input {...register('test')} />
-          <p>{submitted ? 'isSubmitted' : 'no'}</p>
+          <p>{isSubmitted ? 'isSubmitted' : 'no'}</p>
           <p>
-            {submitSuccessful ? 'isSubmitSuccessful' : 'isNotSubmitSuccessful'}
+            {isSubmitSuccessful
+              ? 'isSubmitSuccessful'
+              : 'isNotSubmitSuccessful'}
           </p>
           <button
             type={'button'}
@@ -387,7 +389,7 @@ describe('formState', () => {
       const {
         register,
         control,
-        formState: { valid },
+        formState: { isValid },
       } = useForm<{
         list: {
           firstName: string;
@@ -460,7 +462,7 @@ describe('formState', () => {
           >
             append
           </button>
-          <p>{valid ? 'valid' : 'inValid'}</p>
+          <p>{isValid ? 'valid' : 'inValid'}</p>
         </form>
       );
     };
@@ -537,7 +539,7 @@ describe('formState', () => {
       function App() {
         const {
           register,
-          formState: { valid },
+          formState: { isValid },
         } = useForm({
           mode: 'onChange',
         });
@@ -548,7 +550,7 @@ describe('formState', () => {
               {...register('value', { required: true })}
               defaultValue="Any default value!"
             />
-            <p>isValid = {valid ? 'true' : 'false'}</p>
+            <p>isValid = {isValid ? 'true' : 'false'}</p>
           </form>
         );
       }
@@ -564,7 +566,7 @@ describe('formState', () => {
       function App() {
         const {
           control,
-          formState: { valid },
+          formState: { isValid },
         } = useForm({
           mode: 'onChange',
         });
@@ -577,7 +579,7 @@ describe('formState', () => {
               name={'test'}
               defaultValue="Any default value!"
             />
-            <p>isValid = {valid ? 'true' : 'false'}</p>
+            <p>isValid = {isValid ? 'true' : 'false'}</p>
             <button>Submit</button>
           </form>
         );
@@ -787,7 +789,7 @@ describe('formState', () => {
       const App = () => {
         const {
           register,
-          formState: { errors, valid },
+          formState: { errors, isValid },
         } = useForm<{
           test: string;
         }>({
@@ -797,7 +799,7 @@ describe('formState', () => {
 
         return (
           <div>
-            {valid ? 'valid' : 'inValid'}
+            {isValid ? 'valid' : 'inValid'}
             <input
               {...register('test', {
                 required: true,

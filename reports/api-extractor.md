@@ -37,10 +37,10 @@ declare namespace Auto {
 export { Auto }
 
 // @public (undocumented)
-export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, method: T, args: {
-    argA?: unknown;
-    argB?: unknown;
-}, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], shouldSetValue?: boolean, shouldSetFields?: boolean) => void;
+export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], method?: T, args?: Partial<{
+    argA: unknown;
+    argB: unknown;
+}>, shouldSetValue?: boolean, shouldUpdateFieldsAndErrors?: boolean) => void;
 
 declare namespace Branded {
     export {
@@ -84,6 +84,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext ext
     }>;
     register: UseFormRegister<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
+    getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
 // @public (undocumented)
@@ -92,8 +93,8 @@ export const Controller: <TFieldValues extends FieldValues = FieldValues, TName 
 // @public (undocumented)
 export type ControllerFieldState = {
     invalid: boolean;
-    touched: boolean;
-    dirty: boolean;
+    isTouched: boolean;
+    isDirty: boolean;
     error?: FieldError;
 };
 
@@ -192,7 +193,7 @@ export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArr
 
 // @public (undocumented)
 export type FieldArrayMethodProps = {
-    focus?: boolean;
+    shouldFocus?: boolean;
     focusIndex?: number;
     focusName?: string;
 };
@@ -282,26 +283,26 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 
 // @public (undocumented)
 export type FormState<TFieldValues> = {
-    dirty: boolean;
+    isDirty: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
-    submitted: boolean;
-    submitSuccessful: boolean;
+    isSubmitted: boolean;
+    isSubmitSuccessful: boolean;
     submitCount: number;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
-    submitting: boolean;
-    validating: boolean;
-    valid: boolean;
+    isSubmitting: boolean;
+    isValidating: boolean;
+    isValid: boolean;
     errors: FieldErrors<TFieldValues>;
 };
 
 // @public (undocumented)
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-    dirty: boolean;
-    validating: boolean;
+    isDirty: boolean;
+    isValidating: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
     errors: boolean;
-    valid: boolean;
+    isValid: boolean;
 };
 
 // Warning: (ae-forgotten-export) The symbol "Subject" needs to be exported by the entry point index.d.ts
@@ -347,7 +348,7 @@ export type KeepStateOptions = Partial<{
     keepDirty: boolean;
     keepValues: boolean;
     keepDefaultValues: boolean;
-    keepSubmitted: boolean;
+    keepIsSubmitted: boolean;
     keepTouched: boolean;
     keepSubmitCount: boolean;
 }>;
@@ -446,7 +447,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     valueAsDate: boolean;
     value: FieldPathValue<TFieldValues, TFieldName>;
     setValueAs: (value: any) => any;
-    unregister?: boolean;
+    shouldUnregister?: boolean;
     onChange?: (event: any) => void;
     onBlur?: (event: any) => void;
     disabled: boolean;
@@ -471,7 +472,7 @@ export interface ResolverOptions<TFieldValues> {
     // (undocumented)
     names?: FieldName<TFieldValues>[];
     // (undocumented)
-    nativeValidation: boolean | undefined;
+    shouldUseNativeValidation: boolean | undefined;
 }
 
 // @public (undocumented)
@@ -491,9 +492,9 @@ export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 // @public (undocumented)
 export type SetValueConfig = Partial<{
-    validate: boolean;
-    dirty: boolean;
-    touch: boolean;
+    shouldValidate: boolean;
+    shouldDirty: boolean;
+    shouldTouch: boolean;
 }>;
 
 // @public (undocumented)
@@ -518,7 +519,7 @@ export type SubmitHandler<TFieldValues extends FieldValues> = (data: UnpackNeste
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
-    focus: boolean;
+    shouldFocus: boolean;
 }>;
 
 // @public
@@ -556,7 +557,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues, TN
 export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     name: TName;
     rules?: Omit<RegisterOptions<TFieldValues, TName>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>;
-    unregister?: boolean;
+    shouldUnregister?: boolean;
     defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
     control?: Control<TFieldValues>;
 };
@@ -575,7 +576,7 @@ export const useFieldArray: <TFieldValues extends FieldValues = FieldValues, TFi
 export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = {
     name: TFieldArrayName;
     control?: Control<TFieldValues>;
-    unregister?: boolean;
+    shouldUnregister?: boolean;
 };
 
 // @public (undocumented)
@@ -601,10 +602,10 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: Field
 export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
 
 // @public (undocumented)
-export type _UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
+export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
     invalid: boolean;
-    dirty: boolean;
-    touched: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
     error: FieldError;
 };
 
@@ -625,9 +626,9 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     defaultValues: DefaultValues<TFieldValues>;
     resolver: Resolver<TFieldValues, TContext>;
     context: TContext;
-    focusError: boolean;
-    unregister: boolean;
-    nativeValidation: boolean;
+    shouldFocusError: boolean;
+    shouldUnregister: boolean;
+    shouldUseNativeValidation: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
 }>;
@@ -665,7 +666,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
-    _getFieldState: _UseFormGetFieldState<TFieldValues>;
+    getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
     clearErrors: UseFormClearErrors<TFieldValues>;
     setValue: UseFormSetValue<TFieldValues>;
@@ -682,7 +683,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 
 // @public (undocumented)
 export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues>, error: ErrorOption, options?: {
-    focus: boolean;
+    shouldFocus: boolean;
 }) => void;
 
 // @public (undocumented)
@@ -709,7 +710,7 @@ export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
 // @public (undocumented)
-export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: Omit<KeepStateOptions, 'keepSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
+export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: Omit<KeepStateOptions, 'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
     keepValue?: boolean;
     keepDefaultValue?: boolean;
     keepError?: boolean;

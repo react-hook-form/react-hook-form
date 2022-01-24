@@ -3,14 +3,14 @@ describe('ConditionalField', () => {
     cy.visit('http://localhost:3000/conditionalField');
     cy.get('#state').should(($state) => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: [],
-        submitted: false,
+        dirty: [],
+        isSubmitted: false,
         submitCount: 0,
         touched: [],
-        dirty: false,
-        submitting: false,
-        submitSuccessful: false,
-        valid: false,
+        isDirty: false,
+        isSubmitting: false,
+        isSubmitSuccessful: false,
+        isValid: false,
       });
     });
 
@@ -20,14 +20,14 @@ describe('ConditionalField', () => {
     cy.get('input[name="lastName"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'firstName', 'lastName'],
-        submitted: false,
+        dirty: ['selectNumber', 'firstName', 'lastName'],
+        isSubmitted: false,
         submitCount: 0,
         touched: ['selectNumber', 'firstName', 'lastName'],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: false,
-        valid: true,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: false,
+        isValid: true,
       }),
     );
     cy.get('button#submit').click();
@@ -36,14 +36,14 @@ describe('ConditionalField', () => {
     );
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'firstName', 'lastName'],
-        submitted: true,
+        dirty: ['selectNumber', 'firstName', 'lastName'],
+        isSubmitted: true,
         submitCount: 1,
         touched: ['selectNumber', 'firstName', 'lastName'],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: true,
-        valid: true,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: true,
+        isValid: true,
       }),
     );
     cy.get('#result').should(($state) =>
@@ -57,14 +57,14 @@ describe('ConditionalField', () => {
     cy.get('select[name="selectNumber"]').select('2');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'firstName', 'lastName'],
-        submitted: true,
+        dirty: ['selectNumber', 'firstName', 'lastName'],
+        isSubmitted: true,
         submitCount: 1,
         touched: ['selectNumber', 'firstName', 'lastName'],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: true,
-        valid: false,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: true,
+        isValid: false,
       }),
     );
     cy.get('input[name="min"]').type('10');
@@ -72,27 +72,27 @@ describe('ConditionalField', () => {
     cy.get('input[name="max"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
-        submitted: true,
+        dirty: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
+        isSubmitted: true,
         submitCount: 1,
         touched: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: true,
-        valid: true,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: true,
+        isValid: true,
       }),
     );
     cy.get('button#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
-        submitted: true,
+        dirty: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
+        isSubmitted: true,
         submitCount: 2,
         touched: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: true,
-        valid: true,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: true,
+        isValid: true,
       }),
     );
     cy.get('#result').should(($state) =>
@@ -108,14 +108,14 @@ describe('ConditionalField', () => {
     cy.get('select[name="selectNumber"]').select('3');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
-        submitted: true,
+        dirty: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
+        isSubmitted: true,
         submitCount: 2,
         touched: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: true,
-        valid: true,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: true,
+        isValid: true,
       }),
     );
 
@@ -123,7 +123,7 @@ describe('ConditionalField', () => {
     cy.get('input[name="notRequired"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: [
+        dirty: [
           'selectNumber',
           'firstName',
           'lastName',
@@ -131,7 +131,7 @@ describe('ConditionalField', () => {
           'max',
           'notRequired',
         ],
-        submitted: true,
+        isSubmitted: true,
         submitCount: 2,
         touched: [
           'selectNumber',
@@ -141,10 +141,10 @@ describe('ConditionalField', () => {
           'max',
           'notRequired',
         ],
-        dirty: true,
-        submitting: false,
-        submitSuccessful: true,
-        valid: true,
+        isDirty: true,
+        isSubmitting: false,
+        isSubmitSuccessful: true,
+        isValid: true,
       }),
     );
 

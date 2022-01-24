@@ -162,7 +162,7 @@ describe('append', () => {
     });
   });
 
-  it.each(['dirty', 'dirtyFields'])(
+  it.each(['isDirty', 'dirtyFields'])(
     'should be dirtyFields when value is appended with %s',
     () => {
       let isDirtyValue;
@@ -172,7 +172,7 @@ describe('append', () => {
         const {
           register,
           control,
-          formState: { dirty, dirtyFields },
+          formState: { isDirty, dirtyFields },
         } = useForm<{
           test: { test: string }[];
         }>();
@@ -181,7 +181,7 @@ describe('append', () => {
           name: 'test',
         });
 
-        isDirtyValue = dirty;
+        isDirtyValue = isDirty;
         dirtyValue = dirtyFields;
 
         return (
@@ -258,7 +258,7 @@ describe('append', () => {
     ]);
   });
 
-  it('should focus if focus is true', () => {
+  it('should focus if shouldFocus is true', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -290,7 +290,7 @@ describe('append', () => {
     expect(document.activeElement).toEqual(inputs[2]);
   });
 
-  it('should not focus if focus is false', () => {
+  it('should not focus if shouldFocus is false', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -306,7 +306,7 @@ describe('append', () => {
           ))}
           <button
             type="button"
-            onClick={() => append({ value: '3' }, { focus: false })}
+            onClick={() => append({ value: '3' }, { shouldFocus: false })}
           >
             append
           </button>
@@ -458,7 +458,7 @@ describe('append', () => {
         return { formState, append };
       });
 
-      result.current.formState.valid;
+      result.current.formState.isValid;
 
       await act(async () => {
         result.current.append({ value: '1' });

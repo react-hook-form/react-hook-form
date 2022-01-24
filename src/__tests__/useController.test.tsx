@@ -12,6 +12,7 @@ import { Control, FieldPath } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
+import { createPath } from '../utils';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -54,7 +55,7 @@ describe('useController', () => {
     const Test1 = ({ control }: { control: Control<FormValues> }) => {
       const {
         field,
-        fieldState: { dirty, touched },
+        fieldState: { isDirty, isTouched },
       } = useController({
         name: 'test1',
         control,
@@ -65,8 +66,8 @@ describe('useController', () => {
       return (
         <div>
           <input {...field} />
-          {dirty && <p>dirty</p>}
-          {touched && <p>isTouched</p>}
+          {isDirty && <p>isDirty</p>}
+          {isTouched && <p>isTouched</p>}
         </div>
       );
     };
@@ -99,7 +100,7 @@ describe('useController', () => {
       });
     });
 
-    screen.getByText('dirty');
+    screen.getByText('isDirty');
 
     await act(async () => {
       fireEvent.blur(screen.getAllByRole('textbox')[1]);
@@ -442,7 +443,7 @@ describe('useController', () => {
           test: '',
         },
         mode: 'onChange',
-        nativeValidation: true,
+        shouldUseNativeValidation: true,
       });
 
       return (
@@ -606,7 +607,7 @@ describe('useController', () => {
       } = useController({
         control,
         name,
-        unregister: true,
+        shouldUnregister: true,
       });
 
       data = value;
@@ -615,9 +616,11 @@ describe('useController', () => {
     }
 
     const App = () => {
-      const { control } = useForm<{
+      type FormFields = {
         test: string;
-      }>({
+      };
+
+      const { control } = useForm<FormFields>({
         defaultValues: {
           test: 'test',
         },
@@ -626,7 +629,9 @@ describe('useController', () => {
 
       return (
         <div>
-          {toggle && <Input control={control} name={'test'} />}
+          {toggle && (
+            <Input<FormFields> control={control} name={createPath('test')} />
+          )}
           <button onClick={() => setToggle(!toggle)}>toggle</button>
         </div>
       );
