@@ -118,23 +118,29 @@ describe('formState', () => {
       });
     });
 
-    it.only('should return false when default value is not valid value', async () => {
-      const { result } = renderHook(() => {
+    it('should return false when default value is not valid value', async () => {
+      const App = () => {
         const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
         });
 
         methods.formState.isValid;
 
-        return methods;
+        React.useEffect(() => {
+          methods.register('issue', { required: true });
+          methods.setValue('issue', '', { shouldValidate: true });
+        }, [methods]);
+
+        return <p>{methods.formState.isValid ? 'yes' : 'no'}</p>;
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        screen.getByText('no');
       });
 
-      await act(async () => {
-        result.current.register('issue', { required: true });
-        result.current.setValue('issue', '', { shouldValidate: true });
-      });
-
-      expect(result.current.formState.isValid).toBeFalsy();
+      screen.getByText('no');
     });
 
     it('should return false when custom register with validation', async () => {

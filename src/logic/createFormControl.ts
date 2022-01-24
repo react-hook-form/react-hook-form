@@ -150,6 +150,8 @@ export function createFormControl<
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
+  _formStateMap.set(_formState, _formState);
+
   const debounce =
     <T extends Function>(callback: T, wait: number) =>
     (...args: any) => {
@@ -157,23 +159,25 @@ export function createFormControl<
       timer = window.setTimeout(() => callback(...args), wait);
     };
 
-  const _getFormState = () => _formStateMap.get(_formState) || _formState;
+  const _getFormState = () => _formStateMap.get(_formState);
 
   const _updateFormState = (value: Partial<FormState<TFieldValues>>) => {
-    _formStateMap.set(_formState, {
+    const formState = {
       ..._getFormState(),
       ...value,
-    });
+    };
+    _formStateMap.set(_formState, formState);
+    return formState;
   };
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
-    const formState = _getFormState();
     let isValid = false;
 
     if (_proxyFormState.isValid) {
       isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuildInValidation(_fields, true);
+      const formState = _getFormState();
 
       if (!shouldSkipRender && isValid !== formState.isValid) {
         _updateFormState({
@@ -235,14 +239,15 @@ export function createFormControl<
         formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
       }
 
-      _updateFormState(formState);
-
-      _subjects.state.next({
+      const updatedState = {
         isDirty: _getDirty(name, values),
         dirtyFields: formState.dirtyFields,
         errors: formState.errors,
         isValid: formState.isValid,
-      });
+      };
+
+      _updateFormState(updatedState);
+      _subjects.state.next(updatedState);
     } else {
       set(_formValues, name, values);
     }
@@ -336,7 +341,10 @@ export function createFormControl<
           isPreviousFieldTouched !== isBlurEvent);
     }
 
-    isFieldDirty && shouldRender && _subjects.state.next(output);
+    if (isFieldDirty && shouldRender) {
+      _updateFormState(output);
+      _subjects.state.next(output);
+    }
 
     return isFieldDirty ? output : {};
   };
@@ -381,11 +389,7 @@ export function createFormControl<
         name,
       };
 
-      _updateFormState({
-        ...formState,
-        ...updatedFormState,
-      });
-
+      _updateFormState(updatedFormState);
       _subjects.state.next(updatedFormState);
     }
 
@@ -474,8 +478,6 @@ export function createFormControl<
           }
         }
 
-        _updateFormState({ ...formState });
-
         fieldValue &&
           (await executeBuildInValidation(
             fieldValue,
@@ -484,6 +486,8 @@ export function createFormControl<
           ));
       }
     }
+
+    _updateFormState({ errors: formState.errors });
 
     return context.valid;
   };
@@ -650,10 +654,14 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        _subjects.state.next({
-          name,
+        const updatedFormState = {
           dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
+        };
+        _updateFormState(updatedFormState);
+        _subjects.state.next({
+          name,
+          ...updatedFormState,
         });
       }
     } else {
@@ -805,7 +813,7 @@ export function createFormControl<
       validationResult = isValid = await executeBuildInValidation(_fields);
     }
 
-    _subjects.state.next({
+    const updatedFormState = {
       ...(!isString(name) ||
       (_proxyFormState.isValid && isValid !== formState.isValid)
         ? {}
@@ -813,7 +821,9 @@ export function createFormControl<
       ...(_options.resolver ? { isValid } : {}),
       errors: formState.errors,
       isValidating: false,
-    });
+    };
+
+    _subjects.state.next(updatedFormState);
 
     options.shouldFocus &&
       !validationResult &&
@@ -880,6 +890,7 @@ export function createFormControl<
       ref,
     });
 
+    _updateFormState(formState);
     _subjects.state.next({
       name,
       errors: formState.errors,
@@ -1124,7 +1135,7 @@ export function createFormControl<
         _proxyFormState.isValid && _updateValid();
       }
 
-      _subjects.state.next({ ...formState });
+      _subjects.state.next(formState);
     }
   };
 

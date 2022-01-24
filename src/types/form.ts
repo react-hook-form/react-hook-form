@@ -349,7 +349,9 @@ export type Control<
   };
   _options: UseFormProps<TFieldValues, TContext>;
   _getFormState: () => FormState<TFieldValues>;
-  _updateFormState: (value: Partial<FormState<TFieldValues>>) => void;
+  _updateFormState: (
+    value: Partial<FormState<TFieldValues>>,
+  ) => FormState<TFieldValues>;
   _getDirty: GetIsDirty;
   _updateValid: Noop;
   _fields: FieldRefs;
