@@ -519,7 +519,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
-    error: FieldError;
+    error?: FieldError;
 };
 
 // @public (undocumented)
