@@ -40,10 +40,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
         exact,
       ) &&
       shouldRenderFormState(value, _localProxyFormState.current) &&
-      updateFormState({
-        ...control._getFormState(),
-        ...value,
-      }),
+      updateFormState(control._updateFormState(value)),
     [control, exact],
   );
 

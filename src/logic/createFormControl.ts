@@ -177,9 +177,8 @@ export function createFormControl<
       isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuildInValidation(_fields, true);
-      const formState = _getFormState();
 
-      if (!shouldSkipRender && isValid !== formState.isValid) {
+      if (!shouldSkipRender && isValid !== _getFormState().isValid) {
         _updateFormState({
           isValid,
         });

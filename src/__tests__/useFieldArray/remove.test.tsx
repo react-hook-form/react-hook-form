@@ -85,7 +85,7 @@ describe('remove', () => {
     expect(formState.isDirty).toBeFalsy();
   });
 
-  it.only('should update isValid formState when item removed', async () => {
+  it('should update isValid formState when item removed', async () => {
     let formState: any;
     const Component = () => {
       const {
