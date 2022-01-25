@@ -429,7 +429,7 @@ export type FieldArrayContextProps<TFieldValues> = {
 };
 
 export type FieldArrayContextReturn<TFieldValues> = {
-  arrays: Record<
+  fieldArrays: Record<
     FieldArrayPath<TFieldValues>,
     UseFieldArrayReturn<TFieldValues>
   >;

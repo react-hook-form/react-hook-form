@@ -115,7 +115,7 @@ describe('FormProvider', () => {
 
       return (
         <>
-          {context?.arrays?.test.fields.map((field) => (
+          {context?.fieldArrays?.test.fields.map((field) => (
             <input key={field.id} />
           ))}
         </>
