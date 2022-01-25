@@ -197,6 +197,50 @@ describe('resetField', () => {
     });
   });
 
+  it('should reset input file to empty string only', () => {
+    const getValuesFn = jest.fn();
+
+    const App = () => {
+      const { register, resetField, getValues } = useForm({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      return (
+        <form>
+          <input type={'file'} {...register('test')} />
+          <button
+            type={'button'}
+            onClick={() => {
+              resetField('test', { defaultValue: null });
+            }}
+          >
+            reset
+          </button>
+          <button
+            type={'button'}
+            onClick={() => {
+              getValuesFn(getValues());
+            }}
+          >
+            getValues
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
+
+    expect(getValuesFn).toBeCalledWith({ test: '' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(getValuesFn).toBeCalledWith({ test: '' });
+  });
+
   describe('when provided with options', () => {
     it('should update input value and its defaultValue', () => {
       const App = () => {
