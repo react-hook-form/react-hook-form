@@ -555,7 +555,7 @@ export function createFormControl<
             );
           }
         } else if (isFileInput(fieldReference.ref)) {
-          fieldReference.ref.value = isString(fieldValue) ? fieldValue : '';
+          fieldReference.ref.value = '';
         } else {
           fieldReference.ref.value = fieldValue;
 
