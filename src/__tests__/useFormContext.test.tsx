@@ -132,7 +132,7 @@ describe('FormProvider', () => {
       return (
         <FormProvider
           {...methods}
-          arrays={{
+          fieldArrays={{
             test: testField,
           }}
         >

@@ -422,7 +422,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 export type FieldArrayContextProps<TFieldValues> = {
-  arrays?: Record<
+  fieldArrays?: Record<
     FieldArrayPath<TFieldValues>,
     UseFieldArrayReturn<TFieldValues>
   >;
