@@ -189,7 +189,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
-  error: FieldError;
+  error?: FieldError;
 };
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {

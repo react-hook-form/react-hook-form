@@ -186,6 +186,37 @@ describe('getFieldState', () => {
 
         screen.getByText('dirty');
       });
+
+      it('should not have error', () => {
+        const App = () => {
+          const {
+            register,
+            getFieldState,
+            formState: { dirtyFields },
+          } = useForm({
+            defaultValues: {
+              test: '',
+            },
+          });
+
+          dirtyFields;
+
+          return (
+            <form>
+              <input {...register('test')} />
+              <p>
+                {getFieldState('test').error === undefined
+                  ? 'error undefined'
+                  : ''}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        screen.getByText('error undefined');
+      });
     });
 
     describe('when input is nested data type', () => {
@@ -335,6 +366,40 @@ describe('getFieldState', () => {
 
         screen.getByText('dirty');
       });
+
+      it('should not have error', () => {
+        const App = () => {
+          const {
+            control,
+            getFieldState,
+            formState: { dirtyFields },
+          } = useForm<FormValues>({
+            defaultValues: {
+              nested: {
+                first: '',
+                last: '',
+              },
+            },
+          });
+
+          dirtyFields;
+
+          return (
+            <form>
+              <NestedInput control={control} />
+              <p>
+                {getFieldState('nested').error === undefined
+                  ? 'error undefined'
+                  : ''}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        screen.getByText('error undefined');
+      });
     });
   });
 
@@ -455,6 +520,29 @@ describe('getFieldState', () => {
         });
 
         screen.getByText('dirty');
+      });
+
+      it('should not have error', () => {
+        const App = () => {
+          const { register, getFieldState, formState } = useForm({
+            defaultValues: {
+              test: '',
+            },
+          });
+
+          const { error } = getFieldState('test', formState);
+
+          return (
+            <form>
+              <input {...register('test')} />
+              <p>{error === undefined ? 'error undefined' : ''}</p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        screen.getByText('error undefined');
       });
     });
 
@@ -589,6 +677,32 @@ describe('getFieldState', () => {
 
         screen.getByText('dirty');
       });
+
+      it('should not have error', () => {
+        const App = () => {
+          const { control, getFieldState, formState } = useForm<FormValues>({
+            defaultValues: {
+              nested: {
+                first: '',
+                last: '',
+              },
+            },
+          });
+
+          const { error } = getFieldState('nested', formState);
+
+          return (
+            <form>
+              <NestedInput control={control} />
+              <p>{error === undefined ? 'error undefined' : ''}</p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        screen.getByText('error undefined');
+      });
     });
   });
 
@@ -605,16 +719,17 @@ describe('getFieldState', () => {
         });
 
         // @ts-expect-error expected to show type error for field name
-        const { isDirty } = getFieldState(formState, 'nestedMissing');
+        const { isDirty } = getFieldState('nestedMissing', formState);
 
         // @ts-expect-error expected to show type error for field name
-        const { isTouched } = getFieldState('nestedMissing');
+        const { isTouched, error } = getFieldState('nestedMissing');
 
         return (
           <form>
             <NestedInput control={control} />
             <p>{isDirty ? 'dirty' : 'notDirty'}</p>
             <p>{isTouched ? 'touched' : 'notTouched'}</p>
+            <p>{error === undefined ? 'error undefined' : 'error defined'}</p>
           </form>
         );
       };
@@ -629,6 +744,7 @@ describe('getFieldState', () => {
 
       screen.getByText('notDirty');
       screen.getByText('notTouched');
+      screen.getByText('error undefined');
     });
   });
 });
