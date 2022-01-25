@@ -121,7 +121,7 @@ describe('useFormState', () => {
     screen.getByText('valid');
     screen.getByText('yes');
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should update formState separately with useFormState', async () => {
