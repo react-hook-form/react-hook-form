@@ -702,10 +702,9 @@ export function createFormControl<
 
       validateFields[name] = validateFields[name] ? +1 : 1;
 
-      _proxyFormState.isValidating &&
-        _subjects.state.next({
-          isValidating: true,
-        });
+      _subjects.state.next({
+        isValidating: true,
+      });
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
