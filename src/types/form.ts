@@ -14,6 +14,7 @@ import {
 import {
   Auto,
   Branded,
+  FieldPathSetValue,
   FieldPathValue,
   FieldPathValues,
   PathString,
@@ -231,7 +232,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   TFieldName extends PathString,
 >(
   name: Auto.FieldPath<TFieldValues, TFieldName>,
-  value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>,
+  value: UnpackNestedValue<FieldPathSetValue<TFieldValues, TFieldName>>,
   options?: SetValueConfig,
 ) => void;
 

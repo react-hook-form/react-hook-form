@@ -631,8 +631,8 @@ export function createFormControl<
       }
     } else {
       field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setValues(name, cloneValue, options)
-        : setFieldValue(name, cloneValue, options);
+        ? setValues(name, cloneValue as never, options)
+        : setFieldValue(name, cloneValue as never, options);
     }
 
     isWatched(name, _names) && _subjects.state.next({});

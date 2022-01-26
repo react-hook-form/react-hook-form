@@ -1,11 +1,11 @@
 import { expectType } from 'tsd';
 
-import { Branded } from '../../../types';
 import {
+  Branded,
   FieldPathSetValue,
   FieldPathValue,
   FieldPathValues,
-} from '../../../types/path/value';
+} from '../../../types';
 import { _ } from '../../__fixtures__';
 
 /** {@link FieldPathValue} */ {
@@ -25,6 +25,16 @@ import { _ } from '../../__fixtures__';
   /** it should get the type of a string path */ {
     const actual = _ as FieldPathValue<{ foo: number }, 'foo'>;
     expectType<number>(actual);
+  }
+
+  /** it should evaluate to unknown if the path is never */ {
+    const actual = _ as FieldPathValue<{ foo: number }, never>;
+    expectType<unknown>(actual);
+  }
+
+  /** it should evaluate to any if the path is any */ {
+    const actual = _ as FieldPathValue<{ foo: number }, any>;
+    expectType<any>(actual);
   }
 }
 
@@ -49,6 +59,16 @@ import { _ } from '../../__fixtures__';
     const actual = _ as FieldPathSetValue<{ foo: number }, 'foo'>;
     expectType<number>(actual);
   }
+
+  /** it should evaluate to never if the path is never */ {
+    const actual = _ as FieldPathSetValue<{ foo: number }, never>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to any if the path is any */ {
+    const actual = _ as FieldPathSetValue<{ foo: number }, any>;
+    expectType<any>(actual);
+  }
 }
 
 /** {@link FieldPathValues} */ {
@@ -66,5 +86,25 @@ import { _ } from '../../__fixtures__';
       [Branded.TypedFieldPath<{}, string>, Branded.TypedFieldPath<{}, number>]
     >;
     expectType<[string, number]>(actual);
+  }
+
+  /** it should evaluate to unknown if a path is never */ {
+    const actual = _ as FieldPathValues<{ foo: number }, [never]>;
+    expectType<[unknown]>(actual);
+  }
+
+  /** it should evaluate to any if a path is any */ {
+    const actual = _ as FieldPathValues<{ foo: number }, [any]>;
+    expectType<[any]>(actual);
+  }
+
+  /** it should evaluate to unknown[] if paths is never */ {
+    const actual = _ as FieldPathValues<{ foo: number }, never>;
+    expectType<unknown[]>(actual);
+  }
+
+  /** it should evaluate to any[] if a path is any */ {
+    const actual = _ as FieldPathValues<{ foo: number }, any>;
+    expectType<any[]>(actual);
   }
 }
