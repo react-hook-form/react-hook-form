@@ -1,5 +1,12 @@
-import { Auto, Branded, IsNever, IsUnknown, PathString } from '../types';
-import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
+import {
+  Auto,
+  Branded,
+  FieldPathSetValue,
+  FieldPathValue,
+  IsNever,
+  IsUnknown,
+  PathString,
+} from '../types';
 
 /**
  * Function for creating a {@link TypedFieldPath} from a path string.

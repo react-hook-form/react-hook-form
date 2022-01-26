@@ -1,3 +1,5 @@
+import { IsAny } from '../../utils';
+
 import { AsPathTuple, PathTuple } from './pathTuple';
 import {
   ArrayKey,
@@ -7,7 +9,6 @@ import {
   MapKeys,
   UnionToIntersection,
 } from './utils';
-import { IsAny } from '../../utils';
 
 /**
  * Type to access a type by a key. Returns never

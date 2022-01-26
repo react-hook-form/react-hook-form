@@ -1,6 +1,7 @@
+import { IsAny, IsNever } from '../../utils';
+
 import { AsPathTuple, PathTuple } from './pathTuple';
 import { ArrayKey, AsKey, IsTuple, Key, MapKeys } from './utils';
-import { IsAny, IsNever } from '../../utils';
 
 /**
  * Type to access a type by a key.

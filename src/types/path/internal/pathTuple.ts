@@ -1,7 +1,7 @@
+import { IsAny } from '../../utils';
 import { PathString } from '../pathString';
 
 import { AsKey, Key } from './utils';
-import { IsAny } from '../../utils';
 
 /**
  * Type which describes a path through an object as a list of individual keys.

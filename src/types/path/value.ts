@@ -1,9 +1,10 @@
+import { IsNever } from '../utils';
+
 import { PathGetValue } from './internal/pathGetValue';
 import { PathSetValue } from './internal/pathSetValue';
 import { SplitPathString } from './internal/pathTuple';
 import * as Branded from './branded';
 import { PathString } from './pathString';
-import { IsNever } from '../utils';
 
 /**
  * Type for getting the value of a path.
