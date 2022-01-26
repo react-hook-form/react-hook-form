@@ -8,11 +8,10 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath } from '../types';
+import { Auto, Control, PathString } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
-import { of } from '../utils';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -595,12 +594,12 @@ describe('useController', () => {
   it('should remount with input with current formValue', () => {
     let data: unknown;
 
-    function Input<T>({
+    function Input<T, N extends PathString>({
       control,
       name,
     }: {
       control: Control<T>;
-      name: FieldPath<T>;
+      name: Auto.FieldPath<T, N>;
     }) {
       const {
         field: { value },
@@ -629,7 +628,7 @@ describe('useController', () => {
 
       return (
         <div>
-          {toggle && <Input<FormFields> control={control} name={of('test')} />}
+          {toggle && <Input control={control} name="test" />}
           <button onClick={() => setToggle(!toggle)}>toggle</button>
         </div>
       );

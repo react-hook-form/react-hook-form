@@ -9,12 +9,11 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control, FieldPath } from '../../types';
+import { Auto, Control, PathString } from '../../types';
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
-import { of } from '../../utils';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -871,11 +870,11 @@ describe('trigger', () => {
       y: string;
     };
 
-    function Input({
+    function Input<N extends PathString>({
       name,
       control,
     }: {
-      name: FieldPath<FormValue>;
+      name: Auto.FieldPath<FormValue, N>;
       control: Control<FormValue>;
     }) {
       const renderCount = React.useRef(0);
@@ -896,8 +895,8 @@ describe('trigger', () => {
       return (
         <div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Input name={of('x')} control={control} />
-            <Input name={of('y')} control={control} />
+            <Input name="x" control={control} />
+            <Input name="y" control={control} />
 
             <button type="button" onClick={() => trigger('x')}>
               Trigger Validation on X
