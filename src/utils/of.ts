@@ -15,10 +15,10 @@ import {
  * ```
  * type FooBar = { foo: { bar: string }}
  *
- * const path: TypedFieldPath<FooBar, string> = createPath('foo.bar')
+ * const path: TypedFieldPath<FooBar, string> = of('foo.bar')
  * ```
  */
-export default function createPath<
+export default function of<
   TFieldValues,
   TPathString extends PathString,
   TValue = unknown,

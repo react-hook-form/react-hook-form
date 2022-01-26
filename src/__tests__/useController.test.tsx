@@ -12,7 +12,7 @@ import { Control, FieldPath } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
-import { createPath } from '../utils';
+import { of } from '../utils';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -629,9 +629,7 @@ describe('useController', () => {
 
       return (
         <div>
-          {toggle && (
-            <Input<FormFields> control={control} name={createPath('test')} />
-          )}
+          {toggle && <Input<FormFields> control={control} name={of('test')} />}
           <button onClick={() => setToggle(!toggle)}>toggle</button>
         </div>
       );

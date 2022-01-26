@@ -13,7 +13,7 @@ import { Control, FieldArrayPath, TypedFieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import { createPath } from '../../utils';
+import { of } from '../../utils';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -549,7 +549,7 @@ describe('insert', () => {
           {fields.map((item, index) => (
             <Input
               key={item.id}
-              name={createPath(`test.${index}.name.deep`)}
+              name={of(`test.${index}.name.deep`)}
               control={control}
             />
           ))}
@@ -570,7 +570,7 @@ describe('insert', () => {
       return (
         <form>
           <FieldArray
-            name={createPath('test')}
+            name={of('test')}
             control={control}
             itemDefaultValue={{ name: { deep: '' } }}
           />

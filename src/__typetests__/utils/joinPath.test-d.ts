@@ -1,12 +1,12 @@
 import { expectType } from 'tsd';
 
 import { Branded, Lazy, PathString } from '../../types';
-import { joinPath } from '../../utils';
+import { join } from '../../utils';
 import { _ } from '../__fixtures__';
 
-/** {@link joinPath} */ {
+/** {@link join} */ {
   /** it should join branded paths */ {
-    const actual = joinPath(
+    const actual = join(
       _ as Branded.TypedFieldPath<{}, { foo: string }>,
       _ as Branded.TypedFieldPath<{ foo: string }, string>,
     );
@@ -14,7 +14,7 @@ import { _ } from '../__fixtures__';
   }
 
   /** it should report an error if the branded paths don't match */ {
-    joinPath(
+    join(
       _ as Branded.TypedFieldPath<{}, { foo: string }>,
       // @ts-expect-error this is an error if the test case fails
       _ as Branded.TypedFieldPath<{ foo: number }, string>,
@@ -26,7 +26,7 @@ import { _ } from '../__fixtures__';
       path: Lazy.TypedFieldPath<T1, P1, T2>,
       childPath: Lazy.TypedFieldPath<T2, P2, string>,
     ) => {
-      const actual = joinPath(path, childPath);
+      const actual = join(path, childPath);
       expectType<Branded.TypedFieldPath<T1, string>>(actual);
     };
 
@@ -37,12 +37,12 @@ import { _ } from '../__fixtures__';
     const fn = <T, P1 extends PathString, P2 extends PathString>(
       path: Lazy.TypedFieldPath<T, P1, { bar: number }>,
       childPath: Lazy.FieldPath<{ foo: number }, P2>,
-    ) => joinPath(path, childPath);
+    ) => join(path, childPath);
 
     const path: Branded.TypedFieldPath<{ foo: { bar: number } }, number> = fn(
       'foo',
       // @ts-expect-error this is an error if the test case fails
-      // Ideally, the error would be reported on `joinPath`, but this is good enough
+      // Ideally, the error would be reported on `join`, but this is good enough
       'bar',
     );
     path;
@@ -52,7 +52,7 @@ import { _ } from '../__fixtures__';
     const fn = <T, P extends PathString>(
       path: Lazy.TypedFieldPath<T, P, { foo: string }>,
     ) => {
-      const actual = joinPath(path, 'foo');
+      const actual = join(path, 'foo');
       expectType<Branded.TypedFieldPath<T, string>>(actual);
     };
 
@@ -63,7 +63,7 @@ import { _ } from '../__fixtures__';
     const fn = <T, P extends PathString>(
       path: Lazy.TypedFieldPath<T, P, { foo: string } | undefined | null>,
     ) => {
-      const actual = joinPath(path, 'foo');
+      const actual = join(path, 'foo');
       expectType<Branded.TypedFieldPath<T, string | undefined | null, string>>(
         actual,
       );
@@ -73,7 +73,7 @@ import { _ } from '../__fixtures__';
   }
 
   /** it should infer the generics of the second argument from the context */ {
-    const path: Branded.TypedFieldPath<{}, string> = joinPath(
+    const path: Branded.TypedFieldPath<{}, string> = join(
       _ as Branded.TypedFieldPath<{}, { bar: string }>,
       'bar',
     );
@@ -81,7 +81,7 @@ import { _ } from '../__fixtures__';
   }
 
   /** it should report the error on the argument if there is a type mismatch */ {
-    const path: Branded.TypedFieldPath<{}, number> = joinPath(
+    const path: Branded.TypedFieldPath<{}, number> = join(
       _ as Branded.TypedFieldPath<{}, { bar: string }>,
       // @ts-expect-error this is an error if the test case fails
       'bar',
