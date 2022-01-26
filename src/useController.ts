@@ -45,7 +45,7 @@ export function useController<
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
-      value,
+      value: value as never,
     }),
   );
 
