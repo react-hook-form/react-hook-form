@@ -87,6 +87,9 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
 <a href="https://kanamekey.com/" target="_blank">
   <img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" width="94" height="94" />
 </a>
+<a href="https://marmelab.com/" target="_blank">
+  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="94" height="94" />
+</a>
 
 <p>
     <a href="https://github.com/sayav"
