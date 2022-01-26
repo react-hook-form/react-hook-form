@@ -1177,7 +1177,7 @@ describe('validateField', () => {
             },
             value: 'This is a long text input',
             required: true,
-            validate: (value) => value.toString().length > 3,
+            validate: (value) => (value as string).toString().length > 3,
           },
         },
         'This is a long text input',
@@ -1197,7 +1197,7 @@ describe('validateField', () => {
             },
             value: 'This is a long text input',
             required: true,
-            validate: (value) => value.toString().length < 3,
+            validate: (value) => (value as string).toString().length < 3,
           },
         },
         'This is a long text input',
@@ -1227,8 +1227,8 @@ describe('validateField', () => {
             value: 'This is a long text input',
             required: true,
             validate: {
-              test: (value) => value.toString().length < 3,
-              test1: (value) => value.toString().length > 10,
+              test: (value) => (value as string).toString().length < 3,
+              test1: (value) => (value as string).toString().length > 10,
             },
           },
         },
@@ -1265,8 +1265,8 @@ describe('validateField', () => {
             },
             value: 'This is a long text input!',
             validate: {
-              test: (value) => value.toString().length < 3,
-              test1: (value) => value.toString().length > 10,
+              test: (value) => (value as string).toString().length < 3,
+              test1: (value) => (value as string).toString().length > 10,
             },
           },
         },
@@ -1296,8 +1296,8 @@ describe('validateField', () => {
             },
             value: 'This is a long text input!',
             validate: {
-              test: (value) => value.toString().length < 3,
-              test1: (value) => value.toString().length > 10,
+              test: (value) => (value as string).toString().length < 3,
+              test1: (value) => (value as string).toString().length > 10,
             },
             refs: [{ type: 'data' } as HTMLInputElement],
           },
@@ -1354,7 +1354,7 @@ describe('validateField', () => {
             value: 'This is a long text input',
             validate: {
               test: (value) => {
-                if (value.toString().length > 3) {
+                if ((value as string).toString().length > 3) {
                   return 'max 3';
                 }
                 return true;
@@ -1389,7 +1389,7 @@ describe('validateField', () => {
             value: 'This is a long text input',
             validate: {
               test: (value) => {
-                if (value.toString().length > 3) {
+                if ((value as string).toString().length > 3) {
                   return 'max 3';
                 }
                 return true;
@@ -1424,7 +1424,8 @@ describe('validateField', () => {
               name: 'test',
             },
             value: 'This is a long text input',
-            validate: (value) => value.toString().length < 3 || 'bill',
+            validate: (value) =>
+              (value as string).toString().length < 3 || 'bill',
           },
         },
         'This is a long text input',
@@ -1452,7 +1453,8 @@ describe('validateField', () => {
               name: 'test',
             },
             value: 'This is a long text input',
-            validate: (value) => value.toString().length < 3 || 'bill',
+            validate: (value) =>
+              (value as string).toString().length < 3 || 'bill',
           },
         },
         'This is a long text input',
