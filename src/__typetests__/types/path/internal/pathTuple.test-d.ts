@@ -60,6 +60,16 @@ import { HundredPathString, HundredTuple } from '../../__fixtures__';
     const actual = _ as SplitPathString<`foo.bar.${string}.baz`>;
     expectType<['foo', 'bar', string, 'baz']>(actual);
   }
+
+  /** it should return never for never */ {
+    const actual = _ as SplitPathString<never>;
+    expectType<never>(actual);
+  }
+
+  /** it should return any for any */ {
+    const actual = _ as SplitPathString<any>;
+    expectType<any>(actual);
+  }
 }
 
 /** {@link JoinPathTuple} */ {

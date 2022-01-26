@@ -7,6 +7,7 @@ import {
   MapKeys,
   UnionToIntersection,
 } from './utils';
+import { IsAny } from '../../utils';
 
 /**
  * Type to access a type by a key. Returns never
@@ -114,6 +115,6 @@ type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
  * ```
  * @internal
  */
-export type PathSetValue<T, PT extends PathTuple> = UnionToIntersection<
-  PathSetValueImpl<T, PT>
->[never];
+export type PathSetValue<T, PT extends PathTuple> = IsAny<PT> extends true
+  ? any
+  : UnionToIntersection<PathSetValueImpl<T, PT>>[never];

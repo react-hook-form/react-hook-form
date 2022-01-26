@@ -40,7 +40,7 @@ export type Field = {
     name: InternalFieldName;
     refs?: HTMLInputElement[];
     mount?: boolean;
-  } & RegisterOptions<FieldValues, never>;
+  } & RegisterOptions;
 };
 
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;
