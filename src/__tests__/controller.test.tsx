@@ -18,7 +18,7 @@ function Input<TFieldValues>({
   onChange,
   onBlur,
   placeholder,
-}: Pick<ControllerRenderProps<TFieldValues>, 'onChange' | 'onBlur'> & {
+}: Pick<ControllerRenderProps<TFieldValues, never>, 'onChange' | 'onBlur'> & {
   placeholder?: string;
 }) {
   return (
