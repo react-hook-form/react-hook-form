@@ -194,7 +194,7 @@ export default async <T extends NativeFieldValue>(
 
   if (validate) {
     if (isFunction(validate)) {
-      const result = await validate(inputValue as never);
+      const result = await validate(inputValue);
       const validateError = getValidateError(result, inputRef);
 
       if (validateError) {
