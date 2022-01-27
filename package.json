@@ -40,7 +40,7 @@
     "test:web": "TEST_ENV=web yarn test",
     "test:server": "TEST_ENV=server yarn test",
     "test:native": "TEST_ENV=native yarn test",
-    "test:type": "tsd src/__typetests__/types",
+    "test:type": "tsd src/__typetests__",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "api-extractor": "api-extractor run --local",

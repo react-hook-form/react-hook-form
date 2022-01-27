@@ -166,12 +166,12 @@ export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArr
 
 // @public (undocumented)
 export type FieldArrayContextProps<TFieldValues> = {
-    arrays?: Record<FieldArrayPath<TFieldValues>, UseFieldArrayReturn<TFieldValues>>;
+    fieldArrays?: Record<FieldArrayPath<TFieldValues>, UseFieldArrayReturn<TFieldValues>>;
 };
 
 // @public (undocumented)
 export type FieldArrayContextReturn<TFieldValues> = {
-    arrays: Record<FieldArrayPath<TFieldValues>, UseFieldArrayReturn<TFieldValues>>;
+    fieldArrays: Record<FieldArrayPath<TFieldValues>, UseFieldArrayReturn<TFieldValues>>;
 };
 
 // @public (undocumented)
