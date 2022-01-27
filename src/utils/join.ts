@@ -1,5 +1,12 @@
-import { Auto, Branded, IsNever, IsUnknown, PathString } from '../types';
-import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
+import {
+  Auto,
+  Branded,
+  FieldPathSetValue,
+  FieldPathValue,
+  IsNever,
+  IsUnknown,
+  PathString,
+} from '../types';
 
 /**
  * Function for joining two paths / path strings to a {@link TypedFieldPath}.
@@ -10,11 +17,11 @@ import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
  * type Baz = { baz: string }
  * type FooBarBaz = { foo: { bar: Baz }}
  *
- * const path: TypedFieldPath<FooBarBaz, Baz> = createPath('foo.bar')
- * const joinedPath: TypedFieldPath<FooBar, string> = joinPath(path, 'baz')
+ * const path: TypedFieldPath<FooBarBaz, Baz> = of('foo.bar')
+ * const joinedPath: TypedFieldPath<FooBar, string> = join(path, 'baz')
  * ```
  */
-export default function joinPath<
+export default function join<
   TFieldValues,
   TPathString extends PathString,
   TChildFieldValues,

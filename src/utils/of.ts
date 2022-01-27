@@ -1,5 +1,12 @@
-import { Auto, Branded, IsNever, IsUnknown, PathString } from '../types';
-import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
+import {
+  Auto,
+  Branded,
+  FieldPathSetValue,
+  FieldPathValue,
+  IsNever,
+  IsUnknown,
+  PathString,
+} from '../types';
 
 /**
  * Function for creating a {@link TypedFieldPath} from a path string.
@@ -8,10 +15,10 @@ import { FieldPathSetValue, FieldPathValue } from '../types/path/value';
  * ```
  * type FooBar = { foo: { bar: string }}
  *
- * const path: TypedFieldPath<FooBar, string> = createPath('foo.bar')
+ * const path: TypedFieldPath<FooBar, string> = of('foo.bar')
  * ```
  */
-export default function createPath<
+export default function of<
   TFieldValues,
   TPathString extends PathString,
   TValue = unknown,

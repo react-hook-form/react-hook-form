@@ -164,6 +164,16 @@ import { HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     const actual = _ as KeySetValue<[number], 'toString'>;
     expectType<() => string>(actual);
   }
+
+  /** it should evaluate to never if the key is never */ {
+    const actual = _ as KeySetValue<{ foo: string }, never>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to any if the key is any */ {
+    const actual = _ as KeySetValue<{ foo: string }, any>;
+    expectType<any>(actual);
+  }
 }
 
 /** {@link PathSetValue} */ {
@@ -302,5 +312,25 @@ import { HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
 
     const actual = setter('foo', 'bar');
     expectType<string>(actual);
+  }
+
+  /** it should evaluate to never if the path is never */ {
+    const actual = _ as PathSetValue<{ foo: string }, never>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to never if the path contains never */ {
+    const actual = _ as PathSetValue<{ foo: string }, [never]>;
+    expectType<never>(actual);
+  }
+
+  /** it should evaluate to any if the path is any */ {
+    const actual = _ as PathSetValue<{ foo: string }, any>;
+    expectType<any>(actual);
+  }
+
+  /** it should evaluate to any if the path contains any */ {
+    const actual = _ as PathSetValue<{ foo: string }, [any]>;
+    expectType<any>(actual);
   }
 }

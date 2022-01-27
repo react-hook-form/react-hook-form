@@ -9,7 +9,7 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control, FieldPath } from '../../types';
+import { Auto, Control, PathString } from '../../types';
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
@@ -870,11 +870,11 @@ describe('trigger', () => {
       y: string;
     };
 
-    function Input({
+    function Input<N extends PathString>({
       name,
       control,
     }: {
-      name: FieldPath<FormValue>;
+      name: Auto.FieldPath<FormValue, N>;
       control: Control<FormValue>;
     }) {
       const renderCount = React.useRef(0);

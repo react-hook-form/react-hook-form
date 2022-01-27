@@ -1,6 +1,6 @@
-import createPath from './createPath';
 import get from './get';
-import joinPath from './joinPath';
+import join from './join';
+import of from './of';
 import set from './set';
 
-export { createPath, get, joinPath, set };
+export { get, join, of, set };

@@ -219,7 +219,7 @@ export default async <T extends NativeFieldValue>(
         }
 
         const validateError = getValidateError(
-          await validate[key](inputValue),
+          await validate[key](inputValue as never),
           inputRef,
           key,
         );

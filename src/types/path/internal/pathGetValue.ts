@@ -1,3 +1,5 @@
+import { IsAny, IsNever } from '../../utils';
+
 import { AsPathTuple, PathTuple } from './pathTuple';
 import { ArrayKey, AsKey, IsTuple, Key, MapKeys } from './utils';
 
@@ -58,7 +60,9 @@ type TryGetArray<
  * ```
  * @internal
  */
-export type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any>
+export type KeyGetValue<T, K extends Key> = IsNever<K> extends true
+  ? unknown
+  : T extends ReadonlyArray<any>
   ? IsTuple<T> extends true
     ? TryGet<T, K>
     : TryGetArray<T, K>
@@ -85,9 +89,10 @@ export type KeyGetValue<T, K extends Key> = T extends ReadonlyArray<any>
  * ```
  * @internal
  */
-export type PathGetValue<T, PT extends PathTuple> = PT extends [
-  infer K,
-  ...infer R
-]
+export type PathGetValue<T, PT extends PathTuple> = IsAny<PT> extends true
+  ? any
+  : IsNever<PT> extends true
+  ? unknown
+  : PT extends [infer K, ...infer R]
   ? PathGetValue<KeyGetValue<T, AsKey<K>>, AsPathTuple<R>>
   : T;

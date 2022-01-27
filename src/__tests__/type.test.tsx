@@ -1,37 +1,10 @@
 import React from 'react';
 
 import { Controller } from '../controller';
-import {
-  FieldErrors,
-  FieldPath,
-  FieldValues,
-  Path,
-  UseFormRegister,
-} from '../types';
+import { FieldErrors, FieldPath, FieldValues, UseFormRegister } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
-
-test('should not throw type error with path name', () => {
-  type MissingCompanyNamePath = Path<{
-    test: {
-      test: {
-        name: string;
-      }[];
-      testName: string;
-    };
-  }>;
-
-  const test: MissingCompanyNamePath[] = [
-    'test',
-    'test.test',
-    'test.testName',
-    'test.test.0',
-    'test.test.0.name',
-  ];
-
-  test;
-});
 
 test('should not throw type error with optional array fields', () => {
   type Thing = { id: string; name: string };

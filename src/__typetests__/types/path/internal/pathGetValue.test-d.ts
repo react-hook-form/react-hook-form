@@ -147,6 +147,16 @@ import { HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
     const actual = _ as KeyGetValue<[number], 'toString'>;
     expectType<() => string>(actual);
   }
+
+  /** it should evaluate to unknown if the key is never */ {
+    const actual = _ as KeyGetValue<{ foo: string }, never>;
+    expectType<unknown>(actual);
+  }
+
+  /** it should evaluate to any if the key is any */ {
+    const actual = _ as KeyGetValue<{ foo: string }, any>;
+    expectType<any>(actual);
+  }
 }
 
 /** {@link PathGetValue} */ {
@@ -280,5 +290,25 @@ import { HundredTuple, InfiniteType, Nested } from '../../__fixtures__';
 
     const actual = setter('foo', 'bar');
     expectType<string>(actual);
+  }
+
+  /** it should evaluate to unknown if the path is never */ {
+    const actual = _ as PathGetValue<{ foo: string }, never>;
+    expectType<unknown>(actual);
+  }
+
+  /** it should evaluate to unknown if the path contains never */ {
+    const actual = _ as PathGetValue<{ foo: string }, [never]>;
+    expectType<unknown>(actual);
+  }
+
+  /** it should evaluate to any if the path is any */ {
+    const actual = _ as PathGetValue<{ foo: string }, any>;
+    expectType<any>(actual);
+  }
+
+  /** it should evaluate to any if the path contains any */ {
+    const actual = _ as PathGetValue<{ foo: string }, [any]>;
+    expectType<any>(actual);
   }
 }

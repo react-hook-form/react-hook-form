@@ -10,7 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { ControllerRenderProps, UseFormRegister } from '../../types';
+import { UseFormRegister } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
@@ -1230,7 +1230,7 @@ describe('register', () => {
       onChange,
     }: {
       value: boolean[];
-      onChange: ControllerRenderProps['onChange'];
+      onChange: (value: boolean[]) => void;
     }) => {
       const [checkboxValue, setCheckboxValue] = React.useState(value);
 

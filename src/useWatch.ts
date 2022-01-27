@@ -6,52 +6,50 @@ import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import objectHasFunction from './utils/objectHasFunction';
 import {
+  Auto,
   Control,
   DeepPartialSkipArrayKey,
-  FieldPath,
   FieldPathValue,
   FieldPathValues,
   FieldValues,
   InternalFieldName,
+  PathString,
   UnpackNestedValue,
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
->(props: {
+export function useWatch<TFieldValues extends FieldValues>(props: {
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
 }): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TFieldName extends PathString,
 >(props: {
-  name: TFieldName;
+  name: Auto.FieldPath<TFieldValues, TFieldName>;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TFieldValues extends FieldValues,
+  TFieldNames extends readonly PathString[],
 >(props: {
-  name: readonly [...TFieldNames];
+  name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
->(): FieldPathValues<TFieldValues, TFieldNames>;
-export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
+  TFieldValues extends FieldValues,
+  TFieldName extends PathString,
+>(props?: UseWatchProps<TFieldValues, TFieldName>) {
   const methods = useFormContext();
   const {
     control = methods.control,

@@ -19,11 +19,11 @@ import updateAt from './utils/update';
 import {
   FieldArray,
   FieldArrayMethodProps,
-  FieldArrayPath,
   FieldArrayWithId,
   FieldErrors,
   FieldPath,
   FieldValues,
+  PathString,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -31,8 +31,8 @@ import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
 export const useFieldArray = <
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 >(
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName> => {

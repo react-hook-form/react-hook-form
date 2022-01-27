@@ -1,3 +1,4 @@
+import { IsAny } from '../../utils';
 import { PathString } from '../pathString';
 
 import { AsKey, Key } from './utils';
@@ -58,10 +59,9 @@ type SplitPathStringImpl<
  * ```
  * @internal
  */
-export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
-  PS,
-  []
->;
+export type SplitPathString<PS extends PathString> = IsAny<PS> extends true
+  ? any
+  : SplitPathStringImpl<PS, []>;
 
 /**
  * Type to implement {@link JoinPathTuple} tail-recursively.

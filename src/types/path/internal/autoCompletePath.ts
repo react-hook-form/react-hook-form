@@ -1,4 +1,4 @@
-import { IsNever } from '../../utils';
+import { IsAny, IsNever } from '../../utils';
 import { PathString } from '../pathString';
 
 import { HasPath, ValidPathPrefix } from './hasPath';
@@ -221,7 +221,9 @@ export type AutoCompletePath<
   T,
   PS extends PathString,
   C extends AccessPattern = AccessPattern,
-> = IsPathUnion<PS> extends false
+> = IsAny<PS> extends true
+  ? any
+  : IsPathUnion<PS> extends false
   ? AutoCompletePathImpl<T, PS, SplitPathString<PS>, C>
   : PS extends any
   ? AutoCompletePathCheckConstraint<T, PS, SplitPathString<PS>, C>

@@ -16,7 +16,6 @@ import {
   GetIsDirty,
   InternalFieldName,
   Names,
-  Path,
   Ref,
   ResolverResult,
   SetFieldValue,
@@ -575,7 +574,7 @@ export function createFormControl<
         true,
       );
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate && trigger(name as FieldPath<TFieldValues>);
   };
 
   const setValues = <
@@ -589,7 +588,7 @@ export function createFormControl<
   ) => {
     for (const fieldKey in value) {
       const fieldValue = value[fieldKey];
-      const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
+      const fieldName = `${name}.${fieldKey}` as FieldPath<TFieldValues>;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
@@ -632,8 +631,8 @@ export function createFormControl<
       }
     } else {
       field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setValues(name, cloneValue, options)
-        : setFieldValue(name, cloneValue, options);
+        ? setValues(name, cloneValue as never, options)
+        : setFieldValue(name, cloneValue as never, options);
     }
 
     isWatched(name, _names) && _subjects.state.next({});
@@ -799,9 +798,7 @@ export function createFormControl<
   };
 
   const getValues: UseFormGetValues<TFieldValues> = (
-    fieldNames?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+    fieldNames?: InternalFieldName | ReadonlyArray<InternalFieldName>,
   ) => {
     const values = {
       ..._defaultValues,
@@ -811,8 +808,8 @@ export function createFormControl<
     return isUndefined(fieldNames)
       ? values
       : isString(fieldNames)
-      ? get(values, fieldNames as InternalFieldName)
-      : fieldNames.map((name) => get(values, name as InternalFieldName));
+      ? get(values, fieldNames)
+      : fieldNames.map((name) => get(values, name));
   };
 
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
@@ -856,8 +853,8 @@ export function createFormControl<
 
   const watch: UseFormWatch<TFieldValues> = (
     name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
+      | InternalFieldName
+      | ReadonlyArray<InternalFieldName>
       | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>

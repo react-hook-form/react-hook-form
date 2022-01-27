@@ -9,10 +9,11 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import * as generateId from '../../logic/generateId';
-import { Control, FieldPath } from '../../types';
+import { Auto, Control, PathString } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { of } from '../../utils';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -514,33 +515,33 @@ describe('insert', () => {
       test: { name: { deep: string } }[];
     };
 
-    function Input({
+    function Input<N extends PathString>({
       name,
       control,
     }: {
-      name: FieldPath<FormValues>;
+      name: Auto.TypedFieldPath<FormValues, N, string>;
       control: Control<FormValues>;
     }) {
       const { field } = useController({
-        name: name as 'test.0.name.deep',
+        name: of(name),
         control,
       });
 
       return <input type="text" {...field} />;
     }
 
-    function FieldArray({
+    function FieldArray<N extends PathString>({
       control,
       name,
       itemDefaultValue,
     }: {
       control: Control<FormValues>;
-      name: FieldPath<FormValues>;
+      name: Auto.FieldArrayPath<FormValues, N>;
       itemDefaultValue: { name: { deep: string } };
     }) {
       const { fields, insert } = useFieldArray({
         control,
-        name: name as 'test',
+        name: of(name),
       });
 
       return (

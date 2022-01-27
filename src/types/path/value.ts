@@ -1,3 +1,5 @@
+import { IsNever } from '../utils';
+
 import { PathGetValue } from './internal/pathGetValue';
 import { PathSetValue } from './internal/pathSetValue';
 import { SplitPathString } from './internal/pathTuple';
@@ -19,7 +21,9 @@ import { PathString } from './pathString';
 export type FieldPathValue<
   TFieldValues,
   TPathString extends PathString,
-> = TPathString extends Branded.FieldPath<any>
+> = IsNever<TPathString> extends true
+  ? unknown
+  : TPathString extends Branded.FieldPath<any>
   ? TPathString extends Branded.TypedFieldPath<TFieldValues, infer Value, never>
     ? Value
     : unknown
@@ -66,9 +70,11 @@ export type FieldPathSetValue<
 export type FieldPathValues<
   TFieldValues,
   TPathStrings extends ReadonlyArray<PathString>,
-> = {
-  [Idx in keyof TPathStrings]: FieldPathValue<
-    TFieldValues,
-    Extract<TPathStrings[Idx], PathString>
-  >;
-};
+> = IsNever<TPathStrings> extends true
+  ? unknown[]
+  : {
+      [Idx in keyof TPathStrings]: FieldPathValue<
+        TFieldValues,
+        Extract<TPathStrings[Idx], PathString>
+      >;
+    };

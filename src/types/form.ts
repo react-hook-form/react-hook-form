@@ -12,10 +12,12 @@ import {
   InternalFieldName,
 } from './fields';
 import {
-  FieldArrayPath,
-  FieldPath,
+  Auto,
+  Branded,
+  FieldPathSetValue,
   FieldPathValue,
   FieldPathValues,
+  PathString,
 } from './path';
 import { Resolver } from './resolvers';
 import { DeepMap, DeepPartial, Noop } from './utils';
@@ -157,32 +159,32 @@ export type UseFormRegisterReturn = {
 };
 
 export type UseFormRegister<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends PathString,
 >(
-  name: TFieldName,
+  name: Auto.FieldPath<TFieldValues, TFieldName>,
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends PathString,
 >(
-  name: TFieldName,
+  name: Auto.FieldPath<TFieldValues, TFieldName>,
 ) => void;
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
-  <TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
+  <TFieldName extends PathString>(
+    name: Auto.FieldPath<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
-  <TFieldNames extends FieldPath<TFieldValues>[]>(
-    names: readonly [...TFieldNames],
+  <TFieldNames extends PathString[]>(
+    names: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>],
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues>,
+  TFieldName extends PathString,
 >(
-  name: TFieldName,
+  name: Auto.FieldPath<TFieldValues, TFieldName>,
   formState?: FormState<TFieldValues>,
 ) => {
   invalid: boolean;
@@ -193,12 +195,12 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
-  <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
-    names: readonly [...TFieldNames],
+  <TFieldNames extends PathString[]>(
+    names: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
-  <TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
+  <TFieldName extends PathString>(
+    name: Auto.FieldPath<TFieldValues, TFieldName>,
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
   (
@@ -207,42 +209,50 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   ): Subscription;
 };
 
-export type UseFormTrigger<TFieldValues extends FieldValues> = (
+export type UseFormTrigger<TFieldValues extends FieldValues> = <
+  TFieldName extends PathString,
+>(
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[],
+    | Auto.FieldPath<TFieldValues, TFieldName>
+    | Auto.FieldPath<TFieldValues, TFieldName>[]
+    | readonly Auto.FieldPath<TFieldValues, TFieldName>[],
   options?: TriggerConfig,
 ) => Promise<boolean>;
 
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (
+export type UseFormClearErrors<TFieldValues extends FieldValues> = <
+  TFieldName extends PathString,
+>(
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[],
+    | Auto.FieldPath<TFieldValues, TFieldName>
+    | Auto.FieldPath<TFieldValues, TFieldName>[]
+    | readonly Auto.FieldPath<TFieldValues, TFieldName>[],
 ) => void;
 
 export type UseFormSetValue<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends PathString,
 >(
-  name: TFieldName,
-  value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>,
+  name: Auto.FieldPath<TFieldValues, TFieldName>,
+  value: UnpackNestedValue<FieldPathSetValue<TFieldValues, TFieldName>>,
   options?: SetValueConfig,
 ) => void;
 
-export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues>,
+export type UseFormSetError<TFieldValues extends FieldValues> = <
+  TFieldName extends PathString,
+>(
+  name: Auto.FieldPath<TFieldValues, TFieldName>,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
   },
 ) => void;
 
-export type UseFormUnregister<TFieldValues extends FieldValues> = (
+export type UseFormUnregister<TFieldValues extends FieldValues> = <
+  TFieldName extends PathString,
+>(
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[],
+    | Auto.FieldPath<TFieldValues, TFieldName>
+    | Auto.FieldPath<TFieldValues, TFieldName>[]
+    | readonly Auto.FieldPath<TFieldValues, TFieldName>[],
   options?: Omit<
     KeepStateOptions,
     | 'keepIsSubmitted'
@@ -259,9 +269,9 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
 export type UseFormResetField<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldName extends PathString,
 >(
-  name: TFieldName,
+  name: Auto.FieldPath<TFieldValues, TFieldName>,
   options?: Partial<{
     keepDirty: boolean;
     keepTouched: boolean;
@@ -318,9 +328,9 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends PathString,
 >(
-  name: InternalFieldName,
+  name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>,
   updatedFieldArrayValues?: Partial<
     FieldArray<TFieldValues, TFieldArrayName>
   >[],
@@ -369,7 +379,7 @@ export type Control<
 export type WatchObserver<TFieldValues> = (
   value: UnpackNestedValue<DeepPartial<TFieldValues>>,
   info: {
-    name?: FieldPath<TFieldValues>;
+    name?: Branded.FieldPath<TFieldValues>;
     type?: EventType;
     value?: unknown;
   },
@@ -396,25 +406,28 @@ export type UseFormReturn<
   setFocus: UseFormSetFocus<TFieldValues>;
 };
 
-export type UseFormStateProps<TFieldValues> = Partial<{
+export type UseFormStateProps<TFieldValues, TFieldName extends PathString> = {
   control?: Control<TFieldValues>;
   disabled?: boolean;
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
+    | Auto.FieldPath<TFieldValues, TFieldName>
+    | Auto.FieldPath<TFieldValues, TFieldName>[]
+    | readonly Auto.FieldPath<TFieldValues, TFieldName>[];
   exact?: boolean;
-}>;
+};
 
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+export type UseWatchProps<
+  TFieldValues extends FieldValues,
+  TFieldName extends PathString,
+> = {
   defaultValue?: unknown;
   disabled?: boolean;
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
+    | Auto.FieldPath<TFieldValues, TFieldName>
+    | Auto.FieldPath<TFieldValues, TFieldName>[]
+    | readonly Auto.FieldPath<TFieldValues, TFieldName>[];
   control?: Control<TFieldValues>;
   exact?: boolean;
 };

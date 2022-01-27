@@ -1,3 +1,5 @@
+import { IsAny } from '../../utils';
+
 import { AsPathTuple, PathTuple } from './pathTuple';
 import {
   ArrayKey,
@@ -114,6 +116,6 @@ type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
  * ```
  * @internal
  */
-export type PathSetValue<T, PT extends PathTuple> = UnionToIntersection<
-  PathSetValueImpl<T, PT>
->[never];
+export type PathSetValue<T, PT extends PathTuple> = IsAny<PT> extends true
+  ? any
+  : UnionToIntersection<PathSetValueImpl<T, PT>>[never];

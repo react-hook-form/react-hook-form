@@ -1,27 +1,25 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './path';
-
-export type FieldArrayName = string;
+import { Auto, FieldPathValue, PathString } from './path';
 
 export type UseFieldArrayProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 > = {
-  name: TFieldArrayName;
+  name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>;
   control?: Control<TFieldValues>;
   shouldUnregister?: boolean;
 };
 
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends PathString = never,
 > = FieldArray<TFieldValues, TFieldArrayName> & Record<'id', string>;
 
 export type FieldArray<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
+> = FieldPathValue<TFieldValues, TFieldArrayName> extends
   | ReadonlyArray<infer U>
   | null
   | undefined
@@ -35,8 +33,8 @@ export type FieldArrayMethodProps = {
 };
 
 export type UseFieldArrayReturn<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 > = {
   swap: (indexA: number, indexB: number) => void;
   move: (indexA: number, indexB: number) => void;
