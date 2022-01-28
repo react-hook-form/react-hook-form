@@ -112,7 +112,7 @@ export function useController<
             };
           }
         },
-        [name, control],
+        [name, control._fields],
       ),
     },
     formState,

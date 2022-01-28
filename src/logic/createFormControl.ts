@@ -553,7 +553,9 @@ export function createFormControl<
                 (radioRef.checked = radioRef.value === fieldValue),
             );
           }
-        } else if (!isFileInput(fieldReference.ref)) {
+        } else if (isFileInput(fieldReference.ref)) {
+          fieldReference.ref.value = '';
+        } else {
           fieldReference.ref.value = fieldValue;
 
           if (!fieldReference.ref.type) {
@@ -701,10 +703,9 @@ export function createFormControl<
 
       validateFields[name] = validateFields[name] ? +1 : 1;
 
-      _proxyFormState.isValidating &&
-        _subjects.state.next({
-          isValidating: true,
-        });
+      _subjects.state.next({
+        isValidating: true,
+      });
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
