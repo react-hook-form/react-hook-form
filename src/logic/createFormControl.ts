@@ -655,7 +655,7 @@ export function createFormControl<
       const fieldValue = target.type
         ? getFieldValue(field._f)
         : getEventValue(event);
-      const isBlurEvent = [EVENTS.BLUR, EVENTS.FOCUS_OUT].includes(event.type);
+      const isBlurEvent = event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !_options.resolver &&
