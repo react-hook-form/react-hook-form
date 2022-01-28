@@ -1,5 +1,41 @@
 # Changelog
 
+## [7.25.0] - 2022-1-22
+
+- `getFieldState` get individual field state
+
+```tsx
+export default function App() {
+  const {
+    register,
+    getFieldState,
+    formState: { isDirty, isValid },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+    },
+  });
+
+  // you can invoke before render or within the render function
+  const fieldState = getFieldState('firstName');
+
+  return (
+    <form>
+      <input {...register('firstName', { required: true })} />
+      <p>{getFieldState('firstName').isDirty && 'dirty'}</p>
+      <p>{getFieldState('firstName').isTouched && 'touched'}</p>
+      <button
+        type="button"
+        onClick={() => console.log(getFieldState('firstName'))}
+      >
+        field state
+      </button>
+    </form>
+  );
+}
+```
+
 ## [7.24.0] - 2022-1-14
 
 - `useController` return prop: `onChange`, `onBlur` and `ref` will be memorized with `useCallback`
