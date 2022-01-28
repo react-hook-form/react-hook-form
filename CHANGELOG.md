@@ -1,6 +1,14 @@
 # Changelog
 
+## [7.25.0] - 2022-1-29
+
+## Changed
+
+- `onTouched` mode will honor `focusout` event
+
 ## [7.25.0] - 2022-1-22
+
+## Added
 
 - `getFieldState` get individual field state
 
@@ -37,6 +45,8 @@ export default function App() {
 ```
 
 ## [7.24.0] - 2022-1-14
+
+## Changed
 
 - `useController` return prop: `onChange`, `onBlur` and `ref` will be memorized with `useCallback`
 
