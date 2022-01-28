@@ -554,7 +554,9 @@ export function createFormControl<
                 (radioRef.checked = radioRef.value === fieldValue),
             );
           }
-        } else if (!isFileInput(fieldReference.ref)) {
+        } else if (isFileInput(fieldReference.ref)) {
+          fieldReference.ref.value = '';
+        } else {
           fieldReference.ref.value = fieldValue;
 
           if (!fieldReference.ref.type) {
