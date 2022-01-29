@@ -161,7 +161,7 @@ export type UseFormRegisterReturn = {
  * Register field into hook form with or without actual DOM ref. You can invoke register
  * before render function or at useEffect as well.
  *
- * [API](https://react-hook-form.com/api/useform/register) • [Demo](https://codesandbox.io/s/react-hook-form-register-ts-ip2j3)
+ * [API](https://react-hook-form.com/api/useform/register) • [Demo](https://codesandbox.io/s/react-hook-form-register-ts-ip2j3) • [Video](https://www.youtube.com/watch?v=JFIpCoajYkA)
  *
  * @param name - field name and the path to the form field value
  * @param options - register options include validation, disabled, unregister, valueAs and deps validation
