@@ -168,7 +168,7 @@ export type UseFormRegisterReturn = {
  * @return onChange, onBlur, name and ref
  *
  * @example
- * ```
+ * ```tsx
  * // Register HTML native input
  * <input {...register("name")} />
  * <input {...register("name1", { required: "This is required.", maxLength: 20 })} />
