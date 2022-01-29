@@ -239,7 +239,7 @@ export const useFieldArray = <
     control._updateFieldArray(
       name,
       [...updatedFieldArrayValues],
-      <T>(data: T) => data,
+      <T>(data: T): T => data,
       {},
       true,
       false,
