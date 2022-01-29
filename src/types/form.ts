@@ -196,19 +196,16 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 /**
  * Set focus on a field. You can start invoke this method after fields are mounted to the DOM.
  *
+ * [API](https://react-hook-form.com/api/useform/setfocus) • [Demo](https://codesandbox.io/s/setfocus-rolus)
+ *
  * @param name - field name and the path to the form field value
  *
  * @example
- * Safe to use at the useEffect as all fields are mounted
- * ```
+ * ```tsx
  * useEffect(() => {
  *   register('name');
  * }, [register])
- * ```
  *
- * @example
- * Set focus by click on a button
- * ```
  * <button onClick={() => setFocus('name')}>Focus</button>
  * ```
  */
