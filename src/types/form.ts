@@ -210,34 +210,34 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   name: TFieldName,
 ) => void;
 
-/**
- * Get current form values.
- * @example
- * ```
- * <button onClick={() => getValues()}>get all fields</button>
- * ```
- */
-/**
- * Get a single field value.
- * @typeParam TFieldName - field name
- * @example
- * ```
- * <button onClick={() => getValues('name')}>get single field</button>
- * ```
- */
-/**
- * Get an array of field values.
- * @typeParam readonly [...TFieldNames] - an array of field names
- * @example
- * ```
- * <button onClick={() => getValues(['name'])}>get array of fields</button>
- * ```
- */
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
+  /**
+   * Get current form values.
+   * @example
+   * ```
+   * <button onClick={() => getValues()}>get all fields</button>
+   * ```
+   */
   (): UnpackNestedValue<TFieldValues>;
+  /**
+   * Get a single field value.
+   * @typeParam TFieldName - field name
+   * @example
+   * ```
+   * <button onClick={() => getValues('name')}>get single field</button>
+   * ```
+   */
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
   ): FieldPathValue<TFieldValues, TFieldName>;
+  /**
+   * Get an array of field values.
+   * @typeParam readonly [...TFieldNames] - an array of field names
+   * @example
+   * ```
+   * <button onClick={() => getValues(['name'])}>get array of fields</button>
+   * ```
+   */
   <TFieldNames extends FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
@@ -270,48 +270,59 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   error?: FieldError;
 };
 
-/**
- * Watch then entire form update
- * @example
- * ```
- * watch()
- * ```
- */
-/**
- * Watch and subscribe to all array of fields
- * @typeParam readonly [...TFieldNames] - an array of field names
- * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
- * @example
- * watch(['name'])
- */
-/**
- * Watch a single field update
- * @typeParam TFieldName - field name
- * @example
- * watch('name')
- */
-/**
- * Subscribe to field update without trigger re-render
- * @typeParam WatchObserver<TFieldValues> - call back function to subscribe all fields change and return unsubscribe function
- * @example
- * watch(() => {})
- */
 export type UseFormWatch<TFieldValues extends FieldValues> = {
+  /**
+   * Watch then entire form update
+   * @example
+   * ```
+   * @typeParam undefined - defaultValues for the entire form
+   * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
+   * watch()
+   * ```
+   */
   (): UnpackNestedValue<TFieldValues>;
+  /**
+   * Watch and subscribe to all array of fields
+   * @typeParam readonly [...TFieldNames] - an array of field names
+   * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
+   * @example
+   * watch(['name'])
+   */
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
+  /**
+   * Watch a single field update
+   * @typeParam TFieldName - field name
+   * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
+   * @example
+   * watch('name')
+   */
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
+  /**
+   * Subscribe to field update without trigger re-render
+   * @typeParam WatchObserver<TFieldValues> - call back function to subscribe all fields change and return unsubscribe function
+   * @returns unsubscribe function
+   * @example
+   * useEffect(() => {
+   *   const unsubscribe = watch(() => {});
+   *
+   *   return () => unsubscribe();
+   * })
+   */
   (
     callback: WatchObserver<TFieldValues>,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): Subscription;
 };
 
+/**
+ * Trigger field validation
+ */
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?:
     | FieldPath<TFieldValues>
