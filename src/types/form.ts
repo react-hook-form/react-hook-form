@@ -203,10 +203,10 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
  * @example
  * ```tsx
  * useEffect(() => {
- *   register('name');
- * }, [register])
+ *   setFocus("name");
+ * }, [setFocus])
  *
- * <button onClick={() => setFocus('name')}>Focus</button>
+ * <button onClick={() => setFocus("name")}>Focus</button>
  * ```
  */
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
@@ -217,20 +217,30 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   /**
-   * Get current form values.
+   * Get the entire current form values when no argument is supplied to this function.
+   *
+   * [API](https://react-hook-form.com/api/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
+   *
+   * @return the entire form values
    *
    * @example
-   * ```
+   * ```tsx
    * <button onClick={() => getValues()}>get all fields</button>
    * ```
    */
   (): UnpackNestedValue<TFieldValues>;
   /**
    * Get a single field value.
-   * @param name - field name
+   *
+   * [API](https://react-hook-form.com/api/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
+   *
+   * @param name - field name and the path to the form field value
+   *
+   * @return the single field value
+   *
    * @example
-   * ```
-   * <button onClick={() => getValues('name')}>get single field</button>
+   * ```tsx
+   * <button onClick={() => getValues("name""")}>get single field</button>
    * ```
    */
   <TFieldName extends FieldPath<TFieldValues>>(
@@ -238,10 +248,16 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): FieldPathValue<TFieldValues, TFieldName>;
   /**
    * Get an array of field values.
+   *
+   * [API](https://react-hook-form.com/api/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
+   *
    * @param names - an array of field names
+   *
+   * @return An array of field values
+   *
    * @example
-   * ```
-   * <button onClick={() => getValues(['name'])}>get array of fields</button>
+   * ```tsx
+   * <button onClick={() => getValues(["name", "name1"])}>get array of fields</button>
    * ```
    */
   <TFieldNames extends FieldPath<TFieldValues>[]>(
@@ -250,19 +266,21 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 /**
- * Get individual field state, this is suitable to get an object/array field
- * @param name - an individual field name
+ * This method will return individual field state. It will be useful when you are try to retrieve nested value field state in a typesafe approach.
+ *
+ * [API](https://react-hook-form.com/api/useform/getfieldstate) • [Demo](https://codesandbox.io/s/getfieldstate-jvekk)
+ *
+ * @param name - field name and the path to the form field value
+ *
+ * @return invalid, isDirty, isTouched and error object
  *
  * @example
  * Get field state when form state already been subscribed
- * ```
+ * ```tsx
  * const { formState: { dirtyFields, errors, touchedFields } } = formState();
  * getFieldState('name')
- * ```
  *
- * * @example
- * Get field state when form state is not subscribed yet
- * ```
+ * // Get field state when form state is not subscribed yet
  * getFieldState('name', formState)
  * ```
  */
