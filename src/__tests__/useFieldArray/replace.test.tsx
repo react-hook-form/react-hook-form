@@ -9,8 +9,10 @@ import {
 import { act } from '@testing-library/react-hooks';
 
 import * as generateId from '../../logic/generateId';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { FormProvider } from '../../useFormContext';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -276,5 +278,64 @@ describe('replace', () => {
     await waitFor(async () => {
       screen.getByText('This is required');
     });
+  });
+
+  it('should not affect other formState during replace action', () => {
+    const ControlledInput = ({ index }: { index: number }) => {
+      const { field } = useController({
+        name: `fieldArray.${index}.firstName`,
+      });
+      return <input {...field} />;
+    };
+
+    const defaultValue = {
+      firstName: 'test',
+    };
+
+    const FieldArray = () => {
+      const { fields, replace } = useFieldArray({
+        name: 'fieldArray',
+      });
+
+      React.useEffect(() => {
+        replace([defaultValue]);
+      }, [replace]);
+
+      return (
+        <div>
+          {fields.map((field, index) => {
+            return <ControlledInput key={field.id} index={index} />;
+          })}
+
+          <button type="button" onClick={() => replace(defaultValue)}>
+            replace
+          </button>
+        </div>
+      );
+    };
+
+    function App() {
+      const form = useForm({
+        mode: 'onChange',
+      });
+      const [, updateState] = React.useState(0);
+
+      return (
+        <FormProvider {...form}>
+          <FieldArray />
+          <p>{JSON.stringify(form.formState.touchedFields)}</p>
+          <button onClick={() => updateState(1)}>updateState</button>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.focus(screen.getByRole('textbox'));
+    fireEvent.blur(screen.getByRole('textbox'));
+    fireEvent.click(screen.getByRole('button', { name: 'replace' }));
+    fireEvent.click(screen.getByRole('button', { name: 'updateState' }));
+
+    screen.getByText('{"fieldArray":[{"firstName":true}]}');
   });
 });
