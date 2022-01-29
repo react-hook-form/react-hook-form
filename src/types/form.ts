@@ -240,7 +240,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    *
    * @example
    * ```tsx
-   * <button onClick={() => getValues("name""")}>get single field</button>
+   * <button onClick={() => getValues("name")}>get single field</button>
    * ```
    */
   <TFieldName extends FieldPath<TFieldValues>>(
