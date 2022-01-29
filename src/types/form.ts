@@ -169,8 +169,9 @@ export type UseFormRegisterReturn = {
  *
  * @example
  * ```
+ * // Register HTML native input
  * <input {...register("name")} />
- * <input {...register("name1", { required: true })} />
+ * <input {...register("name1", { required: "This is required.", maxLength: 20 })} />
  * <input type="number" {...register("name2", { valueAsNumber: true })} />
  * <input {...register("name3", { deps: ["name2"] })} />
  *
