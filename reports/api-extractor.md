@@ -508,13 +508,13 @@ export type UseFieldArrayReturn<TFieldValues extends FieldValues = FieldValues, 
 // @public (undocumented)
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext extends object = object>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
 
-// @public (undocumented)
+// @public
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]) => void;
 
 // @public (undocumented)
 export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
 
-// @public (undocumented)
+// @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
     invalid: boolean;
     isDirty: boolean;
@@ -529,7 +529,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
     <TFieldNames extends FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames]): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
-// @public (undocumented)
+// @public
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
@@ -546,7 +546,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     delayError: number;
 }>;
 
-// @public (undocumented)
+// @public
 export type UseFormRegister<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: RegisterOptions<TFieldValues, TFieldName>) => UseFormRegisterReturn;
 
 // @public (undocumented)
@@ -564,10 +564,10 @@ export type UseFormRegisterReturn = {
     disabled?: boolean;
 };
 
-// @public (undocumented)
+// @public
 export type UseFormReset<TFieldValues extends FieldValues> = (values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>, keepStateOptions?: KeepStateOptions) => void;
 
-// @public (undocumented)
+// @public
 export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: Partial<{
     keepDirty: boolean;
     keepTouched: boolean;
@@ -594,15 +594,15 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     setFocus: UseFormSetFocus<TFieldValues>;
 };
 
-// @public (undocumented)
+// @public
 export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues>, error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
-// @public (undocumented)
+// @public
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName) => void;
 
-// @public (undocumented)
+// @public
 export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>, options?: SetValueConfig) => void;
 
 // @public (undocumented)
@@ -619,10 +619,10 @@ export type UseFormStateProps<TFieldValues> = Partial<{
 // @public (undocumented)
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
-// @public (undocumented)
+// @public
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
-// @public (undocumented)
+// @public
 export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: Omit<KeepStateOptions, 'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
     keepValue?: boolean;
     keepDefaultValue?: boolean;
@@ -714,7 +714,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:205:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:381:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

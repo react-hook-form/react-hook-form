@@ -158,8 +158,8 @@ export type UseFormRegisterReturn = {
 };
 
 /**
- * Register field into hook form with or without actual DOM ref. You can invoke register
- * before render function or at useEffect as well.
+ * Register field into hook form with or without the actual DOM ref. You can invoke register
+ * anywhere in the component or at useEffect as well.
  *
  * [API](https://react-hook-form.com/api/useform/register) • [Demo](https://codesandbox.io/s/react-hook-form-register-ts-ip2j3) • [Video](https://www.youtube.com/watch?v=JFIpCoajYkA)
  *
@@ -171,7 +171,8 @@ export type UseFormRegisterReturn = {
  * ```tsx
  * // Register HTML native input
  * <input {...register("name")} />
- * <input {...register("name1", { required: "This is required.", maxLength: 20 })} />
+ * <select {...register("select")} />
+ * <textarea {...register("name1", { required: "This is required.", maxLength: 20 })} />
  * <input type="number" {...register("name2", { valueAsNumber: true })} />
  * <input {...register("name3", { deps: ["name2"] })} />
  *
@@ -181,7 +182,7 @@ export type UseFormRegisterReturn = {
  *   register("name5", { value: '"hiddenValue" });
  * }, [register])
  *
- * // Register before render without ref
+ * // Register without ref
  * const { onChange, onBlur } = register("name6")
  * <input onChange={onChange} onBlur={onBlur} />
  * ```
@@ -217,7 +218,7 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   /**
-   * Get the entire current form values when no argument is supplied to this function.
+   * Get the entire form values when no argument is supplied to this function.
    *
    * [API](https://react-hook-form.com/api/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
@@ -226,6 +227,10 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * @example
    * ```tsx
    * <button onClick={() => getValues()}>get all fields</button>
+   *
+   * <input {...register("name", {
+   *   validate: () => getValues().otherField === "test";
+   * })} />
    * ```
    */
   (): UnpackNestedValue<TFieldValues>;
@@ -241,6 +246,10 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * @example
    * ```tsx
    * <button onClick={() => getValues("name")}>get single field</button>
+   *
+   * <input {...register("name", {
+   *   validate: () => getValues('otherField') === "test";
+   * })} />
    * ```
    */
   <TFieldName extends FieldPath<TFieldValues>>(
@@ -258,6 +267,10 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * @example
    * ```tsx
    * <button onClick={() => getValues(["name", "name1"])}>get array of fields</button>
+   *
+   * <input {...register("name", {
+   *   validate: () => getValues(["fieldA", "fieldB"]).includes("test");
+   * })} />
    * ```
    */
   <TFieldNames extends FieldPath<TFieldValues>[]>(
@@ -310,7 +323,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    */
   (): UnpackNestedValue<TFieldValues>;
   /**
-   * Watch and subscribe to an array of fields
+   * Watch and subscribe to an array of fields and used outside of render.
    *
    * [API](https://react-hook-form.com/api/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
@@ -329,7 +342,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
   /**
-   * Watch a single field update
+   * Watch a single field update and used outside of render.
    *
    * [API](https://react-hook-form.com/api/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
@@ -388,7 +401,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
  * }, [trigger])
  *
  * <button onClick={async () => {
- *   const result = await trigger();
+ *   const result = await trigger(); // result will be a boolean value
  * }}>
  *  trigger
  *  </button>
@@ -459,6 +472,23 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   options?: SetValueConfig,
 ) => void;
 
+/**
+ * Set an error for the field. When set an error which is not associated to a field then manual `clearErrors` invoke is required.
+ *
+ * [API](https://react-hook-form.com/api/useform/seterror) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-seterror-nfxxu) • [Video](https://www.youtube.com/watch?v=raMqvE0YyIY)
+ *
+ * @param name - field name and the path to the form field value
+ * @param error - an error object which contains type and optional message
+ * @param options - whether or not to focus on the field
+ *
+ * @example
+ * ```tsx
+ * const onSubmit = () => setError("serverError", { type: "server", message: "Error occurred"})
+ *
+ * <button onClick={() => setError("name", { type: "min" })} />
+ * <button onClick={() => setError("name", { type: "max" }, { shouldFocus: true })} />
+ * ```
+ */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
   name: FieldPath<TFieldValues>,
   error: ErrorOption,
@@ -467,6 +497,23 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (
   },
 ) => void;
 
+/**
+ * unregister a field reference and remove its value.
+ *
+ * [API](https://react-hook-form.com/api/useform/unregister) • [Demo](https://codesandbox.io/s/react-hook-form-unregister-4k2ey) • [Video](https://www.youtube.com/watch?v=TM99g_NW5Gk&feature=emb_imp_woyt)
+ *
+ * @param name - field name and the path to the form field value
+ * @param options - keep form state options
+ *
+ * @example
+ * ```tsx
+ * register("name", { required: true })
+ *
+ * <button onClick={() => unregister("name")} />
+ * // there are various keep options to retain formState
+ * <button onClick={() => unregister("name", { keepErrors: true })} />
+ * ```
+ */
 export type UseFormUnregister<TFieldValues extends FieldValues> = (
   name?:
     | FieldPath<TFieldValues>
@@ -482,12 +529,44 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
   > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
 ) => void;
 
+/**
+ * Validate the entire form and handle submit and error callback.
+ *
+ * [API](https://react-hook-form.com/api/useform/handlesubmit) • [Demo](https://codesandbox.io/s/react-hook-form-handlesubmit-ts-v7-lcrtu) • [Video](https://www.youtube.com/watch?v=KzcPKB9SOEk)
+ *
+ * @param onValid - callback function invoked after form pass validation
+ * @param onInvalid - callback function invoked when form failed validation
+ *
+ * @return callback - return callback function
+ *
+ * @example
+ * ```tsx
+ * const onSubmit = (data) => console.log(data);
+ * const onError = (error) => console.log(error);
+ *
+ * <form onSubmit={handleSubmit(onSubmit, onError)} />
+ * ```
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(
   onValid: SubmitHandler<TFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
+/**
+ * Reset a field state and reference.
+ *
+ * [API](https://react-hook-form.com/api/useform/resetfield) • [Demo](https://codesandbox.io/s/priceless-firefly-d0kuv) • [Video](https://www.youtube.com/watch?v=IdLFcNaEFEo)
+ *
+ * @param name - field name and the path to the form field value
+ * @param options - keep form state options
+ *
+ * @example
+ * ```tsx
+ * <input {...register("firstName", { required: true })} />
+ * <button type="button" onClick={() => resetField("firstName"))}>Reset</button>
+ * ```
+ */
 export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
@@ -500,6 +579,39 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   }>,
 ) => void;
 
+/**
+ * Reset athe entire form state.
+ *
+ * [API](https://react-hook-form.com/api/useform/reset) • [Demo](https://codesandbox.io/s/react-hook-form-reset-v7-ts-pu901) • [Video](https://www.youtube.com/watch?v=qmCLBjyPwVk)
+ *
+ * @param values - the entire form values to be reset
+ * @param keepStateOptions - keep form state options
+ *
+ * @example
+ * ```tsx
+ * useEffect(() => {
+ *   // reset the entire form after component mount or form defaultValues is ready
+ *   reset({
+ *     fieldA: "test"
+ *     fieldB: "test"
+ *   });
+ * }, [reset])
+ *
+ * // reset by combine with existing form values
+ * reset({
+ *   ...getValues(),
+ *  fieldB: "test"
+ *});
+ *
+ * // reset and keep form state
+ * reset({
+ *   ...getValues(),
+ *}, {
+ *   keepErrors: true,
+ *   keepDirty: true
+ *});
+ * ```
+ */
 export type UseFormReset<TFieldValues extends FieldValues> = (
   values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
