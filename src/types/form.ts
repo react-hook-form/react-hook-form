@@ -159,24 +159,32 @@ export type UseFormRegisterReturn = {
 
 /**
  * Register field into hook form with or without actual DOM ref. You can invoke register
- * before render function or useEffect as well
+ * before render function or at useEffect as well.
  *
  * @param name - field name and the path to the form field value
- * @param options - register options include validation, disabled, unregister, valueAs and deps
- * @return UseFormRegisterReturn
+ * @param options - register options include validation, disabled, unregister, valueAs and deps validation
+ * @return onChange, onBlur, name and ref
+ *
+ * API: {@link https://react-hook-form.com/api/useform/register}
+ *
+ * Demo: {@link https://codesandbox.io/s/react-hook-form-register-ts-ip2j3}
  *
  * @example
- * Here is an example register an native input
  * ```
- * <input {...register('name')} />
- * ```
+ * <input {...register("name")} />
+ * <input {...register("name1", { required: true })} />
+ * <input type="number" {...register("name2", { valueAsNumber: true })} />
+ * <input {...register("name3", { deps: ["name2"] })} />
  *
- * @example
- * Register custom field at `useEffect`
- * ```
+ * // Register custom field at useEffect
  * useEffect(() => {
- *   register('name');
+ *   register("name4");
+ *   register("name5", { value: '"hiddenValue" });
  * }, [register])
+ *
+ * // Register before render without ref
+ * const { onChange, onBlur } = register("name6")
+ * <input onChange={onChange} onBlur={onBlur} />
  * ```
  */
 export type UseFormRegister<TFieldValues extends FieldValues> = <
