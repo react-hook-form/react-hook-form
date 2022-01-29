@@ -157,6 +157,27 @@ export type UseFormRegisterReturn = {
   disabled?: boolean;
 };
 
+/**
+ * Register field into hook form with or without actual DOM ref. You can invoke register
+ * before render function or useEffect as well
+ *
+ * @typeParam TFieldName - field name
+ * @typeParam RegisterOptions<TFieldValues, TFieldName> - register options include validation, disabled, unregister, valueAs and deps
+ * @return UseFormRegisterReturn
+ *
+ * @example
+ * Here is an example register an native input
+ * ```
+ * <input {...register('name')} />
+ * ```
+ * @example
+ * Register custom field at `useEffect`
+ * ```
+ * useEffect(() => {
+ *   register('name');
+ * }, [register])
+ * ```
+ */
 export type UseFormRegister<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
@@ -164,12 +185,54 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
+/**
+ * Set focus on a field. You can start invoke this method after fields are mounted to the DOM.
+ *
+ * @typeParam TFieldName - field name
+ *
+ * @example
+ * Safe to use at the useEffect as all fields are mounted
+ * ```
+ * useEffect(() => {
+ *   register('name');
+ * }, [register])
+ * ```
+ *
+ * @example
+ * Set focus by click on a button
+ * ```
+ * <button onClick={() => setFocus('name')}>Focus</button>
+ * ```
+ */
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
 ) => void;
 
+/**
+ * Get current form values.
+ * @example
+ * ```
+ * <button onClick={() => getValues()}>get all fields</button>
+ * ```
+ */
+/**
+ * Get a single field value.
+ * @typeParam TFieldName - field name
+ * @example
+ * ```
+ * <button onClick={() => getValues('name')}>get single field</button>
+ * ```
+ */
+/**
+ * Get an array of field values.
+ * @typeParam readonly [...TFieldNames] - an array of field names
+ * @example
+ * ```
+ * <button onClick={() => getValues(['name'])}>get array of fields</button>
+ * ```
+ */
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
   <TFieldName extends FieldPath<TFieldValues>>(
@@ -180,6 +243,21 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
+/**
+ * Get individual field state, this is suitable to get an object/array field
+ * @typeParam TFieldName - an individual field name
+ * @example
+ * Get field state when form state already been subscribed
+ * ```
+ * const { formState: { dirtyFields, errors, touchedFields } } = formState();
+ * getFieldState('name')
+ * ```
+ * * @example
+ * Get field state when form state is not subscrbied yet
+ * ```
+ * getFieldState('name', formState)
+ * ```
+ */
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues>,
 >(
@@ -192,6 +270,32 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   error?: FieldError;
 };
 
+/**
+ * Watch then entire form update
+ * @example
+ * ```
+ * watch()
+ * ```
+ */
+/**
+ * Watch and subscribe to all array of fields
+ * @typeParam readonly [...TFieldNames] - an array of field names
+ * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
+ * @example
+ * watch(['name'])
+ */
+/**
+ * Watch a single field update
+ * @typeParam TFieldName - field name
+ * @example
+ * watch('name')
+ */
+/**
+ * Subscribe to field update without trigger re-render
+ * @typeParam WatchObserver<TFieldValues> - call back function to subscribe all fields change and return unsubscribe function
+ * @example
+ * watch(() => {})
+ */
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
