@@ -161,8 +161,8 @@ export type UseFormRegisterReturn = {
  * Register field into hook form with or without actual DOM ref. You can invoke register
  * before render function or useEffect as well
  *
- * @typeParam TFieldName - field name
- * @typeParam RegisterOptions<TFieldValues, TFieldName> - register options include validation, disabled, unregister, valueAs and deps
+ * @param name - field name and the path to the form field value
+ * @param options - register options include validation, disabled, unregister, valueAs and deps
  * @return UseFormRegisterReturn
  *
  * @example
@@ -170,6 +170,7 @@ export type UseFormRegisterReturn = {
  * ```
  * <input {...register('name')} />
  * ```
+ *
  * @example
  * Register custom field at `useEffect`
  * ```
@@ -188,7 +189,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 /**
  * Set focus on a field. You can start invoke this method after fields are mounted to the DOM.
  *
- * @typeParam TFieldName - field name
+ * @param name - field name and the path to the form field value
  *
  * @example
  * Safe to use at the useEffect as all fields are mounted
@@ -213,6 +214,7 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   /**
    * Get current form values.
+   *
    * @example
    * ```
    * <button onClick={() => getValues()}>get all fields</button>
@@ -221,7 +223,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   (): UnpackNestedValue<TFieldValues>;
   /**
    * Get a single field value.
-   * @typeParam TFieldName - field name
+   * @param name - field name
    * @example
    * ```
    * <button onClick={() => getValues('name')}>get single field</button>
@@ -232,7 +234,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): FieldPathValue<TFieldValues, TFieldName>;
   /**
    * Get an array of field values.
-   * @typeParam readonly [...TFieldNames] - an array of field names
+   * @param names - an array of field names
    * @example
    * ```
    * <button onClick={() => getValues(['name'])}>get array of fields</button>
@@ -245,15 +247,17 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 
 /**
  * Get individual field state, this is suitable to get an object/array field
- * @typeParam TFieldName - an individual field name
+ * @param name - an individual field name
+ *
  * @example
  * Get field state when form state already been subscribed
  * ```
  * const { formState: { dirtyFields, errors, touchedFields } } = formState();
  * getFieldState('name')
  * ```
+ *
  * * @example
- * Get field state when form state is not subscrbied yet
+ * Get field state when form state is not subscribed yet
  * ```
  * getFieldState('name', formState)
  * ```
@@ -273,20 +277,22 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   /**
    * Watch then entire form update
+   *
    * @example
    * ```
-   * @typeParam undefined - defaultValues for the entire form
-   * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
    * watch()
    * ```
    */
   (): UnpackNestedValue<TFieldValues>;
   /**
    * Watch and subscribe to all array of fields
-   * @typeParam readonly [...TFieldNames] - an array of field names
-   * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
+   * @param names - an array of field names
+   * @param defaultValue - defaultValues for the entire form
+   *
    * @example
+   * ```
    * watch(['name'])
+   * ```
    */
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
@@ -294,10 +300,13 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   ): FieldPathValues<TFieldValues, TFieldNames>;
   /**
    * Watch a single field update
-   * @typeParam TFieldName - field name
-   * @typeParam UnpackNestedValue<DeepPartial<TFieldValues>> - defaultValues for the entire form
+   * @param name - field name
+   * @param defaultValue - defaultValues for the entire form
+   *
    * @example
+   * ```
    * watch('name')
+   * ```
    */
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
@@ -305,14 +314,19 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   ): FieldPathValue<TFieldValues, TFieldName>;
   /**
    * Subscribe to field update without trigger re-render
-   * @typeParam WatchObserver<TFieldValues> - call back function to subscribe all fields change and return unsubscribe function
+   * @param callback - call back function to subscribe all fields change and return unsubscribe function
+   * @param defaultValues - defaultValues for the entire form
+   *
    * @returns unsubscribe function
+   *
    * @example
+   * ```
    * useEffect(() => {
    *   const unsubscribe = watch(() => {});
    *
    *   return () => unsubscribe();
    * })
+   * ```
    */
   (
     callback: WatchObserver<TFieldValues>,
@@ -322,6 +336,11 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 
 /**
  * Trigger field validation
+ * @param name - undefined will trigger the entire form validation
+ *               array will validate an arrange of fields
+ *               single field name will only trigger that field's validation
+ * @example
+ *
  */
 export type UseFormTrigger<TFieldValues extends FieldValues> = (
   name?:
@@ -331,6 +350,30 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
   options?: TriggerConfig,
 ) => Promise<boolean>;
 
+/**
+ * Clear the entire form errors, this will only impact errors form state
+ *
+ * @param name - undefined will remove all field errors
+ *               array will remove an arrange of fields errors
+ *               single field name will only remove that field's error state
+ * @example
+ * Clear all errors
+ * ```
+ * clearErrors()
+ * ```
+ *
+ * @example
+ * Clear a group of fields
+ * ```
+ * clearErrors(['name', 'name1'])
+ * ```
+ *
+ * @example
+ * Clear a single field error
+ * ```
+ * clearErrors('name')
+ * ```
+ */
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (
   name?:
     | FieldPath<TFieldValues>
@@ -338,6 +381,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | readonly FieldPath<TFieldValues>[],
 ) => void;
 
+/**
+ * Set a single field value and a group of fields value
+ */
 export type UseFormSetValue<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
