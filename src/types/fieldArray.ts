@@ -37,41 +37,218 @@ export type FieldArrayMethodProps = {
   focusName?: string;
 };
 
+/**
+ * Swap field array by from and to index
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param indexA - from index
+ * @param indexB - to index
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => swap(0, 1)}>swap</button>
+ * ```
+ */
+export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
+
+/**
+ * Move field array by from and to index
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param indexA - from index
+ * @param indexB - to index
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => move(0, 1)}>swap</button>
+ * ```
+ */
+export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
+
+/**
+ * Prepend field/fields to the start of the fields and focus. The input value will be registered during this action.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param value - prepend items or items
+ * @param options - focus field option
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => prepend({ name: "data" })}>Prepend</button>
+ * <button
+ *   type="button"
+ *   onClick={() => prepend([{ name: "data" }, { name: "data" }])}
+ * >
+ *   Prepend
+ * </button>
+ * ```
+ */
+export type UseFieldArrayPrepend<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+> = (
+  value:
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+  options?: FieldArrayMethodProps,
+) => void;
+
+/**
+ * Append field/fields to the end of your fields and focus. The input value will be registered during this action.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param value - append items or items
+ * @param options - focus field option
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => prepend({ name: "data" })}>Prepend</button>
+ * <button
+ *   type="button"
+ *   onClick={() => append([{ name: "data" }, { name: "data" }])}
+ * >
+ *   Append
+ * </button>
+ * ```
+ */
+export type UseFieldArrayAppend<
+  TFieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+> = (
+  value:
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+  options?: FieldArrayMethodProps,
+) => void;
+
+/**
+ * Remove field/fields at particular position, or remove all when no index provided.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param index - remove index
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => remove(0)}>Remove</button>
+ * <button
+ *   type="button"
+ *   onClick={() => remove()}
+ * >
+ *   Remove all
+ * </button>
+ * ```
+ */
+export type UseFieldArrayRemove = (index?: number | number[]) => void;
+
+/**
+ * Insert field/fields at particular position and focus.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param index - insert position
+ * @param value - insert field or fields
+ * @param options - focus field option
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => insert(1, { name: "data" })}>Insert</button>
+ * <button
+ *   type="button"
+ *   onClick={() => insert(1, [{ name: "data" }, { name: "data" }])}
+ * >
+ *   Insert
+ * </button>
+ * ```
+ */
+export type UseFieldArrayInsert<
+  TFieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+> = (
+  index: number,
+  value:
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+  options?: FieldArrayMethodProps,
+) => void;
+
+/**
+ * Update field/fields at particular position.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param index - insert position
+ * @param value - insert field or fields
+ *
+ * @example
+ * ```tsx
+ * <button type="button" onClick={() => update(1, { name: "data" })}>Update</button>
+ * <button
+ *   type="button"
+ *   onClick={() => update(1, [{ name: "data" }, { name: "data" }])}
+ * >
+ *   Update
+ * </button>
+ * ```
+ */
+type UseFieldArrayUpdate<
+  TFieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+> = (
+  index: number,
+  value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
+) => void;
+
+/**
+ * 	Replace the entire field array values.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ *
+ * @param value - the entire field values
+ *
+ * @example
+ * ```tsx
+ * <button
+ *   type="button"
+ *   onClick={() => update([{ name: "data" }, { name: "data" }])}
+ * >
+ *   Replace
+ * </button>
+ * ```
+ */
+type UseFieldArrayReplace<
+  TFieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+> = (
+  value:
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+) => void;
+
 export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 > = {
-  swap: (indexA: number, indexB: number) => void;
-  move: (indexA: number, indexB: number) => void;
-  prepend: (
-    value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
-    options?: FieldArrayMethodProps,
-  ) => void;
-  append: (
-    value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
-    options?: FieldArrayMethodProps,
-  ) => void;
-  remove: (index?: number | number[]) => void;
-  insert: (
-    index: number,
-    value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
-    options?: FieldArrayMethodProps,
-  ) => void;
-  update: (
-    index: number,
-    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
-  ) => void;
-  replace: (
-    value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
-  ) => void;
+  swap: UseFieldArraySwap;
+  move: UseFieldArrayMove;
+  prepend: UseFieldArrayPrepend<TFieldValues, TFieldArrayName>;
+  append: UseFieldArrayAppend<TFieldValues, TFieldArrayName>;
+  remove: UseFieldArrayRemove;
+  insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
+  update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
+  replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
   fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };

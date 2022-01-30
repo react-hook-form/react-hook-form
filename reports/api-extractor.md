@@ -484,6 +484,18 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
 // @public
 export function useFieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
 
+// @public
+export type UseFieldArrayAppend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+
+// @public
+export type UseFieldArrayInsert<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+
+// @public
+export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
+
+// @public
+export type UseFieldArrayPrepend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: FieldArray<TFieldValues, TFieldArrayName> | FieldArray<TFieldValues, TFieldArrayName>[], options?: FieldArrayMethodProps) => void;
+
 // @public (undocumented)
 export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
     name: TFieldArrayName;
@@ -492,18 +504,24 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     shouldUnregister?: boolean;
 };
 
+// @public
+export type UseFieldArrayRemove = (index?: number | number[]) => void;
+
 // @public (undocumented)
 export type UseFieldArrayReturn<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
-    swap: (indexA: number, indexB: number) => void;
-    move: (indexA: number, indexB: number) => void;
-    prepend: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
-    append: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
-    remove: (index?: number | number[]) => void;
-    insert: (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
-    update: (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>>) => void;
-    replace: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[]) => void;
+    swap: UseFieldArraySwap;
+    move: UseFieldArrayMove;
+    prepend: UseFieldArrayPrepend<TFieldValues, TFieldArrayName>;
+    append: UseFieldArrayAppend<TFieldValues, TFieldArrayName>;
+    remove: UseFieldArrayRemove;
+    insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
+    update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
+    replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
     fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };
+
+// @public
+export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 
 // @public
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext extends object = object>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
@@ -714,6 +732,8 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
+// src/types/fieldArray.ts:251:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:252:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:400:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
