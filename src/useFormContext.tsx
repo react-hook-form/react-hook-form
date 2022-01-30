@@ -8,10 +8,10 @@ const HookFormContext = React.createContext<UseFormReturn | null>(null);
 /**
  * This custom hook allows you to access the form context. useFormContext is intended to be used in deeply nested structures, where it would become inconvenient to pass the context as a prop.
  *
- * @summary
+ * @remarks
  * [API](https://react-hook-form.com/api/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
  *
- * @return return all useForm methods
+ * @returns return all useForm methods
  *
  * @example
  * ```tsx

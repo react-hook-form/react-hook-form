@@ -16,12 +16,12 @@ import { useSubscribe } from './useSubscribe';
 /**
  * useForm is a custom hook, by invoke the hook it returns functions to mange the entire form. It takes optional arguments.
  *
- * @summary
+ * @remarks
  * [API](https://react-hook-form.com/api/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
  *
  * @param props - options to set validation strategy, default values, plug in validation schema and more user experience behaviour setting.
  *
- * @return methods - individual functions to manage the form state.
+ * @returns methods - individual functions to manage the form state.
  *
  * @example
  * ```tsx

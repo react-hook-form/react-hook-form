@@ -22,7 +22,7 @@ import { useSubscribe } from './useSubscribe';
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
  *
- * @summary
+ * @remarks
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
@@ -51,7 +51,7 @@ export function useWatch<
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
- * @summary
+ * @remarks
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
@@ -81,7 +81,7 @@ export function useWatch<
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
- * @summary
+ * @remarks
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
@@ -114,7 +114,7 @@ export function useWatch<
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
- * @summary
+ * @remarks
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
@@ -131,7 +131,7 @@ export function useWatch<
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
- * @summary
+ * @remarks
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *

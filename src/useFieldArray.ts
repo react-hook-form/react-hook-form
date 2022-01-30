@@ -33,12 +33,12 @@ import { useSubscribe } from './useSubscribe';
 /**
  * Custom hook for managing Field Arrays (dynamic inputs). The motivation is to provide better user experience and form performance.
  *
- * @summary
+ * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
  *
  * @param props - field array name and unregister on unmount option
  *
- * @return methods - functions to manipulate with the Field Arrays (dynamic inputs)
+ * @returns methods - functions to manipulate with the Field Arrays (dynamic inputs)
  *
  * @example
  * ```tsx
