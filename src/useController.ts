@@ -21,6 +21,7 @@ import { useWatch } from './useWatch';
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
  *
+ * @summary
  * [API](https://react-hook-form.com/api/usecontroller) • [Demo](https://codesandbox.io/s/usecontroller-0o8px)
  *
  * @param props - field name and the path to the form field value, and validation rules.
