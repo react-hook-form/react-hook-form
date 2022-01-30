@@ -40,6 +40,31 @@ export const useFormContext = <
 >(): UseFormReturn<TFieldValues> =>
   React.useContext(HookFormContext) as unknown as UseFormReturn<TFieldValues>;
 
+/**
+ * Form provider to host all useForm methods.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
+ *
+ * @param props -  all useFrom methods
+ *
+ * @example
+ * ```tsx
+ * function App() {
+ *   const methods = useForm();
+ *   const onSubmit = data => console.log(data);
+ *
+ *   return (
+ *     <FormProvider {...methods} >
+ *       <form onSubmit={methods.handleSubmit(onSubmit)}>
+ *         <NestedInput />
+ *         <input type="submit" />
+ *       </form>
+ *     </FormProvider>
+ *   );
+ * }
+ * ```
+ */
 export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext extends object = object,
