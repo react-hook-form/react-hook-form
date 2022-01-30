@@ -24,7 +24,7 @@ import { useWatch } from './useWatch';
  * @remarks
  * [API](https://react-hook-form.com/api/usecontroller) • [Demo](https://codesandbox.io/s/usecontroller-0o8px)
  *
- * @param props - field name and the path to the form field value, and validation rules.
+ * @param props - the field name and the path to the form field value, and validation rules.
  *
  * @returns provide field handler functions, and form state.
  *

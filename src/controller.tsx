@@ -7,7 +7,7 @@ import { useController } from './useController';
  * @remarks
  * [API](https://react-hook-form.com/api/usecontroller/controller) • [Demo](https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw) • [Video](https://www.youtube.com/watch?v=N2UNk_UCVyA)
  *
- * @param props - field name and the path to the form field value, and validation rules.
+ * @param props - the field name and the path to the form field value, and validation rules.
  *
  * @returns provide field handler functions, and form state.
  *
