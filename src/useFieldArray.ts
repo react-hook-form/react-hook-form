@@ -30,13 +30,62 @@ import {
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
-export const useFieldArray = <
+/**
+ * Custom hook for managing Field Arrays (dynamic inputs). The motivation is to provide better user experience and form performance.
+ *
+ * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
+ *
+ * @param props - field array name and unregister on unmount option
+ *
+ * @return methods - functions to manipulate with the Field Arrays (dynamic inputs)
+ *
+ * @example
+ * ```tsx
+ * function App() {
+ *   const { register, control, handleSubmit, reset, trigger, setError } = useForm({
+ *     defaultValues: {
+ *       test: []
+ *     }
+ *   });
+ *   const { fields, append } = useFieldArray({
+ *     control,
+ *     name: "test"
+ *   });
+ *
+ *   return (
+ *     <form onSubmit={handleSubmit(data => console.log(data))}>
+ *       <ul>
+ *         {fields.map((item, index) => (
+ *           <li key={item.id}>
+ *             <input {...register(`test.${index}.firstName`)} />
+ *             <Controller
+ *               render={({ field }) => <input {...field} />}
+ *               name={`test.${index}.lastName`}
+ *               control={control}
+ *             />
+ *             <button type="button" onClick={() => remove(index)}>Delete</button>
+ *           </li>
+ *         ))}
+ *       </ul>
+ *       <button
+ *         type="button"
+ *         onClick={() => append({ firstName: "bill", lastName: "luo" })}
+ *       >
+ *         append
+ *       </button>
+ *       <input type="submit" />
+ *     </form>
+ *   );
+ * }
+ * ```
+ */
+export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> => {
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const methods = useFormContext();
   const {
     control = methods.control,
@@ -306,4 +355,4 @@ export const useFieldArray = <
       [fields, keyName],
     ),
   };
-};
+}
