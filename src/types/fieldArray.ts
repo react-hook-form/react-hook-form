@@ -90,7 +90,7 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
  * ```
  */
 export type UseFieldArrayPrepend<
-  TFieldValues extends FieldValues = FieldValues,
+  TFieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
