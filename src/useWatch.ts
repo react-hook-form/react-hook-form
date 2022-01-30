@@ -19,12 +19,6 @@ import {
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
-type CommonProps<T> = {
-  control?: Control<T>;
-  disabled?: boolean;
-  exact?: boolean;
-};
-
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
  *
@@ -46,11 +40,14 @@ type CommonProps<T> = {
  * })
  * ```
  */
-export function useWatch<TFieldValues extends FieldValues = FieldValues>(
-  props: {
-    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-  } & CommonProps<TFieldValues>,
-): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+>(props: {
+  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
@@ -74,12 +71,13 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues>(
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  props: {
-    name: TFieldName;
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  } & CommonProps<TFieldValues>,
-): FieldPathValue<TFieldValues, TFieldName>;
+>(props: {
+  name: TFieldName;
+  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): FieldPathValue<TFieldValues, TFieldName>;
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
@@ -106,12 +104,13 @@ export function useWatch<
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
->(
-  props: {
-    name: readonly [...TFieldNames];
-    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-  } & CommonProps<TFieldValues>,
-): FieldPathValues<TFieldValues, TFieldNames>;
+>(props: {
+  name: readonly [...TFieldNames];
+  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): FieldPathValues<TFieldValues, TFieldNames>;
 /**
  * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
  *
