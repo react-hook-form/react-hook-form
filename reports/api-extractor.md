@@ -223,7 +223,7 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 // @public (undocumented)
 export type FieldValues = Record<string, any>;
 
-// @public (undocumented)
+// @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext extends object = object>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
 
 // @public (undocumented)
@@ -714,7 +714,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:391:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:400:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
