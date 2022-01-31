@@ -232,14 +232,14 @@ export const useFieldArray = <
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
-    const updatedFieldArrayValues = convertToArrayPayload(value);
+    const updatedFieldArrayValues = convertToArrayPayload(cloneObject(value));
     ids.current = updatedFieldArrayValues.map(generateId);
     updateValues([...updatedFieldArrayValues]);
     setFields([...updatedFieldArrayValues]);
     control._updateFieldArray(
       name,
       [...updatedFieldArrayValues],
-      () => updatedFieldArrayValues,
+      <T>(data: T): T => data,
       {},
       true,
       false,

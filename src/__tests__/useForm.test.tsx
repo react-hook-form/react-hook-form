@@ -1222,6 +1222,59 @@ describe('useForm', () => {
 
       expect(screen.queryByText('This is required.')).toBeInTheDocument();
     });
+
+    it('should validate onFocusout event', async () => {
+      const Component = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          mode: 'onTouched',
+        });
+
+        return (
+          <>
+            <input
+              type="text"
+              {...register('test', { required: 'This is required.' })}
+            />
+            {errors.test?.message}
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      screen.getByRole('textbox').focus();
+
+      await actComponent(async () => {
+        fireEvent.focusOut(screen.getByRole('textbox'));
+      });
+
+      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+
+      await actComponent(async () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      expect(screen.queryByText('This is required.')).not.toBeInTheDocument();
+
+      await actComponent(async () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+    });
   });
 
   describe('with schema validation', () => {
