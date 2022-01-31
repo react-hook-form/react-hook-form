@@ -118,8 +118,7 @@ export default async <T extends NativeFieldValue>(
 
     if (!isNaN(inputValue as number)) {
       const valueNumber =
-        (ref as HTMLInputElement).valueAsNumber ||
-        parseFloat(inputValue as string);
+        (ref as HTMLInputElement).valueAsNumber || +inputValue;
       if (!isNullOrUndefined(maxOutput.value)) {
         exceedMax = valueNumber > maxOutput.value;
       }
