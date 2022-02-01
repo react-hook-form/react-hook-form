@@ -14,7 +14,7 @@ import {
 import { useSubscribe } from './useSubscribe';
 
 /**
- * useForm is a custom hook, by invoke the hook it returns functions to mange the entire form. It takes optional arguments.
+ * useForm is a custom hook to mange the entire form by invoke the hook it returns functions.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
