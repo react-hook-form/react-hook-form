@@ -26,7 +26,7 @@ import { useWatch } from './useWatch';
  *
  * @param props - the path name to the form field value, and validation rules.
  *
- * @returns provide field handler functions, field and form state.
+ * @returns provide field handler functions, field and form state. {@link UseControllerReturn}
  *
  * @example
  * ```tsx

@@ -21,7 +21,7 @@ import { useSubscribe } from './useSubscribe';
  *
  * @param props - useForm props
  *
- * @returns methods - individual functions to manage the form state.
+ * @returns methods - individual functions to manage the form state. {@link UseFormReturn}
  *
  * @example
  * ```tsx

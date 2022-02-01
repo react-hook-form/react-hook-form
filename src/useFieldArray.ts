@@ -38,7 +38,7 @@ import { useSubscribe } from './useSubscribe';
  *
  * @param props - useFieldArray props
  *
- * @returns methods - functions to manipulate with the Field Arrays (dynamic inputs)
+ * @returns methods - functions to manipulate with the Field Arrays (dynamic inputs) {@link UseFieldArrayReturn}
  *
  * @example
  * ```tsx
