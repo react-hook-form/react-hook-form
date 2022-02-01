@@ -164,15 +164,12 @@ export type Field = {
 // @public (undocumented)
 export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<infer U> | null | undefined ? U : never;
 
-// @public (undocumented)
+// @public
 export type FieldArrayMethodProps = {
     shouldFocus?: boolean;
     focusIndex?: number;
     focusName?: string;
 };
-
-// @public (undocumented)
-export type FieldArrayName = string;
 
 // @public
 export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
@@ -180,7 +177,7 @@ export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldV
 // @public
 export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
 
-// @public (undocumented)
+// @public
 export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
 // @public (undocumented)
@@ -732,8 +729,8 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/fieldArray.ts:254:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
-// src/types/fieldArray.ts:255:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:258:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:259:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:400:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

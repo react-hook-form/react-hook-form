@@ -2,8 +2,6 @@ import { FieldValues } from './fields';
 import { Control } from './form';
 import { FieldArrayPath, FieldArrayPathValue } from './path';
 
-export type FieldArrayName = string;
-
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
@@ -15,6 +13,9 @@ export type UseFieldArrayProps<
   shouldUnregister?: boolean;
 };
 
+/**
+ * `useFieldArray` returned `fields` with unique id
+ */
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
@@ -31,6 +32,9 @@ export type FieldArray<
   ? U
   : never;
 
+/**
+ * `useFieldArray` focus option, ability to toggle focus on and off with `shouldFocus` and setting focus by either field index or name.
+ */
 export type FieldArrayMethodProps = {
   shouldFocus?: boolean;
   focusIndex?: number;
