@@ -77,7 +77,7 @@ export type ControllerFieldState = {
     error?: FieldError;
 };
 
-// @public (undocumented)
+// @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     render: ({ field, fieldState, formState, }: {
         field: ControllerRenderProps<TFieldValues, TName>;
@@ -474,7 +474,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     control?: Control<TFieldValues>;
 };
 
-// @public (undocumented)
+// @public
 export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     field: ControllerRenderProps<TFieldValues, TName>;
     formState: UseFormStateReturn<TFieldValues>;
@@ -732,8 +732,8 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/fieldArray.ts:251:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
-// src/types/fieldArray.ts:252:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:254:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:255:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:400:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

@@ -36,9 +36,7 @@ import { useSubscribe } from './useSubscribe';
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
  *
- * @param props.name - the path name to the form field value.
- * @param props.shouldUnregister - set to true to remove the entire field array value once hook is unmounted
- * @param props.control - the internal control object and it's optional when using with form context API.
+ * @param props - useFieldArray props
  *
  * @returns methods - functions to manipulate with the Field Arrays (dynamic inputs)
  *

@@ -76,9 +76,7 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param value - prepend items or items
- * @param options.shouldFocus - set whether to focus on the field after prepend.
- * @param options.focusIndex - set focus index, by default it will focus on the prepend item.
- * @param options.focusName - set focus field name.
+ * @param options - focus options
  *
  * @example
  * ```tsx
@@ -109,9 +107,7 @@ export type UseFieldArrayPrepend<
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param value - append items or items.
- * @param options.shouldFocus - set whether to focus on the field after prepend.
- * @param options.focusIndex - set focus index, by default it will focus on the prepend item.
- * @param options.focusName - set focus field name.
+ * @param options - focus options
  *
  * @example
  * ```tsx
@@ -164,9 +160,7 @@ export type UseFieldArrayRemove = (index?: number | number[]) => void;
  *
  * @param index - insert position
  * @param value - insert field or fields
- * @param options.shouldFocus - set whether to focus on the field after prepend.
- * @param options.focusIndex - set focus index, by default it will focus on the prepend item.
- * @param options.focusName - set focus field name.
+ * @param options - focus options
  *
  * @example
  * ```tsx

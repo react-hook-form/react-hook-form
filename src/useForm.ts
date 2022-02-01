@@ -19,16 +19,7 @@ import { useSubscribe } from './useSubscribe';
  * @remarks
  * [API](https://react-hook-form.com/api/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
  *
- * @param props.mode - options to set pre submit validation strategy.
- * @param props.reValidateMode - options to set after submit validation strategy.
- * @param props.defaultValues - default values for the entire form.
- * @param props.resolver - This function allows you to use any external validation library.
- * @param props.context - This context object is mutable and will be injected into the resolver's second argument.
- * @param props.shouldFocusError - should focus on the error field.
- * @param props.shouldUnregister - should remove field after unmount.
- * @param props.shouldUseNativeValidation - should use browser build in validation.
- * @param props.criteriaMode - show single field error at a time or show all errors associated to the field.
- * @param props.delayError - This config will delay the error state to be displayed to the end-user in milliseconds.
+ * @param props - useForm props
  *
  * @returns methods - individual functions to manage the form state.
  *
