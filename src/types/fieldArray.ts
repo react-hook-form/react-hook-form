@@ -38,7 +38,7 @@ export type FieldArrayMethodProps = {
 };
 
 /**
- * Swap field array by from and to index
+ * Swap field array by supplying from and to index
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
@@ -54,7 +54,7 @@ export type FieldArrayMethodProps = {
 export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 
 /**
- * Move field array by from and to index
+ * Move field array by supplying from and to index
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
@@ -70,17 +70,20 @@ export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
 
 /**
- * Prepend field/fields to the start of the fields and focus. The input value will be registered during this action.
+ * Prepend field/fields to the start of the fields and optionally focus. The input value will be registered during this action.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param value - prepend items or items
- * @param options - focus field option
+ * @param options.shouldFocus - set whether to focus on the field after prepend.
+ * @param options.focusIndex - set focus index, by default it will focus on the prepend item.
+ * @param options.focusName - set focus field name.
  *
  * @example
  * ```tsx
  * <button type="button" onClick={() => prepend({ name: "data" })}>Prepend</button>
+ * <button type="button" onClick={() => prepend({ name: "data" }, { shouldFocus: false })}>Prepend</button>
  * <button
  *   type="button"
  *   onClick={() => prepend([{ name: "data" }, { name: "data" }])}
@@ -105,12 +108,15 @@ export type UseFieldArrayPrepend<
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
- * @param value - append items or items
- * @param options - focus field option
+ * @param value - append items or items.
+ * @param options.shouldFocus - set whether to focus on the field after prepend.
+ * @param options.focusIndex - set focus index, by default it will focus on the prepend item.
+ * @param options.focusName - set focus field name.
  *
  * @example
  * ```tsx
- * <button type="button" onClick={() => prepend({ name: "data" })}>Prepend</button>
+ * <button type="button" onClick={() => prepend({ name: "data" })}>Append</button>
+ * <button type="button" onClick={() => prepend({ name: "data" }, { shouldFocus: false })}>Append</button>
  * <button
  *   type="button"
  *   onClick={() => append([{ name: "data" }, { name: "data" }])}
@@ -130,12 +136,12 @@ export type UseFieldArrayAppend<
 ) => void;
 
 /**
- * Remove field/fields at particular position, or remove all when no index provided.
+ * Remove field/fields at particular position.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
- * @param index - remove index
+ * @param index - index to remove at, or remove all when no index provided.
  *
  * @example
  * ```tsx
@@ -158,11 +164,14 @@ export type UseFieldArrayRemove = (index?: number | number[]) => void;
  *
  * @param index - insert position
  * @param value - insert field or fields
- * @param options - focus field option
+ * @param options.shouldFocus - set whether to focus on the field after prepend.
+ * @param options.focusIndex - set focus index, by default it will focus on the prepend item.
+ * @param options.focusName - set focus field name.
  *
  * @example
  * ```tsx
  * <button type="button" onClick={() => insert(1, { name: "data" })}>Insert</button>
+ * <button type="button" onClick={() => insert(1, { name: "data" }, { shouldFocus: false })}>Insert</button>
  * <button
  *   type="button"
  *   onClick={() => insert(1, [{ name: "data" }, { name: "data" }])}
@@ -216,7 +225,7 @@ type UseFieldArrayUpdate<
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
- * @param value - the entire field values
+ * @param value - the entire field values.
  *
  * @example
  * ```tsx

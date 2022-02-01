@@ -36,7 +36,9 @@ import { useSubscribe } from './useSubscribe';
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
  *
- * @param props - field array name and unregister on unmount option
+ * @param props.name - the path name to the form field value.
+ * @param props.shouldUnregister - set to true to remove the entire field array value once hook is unmounted
+ * @param props.control - the internal control object and it's optional when using with form context API.
  *
  * @returns methods - functions to manipulate with the Field Arrays (dynamic inputs)
  *
@@ -55,23 +57,10 @@ import { useSubscribe } from './useSubscribe';
  *
  *   return (
  *     <form onSubmit={handleSubmit(data => console.log(data))}>
- *       <ul>
- *         {fields.map((item, index) => (
- *           <li key={item.id}>
- *             <input {...register(`test.${index}.firstName`)} />
- *             <Controller
- *               render={({ field }) => <input {...field} />}
- *               name={`test.${index}.lastName`}
- *               control={control}
- *             />
- *             <button type="button" onClick={() => remove(index)}>Delete</button>
- *           </li>
- *         ))}
- *       </ul>
- *       <button
- *         type="button"
- *         onClick={() => append({ firstName: "bill", lastName: "luo" })}
- *       >
+ *       {fields.map((item, index) => (
+ *          <input key={item.id} {...register(`test.${index}.firstName`)}  />
+ *       ))}
+ *       <button type="button" onClick={() => append({ firstName: "bill" })}>
  *         append
  *       </button>
  *       <input type="submit" />

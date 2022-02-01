@@ -163,7 +163,7 @@ export type UseFormRegisterReturn = {
  * @remarks
  * [API](https://react-hook-form.com/api/useform/register) • [Demo](https://codesandbox.io/s/react-hook-form-register-ts-ip2j3) • [Video](https://www.youtube.com/watch?v=JFIpCoajYkA)
  *
- * @param name - the field name and the path to the form field value, name is required and unique
+ * @param name - the path name to the form field value, name is required and unique
  * @param options - register options include validation, disabled, unregister, value as and dependent validation
  *
  * @returns onChange, onBlur, name, ref, and native contribute attribute if browser validation is enabled.
@@ -203,7 +203,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
  * @remarks
  * [API](https://react-hook-form.com/api/useform/setfocus) • [Demo](https://codesandbox.io/s/setfocus-rolus)
  *
- * @param name - the field name and the path to the form field value
+ * @param name - the path name to the form field value.
  *
  * @example
  * ```tsx
@@ -245,7 +245,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * @remarks
    * [API](https://react-hook-form.com/api/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
-   * @param name - the field name and the path to the form field value
+   * @param name - the path name to the form field value.
    *
    * @returns the single field value
    *
@@ -291,7 +291,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
  * @remarks
  * [API](https://react-hook-form.com/api/useform/getfieldstate) • [Demo](https://codesandbox.io/s/getfieldstate-jvekk)
  *
- * @param name - the field name and the path to the form field value
+ * @param name - the path name to the form field value.
  *
  * @returns invalid, isDirty, isTouched and error object
  *
@@ -362,7 +362,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * @remarks
    * [API](https://react-hook-form.com/api/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
-   * @param name - the field name and the path to the form field value
+   * @param name - the path name to the form field value.
    * @param defaultValue - defaultValues for the entire form
    *
    * @returns return the single field value
@@ -441,7 +441,7 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
  * @remarks
  * [API](https://react-hook-form.com/api/useform/clearerrors) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx)
  *
- * @param name - the field name and the path to the form field value.
+ * @param name - the path name to the form field value.
  *
  * @example
  * Clear all errors
@@ -464,7 +464,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
  * @remarks
  * [API](https://react-hook-form.com/api/useform/setvalue) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-setvalue-8z9hx) • [Video](https://www.youtube.com/watch?v=qpv51sCH3fI)
  *
- * @param name - the field name and the path to the form field value
+ * @param name - the path name to the form field value.
  * @param value - field value
  * @param options - should validate or update form state
  *
@@ -501,7 +501,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * @remarks
  * [API](https://react-hook-form.com/api/useform/seterror) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-seterror-nfxxu) • [Video](https://www.youtube.com/watch?v=raMqvE0YyIY)
  *
- * @param name - the field name and the path to the form field value
+ * @param name - the path name to the form field value.
  * @param error - an error object which contains type and optional message
  * @param options - whether or not to focus on the field
  *
@@ -530,7 +530,7 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (
  * @remarks
  * [API](https://react-hook-form.com/api/useform/unregister) • [Demo](https://codesandbox.io/s/react-hook-form-unregister-4k2ey) • [Video](https://www.youtube.com/watch?v=TM99g_NW5Gk&feature=emb_imp_woyt)
  *
- * @param name - the field name and the path to the form field value
+ * @param name - the path name to the form field value.
  * @param options - keep form state options
  *
  * @example
@@ -588,7 +588,7 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(
  * @remarks
  * [API](https://react-hook-form.com/api/useform/resetfield) • [Demo](https://codesandbox.io/s/priceless-firefly-d0kuv) • [Video](https://www.youtube.com/watch?v=IdLFcNaEFEo)
  *
- * @param name - the field name and the path to the form field value
+ * @param name - the path name to the form field value.
  * @param options - keep form state options
  *
  * @example

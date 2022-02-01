@@ -7,26 +7,30 @@ import { useController } from './useController';
  * @remarks
  * [API](https://react-hook-form.com/api/usecontroller/controller) • [Demo](https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw) • [Video](https://www.youtube.com/watch?v=N2UNk_UCVyA)
  *
- * @param props - the field name and the path to the form field value, and validation rules.
+ * @param props - the path name to the form field value, and validation rules.
  *
- * @returns provide field handler functions, and form state.
+ * @returns provide field handler functions, field and form state.
  *
  * @example
  * ```tsx
  * function App() {
- *   const { control } = useForm<FormValues>();
+ *   const { control } = useForm<FormValues>({
+ *     defaultValues: {
+ *       test: ""
+ *     }
+ *   });
  *
  *   return (
  *     <form>
  *       <Controller
  *         control={control}
- *         name="ReactDatepicker"
+ *         name="test"
  *         render={({ field: { onChange, onBlur, value, ref }, formState, fieldState }) => (
  *           <>
  *             <input
  *               onChange={onChange} // send value to hook form
- *               onBlur={onBlur} // notify when input is touched/blur
- *               value={value} // update value
+ *               onBlur={onBlur} // notify when input is touched
+ *               value={value} // return updated value
  *               ref={ref} // set ref for focus management
  *             />
  *             <p>{formState.isSubmitted ? "submitted" : ""}</p>
