@@ -456,6 +456,9 @@ Thank you for helping and answering questions from the community.
 <a href="https://github.com/Moshyfawn">
   <img src="https://avatars.githubusercontent.com/u/16290753?v=4" width="25" />
 </a>
+<a href="https://github.com/weisisheng">
+  <img src="https://avatars.githubusercontent.com/u/47701145?v=4" width="25" />
+</a>
 
 ### Organizations
 
