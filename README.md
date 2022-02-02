@@ -460,7 +460,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
       height="45"
     />
   </a>
-</p>;
+</p>
 
 ### Backers
 
