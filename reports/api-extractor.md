@@ -471,7 +471,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     control?: Control<TFieldValues>;
 };
 
-// @public
+// @public (undocumented)
 export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     field: ControllerRenderProps<TFieldValues, TName>;
     formState: UseFormStateReturn<TFieldValues>;
