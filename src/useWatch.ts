@@ -49,7 +49,7 @@ export function useWatch<
   exact?: boolean;
 }): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 /**
- * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
  *
@@ -79,7 +79,7 @@ export function useWatch<
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 /**
- * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
  *
@@ -112,7 +112,7 @@ export function useWatch<
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 /**
- * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
  *
@@ -120,7 +120,7 @@ export function useWatch<
  *
  * @example
  * ```tsx
- * // when the component is wrapped with FormProvider
+ * // can skip passing down the control into useWatch if the form is wrapped with the FormProvider
  * const values = useWatch()
  * ```
  */
@@ -129,7 +129,7 @@ export function useWatch<
   TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
 >(): FieldPathValues<TFieldValues, TFieldNames>;
 /**
- * Behaves similarly to the watch API, however, this will isolate re-rendering at the component level and potentially result in better performance for your application.
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
  *

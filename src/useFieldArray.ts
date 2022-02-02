@@ -31,7 +31,7 @@ import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
 /**
- * Custom hook for managing Field Arrays (dynamic inputs). The motivation is to provide better user experience and form performance.
+ * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)

@@ -26,7 +26,7 @@ import { useWatch } from './useWatch';
  *
  * @param props - the path name to the form field value, and validation rules.
  *
- * @returns provide field handler functions, field and form state. {@link UseControllerReturn}
+ * @returns field properties, field and form state. {@link UseControllerReturn}
  *
  * @example
  * ```tsx
@@ -38,20 +38,6 @@ import { useWatch } from './useWatch';
  *       <p>{fieldState.isTouched && "Touched"}</p>
  *       <p>{formState.isSubmitted ? "submitted" : ""}</p>
  *     </div>
- *   );
- * }
- *
- *  export default function App() {
- *   const { handleSubmit, control } = useForm({
- *     defaultValues: {
- *       FirstName: ""
- *     },
- *   });
- *   return (
- *     <form>
- *       <Input control={control} name="FirstName" rules={{ required: true }} />
- *       <input type="submit" />
- *     </form>
  *   );
  * }
  * ```

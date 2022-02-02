@@ -6,7 +6,7 @@ import { FieldValues, FormProviderProps, UseFormReturn } from './types';
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 
 /**
- * This custom hook allows you to access the form context. useFormContext is intended to be used in deeply nested structures, where it would become inconvenient to pass the context as a prop.
+ * This custom hook allows you to access the form context. useFormContext is intended to be used in deeply nested structures, where it would become inconvenient to pass the context as a prop. To be used with {@link FormProvider}.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
@@ -41,12 +41,12 @@ export const useFormContext = <
   React.useContext(HookFormContext) as unknown as UseFormReturn<TFieldValues>;
 
 /**
- * Form provider to host all useForm methods.
+ * A provider component that propagates the `useForm` methods to all children components via [React Context](https://reactjs.org/docs/context.html) API. To be used with {@link useFormContext}.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
  *
- * @param props -  all useFrom methods
+ * @param props - all useFrom methods
  *
  * @example
  * ```tsx
@@ -62,6 +62,11 @@ export const useFormContext = <
  *       </form>
  *     </FormProvider>
  *   );
+ * }
+ *
+ *  function NestedInput() {
+ *   const { register } = useFormContext(); // retrieve all hook methods
+ *   return <input {...register("test")} />;
  * }
  * ```
  */
