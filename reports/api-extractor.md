@@ -66,7 +66,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext ext
     getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
-// @public (undocumented)
+// @public
 export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends Path<TFieldValues> = Path<TFieldValues>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
 
 // @public (undocumented)
@@ -77,7 +77,7 @@ export type ControllerFieldState = {
     error?: FieldError;
 };
 
-// @public (undocumented)
+// @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     render: ({ field, fieldState, formState, }: {
         field: ControllerRenderProps<TFieldValues, TName>;
@@ -164,15 +164,12 @@ export type Field = {
 // @public (undocumented)
 export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<infer U> | null | undefined ? U : never;
 
-// @public (undocumented)
+// @public
 export type FieldArrayMethodProps = {
     shouldFocus?: boolean;
     focusIndex?: number;
     focusName?: string;
 };
-
-// @public (undocumented)
-export type FieldArrayName = string;
 
 // @public
 export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
@@ -180,7 +177,7 @@ export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldV
 // @public
 export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
 
-// @public (undocumented)
+// @public
 export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
 // @public (undocumented)
@@ -223,7 +220,7 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 // @public (undocumented)
 export type FieldValues = Record<string, any>;
 
-// @public (undocumented)
+// @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext extends object = object>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
 
 // @public (undocumented)
@@ -462,7 +459,7 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extend
     [K in keyof T]: UnpackNestedValue<T[K]>;
 } : T;
 
-// @public (undocumented)
+// @public
 export function useController<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: UseControllerProps<TFieldValues, TName>): UseControllerReturn<TFieldValues, TName>;
 
 // @public (undocumented)
@@ -481,8 +478,20 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
     fieldState: ControllerFieldState;
 };
 
-// @public (undocumented)
-export const useFieldArray: <TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends ArrayPath<TFieldValues> = ArrayPath<TFieldValues>, TKeyName extends string = "id">(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>) => UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
+// @public
+export function useFieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
+
+// @public
+export type UseFieldArrayAppend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+
+// @public
+export type UseFieldArrayInsert<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+
+// @public
+export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
+
+// @public
+export type UseFieldArrayPrepend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
 
 // @public (undocumented)
 export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
@@ -492,29 +501,35 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     shouldUnregister?: boolean;
 };
 
+// @public
+export type UseFieldArrayRemove = (index?: number | number[]) => void;
+
 // @public (undocumented)
 export type UseFieldArrayReturn<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
-    swap: (indexA: number, indexB: number) => void;
-    move: (indexA: number, indexB: number) => void;
-    prepend: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
-    append: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
-    remove: (index?: number | number[]) => void;
-    insert: (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
-    update: (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>>) => void;
-    replace: (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[]) => void;
+    swap: UseFieldArraySwap;
+    move: UseFieldArrayMove;
+    prepend: UseFieldArrayPrepend<TFieldValues, TFieldArrayName>;
+    append: UseFieldArrayAppend<TFieldValues, TFieldArrayName>;
+    remove: UseFieldArrayRemove;
+    insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
+    update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
+    replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
     fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };
 
-// @public (undocumented)
+// @public
+export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
+
+// @public
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext extends object = object>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
 
-// @public (undocumented)
+// @public
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]) => void;
 
-// @public (undocumented)
+// @public
 export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
 
-// @public (undocumented)
+// @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
     invalid: boolean;
     isDirty: boolean;
@@ -529,7 +544,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
     <TFieldNames extends FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames]): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
-// @public (undocumented)
+// @public
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
@@ -546,7 +561,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     delayError: number;
 }>;
 
-// @public (undocumented)
+// @public
 export type UseFormRegister<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: RegisterOptions<TFieldValues, TFieldName>) => UseFormRegisterReturn;
 
 // @public (undocumented)
@@ -564,10 +579,10 @@ export type UseFormRegisterReturn = {
     disabled?: boolean;
 };
 
-// @public (undocumented)
+// @public
 export type UseFormReset<TFieldValues extends FieldValues> = (values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>, keepStateOptions?: KeepStateOptions) => void;
 
-// @public (undocumented)
+// @public
 export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: Partial<{
     keepDirty: boolean;
     keepTouched: boolean;
@@ -594,18 +609,18 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     setFocus: UseFormSetFocus<TFieldValues>;
 };
 
-// @public (undocumented)
+// @public
 export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues>, error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
-// @public (undocumented)
+// @public
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName) => void;
 
-// @public (undocumented)
+// @public
 export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>, options?: SetValueConfig) => void;
 
-// @public (undocumented)
+// @public
 export function useFormState<TFieldValues extends FieldValues = FieldValues>(props?: UseFormStateProps<TFieldValues>): UseFormStateReturn<TFieldValues>;
 
 // @public (undocumented)
@@ -619,10 +634,10 @@ export type UseFormStateProps<TFieldValues> = Partial<{
 // @public (undocumented)
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
-// @public (undocumented)
+// @public
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
-// @public (undocumented)
+// @public
 export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: Omit<KeepStateOptions, 'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
     keepValue?: boolean;
     keepDefaultValue?: boolean;
@@ -637,7 +652,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     (callback: WatchObserver<TFieldValues>, defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>): Subscription;
 };
 
-// @public (undocumented)
+// @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues>(props: {
     defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
     control?: Control<TFieldValues>;
@@ -645,7 +660,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues>(props: 
     exact?: boolean;
 }): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 
-// @public (undocumented)
+// @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: {
     name: TFieldName;
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
@@ -654,7 +669,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
     exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
 
-// @public (undocumented)
+// @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[]>(props: {
     name: readonly [...TFieldNames];
     defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
@@ -663,7 +678,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
     exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 
-// @public (undocumented)
+// @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[]>(): FieldPathValues<TFieldValues, TFieldNames>;
 
 // @public (undocumented)
@@ -714,7 +729,9 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:205:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:258:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
+// src/types/fieldArray.ts:259:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:400:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
