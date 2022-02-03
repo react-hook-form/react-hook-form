@@ -460,6 +460,13 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
       height="45"
     />
   </a>
+  <a href="https://github.com/IanVS">
+    <img
+      src="https://avatars.githubusercontent.com/u/4616705?v=4"
+      width="45"
+      height="45"
+    />
+  </a>
 </p>
 
 ### Backers
