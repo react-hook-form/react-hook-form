@@ -1007,9 +1007,7 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = _options.shouldUnregister
-        ? cloneObject(_formValues)
-        : { ..._formValues };
+      let fieldValues: any = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
