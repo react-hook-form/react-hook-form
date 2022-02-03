@@ -91,7 +91,7 @@ function checkLineEndings(config) {
 /**
  * Finds and loads the API Extractor config relative to the
  * current working directory.
- * @return {ExtractorConfig}
+ * @returns {ExtractorConfig}
  */
 function loadExtractorConfig() {
   const rawConfig = ExtractorConfig.tryLoadForFolder({

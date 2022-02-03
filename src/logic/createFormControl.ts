@@ -554,7 +554,9 @@ export function createFormControl<
                 (radioRef.checked = radioRef.value === fieldValue),
             );
           }
-        } else if (!isFileInput(fieldReference.ref)) {
+        } else if (isFileInput(fieldReference.ref)) {
+          fieldReference.ref.value = '';
+        } else {
           fieldReference.ref.value = fieldValue;
 
           if (!fieldReference.ref.type) {
@@ -653,7 +655,8 @@ export function createFormControl<
       const fieldValue = target.type
         ? getFieldValue(field._f)
         : getEventValue(event);
-      const isBlurEvent = event.type === EVENTS.BLUR;
+      const isBlurEvent =
+        event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !_options.resolver &&
@@ -702,10 +705,9 @@ export function createFormControl<
 
       validateFields[name] = validateFields[name] ? +1 : 1;
 
-      _proxyFormState.isValidating &&
-        _subjects.state.next({
-          isValidating: true,
-        });
+      _subjects.state.next({
+        isValidating: true,
+      });
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
@@ -1008,9 +1010,7 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = _options.shouldUnregister
-        ? cloneObject(_formValues)
-        : { ..._formValues };
+      let fieldValues: any = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,

@@ -87,6 +87,38 @@ describe('handleSubmit', () => {
     });
   });
 
+  it('should not provide reference to _formValues as data', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string; deep: { values: string } }>({
+        mode: VALIDATION_MODE.onSubmit,
+        defaultValues: {
+          test: 'data',
+          deep: {
+            values: '5',
+          },
+        },
+      }),
+    );
+
+    await act(async () => {
+      await result.current.handleSubmit((data: any) => {
+        data.deep.values = '12';
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+
+    await act(async () => {
+      await result.current.handleSubmit((data: any) => {
+        expect(data.deep).toEqual({ values: '5' });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+  });
+
   it('should not invoke callback when there are errors', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
