@@ -1035,7 +1035,10 @@ export function createFormControl<
           });
           await onValid(fieldValues, e);
         } else {
-          onInvalid && (await onInvalid(_formState.errors, e));
+          if (onInvalid) {
+            await onInvalid({ ..._formState.errors }, e);
+          }
+
           _options.shouldFocusError &&
             focusFieldBy(
               _fields,
