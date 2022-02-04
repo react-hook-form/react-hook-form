@@ -368,7 +368,10 @@ export function createFormControl<
 
     validateFields[name]--;
 
-    if (_proxyFormState.isValidating && !validateFields[name]) {
+    if (
+      _proxyFormState.isValidating &&
+      !Object.values(validateFields).some((v) => v)
+    ) {
       _subjects.state.next({
         isValidating: false,
       });
