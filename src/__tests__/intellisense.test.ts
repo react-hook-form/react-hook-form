@@ -1,9 +1,11 @@
-import { completions } from './__fixtures__/completions';
+import { completionsFactory } from './__fixtures__/completions';
+
+const completions = completionsFactory(__dirname);
 
 describe('IntelliSense', () => {
   it('should show completions for useController name prop', () => {
     const [result] = completions`
-      import {useController, Control} from './src'
+      import {useController, Control} from '..'
       declare const control: Control<{foo: string}>
       useController({
         control,
@@ -14,7 +16,7 @@ describe('IntelliSense', () => {
 
   it('should show completions for useWatch name prop', () => {
     const [result] = completions`
-      import {useWatch, Control} from './src'
+      import {useWatch, Control} from '..'
       declare const control: Control<{foo: string}>
       useWatch({
         control,
@@ -25,7 +27,7 @@ describe('IntelliSense', () => {
 
   it('should show completions for useWatch name tuple prop', () => {
     const [result] = completions`
-      import {useWatch, Control} from './src'
+      import {useWatch, Control} from '..'
       declare const control: Control<{foo: string}>
       useWatch({
         control,

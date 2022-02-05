@@ -31,47 +31,51 @@ function getCompletionArgs(
   return completionArgs;
 }
 
-export function completions(
-  strings: TemplateStringsArray,
-  ...options: Array<ts.GetCompletionsAtPositionOptions | undefined>
-) {
-  const scriptName = '__intelliSenseTestSnippet__.tsx';
-  const scriptContent = strings.join('');
-  const completionArgs = getCompletionArgs(strings, options);
+export function completionsFactory(dirname: string) {
+  return (
+    strings: TemplateStringsArray,
+    ...options: Array<ts.GetCompletionsAtPositionOptions | undefined>
+  ) => {
+    const scriptName = '__intelliSenseTestSnippet__.tsx';
+    const scriptContent = strings.join('');
+    const completionArgs = getCompletionArgs(strings, options);
 
-  const servicesHost: ts.LanguageServiceHost = {
-    getScriptFileNames: () => [scriptName],
-    getScriptVersion: () => '0',
-    getScriptSnapshot: (fileName) => {
-      if (fileName === scriptName) {
-        return ts.ScriptSnapshot.fromString(scriptContent);
-      }
-      if (!fs.existsSync(fileName)) {
-        return undefined;
-      }
-      return ts.ScriptSnapshot.fromString(fs.readFileSync(fileName).toString());
-    },
-    getCurrentDirectory: () => process.cwd(),
-    getCompilationSettings: () => ({}),
-    getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
-    fileExists: ts.sys.fileExists,
-    readFile: ts.sys.readFile,
-    readDirectory: ts.sys.readDirectory,
-    directoryExists: ts.sys.directoryExists,
-    getDirectories: ts.sys.getDirectories,
-  };
+    const servicesHost: ts.LanguageServiceHost = {
+      getScriptFileNames: () => [scriptName],
+      getScriptVersion: () => '0',
+      getScriptSnapshot: (fileName) => {
+        if (fileName === scriptName) {
+          return ts.ScriptSnapshot.fromString(scriptContent);
+        }
+        if (!fs.existsSync(fileName)) {
+          return undefined;
+        }
+        return ts.ScriptSnapshot.fromString(
+          fs.readFileSync(fileName).toString(),
+        );
+      },
+      getCurrentDirectory: () => dirname,
+      getCompilationSettings: () => ({}),
+      getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
+      fileExists: ts.sys.fileExists,
+      readFile: ts.sys.readFile,
+      readDirectory: ts.sys.readDirectory,
+      directoryExists: ts.sys.directoryExists,
+      getDirectories: ts.sys.getDirectories,
+    };
 
-  const services = ts.createLanguageService(
-    servicesHost,
-    ts.createDocumentRegistry(),
-  );
-
-  return completionArgs.map(({ position, options }) => {
-    const result = services.getCompletionsAtPosition(
-      scriptName,
-      position,
-      options,
+    const services = ts.createLanguageService(
+      servicesHost,
+      ts.createDocumentRegistry(),
     );
-    return result?.entries.map(({ name, kind }) => ({ name, kind })) ?? [];
-  });
+
+    return completionArgs.map(({ position, options }) => {
+      const result = services.getCompletionsAtPosition(
+        scriptName,
+        position,
+        options,
+      );
+      return result?.entries.map(({ name, kind }) => ({ name, kind })) ?? [];
+    });
+  };
 }
