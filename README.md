@@ -4,11 +4,8 @@
         </a>
 </div>
 
-<div align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/v7_example.gif" alt="React Hook Form video - React custom hook for form validation" width="100%" />
-        </a>
-</div>
+
+https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-9d79-ffa3fafa498a.mp4
 
 <div align="center">
 
