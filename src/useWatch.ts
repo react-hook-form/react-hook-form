@@ -21,33 +21,6 @@ import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
 /**
- * Subscribe to the entire form values change and re-render at the hook level.
- *
- * @remarks
- *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
- *
- * @param props - defaultValue, disable subscription and match exact name.
- *
- * @example
- * ```tsx
- * const { watch } = useForm();
- * const values = useWatch({
- *   control,
- *   defaultValue: {
- *     name: "data"
- *   },
- *   exact: false,
- * })
- * ```
- */
-export function useWatch<TFieldValues extends FieldValues>(props: {
-  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-  control?: Control<TFieldValues>;
-  disabled?: boolean;
-  exact?: boolean;
-}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -110,6 +83,33 @@ export function useWatch<
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
+/**
+ * Subscribe to the entire form values change and re-render at the hook level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { watch } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   defaultValue: {
+ *     name: "data"
+ *   },
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<TFieldValues extends FieldValues>(props: {
+  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *

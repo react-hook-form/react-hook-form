@@ -712,14 +712,6 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export function useWatch<TFieldValues extends FieldValues>(props: {
-    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-    control?: Control<TFieldValues>;
-    disabled?: boolean;
-    exact?: boolean;
-}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-
-// @public
 export function useWatch<TFieldValues extends FieldValues, TFieldName extends PathString>(props: {
     name: Auto.FieldPath<TFieldValues, TFieldName>;
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
@@ -736,6 +728,14 @@ export function useWatch<TFieldValues extends FieldValues, TFieldNames extends r
     disabled?: boolean;
     exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
+
+// @public
+export function useWatch<TFieldValues extends FieldValues>(props: {
+    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+    control?: Control<TFieldValues>;
+    disabled?: boolean;
+    exact?: boolean;
+}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
 
 // @public (undocumented)
 export type UseWatchProps<TFieldValues extends FieldValues, TFieldName extends PathString> = {
