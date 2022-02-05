@@ -368,7 +368,10 @@ export function createFormControl<
 
     validateFields[name]--;
 
-    if (_proxyFormState.isValidating && !validateFields[name]) {
+    if (
+      _proxyFormState.isValidating &&
+      !Object.values(validateFields).some((v) => v)
+    ) {
       _subjects.state.next({
         isValidating: false,
       });
@@ -1010,9 +1013,7 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = _options.shouldUnregister
-        ? cloneObject(_formValues)
-        : { ..._formValues };
+      let fieldValues: any = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1037,7 +1038,10 @@ export function createFormControl<
           });
           await onValid(fieldValues, e);
         } else {
-          onInvalid && (await onInvalid(_formState.errors, e));
+          if (onInvalid) {
+            await onInvalid({ ..._formState.errors }, e);
+          }
+
           _options.shouldFocusError &&
             focusFieldBy(
               _fields,
