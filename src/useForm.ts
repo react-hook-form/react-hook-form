@@ -51,7 +51,9 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext> | undefined
   >();
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, updateFormState] = React.useState<
+    Readonly<FormState<TFieldValues>>
+  >({
     isDirty: false,
     isValidating: false,
     dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,

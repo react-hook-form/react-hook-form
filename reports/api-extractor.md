@@ -481,10 +481,10 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
+export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: Readonly<FieldErrors<TFieldValues>>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
 
 // @public (undocumented)
-export type SubmitHandler<TFieldValues extends FieldValues> = (data: UnpackNestedValue<TFieldValues>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
+export type SubmitHandler<TFieldValues extends FieldValues> = (data: Readonly<UnpackNestedValue<TFieldValues>>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
