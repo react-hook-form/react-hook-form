@@ -13,7 +13,9 @@ import { useForm } from '../../useForm';
       },
     });
 
-    handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
+    handleSubmit((data) =>
+      expectType<Readonly<{ test: string; test1: number }>>(data),
+    );
   }
 
   /** it should infer the correct defaultValues from useForm generic */ {
@@ -23,7 +25,9 @@ import { useForm } from '../../useForm';
       test1: number;
     }>();
 
-    handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
+    handleSubmit((data) =>
+      expectType<Readonly<{ test: string; test1: number }>>(data),
+    );
   }
 }
 
