@@ -714,7 +714,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 // @public
 export function useWatch<TFieldValues extends FieldValues, TFieldNames extends readonly PathString[]>(props: {
     name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
-    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+    defaultValue?: FieldPathValues<TFieldValues, TFieldNames>;
     control?: Control<TFieldValues>;
     disabled?: boolean;
     exact?: boolean;
