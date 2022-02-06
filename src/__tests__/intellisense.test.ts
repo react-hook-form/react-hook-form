@@ -14,17 +14,6 @@ describe('IntelliSense', () => {
     expect(result).toContainEqual({ kind: 'string', name: 'foo' });
   });
 
-  it('should show completions for useWatch name prop', () => {
-    const [result] = completions`
-      import {useWatch, Control} from '..'
-      declare const control: Control<{foo: string}>
-      useWatch({
-        control,
-        name: '${undefined}'
-      })`;
-    expect(result).toContainEqual({ kind: 'string', name: 'foo' });
-  });
-
   it('should show completions for useWatch name tuple prop', () => {
     const [result] = completions`
       import {useWatch, Control} from '..'
