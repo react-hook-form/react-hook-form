@@ -13,25 +13,25 @@ const Basic: React.FC = () => {
     formState: { errors },
     reset,
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
+    firstName: '';
+    lastName: '';
+    min: '';
+    max: '';
+    minDate: '';
+    maxDate: '';
+    minLength: '';
+    minRequiredLength: '';
+    selectNumber: '';
+    pattern: '';
+    radio: '';
+    checkbox: '';
     checkboxArray: NestedValue<string[]>;
-    multiple: string;
-    validate: string;
+    multiple: '';
+    validate: '';
     nestItem: {
-      nest1: string;
+      nest1: '';
     };
-    arrayItem: { test1: string; test2: string }[];
+    arrayItem: { test1: ''; test2: string }[];
   }>({
     mode: mode as keyof ValidationMode,
   });
@@ -149,12 +149,38 @@ const Basic: React.FC = () => {
         type="validate"
         placeholder="validate"
         {...register('validate', {
-          validate: (value) => value === 'test',
+          validate: (value: string) => value === 'test',
         })}
       />
       {errors.validate && <p>validate error</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={() => reset()}>
+      <button
+        type="button"
+        id="resetForm"
+        onClick={() =>
+          reset({
+            firstName: '',
+            lastName: '',
+            min: '',
+            max: '',
+            minDate: '',
+            maxDate: '',
+            minLength: '',
+            minRequiredLength: '',
+            selectNumber: '',
+            pattern: '',
+            radio: '',
+            checkbox: '',
+            checkboxArray: [],
+            multiple: '',
+            validate: '',
+            nestItem: {
+              nest1: '',
+            },
+            arrayItem: [],
+          })
+        }
+      >
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>
