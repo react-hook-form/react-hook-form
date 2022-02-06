@@ -384,66 +384,6 @@ describe('formState', () => {
     screen.getByText('isNotSubmitSuccessful');
   });
 
-  it('should update isValidating to true when other validation still running', async () => {
-    function App() {
-      const [stateValidation, setStateValidation] = React.useState(false);
-      const {
-        register,
-        formState: { isValidating },
-      } = useForm({ mode: 'all' });
-
-      return (
-        <div>
-          <p>isValidating: {String(isValidating)}</p>
-          <p>stateValidation: {String(stateValidation)}</p>
-          <form>
-            <input
-              {...register('lastName', {
-                required: true,
-                validate: () => {
-                  setStateValidation(true);
-                  return new Promise((resolve) => {
-                    setTimeout(() => {
-                      setStateValidation(false);
-                      resolve(true);
-                    }, 5000);
-                  });
-                },
-              })}
-              placeholder="async"
-            />
-
-            <input
-              {...register('firstName', { required: true })}
-              placeholder="required"
-            />
-          </form>
-        </div>
-      );
-    }
-
-    render(<App />);
-
-    fireEvent.change(screen.getByPlaceholderText('async'), {
-      target: { value: 'test' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('required'), {
-      target: { value: 'test' },
-    });
-
-    screen.getByText('isValidating: true');
-    screen.getByText('stateValidation: true');
-
-    await actComponent(async () => {
-      jest.runAllTimers();
-    });
-
-    await actComponent(async () => {
-      screen.getByText('isValidating: false');
-      screen.getByText('stateValidation: false');
-    });
-  });
-
   it('should update correct isValid formState with dynamic fields', async () => {
     const Component = () => {
       const {
@@ -841,7 +781,6 @@ describe('formState', () => {
 
   describe('when delayError is provided', () => {
     it('should only show error after 500ms with register and render formState instantly', async () => {
-      jest.runOnlyPendingTimers();
       jest.useFakeTimers();
 
       const message = 'required.';
@@ -899,7 +838,7 @@ describe('formState', () => {
         await waitFor(() => screen.getByText('inValid'));
       });
 
-      // expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).toBeNull();
 
       actComponent(() => {
         jest.advanceTimersByTime(500);
@@ -908,6 +847,68 @@ describe('formState', () => {
       await waitFor(async () => {
         screen.getByText(message);
       });
+    });
+  });
+
+  it('should update isValidating to true when other validation still running', async () => {
+    jest.useFakeTimers();
+
+    function App() {
+      const [stateValidation, setStateValidation] = React.useState(false);
+      const {
+        register,
+        formState: { isValidating },
+      } = useForm({ mode: 'all' });
+
+      return (
+        <div>
+          <p>isValidating: {String(isValidating)}</p>
+          <p>stateValidation: {String(stateValidation)}</p>
+          <form>
+            <input
+              {...register('lastName', {
+                required: true,
+                validate: () => {
+                  setStateValidation(true);
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      setStateValidation(false);
+                      resolve(true);
+                    }, 5000);
+                  });
+                },
+              })}
+              placeholder="async"
+            />
+
+            <input
+              {...register('firstName', { required: true })}
+              placeholder="required"
+            />
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test' },
+    });
+
+    screen.getByText('isValidating: true');
+    screen.getByText('stateValidation: true');
+
+    await actComponent(async () => {
+      jest.runAllTimers();
+    });
+
+    await actComponent(async () => {
+      screen.getByText('isValidating: false');
+      screen.getByText('stateValidation: false');
     });
   });
 });
