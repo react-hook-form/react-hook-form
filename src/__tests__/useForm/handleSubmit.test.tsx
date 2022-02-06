@@ -395,6 +395,33 @@ describe('handleSubmit', () => {
     });
   });
 
+  it('should not provide internal errors reference to onInvalid callback', async () => {
+    const { result } = renderHook(() =>
+      useForm<{
+        test: string;
+      }>(),
+    );
+    result.current.register('test', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(
+        () => {},
+        (errors) => {
+          Object.freeze(errors);
+        },
+      )({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+
+    await act(async () => {
+      expect(() =>
+        result.current.setError('test', { message: 'Not enough', type: 'min' }),
+      ).not.toThrow();
+    });
+  });
+
   it('should be able to submit correctly when errors contains empty array object', async () => {
     const onSubmit = jest.fn();
 

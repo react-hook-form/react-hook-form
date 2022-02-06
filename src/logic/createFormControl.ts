@@ -367,7 +367,10 @@ export function createFormControl<
 
     validateFields[name]--;
 
-    if (_proxyFormState.isValidating && !validateFields[name]) {
+    if (
+      _proxyFormState.isValidating &&
+      !Object.values(validateFields).some((v) => v)
+    ) {
       _subjects.state.next({
         isValidating: false,
       });
@@ -1032,7 +1035,10 @@ export function createFormControl<
           });
           await onValid(fieldValues, e);
         } else {
-          onInvalid && (await onInvalid(_formState.errors, e));
+          if (onInvalid) {
+            await onInvalid({ ..._formState.errors }, e);
+          }
+
           _options.shouldFocusError &&
             focusFieldBy(
               _fields,
