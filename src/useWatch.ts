@@ -48,7 +48,7 @@ export function useWatch<
   TFieldNames extends readonly PathString[],
 >(props: {
   name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
-  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  defaultValue?: FieldPathValues<TFieldValues, TFieldNames>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;

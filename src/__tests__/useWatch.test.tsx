@@ -98,6 +98,19 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['test', 'test1']);
   });
 
+  it('should return default values from props for array of inputs', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm<{ test: string; test1: string }>();
+      return useWatch({
+        control,
+        name: ['test', 'test1'],
+        defaultValue: ['test', 'test1'],
+      });
+    });
+
+    expect(result.current).toEqual(['test', 'test1']);
+  });
+
   it('should return default value when name is undefined', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
