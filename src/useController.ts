@@ -59,7 +59,7 @@ export function useController<
       name,
       get(control._defaultValues, name, props.defaultValue),
     ),
-    exact: !isArrayField,
+    exact: true,
   }) as UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   const formState = useFormState({
     control,
