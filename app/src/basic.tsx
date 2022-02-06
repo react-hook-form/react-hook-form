@@ -149,12 +149,38 @@ const Basic: React.FC = () => {
         type="validate"
         placeholder="validate"
         {...register('validate', {
-          validate: (value) => value === 'test',
+          validate: (value: string) => value === 'test',
         })}
       />
       {errors.validate && <p>validate error</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={() => reset()}>
+      <button
+        type="button"
+        id="resetForm"
+        onClick={() =>
+          reset({
+            firstName: '',
+            lastName: '',
+            min: '',
+            max: '',
+            minDate: '',
+            maxDate: '',
+            minLength: '',
+            minRequiredLength: '',
+            selectNumber: '',
+            pattern: '',
+            radio: '',
+            checkbox: '',
+            checkboxArray: [],
+            multiple: '',
+            validate: '',
+            nestItem: {
+              nest1: '',
+            },
+            arrayItem: [],
+          })
+        }
+      >
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>
