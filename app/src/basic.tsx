@@ -13,25 +13,25 @@ const Basic: React.FC = () => {
     formState: { errors },
     reset,
   } = useForm<{
-    firstName: '';
-    lastName: '';
-    min: '';
-    max: '';
-    minDate: '';
-    maxDate: '';
-    minLength: '';
-    minRequiredLength: '';
-    selectNumber: '';
-    pattern: '';
-    radio: '';
-    checkbox: '';
+    firstName: string;
+    lastName: string;
+    min: string;
+    max: string;
+    minDate: string;
+    maxDate: string;
+    minLength: string;
+    minRequiredLength: string;
+    selectNumber: string;
+    pattern: string;
+    radio: string;
+    checkbox: string;
     checkboxArray: NestedValue<string[]>;
-    multiple: '';
-    validate: '';
+    multiple: string;
+    validate: string;
     nestItem: {
-      nest1: '';
+      nest1: string;
     };
-    arrayItem: { test1: ''; test2: string }[];
+    arrayItem: { test1: string; test2: string }[];
   }>({
     mode: mode as keyof ValidationMode,
   });
