@@ -4933,9 +4933,9 @@ flow-parser@^0.121.0:
   integrity sha512-1gIBiWJNR0tKUNv8gZuk7l9rVX06OuLzY9AoGio7y/JT4V1IZErEMEq2TJS+PFcw/y0RshZ1J/27VfK1UQzYVg==
 
 follow-redirects@^1.10.0:
-  version "1.13.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.2.tgz#dd73c8effc12728ba5cf4259d760ea5fb83e3147"
-  integrity sha512-6mPTgLxYm3r6Bkkg0vNM0HTjfGrOEtsfbhagQvbxDEsEkpNhw582upBaoRZylzen6krEmxXJgt9Ju6HiI4O7BA==
+  version "1.14.7"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
+  integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
 
 for-in@^1.0.2:
   version "1.0.2"
