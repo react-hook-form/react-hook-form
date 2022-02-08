@@ -482,16 +482,16 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
 export function useFieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
 
 // @public
-export type UseFieldArrayAppend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+export type UseFieldArrayAppend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>> | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[], options?: FieldArrayMethodProps) => void;
 
 // @public
-export type UseFieldArrayInsert<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+export type UseFieldArrayInsert<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>> | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[], options?: FieldArrayMethodProps) => void;
 
 // @public
 export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
 
 // @public
-export type UseFieldArrayPrepend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[], options?: FieldArrayMethodProps) => void;
+export type UseFieldArrayPrepend<TFieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>> | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[], options?: FieldArrayMethodProps) => void;
 
 // @public (undocumented)
 export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = {
