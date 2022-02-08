@@ -24,6 +24,7 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  UnpackNestedValue,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -124,8 +125,8 @@ export function useFieldArray<
 
   const append = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(cloneObject(value));
@@ -148,8 +149,8 @@ export function useFieldArray<
 
   const prepend = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const prependValue = convertToArrayPayload(cloneObject(value));
@@ -181,8 +182,8 @@ export function useFieldArray<
   const insert = (
     index: number,
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = convertToArrayPayload(cloneObject(value));
@@ -239,7 +240,9 @@ export function useFieldArray<
 
   const update = (
     index: number,
-    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
+    value: Partial<
+      UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>
+    >,
   ) => {
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray(name),
@@ -266,8 +269,8 @@ export function useFieldArray<
 
   const replace = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
+      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
   ) => {
     const updatedFieldArrayValues = convertToArrayPayload(cloneObject(value));
     ids.current = updatedFieldArrayValues.map(generateId);
