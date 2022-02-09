@@ -119,6 +119,11 @@ const items: Item[] = [
     slugs: ['/setError'],
   },
   {
+    title: 'setFocus',
+    description: 'Form setFocus',
+    slugs: ['/setFocus'],
+  },
+  {
     title: 'SetValue',
     description: 'Should set input value',
     slugs: ['/setValue', '/setValueAsyncStrictMode'],
