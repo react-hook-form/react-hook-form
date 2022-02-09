@@ -1192,9 +1192,10 @@ export function createFormControl<
     });
   };
 
-  const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
+  const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
     const field = get(_fields, name)._f;
-    (field.ref.focus ? field.ref : field.refs[0]).focus();
+    const fieldRef = field.refs ? field.refs[0] : field.ref;
+    options.shouldSelect ? fieldRef.select() : fieldRef.focus();
   };
 
   return {
