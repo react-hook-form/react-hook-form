@@ -5,6 +5,7 @@ import Basic from './basic';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
 import SetError from './setError';
+import SetFocus from './setFocus';
 import SetValue from './setValue';
 import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
@@ -57,6 +58,7 @@ const App: React.FC = () => {
           element={<BasicSchemaValidation />}
         />
         <Route path="/setError" element={<SetError />} />
+        <Route path="/setFocus" element={<SetFocus />} />
         <Route path="/setValueWithTrigger" element={<SetValueWithTrigger />} />
         <Route path="/conditionalField" element={<ConditionalField />} />
         <Route path="/UseFieldArray/:mode" element={<UseFieldArray />} />
