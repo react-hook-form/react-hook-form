@@ -216,7 +216,7 @@ export type SetFocusOptions = Partial<{
  *   setFocus("name");
  * }, [setFocus])
  * // shouldSelect allows to select input's content on focus
- * <button onClick={() => setFocus("name", { shouldSelect })}>Focus</button>
+ * <button onClick={() => setFocus("name", { shouldSelect: true })}>Focus</button>
  * ```
  */
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
