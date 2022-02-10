@@ -19,7 +19,7 @@ import {
   Ref,
   ResolverResult,
   SetFieldValue,
-  SetValueConfig,
+  SetValueOptions,
   Subjects,
   UnpackNestedValue,
   UseFormClearErrors,
@@ -513,7 +513,7 @@ export function createFormControl<
   const setFieldValue = (
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
-    options: SetValueConfig = {},
+    options: SetValueOptions = {},
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;

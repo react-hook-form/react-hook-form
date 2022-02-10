@@ -460,7 +460,7 @@ export function set(object: FieldValues, path: string, value?: unknown): FieldVa
 export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 // @public (undocumented)
-export type SetValueConfig = Partial<{
+export type SetValueOptions = Partial<{
     shouldValidate: boolean;
     shouldDirty: boolean;
     shouldTouch: boolean;
@@ -487,7 +487,7 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: Read
 export type SubmitHandler<TFieldValues extends FieldValues> = (data: Readonly<UnpackNestedValue<TFieldValues>>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
 
 // @public (undocumented)
-export type TriggerConfig = Partial<{
+export type TriggerOptions = Partial<{
     shouldFocus: boolean;
 }>;
 
@@ -677,7 +677,7 @@ export type UseFormSetError<TFieldValues extends FieldValues> = <TFieldName exte
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>) => void;
 
 // @public
-export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>, value: UnpackNestedValue<FieldPathSetValue<TFieldValues, TFieldName>>, options?: SetValueConfig) => void;
+export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>, value: UnpackNestedValue<FieldPathSetValue<TFieldValues, TFieldName>>, options?: SetValueOptions) => void;
 
 // @public
 export function useFormState<TFieldValues extends FieldValues, TFieldName extends PathString>(props?: UseFormStateProps<TFieldValues, TFieldName>): UseFormStateReturn<TFieldValues>;
@@ -694,7 +694,7 @@ export type UseFormStateProps<TFieldValues, TFieldName extends PathString> = {
 export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
 
 // @public
-export type UseFormTrigger<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name?: Auto.FieldPath<TFieldValues, TFieldName> | Auto.FieldPath<TFieldValues, TFieldName>[] | readonly Auto.FieldPath<TFieldValues, TFieldName>[], options?: TriggerConfig) => Promise<boolean>;
+export type UseFormTrigger<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name?: Auto.FieldPath<TFieldValues, TFieldName> | Auto.FieldPath<TFieldValues, TFieldName>[] | readonly Auto.FieldPath<TFieldValues, TFieldName>[], options?: TriggerOptions) => Promise<boolean>;
 
 // @public
 export type UseFormUnregister<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name?: Auto.FieldPath<TFieldValues, TFieldName> | Auto.FieldPath<TFieldValues, TFieldName>[] | readonly Auto.FieldPath<TFieldValues, TFieldName>[], options?: Omit<KeepStateOptions, 'keepIsSubmitted' | 'keepSubmitCount' | 'keepValues' | 'keepDefaultValues' | 'keepErrors'> & {
