@@ -197,6 +197,10 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
   options?: RegisterOptions<TFieldValues, TFieldName>,
 ) => UseFormRegisterReturn;
 
+export type SetFocusOptions = Partial<{
+  shouldSelect: boolean;
+}>;
+
 /**
  * Set focus on a registered field. You can start to invoke this method after all fields are mounted to the DOM.
  *
@@ -204,20 +208,22 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
  * [API](https://react-hook-form.com/api/useform/setfocus) • [Demo](https://codesandbox.io/s/setfocus-rolus)
  *
  * @param name - the path name to the form field value.
+ * @param options - input focus behavior options
  *
  * @example
  * ```tsx
  * useEffect(() => {
  *   setFocus("name");
  * }, [setFocus])
- *
- * <button onClick={() => setFocus("name")}>Focus</button>
+ * // shouldSelect allows to select input's content on focus
+ * <button onClick={() => setFocus("name", { shouldSelect: true })}>Focus</button>
  * ```
  */
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
+  options?: SetFocusOptions,
 ) => void;
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
