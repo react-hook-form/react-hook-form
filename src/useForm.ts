@@ -19,7 +19,7 @@ import { useSubscribe } from './useSubscribe';
  * @remarks
  * [API](https://react-hook-form.com/api/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
  *
- * @param props - form configuration and validation parameters.
+ * @param props - form options and validation parameters.
  *
  * @returns methods - individual functions to manage the form state. {@link UseFormReturn}
  *

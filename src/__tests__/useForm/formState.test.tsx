@@ -686,7 +686,7 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
-  describe('when delay config is set', () => {
+  describe('when delay option is set', () => {
     const message = 'required.';
 
     it('should only show error after 500ms with register', async () => {
