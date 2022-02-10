@@ -65,13 +65,13 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => any | Promise<any>;
 
-export type SetValueConfig = Partial<{
+export type SetValueOptions = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
   shouldTouch: boolean;
 }>;
 
-export type TriggerConfig = Partial<{
+export type TriggerOptions = Partial<{
   shouldFocus: boolean;
 }>;
 
@@ -435,7 +435,7 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = <
     | Auto.FieldPath<TFieldValues, TFieldName>
     | Auto.FieldPath<TFieldValues, TFieldName>[]
     | readonly Auto.FieldPath<TFieldValues, TFieldName>[],
-  options?: TriggerConfig,
+  options?: TriggerOptions,
 ) => Promise<boolean>;
 
 /**
@@ -497,7 +497,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
 >(
   name: Auto.FieldPath<TFieldValues, TFieldName>,
   value: UnpackNestedValue<FieldPathSetValue<TFieldValues, TFieldName>>,
-  options?: SetValueConfig,
+  options?: SetValueOptions,
 ) => void;
 
 /**
