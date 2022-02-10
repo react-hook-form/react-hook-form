@@ -10,12 +10,12 @@ export type MultipleFieldErrors = {
   [key: string]: ValidateResult;
 };
 
-export type FieldError = {
+export type FieldError<T = unknown> = {
   type: LiteralUnion<keyof RegisterOptions, string>;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
-  validationError?: unknown;
+  validationError?: T;
 };
 
 export type ErrorOption = {
