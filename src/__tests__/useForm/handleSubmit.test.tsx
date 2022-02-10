@@ -349,6 +349,34 @@ describe('handleSubmit', () => {
       });
       expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
     });
+
+    it('should transform input values and return correct output types', async () => {
+      const resolver = async () => {
+        return {
+          values: { count: 0 },
+          errors: {},
+        };
+      };
+
+      const { result } = renderHook(() =>
+        useForm<{ count: string }>({
+          mode: VALIDATION_MODE.onSubmit,
+          resolver,
+        }),
+      );
+
+      result.current.register('count', { required: true });
+
+      const callback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(callback.mock.calls[0][0]).toEqual({ count: 0 });
+    });
   });
 
   describe('with onInvalid callback', () => {
