@@ -367,15 +367,16 @@ describe('handleSubmit', () => {
 
       result.current.register('count', { required: true });
 
-      const callback = jest.fn();
-
       await act(async () => {
-        await result.current.handleSubmit(callback)({
+        await result.current.handleSubmit((data: { count: number }) => {
+          expect(data).toEqual({
+            count: 0,
+          });
+        })({
           preventDefault: () => {},
           persist: () => {},
         } as React.SyntheticEvent);
       });
-      expect(callback.mock.calls[0][0]).toEqual({ count: 0 });
     });
   });
 
