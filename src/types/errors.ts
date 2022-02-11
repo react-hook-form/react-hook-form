@@ -15,6 +15,8 @@ export type FieldError = {
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
+  received?: unknown;
+  expected?: unknown;
 };
 
 export type ErrorOption = {

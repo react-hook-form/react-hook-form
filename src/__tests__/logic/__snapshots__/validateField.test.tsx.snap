@@ -4,6 +4,7 @@ exports[`validateField should handle pattern with g flag 1`] = `
 Object {
   "test": Object {
     "message": "",
+    "received": "a",
     "ref": Object {
       "name": "test",
       "type": "text",
@@ -21,6 +22,7 @@ exports[`validateField should handle pattern with g flag 2`] = `
 Object {
   "test": Object {
     "message": "",
+    "received": "a",
     "ref": Object {
       "name": "test",
       "type": "text",
@@ -38,6 +40,7 @@ exports[`validateField should return all validation error messages 1`] = `
 Object {
   "test": Object {
     "message": "test",
+    "received": "",
     "ref": Object {
       "name": "test",
       "type": "text",
@@ -57,6 +60,7 @@ exports[`validateField should return all validation error messages 2`] = `
 Object {
   "test": Object {
     "message": "minLength",
+    "received": "bil",
     "ref": Object {
       "name": "test",
       "type": "text",
@@ -77,6 +81,7 @@ exports[`validateField should return all validation error messages 3`] = `
 Object {
   "test": Object {
     "message": "minLength",
+    "received": "bil",
     "ref": Object {
       "name": "test",
       "type": "text",
@@ -97,6 +102,7 @@ exports[`validateField should return all validation errors 1`] = `
 Object {
   "test": Object {
     "message": "",
+    "received": "",
     "ref": Object {
       "name": "test",
       "type": "text",
@@ -114,6 +120,7 @@ exports[`validateField should return all validation errors 2`] = `
 Object {
   "test": Object {
     "message": "",
+    "received": "123",
     "ref": Object {
       "name": "test",
       "type": "text",

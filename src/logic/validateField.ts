@@ -58,7 +58,6 @@ export default async <T extends NativeFieldValue>(
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
-  const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
     ((valueAsNumber || isFileInput(ref)) && !ref.value) ||
     inputValue === '' ||
@@ -81,13 +80,14 @@ export default async <T extends NativeFieldValue>(
       type: exceedMax ? maxType : minType,
       message,
       ref,
+      received: inputValue,
       ...appendErrorsCurry(exceedMax ? maxType : minType, message),
     };
   };
 
   if (
     required &&
-    ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
+    ((!(isRadio || isCheckBox) && (isEmpty || isNullOrUndefined(inputValue))) ||
       (isBoolean(inputValue) && !inputValue) ||
       (isCheckBox && !getCheckboxValue(refs).isValid) ||
       (isRadio && !getRadioValue(refs).isValid))
@@ -101,6 +101,7 @@ export default async <T extends NativeFieldValue>(
         type: INPUT_VALIDATION_RULES.required,
         message,
         ref: inputRef,
+        received: inputValue,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
@@ -116,16 +117,7 @@ export default async <T extends NativeFieldValue>(
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNaN(inputValue as number)) {
-      const valueNumber =
-        (ref as HTMLInputElement).valueAsNumber || +inputValue;
-      if (!isNullOrUndefined(maxOutput.value)) {
-        exceedMax = valueNumber > maxOutput.value;
-      }
-      if (!isNullOrUndefined(minOutput.value)) {
-        exceedMin = valueNumber < minOutput.value;
-      }
-    } else {
+    if (isNaN(inputValue as number)) {
       const valueDate =
         (ref as HTMLInputElement).valueAsDate || new Date(inputValue as string);
       if (isString(maxOutput.value)) {
@@ -133,6 +125,15 @@ export default async <T extends NativeFieldValue>(
       }
       if (isString(minOutput.value)) {
         exceedMin = valueDate < new Date(minOutput.value);
+      }
+    } else {
+      const valueNumber =
+        (ref as HTMLInputElement).valueAsNumber || +inputValue;
+      if (!isNullOrUndefined(maxOutput.value)) {
+        exceedMax = valueNumber > maxOutput.value;
+      }
+      if (!isNullOrUndefined(minOutput.value)) {
+        exceedMin = valueNumber < minOutput.value;
       }
     }
 
@@ -182,6 +183,7 @@ export default async <T extends NativeFieldValue>(
         type: INPUT_VALIDATION_RULES.pattern,
         message,
         ref,
+        received: inputValue,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {

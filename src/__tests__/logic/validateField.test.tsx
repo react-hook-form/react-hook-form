@@ -30,6 +30,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        received: '',
         ref: { type: 'text', value: '', name: 'test' },
         message: '',
         type: 'required',
@@ -53,6 +54,7 @@ describe('validateField', () => {
       test: {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
+        received: '',
         type: 'required',
       },
     });
@@ -74,6 +76,7 @@ describe('validateField', () => {
       test: {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
+        received: '',
         type: 'required',
       },
     });
@@ -99,6 +102,7 @@ describe('validateField', () => {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
+        received: '',
       },
     });
 
@@ -123,6 +127,7 @@ describe('validateField', () => {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
+        received: '',
       },
     });
 
@@ -161,6 +166,7 @@ describe('validateField', () => {
       test: {
         message: '',
         type: 'required',
+        received: false,
         ref: { type: 'radio', name: 'test' },
       },
     });
@@ -182,6 +188,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
+        received: '',
         ref: { type: 'text', name: 'test', value: '' },
       },
     });
@@ -203,6 +210,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
+        received: '',
         ref: { type: 'radio', name: 'test', value: '' },
       },
     });
@@ -224,6 +232,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
+        received: false,
         ref: { type: 'checkbox', name: 'test' },
       },
     });
@@ -283,6 +292,7 @@ describe('validateField', () => {
       test: {
         type: 'required',
         message: '',
+        received: '',
         ref: {
           name: 'test',
           value: '',
@@ -308,6 +318,7 @@ describe('validateField', () => {
       test: {
         type: 'required',
         message: '',
+        received: '',
         ref: {
           type: 'file',
           name: 'test',
@@ -335,6 +346,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        received: 10,
         type: 'max',
         message: '',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
@@ -362,6 +374,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'max',
+        received: 10,
         message: 'max',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
@@ -388,6 +401,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'max',
+        received: 10,
         message: 'max',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
@@ -427,6 +441,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'max',
+        received: 10,
         message: '',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
         types: {
@@ -453,6 +468,7 @@ describe('validateField', () => {
       test: {
         type: 'required',
         message: '',
+        received: '',
         ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
       },
     });
@@ -510,6 +526,7 @@ describe('validateField', () => {
       test: {
         type: 'required',
         message: '',
+        received: null,
         ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
       },
     });
@@ -552,6 +569,7 @@ describe('validateField', () => {
       test: {
         type: 'max',
         message: '',
+        received: '2019-2-13',
         ref: {
           type: 'date',
           name: 'test',
@@ -579,6 +597,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        received: -1,
         message: '',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
@@ -605,6 +624,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        received: -1,
         message: 'min',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
@@ -631,6 +651,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        received: -1,
         message: 'min',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
@@ -655,6 +676,7 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: '',
+        received: 10,
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
     });
@@ -682,6 +704,7 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: '',
+        received: '2019-2-12',
         ref: {
           type: 'date',
           name: 'test',
@@ -715,6 +738,7 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: 'min',
+        received: '2019-2-12',
         ref: {
           type: 'date',
           name: 'test',
@@ -748,6 +772,7 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: 'min',
+        received: '2019-2-12',
         ref: {
           type: 'date',
           name: 'test',
@@ -778,6 +803,7 @@ describe('validateField', () => {
         type: 'min',
         message: '',
         ref: { type: '', name: 'test' },
+        received: '1',
       },
     });
 
@@ -800,6 +826,7 @@ describe('validateField', () => {
       test: {
         type: 'max',
         message: '',
+        received: '4',
         ref: { type: '', name: 'test' },
       },
     });
@@ -827,6 +854,7 @@ describe('validateField', () => {
       test: {
         type: 'max',
         message: '',
+        received: '2019-2-12',
         ref: {
           type: '',
           name: 'test',
@@ -861,6 +889,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: '',
         type: 'maxLength',
       },
@@ -893,6 +922,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: 'maxLength',
         type: 'maxLength',
       },
@@ -925,6 +955,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: 'maxLength',
         type: 'maxLength',
       },
@@ -956,6 +987,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: '',
         type: 'minLength',
       },
@@ -988,6 +1020,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: 'minLength',
         type: 'minLength',
       },
@@ -1020,6 +1053,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: 'minLength',
         type: 'minLength',
       },
@@ -1054,6 +1088,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: '',
         type: 'pattern',
       },
@@ -1086,6 +1121,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: 'regex failed',
         type: 'pattern',
       },
@@ -1118,6 +1154,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        received: 'This is a long text input',
         message: 'regex failed',
         type: 'pattern',
       },

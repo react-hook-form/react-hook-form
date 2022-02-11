@@ -5,6 +5,7 @@ Object {
   "test": Object {
     "data": Object {
       "message": "",
+      "received": "",
       "ref": <input
         name="test.data"
         type="text"
