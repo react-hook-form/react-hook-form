@@ -3,6 +3,7 @@
 exports[`validateField should handle pattern with g flag 1`] = `
 Object {
   "test": Object {
+    "expected": 10,
     "message": "",
     "received": "a",
     "ref": Object {
@@ -21,6 +22,7 @@ Object {
 exports[`validateField should handle pattern with g flag 2`] = `
 Object {
   "test": Object {
+    "expected": 10,
     "message": "",
     "received": "a",
     "ref": Object {
@@ -39,6 +41,7 @@ Object {
 exports[`validateField should return all validation error messages 1`] = `
 Object {
   "test": Object {
+    "expected": true,
     "message": "test",
     "received": "",
     "ref": Object {
@@ -59,6 +62,7 @@ Object {
 exports[`validateField should return all validation error messages 2`] = `
 Object {
   "test": Object {
+    "expected": 10,
     "message": "minLength",
     "received": "bil",
     "ref": Object {
@@ -80,6 +84,7 @@ Object {
 exports[`validateField should return all validation error messages 3`] = `
 Object {
   "test": Object {
+    "expected": 10,
     "message": "minLength",
     "received": "bil",
     "ref": Object {
@@ -101,6 +106,7 @@ Object {
 exports[`validateField should return all validation errors 1`] = `
 Object {
   "test": Object {
+    "expected": true,
     "message": "",
     "received": "",
     "ref": Object {
@@ -119,6 +125,7 @@ Object {
 exports[`validateField should return all validation errors 2`] = `
 Object {
   "test": Object {
+    "expected": 10,
     "message": "",
     "received": "123",
     "ref": Object {

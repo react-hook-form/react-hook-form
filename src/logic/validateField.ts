@@ -3,7 +3,6 @@ import {
   Field,
   FieldError,
   InternalFieldErrors,
-  Message,
   NativeFieldValue,
 } from '../types';
 import isBoolean from '../utils/isBoolean';
@@ -23,6 +22,11 @@ import getCheckboxValue from './getCheckboxValue';
 import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
+
+type ValueAndMessage = {
+  value: string | number | boolean | RegExp | undefined;
+  message: string;
+};
 
 export default async <T extends NativeFieldValue>(
   field: Field,
@@ -70,17 +74,18 @@ export default async <T extends NativeFieldValue>(
   );
   const getMinMaxMessage = (
     exceedMax: boolean,
-    maxLengthMessage: Message,
-    minLengthMessage: Message,
-    maxType = INPUT_VALIDATION_RULES.maxLength,
-    minType = INPUT_VALIDATION_RULES.minLength,
+    max: ValueAndMessage,
+    min: ValueAndMessage,
+    maxType: string,
+    minType: string,
   ) => {
-    const message = exceedMax ? maxLengthMessage : minLengthMessage;
+    const message = exceedMax ? max.message : min.message;
     error[name] = {
       type: exceedMax ? maxType : minType,
       message,
       ref,
       received: inputValue,
+      expected: exceedMax ? max.value : min.value,
       ...appendErrorsCurry(exceedMax ? maxType : minType, message),
     };
   };
@@ -102,6 +107,7 @@ export default async <T extends NativeFieldValue>(
         message,
         ref: inputRef,
         received: inputValue,
+        expected: !!required,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
@@ -140,8 +146,8 @@ export default async <T extends NativeFieldValue>(
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
         !!exceedMax,
-        maxOutput.message,
-        minOutput.message,
+        maxOutput,
+        minOutput,
         INPUT_VALIDATION_RULES.max,
         INPUT_VALIDATION_RULES.min,
       );
@@ -165,8 +171,10 @@ export default async <T extends NativeFieldValue>(
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
         exceedMax,
-        maxLengthOutput.message,
-        minLengthOutput.message,
+        maxLengthOutput,
+        minLengthOutput,
+        INPUT_VALIDATION_RULES.maxLength,
+        INPUT_VALIDATION_RULES.minLength,
       );
       if (!validateAllFieldCriteria) {
         setCustomValidity(error[name]!.message);
@@ -184,6 +192,7 @@ export default async <T extends NativeFieldValue>(
         message,
         ref,
         received: inputValue,
+        expected: patternValue,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {

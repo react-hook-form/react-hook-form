@@ -4,6 +4,7 @@ exports[`clearErrors should remove deep nested error and set it to undefined 1`]
 Object {
   "test": Object {
     "data": Object {
+      "expected": true,
       "message": "",
       "received": "",
       "ref": <input

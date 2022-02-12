@@ -30,6 +30,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: true,
         received: '',
         ref: { type: 'text', value: '', name: 'test' },
         message: '',
@@ -54,6 +55,7 @@ describe('validateField', () => {
       test: {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
+        expected: true,
         received: '',
         type: 'required',
       },
@@ -76,6 +78,7 @@ describe('validateField', () => {
       test: {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
+        expected: true,
         received: '',
         type: 'required',
       },
@@ -102,6 +105,7 @@ describe('validateField', () => {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
+        expected: true,
         received: '',
       },
     });
@@ -126,6 +130,7 @@ describe('validateField', () => {
       test: {
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
+        expected: true,
         type: 'required',
         received: '',
       },
@@ -166,6 +171,7 @@ describe('validateField', () => {
       test: {
         message: '',
         type: 'required',
+        expected: true,
         received: false,
         ref: { type: 'radio', name: 'test' },
       },
@@ -187,6 +193,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         message: 'test',
+        expected: true,
         type: 'required',
         received: '',
         ref: { type: 'text', name: 'test', value: '' },
@@ -209,6 +216,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         message: 'test',
+        expected: true,
         type: 'required',
         received: '',
         ref: { type: 'radio', name: 'test', value: '' },
@@ -232,6 +240,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
+        expected: true,
         received: false,
         ref: { type: 'checkbox', name: 'test' },
       },
@@ -290,6 +299,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: true,
         type: 'required',
         message: '',
         received: '',
@@ -317,6 +327,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'required',
+        expected: true,
         message: '',
         received: '',
         ref: {
@@ -346,6 +357,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: 0,
         received: 10,
         type: 'max',
         message: '',
@@ -373,6 +385,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: 0,
         type: 'max',
         received: 10,
         message: 'max',
@@ -400,6 +413,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: 0,
         type: 'max',
         received: 10,
         message: 'max',
@@ -440,6 +454,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: 8,
         type: 'max',
         received: 10,
         message: '',
@@ -466,6 +481,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: true,
         type: 'required',
         message: '',
         received: '',
@@ -493,7 +509,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: true,
         type: 'required',
+        received: undefined,
         message: '',
         ref: {
           type: 'custom',
@@ -524,6 +542,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: true,
         type: 'required',
         message: '',
         received: null,
@@ -567,6 +586,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: '2019-1-12',
         type: 'max',
         message: '',
         received: '2019-2-13',
@@ -596,6 +616,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: 0,
         type: 'min',
         received: -1,
         message: '',
@@ -624,6 +645,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        expected: 0,
         received: -1,
         message: 'min',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
@@ -651,6 +673,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        expected: 0,
         received: -1,
         message: 'min',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
@@ -675,6 +698,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        expected: 12,
         message: '',
         received: 10,
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
@@ -703,6 +727,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
+        expected: '2019-3-12',
         message: '',
         received: '2019-2-12',
         ref: {
@@ -736,6 +761,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: '2019-3-12',
         type: 'min',
         message: 'min',
         received: '2019-2-12',
@@ -772,6 +798,7 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: 'min',
+        expected: '2019-3-12',
         received: '2019-2-12',
         ref: {
           type: 'date',
@@ -802,6 +829,7 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: '',
+        expected: '4',
         ref: { type: '', name: 'test' },
         received: '1',
       },
@@ -824,6 +852,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: '2',
         type: 'max',
         message: '',
         received: '4',
@@ -852,6 +881,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
+        expected: '2019-1-12',
         type: 'max',
         message: '',
         received: '2019-2-12',
@@ -889,6 +919,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: 12,
         received: 'This is a long text input',
         message: '',
         type: 'maxLength',
@@ -922,6 +953,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: 12,
         received: 'This is a long text input',
         message: 'maxLength',
         type: 'maxLength',
@@ -955,6 +987,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: 12,
         received: 'This is a long text input',
         message: 'maxLength',
         type: 'maxLength',
@@ -988,6 +1021,7 @@ describe('validateField', () => {
           name: 'test',
         },
         received: 'This is a long text input',
+        expected: 200,
         message: '',
         type: 'minLength',
       },
@@ -1020,6 +1054,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: 200,
         received: 'This is a long text input',
         message: 'minLength',
         type: 'minLength',
@@ -1053,6 +1088,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: 200,
         received: 'This is a long text input',
         message: 'minLength',
         type: 'minLength',
@@ -1088,6 +1124,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: emailRegex,
         received: 'This is a long text input',
         message: '',
         type: 'pattern',
@@ -1121,6 +1158,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: emailRegex,
         received: 'This is a long text input',
         message: 'regex failed',
         type: 'pattern',
@@ -1154,6 +1192,7 @@ describe('validateField', () => {
           type: 'text',
           name: 'test',
         },
+        expected: emailRegex,
         received: 'This is a long text input',
         message: 'regex failed',
         type: 'pattern',
