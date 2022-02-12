@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.27.0] - 2022-2-11
+
+## Added
+
+- new option for `setFocus` to select the entire field value
+
+```tsx
+setFocus('fieldName', { shouldSelect: true });
+```
+
 ## [7.25.2] - 2022-1-29
 
 ## Changed
