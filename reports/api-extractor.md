@@ -189,6 +189,8 @@ export type FieldError = {
     ref?: Ref;
     types?: MultipleFieldErrors;
     message?: Message;
+    received?: unknown;
+    expected?: unknown;
 };
 
 // @public (undocumented)
