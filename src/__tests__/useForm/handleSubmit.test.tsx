@@ -49,7 +49,7 @@ describe('handleSubmit', () => {
         expect(data).toEqual({
           test: 'data',
           deep: {
-            nested: undefined,
+            nested: '',
             values: '5',
           },
         });
@@ -79,6 +79,7 @@ describe('handleSubmit', () => {
         expect(data).toEqual({
           test: 'data',
           deep: {
+            nested: '',
             values: '5',
           },
         });
