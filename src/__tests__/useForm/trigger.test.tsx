@@ -347,6 +347,7 @@ describe('trigger', () => {
         } = useForm<{ test: string; test1: string }>({
           defaultValues: {
             test: '',
+            test1: '',
           },
           resolver: async (data) => {
             if (data.test && data.test1) {
