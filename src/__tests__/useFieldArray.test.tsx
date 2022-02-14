@@ -2624,7 +2624,10 @@ describe('useFieldArray', () => {
       const { register, control } = useForm<FormValues>({
         mode: 'onChange',
         defaultValues: {
-          items: [{ name: 'one' }, { name: 'two' }],
+          items: [
+            { name: 'one', id: '1' },
+            { name: 'two', id: '2' },
+          ],
         },
       });
 

@@ -868,6 +868,7 @@ describe('Controller', () => {
       }>({
         defaultValues: {
           test: 2,
+          test1: 1,
         },
       });
 

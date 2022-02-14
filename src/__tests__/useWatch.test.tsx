@@ -999,6 +999,7 @@ describe('useWatch', () => {
         React.useEffect(() => {
           reset({
             test: 'test',
+            name: '',
           });
         }, [reset]);
 
@@ -1177,11 +1178,14 @@ describe('useWatch', () => {
           const { register, control } = useForm<{
             test: {
               firstName: string;
-              lsatName: string;
+              lastName: string;
             }[];
           }>({
             defaultValues: {
-              test: [{ firstName: 'test' }, { firstName: 'test1' }],
+              test: [
+                { firstName: 'test', lastName: '' },
+                { firstName: 'test1', lastName: '' },
+              ],
             },
           });
           const { fields, remove } = useFieldArray({

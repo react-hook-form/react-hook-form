@@ -85,7 +85,7 @@ describe('insert', () => {
         const { formState, control } = useForm<{
           test: { value: string; value1: string }[];
         }>({
-          defaultValues: { test: [{ value: '1' }] },
+          defaultValues: { test: [{ value: '1', value1: '0' }] },
         });
         const { fields, append, insert } = useFieldArray({
           control,
@@ -120,7 +120,7 @@ describe('insert', () => {
         const { formState, control } = useForm<{
           test: { value1: string; value2: string; value: string }[];
         }>({
-          defaultValues: { test: [{ value: '1' }] },
+          defaultValues: { test: [{ value: '1', value2: '0', value1: '2' }] },
         });
         const { fields, append, insert } = useFieldArray({
           control,

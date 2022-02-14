@@ -140,7 +140,7 @@ export type DeepPartialSkipArrayKey<T> = T extends Date | FileList_2 | File_2 | 
 };
 
 // @public (undocumented)
-export type DefaultValues<TFieldValues> = UnpackNestedValue<DeepPartial<TFieldValues>>;
+export type DefaultValues<TFieldValues> = UnpackNestedValue<TFieldValues>;
 
 // @public (undocumented)
 export type DelayCallback = (name: InternalFieldName, error: FieldError) => void;
@@ -787,7 +787,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 //
 // src/types/fieldArray.ts:251:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
 // src/types/fieldArray.ts:252:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:401:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:399:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

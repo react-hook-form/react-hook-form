@@ -86,7 +86,9 @@ describe('update', () => {
       } = useForm<{
         test: { test: string }[];
       }>({
-        defaultValues: {},
+        defaultValues: {
+          test: [],
+        },
       });
       const { fields, update } = useFieldArray({
         control,
