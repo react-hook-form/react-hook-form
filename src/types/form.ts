@@ -37,9 +37,7 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValues<TFieldValues> = UnpackNestedValue<
-  DeepPartial<TFieldValues>
->;
+export type DefaultValues<TFieldValues> = UnpackNestedValue<TFieldValues>;
 
 export type InternalNameSet = Set<InternalFieldName>;
 
