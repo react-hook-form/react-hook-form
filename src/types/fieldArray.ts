@@ -214,7 +214,7 @@ type UseFieldArrayUpdate<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   index: number,
-  value: Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>,
+  value: UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>,
 ) => void;
 
 /**
