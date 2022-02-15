@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, NestedValue } from '../types';
+import { ControllerRenderProps } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -868,6 +868,7 @@ describe('Controller', () => {
       }>({
         defaultValues: {
           test: 2,
+          test1: 1,
         },
       });
 
@@ -1195,7 +1196,7 @@ describe('Controller', () => {
         test: string;
       };
       todos: string[];
-      nestedValue: NestedValue<{ test: string }>;
+      nestedValue: { test: string };
     };
 
     function App() {

@@ -19,9 +19,8 @@ import {
   Ref,
   ResolverResult,
   SetFieldValue,
-  SetValueConfig,
+  SetValueOptions,
   Subjects,
-  UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -367,7 +366,10 @@ export function createFormControl<
 
     validateFields[name]--;
 
-    if (_proxyFormState.isValidating && !validateFields[name]) {
+    if (
+      _proxyFormState.isValidating &&
+      !Object.values(validateFields).some((v) => v)
+    ) {
       _subjects.state.next({
         isValidating: false,
       });
@@ -378,7 +380,7 @@ export function createFormControl<
   const _executeSchema = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
-          { ..._formValues } as UnpackNestedValue<TFieldValues>,
+          { ..._formValues } as TFieldValues,
           _options.context,
           getResolverOptions(
             name || _names.mount,
@@ -510,7 +512,7 @@ export function createFormControl<
   const setFieldValue = (
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
-    options: SetValueConfig = {},
+    options: SetValueOptions = {},
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -864,10 +866,7 @@ export function createFormControl<
       ? _subjects.watch.subscribe({
           next: (info) =>
             name(
-              _getWatch(
-                undefined,
-                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-              ),
+              _getWatch(undefined, defaultValue as DeepPartial<TFieldValues>),
               info as {
                 name?: FieldPath<TFieldValues>;
                 type?: EventType;
@@ -877,7 +876,7 @@ export function createFormControl<
         })
       : _getWatch(
           name as InternalFieldName | InternalFieldName[],
-          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          defaultValue as DeepPartial<TFieldValues>,
           true,
         );
 
@@ -1032,7 +1031,10 @@ export function createFormControl<
           });
           await onValid(fieldValues, e);
         } else {
-          onInvalid && (await onInvalid(_formState.errors, e));
+          if (onInvalid) {
+            await onInvalid({ ..._formState.errors }, e);
+          }
+
           _options.shouldFocusError &&
             focusFieldBy(
               _fields,
@@ -1101,23 +1103,6 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (isWeb && isUndefined(formValues)) {
-        for (const name of _names.mount) {
-          const field = get(_fields, name);
-          if (field && field._f) {
-            const fieldReference = Array.isArray(field._f.refs)
-              ? field._f.refs[0]
-              : field._f.ref;
-
-            try {
-              isHTMLElement(fieldReference) &&
-                fieldReference.closest('form')!.reset();
-              break;
-            } catch {}
-          }
-        }
-      }
-
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
           ? cloneObject(_defaultValues)
@@ -1182,9 +1167,10 @@ export function createFormControl<
     });
   };
 
-  const setFocus: UseFormSetFocus<TFieldValues> = (name) => {
+  const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
     const field = get(_fields, name)._f;
-    (field.ref.focus ? field.ref : field.refs[0]).focus();
+    const fieldRef = field.refs ? field.refs[0] : field.ref;
+    options.shouldSelect ? fieldRef.select() : fieldRef.focus();
   };
 
   return {

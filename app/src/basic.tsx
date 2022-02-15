@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, NestedValue, ValidationMode } from 'react-hook-form';
+import { useForm, ValidationMode } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
@@ -25,7 +25,7 @@ const Basic: React.FC = () => {
     pattern: string;
     radio: string;
     checkbox: string;
-    checkboxArray: NestedValue<string[]>;
+    checkboxArray: string[];
     multiple: string;
     validate: string;
     nestItem: {
@@ -149,12 +149,38 @@ const Basic: React.FC = () => {
         type="validate"
         placeholder="validate"
         {...register('validate', {
-          validate: (value) => value === 'test',
+          validate: (value: string) => value === 'test',
         })}
       />
       {errors.validate && <p>validate error</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={() => reset()}>
+      <button
+        type="button"
+        id="resetForm"
+        onClick={() =>
+          reset({
+            firstName: '',
+            lastName: '',
+            min: '',
+            max: '',
+            minDate: '',
+            maxDate: '',
+            minLength: '',
+            minRequiredLength: '',
+            selectNumber: '',
+            pattern: '',
+            radio: '',
+            checkbox: '',
+            checkboxArray: [],
+            multiple: '',
+            validate: '',
+            nestItem: {
+              nest1: '',
+            },
+            arrayItem: [],
+          })
+        }
+      >
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>

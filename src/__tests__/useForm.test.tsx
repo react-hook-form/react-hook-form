@@ -11,7 +11,6 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { VALIDATION_MODE } from '../constants';
 import {
   Control,
-  NestedValue,
   RegisterOptions,
   UseFormRegister,
   UseFormReturn,
@@ -1286,7 +1285,7 @@ describe('useForm', () => {
           register,
           handleSubmit,
         } = useForm<{
-          checkbox: NestedValue<string[]>;
+          checkbox: string[];
         }>({
           mode: 'onChange',
           resolver: (data) => {
@@ -1552,5 +1551,67 @@ describe('useForm', () => {
     unmount();
 
     expect(tempControl._subjects.state.observers.length).toBeFalsy();
+  });
+
+  it('should update isValidating to true when other validation still running', async () => {
+    jest.useFakeTimers();
+
+    function App() {
+      const [stateValidation, setStateValidation] = React.useState(false);
+      const {
+        register,
+        formState: { isValidating },
+      } = useForm({ mode: 'all' });
+
+      return (
+        <div>
+          <p>isValidating: {String(isValidating)}</p>
+          <p>stateValidation: {String(stateValidation)}</p>
+          <form>
+            <input
+              {...register('lastName', {
+                required: true,
+                validate: () => {
+                  setStateValidation(true);
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      setStateValidation(false);
+                      resolve(true);
+                    }, 5000);
+                  });
+                },
+              })}
+              placeholder="async"
+            />
+
+            <input
+              {...register('firstName', { required: true })}
+              placeholder="required"
+            />
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test' },
+    });
+
+    screen.getByText('isValidating: true');
+    screen.getByText('stateValidation: true');
+
+    await actComponent(async () => {
+      jest.runAllTimers();
+    });
+
+    await actComponent(async () => {
+      screen.getByText('isValidating: false');
+      screen.getByText('stateValidation: false');
+    });
   });
 });

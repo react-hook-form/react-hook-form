@@ -33,6 +33,7 @@ describe('handleSubmit', () => {
         defaultValues: {
           test: 'data',
           deep: {
+            nested: '',
             values: '5',
           },
         },
@@ -48,7 +49,7 @@ describe('handleSubmit', () => {
         expect(data).toEqual({
           test: 'data',
           deep: {
-            nested: undefined,
+            nested: '',
             values: '5',
           },
         });
@@ -66,6 +67,7 @@ describe('handleSubmit', () => {
         defaultValues: {
           test: 'data',
           deep: {
+            nested: '',
             values: '5',
           },
         },
@@ -77,6 +79,7 @@ describe('handleSubmit', () => {
         expect(data).toEqual({
           test: 'data',
           deep: {
+            nested: '',
             values: '5',
           },
         });
@@ -219,9 +222,7 @@ describe('handleSubmit', () => {
       }>(),
     );
     const validate = () => {
-      return !!result.current
-        .getValues()
-        .test.some(({ firstName }) => firstName);
+      return result.current.getValues().test.some(({ firstName }) => firstName);
     };
 
     result.current.register('test.0.firstName', {
@@ -392,6 +393,33 @@ describe('handleSubmit', () => {
 
       expect(onValidCallback).not.toBeCalledTimes(1);
       expect(onInvalidCallback).toBeCalledTimes(1);
+    });
+  });
+
+  it('should not provide internal errors reference to onInvalid callback', async () => {
+    const { result } = renderHook(() =>
+      useForm<{
+        test: string;
+      }>(),
+    );
+    result.current.register('test', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(
+        () => {},
+        (errors) => {
+          Object.freeze(errors);
+        },
+      )({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+
+    await act(async () => {
+      expect(() =>
+        result.current.setError('test', { message: 'Not enough', type: 'min' }),
+      ).not.toThrow();
     });
   });
 

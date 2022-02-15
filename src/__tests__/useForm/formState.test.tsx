@@ -781,7 +781,6 @@ describe('formState', () => {
 
   describe('when delayError is provided', () => {
     it('should only show error after 500ms with register and render formState instantly', async () => {
-      jest.runOnlyPendingTimers();
       jest.useFakeTimers();
 
       const message = 'required.';
@@ -839,7 +838,7 @@ describe('formState', () => {
         await waitFor(() => screen.getByText('inValid'));
       });
 
-      // expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).toBeNull();
 
       actComponent(() => {
         jest.advanceTimersByTime(500);

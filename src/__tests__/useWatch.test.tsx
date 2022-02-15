@@ -1012,6 +1012,7 @@ describe('useWatch', () => {
         React.useEffect(() => {
           reset({
             test: 'test',
+            name: '',
           });
         }, [reset]);
 
@@ -1190,11 +1191,14 @@ describe('useWatch', () => {
           const { register, control } = useForm<{
             test: {
               firstName: string;
-              lsatName: string;
+              lastName: string;
             }[];
           }>({
             defaultValues: {
-              test: [{ firstName: 'test' }, { firstName: 'test1' }],
+              test: [
+                { firstName: 'test', lastName: '' },
+                { firstName: 'test1', lastName: '' },
+              ],
             },
           });
           const { fields, remove } = useFieldArray({
@@ -1228,13 +1232,13 @@ describe('useWatch', () => {
         render(<Component />);
 
         expect(watchedValue).toEqual([
-          { firstName: 'test' },
-          { firstName: 'test1' },
+          { firstName: 'test', lastName: '' },
+          { firstName: 'test1', lastName: '' },
         ]);
 
         fireEvent.click(screen.getAllByRole('button')[0]);
 
-        expect(watchedValue).toEqual([{ firstName: 'test1' }]);
+        expect(watchedValue).toEqual([{ firstName: 'test1', lastName: '' }]);
       });
     });
 

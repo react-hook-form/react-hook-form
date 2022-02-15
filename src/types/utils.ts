@@ -1,5 +1,3 @@
-import { NestedValue } from './form';
-
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
 React Native applications is no DOM available. The JavaScript runtime is ES6/ES2015 only.
@@ -39,15 +37,11 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
+export type DeepPartial<T> = T extends Date | FileList | File
   ? T
   : { [K in keyof T]?: DeepPartial<T[K]> };
 
-export type DeepPartialSkipArrayKey<T> = T extends
-  | Date
-  | FileList
-  | File
-  | NestedValue
+export type DeepPartialSkipArrayKey<T> = T extends Date | FileList | File
   ? T
   : T extends ReadonlyArray<any>
   ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
@@ -90,14 +84,14 @@ export type IsUnknown<T> = IsAny<T> extends true
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
-  : T extends Date | FileList | File | NestedValue
+  : T extends Date | FileList | File
   ? TValue
   : T extends object
   ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
   : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], NestedValue | Date | FileList>,
+  Exclude<T[keyof T], Date | FileList>,
   any[] | object
 > extends never
   ? true

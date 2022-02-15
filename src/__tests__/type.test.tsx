@@ -119,7 +119,7 @@ test('should type errors correctly with Path generic', () => {
     return (
       <>
         <input {...register(name)} />
-        {errors[name] ? errors[name].message : 'no error'}
+        {errors[name] ? errors?.[name]?.message : 'no error'}
       </>
     );
   }

@@ -385,6 +385,7 @@ describe('useFormState', () => {
         defaultValues: {
           firstName: 'a',
           lastName: 'b',
+          age: 0,
         },
       });
 
@@ -454,6 +455,7 @@ describe('useFormState', () => {
         defaultValues: {
           firstName: 'a',
           lastName: 'b',
+          age: 0,
         },
       });
 
@@ -572,7 +574,7 @@ describe('useFormState', () => {
           >
             add
           </button>
-          <button onClick={() => reset({})}>reset</button>
+          <button onClick={() => reset({ test: [] })}>reset</button>
         </div>
       );
     }

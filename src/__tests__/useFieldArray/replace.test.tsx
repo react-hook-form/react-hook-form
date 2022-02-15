@@ -250,7 +250,7 @@ describe('replace', () => {
               })}
             />
           ))}
-          <p>{errors.test?.[0].firstName?.message}</p>
+          <p>{errors.test?.[0]?.firstName?.message}</p>
           <button
             type={'button'}
             onClick={() =>

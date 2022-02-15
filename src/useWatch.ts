@@ -14,7 +14,6 @@ import {
   FieldValues,
   InternalFieldName,
   PathString,
-  UnpackNestedValue,
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
