@@ -203,8 +203,12 @@ export type FieldError = {
     message?: Message;
 };
 
+// Warning: (ae-forgotten-export) The symbol "Merge" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type FieldErrors<TFieldValues extends FieldValues = FieldValues> = DeepMap<DeepPartial<TFieldValues>, FieldError>;
+export type FieldErrors<T extends FieldValues = FieldValues> = {
+    [K in keyof T]?: T[K] extends object ? Merge<FieldError, FieldErrors<T[K]>> : FieldError;
+};
 
 // @public (undocumented)
 export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<TFieldValues> extends true ? Extract<keyof TFieldValues, string> : string;

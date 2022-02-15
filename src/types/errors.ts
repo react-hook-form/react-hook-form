@@ -24,7 +24,7 @@ export type ErrorOption = {
 };
 
 type Merge<A, B> = {
-  [K in keyof A | keyof B]: K extends keyof A
+  [K in keyof A | keyof B]?: K extends keyof A
     ? K extends keyof B
       ? [A[K], B[K]] extends [object, object]
         ? Merge<A[K], B[K]>
