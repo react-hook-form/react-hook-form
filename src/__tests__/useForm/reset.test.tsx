@@ -9,12 +9,7 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import {
-  Control,
-  NestedValue,
-  UseFormRegister,
-  UseFormReturn,
-} from '../../types';
+import { Control, UseFormRegister, UseFormReturn } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -73,7 +68,7 @@ describe('reset', () => {
   it('should set array value of multiple checkbox inputs correctly', async () => {
     const Component = () => {
       const { register } = useForm<{
-        test: NestedValue<string[]>;
+        test: string[];
       }>({
         defaultValues: {
           test: ['1', '2'],
