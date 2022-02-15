@@ -28,6 +28,8 @@ You can view the source code for most examples within their folder, or visit Cod
 | Dirty Fields Only Submitted            | https://codesandbox.io/s/react-hook-form-submit-only-dirty-fields-ol5d2                 |
 | Disable Native Validation              | https://codesandbox.io/s/purple-glitter-4pgqq                                           |
 | Field Array Min Length                 | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-k87iy    |
+| Field Array Controlled                 | https://codesandbox.io/s/infallible-bush-c92l0                                          |
+| Field Array Conditional                | https://codesandbox.io/s/react-hook-form-conditional-0g9qx                              |
 | FormProvider                           | https://codesandbox.io/s/react-hook-form-form-context-2703c                             |
 | Parse and format input value           | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-zbgog                |
 | Modal/Toggle input                     | https://codesandbox.io/s/react-hook-form-modal-form-conditional-inputs-h09tf            |

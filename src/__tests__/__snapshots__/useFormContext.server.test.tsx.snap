@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormProvider should work correctly with Controller, useWatch, useFormState. 1`] = `"<input name=\\"test\\" value=\\"\\"/><p></p><div>no</div>"`;
