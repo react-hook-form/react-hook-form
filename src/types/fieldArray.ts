@@ -209,7 +209,7 @@ export type UseFieldArrayInsert<
  * </button>
  * ```
  */
-type UseFieldArrayUpdate<
+export type UseFieldArrayUpdate<
   TFieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
@@ -235,7 +235,7 @@ type UseFieldArrayUpdate<
  * </button>
  * ```
  */
-type UseFieldArrayReplace<
+export type UseFieldArrayReplace<
   TFieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
