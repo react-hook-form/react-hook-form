@@ -21,7 +21,6 @@ import {
   SetFieldValue,
   SetValueOptions,
   Subjects,
-  UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -381,7 +380,7 @@ export function createFormControl<
   const _executeSchema = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
-          { ..._formValues } as UnpackNestedValue<TFieldValues>,
+          { ..._formValues } as TFieldValues,
           _options.context,
           getResolverOptions(
             name || _names.mount,
@@ -867,10 +866,7 @@ export function createFormControl<
       ? _subjects.watch.subscribe({
           next: (info) =>
             name(
-              _getWatch(
-                undefined,
-                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-              ),
+              _getWatch(undefined, defaultValue as DeepPartial<TFieldValues>),
               info as {
                 name?: FieldPath<TFieldValues>;
                 type?: EventType;
@@ -880,7 +876,7 @@ export function createFormControl<
         })
       : _getWatch(
           name as InternalFieldName | InternalFieldName[],
-          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          defaultValue as DeepPartial<TFieldValues>,
           true,
         );
 
