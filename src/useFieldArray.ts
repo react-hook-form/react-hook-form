@@ -240,14 +240,14 @@ export function useFieldArray<
 
   const update = (
     index: number,
-    value: Partial<
-      UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>
-    >,
+    value: UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
     const updatedFieldArrayValues = updateAt(
-      control._getFieldArray(name),
+      control._getFieldArray<
+        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      >(name),
       index,
-      value,
+      value as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
