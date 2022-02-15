@@ -464,6 +464,11 @@ export function set(object: FieldValues, path: string, value?: unknown): FieldVa
 export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 // @public (undocumented)
+export type SetFocusOptions = Partial<{
+    shouldSelect: boolean;
+}>;
+
+// @public (undocumented)
 export type SetValueOptions = Partial<{
     shouldValidate: boolean;
     shouldDirty: boolean;
@@ -678,7 +683,7 @@ export type UseFormSetError<TFieldValues extends FieldValues> = <TFieldName exte
 }) => void;
 
 // @public
-export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>) => void;
+export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>, options?: SetFocusOptions) => void;
 
 // @public
 export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>, value: UnpackNestedValue<FieldPathSetValue<TFieldValues, TFieldName>>, options?: SetValueOptions) => void;
@@ -791,7 +796,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 //
 // src/types/fieldArray.ts:251:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
 // src/types/fieldArray.ts:252:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:399:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:405:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
