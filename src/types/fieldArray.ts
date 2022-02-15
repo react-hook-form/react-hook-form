@@ -208,7 +208,7 @@ export type UseFieldArrayInsert<
  */
 type UseFieldArrayUpdate<TFieldValues, TFieldArrayName extends PathString> = (
   index: number,
-  value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
+  value: FieldArray<TFieldValues, TFieldArrayName>,
 ) => void;
 
 /**

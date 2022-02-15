@@ -229,12 +229,12 @@ export function useFieldArray<
 
   const update = (
     index: number,
-    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>,
+    value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray(name),
       index,
-      value,
+      value as any,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
