@@ -59,7 +59,8 @@ export function useWatch<
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - defaultV
+ alue, disable subscription and match exact name.
  *
  * @example
  * ```tsx
@@ -74,11 +75,11 @@ export function useWatch<
  * ```
  */
 export function useWatch<TFieldValues extends FieldValues>(props: {
-  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
-}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+}): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * @deprecated Use a tuple for the `name` property instead.
  *
