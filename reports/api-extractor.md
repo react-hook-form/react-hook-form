@@ -708,15 +708,6 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export function useWatch<TFieldValues extends FieldValues, TFieldNames extends readonly PathString[]>(props: {
-    name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
-    defaultValue?: FieldPathValues<TFieldValues, TFieldNames>;
-    control?: Control<TFieldValues>;
-    disabled?: boolean;
-    exact?: boolean;
-}): FieldPathValues<TFieldValues, TFieldNames>;
-
-// @public
 export function useWatch<TFieldValues extends FieldValues>(props: {
     defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
     control?: Control<TFieldValues>;
@@ -724,7 +715,7 @@ export function useWatch<TFieldValues extends FieldValues>(props: {
     exact?: boolean;
 }): DeepPartialSkipArrayKey<TFieldValues>;
 
-// @public @deprecated (undocumented)
+// @public
 export function useWatch<TFieldValues extends FieldValues, TFieldName extends PathString>(props: {
     name: Auto.FieldPath<TFieldValues, TFieldName>;
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
@@ -732,6 +723,15 @@ export function useWatch<TFieldValues extends FieldValues, TFieldName extends Pa
     disabled?: boolean;
     exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
+
+// @public
+export function useWatch<TFieldValues extends FieldValues, TFieldNames extends readonly PathString[]>(props: {
+    name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
+    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+    control?: Control<TFieldValues>;
+    disabled?: boolean;
+    exact?: boolean;
+}): FieldPathValues<TFieldValues, TFieldNames>;
 
 // @public (undocumented)
 export type UseWatchProps<TFieldValues extends FieldValues, TFieldName extends PathString> = {
