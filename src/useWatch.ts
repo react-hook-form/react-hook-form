@@ -20,47 +20,13 @@ import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
 /**
- * Custom hook to subscribe to field change and isolate re-rendering at the component level.
- *
- * @remarks
- *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
- *
- * @param props - defaultValue, disable subscription and match exact name.
- *
- * @example
- * ```tsx
- * const { watch } = useForm();
- * const values = useWatch({
- *   control,
- *   name: ["fieldA", "fieldB"],
- *   defaultValue: {
- *     fieldA: "data",
- *     fieldB: "data"
- *   },
- *   exact: false,
- * })
- * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues,
-  TFieldNames extends readonly PathString[],
->(props: {
-  name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
-  defaultValue?: FieldPathValues<TFieldValues, TFieldNames>;
-  control?: Control<TFieldValues>;
-  disabled?: boolean;
-  exact?: boolean;
-}): FieldPathValues<TFieldValues, TFieldNames>;
-/**
  * Subscribe to the entire form values change and re-render at the hook level.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
- * @param props - defaultV
- alue, disable subscription and match exact name.
+ * @param props - defaultValue, disable subscription and match exact name.
  *
  * @example
  * ```tsx
@@ -81,8 +47,6 @@ export function useWatch<TFieldValues extends FieldValues>(props: {
   exact?: boolean;
 }): DeepPartialSkipArrayKey<TFieldValues>;
 /**
- * @deprecated Use a tuple for the `name` property instead.
- *
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -112,6 +76,39 @@ export function useWatch<
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
+/**
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { watch } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   name: ["fieldA", "fieldB"],
+ *   defaultValue: {
+ *     fieldA: "data",
+ *     fieldB: "data"
+ *   },
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues,
+  TFieldNames extends readonly PathString[],
+>(props: {
+  name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): FieldPathValues<TFieldValues, TFieldNames>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
