@@ -3,6 +3,7 @@ import React from 'react';
 import { Controller } from '../controller';
 import {
   Auto,
+  Control,
   FieldErrors,
   FieldPath,
   FieldValues,
@@ -183,13 +184,6 @@ test('should infer context type into control', () => {
 });
 
 test('should work with useController with generic component', () => {
-  // @ts-ignore
-  declare module 'react' {
-    function forwardRef<T, P = {}>(
-      render: (props: P, ref: React.Ref<T>) => React.ReactElement | null,
-    ): (props: P & React.RefAttributes<T>) => React.ReactElement | null;
-  }
-
   type FormValues = {
     yourDetails: {
       firstName: string;
@@ -199,35 +193,32 @@ test('should work with useController with generic component', () => {
     pet: { name: string }[];
   };
 
-  type InputProps<
-    T extends FieldValues,
-    P extends PathString,
-  > = UseControllerProps<T, Auto.TypedFieldPath<T, P, string>>;
+  type InputProps<T extends FieldValues, P extends PathString> = {
+    control: Control<T>;
+    name: Auto.TypedFieldPath<T, P, string>;
+  };
 
-  const Input = React.forwardRef(
-    <T extends FieldValues, P extends PathString>(
-      props: InputProps<T, P>,
-      ref: React.Ref<HTMLInputElement>,
-    ) => {
-      const { field } = useController({
-        name: of(props.name),
-        control: props.control,
-      });
-      const [value, setValue] = React.useState(field.value || '');
+  const Input = <T extends FieldValues, P extends PathString>(
+    props: InputProps<T, P>,
+    ref: React.Ref<HTMLInputElement>,
+  ) => {
+    const { field } = useController({
+      name: of(props.name),
+      control: props.control,
+    });
+    const [value, setValue] = React.useState(field.value || '');
 
-      return (
-        <input
-          // @ts-ignore
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            field.onChange(e.target.value);
-          }}
-          ref={ref}
-        />
-      );
-    },
-  );
+    return (
+      <input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          field.onChange(e.target.value);
+        }}
+        ref={ref}
+      />
+    );
+  };
 
   function App() {
     const { handleSubmit, control } = useForm<FormValues>({
@@ -248,7 +239,6 @@ test('should work with useController with generic component', () => {
             // console.log(data);
           })}
         >
-          {/*@ts-ignore*/}
           <Input name="age" control={control} />
 
           <input type="submit" />
