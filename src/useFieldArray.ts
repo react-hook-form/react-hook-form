@@ -70,11 +70,10 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
-  props: UseFieldArrayProps<TFieldValues, TContext, TFieldArrayName, TKeyName>,
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const methods = useFormContext();
   const {
