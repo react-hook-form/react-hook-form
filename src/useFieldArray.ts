@@ -70,7 +70,7 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object,
+  TContext = any,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
