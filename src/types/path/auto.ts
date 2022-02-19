@@ -21,7 +21,7 @@ import { PathString } from './pathString';
 export type TypedFieldPath<
   TFieldValues,
   TPathString extends PathString,
-  TValue,
+  TValue = string,
   TValueSet = TValue,
 > =
   | Branded.TypedFieldPath<TFieldValues, TValue, TValueSet>

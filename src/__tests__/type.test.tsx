@@ -194,7 +194,7 @@ test('should work with useController with generic component', () => {
 
   type InputProps<T extends FieldValues, P extends PathString> = {
     control: Control<T>;
-    name: Auto.TypedFieldPath<T, P, string>;
+    name: Auto.TypedFieldPath<T, P>;
   };
 
   const Input = <T extends FieldValues, P extends PathString>(
