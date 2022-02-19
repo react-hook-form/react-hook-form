@@ -91,7 +91,7 @@ const defaultOptions = {
 
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknonw,
+  TContext = any,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
