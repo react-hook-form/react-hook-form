@@ -44,7 +44,7 @@ export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
 >(props: {
   defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any>;
   disabled?: boolean;
   exact?: boolean;
 }): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
