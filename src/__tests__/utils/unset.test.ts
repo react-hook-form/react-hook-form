@@ -242,4 +242,42 @@ describe('unset', () => {
       test: [true, undefined, undefined],
     });
   });
+
+  it('should reset the array index', () => {
+    const data = {
+      test: [[{ name: 'test' }], [{ name: 'test1' }]],
+    };
+    unset(data, 'test.0.0.name');
+
+    expect(data).toEqual({
+      test: [undefined, [{ name: 'test1' }]],
+    });
+
+    const data1 = {
+      test: [[{ name: 'test' }], [{ name: 'test1' }]],
+    };
+    unset(data1, 'test.1.0.name');
+
+    expect(data1).toEqual({
+      test: [[{ name: 'test' }], undefined],
+    });
+
+    const data2 = {
+      test: [[[{ name: 'test' }]], [{ name: 'test1' }]],
+    };
+    unset(data2, 'test.0.0.0.name');
+
+    expect(data2).toEqual({
+      test: [undefined, [{ name: 'test1' }]],
+    });
+
+    const data3 = {
+      test: [[[{ name: 'test' }]], [[{ name: 'test1' }]]],
+    };
+    unset(data3, 'test.1.0.0.name');
+
+    expect(data3).toEqual({
+      test: [[[{ name: 'test' }]], undefined],
+    });
+  });
 });
