@@ -47,7 +47,9 @@ export default function unset(object: any, path: string) {
           (Array.isArray(objectRef) &&
             !objectRef.filter(
               (data) =>
-                (isObject(data) && !isEmptyObject(data)) || isBoolean(data),
+                (isObject(data) && !isEmptyObject(data)) ||
+                isBoolean(data) ||
+                (Array.isArray(data) && data.length),
             ).length))
       ) {
         previousObjRef ? delete previousObjRef[item] : delete object[item];
