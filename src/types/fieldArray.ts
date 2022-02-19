@@ -4,13 +4,12 @@ import { FieldArrayPath, FieldArrayPathValue } from './path';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 > = {
   name: TFieldArrayName;
   keyName?: TKeyName;
-  control?: Control<TFieldValues, TContext>;
+  control?: Control<TFieldValues>;
   shouldUnregister?: boolean;
 };
 
