@@ -70,7 +70,10 @@ export const useFormContext = <
  * }
  * ```
  */
-export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
+export const FormProvider = <
+  TFieldValues extends FieldValues,
+  TContext = unknonw,
+>(
   props: FormProviderProps<TFieldValues, TContext>,
 ) => (
   <HookFormContext.Provider
