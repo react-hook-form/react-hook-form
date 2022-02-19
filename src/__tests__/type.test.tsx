@@ -8,7 +8,6 @@ import {
   FieldPath,
   FieldValues,
   PathString,
-  UseControllerProps,
   UseFormRegister,
 } from '../types';
 import { useController } from '../useController';
@@ -234,11 +233,7 @@ test('should work with useController with generic component', () => {
 
     return (
       <div>
-        <form
-          onSubmit={handleSubmit(() => {
-            // console.log(data);
-          })}
-        >
+        <form onSubmit={handleSubmit(() => {})}>
           <Input name="age" control={control} />
 
           <input type="submit" />
