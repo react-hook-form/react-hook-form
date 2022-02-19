@@ -1,4 +1,3 @@
-// @ts-nocheck
 import unset from '../../utils/unset';
 
 describe('unset', () => {
