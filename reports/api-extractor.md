@@ -47,7 +47,7 @@ export type ChangeHandler = (event: {
 }) => Promise<void | boolean>;
 
 // @public (undocumented)
-export type Control<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
+export type Control<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
     _subjects: Subjects<TFieldValues>;
     _removeUnmounted: Noop;
     _names: Names;
@@ -253,10 +253,10 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 export type FieldValues = Record<string, any>;
 
 // @public
-export const FormProvider: <TFieldValues extends FieldValues, TContext extends object = object>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
+export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
 
 // @public (undocumented)
-export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
+export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
     children: React_2.ReactNode;
 } & UseFormReturn<TFieldValues, TContext>;
 
@@ -420,7 +420,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
 }>;
 
 // @public (undocumented)
-export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = (values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
+export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = any> = (values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
 
 // @public (undocumented)
 export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
@@ -576,13 +576,13 @@ export type UseFieldArrayReturn<TFieldValues extends FieldValues, TFieldArrayNam
 export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 
 // @public
-export function useForm<TFieldValues extends FieldValues = FieldValues, TContext extends object = object>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
+export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
 
 // @public
 export type UseFormClearErrors<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name?: Auto.FieldPath<TFieldValues, TFieldName> | Auto.FieldPath<TFieldValues, TFieldName>[] | readonly Auto.FieldPath<TFieldValues, TFieldName>[]) => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, object>;
+export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, any>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends PathString>(name: Auto.FieldPath<TFieldValues, TFieldName>, formState?: FormState<TFieldValues>) => {
@@ -603,7 +603,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
-export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = Partial<{
+export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
     mode: Mode;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: TFieldValues;
@@ -646,7 +646,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 }>) => void;
 
 // @public (undocumented)
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext extends object = object> = {
+export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
