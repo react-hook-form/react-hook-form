@@ -776,7 +776,7 @@ export type UseFormReturn<
 };
 
 export type UseFormStateProps<TFieldValues> = Partial<{
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any>;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
