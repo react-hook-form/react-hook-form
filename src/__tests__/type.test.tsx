@@ -9,19 +9,12 @@ import {
   FieldValues,
   PathString,
   UseFormRegister,
-  UseFormRegisterReturn,
 } from '../types';
 import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
 import { of } from '../utils';
-
-declare module 'react' {
-  function forwardRef<T, P = {}>(
-    render: (props: P, ref: React.Ref<T>) => React.ReactElement | null,
-  ): (props: P & React.RefAttributes<T>) => React.ReactElement | null;
-}
 
 test('should not throw type error with optional array fields', () => {
   type Thing = { id: string; name: string };
@@ -196,6 +189,7 @@ test('should work with useController with generic component', () => {
       lastName: string;
     };
     age: string;
+    pet: { name: string }[];
   };
 
   type InputProps<T extends FieldValues, P extends PathString> = {
@@ -225,42 +219,22 @@ test('should work with useController with generic component', () => {
     );
   };
 
-  const InputNative = React.forwardRef(
-    (
-      { onChange, onBlur, name }: UseFormRegisterReturn,
-      ref: React.Ref<HTMLInputElement>,
-    ) => {
-      return <input ref={ref} {...{ onChange, onBlur, name }} />;
-    },
-  );
-
-  function InputRegister<T extends FieldValues>({
-    register,
-  }: {
-    register: UseFormRegister<T>;
-  }) {
-    return <input {...register('age')} />;
-  }
-
   function App() {
-    const { handleSubmit, control, register } = useForm<FormValues>({
+    const { handleSubmit, control } = useForm<FormValues>({
       defaultValues: {
         yourDetails: {
           firstName: '',
           lastName: '',
         },
         age: '',
+        pet: [],
       },
     });
-
-    register('age');
 
     return (
       <div>
         <form onSubmit={handleSubmit(() => {})}>
           <Input name="age" control={control} />
-          <InputNative {...register('yourDetails.firstName')} />
-          <InputRegister register={register} />
 
           <input type="submit" />
         </form>
