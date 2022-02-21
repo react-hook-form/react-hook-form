@@ -1,10 +1,20 @@
 import React from 'react';
 
 import { Controller } from '../controller';
-import { FieldErrors, FieldPath, FieldValues, UseFormRegister } from '../types';
+import {
+  Auto,
+  Control,
+  FieldErrors,
+  FieldPath,
+  FieldValues,
+  PathString,
+  UseFormRegister,
+} from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
+import { of } from '../utils';
 
 test('should not throw type error with optional array fields', () => {
   type Thing = { id: string; name: string };
@@ -167,6 +177,69 @@ test('should infer context type into control', () => {
     });
 
     return null;
+  }
+
+  App;
+});
+
+test('should work with useController with generic component', () => {
+  type FormValues = {
+    yourDetails: {
+      firstName: string;
+      lastName: string;
+    };
+    age: string;
+    pet: { name: string }[];
+  };
+
+  type InputProps<T extends FieldValues, P extends PathString> = {
+    control: Control<T>;
+    name: Auto.TypedFieldPath<T, P, string>;
+  };
+
+  const Input = <T extends FieldValues, P extends PathString>(
+    props: InputProps<T, P>,
+    ref: React.Ref<HTMLInputElement>,
+  ) => {
+    const { field } = useController({
+      name: of(props.name),
+      control: props.control,
+    });
+    const [value, setValue] = React.useState(field.value || '');
+
+    return (
+      <input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          field.onChange(e.target.value);
+        }}
+        ref={ref}
+      />
+    );
+  };
+
+  function App() {
+    const { handleSubmit, control } = useForm<FormValues>({
+      defaultValues: {
+        yourDetails: {
+          firstName: '',
+          lastName: '',
+        },
+        age: '',
+        pet: [],
+      },
+    });
+
+    return (
+      <div>
+        <form onSubmit={handleSubmit(() => {})}>
+          <Input name="age" control={control} />
+
+          <input type="submit" />
+        </form>
+      </div>
+    );
   }
 
   App;
