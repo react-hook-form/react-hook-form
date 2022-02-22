@@ -8,6 +8,7 @@ import {
   FieldPath,
   FieldValues,
   PathString,
+  TypedFieldPath,
   UseFormRegister,
 } from '../types';
 import { useController } from '../useController';
@@ -219,8 +220,34 @@ test('should work with useController with generic component', () => {
     );
   };
 
+  function TextInput<T>(props: {
+    control: Control<T>;
+    name: TypedFieldPath<T, string>;
+  }) {
+    const {
+      field: { onChange, value },
+    } = useController({
+      control: props.control,
+      name: props.name,
+    });
+    return <input type="text" value={value} onChange={onChange} />;
+  }
+
+  type RegisterInput<T, P extends PathString> = {
+    name: Auto.FieldPath<T, P>;
+    register: UseFormRegister<T>;
+  };
+
+  function RegisterInput<T, P extends PathString>({
+    register,
+    name,
+  }: RegisterInput<T, P>) {
+    const ofName = of(name);
+    return <input {...register(ofName)} />;
+  }
+
   function App() {
-    const { handleSubmit, control } = useForm<FormValues>({
+    const { handleSubmit, control, register } = useForm<FormValues>({
       defaultValues: {
         yourDetails: {
           firstName: '',
@@ -235,6 +262,10 @@ test('should work with useController with generic component', () => {
       <div>
         <form onSubmit={handleSubmit(() => {})}>
           <Input name="age" control={control} />
+
+          <RegisterInput register={register} name={'age'} />
+
+          <TextInput<FormValues> name={of('age')} control={control} />
 
           <input type="submit" />
         </form>
