@@ -742,7 +742,10 @@ export function createFormControl<
         isValid = await _updateValid(true);
       }
 
-      field._f.deps && trigger(field._f.deps as FieldPath<TFieldValues>[]);
+      field._f.deps &&
+        trigger(
+          field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+        );
 
       shouldRenderByError(false, name, isValid, error, fieldState);
     }
