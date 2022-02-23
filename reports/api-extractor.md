@@ -383,7 +383,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     onChange?: (event: any) => void;
     onBlur?: (event: any) => void;
     disabled: boolean;
-    deps: InternalFieldName[];
+    deps: InternalFieldName | InternalFieldName[];
 }>;
 
 // @public (undocumented)
