@@ -118,6 +118,36 @@ describe('register', () => {
     },
   );
 
+  it('should set the default value as array type for checkbox group', async () => {
+    const callback = jest.fn();
+    const Component = () => {
+      const { register, handleSubmit } = useForm<{
+        test: string[];
+      }>();
+      return (
+        <div>
+          <input type="checkbox" {...register('test')} value="red" />
+          <input type="checkbox" {...register('test')} value="blue" />
+
+          <button onClick={handleSubmit(callback)}>submit</button>
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /submit/ }));
+
+    await waitFor(() =>
+      expect(callback).toHaveBeenCalledWith(
+        {
+          test: [],
+        },
+        expect.any(Object),
+      ),
+    );
+  });
+
   it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
     const resolver = async (data: any) => {
       return {

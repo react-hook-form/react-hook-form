@@ -254,6 +254,7 @@ export function createFormControl<
       );
 
       isUndefined(defaultValue) ||
+      (defaultValue === false && field._f.refs && field._f.refs.length > 1) ||
       (ref && (ref as HTMLInputElement).defaultChecked) ||
       shouldSkipSetValueAs
         ? set(
