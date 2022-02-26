@@ -1,0 +1,16 @@
+# This is a workflow to help us filter out "unhealthy" issues that are missing the required issue template information
+name: Issue Requirement Check
+# Triggers the workflow on PR or issue creation events
+on: [issues, pull_request]
+jobs:
+  autoclose:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+    - name: Autoclose issues that did not follow issue template
+      uses: roots/issue-closer@v1.1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-close-message: "@${issue.user.login} this issue was automatically closed because it did not follow the issue template"
+        # The issue template regex to check against
+        issue-pattern: "(https://codesandbox.io/s)|(https://stackblitz.com)"
