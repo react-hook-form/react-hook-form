@@ -5,7 +5,7 @@ on: [issues, pull_request]
 jobs:
   autoclose:
     # The type of runner that the job will run on
-    runs-on: alpine/git
+    runs-on: ubuntu-latest
     steps:
     - name: Autoclose issues that did not follow issue template
       uses: roots/issue-closer@v1.1
