@@ -242,12 +242,13 @@ export function useFieldArray<
     index: number,
     value: UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
+    const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray<
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
       >(name),
       index,
-      value as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
+      updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
@@ -260,7 +261,7 @@ export function useFieldArray<
       updateAt,
       {
         argA: index,
-        argB: value,
+        argB: updateValue,
       },
       true,
       false,
