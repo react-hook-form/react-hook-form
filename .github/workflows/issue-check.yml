@@ -14,7 +14,7 @@ jobs:
           require: 'write'
 
       - name: check invalid
-        if: (contains(github.event.issue.body, 'codesandbox.io') == false) && (steps.checkUser.outputs.result == 'false')
+        if: (contains(github.event.issue.body, 'codesandbox.io') == false || contains(github.event.issue.body, 'stackblitz.com') == false) && (steps.checkUser.outputs.result == 'false')
         uses: actions-cool/issues-helper@v1.2
         with:
           actions: 'create-comment,add-labels,close-issue'
