@@ -231,6 +231,7 @@ export function useFieldArray<
     index: number,
     value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
+    const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray(name),
       index,
@@ -247,7 +248,7 @@ export function useFieldArray<
       updateAt,
       {
         argA: index,
-        argB: value,
+        argB: updateValue,
       },
       true,
       false,
