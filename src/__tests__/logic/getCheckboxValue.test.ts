@@ -87,6 +87,23 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: ['2', '3'], isValid: true });
   });
 
+  it('should return array value when type of reference value is array', () => {
+    expect(
+      getCheckboxValue(
+        [
+          {
+            name: 'bill',
+            checked: true,
+            value: '2',
+            // @ts-expect-error
+            attributes: { value: '2' },
+          },
+        ],
+        [],
+      ),
+    ).toEqual({ value: ['2'], isValid: true });
+  });
+
   it('should return values for checked boxes only', () => {
     expect(
       getCheckboxValue([
