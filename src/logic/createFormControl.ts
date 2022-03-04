@@ -987,7 +987,7 @@ export function createFormControl<
               ...field._f,
               ...(radioOrCheckbox
                 ? {
-                    refs: refs.concat(fieldRef).filter(live),
+                    refs: [...refs.filter(live), fieldRef],
                     ref: { type: fieldRef.type, name },
                   }
                 : { ref: fieldRef }),
