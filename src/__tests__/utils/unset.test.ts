@@ -279,5 +279,18 @@ describe('unset', () => {
     expect(data3).toEqual({
       test: [[[{ name: 'test' }]], undefined],
     });
+
+    const data4 = {
+      test: {
+        fields: ['1', '2'],
+      },
+    };
+    unset(data4, 'test.fields.1');
+
+    expect(data4).toEqual({
+      test: {
+        fields: ['1', undefined],
+      },
+    });
   });
 });
