@@ -1197,9 +1197,11 @@ export function createFormControl<
   };
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
-    const field = get(_fields, name)._f;
-    const fieldRef = field.refs ? field.refs[0] : field.ref;
-    options.shouldSelect ? fieldRef.select() : fieldRef.focus();
+    const field = get(_fields, name)?._f;
+    const fieldRef = field?.refs ? field?.refs[0] : field?.ref;
+    options.shouldSelect
+      ? fieldRef?.select()
+      : fieldRef?.focus && fieldRef?.focus();
   };
 
   return {

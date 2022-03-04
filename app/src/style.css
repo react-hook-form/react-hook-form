@@ -61,3 +61,6 @@ input[type='submit']:active {
   transition: 0.3s all;
   top: 2px;
 }
+a {
+  color: white;
+}

@@ -7,6 +7,8 @@ type FormValues = {
   selectInputContent: string;
   focusTextarea: string;
   selectTextareaContent: string;
+  focusUnfocusable: number;
+  selectUnfocusable: number;
 };
 
 const defaultValues: DefaultValues<FormValues> = {
@@ -14,10 +16,12 @@ const defaultValues: DefaultValues<FormValues> = {
   selectInputContent: 'Content should be selected',
   focusTextarea: 'Textarea should be focused',
   selectTextareaContent: 'Content should be selected',
+  focusUnfocusable: 1,
+  selectUnfocusable: 1,
 };
 
 const SetFocus = () => {
-  const { register, setFocus } = useForm<FormValues>({
+  const { register, watch, setValue, setFocus } = useForm<FormValues>({
     defaultValues,
   });
 
@@ -64,6 +68,45 @@ const SetFocus = () => {
           }
         >
           Select Textarea Content
+        </button>
+      </fieldset>
+      <fieldset>
+        <legend>Don't focus unfocusable input</legend>
+        <label htmlFor="focusUnfocusable">Unfocusable Input</label>
+        <div>Value: {watch('focusUnfocusable')}</div>
+        <a
+          id="focusUnfocusable"
+          href="#"
+          onClick={(event) => {
+            event.preventDefault();
+            setValue('focusUnfocusable', watch('focusUnfocusable') + 1);
+          }}
+        >
+          Click to increment
+        </a>
+        <button type="button" onClick={() => setFocus('focusUnfocusable')}>
+          Do Not Focus
+        </button>
+      </fieldset>
+      <fieldset>
+        <legend>Don't select unfocusable input</legend>
+        <label htmlFor="selectUnfocusable">Unfocusable Input</label>
+        <div>Value: {watch('selectUnfocusable')}</div>
+        <a
+          id="selectUnfocusable"
+          href="#"
+          onClick={(event) => {
+            event.preventDefault();
+            setValue('selectUnfocusable', watch('selectUnfocusable') + 1);
+          }}
+        >
+          Click to increment
+        </a>
+        <button
+          type="button"
+          onClick={() => setFocus('focusUnfocusable', { shouldSelect: true })}
+        >
+          Do Not Select
         </button>
       </fieldset>
     </form>

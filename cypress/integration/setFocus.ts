@@ -26,4 +26,14 @@ describe('form setFocus', () => {
       .type('New Value')
       .should('have.value', 'New Value');
   });
+
+  it('should not focus unfocusable input', () => {
+    cy.visit('http://localhost:3000/setFocus');
+    cy.get('button:contains("Do Not Focus")').click();
+  });
+
+  it('should not select unfocusable input', () => {
+    cy.visit('http://localhost:3000/setFocus');
+    cy.get('button:contains("Do Not Select")').click();
+  });
 });
