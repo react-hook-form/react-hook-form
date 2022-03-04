@@ -1,4 +1,3 @@
-import isBoolean from './isBoolean';
 import isEmptyObject from './isEmptyObject';
 import isKey from './isKey';
 import isObject from './isObject';
@@ -45,12 +44,7 @@ export default function unset(object: any, path: string) {
         currentPathsLength === index &&
         ((isObject(objectRef) && isEmptyObject(objectRef)) ||
           (Array.isArray(objectRef) &&
-            !objectRef.filter(
-              (data) =>
-                (isObject(data) && !isEmptyObject(data)) ||
-                isBoolean(data) ||
-                (Array.isArray(data) && data.length),
-            ).length))
+            !objectRef.filter((data) => !isUndefined(data)).length))
       ) {
         previousObjRef ? delete previousObjRef[item] : delete object[item];
       }
