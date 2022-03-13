@@ -1,5 +1,13 @@
 # Changelog
 
+## [7.28.0] - 2022-3-13
+
+- `register` API options `deps` now support string
+
+```tsx
+register('test', { dpes: 'test' });
+```
+
 ## [7.27.0] - 2022-2-11
 
 ## Added
