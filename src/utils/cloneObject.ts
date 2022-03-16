@@ -8,7 +8,15 @@ export default function cloneObject<T>(data: T): T {
   if (data instanceof Date) {
     copy = new Date(data);
   } else if (data instanceof Set) {
-    copy = new Set(data);
+    copy = new Set();
+    for (const item of data) {
+      copy.add(cloneObject(item));
+    }
+  } else if (data instanceof Map) {
+    copy = new Map();
+    for (const [key, value] of data) {
+      copy.set(cloneObject(key), cloneObject(value));
+    }
   } else if (isArray || isObject(data)) {
     copy = isArray ? [] : {};
     for (const key in data) {

@@ -27,22 +27,27 @@ describe('clone', () => {
         },
       },
       file: fileData,
-      test2: new Set([1, 2]),
-      test1: new Map([
+      testSet: new Set([1, 2]),
+      testMap: new Map([
         [1, 'one'],
         [2, 'two'],
         [3, 'three'],
       ]),
+      testMap2: new Map([['test', { test0: 12, test1: '12' }]]),
     };
 
     const copy = cloneObject(data);
-    expect(cloneObject(data)).toEqual(copy);
+    expect(data).toEqual(copy);
 
     // @ts-expect-error
     copy.test.what = '1243';
     copy.test.date = new Date('2020-10-16');
     // @ts-expect-error
     copy.items[0] = 2;
+    copy.testSet.add(3);
+    copy.testMap.set(4, 'four');
+    // @ts-expect-error
+    copy.testMap2.get('test').test1 = '13';
 
     expect(data).toEqual({
       items: [],
@@ -68,12 +73,13 @@ describe('clone', () => {
         },
       },
       file: fileData,
-      test2: new Set([1, 2]),
-      test1: new Map([
+      testSet: new Set([1, 2]),
+      testMap: new Map([
         [1, 'one'],
         [2, 'two'],
         [3, 'three'],
       ]),
+      testMap2: new Map([['test', { test0: 12, test1: '12' }]]),
     });
 
     // @ts-expect-error
