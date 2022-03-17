@@ -112,10 +112,13 @@ export function createFormControl<
     errors: {} as FieldErrors<TFieldValues>,
   };
   let _fields = {};
+  const _utilities = {
+    clone: cloneObject,
+  };
   let _defaultValues = _options.defaultValues || {};
   let _formValues = _options.shouldUnregister
     ? {}
-    : cloneObject(_defaultValues);
+    : _utilities.clone(_defaultValues);
   let _stateFlags = {
     action: false,
     mount: false,
@@ -614,7 +617,7 @@ export function createFormControl<
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
-    const cloneValue = cloneObject(value);
+    const cloneValue = _utilities.clone(value);
 
     set(_formValues, name, cloneValue);
 
@@ -1017,7 +1020,7 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let hasNoPromiseError = true;
-      let fieldValues: any = cloneObject(_formValues);
+      let fieldValues: any = _utilities.clone(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1103,7 +1106,7 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     const updatedValues = formValues || _defaultValues;
-    const cloneUpdatedValues = cloneObject(updatedValues);
+    const cloneUpdatedValues = _utilities.clone(updatedValues);
     const values =
       formValues && !isEmptyObject(formValues)
         ? cloneUpdatedValues
@@ -1133,7 +1136,7 @@ export function createFormControl<
 
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
-          ? cloneObject(_defaultValues)
+          ? _utilities.clone(_defaultValues)
           : {}
         : cloneUpdatedValues;
 
@@ -1216,6 +1219,7 @@ export function createFormControl<
       _getFieldArray,
       _subjects,
       _proxyFormState,
+      _utilities,
       get _fields() {
         return _fields;
       },

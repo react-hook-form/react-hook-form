@@ -53,6 +53,10 @@ export type Mode = keyof ValidationMode;
 
 export type CriteriaMode = 'firstError' | 'all';
 
+export type Utilities = {
+  clone: <T>(payload: T) => T;
+};
+
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,
   event?: React.BaseSyntheticEvent,
@@ -97,6 +101,7 @@ export type UseFormProps<
   shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  utilities: Utilities;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -740,6 +745,7 @@ export type Control<
   _executeSchema: (
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
+  _utilities: Utilities;
   register: UseFormRegister<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;

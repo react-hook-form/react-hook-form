@@ -5,7 +5,6 @@ import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
 import appendAt from './utils/append';
-import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
@@ -129,7 +128,7 @@ export function useFieldArray<
       | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const appendValue = convertToArrayPayload(cloneObject(value));
+    const appendValue = convertToArrayPayload(control._utilities.clone(value));
     const updatedFieldArrayValues = appendAt(
       control._getFieldArray(name),
       appendValue,
@@ -153,7 +152,7 @@ export function useFieldArray<
       | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const prependValue = convertToArrayPayload(cloneObject(value));
+    const prependValue = convertToArrayPayload(control._utilities.clone(value));
     const updatedFieldArrayValues = prependAt(
       control._getFieldArray(name),
       prependValue,
@@ -186,7 +185,7 @@ export function useFieldArray<
       | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    const insertValue = convertToArrayPayload(cloneObject(value));
+    const insertValue = convertToArrayPayload(control._utilities.clone(value));
     const updatedFieldArrayValues = insertAt(
       control._getFieldArray(name),
       index,
@@ -242,7 +241,7 @@ export function useFieldArray<
     index: number,
     value: UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>,
   ) => {
-    const updateValue = cloneObject(value);
+    const updateValue = control._utilities.clone(value);
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray<
         FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
@@ -273,7 +272,9 @@ export function useFieldArray<
       | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
       | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
   ) => {
-    const updatedFieldArrayValues = convertToArrayPayload(cloneObject(value));
+    const updatedFieldArrayValues = convertToArrayPayload(
+      control._utilities.clone(value),
+    );
     ids.current = updatedFieldArrayValues.map(generateId);
     updateValues([...updatedFieldArrayValues]);
     setFields([...updatedFieldArrayValues]);
