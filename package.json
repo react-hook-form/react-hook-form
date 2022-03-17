@@ -10,7 +10,7 @@
   "jsnext:main": "dist/index.esm.mjs",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
-  "sideEffects": true,
+  "sideEffects": false,
   "files": [
     "dist",
     "dist/__tests__"
