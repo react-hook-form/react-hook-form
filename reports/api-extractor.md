@@ -61,6 +61,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _executeSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
+    _utilities: Utilities;
     register: UseFormRegister<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -570,6 +571,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldUseNativeValidation: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
+    utilities: Utilities;
 }>;
 
 // @public
@@ -702,6 +704,11 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
+export type Utilities = {
+    clone: <T>(payload: T) => T;
+};
+
+// @public (undocumented)
 export type Validate<TFieldValue> = (value: TFieldValue) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
@@ -740,7 +747,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:406:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:411:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
