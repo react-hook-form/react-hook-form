@@ -90,13 +90,11 @@ describe('reset', () => {
 
     render(<Component />);
 
-    actComponent(() => {
-      screen
-        .getAllByRole('checkbox')
-        .forEach((checkbox) =>
-          expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
-        );
-    });
+    screen
+      .getAllByRole('checkbox')
+      .forEach((checkbox) =>
+        expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
+      );
   });
 
   it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
@@ -193,7 +191,7 @@ describe('reset', () => {
     );
   });
 
-  it('should not reset form defaultValues when keepDefaultValues is specified', () => {
+  it('should not reset form defaultValues when keepDefaultValues is specified', async () => {
     const Component = () => {
       const {
         register,
@@ -243,9 +241,7 @@ describe('reset', () => {
       },
     });
 
-    act(() => {
-      screen.getByText('dirty');
-    });
+    expect(await screen.findByText('dirty')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -468,21 +464,19 @@ describe('reset', () => {
 
     screen.getByRole('button', { name: 'reset' }).click();
 
-    await actComponent(async () => {
-      screen.getByRole('button', { name: 'submit' }).click();
-    });
+    screen.getByRole('button', { name: 'submit' }).click();
 
-    await expect(data).toEqual({});
+    await waitFor(() => expect(data).toEqual({}));
 
     screen.getByRole('button', { name: 'reset with value' }).click();
 
-    await actComponent(async () => {
-      screen.getByRole('button', { name: 'submit' }).click();
-    });
+    screen.getByRole('button', { name: 'submit' }).click();
 
-    await expect(data).toEqual({
-      test: [{ firstName: 'test', lastName: 'test' }],
-    });
+    await waitFor(() =>
+      expect(data).toEqual({
+        test: [{ firstName: 'test', lastName: 'test' }],
+      }),
+    );
   });
 
   it('should return reset nested value', () => {
@@ -559,9 +553,7 @@ describe('reset', () => {
       target: { value: 'data' },
     });
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -684,19 +676,13 @@ describe('reset', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     expect(submittedData).toEqual({});
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     expect(submittedData).toEqual({});
   });
@@ -1036,11 +1022,9 @@ describe('reset', () => {
       `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
     );
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    screen.getByText(/no/i);
+    expect(await screen.findByText(/no/i)).toBeVisible();
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -50,21 +44,17 @@ describe('trigger', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    await waitFor(() => screen.getByText('error'));
+    await screen.findByText('error');
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    expect(screen.queryByText('error')).toBeNull();
+    await waitFor(() =>
+      expect(screen.queryByText('error')).not.toBeInTheDocument(),
+    );
   });
 
   it('should return empty errors when field is found and validation pass', async () => {
@@ -95,9 +85,7 @@ describe('trigger', () => {
       await result.current.trigger('test');
     });
 
-    await actComponent(async () => {
-      expect(errors).toEqual({});
-    });
+    expect(errors).toEqual({});
   });
 
   it('should trigger multiple fields validation', async () => {
@@ -613,21 +601,17 @@ describe('trigger', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    await waitFor(() => screen.getByText('error'));
+    await screen.findByText('error');
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    expect(screen.queryByText('error')).toBeNull();
+    await waitFor(() =>
+      expect(screen.queryByText('error')).not.toBeInTheDocument(),
+    );
   });
 
   it('should focus on errored input with build in validation', async () => {
@@ -651,11 +635,13 @@ describe('trigger', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+    await waitFor(() => {
+      expect(document.activeElement).toEqual(
+        screen.getByPlaceholderText('test'),
+      );
+    });
   });
 
   it('should focus on errored input with schema validation', async () => {
@@ -685,11 +671,13 @@ describe('trigger', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+    await waitFor(() => {
+      expect(document.activeElement).toEqual(
+        screen.getByPlaceholderText('test'),
+      );
+    });
   });
 
   it('should focus on first errored input', async () => {
@@ -718,11 +706,13 @@ describe('trigger', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    expect(document.activeElement).toEqual(screen.getByPlaceholderText('test'));
+    await waitFor(() => {
+      expect(document.activeElement).toEqual(
+        screen.getByPlaceholderText('test'),
+      );
+    });
   });
 
   it('should return isValid for the entire form', async () => {
@@ -756,9 +746,7 @@ describe('trigger', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     await waitFor(async () => {
       screen.getByText('false');
@@ -810,9 +798,7 @@ describe('trigger', () => {
 
     render(<App />);
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(isValid).toBeFalsy();
   });
@@ -852,9 +838,7 @@ describe('trigger', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(isValid).toBeFalsy();
 
@@ -908,9 +892,7 @@ describe('trigger', () => {
 
     render(<App />);
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     await waitFor(async () => {
       screen.getByText('2');
@@ -955,9 +937,7 @@ describe('trigger', () => {
       screen.getByText('invalid');
     });
 
-    await waitFor(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(count).toEqual(2);
   });

@@ -159,8 +159,8 @@ describe('useFieldArray', () => {
       };
 
       render(<Component />);
-      await waitFor(() => screen.getAllByRole('textbox'));
-      await waitFor(() => screen.getByText('not valid'));
+      await screen.findAllByRole('textbox');
+      await screen.findByText('not valid');
     });
 
     it('should retain input values during unmount', async () => {
@@ -218,13 +218,9 @@ describe('useFieldArray', () => {
         target: { value: '12345' },
       });
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         '12345',
@@ -268,11 +264,9 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await waitFor(() => screen.getByText('valid'));
+      await screen.findByText('valid');
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
       expect(formData).toEqual({
         data: 'test',
@@ -363,11 +357,9 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Append Nest' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Append Nest' }));
 
-      await waitFor(() => screen.getByText('valid'));
+      expect(await screen.findByText('valid')).toBeVisible();
 
       expect(formData).toEqual({
         test: [
@@ -378,9 +370,7 @@ describe('useFieldArray', () => {
         ],
       });
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'delete' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'delete' }));
 
       expect(formData).toEqual({
         test: [],
@@ -436,9 +426,7 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByText('minLength')).toBeNull();
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
       await waitFor(async () => {
         screen.getByText('minLength');
@@ -526,17 +514,11 @@ describe('useFieldArray', () => {
 
       const button = screen.getByRole('button', { name: /append/i });
 
-      await actComponent(async () => {
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      await actComponent(async () => {
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      await actComponent(async () => {
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
       fireEvent.click(screen.getByRole('button', { name: 'setShow' }));
 
@@ -673,18 +655,17 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      const addChild = async () =>
-        await actComponent(async () => screen.getByText('Add child').click());
+      const addChild = () => fireEvent.click(screen.getByText('Add child'));
 
-      await addChild();
+      addChild();
 
       expect(screen.getByText('Remove child')).toBeInTheDocument();
 
-      await actComponent(async () => screen.getByText('Remove child').click());
+      fireEvent.click(screen.getByText('Remove child'));
 
       expect(screen.queryByText('Remove child')).toBeNull();
 
-      await addChild();
+      addChild();
 
       expect(screen.getByText('Remove child')).toBeInTheDocument();
     });
@@ -828,19 +809,13 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'append' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'delete' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'delete' }));
 
-      screen.getByText('Error');
+      expect(await screen.findByText('Error')).toBeVisible();
     });
   });
 
@@ -891,13 +866,9 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'append' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
       expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
     });
@@ -1244,9 +1215,7 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
 
       const input = screen.getByLabelText(
         'test.0.keyValue.0.name',
@@ -1901,11 +1870,11 @@ describe('useFieldArray', () => {
 
       expect(watchValue).toMatchSnapshot();
 
-      actComponent(() => {
+      expect(
         screen.getByText(
           '{"test":[{"yourDetails":{"firstName":["test","test1"],"lastName":["test","test1"]}}]}',
-        );
-      });
+        ),
+      ).toBeVisible();
     });
   });
 
@@ -1942,13 +1911,14 @@ describe('useFieldArray', () => {
       };
 
       render(<Component />);
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
 
-      expect(submitData).toEqual({
-        test: [],
-      });
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() =>
+        expect(submitData).toEqual({
+          test: [],
+        }),
+      );
     });
   });
 
@@ -2060,25 +2030,15 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'insert' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
 
     expect(watchValues).toMatchSnapshot();
   });
@@ -2186,31 +2146,19 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
 
     expect(screen.queryAllByRole('textbox')).toEqual([]);
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Change value' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Change value' }));
 
-    actComponent(() => {
-      expect(screen.queryByRole('textbox')).toBeNull();
-    });
+    expect(screen.queryByRole('textbox')).toBeNull();
 
-    actComponent(() => {
-      expect(screen.queryByRole('textbox')).toBeNull();
-    });
+    expect(screen.queryByRole('textbox')).toBeNull();
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
 
-    actComponent(() => {
-      expect(screen.queryByRole('textbox')).toBeNull();
-    });
+    expect(screen.queryByRole('textbox')).toBeNull();
 
     expect(result).toMatchSnapshot();
   });
@@ -2331,15 +2279,11 @@ describe('useFieldArray', () => {
     fireEvent.click(screen.getByRole('button', { name: 'append' }));
     fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'show' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'show' }));
 
     expect(screen.queryByRole('textbox')).toBeNull();
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'show' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'show' }));
 
     expect(screen.getAllByRole('textbox').length).toEqual(2);
   });
@@ -2391,9 +2335,7 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Append' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Append' }));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -2496,13 +2438,9 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'swap' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'swap' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'append' })[0]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'append' })[0]);
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -2599,18 +2537,14 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'remove1' }));
 
-    actComponent(() => {
-      expect(screen.getAllByRole('textbox').length).toEqual(6);
-    });
+    expect(screen.getAllByRole('textbox').length).toEqual(6);
 
     fireEvent.click(screen.getByRole('button', { name: 'set' }));
 
-    actComponent(() => {
-      expect(screen.getAllByRole('textbox').length).toEqual(7);
-      expect(
-        (screen.getAllByRole('textbox')[6] as HTMLInputElement).value,
-      ).toEqual('1sub-new');
-    });
+    expect(screen.getAllByRole('textbox').length).toEqual(7);
+    expect(
+      (screen.getAllByRole('textbox')[6] as HTMLInputElement).value,
+    ).toEqual('1sub-new');
   });
 
   it('should update field array correctly with async invocation', async () => {
@@ -2676,13 +2610,9 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    actComponent(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'copy' })[0]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'copy' })[0]);
 
-    actComponent(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
 
     expect(controlObj._fields.items.length).toEqual(2);
   });

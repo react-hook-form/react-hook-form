@@ -1517,6 +1517,7 @@ describe('validateField', () => {
     (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
+    // TODO rtr why does it use snapshot?
     expect(
       await validateField(
         {

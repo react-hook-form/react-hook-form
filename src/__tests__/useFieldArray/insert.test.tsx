@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -269,23 +270,15 @@ describe('insert', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /insert/i }));
 
-    expect(errors.test[0]).toBeDefined();
+    await waitFor(() => expect(errors.test[0]).toBeDefined());
     expect(errors.test[1]).toBeUndefined();
     expect(errors.test[2]).toBeDefined();
   });
@@ -325,23 +318,15 @@ describe('insert', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
 
-    expect(errors.test[0]).toBeDefined();
+    await waitFor(() => expect(errors.test[0]).toBeDefined());
     expect(errors.test[1]).toBeUndefined();
     expect(errors.test[2]).toBeUndefined();
     expect(errors.test[3]).toBeDefined();
@@ -777,13 +762,13 @@ describe('insert', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText(
-      '{"test":[{"id":"1234","test":"data"},{"id":"whatever","test":"1234"}]}',
-    );
+    expect(
+      await screen.findByText(
+        '{"test":[{"id":"1234","test":"data"},{"id":"whatever","test":"1234"}]}',
+      ),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -829,10 +814,10 @@ describe('insert', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"1234"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
+    ).toBeVisible();
   });
 });

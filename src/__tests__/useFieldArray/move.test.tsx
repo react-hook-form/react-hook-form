@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -97,11 +91,9 @@ describe('swap', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    expect(errors.test[0]).toBeUndefined();
+    await waitFor(() => expect(errors.test[0]).toBeUndefined());
     expect(errors.test[1]).toBeDefined();
 
     fireEvent.click(screen.getByRole('button', { name: /move/i }));
@@ -389,13 +381,13 @@ describe('swap', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'move' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText(
-      '{"test":[{"id":"4567","test":"data1"},{"id":"1234","test":"data"}]}',
-    );
+    expect(
+      await screen.findByText(
+        '{"test":[{"id":"4567","test":"data1"},{"id":"1234","test":"data"}]}',
+      ),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -456,12 +448,12 @@ describe('swap', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'move' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText(
-      '{"test":[{"id":"whatever1","test":"12341"},{"id":"whatever0","test":"12340"}]}',
-    );
+    expect(
+      await screen.findByText(
+        '{"test":[{"id":"whatever1","test":"12341"},{"id":"whatever0","test":"12340"}]}',
+      ),
+    ).toBeVisible();
   });
 });

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { Control } from '../../types';
 import { useController } from '../../useController';
@@ -80,11 +80,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('This is required');
+        expect(await screen.findByText('This is required')).toBeVisible();
       });
 
       it('should display isValid state', async () => {
@@ -115,11 +113,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('error');
+        expect(await screen.findByText('error')).toBeVisible();
       });
 
       it('should display isTouched state', async () => {
@@ -146,10 +142,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.focus(screen.getByRole('textbox'));
-          fireEvent.blur(screen.getByRole('textbox'));
-        });
+        fireEvent.focus(screen.getByRole('textbox'));
+        fireEvent.blur(screen.getByRole('textbox'));
 
         screen.getByText('touched');
       });
@@ -178,10 +172,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.change(screen.getByRole('textbox'), {
-            target: { value: ' test' },
-          });
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: ' test' },
         });
 
         screen.getByText('dirty');
@@ -251,11 +243,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('This is required');
+        expect(await screen.findByText('This is required')).toBeVisible();
       });
 
       it('should display isValid state', async () => {
@@ -289,11 +279,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('error');
+        expect(await screen.findByText('error')).toBeVisible();
       });
 
       it('should display isTouched state', async () => {
@@ -323,10 +311,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.focus(screen.getAllByRole('textbox')[0]);
-          fireEvent.blur(screen.getAllByRole('textbox')[0]);
-        });
+        fireEvent.focus(screen.getAllByRole('textbox')[0]);
+        fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
         screen.getByText('touched');
       });
@@ -358,10 +344,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.change(screen.getAllByRole('textbox')[0], {
-            target: { value: ' test' },
-          });
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: { value: ' test' },
         });
 
         screen.getByText('dirty');
@@ -428,11 +412,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('This is required');
+        expect(await screen.findByText('This is required')).toBeVisible();
       });
 
       it('should display isValid state', async () => {
@@ -458,11 +440,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('error');
+        expect(await screen.findByText('error')).toBeVisible();
       });
 
       it('should display isTouched state', async () => {
@@ -485,10 +465,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.focus(screen.getByRole('textbox'));
-          fireEvent.blur(screen.getByRole('textbox'));
-        });
+        fireEvent.focus(screen.getByRole('textbox'));
+        fireEvent.blur(screen.getByRole('textbox'));
 
         screen.getByText('touched');
       });
@@ -513,10 +491,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.change(screen.getByRole('textbox'), {
-            target: { value: ' test' },
-          });
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: ' test' },
         });
 
         screen.getByText('dirty');
@@ -574,11 +550,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('This is required');
+        expect(await screen.findByText('This is required')).toBeVisible();
       });
 
       it('should display isValid state', async () => {
@@ -608,11 +582,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        screen.getByText('error');
+        expect(await screen.findByText('error')).toBeVisible();
       });
 
       it('should display isTouched state', async () => {
@@ -638,10 +610,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.focus(screen.getAllByRole('textbox')[0]);
-          fireEvent.blur(screen.getAllByRole('textbox')[0]);
-        });
+        fireEvent.focus(screen.getAllByRole('textbox')[0]);
+        fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
         screen.getByText('touched');
       });
@@ -669,10 +639,8 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        await act(async () => {
-          fireEvent.change(screen.getAllByRole('textbox')[0], {
-            target: { value: ' test' },
-          });
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: { value: ' test' },
         });
 
         screen.getByText('dirty');
@@ -736,10 +704,8 @@ describe('getFieldState', () => {
 
       render(<App />);
 
-      await act(async () => {
-        fireEvent.change(screen.getAllByRole('textbox')[0], {
-          target: { value: ' test' },
-        });
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: { value: ' test' },
       });
 
       screen.getByText('notDirty');

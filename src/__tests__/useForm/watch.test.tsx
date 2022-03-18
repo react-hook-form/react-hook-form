@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
@@ -40,9 +34,7 @@ describe('watch', () => {
 
     screen.getByText('test');
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(screen.queryByText('test')).toBeNull();
   });
@@ -314,30 +306,22 @@ describe('watch', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: '123' },
     });
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
-
-    await actComponent(async () => {
-      fireEvent.change(screen.getAllByRole('textbox')[0], {
-        target: { value: '123' },
-      });
-    });
-
-    await actComponent(async () => {
-      fireEvent.change(screen.getAllByRole('textbox')[1], {
-        target: { value: '456' },
-      });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: '456' },
     });
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should have dirty marked when watch is enabled', () => {
+  it('should have dirty marked when watch is enabled', async () => {
     function Component() {
       const {
         register,
@@ -362,21 +346,17 @@ describe('watch', () => {
 
     screen.getByText('False');
 
-    actComponent(() => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: 'test' },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test' },
     });
 
     screen.getByText('True');
 
-    actComponent(() => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: '' },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '' },
     });
 
-    screen.getByText('False');
+    expect(await screen.findByText('False')).toBeVisible();
   });
 
   it('should return deeply nested field values with defaultValues', async () => {
@@ -404,12 +384,10 @@ describe('watch', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: {
-          value: '1234',
-        },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '1234',
+      },
     });
 
     expect(data).toEqual({

@@ -45,23 +45,17 @@ describe('formState', () => {
         return <input {...register('test')} />;
       };
 
-      await actComponent(async () => {
-        render(<Component />);
-      });
+      render(<Component />);
 
       expect(isValidValue).toBeFalsy();
 
-      await actComponent(async () => {
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: {
-            value: 'test',
-          },
-        });
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
       });
 
-      await actComponent(async () => {
-        expect(isValidValue).toBeTruthy();
-      });
+      await waitFor(() => expect(isValidValue).toBeTruthy());
     });
 
     it('should return true for onBlur mode by default', async () => {
@@ -205,45 +199,37 @@ describe('formState', () => {
 
       screen.getByText('invalid');
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByTestId('select'), {
-          target: {
-            value: 'test',
-          },
-        });
+      fireEvent.change(screen.getByTestId('select'), {
+        target: {
+          value: 'test',
+        },
       });
 
-      await waitFor(() => screen.getByText('valid'));
+      await screen.findByText('valid');
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByTestId('select'), {
-          target: {
-            value: 'test1',
-          },
-        });
+      fireEvent.change(screen.getByTestId('select'), {
+        target: {
+          value: 'test1',
+        },
       });
 
-      await waitFor(() => screen.getByText('invalid'));
+      await screen.findByText('invalid');
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByTestId('select'), {
-          target: {
-            value: 'test',
-          },
-        });
+      fireEvent.change(screen.getByTestId('select'), {
+        target: {
+          value: 'test',
+        },
       });
 
-      await waitFor(() => screen.getByText('valid'));
+      await screen.findByText('valid');
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByTestId('select'), {
-          target: {
-            value: 'test1',
-          },
-        });
+      fireEvent.change(screen.getByTestId('select'), {
+        target: {
+          value: 'test1',
+        },
       });
 
-      await waitFor(() => screen.getByText('invalid'));
+      await screen.findByText('invalid');
     });
   });
 
@@ -305,7 +291,7 @@ describe('formState', () => {
 
       render(<Component />);
 
-      await waitFor(async () => screen.getByText('valid'));
+      await screen.findByText('valid');
     });
 
     it('should render isValid as false with reset at useEffect with valid data', async () => {
@@ -341,7 +327,7 @@ describe('formState', () => {
 
       render(<Component />);
 
-      await waitFor(async () => screen.getByText('nope'));
+      await screen.findByText('nope');
     });
   });
 
@@ -378,11 +364,9 @@ describe('formState', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    screen.getByText('isSubmitted');
+    expect(await screen.findByText('isSubmitted')).toBeVisible();
     screen.getByText('isNotSubmitSuccessful');
   });
 
@@ -433,17 +417,15 @@ describe('formState', () => {
       target: { value: 'test' },
     });
 
-    screen.getByText('isValidating: true');
+    expect(await screen.findByText('isValidating: true')).toBeVisible();
     screen.getByText('stateValidation: true');
 
-    await actComponent(async () => {
+    actComponent(() => {
       jest.runAllTimers();
     });
 
-    await actComponent(async () => {
-      screen.getByText('isValidating: false');
-      screen.getByText('stateValidation: false');
-    });
+    expect(await screen.findByText('isValidating: false')).toBeVisible();
+    screen.getByText('stateValidation: false');
   });
 
   it('should update correct isValid formState with dynamic fields', async () => {
@@ -679,9 +661,7 @@ describe('formState', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.blur(screen.getByRole('textbox'));
-    });
+    fireEvent.blur(screen.getByRole('textbox'));
 
     expect(dirtyFieldsState).toEqual({});
   });
@@ -715,19 +695,15 @@ describe('formState', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '123456',
-          },
-        });
-
-        expect(screen.queryByText(message)).toBeNull();
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123456',
+        },
       });
 
-      actComponent(() => {
-        jest.advanceTimersByTime(500);
-      });
+      expect(screen.queryByText(message)).toBeNull();
+
+      jest.advanceTimersByTime(500);
 
       await waitFor(async () => {
         screen.getByText(message);
@@ -762,31 +738,23 @@ describe('formState', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '123',
-          },
-        });
-
-        expect(screen.queryByText(message)).toBeNull();
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123',
+        },
       });
 
-      await actComponent(async () => {
-        await waitFor(() => screen.getByText('valid'));
+      expect(screen.queryByText(message)).toBeNull();
+
+      await screen.findByText('valid');
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '',
+        },
       });
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '',
-          },
-        });
-      });
-
-      await actComponent(async () => {
-        await waitFor(() => screen.getByText('inValid'));
-      });
+      await screen.findByText('inValid');
 
       expect(screen.queryByText(message)).toBeNull();
 
@@ -829,19 +797,15 @@ describe('formState', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '123456',
-          },
-        });
-
-        expect(screen.queryByText(message)).toBeNull();
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123456',
+        },
       });
 
-      actComponent(() => {
-        jest.advanceTimersByTime(500);
-      });
+      expect(screen.queryByText(message)).toBeNull();
+
+      jest.advanceTimersByTime(500);
 
       await waitFor(async () => {
         screen.getByText(message);
@@ -874,31 +838,27 @@ describe('formState', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '123456',
-          },
-        });
-
-        expect(screen.queryByText(message)).toBeNull();
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123456',
+        },
       });
 
-      await actComponent(async () => {
-        fireEvent.change(screen.getByRole('textbox'), {
-          target: {
-            value: '123',
-          },
-        });
+      await waitFor(() => expect(screen.queryByText(message)).toBeNull());
 
-        expect(screen.queryByText(message)).toBeNull();
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123',
+        },
       });
+
+      expect(screen.queryByText(message)).toBeNull();
 
       actComponent(() => {
         jest.advanceTimersByTime(500);
       });
 
-      expect(screen.queryByText(message)).toBeNull();
+      await waitFor(() => expect(screen.queryByText(message)).toBeNull());
     });
   });
 });

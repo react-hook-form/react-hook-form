@@ -67,7 +67,7 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => screen.getByText('dirty'));
+    await screen.findByText('dirty');
 
     expect(dirtyInputs).toEqual({
       test: [{ value: true }, { value: false }, { value: false }],
@@ -115,9 +115,7 @@ describe('update', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'update' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
     expect(isDirtyValue).toBeTruthy();
     expect(dirtyValue).toEqual({
@@ -510,11 +508,11 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"1234"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -560,11 +558,11 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"1234"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
+    ).toBeVisible();
   });
 
   it('should not update errors state', async () => {

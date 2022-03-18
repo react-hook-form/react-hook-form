@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -579,11 +573,11 @@ describe('setValue', () => {
         screen.getByText('test');
       });
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'update' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-      expect(screen.queryByText('test')).toBeNull();
+      await waitFor(() =>
+        expect(screen.queryByText('test')).not.toBeInTheDocument(),
+      );
     });
 
     it('should not be called trigger method if options is empty', async () => {
@@ -860,9 +854,7 @@ describe('setValue', () => {
         </React.StrictMode>,
       );
 
-      actComponent(() => {
-        jest.advanceTimersByTime(10000);
-      });
+      jest.advanceTimersByTime(10000);
 
       await waitFor(async () => {
         screen.getByText('test');
@@ -871,7 +863,7 @@ describe('setValue', () => {
   });
 
   it('should set hidden input value correctly and reflect on the submission data', async () => {
-    let submitData = undefined;
+    let submitData: Record<string, string> | undefined = undefined;
 
     const Component = () => {
       const { register, handleSubmit, setValue } = useForm<{
@@ -901,17 +893,15 @@ describe('setValue', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'change' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'change' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    expect(submitData).toEqual({
-      test: 'changed',
-    });
+    await waitFor(() =>
+      expect(submitData).toEqual({
+        test: 'changed',
+      }),
+    );
   });
 
   it('should validate the input and return correct isValid formState', async () => {
@@ -948,7 +938,7 @@ describe('setValue', () => {
   });
 
   it('should setValue with valueAs', async () => {
-    let result;
+    let result: Record<string, string>;
 
     function App() {
       const { register, handleSubmit, setValue } = useForm();
@@ -974,13 +964,13 @@ describe('setValue', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    expect(result).toEqual({
-      setStringDate: new Date('2021-04-23'),
-    });
+    await waitFor(() =>
+      expect(result).toEqual({
+        setStringDate: new Date('2021-04-23'),
+      }),
+    );
   });
 
   it('should set value for field array name correctly', () => {
@@ -1079,13 +1069,9 @@ describe('setValue', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(fieldsValue.length).toEqual(1);
   });
@@ -1172,9 +1158,7 @@ describe('setValue', () => {
 
       render(<App />);
 
-      actComponent(() => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
       expect(result).toEqual({
         user: null,
@@ -1210,9 +1194,7 @@ describe('setValue', () => {
 
       render(<App />);
 
-      actComponent(() => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
       expect(result).toEqual({
         user: null,
@@ -1309,9 +1291,7 @@ describe('setValue', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValue).toMatchSnapshot();
   });

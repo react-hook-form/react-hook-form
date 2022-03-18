@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
 
@@ -104,21 +98,15 @@ describe('resolver', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(async () => {
       screen.getByText('Error');
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(async () => {
       screen.getByText('Submitted');
@@ -152,9 +140,7 @@ describe('resolver', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(test.mock.calls[0][2]).toEqual(
       expect.objectContaining({ shouldUseNativeValidation: true }),
