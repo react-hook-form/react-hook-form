@@ -544,6 +544,7 @@ export function createFormControl<
             fieldReference.refs.length > 1
               ? fieldReference.refs.forEach(
                   (checkboxRef) =>
+                    !checkboxRef.disabled &&
                     (checkboxRef.checked = Array.isArray(fieldValue)
                       ? !!(fieldValue as []).find(
                           (data: string) => data === checkboxRef.value,
