@@ -1,0 +1,1 @@
+{"version":3,"file":"useFormState.d.ts","sourceRoot":"","sources":["../src/useFormState.ts"],"names":[],"mappings":"AAKA,OAAO,EACL,WAAW,EAEX,iBAAiB,EACjB,kBAAkB,EACnB,MAAM,SAAS,CAAC;AAIjB;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GA6BG;AACH,iBAAS,YAAY,CAAC,YAAY,SAAS,WAAW,GAAG,WAAW,EAClE,KAAK,CAAC,EAAE,iBAAiB,CAAC,YAAY,CAAC,GACtC,kBAAkB,CAAC,YAAY,CAAC,CAoDlC;AAED,OAAO,EAAE,YAAY,EAAE,CAAC"}

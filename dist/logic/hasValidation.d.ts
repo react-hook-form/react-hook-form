@@ -1,0 +1,4 @@
+import { Field } from '../types';
+declare const _default: (options: Field['_f']) => string | number | boolean | import("../types").ValidationValueMessage<boolean> | import("../types").ValidationValueMessage<string | number> | import("../types").ValidationRule<RegExp> | import("../types").Validate<any> | Record<string, import("../types").Validate<any>> | undefined;
+export default _default;
+//# sourceMappingURL=hasValidation.d.ts.map

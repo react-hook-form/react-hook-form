@@ -35,7 +35,6 @@ example/build/
 
 .DS_Store
 /lib
-/dist
 /temp
 .idea/
 .rpt2_cache
