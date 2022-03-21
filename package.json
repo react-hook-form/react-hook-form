@@ -140,5 +140,8 @@
   "engines": {
     "node": ">=12.22.0"
   },
-  "packageManager": "yarn@1.22.15"
+  "packageManager": "yarn@1.22.15",
+  "dependencies": {
+    "core-js-pure": "^3.21.1"
+  }
 }
