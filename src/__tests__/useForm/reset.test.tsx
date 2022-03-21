@@ -1009,10 +1009,12 @@ describe('reset', () => {
       target: { value: '3' },
     });
 
-    screen.getByText(/yes/i);
-    screen.getByText(
-      `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
-    );
+    expect(screen.getByText(/yes/i)).toBeVisible();
+    expect(
+      screen.getByText(
+        `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
+      ),
+    ).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 

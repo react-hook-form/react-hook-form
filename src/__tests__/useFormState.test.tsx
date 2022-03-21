@@ -53,12 +53,12 @@ describe('useFormState', () => {
       },
     });
 
-    screen.getByText('isDirty');
-    screen.getByText('dirty field');
+    expect(screen.getByText('isDirty')).toBeVisible();
+    expect(screen.getByText('dirty field')).toBeVisible();
     expect(count).toEqual(1);
 
     fireEvent.blur(screen.getByLabelText('test'));
-    screen.getByText('isTouched');
+    expect(screen.getByText('isTouched')).toBeVisible();
     expect(count).toEqual(1);
   });
 
@@ -100,7 +100,7 @@ describe('useFormState', () => {
     });
 
     expect(await screen.findByText('error')).toBeVisible();
-    screen.getByText('no');
+    expect(screen.getByText('no')).toBeVisible();
 
     fireEvent.input(screen.getByLabelText('test'), {
       target: {
@@ -109,7 +109,7 @@ describe('useFormState', () => {
     });
 
     expect(await screen.findByText('valid')).toBeVisible();
-    screen.getByText('yes');
+    expect(screen.getByText('yes')).toBeVisible();
 
     expect(count).toEqual(1);
   });
@@ -175,14 +175,14 @@ describe('useFormState', () => {
     });
 
     expect(await screen.findByText('hasDirtyField')).toBeVisible();
-    screen.getByText('isDirty');
+    expect(screen.getByText('isDirty')).toBeVisible();
 
     expect(count).toEqual(1);
     expect(testCount).toEqual(2);
     expect(test1Count).toEqual(1);
 
     fireEvent.blur(screen.getByLabelText('test'));
-    screen.getByText('isTouched');
+    expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(count).toEqual(1);
     expect(testCount).toEqual(3);
@@ -232,7 +232,7 @@ describe('useFormState', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(await screen.findByText('isSubmitted')).toBeVisible();
-    screen.getByText('1');
+    expect(screen.getByText('1')).toBeVisible();
 
     expect(count).toEqual(1);
   });

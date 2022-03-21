@@ -807,7 +807,7 @@ describe('setValue', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      screen.getByText('test');
+      expect(screen.getByText('test')).toBeVisible();
     });
   });
 
@@ -1350,7 +1350,7 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    screen.getByText('dirty');
-    screen.getByText('touched');
+    expect(screen.getByText('dirty')).toBeVisible();
+    expect(screen.getByText('touched')).toBeVisible();
   });
 });

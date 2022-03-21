@@ -193,13 +193,13 @@ describe('useForm', () => {
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
       expect(await screen.findByText('First name is required.')).toBeVisible();
-      screen.getByText('Last name is required.');
+      expect(screen.getByText('Last name is required.')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      screen.getByText('Last name is required.');
+      expect(screen.getByText('Last name is required.')).toBeVisible();
 
       await waitForElementToBeRemoved(
         screen.queryByText('First name is required.'),

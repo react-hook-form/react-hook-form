@@ -316,6 +316,8 @@ describe('replace', () => {
     fireEvent.click(screen.getByRole('button', { name: 'replace' }));
     fireEvent.click(screen.getByRole('button', { name: 'updateState' }));
 
-    screen.getByText('{"fieldArray":[{"firstName":true}]}');
+    expect(
+      screen.getByText('{"fieldArray":[{"firstName":true}]}'),
+    ).toBeVisible();
   });
 });

@@ -266,7 +266,7 @@ describe('useWatch', () => {
       },
     });
 
-    screen.getByText('test');
+    expect(screen.getByText('test')).toBeVisible();
   });
 
   it('should return root object subscription', () => {
@@ -306,7 +306,7 @@ describe('useWatch', () => {
       },
     });
 
-    screen.getByText('345');
+    expect(screen.getByText('345')).toBeVisible();
   });
 
   describe('when disabled prop is used', () => {
@@ -365,7 +365,7 @@ describe('useWatch', () => {
         },
       });
 
-      screen.getByText('test');
+      expect(screen.getByText('test')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -375,7 +375,7 @@ describe('useWatch', () => {
         },
       });
 
-      screen.getByText('what12345');
+      expect(screen.getByText('what12345')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -385,7 +385,7 @@ describe('useWatch', () => {
         },
       });
 
-      screen.getByText('what12345');
+      expect(screen.getByText('what12345')).toBeVisible();
     });
 
     it('should be able to toggle the subscription and started with false', async () => {
@@ -443,7 +443,7 @@ describe('useWatch', () => {
         },
       });
 
-      screen.getByText('what');
+      expect(screen.getByText('what')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -453,7 +453,7 @@ describe('useWatch', () => {
         },
       });
 
-      screen.getByText('what');
+      expect(screen.getByText('what')).toBeVisible();
     });
   });
 
@@ -665,7 +665,7 @@ describe('useWatch', () => {
         },
       });
 
-      screen.getByText('test');
+      expect(screen.getByText('test')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -709,7 +709,7 @@ describe('useWatch', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      screen.getByText('yes');
+      expect(screen.getByText('yes')).toBeVisible();
     });
   });
 
@@ -1051,13 +1051,13 @@ describe('useWatch', () => {
 
       render(<Component />);
 
-      screen.getByText('firstName');
+      expect(screen.getByText('firstName')).toBeVisible();
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '123' },
       });
 
-      screen.getByText('123');
+      expect(screen.getByText('123')).toBeVisible();
     });
 
     it('should fallback to inline defaultValue with reset API', () => {
@@ -1078,7 +1078,7 @@ describe('useWatch', () => {
 
       render(<App />);
 
-      screen.getByText('yes');
+      expect(screen.getByText('yes')).toBeVisible();
     });
 
     describe('with useFieldArray', () => {
@@ -1328,11 +1328,11 @@ describe('useWatch', () => {
 
       render(<Form />);
 
-      screen.getByText('test');
+      expect(screen.getByText('test')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
-      screen.getByText('no');
+      expect(screen.getByText('no')).toBeVisible();
     });
   });
 
@@ -1428,7 +1428,7 @@ describe('useWatch', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      screen.getByText('333');
+      expect(screen.getByText('333')).toBeVisible();
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         '333',

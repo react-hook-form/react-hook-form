@@ -191,7 +191,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      screen.getByText('invalid');
+      expect(screen.getByText('invalid')).toBeVisible();
 
       fireEvent.change(screen.getByTestId('select'), {
         target: {
@@ -361,7 +361,7 @@ describe('formState', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(await screen.findByText('isSubmitted')).toBeVisible();
-    screen.getByText('isNotSubmitSuccessful');
+    expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
   });
 
   it('should update isValidating to true when other validation still running', async () => {
@@ -412,14 +412,14 @@ describe('formState', () => {
     });
 
     expect(await screen.findByText('isValidating: true')).toBeVisible();
-    screen.getByText('stateValidation: true');
+    expect(screen.getByText('stateValidation: true')).toBeVisible();
 
     actComponent(() => {
       jest.runAllTimers();
     });
 
     expect(await screen.findByText('isValidating: false')).toBeVisible();
-    screen.getByText('stateValidation: false');
+    expect(screen.getByText('stateValidation: false')).toBeVisible();
   });
 
   it('should update correct isValid formState with dynamic fields', async () => {

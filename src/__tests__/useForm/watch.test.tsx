@@ -32,7 +32,7 @@ describe('watch', () => {
       },
     });
 
-    screen.getByText('test');
+    expect(screen.getByText('test')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -344,13 +344,13 @@ describe('watch', () => {
 
     render(<Component />);
 
-    screen.getByText('False');
+    expect(screen.getByText('False')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'test' },
     });
 
-    screen.getByText('True');
+    expect(screen.getByText('True')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' },

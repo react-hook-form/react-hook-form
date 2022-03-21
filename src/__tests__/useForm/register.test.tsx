@@ -82,7 +82,7 @@ describe('register', () => {
 
       expect(screen.getByRole('alert').textContent).toBe('false');
 
-      screen.getByText('test');
+      expect(screen.getByText('test')).toBeVisible();
     },
   );
 
@@ -239,7 +239,7 @@ describe('register', () => {
 
     render(<Component />);
 
-    screen.getByText('false');
+    expect(screen.getByText('false')).toBeVisible();
 
     fireEvent.input(screen.getByPlaceholderText('inputA'), {
       target: { value: 'test' },
@@ -1050,7 +1050,7 @@ describe('register', () => {
       fireEvent.click(screen.getByRole('button'));
 
       expect(await screen.findByText('test error')).toBeVisible();
-      screen.getByText('test1 error');
+      expect(screen.getByText('test1 error')).toBeVisible();
 
       fireEvent.change(screen.getAllByRole('textbox')[0], {
         target: {
@@ -1135,7 +1135,7 @@ describe('register', () => {
       fireEvent.click(screen.getByRole('button'));
 
       expect(await screen.findByText('test error')).toBeVisible();
-      screen.getByText('test1 error');
+      expect(screen.getByText('test1 error')).toBeVisible();
 
       fireEvent.change(screen.getAllByRole('textbox')[0], {
         target: {

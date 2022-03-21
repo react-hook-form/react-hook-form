@@ -145,7 +145,7 @@ describe('getFieldState', () => {
         fireEvent.focus(screen.getByRole('textbox'));
         fireEvent.blur(screen.getByRole('textbox'));
 
-        screen.getByText('touched');
+        expect(screen.getByText('touched')).toBeVisible();
       });
 
       it('should display isDirty state', async () => {
@@ -176,7 +176,7 @@ describe('getFieldState', () => {
           target: { value: ' test' },
         });
 
-        screen.getByText('dirty');
+        expect(screen.getByText('dirty')).toBeVisible();
       });
 
       it('should not have error', () => {
@@ -207,7 +207,7 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        screen.getByText('error undefined');
+        expect(screen.getByText('error undefined')).toBeVisible();
       });
     });
 
@@ -314,7 +314,7 @@ describe('getFieldState', () => {
         fireEvent.focus(screen.getAllByRole('textbox')[0]);
         fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-        screen.getByText('touched');
+        expect(screen.getByText('touched')).toBeVisible();
       });
 
       it('should display isDirty state', async () => {
@@ -348,7 +348,7 @@ describe('getFieldState', () => {
           target: { value: ' test' },
         });
 
-        screen.getByText('dirty');
+        expect(screen.getByText('dirty')).toBeVisible();
       });
 
       it('should not have error', () => {
@@ -382,7 +382,7 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        screen.getByText('error undefined');
+        expect(screen.getByText('error undefined')).toBeVisible();
       });
     });
   });
@@ -468,7 +468,7 @@ describe('getFieldState', () => {
         fireEvent.focus(screen.getByRole('textbox'));
         fireEvent.blur(screen.getByRole('textbox'));
 
-        screen.getByText('touched');
+        expect(screen.getByText('touched')).toBeVisible();
       });
 
       it('should display isDirty state', async () => {
@@ -495,7 +495,7 @@ describe('getFieldState', () => {
           target: { value: ' test' },
         });
 
-        screen.getByText('dirty');
+        expect(screen.getByText('dirty')).toBeVisible();
       });
 
       it('should not have error', () => {
@@ -518,7 +518,7 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        screen.getByText('error undefined');
+        expect(screen.getByText('error undefined')).toBeVisible();
       });
     });
 
@@ -613,7 +613,7 @@ describe('getFieldState', () => {
         fireEvent.focus(screen.getAllByRole('textbox')[0]);
         fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-        screen.getByText('touched');
+        expect(screen.getByText('touched')).toBeVisible();
       });
 
       it('should display isDirty state', async () => {
@@ -643,7 +643,7 @@ describe('getFieldState', () => {
           target: { value: ' test' },
         });
 
-        screen.getByText('dirty');
+        expect(screen.getByText('dirty')).toBeVisible();
       });
 
       it('should not have error', () => {
@@ -669,7 +669,7 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        screen.getByText('error undefined');
+        expect(screen.getByText('error undefined')).toBeVisible();
       });
     });
   });
@@ -708,9 +708,9 @@ describe('getFieldState', () => {
         target: { value: ' test' },
       });
 
-      screen.getByText('notDirty');
-      screen.getByText('notTouched');
-      screen.getByText('error undefined');
+      expect(screen.getByText('notDirty')).toBeVisible();
+      expect(screen.getByText('notTouched')).toBeVisible();
+      expect(screen.getByText('error undefined')).toBeVisible();
     });
   });
 });

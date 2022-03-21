@@ -919,7 +919,7 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    screen.getByText('false');
+    expect(screen.getByText('false')).toBeVisible();
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -970,13 +970,13 @@ describe('Controller', () => {
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
 
-    screen.getByText('{"test":true}');
-    screen.getByText('true');
+    expect(screen.getByText('{"test":true}')).toBeVisible();
+    expect(screen.getByText('true')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
 
-    screen.getByText('{}');
-    screen.getByText('false');
+    expect(screen.getByText('{}')).toBeVisible();
+    expect(screen.getByText('false')).toBeVisible();
   });
 
   it('should remove input value and reference with Controller and set shouldUnregister: true', () => {

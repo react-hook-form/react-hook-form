@@ -91,11 +91,11 @@ describe('useController', () => {
       },
     });
 
-    screen.getByText('isDirty');
+    expect(screen.getByText('isDirty')).toBeVisible();
 
     fireEvent.blur(screen.getAllByRole('textbox')[1]);
 
-    screen.getByText('isTouched');
+    expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(renderCounter).toEqual([3, 3]);
 
@@ -264,8 +264,8 @@ describe('useController', () => {
 
     expect(counter).toEqual(1);
 
-    screen.getByText('dirty');
-    screen.getByText('touched');
+    expect(screen.getByText('dirty')).toBeVisible();
+    expect(screen.getByText('touched')).toBeVisible();
   });
 
   it('should not overwrite defaultValues with defaultValue', () => {

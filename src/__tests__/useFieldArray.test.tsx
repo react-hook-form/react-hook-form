@@ -757,7 +757,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      screen.getByRole('textbox');
+      expect(screen.getByRole('textbox')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
