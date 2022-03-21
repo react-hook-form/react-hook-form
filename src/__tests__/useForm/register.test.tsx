@@ -1065,7 +1065,7 @@ describe('register', () => {
       });
 
       await waitForElementToBeRemoved(screen.queryByText('test error'));
-      expect(screen.queryByText('test1 error')).toBeNull();
+      expect(screen.queryByText('test1 error')).not.toBeInTheDocument();
     });
 
     it('should send valueAs fields to resolver', async () => {
@@ -1150,7 +1150,7 @@ describe('register', () => {
       });
 
       await waitForElementToBeRemoved(screen.queryByText('test error'));
-      expect(screen.queryByText('test1 error')).toBeNull();
+      expect(screen.queryByText('test1 error')).not.toBeInTheDocument();
     });
 
     it('should still validate with an error existed', async () => {

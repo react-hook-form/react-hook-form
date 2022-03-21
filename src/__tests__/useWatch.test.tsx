@@ -669,7 +669,7 @@ describe('useWatch', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      expect(screen.queryByText('test')).toBeNull();
+      expect(screen.queryByText('test')).not.toBeInTheDocument();
     });
 
     it('should return undefined when input get unregistered', () => {

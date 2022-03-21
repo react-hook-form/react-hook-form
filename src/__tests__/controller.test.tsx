@@ -46,10 +46,10 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
-    expect(input).toBeInTheDocument();
-    expect(input?.name).toBe('test');
+    expect(input).toBeVisible();
+    expect(input.name).toBe('test');
   });
 
   it('should render correctly with as with component', () => {
@@ -67,9 +67,9 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
-    expect(input).toBeInTheDocument();
+    expect(input).toBeVisible();
     expect(input?.name).toBe('test');
   });
 
@@ -666,7 +666,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(screen.queryByText('Input is invalid.')).toBeNull();
+    expect(screen.queryByText('Input is invalid.')).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -701,7 +701,7 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    expect(screen.queryByText('Input is touched.')).toBeNull();
+    expect(screen.queryByText('Input is touched.')).not.toBeInTheDocument();
 
     fireEvent.blur(screen.getByRole('textbox'));
 
@@ -732,7 +732,7 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    expect(screen.queryByText('Input is dirty.')).toBeNull();
+    expect(screen.queryByText('Input is dirty.')).not.toBeInTheDocument();
 
     const input = screen.getByRole('textbox');
 

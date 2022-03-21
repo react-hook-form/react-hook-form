@@ -503,7 +503,7 @@ describe('useFormState', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    expect(screen.queryByText('error')).toBeNull();
+    expect(screen.queryByText('error')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
@@ -596,7 +596,7 @@ describe('useFormState', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(screen.queryByText('touched')).toBeNull();
+    expect(screen.queryByText('touched')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -604,6 +604,6 @@ describe('useFormState', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    screen.queryByText('touched');
+    expect(screen.getByText('touched')).toBeVisible();
   });
 });

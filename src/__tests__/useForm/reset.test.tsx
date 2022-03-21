@@ -249,7 +249,7 @@ describe('reset', () => {
       },
     });
 
-    expect(screen.queryByText('dirty')).toBeNull();
+    expect(screen.queryByText('dirty')).not.toBeInTheDocument();
   });
 
   it('should update dirty and dirtyFields when keepDefaultValues and updatedValues is provided', async () => {

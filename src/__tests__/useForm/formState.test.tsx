@@ -675,7 +675,7 @@ describe('formState', () => {
         },
       });
 
-      expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       jest.advanceTimersByTime(500);
 
@@ -716,7 +716,7 @@ describe('formState', () => {
         },
       });
 
-      expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       expect(await screen.findByText('valid')).toBeVisible();
 
@@ -728,7 +728,7 @@ describe('formState', () => {
 
       expect(await screen.findByText('inValid')).toBeVisible();
 
-      expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       actComponent(() => {
         jest.advanceTimersByTime(500);
@@ -773,7 +773,7 @@ describe('formState', () => {
         },
       });
 
-      expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       jest.advanceTimersByTime(500);
 
@@ -812,7 +812,9 @@ describe('formState', () => {
         },
       });
 
-      await waitFor(() => expect(screen.queryByText(message)).toBeNull());
+      await waitFor(() =>
+        expect(screen.queryByText(message)).not.toBeInTheDocument(),
+      );
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
@@ -820,13 +822,15 @@ describe('formState', () => {
         },
       });
 
-      expect(screen.queryByText(message)).toBeNull();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       actComponent(() => {
         jest.advanceTimersByTime(500);
       });
 
-      await waitFor(() => expect(screen.queryByText(message)).toBeNull());
+      await waitFor(() =>
+        expect(screen.queryByText(message)).not.toBeInTheDocument(),
+      );
     });
   });
 });

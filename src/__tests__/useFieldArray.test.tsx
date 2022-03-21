@@ -111,7 +111,7 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
       expect(screen.getAllByRole('textbox').length).toEqual(1);
       fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-      expect(screen.queryByRole('textbox')).toBeNull();
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
       fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
       expect(screen.getAllByRole('textbox').length).toEqual(1);
     });
@@ -425,7 +425,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      expect(screen.queryByText('minLength')).toBeNull();
+      expect(screen.queryByText('minLength')).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -479,7 +479,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      expect(screen.queryByText('minLength')).toBeNull();
+      expect(screen.queryByText('minLength')).not.toBeInTheDocument();
     });
   });
 
@@ -662,7 +662,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByText('Remove child'));
 
-      expect(screen.queryByText('Remove child')).toBeNull();
+      expect(screen.queryByText('Remove child')).not.toBeInTheDocument();
 
       addChild();
 
@@ -761,7 +761,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      expect(screen.queryByRole('textbox')).toBeNull();
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     });
   });
 
@@ -2151,13 +2151,13 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Change value' }));
 
-    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
-    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
 
-    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
     expect(result).toMatchSnapshot();
   });
@@ -2280,7 +2280,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'show' }));
 
-    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'show' }));
 

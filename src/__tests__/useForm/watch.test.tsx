@@ -36,7 +36,7 @@ describe('watch', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.queryByText('test')).toBeNull();
+    expect(screen.queryByText('test')).not.toBeInTheDocument();
   });
 
   it('should watch individual input', async () => {
