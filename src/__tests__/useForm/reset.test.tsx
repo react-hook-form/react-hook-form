@@ -456,15 +456,16 @@ describe('reset', () => {
 
     render(<Component />);
 
-    screen.getByRole('button', { name: 'reset' }).click();
+    const resetButton = screen.getByRole('button', { name: 'reset' });
+    const submitButton = screen.getByRole('button', { name: 'submit' });
 
-    screen.getByRole('button', { name: 'submit' }).click();
+    fireEvent.click(resetButton);
+    fireEvent.click(submitButton);
 
     await waitFor(() => expect(data).toEqual({}));
 
-    screen.getByRole('button', { name: 'reset with value' }).click();
-
-    screen.getByRole('button', { name: 'submit' }).click();
+    fireEvent.click(screen.getByRole('button', { name: 'reset with value' }));
+    fireEvent.click(submitButton);
 
     await waitFor(() =>
       expect(data).toEqual({

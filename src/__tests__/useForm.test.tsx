@@ -1219,13 +1219,15 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      screen.getByRole('textbox').focus();
+      const input = screen.getByRole('textbox');
 
-      fireEvent.blur(screen.getByRole('textbox'));
+      fireEvent.focus(input);
+
+      fireEvent.blur(input);
 
       expect(await screen.findByText('This is required.')).toBeVisible();
 
-      fireEvent.input(screen.getByRole('textbox'), {
+      fireEvent.input(input, {
         target: {
           value: 'test',
         },
@@ -1235,7 +1237,7 @@ describe('useForm', () => {
         expect(screen.queryByText('This is required.')).not.toBeInTheDocument(),
       );
 
-      fireEvent.input(screen.getByRole('textbox'), {
+      fireEvent.input(input, {
         target: {
           value: '',
         },
@@ -1268,13 +1270,15 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      screen.getByRole('textbox').focus();
+      const input = screen.getByRole('textbox');
 
-      fireEvent.focusOut(screen.getByRole('textbox'));
+      fireEvent.focus(input);
+
+      fireEvent.focusOut(input);
 
       expect(await screen.findByText('This is required.')).toBeVisible();
 
-      fireEvent.input(screen.getByRole('textbox'), {
+      fireEvent.input(input, {
         target: {
           value: 'test',
         },
@@ -1284,7 +1288,7 @@ describe('useForm', () => {
         expect(screen.queryByText('This is required.')).not.toBeInTheDocument(),
       );
 
-      fireEvent.input(screen.getByRole('textbox'), {
+      fireEvent.input(input, {
         target: {
           value: '',
         },
@@ -1487,7 +1491,7 @@ describe('useForm', () => {
 
       render(<Toggle />);
 
-      const toggle = () => screen.getByText('Toggle').click();
+      const toggle = () => fireEvent.click(screen.getByText('Toggle'));
 
       toggle();
 
