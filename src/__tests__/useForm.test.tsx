@@ -972,9 +972,7 @@ describe('useForm', () => {
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
 
-        await waitFor(() => {
-          screen.getByText('invalid');
-        });
+        expect(await screen.findByText('invalid')).toBeVisible();
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {

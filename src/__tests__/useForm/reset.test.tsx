@@ -293,10 +293,8 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      screen.getByText('dirty');
-      screen.getByText('{"firstName":true}');
-    });
+    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(screen.getByText('{"firstName":true}')).toBeVisible();
   });
 
   it('should not reset if keepStateOption is specified', async () => {
@@ -399,15 +397,11 @@ describe('reset', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('invalid');
-    });
+    expect(await screen.findByText('invalid')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      screen.getByText('invalid');
-    });
+    expect(await screen.findByText('invalid')).toBeVisible();
   });
 
   it('should reset field array fine with empty value', async () => {
@@ -825,9 +819,7 @@ describe('reset', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('false');
-    });
+    expect(await screen.findByText('false')).toBeVisible();
 
     expect(mounted).toEqual([false, false, true]);
   });
@@ -871,15 +863,15 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      expect(
-        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
-      ).toEqual('changed1');
-      expect(
-        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
-      ).toEqual('changed2');
-      screen.getByText('{"test":"test","test1":"test1"}');
-    });
+    expect(
+      await screen.findByText('{"test":"test","test1":"test1"}'),
+    ).toBeVisible();
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('changed1');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('changed2');
   });
 
   it('should reset field array async', () => {

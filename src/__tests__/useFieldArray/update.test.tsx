@@ -67,7 +67,7 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await screen.findByText('dirty');
+    expect(await screen.findByText('dirty')).toBeVisible();
 
     expect(dirtyInputs).toEqual({
       test: [{ value: true }, { value: false }, { value: false }],
@@ -617,14 +617,10 @@ describe('update', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
   });
 });

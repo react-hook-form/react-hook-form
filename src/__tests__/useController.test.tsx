@@ -508,9 +508,9 @@ describe('useController', () => {
 
     expect(true).toEqual(true);
 
-    await waitFor(() => {
-      screen.getByText('{"test":{"deep":[{"test":"0","test1":"1"}]}}');
-    });
+    expect(
+      await screen.findByText('{"test":{"deep":[{"test":"0","test1":"1"}]}}'),
+    ).toBeVisible();
   });
 
   it('should trigger extra re-render and update latest value when setValue called during mount', async () => {
@@ -548,9 +548,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('expected value');
-    });
+    expect(await screen.findByText('expected value')).toBeVisible();
   });
 
   it('should remount with input with current formValue', () => {

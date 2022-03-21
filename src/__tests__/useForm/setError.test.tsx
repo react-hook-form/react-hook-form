@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { DeepMap, ErrorOption, FieldError } from '../../types';
@@ -85,14 +85,10 @@ describe('setError', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('yes');
-    });
+    expect(await screen.findByText('yes')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      screen.getByText('no');
-    });
+    expect(await screen.findByText('no')).toBeVisible();
   });
 });

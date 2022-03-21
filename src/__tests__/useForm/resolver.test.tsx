@@ -1,10 +1,10 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
 
 describe('resolver', () => {
-  it('should update context within the resolver', () => {
+  it('should update context within the resolver', async () => {
     type FormValues = {
       test: string;
     };
@@ -45,7 +45,9 @@ describe('resolver', () => {
     });
     fireEvent.click(screen.getByRole('button'));
 
-    screen.findByText("{test:'test'}");
+    expect(
+      await screen.findByText('{"test":"test"}', undefined, { timeout: 3000 }),
+    ).toBeVisible();
   });
 
   it('should support resolver schema switching', async () => {
@@ -100,17 +102,13 @@ describe('resolver', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    await waitFor(async () => {
-      screen.getByText('Error');
-    });
+    expect(await screen.findByText('Error')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    await waitFor(async () => {
-      screen.getByText('Submitted');
-    });
+    expect(await screen.findByText('Submitted')).toBeVisible();
   });
 
   it('should be called with the shouldUseNativeValidation option to true', async () => {

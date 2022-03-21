@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
@@ -464,9 +464,7 @@ describe('watch', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('1234');
-    });
+    expect(await screen.findByText('1234')).toBeVisible();
 
     expect(watchedData).toEqual([{}, {}, { test: '1234' }]);
   });

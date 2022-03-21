@@ -986,7 +986,7 @@ describe('useWatch', () => {
 
       render(<Component />);
 
-      await waitFor(() => screen.getByText('test'));
+      expect(await screen.findByText('test')).toBeVisible();
     });
 
     it('should return default value of reset method', async () => {
@@ -1368,7 +1368,7 @@ describe('useWatch', () => {
 
       render(<Form />);
 
-      await waitFor(async () => screen.getByText('no'));
+      expect(await screen.findByText('no')).toBeVisible();
     });
 
     it('should watch nested object field update', () => {

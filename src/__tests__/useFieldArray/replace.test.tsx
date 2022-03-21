@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import * as generateId from '../../logic/generateId';
 import { useController } from '../../useController';
@@ -253,15 +253,11 @@ describe('replace', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
   });
 
   it('should not affect other formState during replace action', () => {

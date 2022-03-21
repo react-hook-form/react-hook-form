@@ -159,8 +159,9 @@ describe('useFieldArray', () => {
       };
 
       render(<Component />);
-      await screen.findAllByRole('textbox');
-      await screen.findByText('not valid');
+
+      expect(await screen.findByRole('textbox')).toBeVisible();
+      expect(await screen.findByText('not valid')).toBeVisible();
     });
 
     it('should retain input values during unmount', async () => {
@@ -264,7 +265,7 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await screen.findByText('valid');
+      expect(await screen.findByText('valid')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -428,9 +429,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(async () => {
-        screen.getByText('minLength');
-      });
+      expect(await screen.findByText('minLength')).toBeVisible();
     });
 
     it('should not return schema error without user action', () => {

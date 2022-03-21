@@ -46,7 +46,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    await screen.findByText('error');
+    expect(await screen.findByText('error')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
@@ -392,9 +392,7 @@ describe('trigger', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'trigger1' }));
 
-      await waitFor(() => {
-        screen.getByText('no');
-      });
+      expect(await screen.findByText('no')).toBeVisible();
 
       fireEvent.change(screen.getAllByRole('textbox')[1], {
         target: {
@@ -404,9 +402,7 @@ describe('trigger', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'trigger2' }));
 
-      await waitFor(() => {
-        screen.getByText('yes');
-      });
+      expect(await screen.findByText('yes')).toBeVisible();
     });
 
     it('should update isValid for the entire useForm scope', async () => {
@@ -474,28 +470,22 @@ describe('trigger', () => {
 
       render(<App />);
 
-      await waitFor(() => {
-        screen.getByText('test: invalid');
-        screen.getByText('test1: invalid');
-      });
+      expect(await screen.findByText('test: invalid')).toBeVisible();
+      expect(screen.getByText('test1: invalid')).toBeVisible();
 
       fireEvent.change(screen.getAllByRole('textbox')[0], {
         target: { value: 'test' },
       });
 
-      await waitFor(() => {
-        screen.getByText('test: invalid');
-        screen.getByText('test1: invalid');
-      });
+      expect(await screen.findByText('test: invalid')).toBeVisible();
+      expect(screen.getByText('test1: invalid')).toBeVisible();
 
       fireEvent.change(screen.getAllByRole('textbox')[1], {
         target: { value: 'test' },
       });
 
-      await waitFor(() => {
-        screen.getByText('test: valid');
-        screen.getByText('test1: valid');
-      });
+      expect(await screen.findByText('test: valid')).toBeVisible();
+      expect(screen.getByText('test1: valid')).toBeVisible();
     });
   });
 
@@ -567,9 +557,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      screen.getByText('yes');
-    });
+    expect(await screen.findByText('yes')).toBeVisible();
   });
 
   it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -603,7 +591,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    await screen.findByText('error');
+    expect(await screen.findByText('error')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
@@ -748,9 +736,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('false');
-    });
+    expect(await screen.findByText('false')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('firstName'), {
       target: {
@@ -765,9 +751,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('true');
-    });
+    expect(await screen.findByText('true')).toBeVisible();
   });
 
   it('should return correct valid state when trigger the entire form with build in validation', async () => {
@@ -842,10 +826,8 @@ describe('trigger', () => {
 
     expect(isValid).toBeFalsy();
 
-    await waitFor(() => {
-      screen.getByText('firstName');
-      screen.getByText('lastName');
-    });
+    expect(await screen.findByText('firstName')).toBeVisible();
+    expect(screen.getByText('lastName')).toBeVisible();
   });
 
   it('should only trigger render on targeted input', async () => {
@@ -894,10 +876,8 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('2');
-      screen.getByText('1');
-    });
+    expect(await screen.findByText('2')).toBeVisible();
+    expect(screen.getByText('1')).toBeVisible();
   });
 
   it('should skip additional validation when input validation already failed', async () => {
@@ -933,9 +913,7 @@ describe('trigger', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('invalid');
-    });
+    expect(await screen.findByText('invalid')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 

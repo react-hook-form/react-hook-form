@@ -64,7 +64,7 @@ describe('append', () => {
     });
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    await screen.findByText('dirty');
+    expect(await screen.findByText('dirty')).toBeVisible();
 
     expect(dirtyInputs).toEqual({
       test: [{ value: true }],

@@ -245,9 +245,7 @@ describe('register', () => {
       target: { value: 'test' },
     });
 
-    await waitFor(() => {
-      screen.getByText('false');
-    });
+    expect(await screen.findByText('false')).toBeVisible();
 
     fireEvent.input(screen.getByPlaceholderText('inputB'), {
       target: { value: 'test' },
@@ -681,9 +679,7 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() => {
-        screen.getByText(message);
-      });
+      expect(await screen.findByText(message)).toBeVisible();
 
       fireEvent.click(screen.getByRole('checkbox'));
       fireEvent.click(screen.getByRole('button'));
@@ -784,25 +780,19 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(async () => {
-        screen.getByText('{"test":"a"}');
-      });
+      expect(await screen.findByText('{"test":"a"}')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button', { name: 'setDisabled' }));
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(async () => {
-        screen.getByText('{}');
-      });
+      expect(await screen.findByText('{}')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button', { name: 'setDisabled' }));
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(async () => {
-        screen.getByText('{"test":"a"}');
-      });
+      expect(await screen.findByText('{"test":"a"}')).toBeVisible();
     });
   });
 
@@ -1199,9 +1189,7 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(async () => {
-        screen.getByText('Empty');
-      });
+      expect(await screen.findByText('Empty')).toBeVisible();
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
@@ -1685,13 +1673,17 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('checkbox'));
 
-    await waitFor(() => {
-      screen.getByPlaceholderText('test');
-    });
+    expect(await screen.findByPlaceholderText('test')).toBeVisible();
 
     fireEvent.click(screen.getByRole('checkbox'));
 
+    await waitFor(() =>
+      expect(screen.queryByPlaceholderText('test')).not.toBeInTheDocument(),
+    );
+
     fireEvent.click(screen.getByRole('checkbox'));
+
+    expect(await screen.findByPlaceholderText('test')).toBeVisible();
   });
 
   it('should set value before custom onChange', () => {

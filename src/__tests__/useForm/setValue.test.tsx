@@ -569,9 +569,7 @@ describe('setValue', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'setError' }));
 
-      await waitFor(() => {
-        screen.getByText('test');
-      });
+      expect(await screen.findByText('test')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
@@ -856,9 +854,7 @@ describe('setValue', () => {
 
       jest.advanceTimersByTime(10000);
 
-      await waitFor(async () => {
-        screen.getByText('test');
-      });
+      expect(await screen.findByText('test')).toBeVisible();
     });
   });
 
@@ -1221,9 +1217,7 @@ describe('setValue', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('["2","2"]');
-    });
+    expect(await screen.findByText('["2","2"]')).toBeVisible();
   });
 
   it('should only be able to update value of object which is not registered', async () => {
@@ -1250,9 +1244,7 @@ describe('setValue', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('{"data":"2"}');
-    });
+    expect(await screen.findByText('{"data":"2"}')).toBeVisible();
   });
 
   it('should update nested object which contain date object without register', async () => {
@@ -1316,9 +1308,7 @@ describe('setValue', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('dirty');
-    });
+    expect(await screen.findByText('dirty')).toBeVisible();
   });
 
   it('should update both dirty and touched state', () => {

@@ -140,15 +140,11 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await waitFor(() => {
-      screen.getByText('notValid');
-    });
+    expect(await screen.findByText('notValid')).toBeVisible();
 
     fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
 
-    await waitFor(() => {
-      screen.getByText('isValid');
-    });
+    expect(await screen.findByText('isValid')).toBeVisible();
   });
 
   it('should remove field according index', () => {
@@ -375,9 +371,7 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await waitFor(() => {
-      screen.getByText('notValid');
-    });
+    expect(await screen.findByText('notValid')).toBeVisible();
 
     const inputs = screen.getAllByRole('textbox');
 
@@ -393,15 +387,11 @@ describe('remove', () => {
       target: { value: 'test' },
     });
 
-    await waitFor(() => {
-      screen.getByText('notValid');
-    });
+    expect(await screen.findByText('notValid')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    await waitFor(() => {
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('valid')).toBeVisible();
   });
 
   it('should remove all field if isValid is true', async () => {

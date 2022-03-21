@@ -4,7 +4,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -254,20 +253,14 @@ describe('clearErrors', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('yes');
-    });
+    expect(await screen.findByText('yes')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'setError' }));
 
-    await waitFor(() => {
-      screen.getByText('no');
-    });
+    expect(await screen.findByText('no')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'clearError' }));
 
-    await waitFor(() => {
-      screen.getByText('no');
-    });
+    expect(await screen.findByText('no')).toBeVisible();
   });
 });

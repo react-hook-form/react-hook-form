@@ -71,9 +71,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await waitFor(() => {
-        screen.getByText('valid');
-      });
+      expect(await screen.findByText('valid')).toBeVisible();
     });
 
     it('should return true for onChange mode by default', async () => {
@@ -89,9 +87,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await waitFor(() => {
-        screen.getByText('valid');
-      });
+      expect(await screen.findByText('valid')).toBeVisible();
     });
 
     it('should return true for all mode by default', async () => {
@@ -107,9 +103,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await waitFor(() => {
-        screen.getByText('valid');
-      });
+      expect(await screen.findByText('valid')).toBeVisible();
     });
 
     it('should return false when default value is not valid value', async () => {
@@ -205,7 +199,7 @@ describe('formState', () => {
         },
       });
 
-      await screen.findByText('valid');
+      expect(await screen.findByText('valid')).toBeVisible();
 
       fireEvent.change(screen.getByTestId('select'), {
         target: {
@@ -213,7 +207,7 @@ describe('formState', () => {
         },
       });
 
-      await screen.findByText('invalid');
+      expect(await screen.findByText('invalid')).toBeVisible();
 
       fireEvent.change(screen.getByTestId('select'), {
         target: {
@@ -221,7 +215,7 @@ describe('formState', () => {
         },
       });
 
-      await screen.findByText('valid');
+      expect(await screen.findByText('valid')).toBeVisible();
 
       fireEvent.change(screen.getByTestId('select'), {
         target: {
@@ -229,7 +223,7 @@ describe('formState', () => {
         },
       });
 
-      await screen.findByText('invalid');
+      expect(await screen.findByText('invalid')).toBeVisible();
     });
   });
 
@@ -291,7 +285,7 @@ describe('formState', () => {
 
       render(<Component />);
 
-      await screen.findByText('valid');
+      expect(await screen.findByText('valid')).toBeVisible();
     });
 
     it('should render isValid as false with reset at useEffect with valid data', async () => {
@@ -327,7 +321,7 @@ describe('formState', () => {
 
       render(<Component />);
 
-      await screen.findByText('nope');
+      expect(await screen.findByText('nope')).toBeVisible();
     });
   });
 
@@ -513,9 +507,7 @@ describe('formState', () => {
 
     render(<Component />);
 
-    await waitFor(() => {
-      screen.getByText('inValid');
-    });
+    expect(await screen.findByText('inValid')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('test'), {
       target: { value: '1' },
@@ -524,15 +516,11 @@ describe('formState', () => {
       target: { value: '1' },
     });
 
-    await waitFor(async () => {
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('valid')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('inValid');
-    });
+    expect(await screen.findByText('inValid')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
       target: { value: '1' },
@@ -541,41 +529,31 @@ describe('formState', () => {
       target: { value: '1' },
     });
 
-    await waitFor(async () => {
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('valid')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
       target: { value: '' },
     });
 
-    await waitFor(async () => {
-      screen.getByText('inValid');
-    });
+    expect(await screen.findByText('inValid')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
       target: { value: '1' },
     });
 
-    await waitFor(async () => {
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('valid')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
       target: { value: '' },
     });
 
-    await waitFor(async () => {
-      screen.getByText('inValid');
-    });
+    expect(await screen.findByText('inValid')).toBeVisible();
 
     fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
       target: { value: '1' },
     });
 
-    await waitFor(async () => {
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('valid')).toBeVisible();
   });
 
   describe('when defaultValue supplied', () => {
@@ -601,9 +579,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await waitFor(async () => {
-        screen.getByText('isValid = true');
-      });
+      expect(await screen.findByText('isValid = true')).toBeVisible();
     });
 
     it('should update isValid to true for Controller validation', async () => {
@@ -631,9 +607,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      await waitFor(async () => {
-        screen.getByText('isValid = true');
-      });
+      expect(await screen.findByText('isValid = true')).toBeVisible();
     });
   });
 
@@ -705,9 +679,7 @@ describe('formState', () => {
 
       jest.advanceTimersByTime(500);
 
-      await waitFor(async () => {
-        screen.getByText(message);
-      });
+      expect(await screen.findByText(message)).toBeVisible();
     });
 
     it('should only show error after 500ms with register and render formState instantly', async () => {
@@ -746,7 +718,7 @@ describe('formState', () => {
 
       expect(screen.queryByText(message)).toBeNull();
 
-      await screen.findByText('valid');
+      expect(await screen.findByText('valid')).toBeVisible();
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
@@ -754,7 +726,7 @@ describe('formState', () => {
         },
       });
 
-      await screen.findByText('inValid');
+      expect(await screen.findByText('inValid')).toBeVisible();
 
       expect(screen.queryByText(message)).toBeNull();
 
@@ -762,9 +734,7 @@ describe('formState', () => {
         jest.advanceTimersByTime(500);
       });
 
-      await waitFor(async () => {
-        screen.getByText(message);
-      });
+      expect(await screen.findByText(message)).toBeVisible();
     });
 
     it('should only show error after 500ms with Controller', async () => {
@@ -807,9 +777,7 @@ describe('formState', () => {
 
       jest.advanceTimersByTime(500);
 
-      await waitFor(async () => {
-        screen.getByText(message);
-      });
+      expect(await screen.findByText(message)).toBeVisible();
     });
 
     it('should prevent error from showing once input is validated', async () => {

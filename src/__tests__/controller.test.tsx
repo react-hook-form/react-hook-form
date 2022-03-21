@@ -302,9 +302,7 @@ describe('Controller', () => {
       },
     });
 
-    await waitFor(() =>
-      expect(screen.queryByRole('alert')).toBeInTheDocument(),
-    );
+    expect(await screen.findByRole('alert')).toBeVisible();
 
     fireEvent.blur(screen.getByRole('textbox'), {
       target: {
@@ -676,7 +674,7 @@ describe('Controller', () => {
       },
     });
 
-    await waitFor(async () => screen.queryByText('Input is invalid.'));
+    expect(await screen.findByText('Input is invalid.')).toBeVisible();
   });
 
   it('should show input has been touched.', async () => {
@@ -707,7 +705,7 @@ describe('Controller', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    await waitFor(async () => screen.queryByText('Input is touched.'));
+    expect(await screen.findByText('Input is touched.')).toBeVisible();
   });
 
   it('should show input is dirty.', async () => {
@@ -736,13 +734,12 @@ describe('Controller', () => {
 
     expect(screen.queryByText('Input is dirty.')).toBeNull();
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test',
-      },
-    });
+    const input = screen.getByRole('textbox');
 
-    await waitFor(async () => screen.queryByText('Input is dirty.'));
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    expect(await screen.findByText('Input is dirty.')).toBeVisible();
   });
 
   it('should display input error.', async () => {
@@ -771,9 +768,12 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    fireEvent.blur(screen.getByRole('textbox'));
+    const input = screen.getByRole('textbox');
 
-    await waitFor(async () => screen.queryByText('This is required'));
+    fireEvent.change(input, { target: { value: 'q' } });
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(await screen.findByText('This is required')).toBeVisible();
   });
 
   it('should not trigger extra-render while not subscribed to any input state', () => {
@@ -927,7 +927,7 @@ describe('Controller', () => {
       },
     });
 
-    await waitFor(() => screen.getByText('false'));
+    expect(await screen.findByText('false')).toBeVisible();
 
     fireEvent.input(screen.getAllByRole('textbox')[0], {
       target: {
@@ -935,7 +935,7 @@ describe('Controller', () => {
       },
     });
 
-    await waitFor(() => screen.getByText('true'));
+    expect(await screen.findByText('true')).toBeVisible();
   });
 
   it('should subscribe the correct dirty fields', () => {
