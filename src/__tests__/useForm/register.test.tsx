@@ -716,6 +716,42 @@ describe('register', () => {
       expect(screen.queryByText(message)).toBeNull();
     });
 
+    it('should not affect checked attribute with disabled attribute', () => {
+      const App = () => {
+        const { register } = useForm();
+        const options = [
+          { checked: false, disabled: false, value: 'test' },
+          { checked: true, disabled: true, value: 'test1' },
+          { checked: false, disabled: false, value: 'test2' },
+        ];
+
+        return (
+          <>
+            {options.map((option, index) => {
+              return (
+                <div key={index}>
+                  <input
+                    {...register('test')}
+                    type="checkbox"
+                    disabled={option.disabled}
+                    value={option.value}
+                    defaultChecked={option.checked}
+                    data-testid={'checkbox' + index}
+                  />
+                </div>
+              );
+            })}
+          </>
+        );
+      };
+
+      render(<App />);
+
+      expect(
+        (screen.getByTestId('checkbox1') as HTMLInputElement).checked,
+      ).toBeTruthy();
+    });
+
     it('should work correctly with toggle disabled attribute and validation', async () => {
       type FormValues = {
         test: string;

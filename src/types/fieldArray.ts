@@ -212,7 +212,7 @@ type UseFieldArrayUpdate<TFieldValues, TFieldArrayName extends PathString> = (
 ) => void;
 
 /**
- * 	Replace the entire field array values.
+ * Replace the entire field array values.
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
