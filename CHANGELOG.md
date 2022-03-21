@@ -5,7 +5,7 @@
 - `register` API options `deps` now support string
 
 ```tsx
-register('test', { dpes: 'test' });
+register('test', { deps: 'test' });
 ```
 
 ## [7.27.0] - 2022-2-11
