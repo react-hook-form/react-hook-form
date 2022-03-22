@@ -104,6 +104,7 @@ export function useForm<
       control._subjects.state.next({});
     }
     control._removeUnmounted();
+    return () => control._removeUnmounted();
   });
 
   _formControl.current.formState = getProxyFormState(
