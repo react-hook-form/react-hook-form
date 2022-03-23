@@ -1,14 +1,13 @@
 import { VALIDATION_MODE } from '../constants';
 import { ReadFormState } from '../types';
 import isEmptyObject from '../utils/isEmptyObject';
-import omit from '../utils/omit';
 
 export default <T extends Record<string, any>, K extends ReadFormState>(
   formStateData: T,
   _proxyFormState: K,
   isRoot?: boolean,
 ) => {
-  const formState = omit(formStateData, 'name');
+  const { name, ...formState } = formStateData;
 
   return (
     isEmptyObject(formState) ||
