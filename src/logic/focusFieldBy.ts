@@ -12,7 +12,7 @@ const focusFieldBy = (
     const field = get(fields, key);
 
     if (field) {
-      const { _f, current } = field;
+      const { _f, ...currentField } = field;
 
       if (_f && callback(_f.name)) {
         if (_f.ref.focus && isUndefined(_f.ref.focus())) {
@@ -21,8 +21,8 @@ const focusFieldBy = (
           _f.refs[0].focus();
           break;
         }
-      } else if (isObject(current)) {
-        focusFieldBy(current, callback);
+      } else if (isObject(currentField)) {
+        focusFieldBy(currentField, callback);
       }
     }
   }
