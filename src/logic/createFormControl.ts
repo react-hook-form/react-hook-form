@@ -63,7 +63,6 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
-import omit from '../utils/omit';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -422,8 +421,7 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const fieldReference = field._f;
-        const fieldValue = omit(field, '_f');
+        const { _f: fieldReference, ...fieldValue } = field;
 
         if (fieldReference) {
           const fieldError = await validateField(
