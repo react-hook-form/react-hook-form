@@ -298,6 +298,66 @@ describe('useForm', () => {
       });
     });
 
+    it('should not mutate defaultValues', () => {
+      const defaultValues = {
+        test: {
+          test: '123',
+          test1: '1234',
+        },
+      };
+
+      const Form = () => {
+        const { register, control } = useForm({
+          defaultValues,
+        });
+        return (
+          <>
+            <input {...register('test.test', { shouldUnregister: true })} />
+            <Controller
+              control={control}
+              shouldUnregister
+              render={() => {
+                return <input />;
+              }}
+              name={'test.test1'}
+            />
+          </>
+        );
+      };
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        return (
+          <>
+            {show && <Form />}
+            <button
+              type={'button'}
+              onClick={() => {
+                setShow(!show);
+              }}
+            >
+              toggle
+            </button>
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      fireEvent.click(screen.getByRole('button'));
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(defaultValues).toEqual({
+        test: {
+          test: '123',
+          test1: '1234',
+        },
+      });
+    });
+
     it('should not register or shallow defaultValues into submission data', () => {
       let data = {};
 
