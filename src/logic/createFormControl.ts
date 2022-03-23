@@ -112,7 +112,7 @@ export function createFormControl<
     errors: {} as FieldErrors<TFieldValues>,
   };
   let _fields = {};
-  let _defaultValues = _options.defaultValues || {};
+  let _defaultValues = cloneObject(_options.defaultValues) || {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
