@@ -206,10 +206,10 @@ export type UseFieldArrayInsert<
  * </button>
  * ```
  */
-type UseFieldArrayUpdate<TFieldValues, TFieldArrayName extends PathString> = (
-  index: number,
-  value: FieldArray<TFieldValues, TFieldArrayName>,
-) => void;
+export type UseFieldArrayUpdate<
+  TFieldValues,
+  TFieldArrayName extends PathString,
+> = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 /**
  * Replace the entire field array values.
@@ -229,7 +229,7 @@ type UseFieldArrayUpdate<TFieldValues, TFieldArrayName extends PathString> = (
  * </button>
  * ```
  */
-type UseFieldArrayReplace<
+export type UseFieldArrayReplace<
   TFieldValues extends FieldValues,
   TFieldArrayName extends PathString,
 > = (
