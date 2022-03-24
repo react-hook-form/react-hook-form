@@ -559,6 +559,9 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues, TFieldArrayName
 // @public
 export type UseFieldArrayRemove = (index?: number | number[]) => void;
 
+// @public
+export type UseFieldArrayReplace<TFieldValues extends FieldValues, TFieldArrayName extends PathString> = (value: Partial<FieldArray<TFieldValues, TFieldArrayName>> | Partial<FieldArray<TFieldValues, TFieldArrayName>>[]) => void;
+
 // @public (undocumented)
 export type UseFieldArrayReturn<TFieldValues extends FieldValues, TFieldArrayName extends PathString> = {
     swap: UseFieldArraySwap;
@@ -574,6 +577,9 @@ export type UseFieldArrayReturn<TFieldValues extends FieldValues, TFieldArrayNam
 
 // @public
 export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
+
+// @public
+export type UseFieldArrayUpdate<TFieldValues, TFieldArrayName extends PathString> = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 // @public
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
@@ -781,8 +787,6 @@ export type WatchObserver<TFieldValues> = (value: DeepPartial<TFieldValues>, inf
 
 // Warnings were encountered during analysis:
 //
-// src/types/fieldArray.ts:251:3 - (ae-forgotten-export) The symbol "UseFieldArrayUpdate" needs to be exported by the entry point index.d.ts
-// src/types/fieldArray.ts:252:3 - (ae-forgotten-export) The symbol "UseFieldArrayReplace" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:389:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
