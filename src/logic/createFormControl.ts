@@ -422,7 +422,7 @@ export function createFormControl<
         const { _f, ...fieldValue } = field;
 
         if (_f) {
-          const isFieldArrayRoot = isNameInFieldArray(_names.array, _f.name);
+          const isFieldArrayRoot = _names.array.has(_f.name);
           const fieldError = await validateField(
             field,
             get(_formValues, _f.name),
@@ -441,13 +441,10 @@ export function createFormControl<
 
           if (!shouldOnlyCheckValid) {
             if (get(fieldError, _f.name)) {
-              if (
-                isFieldArrayRoot &&
-                (_f.maxLength || _f.minLength || _f.validate)
-              ) {
+              if (isFieldArrayRoot && hasValidation(_f)) {
                 const errors = compact(get(_formState.errors, _f.name));
                 set(errors, 'root', fieldError[_f.name]);
-                set(_formState.errors, name, compact(errors));
+                set(_formState.errors, _f.name, errors);
               } else {
                 set(_formState.errors, _f.name, fieldError[_f.name]);
               }
