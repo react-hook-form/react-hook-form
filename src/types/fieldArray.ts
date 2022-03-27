@@ -9,10 +9,7 @@ export type UseFieldArrayProps<
 > = {
   name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>;
   control?: Control<TFieldValues>;
-  rules?: Pick<
-    RegisterOptions<TFieldValues>,
-    'required' | 'maxLength' | 'minLength'
-  > & {
+  rules?: Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength'> & {
     validate: Validate<FieldPathValue<TFieldValues, TFieldArrayName>>;
   };
   shouldUnregister?: boolean;

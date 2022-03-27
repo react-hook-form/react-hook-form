@@ -4,6 +4,7 @@ import isFunction from '../utils/isFunction';
 import isUndefined from '../utils/isUndefined';
 
 import getValidateError from './getValidateError';
+import getValueAndMessage from './getValueAndMessage';
 
 export default async function validateFieldArray(
   formValues: FieldValues,
@@ -11,26 +12,28 @@ export default async function validateFieldArray(
 ): Promise<{ root: FieldError | void }> {
   let rootError;
 
-  if (field && field._f) {
+  if (field && field._f && Array.isArray(formValues)) {
     const { ref, minLength, maxLength, validate } = field._f;
 
     if (!isUndefined(minLength)) {
+      const minOutput = getValueAndMessage(minLength);
       if (formValues.length < minLength) {
         rootError = {
           type: INPUT_VALIDATION_RULES.minLength,
-          message: formValues.message,
+          message: minOutput.message,
           ref,
         };
       }
     } else if (!isUndefined(maxLength)) {
+      const maxOutput = getValueAndMessage(maxLength);
       if (formValues.length > maxLength) {
         rootError = {
           type: INPUT_VALIDATION_RULES.maxLength,
-          message: formValues.message,
+          message: maxOutput.message,
           ref,
         };
       }
-    } else if (validate && isFunction(validate)) {
+    } else if (isFunction(validate)) {
       const error = getValidateError(await validate(formValues), {} as Ref);
       if (error) {
         rootError = error;

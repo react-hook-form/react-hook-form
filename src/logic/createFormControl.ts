@@ -425,13 +425,11 @@ export function createFormControl<
         if (_f) {
           if (_f.name && isNameInFieldArray(_names.array, name)) {
             const error = await validateFieldArray(
-              get(_formValues, name),
-              get(_fields, name),
+              get(_formValues, _f.name),
+              get(_fields, _f.name),
             );
 
-            if (error) {
-              set(_formState.errors, _f.name, error);
-            }
+            error.root && set(_formState.errors, _f.name, error);
           } else {
             const fieldError = await validateField(
               field,
