@@ -78,6 +78,7 @@ import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
+import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
 
 const defaultOptions = {
@@ -441,10 +442,12 @@ export function createFormControl<
 
           if (!shouldOnlyCheckValid) {
             if (get(fieldError, _f.name)) {
-              if (isFieldArrayRoot && hasValidation(_f)) {
-                const errors = compact(get(_formState.errors, _f.name));
-                set(errors, 'root', fieldError[_f.name]);
-                set(_formState.errors, _f.name, errors);
+              if (isFieldArrayRoot) {
+                updateFieldArrayRootError(
+                  _formState.errors,
+                  fieldError,
+                  _f.name,
+                );
               } else {
                 set(_formState.errors, _f.name, fieldError[_f.name]);
               }

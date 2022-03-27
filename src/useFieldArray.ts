@@ -4,10 +4,10 @@ import focusFieldBy from './logic/focusFieldBy';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
+import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
-import compact from './utils/compact';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
@@ -324,12 +324,12 @@ export function useFieldArray<
             true,
           ).then((error) => {
             if (!isEmptyObject(error)) {
-              const errors = compact(get(control._formState.errors, name));
-              set(errors, 'root', error[name]);
-              set(control._formState.errors, name, errors);
-
               control._subjects.state.next({
-                errors: control._formState.errors as FieldErrors<TFieldValues>,
+                errors: updateFieldArrayRootError(
+                  control._formState.errors,
+                  error,
+                  name,
+                ) as FieldErrors<TFieldValues>,
               });
             }
           });
