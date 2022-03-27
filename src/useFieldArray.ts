@@ -294,45 +294,47 @@ export function useFieldArray<
     isWatched(name, control._names) && control._subjects.state.next({});
 
     if (_actioned.current) {
-      const field: Field = get(control._fields, name);
-      const validationModeBeforeSubmit = getValidationModes(
-        control._options.mode,
-      );
-      if (
-        (!validationModeBeforeSubmit.isOnSubmit ||
-          control._formState.isSubmitted) &&
-        field &&
-        field._f
-      ) {
-        validateField(
-          field,
-          get(control._formValues, name),
-          control._options.criteriaMode === VALIDATION_MODE.all,
-          control._options.shouldUseNativeValidation,
-          true,
-        ).then((error) => {
-          if (!isEmptyObject(error)) {
-            const errors = compact(get(control._formState.errors, name));
-            set(errors, 'root', error[name]);
-            set(control._formState.errors, name, errors);
+      if (control._options.resolver) {
+        control._executeSchema([name]).then((result) => {
+          const error = get(result.errors, name);
 
+          if (error && error.type && !get(control._formState.errors, name)) {
+            set(control._formState.errors, name, error);
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,
             });
           }
         });
-      }
+      } else {
+        const field: Field = get(control._fields, name);
+        const validationModeBeforeSubmit = getValidationModes(
+          control._options.mode,
+        );
+        if (
+          (!validationModeBeforeSubmit.isOnSubmit ||
+            control._formState.isSubmitted) &&
+          field &&
+          field._f
+        ) {
+          validateField(
+            field,
+            get(control._formValues, name),
+            control._options.criteriaMode === VALIDATION_MODE.all,
+            control._options.shouldUseNativeValidation,
+            true,
+          ).then((error) => {
+            if (!isEmptyObject(error)) {
+              const errors = compact(get(control._formState.errors, name));
+              set(errors, 'root', error[name]);
+              set(control._formState.errors, name, errors);
 
-      control._executeSchema([name]).then((result) => {
-        const error = get(result.errors, name);
-
-        if (error && error.type && !get(control._formState.errors, name)) {
-          set(control._formState.errors, name, error);
-          control._subjects.state.next({
-            errors: control._formState.errors as FieldErrors<TFieldValues>,
+              control._subjects.state.next({
+                errors: control._formState.errors as FieldErrors<TFieldValues>,
+              });
+            }
           });
         }
-      });
+      }
     }
 
     control._subjects.watch.next({
