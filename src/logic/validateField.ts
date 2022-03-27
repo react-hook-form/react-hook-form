@@ -29,6 +29,7 @@ export default async <T extends NativeFieldValue>(
   inputValue: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
+  isFieldArray?: boolean,
 ): Promise<InternalFieldErrors> => {
   const {
     ref,
@@ -151,7 +152,11 @@ export default async <T extends NativeFieldValue>(
     }
   }
 
-  if ((maxLength || minLength) && !isEmpty && isString(inputValue)) {
+  if (
+    (maxLength || minLength) &&
+    ((!isEmpty && isString(inputValue)) ||
+      (isFieldArray && Array.isArray(inputValue)))
+  ) {
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =

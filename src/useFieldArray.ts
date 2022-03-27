@@ -4,7 +4,7 @@ import focusFieldBy from './logic/focusFieldBy';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
-import validateFieldArray from './logic/validateFieldArray';
+import validateField from './logic/validateField';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import compact from './utils/compact';
@@ -13,13 +13,16 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import getValidationModes from './utils/getValidationModes';
 import insertAt from './utils/insert';
+import isEmptyObject from './utils/isEmptyObject';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import updateAt from './utils/update';
+import { VALIDATION_MODE } from './constants';
 import {
+  Field,
   FieldArray,
   FieldArrayMethodProps,
   FieldArrayWithId,
@@ -291,22 +294,27 @@ export function useFieldArray<
     isWatched(name, control._names) && control._subjects.state.next({});
 
     if (_actioned.current) {
+      const field: Field = get(control._fields, name);
       const validationModeBeforeSubmit = getValidationModes(
         control._options.mode,
       );
       if (
-        !validationModeBeforeSubmit.isOnSubmit ||
-        control._formState.isSubmitted
+        (!validationModeBeforeSubmit.isOnSubmit ||
+          control._formState.isSubmitted) &&
+        field &&
+        field._f
       ) {
-        validateFieldArray(
+        validateField(
+          field,
           get(control._formValues, name),
-          get(control._fields, name),
+          control._options.criteriaMode === VALIDATION_MODE.all,
+          control._options.shouldUseNativeValidation,
+          true,
         ).then((error) => {
-          if (error) {
+          if (!isEmptyObject(error)) {
             const errors = compact(get(control._formState.errors, name));
-            if (error.root) {
-              set(control._formState.errors, name, errors);
-            }
+            set(errors, 'root', error[name]);
+            set(control._formState.errors, name, errors);
 
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,

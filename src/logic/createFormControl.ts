@@ -79,7 +79,6 @@ import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import validateField from './validateField';
-import validateFieldArray from './validateFieldArray';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
@@ -423,33 +422,37 @@ export function createFormControl<
         const { _f, ...fieldValue } = field;
 
         if (_f) {
-          if (_f.name && isNameInFieldArray(_names.array, name)) {
-            const error = await validateFieldArray(
-              get(_formValues, _f.name),
-              get(_fields, _f.name),
-            );
+          const isFieldArrayRoot = isNameInFieldArray(_names.array, _f.name);
+          const fieldError = await validateField(
+            field,
+            get(_formValues, _f.name),
+            shouldDisplayAllAssociatedErrors,
+            _options.shouldUseNativeValidation,
+            isFieldArrayRoot,
+          );
 
-            error.root && set(_formState.errors, _f.name, error);
-          } else {
-            const fieldError = await validateField(
-              field,
-              get(_formValues, _f.name),
-              shouldDisplayAllAssociatedErrors,
-              _options.shouldUseNativeValidation,
-            );
+          if (fieldError[_f.name]) {
+            context.valid = false;
 
-            if (fieldError[_f.name]) {
-              context.valid = false;
-
-              if (shouldOnlyCheckValid) {
-                break;
-              }
+            if (shouldOnlyCheckValid) {
+              break;
             }
+          }
 
-            if (!shouldOnlyCheckValid) {
-              fieldError[_f.name]
-                ? set(_formState.errors, _f.name, fieldError[_f.name])
-                : unset(_formState.errors, _f.name);
+          if (!shouldOnlyCheckValid) {
+            if (get(fieldError, _f.name)) {
+              if (
+                isFieldArrayRoot &&
+                (_f.maxLength || _f.minLength || _f.validate)
+              ) {
+                const errors = compact(get(_formState.errors, _f.name));
+                set(errors, 'root', fieldError[_f.name]);
+                set(_formState.errors, name, compact(errors));
+              } else {
+                set(_formState.errors, _f.name, fieldError[_f.name]);
+              }
+            } else {
+              unset(_formState.errors, _f.name);
             }
           }
         }
