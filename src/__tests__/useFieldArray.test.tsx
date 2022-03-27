@@ -2716,4 +2716,345 @@ describe('useFieldArray', () => {
       test: [{ id: '1234', test: 'data' }],
     });
   });
+
+  describe('with rules', () => {
+    it('should validate the minLength of the entire field array after submit and correct accordingly', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            minLength: {
+              value: 2,
+              message: 'Min length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Min length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByAltText('Min length should be 2')).toBeNull();
+    });
+
+    it('should validate with custom validation after submit and correct accordingly', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) => {
+              if (Array.isArray(values) && values.length < 2) {
+                return 'Min length should be 2';
+              }
+
+              return true;
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Min length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByAltText('Min length should be 2')).toBeNull();
+    });
+
+    it('should validate the maxLength of the entire field array after submit and correct accordingly', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }, { test: '' }, { test: '' }, { test: '' }],
+          },
+        });
+
+        const { remove } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                remove();
+              }}
+            >
+              remove
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Max length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should respect the validation mode and trigger validation after each field array action', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }, { test: '' }, { test: '' }, { test: '' }],
+          },
+          mode: 'onChange',
+        });
+
+        const { remove, append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                remove();
+              }}
+            >
+              remove
+            </button>
+
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('Max length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should not conflict with field level error', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }, { test: '' }, { test: '' }, { test: '' }],
+          },
+          mode: 'onChange',
+        });
+
+        const { remove, append, fields } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.test`, {
+                      required: 'This is required',
+                    })}
+                  />
+                  <p>{errors.test?.[index]?.test?.message}</p>
+                </div>
+              );
+            })}
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                remove();
+              }}
+            >
+              remove
+            </button>
+
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+      expect(screen.queryByAltText('This is required')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '1',
+          },
+        });
+      });
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      screen.getByText('This is required');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+  });
 });
