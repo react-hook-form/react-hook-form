@@ -79,6 +79,7 @@ import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import validateField from './validateField';
+import validateFieldArray from './validateFieldArray';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
@@ -419,32 +420,39 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const { _f: fieldReference, ...fieldValue } = field;
+        const { _f, ...fieldValue } = field;
 
-        if (fieldReference) {
-          const fieldError = await validateField(
-            field,
-            get(_formValues, fieldReference.name),
-            shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation,
-          );
+        if (_f) {
+          if (_f.name && isNameInFieldArray(_names.array, name)) {
+            const error = await validateFieldArray(
+              get(_formValues, name),
+              get(_fields, name),
+            );
 
-          if (fieldError[fieldReference.name]) {
-            context.valid = false;
-
-            if (shouldOnlyCheckValid) {
-              break;
+            if (error) {
+              set(_formState.errors, _f.name, error);
             }
-          }
+          } else {
+            const fieldError = await validateField(
+              field,
+              get(_formValues, _f.name),
+              shouldDisplayAllAssociatedErrors,
+              _options.shouldUseNativeValidation,
+            );
 
-          if (!shouldOnlyCheckValid) {
-            fieldError[fieldReference.name]
-              ? set(
-                  _formState.errors,
-                  fieldReference.name,
-                  fieldError[fieldReference.name],
-                )
-              : unset(_formState.errors, fieldReference.name);
+            if (fieldError[_f.name]) {
+              context.valid = false;
+
+              if (shouldOnlyCheckValid) {
+                break;
+              }
+            }
+
+            if (!shouldOnlyCheckValid) {
+              fieldError[_f.name]
+                ? set(_formState.errors, _f.name, fieldError[_f.name])
+                : unset(_formState.errors, _f.name);
+            }
           }
         }
 
