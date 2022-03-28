@@ -84,9 +84,6 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
 <a href="https://kanamekey.com/" target="_blank">
   <img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" width="94" height="94" />
 </a>
-<a href="https://marmelab.com/" target="_blank">
-  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="94" height="94" />
-</a>
 <a href="https://www.feathery.io/" target="_blank">
   <img src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" width="94" height="94" />
 </a>
