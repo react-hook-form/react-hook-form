@@ -554,7 +554,7 @@ export type UseFieldArrayPrepend<TFieldValues, TFieldArrayName extends PathStrin
 export type UseFieldArrayProps<TFieldValues extends FieldValues, TFieldArrayName extends PathString> = {
     name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>;
     control?: Control<TFieldValues>;
-    rules?: Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'validate'>;
+    rules?: Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'validate' | 'required'>;
     shouldUnregister?: boolean;
 };
 
