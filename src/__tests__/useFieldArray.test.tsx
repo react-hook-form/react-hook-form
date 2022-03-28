@@ -3056,5 +3056,108 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
     });
+
+    it('should not throw error when required is not defined but minLength', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm<{ test: { test: string }[] }>({
+          defaultValues: {
+            test: [],
+          },
+        });
+
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.test`, {
+                      required: 'This is required',
+                    })}
+                  />
+                  <p>{errors.test?.[index]?.test?.message}</p>
+                </div>
+              );
+            })}
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should throw error when required is defined', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm<{ test: { test: string }[] }>({
+          defaultValues: {
+            test: [],
+          },
+        });
+
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            required: 'Please enter some data',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.test`, {
+                      required: 'This is required',
+                    })}
+                  />
+                  <p>{errors.test?.[index]?.test?.message}</p>
+                </div>
+              );
+            })}
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByAltText('Please enter some data')).toBeNull();
+    });
   });
 });

@@ -11,7 +11,7 @@ export type UseFieldArrayProps<
   control?: Control<TFieldValues>;
   rules?: Pick<
     RegisterOptions<TFieldValues>,
-    'maxLength' | 'minLength' | 'validate'
+    'maxLength' | 'minLength' | 'validate' | 'required'
   >;
   shouldUnregister?: boolean;
 };

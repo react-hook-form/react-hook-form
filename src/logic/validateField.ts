@@ -87,11 +87,13 @@ export default async <T extends NativeFieldValue>(
   };
 
   if (
-    required &&
-    ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
-      (isBoolean(inputValue) && !inputValue) ||
-      (isCheckBox && !getCheckboxValue(refs).isValid) ||
-      (isRadio && !getRadioValue(refs).isValid))
+    isFieldArray
+      ? Array.isArray(inputValue) && !inputValue.length
+      : required &&
+        ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
+          (isBoolean(inputValue) && !inputValue) ||
+          (isCheckBox && !getCheckboxValue(refs).isValid) ||
+          (isRadio && !getRadioValue(refs).isValid))
   ) {
     const { value, message } = isMessage(required)
       ? { value: !!required, message: required }
@@ -154,8 +156,8 @@ export default async <T extends NativeFieldValue>(
 
   if (
     (maxLength || minLength) &&
-    ((!isEmpty && isString(inputValue)) ||
-      (isFieldArray && Array.isArray(inputValue)))
+    !isEmpty &&
+    (isString(inputValue) || (isFieldArray && Array.isArray(inputValue)))
   ) {
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
