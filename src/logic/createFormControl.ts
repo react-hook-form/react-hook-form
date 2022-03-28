@@ -440,21 +440,16 @@ export function createFormControl<
             }
           }
 
-          if (!shouldOnlyCheckValid) {
-            if (get(fieldError, _f.name)) {
-              if (isFieldArrayRoot) {
-                updateFieldArrayRootError(
-                  _formState.errors,
-                  fieldError,
-                  _f.name,
-                );
-              } else {
-                set(_formState.errors, _f.name, fieldError[_f.name]);
-              }
-            } else {
-              unset(_formState.errors, _f.name);
-            }
-          }
+          !shouldOnlyCheckValid &&
+            (get(fieldError, _f.name)
+              ? isFieldArrayRoot
+                ? updateFieldArrayRootError(
+                    _formState.errors,
+                    fieldError,
+                    _f.name,
+                  )
+                : set(_formState.errors, _f.name, fieldError[_f.name])
+              : unset(_formState.errors, _f.name));
         }
 
         fieldValue &&

@@ -96,12 +96,11 @@ export function useFieldArray<
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  if (props.rules) {
+  props.rules &&
     control.register(
       name as FieldPath<TFieldValues>,
       props.rules as RegisterOptions<FieldValues, PathString>,
     );
-  }
 
   const callback = React.useCallback(({ values, name: fieldArrayName }) => {
     if (fieldArrayName === _name.current || !fieldArrayName) {
@@ -322,17 +321,17 @@ export function useFieldArray<
             control._options.criteriaMode === VALIDATION_MODE.all,
             control._options.shouldUseNativeValidation,
             true,
-          ).then((error) => {
-            if (!isEmptyObject(error)) {
+          ).then(
+            (error) =>
+              !isEmptyObject(error) &&
               control._subjects.state.next({
                 errors: updateFieldArrayRootError(
                   control._formState.errors,
                   error,
                   name,
                 ) as FieldErrors<TFieldValues>,
-              });
-            }
-          });
+              }),
+          );
         }
       }
     }
