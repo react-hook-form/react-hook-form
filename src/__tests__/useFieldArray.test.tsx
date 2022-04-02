@@ -3160,4 +3160,166 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Please enter some data')).toBeNull();
     });
   });
+
+  describe('with nested field array ', () => {
+    type FormValues = {
+      fieldArray: {
+        value: string;
+        nestedFieldArray: {
+          value: string;
+        }[];
+      }[];
+    };
+
+    const ArrayField = ({
+      arrayIndex,
+      register,
+      control,
+    }: {
+      arrayIndex: number;
+      register: UseFormReturn<FormValues>['register'];
+      arrayField: Partial<FieldValues>;
+      control: Control<FormValues>;
+    }) => {
+      const { fields, append } = useFieldArray({
+        name: `fieldArray.${arrayIndex}.nestedFieldArray` as const,
+        control,
+        rules: {
+          required: 'This is required',
+          minLength: 3,
+        },
+      });
+
+      return (
+        <div>
+          {fields.map((nestedField, index) => (
+            <div key={nestedField.id}>
+              <input
+                {...register(
+                  `fieldArray.${arrayIndex}.nestedFieldArray.${index}.value` as const,
+                )}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              append({
+                value:
+                  `fieldArray.${arrayIndex}.nestedFieldArray.${fields.length}.value` as const,
+              });
+            }}
+          >
+            Add nested array
+          </button>
+        </div>
+      );
+    };
+
+    it('should report field array error at the nested useFieldArray level when form submitted', async () => {
+      const Component = () => {
+        const {
+          register,
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm<FormValues>();
+        const { fields, append } = useFieldArray({
+          name: 'fieldArray',
+          control,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <ArrayField
+                    arrayIndex={index}
+                    arrayField={field}
+                    register={register}
+                    control={control}
+                  />
+                  <p>
+                    {errors?.fieldArray?.[0]?.nestedFieldArray?.root?.message}
+                  </p>
+                </div>
+              );
+            })}
+            <button onClick={() => append({})} type={'button'}>
+              append
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('This is required');
+    });
+
+    it('should report field array error at the nested useFieldArray level during field level action', async () => {
+      const Component = () => {
+        const {
+          register,
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+        });
+        const { fields, append } = useFieldArray({
+          name: 'fieldArray',
+          control,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <ArrayField
+                    arrayIndex={index}
+                    arrayField={field}
+                    register={register}
+                    control={control}
+                  />
+                  <p>
+                    {errors?.fieldArray?.[0]?.nestedFieldArray?.root?.message}
+                  </p>
+                </div>
+              );
+            })}
+            <button onClick={() => append({})} type={'button'}>
+              append
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Add nested array' }),
+        );
+      });
+
+      screen.getByText('This is required');
+    });
+  });
 });
