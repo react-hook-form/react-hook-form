@@ -20,7 +20,8 @@
     ".": {
       "import": "./dist/index.esm.mjs",
       "require": "./dist/index.cjs.js"
-    }
+    },
+    "./dist/": "./dist/"
   },
   "scripts": {
     "clean": "rimraf dist",
