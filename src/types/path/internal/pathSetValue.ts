@@ -88,7 +88,7 @@ export type KeySetValue<T, K extends Key> = UnionToIntersection<
  */
 type PathSetValueImpl<T, PT extends PathTuple> = PT extends [
   infer K,
-  ...infer R
+  ...infer R,
 ]
   ? PathSetValueImpl<KeySetValue<T, AsKey<K>>, AsPathTuple<R>>
   : [T];
