@@ -3186,7 +3186,10 @@ describe('useFieldArray', () => {
         control,
         rules: {
           required: 'This is required',
-          minLength: 3,
+          minLength: {
+            value: 3,
+            message: 'Min length of 3',
+          },
         },
       });
 
@@ -3319,7 +3322,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      screen.getByText('This is required');
+      screen.getByText('Min length of 3');
     });
   });
 });
