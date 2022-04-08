@@ -1517,7 +1517,7 @@ describe('validateField', () => {
     (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
-    // TODO rtr why does it use snapshot?
+
     expect(
       await validateField(
         {
@@ -1535,7 +1535,20 @@ describe('validateField', () => {
         '',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'required',
+        types: {
+          required: true,
+          validate: true,
+        },
+      },
+    });
 
     expect(
       await validateField(
@@ -1554,7 +1567,21 @@ describe('validateField', () => {
         '123',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'minLength',
+        types: {
+          minLength: true,
+          pattern: true,
+          validate: true,
+        },
+      },
+    });
   });
 
   it('should handle pattern with g flag', async () => {
@@ -1580,7 +1607,20 @@ describe('validateField', () => {
         'a',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'minLength',
+        types: {
+          minLength: true,
+          validate: true,
+        },
+      },
+    });
 
     expect(
       await validateField(
@@ -1599,7 +1639,20 @@ describe('validateField', () => {
         'a',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'minLength',
+        types: {
+          minLength: true,
+          validate: true,
+        },
+      },
+    });
   });
 
   it('should return all validation error messages', async () => {
@@ -1633,7 +1686,22 @@ describe('validateField', () => {
         '',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: 'test',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'required',
+        types: {
+          required: 'test',
+          test: true,
+          test1: 'Luo',
+          test2: 'Bill',
+        },
+      },
+    });
 
     expect(
       await validateField(
@@ -1662,7 +1730,23 @@ describe('validateField', () => {
         'bil',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: 'minLength',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'minLength',
+        types: {
+          minLength: 'minLength',
+          pattern: 'pattern',
+          test: true,
+          test1: 'Luo',
+          test2: 'Bill',
+        },
+      },
+    });
 
     expect(
       await validateField(
@@ -1691,7 +1775,23 @@ describe('validateField', () => {
         'bil',
         true,
       ),
-    ).toMatchSnapshot();
+    ).toEqual({
+      test: {
+        message: 'minLength',
+        ref: {
+          name: 'test',
+          type: 'text',
+        },
+        type: 'minLength',
+        types: {
+          minLength: 'minLength',
+          pattern: 'pattern',
+          test: true,
+          test1: 'Luo',
+          test2: 'Bill',
+        },
+      },
+    });
   });
 
   describe('with Browser native validation', () => {

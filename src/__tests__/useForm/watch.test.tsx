@@ -258,14 +258,14 @@ describe('watch', () => {
     ]);
   });
 
-  it('should watch correctly with useFieldArray with action and then fallback to onChange', async () => {
+  it('should watch correctly with useFieldArray with action and then fallback to onChange', () => {
     type FormValues = {
       names: {
         name: string;
       }[];
     };
 
-    const output: object[] = [];
+    let output: object = {};
 
     const Component = () => {
       const { control, handleSubmit, watch } = useForm<FormValues>({
@@ -282,7 +282,7 @@ describe('watch', () => {
         append({ name: 'test' });
       };
 
-      output.push(watch());
+      output = watch();
 
       return (
         <form onSubmit={handleSubmit(() => {})}>
@@ -306,19 +306,45 @@ describe('watch', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button'));
+    expect(output).toEqual({
+      names: [],
+    });
 
-    fireEvent.click(screen.getByRole('button'));
+    const appendButton = screen.getByRole('button');
+
+    fireEvent.click(appendButton);
+
+    fireEvent.click(appendButton);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: { value: '123' },
+    });
+
+    expect(output).toEqual({
+      names: [
+        {
+          name: '123',
+        },
+        {
+          name: 'test',
+        },
+      ],
     });
 
     fireEvent.change(screen.getAllByRole('textbox')[1], {
       target: { value: '456' },
     });
 
-    expect(output).toMatchSnapshot();
+    expect(output).toEqual({
+      names: [
+        {
+          name: '123',
+        },
+        {
+          name: '456',
+        },
+      ],
+    });
   });
 
   it('should have dirty marked when watch is enabled', async () => {
@@ -424,15 +450,33 @@ describe('watch', () => {
 
     render(<App />);
 
+    expect(watched).toEqual([{}]);
+
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '1',
       },
     });
 
+    expect(watched).toEqual([
+      {},
+      {
+        test: '1',
+      },
+    ]);
+
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watched).toMatchSnapshot();
+    expect(watched).toEqual([
+      {},
+      {
+        test: '1',
+      },
+      {
+        test: '1',
+      },
+      {},
+    ]);
   });
 
   it('should flush additional render for shouldUnregister: true', async () => {

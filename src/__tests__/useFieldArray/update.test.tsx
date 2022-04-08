@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -149,9 +143,35 @@ describe('update', () => {
 
     render(<Component />);
 
+    expect(watched).toEqual([
+      {},
+      {
+        test: [],
+      },
+    ]);
+
     fireEvent.click(screen.getByRole('button', { name: /update/i }));
 
-    expect(watched).toMatchSnapshot();
+    expect(watched).toEqual([
+      {},
+      {
+        test: [],
+      },
+      {
+        test: [
+          {
+            value: '',
+          },
+        ],
+      },
+      {
+        test: [
+          {
+            value: '',
+          },
+        ],
+      },
+    ]);
   });
 
   it('should return watched value with update and watch API', async () => {
@@ -192,7 +212,7 @@ describe('update', () => {
     );
   });
 
-  it('should update group input correctly', async () => {
+  it('should update group input correctly', () => {
     type FormValues = {
       test: {
         value: {
@@ -202,7 +222,7 @@ describe('update', () => {
       }[];
     };
 
-    const fieldArrayValues: unknown[] = [];
+    let fieldArrayValues: unknown[] = [];
 
     const GroupInput = ({
       control,
@@ -258,7 +278,7 @@ describe('update', () => {
         control,
       });
 
-      fieldArrayValues.push(fields);
+      fieldArrayValues = fields;
 
       return (
         <div>
@@ -282,9 +302,17 @@ describe('update', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    expect(fieldArrayValues).toEqual([
+      {
+        id: '0',
+        value: {
+          firstName: 'bill',
+          lastName: 'luo',
+        },
+      },
+    ]);
+
+    fireEvent.click(screen.getByRole('button'));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -293,7 +321,15 @@ describe('update', () => {
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('lastName');
 
-    expect(fieldArrayValues).toMatchSnapshot();
+    expect(fieldArrayValues).toEqual([
+      {
+        id: '1',
+        value: {
+          firstName: 'firstName',
+          lastName: 'lastName',
+        },
+      },
+    ]);
   });
 
   it('should update field array with single value', () => {
@@ -340,7 +376,7 @@ describe('update', () => {
     expect(fieldArrayValues[0].value).toEqual('test');
   });
 
-  it('should update field array with multiple values', async () => {
+  it('should update field array with multiple values', () => {
     let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
 
     const App = () => {
@@ -389,9 +425,20 @@ describe('update', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    expect(fieldArrayValues).toEqual([
+      {
+        firstName: 'bill',
+        id: '0',
+        lastName: 'luo',
+      },
+      {
+        firstName: 'bill1',
+        id: '1',
+        lastName: 'luo1',
+      },
+    ]);
+
+    fireEvent.click(screen.getByRole('button'));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -406,7 +453,18 @@ describe('update', () => {
       (screen.getAllByRole('textbox')[3] as HTMLInputElement).value,
     ).toEqual('test4');
 
-    expect(fieldArrayValues).toMatchSnapshot();
+    expect(fieldArrayValues).toEqual([
+      {
+        firstName: 'test1',
+        id: '2',
+        lastName: 'test2',
+      },
+      {
+        firstName: 'test3',
+        id: '3',
+        lastName: 'test4',
+      },
+    ]);
   });
 
   describe('with resolver', () => {

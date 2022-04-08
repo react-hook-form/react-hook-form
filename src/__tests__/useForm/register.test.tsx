@@ -356,7 +356,6 @@ describe('register', () => {
     type FormValue = {
       test: string;
     };
-    const watchedValue: FormValue[] = [];
     const Component = () => {
       const { register, watch } = useForm<FormValue>({
         defaultValues: {
@@ -364,10 +363,11 @@ describe('register', () => {
         },
       });
       const [show, setShow] = React.useState(true);
-      watchedValue.push(watch());
+      const value = watch('test');
 
       return (
         <>
+          <p>Value: {`${value}`}</p>
           {show && <input {...register('test', { shouldUnregister: true })} />}
           <button onClick={() => setShow(false)}>hide</button>
         </>
@@ -376,9 +376,11 @@ describe('register', () => {
 
     render(<Component />);
 
+    expect(screen.getByText('Value: bill')).toBeVisible();
+
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue).toMatchSnapshot();
+    expect(screen.getByText('Value: undefined')).toBeVisible();
   });
 
   it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {
@@ -1270,7 +1272,18 @@ describe('register', () => {
       { test: [false, false, false] },
     ]);
 
-    expect(inputs).toMatchSnapshot();
+    expect(inputs).toEqual({
+      test: {
+        _f: {
+          mount: true,
+          name: 'test',
+          ref: {
+            name: 'test',
+          },
+          value: [false, false, false],
+        },
+      },
+    });
   });
 
   describe('when setValueAs is presented with inputs', () => {

@@ -342,25 +342,35 @@ describe('reset', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: {
-          value: 'test',
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(formState).toEqual({
+        errors: {},
+        isDirty: true,
+        touchedFields: {
+          test: true,
         },
-      });
+      }),
+    );
 
-      fireEvent.blur(screen.getByRole('textbox'));
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    expect(formState).toEqual({
+      errors: {},
+      isDirty: true,
+      touchedFields: {
+        test: true,
+      },
     });
-
-    expect(formState).toMatchSnapshot();
-
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-    });
-
-    expect(formState).toMatchSnapshot();
   });
 
   it('should keep isValid state when keep option is presented', async () => {
@@ -507,7 +517,35 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(getValuesResult).toMatchSnapshot();
+    expect(getValuesResult).toEqual([
+      {
+        names: [
+          {
+            name: 'test',
+          },
+        ],
+      },
+      {
+        names: [
+          {
+            name: 'Bill',
+          },
+          {
+            name: 'Luo',
+          },
+        ],
+      },
+      {
+        names: [
+          {
+            name: 'Bill',
+          },
+          {
+            name: 'Luo',
+          },
+        ],
+      },
+    ]);
   });
 
   it('should keep defaultValues after reset with shouldKeepDefaultValues', async () => {

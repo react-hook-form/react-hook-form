@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  act as actComponent,
   fireEvent,
   render,
   screen,
@@ -243,7 +242,7 @@ describe('useForm', () => {
       };
 
       it('should remove and unregister inputs when inputs gets unmounted', async () => {
-        const submittedData: FormValues[] = [];
+        let submittedData: FormValues;
 
         const Component = () => {
           const [show, setShow] = React.useState(true);
@@ -257,7 +256,7 @@ describe('useForm', () => {
           });
 
           return (
-            <form onSubmit={handleSubmit((data) => submittedData.push(data))}>
+            <form onSubmit={handleSubmit((data) => (submittedData = data))}>
               {show && (
                 <>
                   <input {...register('test')} />
@@ -279,19 +278,25 @@ describe('useForm', () => {
 
         render(<Component />);
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-        });
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-        actComponent(() => {
-          fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-        });
+        await waitFor(() =>
+          expect(submittedData).toEqual({
+            test: 'bill',
+            test1: 'bill1',
+            test2: [
+              {
+                value: 'bill2',
+              },
+            ],
+          }),
+        );
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-        });
+        fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
 
-        expect(submittedData).toMatchSnapshot();
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => expect(submittedData).toEqual({}));
       });
     });
 
@@ -1014,20 +1019,77 @@ describe('useForm', () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
 
         render(<Component resolver={resolver} mode="onChange" />);
-        expect(resolver).toHaveBeenCalled();
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: 'test' },
-          });
+        const input = screen.getByRole('textbox');
+
+        expect(resolver).toHaveBeenCalledWith(
+          {
+            test: '',
+          },
+          undefined,
+          {
+            criteriaMode: undefined,
+            fields: {
+              test: {
+                mount: true,
+                name: 'test',
+                ref: input,
+              },
+            },
+            names: ['test'],
+            shouldUseNativeValidation: undefined,
+          },
+        );
+
+        resolver.mockClear();
+
+        fireEvent.input(input, {
+          target: { name: 'test', value: 'test' },
         });
 
-        expect(resolver.mock.calls).toMatchSnapshot();
+        expect(resolver).toHaveBeenCalledWith(
+          {
+            test: 'test',
+          },
+          undefined,
+          {
+            criteriaMode: undefined,
+            fields: {
+              test: {
+                mount: true,
+                name: 'test',
+                ref: input,
+              },
+            },
+            names: ['test'],
+            shouldUseNativeValidation: undefined,
+          },
+        );
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByText(/button/i));
-        });
-        expect(resolver.mock.calls[1]).toMatchSnapshot();
+        resolver.mockClear();
+
+        fireEvent.click(screen.getByText(/button/i));
+
+        await waitFor(() =>
+          expect(resolver).toHaveBeenCalledWith(
+            {
+              test: 'test',
+            },
+            undefined,
+            {
+              criteriaMode: undefined,
+              fields: {
+                test: {
+                  mount: true,
+                  name: 'test',
+                  ref: input,
+                },
+              },
+              names: ['test'],
+              shouldUseNativeValidation: undefined,
+            },
+          ),
+        );
       });
 
       it('should call the resolver with the field being validated when `trigger` is called', async () => {

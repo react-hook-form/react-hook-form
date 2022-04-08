@@ -529,7 +529,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(3);
     });
 
-    it('should remove reset method when field array is removed', async () => {
+    it('should remove reset method when field array is removed', () => {
       let controlTemp: any;
       let fieldsTemp: unknown[] = [];
 
@@ -567,14 +567,28 @@ describe('useFieldArray', () => {
 
       const { unmount } = render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      expect(fieldsTemp).toEqual([{ id: '0', value: 'default' }]);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(fieldsTemp).toEqual([
+        { id: '0', value: 'default' },
+        {
+          id: '1',
+          value: 'test',
+        },
+      ]);
 
       unmount();
 
-      expect(fieldsTemp).toMatchSnapshot();
       expect(controlTemp._names.array).toEqual(new Set(['test']));
+      expect(fieldsTemp).toEqual([
+        { id: '0', value: 'default' },
+        {
+          id: '1',
+          value: 'test',
+        },
+      ]);
     });
 
     it('should unset field array values correctly on DOM removing', async () => {
@@ -1524,7 +1538,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
 
-    it('should populate all array fields with setValue when name match Field Array', async () => {
+    it('should populate all array fields with setValue when name match Field Array', () => {
       type FormInputs = {
         nest: {
           value: number;
@@ -1549,12 +1563,14 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((item, i) => (
-              <input
-                key={item.id}
-                {...control.register(
-                  `nest.${index}.nestedArray.${i}.value` as const,
-                )}
-              />
+              <label key={item.id}>
+                {`nest.${index}.nestedArray.${i}.value`}
+                <input
+                  {...control.register(
+                    `nest.${index}.nestedArray.${i}.value` as const,
+                  )}
+                />
+              </label>
             ))}
           </div>
         );
@@ -1573,7 +1589,7 @@ describe('useFieldArray', () => {
               value: 1,
               nestedArray: [
                 {
-                  value: 1,
+                  value: 11,
                 },
               ],
             },
@@ -1581,7 +1597,7 @@ describe('useFieldArray', () => {
               value: 2,
               nestedArray: [
                 {
-                  value: 1,
+                  value: 21,
                 },
               ],
             },
@@ -1592,7 +1608,10 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((item, i) => (
               <div key={item.id}>
-                <input {...register(`nest.${i}.value` as const)} />
+                <label>
+                  {`nest.${i}.value`}
+                  <input {...register(`nest.${i}.value` as const)} />
+                </label>
 
                 <ChildComponent control={control} index={i} />
               </div>
@@ -1601,12 +1620,26 @@ describe('useFieldArray', () => {
         );
       };
 
-      const { asFragment } = render(<Component />);
+      render(<Component />);
 
-      expect(asFragment()).toMatchSnapshot();
+      const nestInput0 = screen.getByRole('textbox', {
+        name: 'nest.0.value',
+      });
+      const nestInput1 = screen.getByRole('textbox', { name: 'nest.1.value' });
+      const nestedArrayInput0 = screen.getByRole('textbox', {
+        name: 'nest.0.nestedArray.0.value',
+      });
+      const nestedArrayInput1 = screen.getByRole('textbox', {
+        name: 'nest.1.nestedArray.0.value',
+      });
+
+      expect(nestInput0).toHaveValue('1');
+      expect(nestedArrayInput0).toHaveValue('11');
+      expect(nestInput1).toHaveValue('2');
+      expect(nestedArrayInput1).toHaveValue('21');
     });
 
-    it('should populate all array fields correctly with setValue', async () => {
+    it('should populate all array fields correctly with setValue', () => {
       type FormValues = {
         nest: {
           value: number;
@@ -1629,12 +1662,14 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((item, i) => (
-              <input
-                key={item.id}
-                {...control.register(
-                  `nest.${index}.nestedArray.${i}.value` as const,
-                )}
-              />
+              <label key={item.id}>
+                {`nest.${index}.nestedArray.${i}.value`}
+                <input
+                  {...control.register(
+                    `nest.${index}.nestedArray.${i}.value` as const,
+                  )}
+                />
+              </label>
             ))}
           </div>
         );
@@ -1655,7 +1690,7 @@ describe('useFieldArray', () => {
                 value: 1,
                 nestedArray: [
                   {
-                    value: 1,
+                    value: 11,
                   },
                 ],
               },
@@ -1663,7 +1698,7 @@ describe('useFieldArray', () => {
                 value: 2,
                 nestedArray: [
                   {
-                    value: 1,
+                    value: 21,
                   },
                 ],
               },
@@ -1676,7 +1711,10 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((item, i) => (
               <div key={item.id}>
-                <input {...register(`nest.${i}.value` as const)} />
+                <label>
+                  {`nest.${i}.value`}
+                  <input {...register(`nest.${i}.value` as const)} />
+                </label>
 
                 <ChildComponent control={control} index={i} />
               </div>
@@ -1685,12 +1723,24 @@ describe('useFieldArray', () => {
         );
       };
 
-      const { asFragment } = render(<Component />);
+      render(<Component />);
 
-      expect(asFragment()).toMatchSnapshot();
+      const nestInput0 = screen.getByRole('textbox', { name: 'nest.0.value' });
+      const nestInput1 = screen.getByRole('textbox', { name: 'nest.1.value' });
+      const nestedArrayInput0 = screen.getByRole('textbox', {
+        name: 'nest.0.nestedArray.0.value',
+      });
+      const nestedArrayInput1 = screen.getByRole('textbox', {
+        name: 'nest.1.nestedArray.0.value',
+      });
+
+      expect(nestInput0).toHaveValue('1');
+      expect(nestedArrayInput0).toHaveValue('11');
+      expect(nestInput1).toHaveValue('2');
+      expect(nestedArrayInput1).toHaveValue('21');
     });
 
-    it('should worked with deep nested field array without chaining useFieldArray', async () => {
+    it('should worked with deep nested field array without chaining useFieldArray', () => {
       type FormValues = {
         nest: {
           value: string;
@@ -1713,12 +1763,14 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((item, i) => (
-              <input
-                key={item.id}
-                {...control.register(
-                  `nest.${index}.nestedArray.deepNest.${i}.value` as const,
-                )}
-              />
+              <label key={item.id}>
+                {`nest.${index}.nestedArray.deepNest.${i}.value`}
+                <input
+                  {...control.register(
+                    `nest.${index}.nestedArray.deepNest.${i}.value` as const,
+                  )}
+                />
+              </label>
             ))}
             <button type={'button'} onClick={() => append({ value: 'test' })}>
               append
@@ -1755,7 +1807,10 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((item, i) => (
               <div key={item.id}>
-                <input {...register(`nest.${i}.value` as const)} />
+                <label>
+                  {`nest.${i}.value`}
+                  <input {...register(`nest.${i}.value` as const)} />
+                </label>
                 <ChildComponent control={control} index={i} />
                 <button
                   type={'button'}
@@ -1764,17 +1819,17 @@ describe('useFieldArray', () => {
                       'nest',
                       [
                         {
-                          value: '1',
+                          value: 'newV1',
                           nestedArray: {
                             deepNest: [
                               {
-                                value: '1',
+                                value: 'new1',
                               },
                               {
-                                value: '2',
+                                value: 'new2',
                               },
                               {
-                                value: '3',
+                                value: 'new3',
                               },
                             ],
                           },
@@ -1792,25 +1847,47 @@ describe('useFieldArray', () => {
         );
       };
 
-      const { asFragment } = render(<Component />);
+      render(<Component />);
 
-      expect(asFragment()).toMatchSnapshot();
-
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+      expect(screen.getAllByRole('textbox')).toHaveLength(2);
+      const nestInput = screen.getByRole('textbox', { name: 'nest.0.value' });
+      const deepNestInput0 = screen.getByRole('textbox', {
+        name: 'nest.0.nestedArray.deepNest.0.value',
       });
 
-      expect(asFragment()).toMatchSnapshot();
+      expect(nestInput).toHaveValue('1');
+      expect(deepNestInput0).toHaveValue('1');
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+
+      const deepNestInput1 = screen.getByRole('textbox', {
+        name: 'nest.0.nestedArray.deepNest.1.value',
+      });
+      const deepNestInput2 = screen.getByRole('textbox', {
+        name: 'nest.0.nestedArray.deepNest.2.value',
       });
 
-      expect(asFragment()).toMatchSnapshot();
+      expect(screen.getByRole('textbox', { name: 'nest.0.value' })).toHaveValue(
+        'newV1',
+      );
+      expect(
+        screen.getByRole('textbox', {
+          name: 'nest.0.nestedArray.deepNest.0.value',
+        }),
+      ).toHaveValue('new1');
+      expect(deepNestInput1).toHaveValue('new2');
+      expect(deepNestInput2).toHaveValue('new3');
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      const deepNestInput3 = screen.getByRole('textbox', {
+        name: 'nest.0.nestedArray.deepNest.3.value',
+      });
+      expect(deepNestInput3).toHaveValue('test');
     });
 
     it('should allow append with deeply nested field array even with flat structure', async () => {
-      const watchValue: unknown[] = [];
+      let watchValue: object = {};
 
       const App = () => {
         const [data, setData] = React.useState({});
@@ -1827,7 +1904,7 @@ describe('useFieldArray', () => {
           name: 'test',
         });
 
-        watchValue.push(watch());
+        watchValue = watch();
 
         return (
           <form
@@ -1859,18 +1936,25 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      expect(watchValue).toEqual({ test: [] });
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      expect(watchValue).toEqual({
+        test: [
+          {
+            yourDetails: {
+              firstName: ['test', 'test1'],
+              lastName: ['test', 'test1'],
+            },
+          },
+        ],
       });
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-      });
-
-      expect(watchValue).toMatchSnapshot();
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
       expect(
-        screen.getByText(
+        await screen.findByText(
           '{"test":[{"yourDetails":{"firstName":["test","test1"],"lastName":["test","test1"]}}]}',
         ),
       ).toBeVisible();
@@ -1931,7 +2015,7 @@ describe('useFieldArray', () => {
         }[];
       }[];
     };
-    const watchValues: unknown[] = [];
+    let watchValues: unknown[] = [];
 
     const Component = () => {
       const { control, watch } = useForm<FormValues>({
@@ -1944,7 +2028,7 @@ describe('useFieldArray', () => {
         name: 'test',
       });
 
-      watchValues.push(watch('test'));
+      watchValues = watch('test');
 
       React.useEffect(() => {
         append({
@@ -1981,8 +2065,8 @@ describe('useFieldArray', () => {
           <button
             type={'button'}
             onClick={() =>
-              prepend({
-                test: 'prepend',
+              append({
+                test: 'append',
                 test2: [
                   {
                     test: 'test',
@@ -1996,7 +2080,7 @@ describe('useFieldArray', () => {
           <button
             type={'button'}
             onClick={() =>
-              append({
+              prepend({
                 test: 'prepend',
                 test2: [
                   {
@@ -2029,17 +2113,126 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
+    expect(watchValues).toEqual([
+      {
+        test: 'append',
+        test1: 'append',
+      },
+    ]);
+
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+
+    expect(watchValues).toEqual([
+      { test: 'prepend', test1: 'prepend' },
+      {
+        test: 'append',
+        test1: 'append',
+      },
+    ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
+    expect(watchValues).toEqual([
+      { test: 'prepend', test1: 'prepend' },
+      {
+        test: 'insert',
+        test1: 'insert',
+      },
+      {
+        test: 'append',
+        test1: 'append',
+      },
+    ]);
+
     fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
+
+    expect(watchValues).toEqual([
+      { test: 'prepend', test1: 'prepend' },
+      {
+        test: 'insert',
+        test1: 'insert',
+      },
+      {
+        test: 'append',
+        test1: 'append',
+      },
+      {
+        test: 'append',
+        test2: [
+          {
+            test: 'test',
+          },
+        ],
+      },
+    ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
 
+    expect(watchValues).toEqual([
+      {
+        test: 'prepend',
+        test2: [
+          {
+            test: 'test',
+          },
+        ],
+      },
+      { test: 'prepend', test1: 'prepend' },
+      {
+        test: 'insert',
+        test1: 'insert',
+      },
+      {
+        test: 'append',
+        test1: 'append',
+      },
+      {
+        test: 'append',
+        test2: [
+          {
+            test: 'test',
+          },
+        ],
+      },
+    ]);
+
     fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
 
-    expect(watchValues).toMatchSnapshot();
+    expect(watchValues).toEqual([
+      {
+        test: 'prepend',
+        test2: [
+          {
+            test: 'test',
+          },
+        ],
+      },
+      {
+        test: 'insert',
+        test2: [
+          {
+            test: 'test',
+          },
+        ],
+      },
+      { test: 'prepend', test1: 'prepend' },
+      {
+        test: 'insert',
+        test1: 'insert',
+      },
+      {
+        test: 'append',
+        test1: 'append',
+      },
+      {
+        test: 'append',
+        test2: [
+          {
+            test: 'test',
+          },
+        ],
+      },
+    ]);
   });
 
   it('should append multiple inputs correctly', () => {
@@ -2049,7 +2242,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    const watchedValue: unknown[] = [];
+    let watchedValue: object = {};
 
     const Component = () => {
       const { register, control, watch } = useForm<FormValues>({
@@ -2066,7 +2259,7 @@ describe('useFieldArray', () => {
         name: 'test',
       });
 
-      watchedValue.push(watch());
+      watchedValue = watch();
 
       return (
         <form>
@@ -2087,9 +2280,25 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
+    expect(watchedValue).toEqual({
+      test: [
+        {
+          value: 'data',
+        },
+      ],
+    });
+
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue).toMatchSnapshot();
+    expect(watchedValue).toEqual({
+      test: [
+        {
+          value: 'data',
+        },
+        { value: 'test' },
+        { value: 'test1' },
+      ],
+    });
   });
 
   it('should update field array defaultValues when invoke setValue', async () => {
@@ -2099,7 +2308,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    const result: unknown[] = [];
+    let result: object = {};
 
     const Child = () => {
       const { fields } = useFieldArray<FormValues>({
@@ -2128,7 +2337,7 @@ describe('useFieldArray', () => {
       });
       const { setValue } = methods;
 
-      result.push(methods.watch());
+      result = methods.watch();
 
       return (
         <form>
@@ -2145,6 +2354,17 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
+    expect(result).toEqual({
+      names: [
+        {
+          name: 'will',
+        },
+        {
+          name: 'Mike',
+        },
+      ],
+    });
+
     fireEvent.click(screen.getByRole('button', { name: 'Toggle hide' }));
 
     expect(screen.queryAllByRole('textbox')).toEqual([]);
@@ -2159,7 +2379,7 @@ describe('useFieldArray', () => {
 
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
-    expect(result).toMatchSnapshot();
+    expect(result).toEqual({ names: [] });
   });
 
   it('should unregister field array when shouldUnregister set to true', () => {
@@ -2169,7 +2389,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    const watchedValues: FormValues[] = [];
+    let watchedValues: object = {};
 
     const Child = ({
       control,
@@ -2202,7 +2422,7 @@ describe('useFieldArray', () => {
       });
       const [show, setShow] = React.useState(true);
 
-      watchedValues.push(watch());
+      watchedValues = watch();
 
       return (
         <form>
@@ -2216,9 +2436,13 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
+    expect(watchedValues).toEqual({
+      test: [{ value: 'test' }, { value: 'test1' }],
+    });
+
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValues).toMatchSnapshot();
+    expect(watchedValues).toEqual({});
   });
 
   it('should keep field values when field array gets unmounted and mounted', async () => {

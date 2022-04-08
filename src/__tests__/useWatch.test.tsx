@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
 import * as generateId from '../logic/generateId';
@@ -850,14 +856,21 @@ describe('useWatch', () => {
 
       render(<App />);
 
-      expect(watchedValue).toMatchSnapshot();
+      expect(watchedValue).toEqual([
+        {
+          arr: [],
+          name: 'foo',
+        },
+        {
+          arr: [],
+          name: 'foo',
+        },
+      ]);
     });
   });
 
   describe('fieldArray with shouldUnregister true', () => {
-    it('should watch correct input update with single field array input', () => {
-      const watchData: unknown[] = [];
-
+    it('should watch correct input update with single field array input', async () => {
       type Unpacked<T> = T extends (infer U)[] ? U : T;
 
       type FormValues = {
@@ -880,15 +893,10 @@ describe('useWatch', () => {
 
         return (
           <form>
-            {fields.map((item, index, items) => {
+            {fields.map((item, index) => {
               return (
                 <div key={item.id}>
-                  <Child
-                    control={control}
-                    index={index}
-                    itemDefault={item}
-                    itemsDefault={items}
-                  />
+                  <Child control={control} index={index} itemDefault={item} />
                   <button
                     type="button"
                     onClick={() => {
@@ -908,19 +916,16 @@ describe('useWatch', () => {
                 </div>
               );
             })}
+            <Watcher itemsDefault={fields} control={control} />
             <input type="submit" />
           </form>
         );
       }
 
-      function Child({
-        index,
-        itemDefault,
+      function Watcher({
         itemsDefault,
         control,
       }: {
-        index: number;
-        itemDefault: Unpacked<FormValues['items']>;
         itemsDefault: FormValues['items'];
         control: Control<FormValues>;
       }) {
@@ -930,8 +935,28 @@ describe('useWatch', () => {
           defaultValue: itemsDefault,
         });
 
-        watchData.push(useWatchedItems);
+        return (
+          <div>
+            {useWatchedItems.map((item, index) => {
+              return (
+                <p key={index}>
+                  Value {index}: {item.prop}
+                </p>
+              );
+            })}
+          </div>
+        );
+      }
 
+      function Child({
+        index,
+        itemDefault,
+        control,
+      }: {
+        index: number;
+        itemDefault: Unpacked<FormValues['items']>;
+        control: Control<FormValues>;
+      }) {
         const { field } = useController({
           name: `items.${index}.prop` as const,
           control,
@@ -943,11 +968,22 @@ describe('useWatch', () => {
 
       render(<App />);
 
+      expect(screen.getByText('Value 0: test')).toBeVisible();
+      expect(screen.getByText('Value 1: test1')).toBeVisible();
+      expect(
+        screen.queryByText('Value 1: ShouldBeTHere'),
+      ).not.toBeInTheDocument();
+
       fireEvent.click(screen.getAllByRole('button', { name: 'insert' })[0]);
+
+      expect(await screen.findByText('Value 1: ShouldBeTHere')).toBeVisible();
+      expect(screen.getByText('Value 2: test1')).toBeVisible();
 
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
 
-      expect(watchData).toMatchSnapshot();
+      expect(
+        screen.queryByText('Value 2: ShouldBeTHere'),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -1083,21 +1119,21 @@ describe('useWatch', () => {
 
     describe('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
-      it('should return current value with radio type', async () => {
+      it('should return current value with radio type', () => {
         type FormValues = {
           options: { option: string }[];
         };
 
-        const watchedValue: object[] = [];
-
         const Test = ({ control }: { control: Control<FormValues> }) => {
-          watchedValue.push(
-            useWatch({
-              control,
-            }),
-          );
+          const values = useWatch({ control });
+          const options = values.options;
 
-          return null;
+          return (
+            <div>
+              <p>First: {options?.[0].option}</p>
+              <p>Second: {options?.[1].option}</p>
+            </div>
+          );
         };
 
         const Component = () => {
@@ -1120,34 +1156,44 @@ describe('useWatch', () => {
           return (
             <form>
               {fields.map((_, i) => (
-                <div key={i.toString()}>
-                  <input
-                    type="radio"
-                    value="yes"
-                    {...register(`options.${i}.option` as const)}
-                  />
-                  <input
-                    type="radio"
-                    value="no"
-                    {...register(`options.${i}.option` as const)}
-                  />
-                  <Test control={control} />
+                <div key={i.toString()} data-testid={`field-${i}`}>
+                  <label>
+                    Yes
+                    <input
+                      type="radio"
+                      value="yes"
+                      {...register(`options.${i}.option` as const)}
+                    />
+                  </label>
+                  <label>
+                    No
+                    <input
+                      type="radio"
+                      value="no"
+                      {...register(`options.${i}.option` as const)}
+                    />
+                  </label>
                 </div>
               ))}
+              <Test control={control} />
             </form>
           );
         };
 
         render(<Component />);
 
-        fireEvent.change(screen.getAllByRole('radio')[1], {
-          target: {
-            value: 'yes',
-            checked: true,
-          },
-        });
+        const firstField = screen.getByTestId('field-0');
+        expect(within(firstField).getByLabelText('Yes')).toBeChecked();
+        expect(screen.getByText('First: yes')).toBeVisible();
 
-        expect(watchedValue).toMatchSnapshot();
+        const secondField = screen.getByTestId('field-1');
+        expect(within(secondField).getByLabelText('Yes')).toBeChecked();
+        expect(screen.getByText('Second: yes')).toBeVisible();
+
+        fireEvent.click(within(firstField).getByLabelText('No'));
+
+        expect(screen.getByText('First: no')).toBeVisible();
+        expect(screen.getByText('Second: yes')).toBeVisible();
       });
 
       it("should watch item correctly with useFieldArray's remove method", async () => {

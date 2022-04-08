@@ -1115,11 +1115,23 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
 
-    expect(fields).toMatchSnapshot();
+    expect(fields).toEqual({});
 
     fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
 
-    expect(data).toMatchSnapshot();
+    expect(data).toEqual({
+      test: [
+        {
+          name: 'append',
+          nestedArray: [
+            {
+              field1: 'append',
+              field2: 'append',
+            },
+          ],
+        },
+      ],
+    });
   });
 
   describe('when set field to null', () => {
@@ -1247,7 +1259,7 @@ describe('setValue', () => {
     expect(await screen.findByText('{"data":"2"}')).toBeVisible();
   });
 
-  it('should update nested object which contain date object without register', async () => {
+  it('should update nested object which contain date object without register', () => {
     const watchedValue: unknown[] = [];
     const defaultValues = {
       userData: {
@@ -1285,7 +1297,16 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue).toMatchSnapshot();
+    expect(watchedValue).toEqual([
+      {
+        date: new Date('2021-06-15T00:00:00.000Z'),
+        userId: 'abc',
+      },
+      {
+        date: new Date('2021-12-17T00:00:00.000Z'),
+        userId: '1234',
+      },
+    ]);
   });
 
   it('should update isDirty even input is not registered', async () => {

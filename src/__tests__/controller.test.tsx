@@ -1012,7 +1012,15 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue).toMatchSnapshot();
+    expect(watchedValue).toEqual([
+      {
+        test: 'bill',
+      },
+      {
+        test: 'bill',
+      },
+      {},
+    ]);
   });
 
   it('should set ref to empty object when ref is not defined', async () => {
