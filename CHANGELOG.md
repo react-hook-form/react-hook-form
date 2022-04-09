@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.29.0] - 2022-3-30
+
+- tsconfig config change from es2017 to es2018
+
 ## [7.28.0] - 2022-3-13
 
 - `register` API options `deps` now support string
