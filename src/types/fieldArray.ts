@@ -1,6 +1,7 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
 import { Auto, FieldPathValue, PathString } from './path';
+import { RegisterOptions } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues,
@@ -8,6 +9,10 @@ export type UseFieldArrayProps<
 > = {
   name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>;
   control?: Control<TFieldValues>;
+  rules?: Pick<
+    RegisterOptions<TFieldValues>,
+    'maxLength' | 'minLength' | 'validate' | 'required'
+  >;
   shouldUnregister?: boolean;
 };
 

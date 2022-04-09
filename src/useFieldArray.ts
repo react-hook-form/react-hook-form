@@ -4,19 +4,25 @@ import focusFieldBy from './logic/focusFieldBy';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
+import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
+import validateField from './logic/validateField';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
+import getValidationModes from './utils/getValidationModes';
 import insertAt from './utils/insert';
+import isEmptyObject from './utils/isEmptyObject';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import updateAt from './utils/update';
+import { VALIDATION_MODE } from './constants';
 import {
+  Field,
   FieldArray,
   FieldArrayMethodProps,
   FieldArrayWithId,
@@ -24,6 +30,7 @@ import {
   FieldPath,
   FieldValues,
   PathString,
+  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -88,6 +95,12 @@ export function useFieldArray<
   _name.current = name;
   _fieldIds.current = fields;
   control._names.array.add(name);
+
+  props.rules &&
+    control.register(
+      name as FieldPath<TFieldValues>,
+      props.rules as RegisterOptions<FieldValues, PathString>,
+    );
 
   const callback = React.useCallback(({ values, name: fieldArrayName }) => {
     if (fieldArrayName === _name.current || !fieldArrayName) {
@@ -280,16 +293,47 @@ export function useFieldArray<
     isWatched(name, control._names) && control._subjects.state.next({});
 
     if (_actioned.current) {
-      control._executeSchema([name]).then((result) => {
-        const error = get(result.errors, name);
+      if (control._options.resolver) {
+        control._executeSchema([name]).then((result) => {
+          const error = get(result.errors, name);
 
-        if (error && error.type && !get(control._formState.errors, name)) {
-          set(control._formState.errors, name, error);
-          control._subjects.state.next({
-            errors: control._formState.errors as FieldErrors<TFieldValues>,
-          });
+          if (error && error.type && !get(control._formState.errors, name)) {
+            set(control._formState.errors, name, error);
+            control._subjects.state.next({
+              errors: control._formState.errors as FieldErrors<TFieldValues>,
+            });
+          }
+        });
+      } else {
+        const field: Field = get(control._fields, name);
+        const validationModeBeforeSubmit = getValidationModes(
+          control._options.mode,
+        );
+        if (
+          (!validationModeBeforeSubmit.isOnSubmit ||
+            control._formState.isSubmitted) &&
+          field &&
+          field._f
+        ) {
+          validateField(
+            field,
+            get(control._formValues, name),
+            control._options.criteriaMode === VALIDATION_MODE.all,
+            control._options.shouldUseNativeValidation,
+            true,
+          ).then(
+            (error) =>
+              !isEmptyObject(error) &&
+              control._subjects.state.next({
+                errors: updateFieldArrayRootError(
+                  control._formState.errors,
+                  error,
+                  name,
+                ) as FieldErrors<TFieldValues>,
+              }),
+          );
         }
-      });
+      }
     }
 
     control._subjects.watch.next({

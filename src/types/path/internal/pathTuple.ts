@@ -89,7 +89,7 @@ type JoinPathTupleImpl<
  */
 export type JoinPathTuple<PT extends PathTuple> = PT extends [
   infer K,
-  ...infer R
+  ...infer R,
 ]
   ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>>
   : never;
