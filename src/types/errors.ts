@@ -12,6 +12,7 @@ export type MultipleFieldErrors = {
 
 export type FieldError = {
   type: LiteralUnion<keyof RegisterOptions, string>;
+  root?: FieldError;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;

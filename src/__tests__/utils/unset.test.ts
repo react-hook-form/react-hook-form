@@ -293,4 +293,22 @@ describe('unset', () => {
       },
     });
   });
+
+  describe('when there are remaining props', () => {
+    it('should not unset the array', () => {
+      const test = {
+        test: [{ firstName: 'test' }],
+      };
+
+      // @ts-ignore
+      test.test.root = {
+        test: 'message',
+      };
+
+      unset(test, 'test.0.firstName');
+
+      // @ts-ignore
+      expect(test.test.root).toBeDefined();
+    });
+  });
 });
