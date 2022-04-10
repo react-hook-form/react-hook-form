@@ -1,0 +1,349 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
+Array [
+  Object {},
+  Object {
+    "test": Array [],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "yourDetails": Object {
+          "firstName": Array [
+            "test",
+            "test1",
+          ],
+          "lastName": Array [
+            "test",
+            "test1",
+          ],
+        },
+      },
+    ],
+  },
+]
+`;
+
+exports[`useFieldArray should append multiple inputs correctly 1`] = `
+Array [
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+  Object {
+    "test": Array [
+      Object {
+        "value": "data",
+      },
+      Object {
+        "value": "test",
+      },
+      Object {
+        "value": "test1",
+      },
+    ],
+  },
+]
+`;
+
+exports[`useFieldArray should custom register append, prepend and insert inputs with values 1`] = `
+Array [
+  Array [],
+  Array [
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "append",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "append",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "append",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "append",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "insert",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "append",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "insert",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+    },
+    Object {
+      "test": "append",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+]
+`;

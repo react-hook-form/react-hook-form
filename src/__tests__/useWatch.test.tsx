@@ -871,6 +871,8 @@ describe('useWatch', () => {
 
   describe('fieldArray with shouldUnregister true', () => {
     it('should watch correct input update with single field array input', async () => {
+      const watchData: unknown[] = [];
+
       type Unpacked<T> = T extends (infer U)[] ? U : T;
 
       type FormValues = {
@@ -935,6 +937,8 @@ describe('useWatch', () => {
           defaultValue: itemsDefault,
         });
 
+        watchData.push(useWatchedItems);
+
         return (
           <div>
             {useWatchedItems.map((item, index) => {
@@ -984,6 +988,8 @@ describe('useWatch', () => {
       expect(
         screen.queryByText('Value 2: ShouldBeTHere'),
       ).not.toBeInTheDocument();
+
+      expect(watchData).toMatchSnapshot();
     });
   });
 
@@ -1123,10 +1129,12 @@ describe('useWatch', () => {
         type FormValues = {
           options: { option: string }[];
         };
+        const watchedValue: object[] = [];
 
         const Test = ({ control }: { control: Control<FormValues> }) => {
           const values = useWatch({ control });
           const options = values.options;
+          watchedValue.push(values);
 
           return (
             <div>
@@ -1194,6 +1202,9 @@ describe('useWatch', () => {
 
         expect(screen.getByText('First: no')).toBeVisible();
         expect(screen.getByText('Second: yes')).toBeVisible();
+
+        // Let's check all values of renders with implicitly the number of render (for each value)
+        expect(watchedValue).toMatchSnapshot();
       });
 
       it("should watch item correctly with useFieldArray's remove method", async () => {

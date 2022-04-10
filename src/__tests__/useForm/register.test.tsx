@@ -356,6 +356,7 @@ describe('register', () => {
     type FormValue = {
       test: string;
     };
+    const watchedValue: FormValue[] = [];
     const Component = () => {
       const { register, watch } = useForm<FormValue>({
         defaultValues: {
@@ -363,11 +364,10 @@ describe('register', () => {
         },
       });
       const [show, setShow] = React.useState(true);
-      const value = watch('test');
+      watchedValue.push(watch());
 
       return (
         <>
-          <p>Value: {`${value}`}</p>
           {show && <input {...register('test', { shouldUnregister: true })} />}
           <button onClick={() => setShow(false)}>hide</button>
         </>
@@ -376,11 +376,20 @@ describe('register', () => {
 
     render(<Component />);
 
-    expect(screen.getByText('Value: bill')).toBeVisible();
+    expect(watchedValue.at(-1)).toEqual({ test: 'bill' });
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.getByText('Value: undefined')).toBeVisible();
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(watchedValue).toEqual([
+      {
+        test: 'bill',
+      },
+      {
+        test: 'bill',
+      },
+      {},
+    ]);
   });
 
   it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {

@@ -222,7 +222,7 @@ describe('update', () => {
       }[];
     };
 
-    let fieldArrayValues: unknown[] = [];
+    const fieldArrayValues: unknown[] = [];
 
     const GroupInput = ({
       control,
@@ -278,7 +278,7 @@ describe('update', () => {
         control,
       });
 
-      fieldArrayValues = fields;
+      fieldArrayValues.push(fields);
 
       return (
         <div>
@@ -302,7 +302,7 @@ describe('update', () => {
 
     render(<App />);
 
-    expect(fieldArrayValues).toEqual([
+    expect(fieldArrayValues.at(-1)).toEqual([
       {
         id: '0',
         value: {
@@ -321,14 +321,26 @@ describe('update', () => {
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('lastName');
 
+    // Let's check all values of renders with implicitly the number of render (for each value)
     expect(fieldArrayValues).toEqual([
-      {
-        id: '1',
-        value: {
-          firstName: 'firstName',
-          lastName: 'lastName',
+      [
+        {
+          id: '0',
+          value: {
+            firstName: 'bill',
+            lastName: 'luo',
+          },
         },
-      },
+      ],
+      [
+        {
+          id: '1',
+          value: {
+            firstName: 'firstName',
+            lastName: 'lastName',
+          },
+        },
+      ],
     ]);
   });
 

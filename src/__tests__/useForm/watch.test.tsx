@@ -265,7 +265,7 @@ describe('watch', () => {
       }[];
     };
 
-    let output: object = {};
+    const output: object[] = [];
 
     const Component = () => {
       const { control, handleSubmit, watch } = useForm<FormValues>({
@@ -282,7 +282,7 @@ describe('watch', () => {
         append({ name: 'test' });
       };
 
-      output = watch();
+      output.push(watch());
 
       return (
         <form onSubmit={handleSubmit(() => {})}>
@@ -306,7 +306,7 @@ describe('watch', () => {
 
     render(<Component />);
 
-    expect(output).toEqual({
+    expect(output.at(-1)).toEqual({
       names: [],
     });
 
@@ -320,7 +320,7 @@ describe('watch', () => {
       target: { value: '123' },
     });
 
-    expect(output).toEqual({
+    expect(output.at(-1)).toEqual({
       names: [
         {
           name: '123',
@@ -335,16 +335,8 @@ describe('watch', () => {
       target: { value: '456' },
     });
 
-    expect(output).toEqual({
-      names: [
-        {
-          name: '123',
-        },
-        {
-          name: '456',
-        },
-      ],
-    });
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(output).toMatchSnapshot();
   });
 
   it('should have dirty marked when watch is enabled', async () => {

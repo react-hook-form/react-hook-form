@@ -1887,7 +1887,7 @@ describe('useFieldArray', () => {
     });
 
     it('should allow append with deeply nested field array even with flat structure', async () => {
-      let watchValue: object = {};
+      const watchValue: unknown[] = [];
 
       const App = () => {
         const [data, setData] = React.useState({});
@@ -1904,7 +1904,7 @@ describe('useFieldArray', () => {
           name: 'test',
         });
 
-        watchValue = watch();
+        watchValue.push(watch());
 
         return (
           <form
@@ -1936,11 +1936,11 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      expect(watchValue).toEqual({ test: [] });
+      expect(watchValue.at(-1)).toEqual({ test: [] });
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      expect(watchValue).toEqual({
+      expect(watchValue.at(-1)).toEqual({
         test: [
           {
             yourDetails: {
@@ -1958,6 +1958,9 @@ describe('useFieldArray', () => {
           '{"test":[{"yourDetails":{"firstName":["test","test1"],"lastName":["test","test1"]}}]}',
         ),
       ).toBeVisible();
+
+      // Let's check all values of renders with implicitly the number of render (for each value)
+      expect(watchValue).toMatchSnapshot();
     });
   });
 
@@ -2015,7 +2018,7 @@ describe('useFieldArray', () => {
         }[];
       }[];
     };
-    let watchValues: unknown[] = [];
+    const watchValues: unknown[] = [];
 
     const Component = () => {
       const { control, watch } = useForm<FormValues>({
@@ -2028,7 +2031,7 @@ describe('useFieldArray', () => {
         name: 'test',
       });
 
-      watchValues = watch('test');
+      watchValues.push(watch('test'));
 
       React.useEffect(() => {
         append({
@@ -2113,7 +2116,7 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(watchValues).toEqual([
+    expect(watchValues.at(-1)).toEqual([
       {
         test: 'append',
         test1: 'append',
@@ -2122,7 +2125,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    expect(watchValues).toEqual([
+    expect(watchValues.at(-1)).toEqual([
       { test: 'prepend', test1: 'prepend' },
       {
         test: 'append',
@@ -2132,7 +2135,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
-    expect(watchValues).toEqual([
+    expect(watchValues.at(-1)).toEqual([
       { test: 'prepend', test1: 'prepend' },
       {
         test: 'insert',
@@ -2146,7 +2149,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
 
-    expect(watchValues).toEqual([
+    expect(watchValues.at(-1)).toEqual([
       { test: 'prepend', test1: 'prepend' },
       {
         test: 'insert',
@@ -2168,7 +2171,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
 
-    expect(watchValues).toEqual([
+    expect(watchValues.at(-1)).toEqual([
       {
         test: 'prepend',
         test2: [
@@ -2198,7 +2201,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
 
-    expect(watchValues).toEqual([
+    expect(watchValues.at(-1)).toEqual([
       {
         test: 'prepend',
         test2: [
@@ -2233,6 +2236,9 @@ describe('useFieldArray', () => {
         ],
       },
     ]);
+
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(watchValues).toMatchSnapshot();
   });
 
   it('should append multiple inputs correctly', () => {
@@ -2242,7 +2248,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    let watchedValue: object = {};
+    const watchedValue: unknown[] = [];
 
     const Component = () => {
       const { register, control, watch } = useForm<FormValues>({
@@ -2259,7 +2265,7 @@ describe('useFieldArray', () => {
         name: 'test',
       });
 
-      watchedValue = watch();
+      watchedValue.push(watch());
 
       return (
         <form>
@@ -2280,7 +2286,7 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(watchedValue).toEqual({
+    expect(watchedValue.at(-1)).toEqual({
       test: [
         {
           value: 'data',
@@ -2290,7 +2296,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue).toEqual({
+    expect(watchedValue.at(-1)).toEqual({
       test: [
         {
           value: 'data',
@@ -2299,6 +2305,9 @@ describe('useFieldArray', () => {
         { value: 'test1' },
       ],
     });
+
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(watchedValue).toMatchSnapshot();
   });
 
   it('should update field array defaultValues when invoke setValue', async () => {
@@ -2308,7 +2317,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    let result: object = {};
+    const result: unknown[] = [];
 
     const Child = () => {
       const { fields } = useFieldArray<FormValues>({
@@ -2337,7 +2346,7 @@ describe('useFieldArray', () => {
       });
       const { setValue } = methods;
 
-      result = methods.watch();
+      result.push(methods.watch());
 
       return (
         <form>
@@ -2354,7 +2363,7 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(result).toEqual({
+    expect(result.at(-1)).toEqual({
       names: [
         {
           name: 'will',
@@ -2379,7 +2388,40 @@ describe('useFieldArray', () => {
 
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
-    expect(result).toEqual({ names: [] });
+    expect(result.at(-1)).toEqual({ names: [] });
+
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(result).toEqual([
+      {
+        names: [
+          {
+            name: 'will',
+          },
+          {
+            name: 'Mike',
+          },
+        ],
+      },
+      {
+        names: [
+          {
+            name: 'will',
+          },
+          {
+            name: 'Mike',
+          },
+        ],
+      },
+      {
+        names: [],
+      },
+      {
+        names: [],
+      },
+      {
+        names: [],
+      },
+    ]);
   });
 
   it('should unregister field array when shouldUnregister set to true', () => {
@@ -2389,7 +2431,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    let watchedValues: object = {};
+    const watchedValues: FormValues[] = [];
 
     const Child = ({
       control,
@@ -2422,7 +2464,7 @@ describe('useFieldArray', () => {
       });
       const [show, setShow] = React.useState(true);
 
-      watchedValues = watch();
+      watchedValues.push(watch());
 
       return (
         <form>
@@ -2436,13 +2478,38 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(watchedValues).toEqual({
+    expect(watchedValues.at(-1)).toEqual({
       test: [{ value: 'test' }, { value: 'test1' }],
     });
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValues).toEqual({});
+    expect(watchedValues.at(-1)).toEqual({});
+
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(watchedValues).toEqual([
+      {
+        test: [
+          {
+            value: 'test',
+          },
+          {
+            value: 'test1',
+          },
+        ],
+      },
+      {
+        test: [
+          {
+            value: 'test',
+          },
+          {
+            value: 'test1',
+          },
+        ],
+      },
+      {},
+    ]);
   });
 
   it('should keep field values when field array gets unmounted and mounted', async () => {
