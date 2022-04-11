@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  act as actComponent,
   fireEvent,
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
@@ -189,24 +189,20 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      screen.getByText('First name is required.');
-      screen.getByText('Last name is required.');
+      expect(await screen.findByText('First name is required.')).toBeVisible();
+      expect(screen.getByText('Last name is required.')).toBeVisible();
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      screen.getByText('Last name is required.');
+      expect(screen.getByText('Last name is required.')).toBeVisible();
 
-      expect(screen.queryByText('First name is required.')).toBeNull();
+      await waitForElementToBeRemoved(
+        screen.queryByText('First name is required.'),
+      );
     });
   });
 
@@ -246,7 +242,7 @@ describe('useForm', () => {
       };
 
       it('should remove and unregister inputs when inputs gets unmounted', async () => {
-        const submittedData: FormValues[] = [];
+        let submittedData: FormValues;
 
         const Component = () => {
           const [show, setShow] = React.useState(true);
@@ -260,7 +256,7 @@ describe('useForm', () => {
           });
 
           return (
-            <form onSubmit={handleSubmit((data) => submittedData.push(data))}>
+            <form onSubmit={handleSubmit((data) => (submittedData = data))}>
               {show && (
                 <>
                   <input {...register('test')} />
@@ -282,19 +278,25 @@ describe('useForm', () => {
 
         render(<Component />);
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-        });
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-        actComponent(() => {
-          fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-        });
+        await waitFor(() =>
+          expect(submittedData).toEqual({
+            test: 'bill',
+            test1: 'bill1',
+            test2: [
+              {
+                value: 'bill2',
+              },
+            ],
+          }),
+        );
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-        });
+        fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
 
-        expect(submittedData).toMatchSnapshot();
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => expect(submittedData).toEqual({}));
       });
     });
 
@@ -381,9 +383,7 @@ describe('useForm', () => {
 
       render(<App />);
 
-      actComponent(() => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
       expect(data).toEqual({});
     });
@@ -430,23 +430,19 @@ describe('useForm', () => {
         },
       });
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
-      screen.getByText('max length');
+      expect(await screen.findByText('max length')).toBeVisible();
 
       fireEvent.click(screen.getByPlaceholderText('checkbox'));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
-      screen.getByText('max length');
+      expect(await screen.findByText('max length')).toBeVisible();
     });
 
     it('should only unregister inputs when all checkboxes are unmounted', async () => {
-      let result;
+      let result: Record<string, string> | undefined = undefined;
 
       const Component = () => {
         const { register, handleSubmit } = useForm({
@@ -482,19 +478,15 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'setRadio1' }));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      expect(result).toEqual({ test: null });
+      await waitFor(() => expect(result).toEqual({ test: null }));
 
       fireEvent.click(screen.getByRole('button', { name: 'setRadio2' }));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      expect(result).toEqual({});
+      await waitFor(() => expect(result).toEqual({}));
     });
   });
 
@@ -555,11 +547,13 @@ describe('useForm', () => {
       resolver,
       mode,
       rules = { required: 'required' },
+      onSubmit = () => {},
     }: {
       name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
       rules?: RegisterOptions;
+      onSubmit?: () => void;
     }) => {
       const internationalMethods = useForm<{ test: string }>({
         resolver,
@@ -581,7 +575,7 @@ describe('useForm', () => {
           <span role="alert">
             {errors?.test?.message && errors.test.message}
           </span>
-          <button onClick={handleSubmit(() => {})}>button</button>
+          <button onClick={handleSubmit(onSubmit)}>button</button>
           <p>{isValid ? 'valid' : 'invalid'}</p>
         </div>
       );
@@ -596,19 +590,16 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
+
+        const alert = await screen.findByRole('alert');
+        expect(alert.textContent).toBe('');
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
 
-        expect(screen.getByRole('alert').textContent).toBe('');
-
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: 'test' },
-          });
-        });
-
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(alert.textContent).toBe('');
       });
 
       it('should not contain error if name is invalid', async () => {
@@ -618,31 +609,30 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button'));
+
+        const alert = await screen.findByRole('alert');
+        expect(alert.textContent).toBe('');
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'wrongName', value: '' },
         });
 
-        expect(screen.getByRole('alert').textContent).toBe('');
-
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'wrongName', value: '' },
-          });
-        });
-
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(alert.textContent).toBe('');
       });
 
       it('should contain error if value is invalid with revalidateMode is onChange', async () => {
-        render(<Component />);
+        const onSubmit = jest.fn();
+
+        render(<Component onSubmit={onSubmit} />);
 
         const input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test', value: 'test' } });
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
+
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         expect(screen.getByRole('alert').textContent).toBe('');
 
@@ -666,9 +656,7 @@ describe('useForm', () => {
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
 
-        await actComponent(async () => {
-          fireEvent.input(input, { target: { name: 'test', value: '' } });
-        });
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
 
         expect(screen.getByRole('alert').textContent).toBe('required');
       });
@@ -678,9 +666,7 @@ describe('useForm', () => {
 
         methods.formState.touchedFields;
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
         fireEvent.blur(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
@@ -696,6 +682,8 @@ describe('useForm', () => {
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
       it('should perform correct behavior when reValidateMode is onBlur', async () => {
+        const onSubmit = jest.fn();
+
         const Component = () => {
           const {
             register,
@@ -707,7 +695,7 @@ describe('useForm', () => {
             reValidateMode: 'onBlur',
           });
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <input type="text" {...register('test', { required: true })} />
               {errors.test && <span role="alert">required</span>}
               <button>submit</button>
@@ -723,23 +711,19 @@ describe('useForm', () => {
           },
         });
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-        });
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { value: '' },
-          });
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { value: '' },
         });
 
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
-        await actComponent(async () => {
-          fireEvent.blur(screen.getByRole('textbox'));
-        });
+        fireEvent.blur(screen.getByRole('textbox'));
 
-        expect(screen.queryByRole('alert')).toBeInTheDocument();
+        expect(await screen.findByRole('alert')).toBeVisible();
       });
     });
 
@@ -777,12 +761,10 @@ describe('useForm', () => {
       it('should not display error with onBlur', async () => {
         render(<Component mode="onChange" />);
 
-        await actComponent(async () => {
-          fireEvent.blur(screen.getByRole('textbox'), {
-            target: {
-              value: '',
-            },
-          });
+        fireEvent.blur(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
@@ -817,12 +799,10 @@ describe('useForm', () => {
       it('should not display error with onChange', async () => {
         render(<Component mode="onBlur" />);
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: {
-              value: '',
-            },
-          });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
@@ -948,19 +928,15 @@ describe('useForm', () => {
 
         methods.formState.isValid;
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: 'test' },
-          });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.isValid).toBeTruthy();
+        await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: '' },
-          });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: '' },
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
@@ -987,14 +963,12 @@ describe('useForm', () => {
 
         methods.formState.isValid;
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: 'test' },
-          });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.isValid).toBeTruthy();
+        await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
@@ -1003,9 +977,7 @@ describe('useForm', () => {
         await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
 
-        await waitFor(() => {
-          screen.getByText('invalid');
-        });
+        expect(await screen.findByText('invalid')).toBeVisible();
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
@@ -1027,14 +999,12 @@ describe('useForm', () => {
 
         methods.formState.isValid;
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: 'test' },
-          });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.isValid).toBeTruthy();
+        await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
@@ -1049,20 +1019,77 @@ describe('useForm', () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
 
         render(<Component resolver={resolver} mode="onChange" />);
-        expect(resolver).toHaveBeenCalled();
 
-        await actComponent(async () => {
-          fireEvent.input(screen.getByRole('textbox'), {
-            target: { name: 'test', value: 'test' },
-          });
+        const input = screen.getByRole('textbox');
+
+        expect(resolver).toHaveBeenCalledWith(
+          {
+            test: '',
+          },
+          undefined,
+          {
+            criteriaMode: undefined,
+            fields: {
+              test: {
+                mount: true,
+                name: 'test',
+                ref: input,
+              },
+            },
+            names: ['test'],
+            shouldUseNativeValidation: undefined,
+          },
+        );
+
+        resolver.mockClear();
+
+        fireEvent.input(input, {
+          target: { name: 'test', value: 'test' },
         });
 
-        expect(resolver.mock.calls).toMatchSnapshot();
+        expect(resolver).toHaveBeenCalledWith(
+          {
+            test: 'test',
+          },
+          undefined,
+          {
+            criteriaMode: undefined,
+            fields: {
+              test: {
+                mount: true,
+                name: 'test',
+                ref: input,
+              },
+            },
+            names: ['test'],
+            shouldUseNativeValidation: undefined,
+          },
+        );
 
-        await actComponent(async () => {
-          fireEvent.click(screen.getByText(/button/i));
-        });
-        expect(resolver.mock.calls[1]).toMatchSnapshot();
+        resolver.mockClear();
+
+        fireEvent.click(screen.getByText(/button/i));
+
+        await waitFor(() =>
+          expect(resolver).toHaveBeenCalledWith(
+            {
+              test: 'test',
+            },
+            undefined,
+            {
+              criteriaMode: undefined,
+              fields: {
+                test: {
+                  mount: true,
+                  name: 'test',
+                  ref: input,
+                },
+              },
+              names: ['test'],
+              shouldUseNativeValidation: undefined,
+            },
+          ),
+        );
       });
 
       it('should call the resolver with the field being validated when `trigger` is called', async () => {
@@ -1254,33 +1281,31 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      screen.getByRole('textbox').focus();
+      const input = screen.getByRole('textbox');
 
-      await actComponent(async () => {
-        fireEvent.blur(screen.getByRole('textbox'));
+      fireEvent.focus(input);
+
+      fireEvent.blur(input);
+
+      expect(await screen.findByText('This is required.')).toBeVisible();
+
+      fireEvent.input(input, {
+        target: {
+          value: 'test',
+        },
       });
 
-      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.queryByText('This is required.')).not.toBeInTheDocument(),
+      );
 
-      await actComponent(async () => {
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: {
-            value: 'test',
-          },
-        });
+      fireEvent.input(input, {
+        target: {
+          value: '',
+        },
       });
 
-      expect(screen.queryByText('This is required.')).not.toBeInTheDocument();
-
-      await actComponent(async () => {
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: {
-            value: '',
-          },
-        });
-      });
-
-      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+      expect(await screen.findByText('This is required.')).toBeVisible();
     });
 
     it('should validate onFocusout event', async () => {
@@ -1307,33 +1332,31 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      screen.getByRole('textbox').focus();
+      const input = screen.getByRole('textbox');
 
-      await actComponent(async () => {
-        fireEvent.focusOut(screen.getByRole('textbox'));
+      fireEvent.focus(input);
+
+      fireEvent.focusOut(input);
+
+      expect(await screen.findByText('This is required.')).toBeVisible();
+
+      fireEvent.input(input, {
+        target: {
+          value: 'test',
+        },
       });
 
-      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.queryByText('This is required.')).not.toBeInTheDocument(),
+      );
 
-      await actComponent(async () => {
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: {
-            value: 'test',
-          },
-        });
+      fireEvent.input(input, {
+        target: {
+          value: '',
+        },
       });
 
-      expect(screen.queryByText('This is required.')).not.toBeInTheDocument();
-
-      await actComponent(async () => {
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: {
-            value: '',
-          },
-        });
-      });
-
-      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+      expect(await screen.findByText('This is required.')).toBeVisible();
     });
   });
 
@@ -1389,37 +1412,31 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByLabelText('checkbox.0'));
-      });
+      fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      expect(errorsObject).toEqual({
-        checkbox: { type: 'error', message: 'wrong' },
-      });
+      await waitFor(() =>
+        expect(errorsObject).toEqual({
+          checkbox: { type: 'error', message: 'wrong' },
+        }),
+      );
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByLabelText('checkbox.0'));
-      });
+      fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      expect(errorsObject).toEqual({});
+      await waitFor(() => expect(errorsObject).toEqual({}));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByLabelText('checkbox.0'));
-      });
+      fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
-      expect(errorsObject).toEqual({
-        checkbox: { type: 'error', message: 'wrong' },
-      });
+      await waitFor(() =>
+        expect(errorsObject).toEqual({
+          checkbox: { type: 'error', message: 'wrong' },
+        }),
+      );
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByLabelText('checkbox.0'));
-      });
+      fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      expect(errorsObject).toEqual({});
+      await waitFor(() => expect(errorsObject).toEqual({}));
     });
 
     it('should not clear errors for non checkbox parent inputs', async () => {
@@ -1470,32 +1487,32 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
-      expect(errorsObject).toEqual({
-        checkbox: [
-          {
-            test: { type: 'error', message: 'wrong' },
-            test1: { type: 'error', message: 'wrong' },
-          },
-        ],
-      });
+      await waitFor(() =>
+        expect(errorsObject).toEqual({
+          checkbox: [
+            {
+              test: { type: 'error', message: 'wrong' },
+              test1: { type: 'error', message: 'wrong' },
+            },
+          ],
+        }),
+      );
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button'));
-      });
+      fireEvent.click(screen.getByRole('button'));
 
-      expect(errorsObject).toEqual({
-        checkbox: [
-          {
-            test1: { type: 'error', message: 'wrong' },
-          },
-        ],
-      });
+      await waitFor(() =>
+        expect(errorsObject).toEqual({
+          checkbox: [
+            {
+              test1: { type: 'error', message: 'wrong' },
+            },
+          ],
+        }),
+      );
     });
 
     it('should have formState.isValid equals true with defined default values after executing resolver', async () => {
@@ -1536,17 +1553,14 @@ describe('useForm', () => {
 
       render(<Toggle />);
 
-      const toggle = async () =>
-        await actComponent(async () => {
-          await screen.getByText('Toggle').click();
-        });
+      const toggle = () => fireEvent.click(screen.getByText('Toggle'));
 
-      await toggle();
+      toggle();
 
-      expect(screen.getByText('Submit')).toBeEnabled();
+      await waitFor(() => expect(screen.getByText('Submit')).toBeEnabled());
 
-      await toggle();
-      await toggle();
+      toggle();
+      toggle();
 
       expect(screen.getByText('Submit')).toBeEnabled();
     });

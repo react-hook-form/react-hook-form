@@ -70,6 +70,7 @@ module.exports = {
     '!**/src/types/**',
     '!**/node_modules/**',
     '!**/dist/**',
+    '!**/__tests__/**',
   ],
   projects: getProjects(),
 };

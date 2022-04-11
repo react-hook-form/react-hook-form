@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -65,37 +59,25 @@ describe('prepend', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    await actComponent(async () => {
-      expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
-    });
+    expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    act(() => {
-      expect(currentFields).toEqual([
-        { id: '2', test: 'test' },
-        { id: '0', test: 'test' },
-      ]);
-    });
+    expect(currentFields).toEqual([
+      { id: '2', test: 'test' },
+      { id: '0', test: 'test' },
+    ]);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'prependBatch' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'prependBatch' }));
 
-    act(() => {
-      expect(currentFields).toEqual([
-        { id: '5', test: 'test-batch' },
-        { id: '6', test: 'test-batch1' },
-        { id: '2', test: 'test' },
-        { id: '0', test: 'test' },
-      ]);
-    });
+    expect(currentFields).toEqual([
+      { id: '5', test: 'test-batch' },
+      { id: '6', test: 'test-batch1' },
+      { id: '2', test: 'test' },
+      { id: '0', test: 'test' },
+    ]);
   });
 
   it.each(['isDirty', 'dirtyFields'])(
@@ -206,21 +188,21 @@ describe('prepend', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
 
     expect(errors.test).toBeUndefined();
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(errors.test).toHaveLength(1);
     });
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
 
-    expect(errors.test).toHaveLength(2);
+    await waitFor(() => {
+      expect(errors.test).toHaveLength(2);
+    });
   });
 
   it('should trigger reRender when user is watching the all field array', () => {
@@ -568,13 +550,13 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText(
-      '{"test":[{"id":"whatever","test":"1234"},{"id":"1234","test":"data"}]}',
-    );
+    expect(
+      await screen.findByText(
+        '{"test":[{"id":"whatever","test":"1234"},{"id":"1234","test":"data"}]}',
+      ),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -620,10 +602,10 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"1234"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
+    ).toBeVisible();
   });
 });

@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  act,
   fireEvent,
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
@@ -46,10 +46,10 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
-    expect(input).toBeInTheDocument();
-    expect(input?.name).toBe('test');
+    expect(input).toBeVisible();
+    expect(input.name).toBe('test');
   });
 
   it('should render correctly with as with component', () => {
@@ -67,9 +67,9 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    const input = screen.queryByRole('textbox') as HTMLInputElement | null;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
-    expect(input).toBeInTheDocument();
+    expect(input).toBeVisible();
     expect(input?.name).toBe('test');
   });
 
@@ -202,13 +202,11 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.input(screen.getByRole('textbox'), {
-        target: { value: '' },
-      });
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: { value: '' },
     });
 
-    expect(errors.test).toBeDefined();
+    await waitFor(() => expect(errors.test).toBeDefined());
   });
 
   it("should trigger component's onBlur method and invoke trigger method", async () => {
@@ -231,13 +229,11 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.blur(screen.getByRole('textbox'), {
-        target: { value: '' },
-      });
+    fireEvent.blur(screen.getByRole('textbox'), {
+      target: { value: '' },
     });
 
-    expect(errors.test).toBeDefined();
+    await waitFor(() => expect(errors.test).toBeDefined());
   });
 
   it('should set field to formState.touchedFields', async () => {
@@ -259,9 +255,7 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.blur(screen.getByRole('textbox'));
-    });
+    fireEvent.blur(screen.getByRole('textbox'));
 
     expect(touched).toEqual({ test: true });
   });
@@ -300,29 +294,23 @@ describe('Controller', () => {
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
-    await act(async () => {
-      fireEvent.submit(screen.getByRole('button'));
+    fireEvent.submit(screen.getByRole('button'));
+
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
     });
 
-    act(() => {
-      fireEvent.input(screen.getByRole('textbox'), {
-        target: {
-          value: 'test',
-        },
-      });
+    expect(await screen.findByRole('alert')).toBeVisible();
+
+    fireEvent.blur(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
     });
 
-    expect(screen.queryByRole('alert')).toBeInTheDocument();
-
-    await act(async () => {
-      fireEvent.blur(screen.getByRole('textbox'), {
-        target: {
-          value: 'test',
-        },
-      });
-    });
-
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await waitForElementToBeRemoved(screen.queryByRole('alert'));
   });
 
   it('should invoke custom event named method', () => {
@@ -493,23 +481,17 @@ describe('Controller', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
+    await waitFor(() => expect(onInvalid).toBeCalledTimes(1));
     expect(onValid).toBeCalledTimes(0);
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(onValid).toBeCalledTimes(1));
     expect(onInvalid).toBeCalledTimes(1);
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-    });
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
-
-    expect(onInvalid).toBeCalledTimes(1);
-    expect(onValid).toBeCalledTimes(1);
   });
 
   it('should not set initial state from unmount state when input is part of field array', () => {
@@ -641,19 +623,15 @@ describe('Controller', () => {
 
     const input = screen.getByRole('textbox');
 
-    await act(async () => {
-      fireEvent.blur(input);
+    fireEvent.blur(input);
+
+    await waitFor(() => expect(currentErrors.test).not.toBeUndefined());
+
+    fireEvent.input(input, {
+      target: { value: '1' },
     });
 
-    expect(currentErrors.test).not.toBeUndefined();
-
-    await act(async () => {
-      fireEvent.input(input, {
-        target: { value: '1' },
-      });
-    });
-
-    expect(currentErrors.test).toBeUndefined();
+    await waitFor(() => expect(currentErrors.test).toBeUndefined());
   });
 
   it('should show invalid input when there is an error', async () => {
@@ -688,7 +666,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(screen.queryByText('Input is invalid.')).toBeNull();
+    expect(screen.queryByText('Input is invalid.')).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -696,7 +674,7 @@ describe('Controller', () => {
       },
     });
 
-    await waitFor(async () => screen.queryByText('Input is invalid.'));
+    expect(await screen.findByText('Input is invalid.')).toBeVisible();
   });
 
   it('should show input has been touched.', async () => {
@@ -723,11 +701,11 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    expect(screen.queryByText('Input is touched.')).toBeNull();
+    expect(screen.queryByText('Input is touched.')).not.toBeInTheDocument();
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    await waitFor(async () => screen.queryByText('Input is touched.'));
+    expect(await screen.findByText('Input is touched.')).toBeVisible();
   });
 
   it('should show input is dirty.', async () => {
@@ -754,15 +732,14 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    expect(screen.queryByText('Input is dirty.')).toBeNull();
+    expect(screen.queryByText('Input is dirty.')).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test',
-      },
-    });
+    const input = screen.getByRole('textbox');
 
-    await waitFor(async () => screen.queryByText('Input is dirty.'));
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    expect(await screen.findByText('Input is dirty.')).toBeVisible();
   });
 
   it('should display input error.', async () => {
@@ -791,9 +768,12 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    fireEvent.blur(screen.getByRole('textbox'));
+    const input = screen.getByRole('textbox');
 
-    await waitFor(async () => screen.queryByText('This is required'));
+    fireEvent.change(input, { target: { value: 'q' } });
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(await screen.findByText('This is required')).toBeVisible();
   });
 
   it('should not trigger extra-render while not subscribed to any input state', () => {
@@ -939,27 +919,23 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    screen.getByText('false');
+    expect(screen.getByText('false')).toBeVisible();
 
-    act(() => {
-      fireEvent.change(screen.getAllByRole('textbox')[0], {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: {
+        value: '',
+      },
     });
 
-    await waitFor(() => screen.getByText('false'));
+    expect(await screen.findByText('false')).toBeVisible();
 
-    act(() => {
-      fireEvent.input(screen.getAllByRole('textbox')[0], {
-        target: {
-          value: 'test',
-        },
-      });
+    fireEvent.input(screen.getAllByRole('textbox')[0], {
+      target: {
+        value: 'test',
+      },
     });
 
-    await waitFor(() => screen.getByText('true'));
+    expect(await screen.findByText('true')).toBeVisible();
   });
 
   it('should subscribe the correct dirty fields', () => {
@@ -992,19 +968,15 @@ describe('Controller', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
-    });
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
 
-    screen.getByText('{"test":true}');
-    screen.getByText('true');
+    expect(screen.getByText('{"test":true}')).toBeVisible();
+    expect(screen.getByText('true')).toBeVisible();
 
-    act(() => {
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
-    });
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
 
-    screen.getByText('{}');
-    screen.getByText('false');
+    expect(screen.getByText('{}')).toBeVisible();
+    expect(screen.getByText('false')).toBeVisible();
   });
 
   it('should remove input value and reference with Controller and set shouldUnregister: true', () => {
@@ -1040,7 +1012,15 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue).toMatchSnapshot();
+    expect(watchedValue).toEqual([
+      {
+        test: 'bill',
+      },
+      {
+        test: 'bill',
+      },
+      {},
+    ]);
   });
 
   it('should set ref to empty object when ref is not defined', async () => {
@@ -1075,15 +1055,16 @@ describe('Controller', () => {
 
     render(<App />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'));
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, {
+      target: { value: 'test' },
     });
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: 'test' },
-      });
-    });
+    // Everything should be fine even if no ref on the controlled input
+    await waitFor(() => expect(input).toHaveValue('test'));
   });
 
   it('should transform input value instead update via ref', () => {
@@ -1173,19 +1154,13 @@ describe('Controller', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('error');
+    expect(await screen.findByText('error')).toBeVisible();
   });
 
   it('should not throw type error with field state', () => {

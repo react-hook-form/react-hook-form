@@ -18,7 +18,9 @@ describe('useForm with SSR', () => {
 
     const spy = jest.spyOn(console, 'error');
 
-    expect(renderToString(<Component />)).toMatchSnapshot();
+    expect(renderToString(<Component />)).toEqual(
+      '<div data-reactroot=""><input name="test"/></div>',
+    );
 
     expect(spy).not.toHaveBeenCalled();
   });
@@ -44,7 +46,9 @@ describe('useForm with SSR', () => {
       );
     };
 
-    expect(renderToString(<App />)).toMatchSnapshot();
+    expect(renderToString(<App />)).toEqual(
+      '<div data-reactroot=""><input name="test"/></div>',
+    );
   });
 
   it('should pass down constrained API for server side rendering', () => {
@@ -70,6 +74,8 @@ describe('useForm with SSR', () => {
       );
     };
 
-    expect(renderToString(<App />)).toMatchSnapshot();
+    expect(renderToString(<App />)).toEqual(
+      '<div data-reactroot=""><input required="" min="2" max="2" minLength="2" maxLength="2" name="test"/></div>',
+    );
   });
 });

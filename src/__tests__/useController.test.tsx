@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { Control, FieldPath } from '../types';
@@ -91,35 +85,27 @@ describe('useController', () => {
 
     expect(renderCounter).toEqual([1, 1]);
 
-    await act(async () => {
-      fireEvent.change(screen.getAllByRole('textbox')[1], {
-        target: {
-          value: '1232',
-        },
-      });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: {
+        value: '1232',
+      },
     });
 
-    screen.getByText('isDirty');
+    expect(screen.getByText('isDirty')).toBeVisible();
 
-    await act(async () => {
-      fireEvent.blur(screen.getAllByRole('textbox')[1]);
-    });
+    fireEvent.blur(screen.getAllByRole('textbox')[1]);
 
-    screen.getByText('isTouched');
+    expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(renderCounter).toEqual([3, 3]);
 
-    await act(async () => {
-      fireEvent.change(screen.getAllByRole('textbox')[0], {
-        target: {
-          value: '1232',
-        },
-      });
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: {
+        value: '1232',
+      },
     });
 
-    await act(async () => {
-      fireEvent.blur(screen.getAllByRole('textbox')[0]);
-    });
+    fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
     expect(renderCounter).toEqual([5, 5]);
   });
@@ -147,15 +133,11 @@ describe('useController', () => {
 
       expect(watchResult).toEqual([{}]);
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox'));
-      });
+      fireEvent.click(screen.getByRole('checkbox'));
 
       expect(watchResult).toEqual([{}, { test: true }]);
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox'));
-      });
+      fireEvent.click(screen.getByRole('checkbox'));
 
       expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
     });
@@ -188,15 +170,11 @@ describe('useController', () => {
 
       expect(watchResult).toEqual([{}]);
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox'));
-      });
+      fireEvent.click(screen.getByRole('checkbox'));
 
       expect(watchResult).toEqual([{}, { test: true }]);
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox'));
-      });
+      fireEvent.click(screen.getByRole('checkbox'));
 
       expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
     });
@@ -232,15 +210,11 @@ describe('useController', () => {
 
       expect(watchResult).toEqual([{}]);
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox'));
-      });
+      fireEvent.click(screen.getByRole('checkbox'));
 
       expect(watchResult).toEqual([{}, { test: 'on' }]);
 
-      await act(async () => {
-        fireEvent.click(screen.getByRole('checkbox'));
-      });
+      fireEvent.click(screen.getByRole('checkbox'));
 
       expect(watchResult).toEqual([{}, { test: 'on' }, { test: false }]);
     });
@@ -280,22 +254,18 @@ describe('useController', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: {
-          value: 'test',
-        },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
     });
 
-    act(() => {
-      fireEvent.blur(screen.getByRole('textbox'));
-    });
+    fireEvent.blur(screen.getByRole('textbox'));
 
     expect(counter).toEqual(1);
 
-    screen.getByText('dirty');
-    screen.getByText('touched');
+    expect(screen.getByText('dirty')).toBeVisible();
+    expect(screen.getByText('touched')).toBeVisible();
   });
 
   it('should not overwrite defaultValues with defaultValue', () => {
@@ -393,9 +363,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       'test',
@@ -455,27 +423,21 @@ describe('useController', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
+    await waitFor(() => expect(focus).toBeCalled());
     expect(setCustomValidity).toBeCalledWith(message);
-    expect(focus).toBeCalled();
     expect(reportValidity).toBeCalled();
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: {
-          value: 'bill',
-        },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill',
+      },
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    expect(setCustomValidity).toBeCalledTimes(3);
+    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
     expect(reportValidity).toBeCalledTimes(3);
     expect(focus).toBeCalledTimes(1);
   });
@@ -499,13 +461,13 @@ describe('useController', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    expect(onSubmit).toBeCalledWith({
-      test: 'test',
-    });
+    await waitFor(() =>
+      expect(onSubmit).toBeCalledWith({
+        test: 'test',
+      }),
+    );
   });
 
   it('should return defaultValues when component is not yet mounted', async () => {
@@ -546,9 +508,9 @@ describe('useController', () => {
 
     expect(true).toEqual(true);
 
-    await waitFor(() => {
-      screen.getByText('{"test":{"deep":[{"test":"0","test1":"1"}]}}');
-    });
+    expect(
+      await screen.findByText('{"test":{"deep":[{"test":"0","test1":"1"}]}}'),
+    ).toBeVisible();
   });
 
   it('should trigger extra re-render and update latest value when setValue called during mount', async () => {
@@ -586,9 +548,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('expected value');
-    });
+    expect(await screen.findByText('expected value')).toBeVisible();
   });
 
   it('should remount with input with current formValue', () => {
@@ -634,17 +594,13 @@ describe('useController', () => {
 
     render(<App />);
 
-    act(() => {
-      expect(data).toEqual('test');
-    });
+    expect(data).toEqual('test');
 
     fireEvent.click(screen.getByRole('button'));
 
     fireEvent.click(screen.getByRole('button'));
 
-    act(() => {
-      expect(data).toBeUndefined();
-    });
+    expect(data).toBeUndefined();
   });
 
   it('should always get the latest value for onBlur event', async () => {
@@ -674,12 +630,10 @@ describe('useController', () => {
 
     render(<App />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button'), {
-        target: {
-          value: 'test',
-        },
-      });
+    fireEvent.click(screen.getByRole('button'), {
+      target: {
+        value: 'test',
+      },
     });
 
     expect(watchResults).toEqual([

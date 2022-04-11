@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
@@ -67,7 +61,7 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => screen.getByText('dirty'));
+    expect(await screen.findByText('dirty')).toBeVisible();
 
     expect(dirtyInputs).toEqual({
       test: [{ value: true }, { value: false }, { value: false }],
@@ -115,9 +109,7 @@ describe('update', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'update' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
     expect(isDirtyValue).toBeTruthy();
     expect(dirtyValue).toEqual({
@@ -151,9 +143,35 @@ describe('update', () => {
 
     render(<Component />);
 
+    expect(watched).toEqual([
+      {},
+      {
+        test: [],
+      },
+    ]);
+
     fireEvent.click(screen.getByRole('button', { name: /update/i }));
 
-    expect(watched).toMatchSnapshot();
+    expect(watched).toEqual([
+      {},
+      {
+        test: [],
+      },
+      {
+        test: [
+          {
+            value: '',
+          },
+        ],
+      },
+      {
+        test: [
+          {
+            value: '',
+          },
+        ],
+      },
+    ]);
   });
 
   it('should return watched value with update and watch API', async () => {
@@ -194,7 +212,7 @@ describe('update', () => {
     );
   });
 
-  it('should update group input correctly', async () => {
+  it('should update group input correctly', () => {
     type FormValues = {
       test: {
         value: {
@@ -284,9 +302,17 @@ describe('update', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    expect(fieldArrayValues.at(-1)).toEqual([
+      {
+        id: '0',
+        value: {
+          firstName: 'bill',
+          lastName: 'luo',
+        },
+      },
+    ]);
+
+    fireEvent.click(screen.getByRole('button'));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -295,7 +321,27 @@ describe('update', () => {
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('lastName');
 
-    expect(fieldArrayValues).toMatchSnapshot();
+    // Let's check all values of renders with implicitly the number of render (for each value)
+    expect(fieldArrayValues).toEqual([
+      [
+        {
+          id: '0',
+          value: {
+            firstName: 'bill',
+            lastName: 'luo',
+          },
+        },
+      ],
+      [
+        {
+          id: '1',
+          value: {
+            firstName: 'firstName',
+            lastName: 'lastName',
+          },
+        },
+      ],
+    ]);
   });
 
   it('should update field array with single value', () => {
@@ -342,7 +388,7 @@ describe('update', () => {
     expect(fieldArrayValues[0].value).toEqual('test');
   });
 
-  it('should update field array with multiple values', async () => {
+  it('should update field array with multiple values', () => {
     let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
 
     const App = () => {
@@ -391,9 +437,20 @@ describe('update', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    expect(fieldArrayValues).toEqual([
+      {
+        firstName: 'bill',
+        id: '0',
+        lastName: 'luo',
+      },
+      {
+        firstName: 'bill1',
+        id: '1',
+        lastName: 'luo1',
+      },
+    ]);
+
+    fireEvent.click(screen.getByRole('button'));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -408,7 +465,18 @@ describe('update', () => {
       (screen.getAllByRole('textbox')[3] as HTMLInputElement).value,
     ).toEqual('test4');
 
-    expect(fieldArrayValues).toMatchSnapshot();
+    expect(fieldArrayValues).toEqual([
+      {
+        firstName: 'test1',
+        id: '2',
+        lastName: 'test2',
+      },
+      {
+        firstName: 'test3',
+        id: '3',
+        lastName: 'test4',
+      },
+    ]);
   });
 
   describe('with resolver', () => {
@@ -510,11 +578,11 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"1234"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -560,11 +628,11 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"1234"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
+    ).toBeVisible();
   });
 
   it('should not update errors state', async () => {
@@ -619,14 +687,10 @@ describe('update', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
   });
 });
