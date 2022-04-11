@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
@@ -244,9 +244,7 @@ describe('getValues', () => {
       },
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(data).toMatchObject({
       test: {
@@ -311,43 +309,32 @@ describe('getValues', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: 'test1' },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test1' },
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    expect(screen.getByRole('button', { name: 'submit' })).toBeDisabled();
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test2' },
     });
 
-    expect(screen.getByRole('button', { name: 'submit' })).toHaveAttribute(
-      'disabled',
-      '',
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'submit' })).not.toBeDisabled(),
     );
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: 'test2' },
-      });
-    });
-
-    expect(screen.getByRole('button', { name: 'submit' })).not.toHaveAttribute(
-      'disabled',
-    );
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
 
     expect(updatedValue).toEqual({
       firstName: 'test2',
     });
 
-    await act(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: 'test3' },
-      });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test3' },
     });
+
+    expect(screen.getByRole('button', { name: 'submit' })).not.toBeDisabled();
   });
 });

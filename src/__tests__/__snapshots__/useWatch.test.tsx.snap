@@ -1,18 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`useWatch fieldArray should return shallow merged watch values 1`] = `
-Array [
-  Object {
-    "arr": Array [],
-    "name": "foo",
-  },
-  Object {
-    "arr": Array [],
-    "name": "foo",
-  },
-]
-`;
-
 exports[`useWatch fieldArray with shouldUnregister true should watch correct input update with single field array input 1`] = `
 Array [
   Array [
@@ -27,49 +14,9 @@ Array [
   ],
   Array [
     Object {
-      "id": "0",
       "prop": "test",
     },
     Object {
-      "id": "1",
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "test",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "test",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "test",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "id": "0",
-      "prop": "test",
-    },
-    Object {
-      "id": "2",
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "id": "1",
       "prop": "test1",
     },
   ],
@@ -96,47 +43,6 @@ Array [
     Object {
       "prop": "test",
     },
-    Object {
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "test",
-    },
-    Object {
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "test",
-    },
-    Object {
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "prop": "test",
-    },
-    Object {
-      "prop": "ShouldBeTHere",
-    },
-    Object {
-      "prop": "test1",
-    },
-  ],
-  Array [
     Object {
       "prop": "ShouldBeTHere",
     },
@@ -157,10 +63,11 @@ Array [
 
 exports[`useWatch reset with useFieldArray should return current value with radio type 1`] = `
 Array [
+  Object {},
   Object {
     "options": Array [
       Object {
-        "option": "yes",
+        "option": "no",
       },
       Object {
         "option": "yes",
@@ -170,7 +77,7 @@ Array [
   Object {
     "options": Array [
       Object {
-        "option": "yes",
+        "option": "no",
       },
       Object {
         "option": "yes",
@@ -180,17 +87,7 @@ Array [
   Object {
     "options": Array [
       Object {
-        "option": "yes",
-      },
-      Object {
-        "option": "yes",
-      },
-    ],
-  },
-  Object {
-    "options": Array [
-      Object {
-        "option": "yes",
+        "option": "no",
       },
       Object {
         "option": "yes",
