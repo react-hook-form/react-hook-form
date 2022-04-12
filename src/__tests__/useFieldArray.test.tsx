@@ -2730,6 +2730,28 @@ describe('useFieldArray', () => {
     });
   });
 
+  it('should keep id and key props in the value', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm({
+        defaultValues: {
+          test: [
+            { test: '1', id: '11', key: '111' },
+            { test: '2', id: '22', key: '222' },
+          ],
+        },
+      });
+      return useFieldArray({
+        control,
+        name: 'test',
+      });
+    });
+
+    expect(result.current.fields).toEqual([
+      { value: { test: '1', id: '11', key: '111' }, key: '0' },
+      { value: { test: '2', id: '22', key: '222' }, key: '1' },
+    ]);
+  });
+
   describe('with rules', () => {
     it('should validate the minLength of the entire field array after submit and correct accordingly', async () => {
       const App = () => {
