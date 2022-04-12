@@ -27,12 +27,10 @@ exports[`update should update field array with multiple values 1`] = `
 Array [
   Object {
     "firstName": "test1",
-    "id": "2",
     "lastName": "test2",
   },
   Object {
     "firstName": "test3",
-    "id": "3",
     "lastName": "test4",
   },
 ]
@@ -42,19 +40,23 @@ exports[`update should update group input correctly 1`] = `
 Array [
   Array [
     Object {
-      "id": "0",
+      "key": "0",
       "value": Object {
-        "firstName": "bill",
-        "lastName": "luo",
+        "value": Object {
+          "firstName": "bill",
+          "lastName": "luo",
+        },
       },
     },
   ],
   Array [
     Object {
-      "id": "1",
+      "key": "1",
       "value": Object {
-        "firstName": "firstName",
-        "lastName": "lastName",
+        "value": Object {
+          "firstName": "firstName",
+          "lastName": "lastName",
+        },
       },
     },
   ],

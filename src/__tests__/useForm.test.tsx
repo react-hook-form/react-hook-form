@@ -236,7 +236,7 @@ describe('useForm', () => {
           <>
             {fields.map((field, i) => (
               <input
-                key={field.id}
+                key={field.key}
                 {...register(`test2.${i}.value` as const)}
               />
             ))}

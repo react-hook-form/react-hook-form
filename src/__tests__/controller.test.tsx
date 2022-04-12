@@ -526,8 +526,8 @@ describe('Controller', () => {
         <form>
           {fields.map((field, i) => (
             <Controller
-              key={field.id}
-              defaultValue={field.value}
+              key={field.key}
+              defaultValue={field.value.value}
               name={`test.${i}.value` as const}
               render={({ field }) => <input {...field} />}
               control={control}
@@ -567,7 +567,7 @@ describe('Controller', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <Controller
                 render={({ field }) => <input {...field} />}
                 name={`test.${i}.value`}
@@ -1146,7 +1146,7 @@ describe('Controller', () => {
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((field, index) => {
             return (
-              <div key={field.id}>
+              <div key={field.key}>
                 <Controller
                   control={control}
                   render={({ field }) => <input {...field} />}
@@ -1406,7 +1406,7 @@ describe('Controller', () => {
           />
 
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               {show && (
                 <Controller
                   shouldUnregister

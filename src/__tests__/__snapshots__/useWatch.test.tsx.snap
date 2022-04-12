@@ -17,21 +17,9 @@ exports[`useWatch fieldArray with shouldUnregister true should watch correct inp
 Array [
   Array [
     Object {
-      "id": "0",
       "prop": "test",
     },
     Object {
-      "id": "1",
-      "prop": "test1",
-    },
-  ],
-  Array [
-    Object {
-      "id": "0",
-      "prop": "test",
-    },
-    Object {
-      "id": "1",
       "prop": "test1",
     },
   ],
@@ -61,15 +49,20 @@ Array [
   ],
   Array [
     Object {
-      "id": "0",
       "prop": "test",
     },
     Object {
-      "id": "2",
+      "prop": "test1",
+    },
+  ],
+  Array [
+    Object {
+      "prop": "test",
+    },
+    Object {
       "prop": "ShouldBeTHere",
     },
     Object {
-      "id": "1",
       "prop": "test1",
     },
   ],

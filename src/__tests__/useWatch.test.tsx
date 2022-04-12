@@ -802,7 +802,7 @@ describe('useWatch', () => {
           <form>
             {fields.map((item, itemIndex) => (
               <Item
-                key={item.id}
+                key={item.key}
                 control={control}
                 register={register}
                 itemIndex={itemIndex}
@@ -903,12 +903,12 @@ describe('useWatch', () => {
           <form>
             {fields.map((item, index, items) => {
               return (
-                <div key={item.id}>
+                <div key={item.key}>
                   <Child
                     control={control}
                     index={index}
-                    itemDefault={item}
-                    itemsDefault={items}
+                    itemDefault={item.value}
+                    itemsDefault={items.map((x) => x.value)}
                   />
                   <button
                     type="button"
@@ -1200,10 +1200,10 @@ describe('useWatch', () => {
           return (
             <form>
               {fields.map((item, i) => (
-                <div key={item.firstName}>
+                <div key={item.value.firstName}>
                   <input
                     type="input"
-                    defaultValue={item.firstName}
+                    defaultValue={item.value.firstName}
                     {...register(`test.${i}.firstName` as const)}
                   />
 

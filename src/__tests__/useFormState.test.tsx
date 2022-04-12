@@ -557,7 +557,7 @@ describe('useFormState', () => {
       return (
         <div>
           {fields.map((field, index) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <Controller
                 control={control}
                 name={`test.${index}.data` as const}

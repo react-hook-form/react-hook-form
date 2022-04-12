@@ -27,7 +27,7 @@ const ChildComponent = ({
     <div>
       {fields.map((item, i) => (
         <input
-          key={item.id}
+          key={item.key}
           {...control.register(
             `nest.test.${index}.nestedArray.${i}.value` as const,
           )}
@@ -56,7 +56,7 @@ const Component = () => {
   return (
     <div>
       {fields.map((item, i) => (
-        <div key={item.id}>
+        <div key={item.key}>
           <input {...register(`nest.test.${i}.value` as const)} />
 
           <ChildComponent control={control} index={i} />
@@ -64,7 +64,7 @@ const Component = () => {
           <button
             type={'button'}
             onClick={() => remove(i)}
-            data-testid={item.value}
+            data-testid={item.value.value}
           >
             remove
           </button>

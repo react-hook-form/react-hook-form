@@ -384,7 +384,7 @@ describe('reset', () => {
           })}
         >
           {fields.map((field, index) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${index}.firstName` as const)} />
               <Controller
                 control={control}
@@ -546,7 +546,7 @@ describe('reset', () => {
           {fields.map((field, index) => {
             return (
               <input
-                key={field.id}
+                key={field.key}
                 {...register(`test.${index}.name` as const)}
               />
             );
@@ -898,7 +898,7 @@ describe('reset', () => {
           <ul>
             {fields.map((item, index) => (
               <Controller
-                key={item.id}
+                key={item.key}
                 render={({ field }) => <input {...field} />}
                 name={`names.${index}.test`}
                 control={control}
@@ -954,9 +954,9 @@ describe('reset', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <input
-                    defaultValue={`${item.firstName}`}
+                    defaultValue={`${item.value.firstName}`}
                     {...register(`test.${index}.firstName`)}
                   />
 
@@ -964,7 +964,7 @@ describe('reset', () => {
                     render={({ field }) => <input {...field} />}
                     name={`test.${index}.lastName`}
                     control={control}
-                    defaultValue={item.lastName}
+                    defaultValue={item.value.lastName}
                   />
                 </li>
               );

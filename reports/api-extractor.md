@@ -187,7 +187,10 @@ type FieldArrayPath_2<TFieldValues, TPathString extends PathString> = TypedField
 type FieldArrayPath_3<TFieldValues, TPathString extends PathString> = Branded.FieldArrayPath<TFieldValues> | Lazy.FieldArrayPath<TFieldValues, TPathString>;
 
 // @public
-export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends PathString = never> = FieldArray<TFieldValues, TFieldArrayName> & Record<'id', string>;
+export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends PathString = never> = {
+    value: FieldArray<TFieldValues, TFieldArrayName>;
+    key: string;
+};
 
 // @public (undocumented)
 export type FieldElement<TFieldValues extends FieldValues = FieldValues> = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | CustomElement<TFieldValues>;

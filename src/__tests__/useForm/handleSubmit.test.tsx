@@ -444,7 +444,7 @@ describe('handleSubmit', () => {
           {fields.map((field, index) => {
             return (
               <input
-                key={field.id}
+                key={field.key}
                 {...register(`test.${index}.name`, { required: true })}
               />
             );
@@ -507,7 +507,7 @@ describe('handleSubmit', () => {
           {fields.map((field, index) => {
             return (
               <input
-                key={field.id}
+                key={field.key}
                 {...register(`test.${index}.name`, { required: true })}
               />
             );
