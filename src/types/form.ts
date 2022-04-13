@@ -586,7 +586,10 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <_>(
   onValid: SubmitHandler<TFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
-) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+) => (e?: React.BaseSyntheticEvent) => Promise<void | Partial<{
+  values: TFieldValues;
+  errors: FieldErrors<TFieldValues>;
+}>>;
 
 /**
  * Reset a field state and reference.

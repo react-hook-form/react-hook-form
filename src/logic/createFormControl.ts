@@ -1017,6 +1017,7 @@ export function createFormControl<
       }
       let hasNoPromiseError = true;
       let fieldValues: any = cloneObject(_formValues);
+      let result;
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1039,7 +1040,7 @@ export function createFormControl<
             errors: {} as FieldErrors<TFieldValues>,
             isSubmitting: true,
           });
-          await onValid(fieldValues, e);
+          result = await onValid(fieldValues, e);
         } else {
           if (onInvalid) {
             await onInvalid({ ..._formState.errors }, e);
@@ -1056,6 +1057,12 @@ export function createFormControl<
         hasNoPromiseError = false;
         throw err;
       } finally {
+        if (result && result.errors) {
+          for (const key in result.errors) {
+            setError(key as Path<TFieldValues>, result.errors[key]);
+          }
+        }
+
         _formState.isSubmitted = true;
         _subjects.state.next({
           isSubmitted: true,
@@ -1066,6 +1073,8 @@ export function createFormControl<
           errors: _formState.errors,
         });
       }
+
+      return result;
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
