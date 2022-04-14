@@ -29,6 +29,7 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  InternalFieldName,
   PathString,
   RegisterOptions,
   UseFieldArrayProps,
@@ -102,13 +103,22 @@ export function useFieldArray<
       props.rules as RegisterOptions<FieldValues, PathString>,
     );
 
-  const callback = React.useCallback(({ values, name: fieldArrayName }) => {
-    if (fieldArrayName === _name.current || !fieldArrayName) {
-      const fieldValues = get(values, _name.current, []);
-      setFields(fieldValues);
-      ids.current = fieldValues.map(generateId);
-    }
-  }, []);
+  const callback = React.useCallback(
+    ({
+      values,
+      name: fieldArrayName,
+    }: {
+      values?: FieldValues;
+      name?: InternalFieldName;
+    }) => {
+      if (fieldArrayName === _name.current || !fieldArrayName) {
+        const fieldValues = get(values, _name.current, []);
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      }
+    },
+    [],
+  );
 
   useSubscribe({
     callback,

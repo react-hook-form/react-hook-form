@@ -139,7 +139,7 @@ export function useWatch<
   _name.current = name;
 
   const callback = React.useCallback(
-    (formState) => {
+    (formState: { name?: InternalFieldName; values?: FieldValues }) => {
       if (
         shouldSubscribeByName(
           _name.current as InternalFieldName,

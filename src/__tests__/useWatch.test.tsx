@@ -139,7 +139,7 @@ describe('useWatch', () => {
   });
 
   it('should render with FormProvider', () => {
-    const Provider: React.FC = ({ children }) => {
+    const Provider = ({ children }: { children: React.ReactNode }) => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
     };
@@ -487,13 +487,19 @@ describe('useWatch', () => {
           handleSubmit,
           control,
           formState: { errors },
-        } = useForm<FormInputs>();
+        } = useForm<FormInputs>({
+          defaultValues: {
+            parent: '',
+            child: '',
+          },
+        });
         parentCount++;
+
         return (
           <form onSubmit={handleSubmit(() => {})}>
             <input {...register('parent')} />
             <Child register={register} control={control} />
-            {errors.parent}
+            {errors.parent?.message}
             <button>submit</button>
           </form>
         );

@@ -78,7 +78,7 @@ export function useForm<
   const control = _formControl.current.control;
 
   const callback = React.useCallback(
-    (value) => {
+    (value: FieldValues) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
         control._formState = {
           ...control._formState,

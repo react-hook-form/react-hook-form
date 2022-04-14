@@ -537,7 +537,11 @@ describe('setValue', () => {
           setError,
           setValue,
           formState: { errors },
-        } = useForm();
+        } = useForm({
+          defaultValues: {
+            test: '',
+          },
+        });
 
         return (
           <>
