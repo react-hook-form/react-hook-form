@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { useController } from '../useController';
 import { useForm } from '../useForm';
@@ -37,7 +37,7 @@ describe('FormProvider', () => {
     expect(mockRegister).toHaveBeenCalled();
   });
 
-  it('should work correctly with Controller, useWatch, useFormState.', () => {
+  it('should work correctly with Controller, useWatch, useFormState.', async () => {
     const TestComponent = () => {
       const { field } = useController({
         name: 'test',
@@ -51,13 +51,13 @@ describe('FormProvider', () => {
         name: 'test',
       });
 
-      return <p>{value}</p>;
+      return <p>Value: {value === undefined ? 'undefined value' : value}</p>;
     };
 
     const TestFormState = () => {
       const { isDirty } = useFormState();
 
-      return <div>{isDirty ? 'yes' : 'no'}</div>;
+      return <div>Dirty: {isDirty ? 'yes' : 'no'}</div>;
     };
 
     const Component = () => {
@@ -71,9 +71,17 @@ describe('FormProvider', () => {
       );
     };
 
-    const { asFragment } = render(<Component />);
+    render(<Component />);
 
-    expect(asFragment()).toMatchSnapshot();
+    const input = screen.getByRole('textbox');
+
+    expect(input).toBeVisible();
+    expect(await screen.findByText('Value: undefined value')).toBeVisible();
+    expect(screen.getByText('Dirty: no')).toBeVisible();
+
+    fireEvent.change(input, { target: { value: 'test' } });
+    expect(screen.getByText('Value: test')).toBeVisible();
+    expect(screen.getByText('Dirty: yes')).toBeVisible();
   });
 
   it('should not throw type error', () => {
