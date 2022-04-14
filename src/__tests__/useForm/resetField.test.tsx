@@ -165,8 +165,8 @@ describe('resetField', () => {
 
     render(<App />);
 
-    expect(await screen.findByText('noError')).toBeVisible();
-    expect(screen.getByText('valid')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible();
+    expect(screen.getByText('noError')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -174,13 +174,13 @@ describe('resetField', () => {
       },
     });
 
-    expect(await screen.findByText('error')).toBeVisible();
-    expect(screen.getByText('NotValid')).toBeVisible();
+    expect(await screen.findByText('NotValid')).toBeVisible();
+    expect(screen.getByText('error')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(await screen.findByText('noError')).toBeVisible();
-    expect(screen.getByText('valid')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible();
+    expect(screen.getByText('noError')).toBeVisible();
   });
 
   it('should reset input file to empty string only', () => {
@@ -391,8 +391,8 @@ describe('resetField', () => {
 
       render(<App />);
 
-      expect(await screen.findByText('noError')).toBeVisible();
-      expect(screen.getByText('valid')).toBeVisible();
+      expect(await screen.findByText('valid')).toBeVisible();
+      expect(screen.getByText('noError')).toBeVisible();
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
@@ -400,13 +400,13 @@ describe('resetField', () => {
         },
       });
 
-      expect(await screen.findByText('error')).toBeVisible();
-      expect(screen.getByText('NotValid')).toBeVisible();
+      expect(await screen.findByText('NotValid')).toBeVisible();
+      expect(screen.getByText('error')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
-      expect(await screen.findByText('error')).toBeVisible();
-      expect(screen.getByText('NotValid')).toBeVisible();
+      expect(await screen.findByText('NotValid')).toBeVisible();
+      expect(screen.getByText('error')).toBeVisible();
     });
   });
 });

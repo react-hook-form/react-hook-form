@@ -376,6 +376,7 @@ describe('useController', () => {
     const reportValidity = jest.fn();
     const focus = jest.fn();
     const message = 'This is required';
+    const onSubmit = jest.fn();
 
     type FormValues = {
       test: string;
@@ -414,7 +415,7 @@ describe('useController', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Input control={control} />
           <input type="submit" />
         </form>
@@ -437,7 +438,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(setCustomValidity).toBeCalledTimes(3);
     expect(reportValidity).toBeCalledTimes(3);
     expect(focus).toBeCalledTimes(1);
   });

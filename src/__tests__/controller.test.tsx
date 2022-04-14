@@ -1027,7 +1027,10 @@ describe('Controller', () => {
   it('should set ref to empty object when ref is not defined', async () => {
     const App = () => {
       const [show, setShow] = React.useState(false);
-      const { control } = useForm({
+      const {
+        control,
+        formState: { isDirty },
+      } = useForm({
         mode: 'onChange',
         defaultValues: {
           test: {
@@ -1039,6 +1042,7 @@ describe('Controller', () => {
 
       return (
         <div>
+          <p>Dirty: {isDirty.toString()}</p>
           {show && (
             <Controller
               name={'test'}
@@ -1065,7 +1069,7 @@ describe('Controller', () => {
     });
 
     // Everything should be fine even if no ref on the controlled input
-    await waitFor(() => expect(input).toHaveValue('test'));
+    expect(await screen.findByText('Dirty: true')).toBeVisible();
   });
 
   it('should transform input value instead update via ref', () => {

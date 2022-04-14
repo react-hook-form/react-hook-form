@@ -939,7 +939,7 @@ describe('register', () => {
                 min: 20,
               })}
             />
-            <span role="alert">{errors.test && 'Number length'}</span>
+            <span role="alert">{errors.test1 && 'Number length'}</span>
           </>
         );
       };
@@ -1588,7 +1588,7 @@ describe('register', () => {
     });
 
     await waitFor(() =>
-      expect(screen.queryByText('error')).not.toBeInTheDocument(),
+      expect(screen.queryByText(/error/)).not.toBeInTheDocument(),
     );
   });
 

@@ -675,7 +675,7 @@ describe('formState', () => {
       const App = () => {
         const {
           register,
-          formState: { errors },
+          formState: { errors, isDirty },
         } = useForm<{
           test: string;
         }>({
@@ -685,6 +685,7 @@ describe('formState', () => {
 
         return (
           <div>
+            <p>Dirty: {isDirty.toString()}</p>
             <input
               {...register('test', {
                 maxLength: 4,
@@ -697,25 +698,25 @@ describe('formState', () => {
 
       render(<App />);
 
-      fireEvent.change(screen.getByRole('textbox'), {
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, {
         target: {
           value: '123456',
         },
       });
 
-      await waitFor(() =>
-        expect(screen.queryByText(message)).not.toBeInTheDocument(),
-      );
+      expect(await screen.findByText('Dirty: true')).toBeVisible();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      fireEvent.change(screen.getByRole('textbox'), {
+      fireEvent.change(input, {
         target: {
           value: '123',
         },
       });
-
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      actComponent(() => {
+      await actComponent(async () => {
         jest.advanceTimersByTime(500);
       });
 

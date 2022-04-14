@@ -294,6 +294,7 @@ describe('reset', () => {
 
   it('should not reset if keepStateOption is specified', async () => {
     let formState = {};
+    const onSubmit = jest.fn();
 
     const App = () => {
       const {
@@ -310,7 +311,7 @@ describe('reset', () => {
       formState = { touchedFields, errors, isDirty };
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input {...register('test', { required: true, minLength: 3 })} />
           <button>submit</button>
           <button
@@ -346,6 +347,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     await waitFor(() =>
       expect(formState).toEqual({
         errors: {},
