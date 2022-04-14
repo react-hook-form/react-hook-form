@@ -6,6 +6,7 @@ describe('getNodeParentName', () => {
     expect(getNodeParentName('test1.1')).toBe('test1');
     expect(getNodeParentName('test.0.data.0')).toBe('test');
     expect(getNodeParentName('test.data.0')).toBe('test.data');
+    expect(getNodeParentName('test.1st')).toBe('test.1st');
   });
 
   it('should return empty string when name is not field array', () => {
