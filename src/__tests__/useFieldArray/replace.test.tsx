@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import * as generateId from '../../logic/generateId';
 import { useController } from '../../useController';
@@ -79,26 +72,17 @@ describe('replace', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: labelSingle }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: labelSingle }));
 
-    act(() => {
-      expect(currentFields).toEqual([{ key: '3', value: { x: '201' } }]);
-    });
+    expect(currentFields).toEqual([{ key: '3', value: { x: '201' } }]);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: labelBatch }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: labelBatch }));
 
-    act(() => {
-      expect(currentFields).toEqual([
-        { key: '5', value: { x: '301' } },
-        { key: '6', value: { x: '302' } },
-      ]);
-    });
+    expect(currentFields).toEqual([
+      { key: '5', value: { x: '301' } },
+      { key: '6', value: { x: '302' } },
+    ]);
   });
-
   it('should not omit keyName when provided', async () => {
     type FormValues = {
       test: {
@@ -148,11 +132,11 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'replace' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"test","test":"data"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"test","test":"data"}]}'),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -215,11 +199,11 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'replace' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"data"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"data"}]}'),
+    ).toBeVisible();
   });
 
   it('should not replace errors state', async () => {
@@ -276,15 +260,11 @@ describe('replace', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
   });
 
   it('should not affect other formState during replace action', () => {
@@ -343,6 +323,8 @@ describe('replace', () => {
     fireEvent.click(screen.getByRole('button', { name: 'replace' }));
     fireEvent.click(screen.getByRole('button', { name: 'updateState' }));
 
-    screen.getByText('{"fieldArray":[{"firstName":true}]}');
+    expect(
+      screen.getByText('{"fieldArray":[{"firstName":true}]}'),
+    ).toBeVisible();
   });
 });

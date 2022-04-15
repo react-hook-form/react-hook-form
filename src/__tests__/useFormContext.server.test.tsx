@@ -52,6 +52,6 @@ describe('FormProvider', () => {
 
     const output = renderToString(<Component />);
 
-    expect(output).toMatchSnapshot();
+    expect(output).toEqual('<input name="test" value=""/><p></p><div>no</div>');
   });
 });
