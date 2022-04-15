@@ -106,7 +106,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{getFieldState('test')?.invalid ? 'error' : 'valid'}</p>
+              <p>{getFieldState('test')?.invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
@@ -272,7 +272,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{getFieldState('nested')?.invalid ? 'error' : 'valid'}</p>
+              <p>{getFieldState('nested')?.invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
@@ -433,7 +433,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{invalid ? 'error' : 'valid'}</p>
+              <p>{invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
@@ -575,7 +575,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{invalid ? 'error' : 'valid'}</p>
+              <p>{invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
