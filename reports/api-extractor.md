@@ -71,7 +71,7 @@ export const Controller: <TFieldValues extends FieldValues = FieldValues, TName 
 
 // @public (undocumented)
 export type ControllerFieldState = {
-    invalid: boolean;
+    isValid: boolean;
     isTouched: boolean;
     isDirty: boolean;
     error?: FieldError;
@@ -542,7 +542,7 @@ export const useFormContext: <TFieldValues extends FieldValues>() => UseFormRetu
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
-    invalid: boolean;
+    isValid: boolean;
     isDirty: boolean;
     isTouched: boolean;
     error?: FieldError;
