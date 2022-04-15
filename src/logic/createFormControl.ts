@@ -63,7 +63,6 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
-import omit from '../utils/omit';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -112,7 +111,7 @@ export function createFormControl<
     errors: {} as FieldErrors<TFieldValues>,
   };
   let _fields = {};
-  let _defaultValues = _options.defaultValues || {};
+  let _defaultValues = cloneObject(_options.defaultValues) || {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
@@ -422,8 +421,7 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const fieldReference = field._f;
-        const fieldValue = omit(field, '_f');
+        const { _f: fieldReference, ...fieldValue } = field;
 
         if (fieldReference) {
           const fieldError = await validateField(
@@ -545,6 +543,7 @@ export function createFormControl<
             fieldReference.refs.length > 1
               ? fieldReference.refs.forEach(
                   (checkboxRef) =>
+                    !checkboxRef.disabled &&
                     (checkboxRef.checked = Array.isArray(fieldValue)
                       ? !!(fieldValue as []).find(
                           (data: string) => data === checkboxRef.value,
@@ -988,7 +987,7 @@ export function createFormControl<
               ...field._f,
               ...(radioOrCheckbox
                 ? {
-                    refs: refs.concat(fieldRef).filter(live),
+                    refs: [...refs.filter(live), fieldRef],
                     ref: { type: fieldRef.type, name },
                   }
                 : { ref: fieldRef }),

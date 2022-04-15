@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act,
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { Control } from '../types';
@@ -59,12 +53,12 @@ describe('useFormState', () => {
       },
     });
 
-    screen.getByText('isDirty');
-    screen.getByText('dirty field');
+    expect(screen.getByText('isDirty')).toBeVisible();
+    expect(screen.getByText('dirty field')).toBeVisible();
     expect(count).toEqual(1);
 
     fireEvent.blur(screen.getByLabelText('test'));
-    screen.getByText('isTouched');
+    expect(screen.getByText('isTouched')).toBeVisible();
     expect(count).toEqual(1);
   });
 
@@ -99,27 +93,23 @@ describe('useFormState', () => {
     };
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.input(screen.getByLabelText('test'), {
-        target: {
-          value: 'test',
-        },
-      });
+    fireEvent.input(screen.getByLabelText('test'), {
+      target: {
+        value: 'test',
+      },
     });
 
-    screen.getByText('error');
-    screen.getByText('no');
+    expect(await screen.findByText('error')).toBeVisible();
+    expect(screen.getByText('no')).toBeVisible();
 
-    await act(async () => {
-      fireEvent.input(screen.getByLabelText('test'), {
-        target: {
-          value: 'testtest',
-        },
-      });
+    fireEvent.input(screen.getByLabelText('test'), {
+      target: {
+        value: 'testtest',
+      },
     });
 
-    screen.getByText('valid');
-    screen.getByText('yes');
+    expect(await screen.findByText('valid')).toBeVisible();
+    expect(screen.getByText('yes')).toBeVisible();
 
     expect(count).toEqual(1);
   });
@@ -178,34 +168,30 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.input(screen.getByLabelText('test'), {
-        target: {
-          value: 'test',
-        },
-      });
+    fireEvent.input(screen.getByLabelText('test'), {
+      target: {
+        value: 'test',
+      },
     });
 
-    screen.getByText('hasDirtyField');
-    screen.getByText('isDirty');
+    expect(await screen.findByText('hasDirtyField')).toBeVisible();
+    expect(screen.getByText('isDirty')).toBeVisible();
 
     expect(count).toEqual(1);
     expect(testCount).toEqual(2);
     expect(test1Count).toEqual(1);
 
     fireEvent.blur(screen.getByLabelText('test'));
-    screen.getByText('isTouched');
+    expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(count).toEqual(1);
     expect(testCount).toEqual(3);
     expect(test1Count).toEqual(2);
 
-    await act(async () => {
-      fireEvent.input(screen.getByLabelText('test'), {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.input(screen.getByLabelText('test'), {
+      target: {
+        value: '',
+      },
     });
 
     expect(count).toEqual(1);
@@ -243,12 +229,10 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    screen.getByText('isSubmitted');
-    screen.getByText('1');
+    expect(await screen.findByText('isSubmitted')).toBeVisible();
+    expect(screen.getByText('1')).toBeVisible();
 
     expect(count).toEqual(1);
   });
@@ -295,15 +279,13 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('firstName'), {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: {
+        value: '',
+      },
     });
 
-    expect(count).toEqual(2);
+    await waitFor(() => expect(count).toEqual(2));
   });
 
   it('should not re-render when subscribed field name is not included', async () => {
@@ -348,12 +330,10 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('firstName'), {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: {
+        value: '',
+      },
     });
 
     expect(count).toEqual(1);
@@ -409,23 +389,19 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('firstName'), {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: {
+        value: '',
+      },
     });
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('lastName'), {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.change(screen.getByPlaceholderText('lastName'), {
+      target: {
+        value: '',
+      },
     });
 
-    expect(count).toEqual(3);
+    await waitFor(() => expect(count).toEqual(3));
   });
 
   it('should only re-render when subscribed field names updated', async () => {
@@ -475,12 +451,10 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('firstName'), {
-        target: {
-          value: '',
-        },
-      });
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: {
+        value: '',
+      },
     });
 
     expect(count).toEqual(1);
@@ -527,21 +501,15 @@ describe('useFormState', () => {
 
     render(<App />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    expect(screen.queryByText('error')).toBeNull();
+    expect(screen.queryByText('error')).not.toBeInTheDocument();
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    screen.getByText('error');
+    expect(await screen.findByText('error')).toBeVisible();
   });
 
   it('should not start early subscription and throw warning at strict mode', async () => {
@@ -587,17 +555,13 @@ describe('useFormState', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'add' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'add' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'add' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'add' }));
+
+    expect(await screen.findAllByRole('textbox')).toHaveLength(1);
   });
 
   it('should subscribe to exact form state update', () => {
@@ -632,7 +596,7 @@ describe('useFormState', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(screen.queryByText('touched')).toBeNull();
+    expect(screen.queryByText('touched')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -640,6 +604,6 @@ describe('useFormState', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    screen.queryByText('touched');
+    expect(screen.getByText('touched')).toBeVisible();
   });
 });

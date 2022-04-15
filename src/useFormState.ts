@@ -83,12 +83,12 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     subject: control._subjects.state,
   });
 
-  React.useEffect(
-    () => () => {
+  React.useEffect(() => {
+    _mounted.current = true;
+    return () => {
       _mounted.current = false;
-    },
-    [],
-  );
+    };
+  }, []);
 
   return getProxyFormState(
     formState,

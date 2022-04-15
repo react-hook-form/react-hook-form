@@ -138,21 +138,13 @@ describe('remove', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await waitFor(() => {
-      screen.getByText('notValid');
-    });
+    expect(await screen.findByText('notValid')).toBeVisible();
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
 
-    await waitFor(() => {
-      screen.getByText('isValid');
-    });
+    expect(await screen.findByText('isValid')).toBeVisible();
   });
 
   it('should remove field according index', () => {
@@ -371,57 +363,35 @@ describe('remove', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await waitFor(() => {
-      screen.getByText('notValid');
-    });
+    expect(await screen.findByText('notValid')).toBeVisible();
 
     const inputs = screen.getAllByRole('textbox');
 
-    await actComponent(async () => {
-      fireEvent.input(inputs[0], {
-        target: { value: 'test' },
-      });
+    fireEvent.input(inputs[0], {
+      target: { value: 'test' },
     });
 
-    await actComponent(async () => {
-      fireEvent.input(inputs[2], {
-        target: { value: 'test' },
-      });
+    fireEvent.input(inputs[2], {
+      target: { value: 'test' },
     });
 
-    await actComponent(async () => {
-      fireEvent.input(inputs[3], {
-        target: { value: 'test' },
-      });
+    fireEvent.input(inputs[3], {
+      target: { value: 'test' },
     });
 
-    await waitFor(() => {
-      screen.getByText('notValid');
-    });
+    expect(await screen.findByText('notValid')).toBeVisible();
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    await waitFor(() => {
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('valid')).toBeVisible();
   });
 
   it('should remove all field if isValid is true', async () => {
@@ -456,25 +426,17 @@ describe('remove', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
     expect(isValid).toBeFalsy();
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    expect(isValid).toBeTruthy();
+    await waitFor(() => expect(isValid).toBeTruthy());
   });
 
   it('should remove error', async () => {
@@ -516,31 +478,19 @@ describe('remove', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    expect(errors.test).toHaveLength(2);
+    await waitFor(() => expect(errors.test).toHaveLength(2));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
 
     expect(errors.test).toBeUndefined();
   });
@@ -633,23 +583,21 @@ describe('remove', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    expect(screen.queryByTestId('nested-error')).toBeInTheDocument();
+    expect(await screen.findByTestId('nested-error')).toBeVisible();
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
 
-    expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument(),
+    );
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
 
-    expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument(),
+    );
   });
 
   it('should trigger reRender when user is watching the all field array', () => {
@@ -854,31 +802,15 @@ describe('remove', () => {
 
     render(<Component />);
 
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'append' }));
-    });
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'append' }));
-    });
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'append' }));
-    });
-    actComponent(() => {
-      fireEvent.click(screen.getByRole('button', { name: 'append' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-    actComponent(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
-    });
-    actComponent(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
-    });
-    actComponent(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
-    });
-    actComponent(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[0]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[0]);
   });
 
   it("should not reset Controller's value during remove when Field Array name is already registered", async () => {
@@ -925,19 +857,13 @@ describe('remove', () => {
 
     render(<Component />);
 
-    await actComponent(async () => {
-      fireEvent.input(screen.getAllByRole('textbox')[0], {
-        target: { name: 'test[0].lastName', value: '111' },
-      });
+    fireEvent.input(screen.getAllByRole('textbox')[0], {
+      target: { name: 'test[0].lastName', value: '111' },
     });
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'append' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -1058,39 +984,37 @@ describe('remove', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      expect(output).toEqual({
-        test: [
-          {
-            firstName: 'test',
-            lastName: 'test',
-          },
-          {
-            firstName: 'test1',
-            lastName: 'test1',
-          },
-        ],
-      });
+      await waitFor(() =>
+        expect(output).toEqual({
+          test: [
+            {
+              firstName: 'test',
+              lastName: 'test',
+            },
+            {
+              firstName: 'test1',
+              lastName: 'test1',
+            },
+          ],
+        }),
+      );
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
-      });
+      fireEvent.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      expect(output).toEqual({
-        test: [
-          {
-            firstName: 'test1',
-            lastName: 'test1',
-          },
-        ],
-      });
+      await waitFor(() =>
+        expect(output).toEqual({
+          test: [
+            {
+              firstName: 'test1',
+              lastName: 'test1',
+            },
+          ],
+        }),
+      );
     });
   });
 
@@ -1162,17 +1086,15 @@ describe('remove', () => {
       jest.advanceTimersByTime(2000);
     });
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
-    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    expect(output).toEqual({
-      test: [{ title: 'title1', description: 'description1' }],
-    });
+    await waitFor(() =>
+      expect(output).toEqual({
+        test: [{ title: 'title1', description: 'description1' }],
+      }),
+    );
   });
 
   it('should not omit keyName when provided', async () => {
@@ -1222,11 +1144,11 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"4567","test":"data1"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"4567","test":"data1"}]}'),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -1287,10 +1209,10 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever1","test":"12341"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever1","test":"12341"}]}'),
+    ).toBeVisible();
   });
 });

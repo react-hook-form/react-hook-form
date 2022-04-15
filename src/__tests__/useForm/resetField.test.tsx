@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
 
@@ -80,15 +80,11 @@ describe('resetField', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    await waitFor(async () => {
-      screen.getByText('touched');
-    });
+    expect(await screen.findByText('touched')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('noTouched');
-    });
+    expect(await screen.findByText('noTouched')).toBeVisible();
   });
 
   it('should reset input dirty field and dirty state', async () => {
@@ -128,17 +124,13 @@ describe('resetField', () => {
       },
     });
 
-    await waitFor(async () => {
-      screen.getByText('dirty');
-      screen.getByText('formDirty');
-    });
+    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(screen.getByText('formDirty')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('notDirty');
-      screen.getByText('formNotDirty');
-    });
+    expect(await screen.findByText('notDirty')).toBeVisible();
+    expect(screen.getByText('formNotDirty')).toBeVisible();
   });
 
   it('should reset input error field and isValid state', async () => {
@@ -173,10 +165,8 @@ describe('resetField', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('noError');
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('noError')).toBeVisible();
+    expect(screen.getByText('valid')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -184,17 +174,13 @@ describe('resetField', () => {
       },
     });
 
-    await waitFor(async () => {
-      screen.getByText('error');
-      screen.getByText('NotValid');
-    });
+    expect(await screen.findByText('error')).toBeVisible();
+    expect(screen.getByText('NotValid')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('noError');
-      screen.getByText('valid');
-    });
+    expect(await screen.findByText('noError')).toBeVisible();
+    expect(screen.getByText('valid')).toBeVisible();
   });
 
   it('should reset input file to empty string only', () => {
@@ -320,15 +306,11 @@ describe('resetField', () => {
 
       fireEvent.blur(screen.getByRole('textbox'));
 
-      await waitFor(async () => {
-        screen.getByText('touched');
-      });
+      expect(await screen.findByText('touched')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(async () => {
-        screen.getByText('touched');
-      });
+      expect(await screen.findByText('touched')).toBeVisible();
     });
 
     it('should keep dirty field and isDirty state', async () => {
@@ -368,17 +350,13 @@ describe('resetField', () => {
         },
       });
 
-      await waitFor(async () => {
-        screen.getByText('dirty');
-        screen.getByText('formDirty');
-      });
+      expect(await screen.findByText('dirty')).toBeVisible();
+      expect(screen.getByText('formDirty')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(async () => {
-        screen.getByText('dirty');
-        screen.getByText('formDirty');
-      });
+      expect(await screen.findByText('dirty')).toBeVisible();
+      expect(screen.getByText('formDirty')).toBeVisible();
     });
 
     it('should skip reset error field and isValid state', async () => {
@@ -413,10 +391,8 @@ describe('resetField', () => {
 
       render(<App />);
 
-      await waitFor(async () => {
-        screen.getByText('noError');
-        screen.getByText('valid');
-      });
+      expect(await screen.findByText('noError')).toBeVisible();
+      expect(screen.getByText('valid')).toBeVisible();
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
@@ -424,17 +400,13 @@ describe('resetField', () => {
         },
       });
 
-      await waitFor(async () => {
-        screen.getByText('error');
-        screen.getByText('NotValid');
-      });
+      expect(await screen.findByText('error')).toBeVisible();
+      expect(screen.getByText('NotValid')).toBeVisible();
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(async () => {
-        screen.getByText('error');
-        screen.getByText('NotValid');
-      });
+      expect(await screen.findByText('error')).toBeVisible();
+      expect(screen.getByText('NotValid')).toBeVisible();
     });
   });
 });

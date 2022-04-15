@@ -1,6 +1,5 @@
 import React from 'react';
 
-import omit from './utils/omit';
 import { FieldValues, FormProviderProps, UseFormReturn } from './types';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
@@ -72,10 +71,11 @@ export const useFormContext = <
  */
 export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
   props: FormProviderProps<TFieldValues, TContext>,
-) => (
-  <HookFormContext.Provider
-    value={omit(props, 'children') as unknown as UseFormReturn}
-  >
-    {props.children}
-  </HookFormContext.Provider>
-);
+) => {
+  const { children, ...data } = props;
+  return (
+    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
+      {props.children}
+    </HookFormContext.Provider>
+  );
+};
