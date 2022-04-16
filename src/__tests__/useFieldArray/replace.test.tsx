@@ -54,7 +54,10 @@ describe('replace', () => {
         <form>
           {fields.map((field, index) => {
             return (
-              <input key={field.id} {...register(`test.${index}.x` as const)} />
+              <input
+                key={field.key}
+                {...register(`test.${index}.x` as const)}
+              />
             );
           })}
           <button type="button" onClick={handleSingleReplace}>
@@ -71,13 +74,13 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: labelSingle }));
 
-    expect(currentFields).toEqual([{ id: '3', x: '201' }]);
+    expect(currentFields).toEqual([{ key: '3', x: '201' }]);
 
     fireEvent.click(screen.getByRole('button', { name: labelBatch }));
 
     expect(currentFields).toEqual([
-      { id: '5', x: '301' },
-      { id: '6', x: '302' },
+      { key: '5', x: '301' },
+      { key: '6', x: '302' },
     ]);
   });
   it('should not omit keyName when provided', async () => {
@@ -107,7 +110,9 @@ describe('replace', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -155,7 +160,9 @@ describe('replace', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -228,7 +235,7 @@ describe('replace', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.firstName` as const, {
                 required: 'This is required',
               })}
@@ -284,7 +291,7 @@ describe('replace', () => {
       return (
         <div>
           {fields.map((field, index) => {
-            return <ControlledInput key={field.id} index={index} />;
+            return <ControlledInput key={field.key} index={index} />;
           })}
 
           <button type="button" onClick={() => replace(defaultValue)}>

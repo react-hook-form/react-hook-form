@@ -795,7 +795,7 @@ describe('useWatch', () => {
           <form>
             {fields.map((item, itemIndex) => (
               <Item
-                key={item.id}
+                key={item.key}
                 control={control}
                 register={register}
                 itemIndex={itemIndex}
@@ -905,7 +905,7 @@ describe('useWatch', () => {
           <form>
             {fields.map((item, index) => {
               return (
-                <div key={item.id}>
+                <div key={item.key}>
                   <Child control={control} index={index} itemDefault={item} />
                   <button
                     type="button"

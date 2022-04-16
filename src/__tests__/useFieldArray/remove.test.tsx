@@ -50,7 +50,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${i}.name` as const)} />
               <button type={'button'} onClick={() => remove(i)}>
                 remove
@@ -110,7 +110,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input
                 {...register(`test.${i}.name` as const, { required: true })}
               />
@@ -168,7 +168,7 @@ describe('remove', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.fields).toEqual([{ id: '0', value: 'default' }]);
+    expect(result.current.fields).toEqual([{ key: '0', value: 'default' }]);
 
     act(() => {
       result.current.remove(0);
@@ -288,7 +288,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value`)} />
+            <input key={field.key} {...register(`test.${i}.value`)} />
           ))}
           <button type="button" onClick={() => append({ value: 'append' })}>
             append
@@ -346,7 +346,7 @@ describe('remove', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -410,7 +410,7 @@ describe('remove', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -460,7 +460,7 @@ describe('remove', () => {
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -530,7 +530,7 @@ describe('remove', () => {
       return (
         <fieldset>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input
                 {...control.register(
                   `test.${index}.nested.${i}.test` as const,
@@ -624,7 +624,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -673,7 +673,7 @@ describe('remove', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={`${field.id}`}>
+            <div key={`${field.key}`}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -778,7 +778,7 @@ describe('remove', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <Controller
                     render={({ field }) => <input {...field} />}
                     name={`test.${index}.firstName` as const}
@@ -837,7 +837,7 @@ describe('remove', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <Controller
                     name={`test.${index}.lastName` as const}
                     control={control}
@@ -966,7 +966,7 @@ describe('remove', () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             {fields.map((field, index) => {
               return (
-                <div key={field.id}>
+                <div key={field.key}>
                   <input {...register(`test.${index}.firstName` as const)} />
                   <Controller
                     name={`test.${index}.lastName` as const}
@@ -1069,7 +1069,7 @@ describe('remove', () => {
         <form onSubmit={handleSubmit((data) => (output = data))}>
           {fields.map((field, index) => (
             <div
-              key={field.id}
+              key={field.key}
               style={{ display: 'flex', alignItems: 'center' }}
             >
               <Controller
@@ -1131,7 +1131,9 @@ describe('remove', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -1179,7 +1181,9 @@ describe('remove', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}

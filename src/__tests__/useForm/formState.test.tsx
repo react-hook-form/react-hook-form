@@ -411,7 +411,7 @@ describe('formState', () => {
           />
           {fields.map((field, index) => {
             return (
-              <div key={field.id}>
+              <div key={field.key}>
                 <Controller
                   render={({ field }) => (
                     <input {...field} placeholder={field.name} />

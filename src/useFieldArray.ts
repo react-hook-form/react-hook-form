@@ -84,7 +84,7 @@ export function useFieldArray<
   const methods = useFormContext();
   const { control = methods.control, name, shouldUnregister } = props;
   const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]
+    Partial<FieldArray<TFieldValues, TFieldArrayName>>[]
   >(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
@@ -126,7 +126,7 @@ export function useFieldArray<
   });
 
   const updateValues = React.useCallback(
-    <T extends Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]>(
+    <T extends Partial<FieldArray<TFieldValues, TFieldArrayName>>[]>(
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
@@ -181,7 +181,7 @@ export function useFieldArray<
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName>
+      FieldArray<TFieldValues, TFieldArrayName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
@@ -383,7 +383,7 @@ export function useFieldArray<
       () =>
         fields.map((field, index) => ({
           ...field,
-          id: ids.current[index] || generateId(),
+          key: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
       [fields],
     ),

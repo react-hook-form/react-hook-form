@@ -40,12 +40,12 @@ test('should not throw type error with optional array fields', () => {
         <button onClick={() => append({ name: '' })}>Add</button>
 
         {fields.map((field, index) => (
-          <div key={field.id}>
+          <div key={field.key}>
             <input {...register(`things.${index}.name`)} />
           </div>
         ))}
         {fieldArray.fields.map((item) => {
-          return <div key={item.id}>{item.name}</div>;
+          return <div key={item.key}>{item.name}</div>;
         })}
       </div>
     );

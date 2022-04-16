@@ -39,7 +39,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, index) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${index}.test` as const)} />
             </div>
           ))}
@@ -62,22 +62,22 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
+    expect(currentFields).toEqual([{ key: '0', test: 'test' }]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
     expect(currentFields).toEqual([
-      { id: '2', test: 'test' },
-      { id: '0', test: 'test' },
+      { key: '2', test: 'test' },
+      { key: '0', test: 'test' },
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prependBatch' }));
 
     expect(currentFields).toEqual([
-      { id: '5', test: 'test-batch' },
-      { id: '6', test: 'test-batch1' },
-      { id: '2', test: 'test' },
-      { id: '0', test: 'test' },
+      { key: '5', test: 'test-batch' },
+      { key: '6', test: 'test-batch1' },
+      { key: '2', test: 'test' },
+      { key: '0', test: 'test' },
     ]);
   });
 
@@ -131,7 +131,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value`)} />
+            <input key={field.key} {...register(`test.${i}.value`)} />
           ))}
           <button type="button" onClick={() => prepend({ value: `test${1}` })}>
             prepend
@@ -175,7 +175,7 @@ describe('prepend', () => {
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -221,7 +221,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => prepend({ value: '' })}>
             prepend
@@ -262,7 +262,7 @@ describe('prepend', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={`${field.id}`}>
+            <div key={`${field.key}`}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -317,7 +317,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => prepend({ value: '' })}>
             prepend
@@ -348,7 +348,7 @@ describe('prepend', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -407,7 +407,7 @@ describe('prepend', () => {
         <>
           {fields.map((item, index) => (
             <Input
-              key={item.id}
+              key={item.key}
               name={`test.${index}.name.deep`}
               control={control}
             />
@@ -528,7 +528,9 @@ describe('prepend', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -580,7 +582,9 @@ describe('prepend', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}

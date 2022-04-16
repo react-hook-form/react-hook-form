@@ -47,9 +47,9 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '0', test: '1' },
-      { id: '2', test: '3' },
-      { id: '1', test: '2' },
+      { key: '0', test: '1' },
+      { key: '2', test: '3' },
+      { key: '1', test: '2' },
     ]);
   });
 
@@ -72,10 +72,10 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '0', test: '1' },
-      { id: '2', test: '3' },
-      { id: '3', test: '4' },
-      { id: '1', test: '2' },
+      { key: '0', test: '1' },
+      { key: '2', test: '3' },
+      { key: '3', test: '4' },
+      { key: '1', test: '2' },
     ]);
   });
 
@@ -174,7 +174,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -214,7 +214,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -258,7 +258,7 @@ describe('insert', () => {
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value`, { required: true })}
             />
           ))}
@@ -303,7 +303,7 @@ describe('insert', () => {
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value`, { required: true })}
             />
           ))}
@@ -349,7 +349,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => insert(1, { value: '' })}>
             insert
@@ -380,7 +380,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -419,7 +419,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => insert(0, { value: '' })}>
             insert
@@ -460,7 +460,7 @@ describe('insert', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={`${field.id}`}>
+            <div key={`${field.key}`}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -537,7 +537,7 @@ describe('insert', () => {
         <>
           {fields.map((item, index) => (
             <Input
-              key={item.id}
+              key={item.key}
               name={`test.${index}.name.deep`}
               control={control}
             />
@@ -651,7 +651,7 @@ describe('insert', () => {
             <form>
               {fields.map((field, index) => {
                 return (
-                  <fieldset key={field.id}>
+                  <fieldset key={field.key}>
                     <input {...register(`test.${index}.name`)} />
                   </fieldset>
                 );
@@ -744,7 +744,9 @@ describe('insert', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -796,7 +798,9 @@ describe('insert', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}

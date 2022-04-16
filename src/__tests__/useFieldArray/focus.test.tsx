@@ -22,7 +22,7 @@ describe('useFieldArray focus', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -82,7 +82,7 @@ describe('useFieldArray focus', () => {
       return (
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((field, index) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input
                 {...register(`test.${index}.value`)}
                 defaultValue={field.value}
@@ -118,7 +118,7 @@ describe('useFieldArray focus', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -174,7 +174,7 @@ describe('useFieldArray focus', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button
             type="button"

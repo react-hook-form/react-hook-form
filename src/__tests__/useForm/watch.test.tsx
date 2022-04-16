@@ -288,7 +288,7 @@ describe('watch', () => {
         <form onSubmit={handleSubmit(() => {})}>
           {fields.map((item, index) => {
             return (
-              <div key={item.id}>
+              <div key={item.key}>
                 <Controller
                   control={control}
                   name={`names.${index}.name` as const}

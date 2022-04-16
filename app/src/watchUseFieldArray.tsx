@@ -46,7 +46,7 @@ const WatchUseFieldArray: React.FC = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <ul>
         {fields.map((data, index) => (
-          <li key={data.id}>
+          <li key={data.key}>
             <input
               id={`field${index}`}
               data-order={index}
