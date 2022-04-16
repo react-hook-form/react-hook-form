@@ -41,7 +41,6 @@ import { useForm } from '../../useForm';
     });
 
     expectType<{
-      invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
       error?: FieldError;
@@ -57,7 +56,6 @@ import { useForm } from '../../useForm';
     });
 
     expectType<{
-      invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
       error?: FieldError;
