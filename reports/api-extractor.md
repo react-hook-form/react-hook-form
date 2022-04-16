@@ -71,7 +71,6 @@ export const Controller: <TFieldValues extends FieldValues = FieldValues, TName 
 
 // @public (undocumented)
 export type ControllerFieldState = {
-    invalid: boolean;
     isTouched: boolean;
     isDirty: boolean;
     error?: FieldError;
@@ -542,7 +541,6 @@ export const useFormContext: <TFieldValues extends FieldValues>() => UseFormRetu
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
-    invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
     error?: FieldError;
@@ -740,7 +738,7 @@ export type WatchObserver<TFieldValues> = (value: UnpackNestedValue<DeepPartial<
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:406:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:405:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
