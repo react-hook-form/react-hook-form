@@ -14,7 +14,6 @@ import {
 } from './';
 
 export type ControllerFieldState = {
-  invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
   error?: FieldError;
