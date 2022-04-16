@@ -647,7 +647,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {!fieldState.invalid && <p>Input is invalid.</p>}
+              {fieldState.invalid && <p>Input is invalid.</p>}
             </>
           )}
           control={control}
