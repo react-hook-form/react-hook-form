@@ -106,7 +106,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{getFieldState('test')?.isValid ? 'valid' : 'error'}</p>
+              <p>{getFieldState('test')?.invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
@@ -272,7 +272,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{getFieldState('nested')?.isValid ? 'valid' : 'error'}</p>
+              <p>{getFieldState('nested')?.invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
@@ -425,7 +425,7 @@ describe('getFieldState', () => {
             },
           });
 
-          const { isValid } = getFieldState('test', formState);
+          const { invalid } = getFieldState('test', formState);
 
           return (
             <form>
@@ -433,7 +433,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{isValid ? 'valid' : 'error'}</p>
+              <p>{invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
@@ -567,7 +567,7 @@ describe('getFieldState', () => {
               },
             });
 
-          const { isValid } = getFieldState('nested', formState);
+          const { invalid } = getFieldState('nested', formState);
 
           return (
             <form>
@@ -575,7 +575,7 @@ describe('getFieldState', () => {
               <button type={'button'} onClick={() => trigger()}>
                 trigger
               </button>
-              <p>{isValid ? 'valid' : 'error'}</p>
+              <p>{invalid ? 'valid' : 'error'}</p>
             </form>
           );
         };
