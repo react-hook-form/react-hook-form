@@ -22,7 +22,7 @@ export type UseFieldArrayProps<
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends PathString = never,
-> = { value: FieldArray<TFieldValues, TFieldArrayName>; key: string };
+> = Omit<FieldArray<TFieldValues, TFieldArrayName>, 'key'> & { key: string };
 
 export type FieldArray<
   TFieldValues extends FieldValues,

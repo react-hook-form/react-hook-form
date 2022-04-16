@@ -62,22 +62,22 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    expect(currentFields).toEqual([{ key: '0', value: { test: 'test' } }]);
+    expect(currentFields).toEqual([{ key: '0', test: 'test' }]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
     expect(currentFields).toEqual([
-      { key: '2', value: { test: 'test' } },
-      { key: '0', value: { test: 'test' } },
+      { key: '2', test: 'test' },
+      { key: '0', test: 'test' },
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prependBatch' }));
 
     expect(currentFields).toEqual([
-      { key: '5', value: { test: 'test-batch' } },
-      { key: '6', value: { test: 'test-batch1' } },
-      { key: '2', value: { test: 'test' } },
-      { key: '0', value: { test: 'test' } },
+      { key: '5', test: 'test-batch' },
+      { key: '6', test: 'test-batch1' },
+      { key: '2', test: 'test' },
+      { key: '0', test: 'test' },
     ]);
   });
 

@@ -47,9 +47,9 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { key: '0', value: { test: '1' } },
-      { key: '2', value: { test: '3' } },
-      { key: '1', value: { test: '2' } },
+      { key: '0', test: '1' },
+      { key: '2', test: '3' },
+      { key: '1', test: '2' },
     ]);
   });
 
@@ -72,10 +72,10 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { key: '0', value: { test: '1' } },
-      { key: '2', value: { test: '3' } },
-      { key: '3', value: { test: '4' } },
-      { key: '1', value: { test: '2' } },
+      { key: '0', test: '1' },
+      { key: '2', test: '3' },
+      { key: '3', test: '4' },
+      { key: '1', test: '2' },
     ]);
   });
 

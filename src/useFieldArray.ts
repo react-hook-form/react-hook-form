@@ -382,7 +382,7 @@ export function useFieldArray<
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
-          value: field,
+          ...field,
           key: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
       [fields],

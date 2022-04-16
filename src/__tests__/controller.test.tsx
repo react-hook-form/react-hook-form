@@ -509,7 +509,7 @@ describe('Controller', () => {
           {fields.map((field, i) => (
             <Controller
               key={field.key}
-              defaultValue={field.value.value}
+              defaultValue={field.value}
               name={`test.${i}.value` as const}
               render={({ field }) => <input {...field} />}
               control={control}

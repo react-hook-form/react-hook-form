@@ -39,8 +39,8 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { key: '1', value: { value: '2' } },
-      { key: '0', value: { value: '1' } },
+      { key: '1', value: '2' },
+      { key: '0', value: '1' },
     ]);
   });
 
@@ -66,8 +66,8 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { key: '1', value: { value: '2' } },
-      { key: '0', value: { value: '1' } },
+      { key: '1', value: '2' },
+      { key: '0', value: '1' },
     ]);
   });
 

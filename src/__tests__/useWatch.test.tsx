@@ -906,11 +906,7 @@ describe('useWatch', () => {
             {fields.map((item, index) => {
               return (
                 <div key={item.key}>
-                  <Child
-                    control={control}
-                    index={index}
-                    itemDefault={item.value}
-                  />
+                  <Child control={control} index={index} itemDefault={item} />
                   <button
                     type="button"
                     onClick={() => {
@@ -930,10 +926,7 @@ describe('useWatch', () => {
                 </div>
               );
             })}
-            <Watcher
-              itemsDefault={fields.map((x) => x.value)}
-              control={control}
-            />
+            <Watcher itemsDefault={fields} control={control} />
             <input type="submit" />
           </form>
         );
@@ -1249,10 +1242,10 @@ describe('useWatch', () => {
           return (
             <form>
               {fields.map((item, i) => (
-                <div key={item.value.firstName}>
+                <div key={item.firstName}>
                   <input
                     type="input"
-                    defaultValue={item.value.firstName}
+                    defaultValue={item.firstName}
                     {...register(`test.${i}.firstName` as const)}
                   />
 

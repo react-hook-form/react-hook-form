@@ -56,8 +56,8 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { value: { test: '1' }, key: '0' },
-        { value: { test: '2' }, key: '1' },
+        { test: '1', key: '0' },
+        { test: '2', key: '1' },
       ]);
     });
 
@@ -573,18 +573,18 @@ describe('useFieldArray', () => {
 
       const { unmount } = render(<App />);
 
-      expect(fieldsTemp).toEqual([{ key: '0', value: { value: 'default' } }]);
+      expect(fieldsTemp).toEqual([{ key: '0', value: 'default' }]);
 
       fireEvent.click(screen.getByRole('button'));
 
       expect(fieldsTemp).toEqual([
         {
           key: '0',
-          value: { value: 'default' },
+          value: 'default',
         },
         {
           key: '1',
-          value: { value: 'test' },
+          value: 'test',
         },
       ]);
 
@@ -594,11 +594,11 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([
         {
           key: '0',
-          value: { value: 'default' },
+          value: 'default',
         },
         {
           key: '1',
-          value: { value: 'test' },
+          value: 'test',
         },
       ]);
     });
@@ -895,7 +895,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-      expect(fieldsTemp).toEqual([{ key: '4', value: { value: 'default' } }]);
+      expect(fieldsTemp).toEqual([{ key: '4', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -922,9 +922,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([
-        { key: '4', value: { value: 'default' } },
-      ]);
+      expect(result.current.fields).toEqual([{ key: '4', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -932,9 +930,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([
-        { key: '6', value: { value: 'data' } },
-      ]);
+      expect(result.current.fields).toEqual([{ key: '6', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -1527,7 +1523,7 @@ describe('useFieldArray', () => {
                 <button
                   type={'button'}
                   onClick={() => remove(i)}
-                  data-testid={item.value.value}
+                  data-testid={item.value}
                 >
                   remove
                 </button>
@@ -2956,7 +2952,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  it('should keep id and key props in the value', () => {
+  it('should keep id prop in the value as is', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -2973,8 +2969,8 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { value: { test: '1', id: '11', key: '111' }, key: '0' },
-      { value: { test: '2', id: '22', key: '222' }, key: '1' },
+      { test: '1', id: '11', key: '0' },
+      { test: '2', id: '22', key: '1' },
     ]);
   });
 

@@ -45,7 +45,7 @@ test('should not throw type error with optional array fields', () => {
           </div>
         ))}
         {fieldArray.fields.map((item) => {
-          return <div key={item.key}>{item.value.name}</div>;
+          return <div key={item.key}>{item.name}</div>;
         })}
       </div>
     );

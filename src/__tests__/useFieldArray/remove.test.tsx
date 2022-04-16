@@ -168,9 +168,7 @@ describe('remove', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.fields).toEqual([
-      { key: '0', value: { value: 'default' } },
-    ]);
+    expect(result.current.fields).toEqual([{ key: '0', value: 'default' }]);
 
     act(() => {
       result.current.remove(0);

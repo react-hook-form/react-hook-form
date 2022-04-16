@@ -975,7 +975,7 @@ describe('reset', () => {
               return (
                 <li key={item.key}>
                   <input
-                    defaultValue={`${item.value.firstName}`}
+                    defaultValue={`${item.firstName}`}
                     {...register(`test.${index}.firstName`)}
                   />
 
@@ -983,7 +983,7 @@ describe('reset', () => {
                     render={({ field }) => <input {...field} />}
                     name={`test.${index}.lastName`}
                     control={control}
-                    defaultValue={item.value.lastName}
+                    defaultValue={item.lastName}
                   />
                 </li>
               );

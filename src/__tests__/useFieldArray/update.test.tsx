@@ -308,10 +308,8 @@ describe('update', () => {
       {
         key: '0',
         value: {
-          value: {
-            firstName: 'bill',
-            lastName: 'luo',
-          },
+          firstName: 'bill',
+          lastName: 'luo',
         },
       },
     ]);
@@ -331,10 +329,8 @@ describe('update', () => {
         {
           key: '0',
           value: {
-            value: {
-              firstName: 'bill',
-              lastName: 'luo',
-            },
+            firstName: 'bill',
+            lastName: 'luo',
           },
         },
       ],
@@ -342,10 +338,8 @@ describe('update', () => {
         {
           key: '1',
           value: {
-            value: {
-              firstName: 'firstName',
-              lastName: 'lastName',
-            },
+            firstName: 'firstName',
+            lastName: 'lastName',
           },
         },
       ],
@@ -371,7 +365,7 @@ describe('update', () => {
         control,
       });
 
-      fieldArrayValues = fields.map((x) => x.value);
+      fieldArrayValues = fields;
 
       return (
         <div>
@@ -421,7 +415,7 @@ describe('update', () => {
         control,
       });
 
-      fieldArrayValues = fields.map((x) => x.value);
+      fieldArrayValues = fields;
 
       return (
         <div>
@@ -448,10 +442,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'bill',
+        key: '0',
         lastName: 'luo',
       },
       {
         firstName: 'bill1',
+        key: '1',
         lastName: 'luo1',
       },
     ]);
@@ -474,10 +470,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'test1',
+        key: '2',
         lastName: 'test2',
       },
       {
         firstName: 'test3',
+        key: '3',
         lastName: 'test4',
       },
     ]);

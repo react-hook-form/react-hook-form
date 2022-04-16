@@ -85,7 +85,7 @@ describe('useFieldArray focus', () => {
             <div key={field.key}>
               <input
                 {...register(`test.${index}.value`)}
-                defaultValue={field.value.value}
+                defaultValue={field.value}
               />
               <button onClick={() => insert(1, { value: '' })}>insert</button>
             </div>
