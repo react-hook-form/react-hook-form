@@ -51,7 +51,9 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext> | undefined
   >();
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, updateFormState] = React.useState<
+    Readonly<FormState<TFieldValues>>
+  >({
     isDirty: false,
     isValidating: false,
     dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
@@ -76,7 +78,7 @@ export function useForm<
   const control = _formControl.current.control;
 
   const callback = React.useCallback(
-    (value) => {
+    (value: FieldValues) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
         control._formState = {
           ...control._formState,

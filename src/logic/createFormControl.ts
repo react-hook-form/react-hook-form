@@ -16,13 +16,11 @@ import {
   GetIsDirty,
   InternalFieldName,
   Names,
-  Path,
   Ref,
   ResolverResult,
   SetFieldValue,
-  SetValueConfig,
+  SetValueOptions,
   Subjects,
-  UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -80,6 +78,7 @@ import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
+import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
 
 const defaultOptions = {
@@ -382,7 +381,7 @@ export function createFormControl<
   const _executeSchema = async (name?: InternalFieldName[]) =>
     _options.resolver
       ? await _options.resolver(
-          { ..._formValues } as UnpackNestedValue<TFieldValues>,
+          { ..._formValues } as TFieldValues,
           _options.context,
           getResolverOptions(
             name || _names.mount,
@@ -421,17 +420,19 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const { _f: fieldReference, ...fieldValue } = field;
+        const { _f, ...fieldValue } = field;
 
-        if (fieldReference) {
+        if (_f) {
+          const isFieldArrayRoot = _names.array.has(_f.name);
           const fieldError = await validateField(
             field,
-            get(_formValues, fieldReference.name),
+            get(_formValues, _f.name),
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
+            isFieldArrayRoot,
           );
 
-          if (fieldError[fieldReference.name]) {
+          if (fieldError[_f.name]) {
             context.valid = false;
 
             if (shouldOnlyCheckValid) {
@@ -439,15 +440,16 @@ export function createFormControl<
             }
           }
 
-          if (!shouldOnlyCheckValid) {
-            fieldError[fieldReference.name]
-              ? set(
-                  _formState.errors,
-                  fieldReference.name,
-                  fieldError[fieldReference.name],
-                )
-              : unset(_formState.errors, fieldReference.name);
-          }
+          !shouldOnlyCheckValid &&
+            (get(fieldError, _f.name)
+              ? isFieldArrayRoot
+                ? updateFieldArrayRootError(
+                    _formState.errors,
+                    fieldError,
+                    _f.name,
+                  )
+                : set(_formState.errors, _f.name, fieldError[_f.name])
+              : unset(_formState.errors, _f.name));
         }
 
         fieldValue &&
@@ -513,7 +515,7 @@ export function createFormControl<
   const setFieldValue = (
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
-    options: SetValueConfig = {},
+    options: SetValueOptions = {},
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -580,7 +582,7 @@ export function createFormControl<
         true,
       );
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate && trigger(name as FieldPath<TFieldValues>);
   };
 
   const setValues = <
@@ -594,7 +596,7 @@ export function createFormControl<
   ) => {
     for (const fieldKey in value) {
       const fieldValue = value[fieldKey];
-      const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
+      const fieldName = `${name}.${fieldKey}` as FieldPath<TFieldValues>;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
@@ -637,8 +639,8 @@ export function createFormControl<
       }
     } else {
       field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setValues(name, cloneValue, options)
-        : setFieldValue(name, cloneValue, options);
+        ? setValues(name, cloneValue as never, options)
+        : setFieldValue(name, cloneValue as never, options);
     }
 
     isWatched(name, _names) && _subjects.state.next({});
@@ -807,9 +809,7 @@ export function createFormControl<
   };
 
   const getValues: UseFormGetValues<TFieldValues> = (
-    fieldNames?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+    fieldNames?: InternalFieldName | ReadonlyArray<InternalFieldName>,
   ) => {
     const values = {
       ..._defaultValues,
@@ -819,8 +819,8 @@ export function createFormControl<
     return isUndefined(fieldNames)
       ? values
       : isString(fieldNames)
-      ? get(values, fieldNames as InternalFieldName)
-      : fieldNames.map((name) => get(values, name as InternalFieldName));
+      ? get(values, fieldNames)
+      : fieldNames.map((name) => get(values, name));
   };
 
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
@@ -863,8 +863,8 @@ export function createFormControl<
 
   const watch: UseFormWatch<TFieldValues> = (
     name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
+      | InternalFieldName
+      | ReadonlyArray<InternalFieldName>
       | WatchObserver<TFieldValues>,
     defaultValue?: unknown,
   ) =>
@@ -872,10 +872,7 @@ export function createFormControl<
       ? _subjects.watch.subscribe({
           next: (info) =>
             name(
-              _getWatch(
-                undefined,
-                defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
-              ),
+              _getWatch(undefined, defaultValue as DeepPartial<TFieldValues>),
               info as {
                 name?: FieldPath<TFieldValues>;
                 type?: EventType;
@@ -885,7 +882,7 @@ export function createFormControl<
         })
       : _getWatch(
           name as InternalFieldName | InternalFieldName[],
-          defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>,
+          defaultValue as DeepPartial<TFieldValues>,
           true,
         );
 
@@ -916,7 +913,7 @@ export function createFormControl<
       ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
 
-    !options.keepIsValid && _updateValid();
+    _proxyFormState.isValid && _updateValid();
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
@@ -1112,23 +1109,6 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (isWeb && isUndefined(formValues)) {
-        for (const name of _names.mount) {
-          const field = get(_fields, name);
-          if (field && field._f) {
-            const fieldReference = Array.isArray(field._f.refs)
-              ? field._f.refs[0]
-              : field._f.ref;
-
-            try {
-              isHTMLElement(fieldReference) &&
-                fieldReference.closest('form')!.reset();
-              break;
-            } catch {}
-          }
-        }
-      }
-
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
           ? cloneObject(_defaultValues)
@@ -1155,8 +1135,7 @@ export function createFormControl<
       focus: '',
     };
 
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _stateFlags.mount = !_proxyFormState.isValid;
 
     _stateFlags.watch = !!props.shouldUnregister;
 

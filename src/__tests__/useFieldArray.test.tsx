@@ -62,7 +62,7 @@ describe('useFieldArray', () => {
     });
 
     it('should render with FormProvider', () => {
-      const Provider: React.FC = ({ children }) => {
+      const Provider = ({ children }: { children: React.ReactNode }) => {
         const methods = useForm();
         return <FormProvider {...methods}>{children}</FormProvider>;
       };
@@ -293,7 +293,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields, append } = useFieldArray<FormValues>({
+        const { fields, append } = useFieldArray({
           name: `test.${index}.nestedArray` as const,
           control,
         });
@@ -938,7 +938,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormValues>({
+        const { fields } = useFieldArray({
           name: `test.${index}.nestedArray` as const,
           control,
         });
@@ -1263,7 +1263,7 @@ describe('useFieldArray', () => {
         arrayField: Partial<FieldValues>;
         control: Control<FormValues>;
       }) => {
-        const { fields, append, remove } = useFieldArray<FormValues>({
+        const { fields, append, remove } = useFieldArray({
           name: `fieldArray.${arrayIndex}.nestedFieldArray` as const,
           control,
         });
@@ -1383,7 +1383,7 @@ describe('useFieldArray', () => {
         control: Control<FormInputs>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormInputs>({
+        const { fields } = useFieldArray({
           name: `nest.test.${index}.nestedArray` as const,
           control,
         });
@@ -1465,7 +1465,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormValues>({
+        const { fields } = useFieldArray({
           name: `nest.test.${index}.nestedArray` as const,
           control,
         });
@@ -1555,7 +1555,7 @@ describe('useFieldArray', () => {
         control: Control<FormInputs>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormInputs>({
+        const { fields } = useFieldArray({
           name: `nest.${index}.nestedArray` as const,
           control,
         });
@@ -1654,7 +1654,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray<FormValues>({
+        const { fields } = useFieldArray({
           name: `nest.${index}.nestedArray` as const,
           control,
         });
@@ -1755,7 +1755,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields, append } = useFieldArray<FormValues>({
+        const { fields, append } = useFieldArray({
           name: `nest.${index}.nestedArray.deepNest` as const,
           control,
         });
@@ -2320,7 +2320,7 @@ describe('useFieldArray', () => {
     const result: unknown[] = [];
 
     const Child = () => {
-      const { fields } = useFieldArray<FormValues>({
+      const { fields } = useFieldArray<FormValues, 'names'>({
         name: 'names',
       });
 
@@ -2848,7 +2848,10 @@ describe('useFieldArray', () => {
       const { register, control } = useForm<FormValues>({
         mode: 'onChange',
         defaultValues: {
-          items: [{ name: 'one' }, { name: 'two' }],
+          items: [
+            { name: 'one', id: '1' },
+            { name: 'two', id: '2' },
+          ],
         },
       });
 
@@ -2931,6 +2934,615 @@ describe('useFieldArray', () => {
 
     expect(getValuesMethod()).toEqual({
       test: [{ id: '1234', test: 'data' }],
+    });
+  });
+
+  describe('with rules', () => {
+    it('should validate the minLength of the entire field array after submit and correct accordingly', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            minLength: {
+              value: 2,
+              message: 'Min length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Min length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByAltText('Min length should be 2')).toBeNull();
+    });
+
+    it('should validate with custom validation after submit and correct accordingly', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) => {
+              if (Array.isArray(values) && values.length < 2) {
+                return 'Min length should be 2';
+              }
+
+              return true;
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Min length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByAltText('Min length should be 2')).toBeNull();
+    });
+
+    it('should validate the maxLength of the entire field array after submit and correct accordingly', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }, { test: '' }, { test: '' }, { test: '' }],
+          },
+        });
+
+        const { remove } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                remove();
+              }}
+            >
+              remove
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('Max length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should respect the validation mode and trigger validation after each field array action', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }, { test: '' }, { test: '' }, { test: '' }],
+          },
+          mode: 'onChange',
+        });
+
+        const { remove, append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                remove();
+              }}
+            >
+              remove
+            </button>
+
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('Max length should be 2');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should not conflict with field level error', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }, { test: '' }, { test: '' }, { test: '' }],
+          },
+          mode: 'onChange',
+        });
+
+        const { remove, append, fields } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.test`, {
+                      required: 'This is required',
+                    })}
+                  />
+                  <p>{errors.test?.[index]?.test?.message}</p>
+                </div>
+              );
+            })}
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+            <button
+              type={'button'}
+              onClick={() => {
+                remove();
+              }}
+            >
+              remove
+            </button>
+
+            <button
+              type={'button'}
+              onClick={() => {
+                append({
+                  test: '',
+                });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+      expect(screen.queryByAltText('This is required')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '1',
+          },
+        });
+      });
+
+      await actComponent(async () => {
+        fireEvent.change(screen.getAllByRole('textbox')[0], {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      screen.getByText('This is required');
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should not throw error when required is not defined but minLength', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm<{ test: { test: string }[] }>({
+          defaultValues: {
+            test: [],
+          },
+        });
+
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            maxLength: {
+              value: 2,
+              message: 'Max length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.test`, {
+                      required: 'This is required',
+                    })}
+                  />
+                  <p>{errors.test?.[index]?.test?.message}</p>
+                </div>
+              );
+            })}
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should throw error when required is defined', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm<{ test: { test: string }[] }>({
+          defaultValues: {
+            test: [],
+          },
+        });
+
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            required: 'Please enter some data',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <input
+                    {...register(`test.${index}.test`, {
+                      required: 'This is required',
+                    })}
+                  />
+                  <p>{errors.test?.[index]?.test?.message}</p>
+                </div>
+              );
+            })}
+            <p>{errors.test?.root?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByAltText('Please enter some data')).toBeNull();
+    });
+  });
+
+  describe('with nested field array ', () => {
+    type FormValues = {
+      fieldArray: {
+        value: string;
+        nestedFieldArray: {
+          value: string;
+        }[];
+      }[];
+    };
+
+    const ArrayField = ({
+      arrayIndex,
+      register,
+      control,
+    }: {
+      arrayIndex: number;
+      register: UseFormReturn<FormValues>['register'];
+      arrayField: Partial<FieldValues>;
+      control: Control<FormValues>;
+    }) => {
+      const { fields, append } = useFieldArray({
+        name: `fieldArray.${arrayIndex}.nestedFieldArray` as const,
+        control,
+        rules: {
+          required: 'This is required',
+          minLength: {
+            value: 3,
+            message: 'Min length of 3',
+          },
+        },
+      });
+
+      return (
+        <div>
+          {fields.map((nestedField, index) => (
+            <div key={nestedField.id}>
+              <input
+                {...register(
+                  `fieldArray.${arrayIndex}.nestedFieldArray.${index}.value` as const,
+                )}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              append({
+                value:
+                  `fieldArray.${arrayIndex}.nestedFieldArray.${fields.length}.value` as const,
+              });
+            }}
+          >
+            Add nested array
+          </button>
+        </div>
+      );
+    };
+
+    it('should report field array error at the nested useFieldArray level when form submitted', async () => {
+      const Component = () => {
+        const {
+          register,
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm<FormValues>();
+        const { fields, append } = useFieldArray({
+          name: 'fieldArray',
+          control,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <ArrayField
+                    arrayIndex={index}
+                    arrayField={field}
+                    register={register}
+                    control={control}
+                  />
+                  <p>
+                    {errors?.fieldArray?.[0]?.nestedFieldArray?.root?.message}
+                  </p>
+                </div>
+              );
+            })}
+            <button onClick={() => append({})} type={'button'}>
+              append
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      screen.getByText('This is required');
+    });
+
+    it('should report field array error at the nested useFieldArray level during field level action', async () => {
+      const Component = () => {
+        const {
+          register,
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+        });
+        const { fields, append } = useFieldArray({
+          name: 'fieldArray',
+          control,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, index) => {
+              return (
+                <div key={field.id}>
+                  <ArrayField
+                    arrayIndex={index}
+                    arrayField={field}
+                    register={register}
+                    control={control}
+                  />
+                  <p>
+                    {errors?.fieldArray?.[0]?.nestedFieldArray?.root?.message}
+                  </p>
+                </div>
+              );
+            })}
+            <button onClick={() => append({})} type={'button'}>
+              append
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Add nested array' }),
+        );
+      });
+
+      screen.getByText('Min length of 3');
     });
   });
 });

@@ -32,7 +32,7 @@
 
 - 以性能和开发体验为基础构建
 - 支持浏览器原生校验
-- [UI库](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)开箱即用
+- [UI 库](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)开箱即用
 - [小巧](https://bundlephobia.com/result?p=react-hook-form@latest)无[依赖](./package.json)
 - 遵循 HTML 标准进行[校验](https://react-hook-form.com/get-started#Applyvalidation)
 - 支持[Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator)或自定义

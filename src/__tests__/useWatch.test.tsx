@@ -139,7 +139,7 @@ describe('useWatch', () => {
   });
 
   it('should render with FormProvider', () => {
-    const Provider: React.FC = ({ children }) => {
+    const Provider = ({ children }: { children: React.ReactNode }) => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
     };
@@ -487,13 +487,19 @@ describe('useWatch', () => {
           handleSubmit,
           control,
           formState: { errors },
-        } = useForm<FormInputs>();
+        } = useForm<FormInputs>({
+          defaultValues: {
+            parent: '',
+            child: '',
+          },
+        });
         parentCount++;
+
         return (
           <form onSubmit={handleSubmit(() => {})}>
             <input {...register('parent')} />
             <Child register={register} control={control} />
-            {errors.parent}
+            {errors.parent?.message}
             <button>submit</button>
           </form>
         );
@@ -515,8 +521,8 @@ describe('useWatch', () => {
 
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
-      await waitFor(() => expect(parentCount).toBe(2));
-      expect(childCount).toBe(2);
+      await waitFor(() => expect(parentCount).toBe(1));
+      expect(childCount).toBe(1);
 
       parentCount = 0;
       childCount = 0;
@@ -738,7 +744,7 @@ describe('useWatch', () => {
       }: {
         control: Control<FormValues>;
         register: UseFormReturn<FormValues>['register'];
-        remove: UseFieldArrayReturn['remove'];
+        remove: UseFieldArrayReturn<FormValues, 'labels'>['remove'];
         itemIndex: number;
       }) {
         const actualValue = useWatch({
@@ -807,6 +813,8 @@ describe('useWatch', () => {
       expect(inputValues).toEqual([
         'Type',
         'Number',
+        'Totals',
+        'Type',
         'Totals',
         'Type',
         'Totals',
@@ -1001,7 +1009,7 @@ describe('useWatch', () => {
       };
 
       function Watcher({ control }: { control: Control<FormValues> }) {
-        const testField = useWatch<FormValues>({
+        const testField = useWatch({
           name: 'test',
           control: control,
         });
@@ -1020,6 +1028,7 @@ describe('useWatch', () => {
         React.useEffect(() => {
           reset({
             test: 'test',
+            name: '',
           });
         }, [reset]);
 
@@ -1036,9 +1045,7 @@ describe('useWatch', () => {
         const { register, reset, control } = useForm<{
           test: string;
         }>();
-        const test = useWatch<{
-          test: string;
-        }>({ name: 'test', control });
+        const test = useWatch({ name: 'test', control });
 
         React.useEffect(() => {
           reset({ test: 'default' });
@@ -1213,11 +1220,14 @@ describe('useWatch', () => {
           const { register, control } = useForm<{
             test: {
               firstName: string;
-              lsatName: string;
+              lastName: string;
             }[];
           }>({
             defaultValues: {
-              test: [{ firstName: 'test' }, { firstName: 'test1' }],
+              test: [
+                { firstName: 'test', lastName: '' },
+                { firstName: 'test1', lastName: '' },
+              ],
             },
           });
           const { fields, remove } = useFieldArray({
@@ -1251,13 +1261,13 @@ describe('useWatch', () => {
         render(<Component />);
 
         expect(watchedValue).toEqual([
-          { firstName: 'test' },
-          { firstName: 'test1' },
+          { firstName: 'test', lastName: '' },
+          { firstName: 'test1', lastName: '' },
         ]);
 
         fireEvent.click(screen.getAllByRole('button')[0]);
 
-        expect(watchedValue).toEqual([{ firstName: 'test1' }]);
+        expect(watchedValue).toEqual([{ firstName: 'test1', lastName: '' }]);
       });
     });
 
@@ -1267,9 +1277,7 @@ describe('useWatch', () => {
           const { register, reset, control } = useForm<{
             test: string;
           }>();
-          const test = useWatch<{
-            test: string;
-          }>({
+          const test = useWatch({
             name: 'test',
             control,
           });
@@ -1302,9 +1310,7 @@ describe('useWatch', () => {
           const { register, reset, control } = useForm<{
             test: string;
           }>();
-          const test = useWatch<{
-            test: string;
-          }>({ name: 'test', control });
+          const test = useWatch({ name: 'test', control });
 
           React.useEffect(() => {
             register('test');
@@ -1333,7 +1339,7 @@ describe('useWatch', () => {
               test: 'test',
             },
           });
-          const test = useWatch<{ test: string }>({
+          const test = useWatch({
             name: 'test',
             control,
           });
@@ -1364,8 +1370,12 @@ describe('useWatch', () => {
     it('should return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
-      const Component = ({ control }: { control: Control<FormValues> }) => {
-        const test = useWatch<{ test: string }>({ name: 'test', control });
+      const Component = ({
+        control,
+      }: {
+        control: Control<{ test: string }>;
+      }) => {
+        const test = useWatch({ name: 'test', control });
         return <div>{test === undefined ? 'no' : test}</div>;
       };
 
@@ -1401,8 +1411,12 @@ describe('useWatch', () => {
         return <input {...register('test')} />;
       };
 
-      const Component = ({ control }: { control: Control<FormValues> }) => {
-        const test = useWatch<{ test: string }>({ name: 'test', control });
+      const Component = ({
+        control,
+      }: {
+        control: Control<{ test: string }>;
+      }) => {
+        const test = useWatch({ name: 'test', control });
         return <div>{test === 'bill' ? 'no' : test}</div>;
       };
 
@@ -1496,7 +1510,7 @@ describe('useWatch', () => {
   describe('formContext', () => {
     it('should work with form context', async () => {
       const Component = () => {
-        const test = useWatch<{ test: string }>({ name: 'test' });
+        const test = useWatch<{ test: string }, 'test'>({ name: 'test' });
         return <div>{test}</div>;
       };
 

@@ -37,7 +37,7 @@ import { UseFormState } from './useFormState';
 import SetValueAsyncStrictMode from './setValueStrictMode';
 import './style.css';
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
@@ -113,5 +113,3 @@ const App: React.FC = () => {
     </BrowserRouter>
   );
 };
-
-export default App;

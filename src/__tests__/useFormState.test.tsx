@@ -365,6 +365,7 @@ describe('useFormState', () => {
         defaultValues: {
           firstName: 'a',
           lastName: 'b',
+          age: 0,
         },
       });
 
@@ -395,6 +396,8 @@ describe('useFormState', () => {
       },
     });
 
+    await waitFor(() => expect(count).toEqual(2));
+
     fireEvent.change(screen.getByPlaceholderText('lastName'), {
       target: {
         value: '',
@@ -404,7 +407,7 @@ describe('useFormState', () => {
     await waitFor(() => expect(count).toEqual(3));
   });
 
-  it('should only re-render when subscribed field names updated', async () => {
+  it('should only re-render when subscribed field names updated bis', async () => {
     let count = 0;
 
     type FormValues = {
@@ -430,6 +433,7 @@ describe('useFormState', () => {
         defaultValues: {
           firstName: 'a',
           lastName: 'b',
+          age: 0,
         },
       });
 
@@ -540,7 +544,7 @@ describe('useFormState', () => {
           >
             add
           </button>
-          <button onClick={() => reset({})}>reset</button>
+          <button onClick={() => reset({ test: [] })}>reset</button>
         </div>
       );
     }

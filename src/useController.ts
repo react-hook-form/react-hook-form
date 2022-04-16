@@ -6,11 +6,9 @@ import get from './utils/get';
 import { EVENTS } from './constants';
 import {
   Field,
-  FieldPath,
-  FieldPathValue,
   FieldValues,
   InternalFieldName,
-  UnpackNestedValue,
+  PathString,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -43,8 +41,8 @@ import { useWatch } from './useWatch';
  * ```
  */
 export function useController<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TName extends PathString,
 >(
   props: UseControllerProps<TFieldValues, TName>,
 ): UseControllerReturn<TFieldValues, TName> {
@@ -60,7 +58,7 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
     exact: true,
-  }) as UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
+  });
   const formState = useFormState({
     control,
     name,
@@ -69,7 +67,7 @@ export function useController<
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
-      value,
+      value: value as never,
     }),
   );
 
@@ -100,7 +98,7 @@ export function useController<
 
   return {
     field: {
-      name,
+      name: name as TName,
       value,
       onChange: React.useCallback(
         (event) => {

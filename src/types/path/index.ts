@@ -1,13 +1,8 @@
-/** Re-export public API */
+import type * as Auto from './auto';
+import type * as Branded from './branded';
+import type * as Lazy from './lazy';
 
-export { PathString } from './common';
-export {
-  ArrayPath,
-  FieldArrayPath,
-  FieldArrayPathValue,
-  FieldPath,
-  FieldPathValue,
-  FieldPathValues,
-  Path,
-  PathValue,
-} from './eager';
+export type { Auto, Branded, Lazy };
+export * from './branded';
+export * from './pathString';
+export * from './value';

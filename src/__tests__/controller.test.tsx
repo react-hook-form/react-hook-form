@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, NestedValue } from '../types';
+import { ControllerRenderProps } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -18,7 +18,7 @@ function Input<TFieldValues>({
   onChange,
   onBlur,
   placeholder,
-}: Pick<ControllerRenderProps<TFieldValues>, 'onChange' | 'onBlur'> & {
+}: Pick<ControllerRenderProps<TFieldValues, never>, 'onChange' | 'onBlur'> & {
   placeholder?: string;
 }) {
   return (
@@ -805,6 +805,7 @@ describe('Controller', () => {
       }>({
         defaultValues: {
           test: 2,
+          test1: 1,
         },
       });
 
@@ -983,7 +984,10 @@ describe('Controller', () => {
   it('should set ref to empty object when ref is not defined', async () => {
     const App = () => {
       const [show, setShow] = React.useState(false);
-      const { control } = useForm({
+      const {
+        control,
+        formState: { isDirty },
+      } = useForm({
         mode: 'onChange',
         defaultValues: {
           test: {
@@ -995,6 +999,7 @@ describe('Controller', () => {
 
       return (
         <div>
+          <p>Dirty: {isDirty.toString()}</p>
           {show && (
             <Controller
               name={'test'}
@@ -1021,7 +1026,7 @@ describe('Controller', () => {
     });
 
     // Everything should be fine even if no ref on the controlled input
-    await waitFor(() => expect(input).toHaveValue('test'));
+    expect(await screen.findByText('Dirty: true')).toBeVisible();
   });
 
   it('should transform input value instead update via ref', () => {
@@ -1127,7 +1132,7 @@ describe('Controller', () => {
         test: string;
       };
       todos: string[];
-      nestedValue: NestedValue<{ test: string }>;
+      nestedValue: { test: string };
     };
 
     function App() {

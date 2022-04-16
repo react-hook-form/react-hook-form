@@ -80,7 +80,9 @@ describe('update', () => {
       } = useForm<{
         test: { test: string }[];
       }>({
-        defaultValues: {},
+        defaultValues: {
+          test: [],
+        },
       });
       const { fields, update } = useFieldArray({
         control,
@@ -670,7 +672,7 @@ describe('update', () => {
               })}
             />
           ))}
-          <p>{errors.test?.[0].firstName?.message}</p>
+          <p>{errors.test?.[0]?.firstName?.message}</p>
           <button
             type={'button'}
             onClick={() =>

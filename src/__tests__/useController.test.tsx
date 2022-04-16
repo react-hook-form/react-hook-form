@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath } from '../types';
+import { Auto, Control, PathString } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -376,6 +376,7 @@ describe('useController', () => {
     const reportValidity = jest.fn();
     const focus = jest.fn();
     const message = 'This is required';
+    const onSubmit = jest.fn();
 
     type FormValues = {
       test: string;
@@ -414,7 +415,7 @@ describe('useController', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Input control={control} />
           <input type="submit" />
         </form>
@@ -437,7 +438,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(setCustomValidity).toBeCalledTimes(3);
     expect(reportValidity).toBeCalledTimes(3);
     expect(focus).toBeCalledTimes(1);
   });
@@ -554,12 +556,12 @@ describe('useController', () => {
   it('should remount with input with current formValue', () => {
     let data: unknown;
 
-    function Input<T>({
+    function Input<T, N extends PathString>({
       control,
       name,
     }: {
       control: Control<T>;
-      name: FieldPath<T>;
+      name: Auto.FieldPath<T, N>;
     }) {
       const {
         field: { value },
@@ -575,9 +577,11 @@ describe('useController', () => {
     }
 
     const App = () => {
-      const { control } = useForm<{
+      type FormFields = {
         test: string;
-      }>({
+      };
+
+      const { control } = useForm<FormFields>({
         defaultValues: {
           test: 'test',
         },
@@ -586,7 +590,7 @@ describe('useController', () => {
 
       return (
         <div>
-          {toggle && <Input control={control} name={'test'} />}
+          {toggle && <Input control={control} name="test" />}
           <button onClick={() => setToggle(!toggle)}>toggle</button>
         </div>
       );

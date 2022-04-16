@@ -15,6 +15,15 @@ function baseGet(object: any, updatePath: (string | number)[]) {
   return object;
 }
 
+function isEmptyArray(obj: unknown[]) {
+  for (const key in obj) {
+    if (!isUndefined(obj[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export default function unset(object: any, path: string) {
   const updatePath = isKey(path) ? [path] : stringToPath(path);
   const childObject =
@@ -43,8 +52,7 @@ export default function unset(object: any, path: string) {
       if (
         currentPathsLength === index &&
         ((isObject(objectRef) && isEmptyObject(objectRef)) ||
-          (Array.isArray(objectRef) &&
-            !objectRef.filter((data) => !isUndefined(data)).length))
+          (Array.isArray(objectRef) && isEmptyArray(objectRef)))
       ) {
         previousObjRef ? delete previousObjRef[item] : delete object[item];
       }

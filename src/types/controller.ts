@@ -2,14 +2,14 @@ import React from 'react';
 
 import { RegisterOptions } from './validator';
 import {
+  Auto,
   Control,
   FieldError,
-  FieldPath,
   FieldPathValue,
   FieldValues,
   Noop,
+  PathString,
   RefCallBack,
-  UnpackNestedValue,
   UseFormStateReturn,
 } from './';
 
@@ -20,33 +20,33 @@ export type ControllerFieldState = {
 };
 
 export type ControllerRenderProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TName extends PathString,
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
-  value: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
+  value: FieldPathValue<TFieldValues, TName>;
   name: TName;
   ref: RefCallBack;
 };
 
 export type UseControllerProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TName extends PathString,
 > = {
-  name: TName;
+  name: Auto.FieldPath<TFieldValues, TName>;
   rules?: Omit<
     RegisterOptions<TFieldValues, TName>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >;
   shouldUnregister?: boolean;
-  defaultValue?: UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
+  defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
 };
 
 export type UseControllerReturn<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TName extends PathString,
 > = {
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
@@ -75,8 +75,8 @@ export type UseControllerReturn<
  * ```
  */
 export type ControllerProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TName extends PathString,
 > = {
   render: ({
     field,

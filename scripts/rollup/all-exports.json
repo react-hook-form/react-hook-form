@@ -3,6 +3,8 @@
   "FormProvider",
   "appendErrors",
   "get",
+  "join",
+  "of",
   "set",
   "useController",
   "useFieldArray",

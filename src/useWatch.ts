@@ -6,14 +6,14 @@ import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import objectHasFunction from './utils/objectHasFunction';
 import {
+  Auto,
   Control,
   DeepPartialSkipArrayKey,
-  FieldPath,
   FieldPathValue,
   FieldPathValues,
   FieldValues,
   InternalFieldName,
-  UnpackNestedValue,
+  PathString,
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
@@ -40,14 +40,12 @@ import { useSubscribe } from './useSubscribe';
  * })
  * ```
  */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
->(props: {
-  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+export function useWatch<TFieldValues extends FieldValues>(props: {
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
-}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+}): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
@@ -69,10 +67,10 @@ export function useWatch<
  * ```
  */
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TFieldName extends PathString,
 >(props: {
-  name: TFieldName;
+  name: Auto.FieldPath<TFieldValues, TFieldName>;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
@@ -102,11 +100,11 @@ export function useWatch<
  * ```
  */
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TFieldValues extends FieldValues,
+  TFieldNames extends readonly PathString[],
 >(props: {
-  name: readonly [...TFieldNames];
-  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  name: readonly [...Auto.FieldPaths<TFieldValues, TFieldNames>];
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
@@ -125,26 +123,9 @@ export function useWatch<
  * ```
  */
 export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
->(): FieldPathValues<TFieldValues, TFieldNames>;
-/**
- * Custom hook to subscribe to field change and isolate re-rendering at the component level.
- *
- * @remarks
- *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
- *
- * @example
- * ```tsx
- * const { watch } = useForm();
- * const values = useWatch({
- *   name: "fieldName"
- *   control,
- * })
- * ```
- */
-export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
+  TFieldValues extends FieldValues,
+  TFieldName extends PathString,
+>(props?: UseWatchProps<TFieldValues, TFieldName>) {
   const methods = useFormContext();
   const {
     control = methods.control,
@@ -158,7 +139,7 @@ export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
   _name.current = name;
 
   const callback = React.useCallback(
-    (formState) => {
+    (formState: { name?: InternalFieldName; values?: FieldValues }) => {
       if (
         shouldSubscribeByName(
           _name.current as InternalFieldName,

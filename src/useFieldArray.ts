@@ -4,27 +4,34 @@ import focusFieldBy from './logic/focusFieldBy';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
+import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
+import validateField from './logic/validateField';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
+import getValidationModes from './utils/getValidationModes';
 import insertAt from './utils/insert';
+import isEmptyObject from './utils/isEmptyObject';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import updateAt from './utils/update';
+import { VALIDATION_MODE } from './constants';
 import {
+  Field,
   FieldArray,
   FieldArrayMethodProps,
-  FieldArrayPath,
   FieldArrayWithId,
   FieldErrors,
   FieldPath,
   FieldValues,
-  UnpackNestedValue,
+  InternalFieldName,
+  PathString,
+  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -69,21 +76,15 @@ import { useSubscribe } from './useSubscribe';
  * ```
  */
 export function useFieldArray<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName>,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName> {
   const methods = useFormContext();
-  const {
-    control = methods.control,
-    name,
-    keyName = 'id' as TKeyName,
-    shouldUnregister,
-  } = props;
+  const { control = methods.control, name, shouldUnregister } = props;
   const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
+    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]
   >(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
@@ -96,13 +97,28 @@ export function useFieldArray<
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  const callback = React.useCallback(({ values, name: fieldArrayName }) => {
-    if (fieldArrayName === _name.current || !fieldArrayName) {
-      const fieldValues = get(values, _name.current, []);
-      setFields(fieldValues);
-      ids.current = fieldValues.map(generateId);
-    }
-  }, []);
+  props.rules &&
+    control.register(
+      name as FieldPath<TFieldValues>,
+      props.rules as RegisterOptions<FieldValues, PathString>,
+    );
+
+  const callback = React.useCallback(
+    ({
+      values,
+      name: fieldArrayName,
+    }: {
+      values?: FieldValues;
+      name?: InternalFieldName;
+    }) => {
+      if (fieldArrayName === _name.current || !fieldArrayName) {
+        const fieldValues = get(values, _name.current, []);
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      }
+    },
+    [],
+  );
 
   useSubscribe({
     callback,
@@ -110,11 +126,7 @@ export function useFieldArray<
   });
 
   const updateValues = React.useCallback(
-    <
-      T extends Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >[],
-    >(
+    <T extends Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]>(
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
@@ -125,8 +137,8 @@ export function useFieldArray<
 
   const append = (
     value:
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(cloneObject(value));
@@ -149,8 +161,8 @@ export function useFieldArray<
 
   const prepend = (
     value:
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const prependValue = convertToArrayPayload(cloneObject(value));
@@ -169,7 +181,7 @@ export function useFieldArray<
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
@@ -182,8 +194,8 @@ export function useFieldArray<
   const insert = (
     index: number,
     value:
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = convertToArrayPayload(cloneObject(value));
@@ -240,15 +252,13 @@ export function useFieldArray<
 
   const update = (
     index: number,
-    value: UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>,
+    value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
     const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
-      control._getFieldArray<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >(name),
+      control._getFieldArray(name),
       index,
-      updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
+      value as any,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
@@ -270,8 +280,8 @@ export function useFieldArray<
 
   const replace = (
     value:
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-      | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
     const updatedFieldArrayValues = convertToArrayPayload(cloneObject(value));
     ids.current = updatedFieldArrayValues.map(generateId);
@@ -293,16 +303,47 @@ export function useFieldArray<
     isWatched(name, control._names) && control._subjects.state.next({});
 
     if (_actioned.current) {
-      control._executeSchema([name]).then((result) => {
-        const error = get(result.errors, name);
+      if (control._options.resolver) {
+        control._executeSchema([name]).then((result) => {
+          const error = get(result.errors, name);
 
-        if (error && error.type && !get(control._formState.errors, name)) {
-          set(control._formState.errors, name, error);
-          control._subjects.state.next({
-            errors: control._formState.errors as FieldErrors<TFieldValues>,
-          });
+          if (error && error.type && !get(control._formState.errors, name)) {
+            set(control._formState.errors, name, error);
+            control._subjects.state.next({
+              errors: control._formState.errors as FieldErrors<TFieldValues>,
+            });
+          }
+        });
+      } else {
+        const field: Field = get(control._fields, name);
+        const validationModeBeforeSubmit = getValidationModes(
+          control._options.mode,
+        );
+        if (
+          (!validationModeBeforeSubmit.isOnSubmit ||
+            control._formState.isSubmitted) &&
+          field &&
+          field._f
+        ) {
+          validateField(
+            field,
+            get(control._formValues, name),
+            control._options.criteriaMode === VALIDATION_MODE.all,
+            control._options.shouldUseNativeValidation,
+            true,
+          ).then(
+            (error) =>
+              !isEmptyObject(error) &&
+              control._subjects.state.next({
+                errors: updateFieldArrayRootError(
+                  control._formState.errors,
+                  error,
+                  name,
+                ) as FieldErrors<TFieldValues>,
+              }),
+          );
         }
-      });
+      }
     }
 
     control._subjects.watch.next({
@@ -327,7 +368,7 @@ export function useFieldArray<
       (control._options.shouldUnregister || shouldUnregister) &&
         control.unregister(name as FieldPath<TFieldValues>);
     };
-  }, [name, control, keyName, shouldUnregister]);
+  }, [name, control, shouldUnregister]);
 
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),
@@ -342,9 +383,9 @@ export function useFieldArray<
       () =>
         fields.map((field, index) => ({
           ...field,
-          [keyName]: ids.current[index] || generateId(),
-        })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName],
+          id: ids.current[index] || generateId(),
+        })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
+      [fields],
     ),
   };
 }

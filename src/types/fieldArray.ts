@@ -1,15 +1,18 @@
 import { FieldValues } from './fields';
-import { Control, UnpackNestedValue } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './path';
+import { Control } from './form';
+import { Auto, FieldPathValue, PathString } from './path';
+import { RegisterOptions } from './validator';
 
 export type UseFieldArrayProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 > = {
-  name: TFieldArrayName;
-  keyName?: TKeyName;
+  name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>;
   control?: Control<TFieldValues>;
+  rules?: Pick<
+    RegisterOptions<TFieldValues>,
+    'maxLength' | 'minLength' | 'validate' | 'required'
+  >;
   shouldUnregister?: boolean;
 };
 
@@ -18,14 +21,13 @@ export type UseFieldArrayProps<
  */
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
-> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+  TFieldArrayName extends PathString = never,
+> = FieldArray<TFieldValues, TFieldArrayName> & Record<'id', string>;
 
 export type FieldArray<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
+> = FieldPathValue<TFieldValues, TFieldArrayName> extends
   | ReadonlyArray<infer U>
   | null
   | undefined
@@ -96,11 +98,11 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
  */
 export type UseFieldArrayPrepend<
   TFieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends PathString,
 > = (
   value:
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -127,11 +129,11 @@ export type UseFieldArrayPrepend<
  */
 export type UseFieldArrayAppend<
   TFieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends PathString,
 > = (
   value:
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -180,12 +182,12 @@ export type UseFieldArrayRemove = (index?: number | number[]) => void;
  */
 export type UseFieldArrayInsert<
   TFieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends PathString,
 > = (
   index: number,
   value:
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -211,11 +213,8 @@ export type UseFieldArrayInsert<
  */
 export type UseFieldArrayUpdate<
   TFieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-> = (
-  index: number,
-  value: UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>,
-) => void;
+  TFieldArrayName extends PathString,
+> = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 /**
  * Replace the entire field array values.
@@ -236,18 +235,17 @@ export type UseFieldArrayUpdate<
  * ```
  */
 export type UseFieldArrayReplace<
-  TFieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 > = (
   value:
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>
-    | Partial<UnpackNestedValue<FieldArray<TFieldValues, TFieldArrayName>>>[],
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
 ) => void;
 
 export type UseFieldArrayReturn<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TFieldValues extends FieldValues,
+  TFieldArrayName extends PathString,
 > = {
   swap: UseFieldArraySwap;
   move: UseFieldArrayMove;
@@ -257,5 +255,5 @@ export type UseFieldArrayReturn<
   insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
   update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
   replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+  fields: FieldArrayWithId<TFieldValues, TFieldArrayName>[];
 };

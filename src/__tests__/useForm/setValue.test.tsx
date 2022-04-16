@@ -4,7 +4,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control, NestedValue } from '../../types';
+import { Control } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
@@ -274,17 +274,15 @@ describe('setValue', () => {
   it('should set nested value correctly ', () => {
     const { result } = renderHook(() =>
       useForm<{
-        test1: NestedValue<string[]>;
-        test2: NestedValue<{
+        test1: string[];
+        test2: {
           key1: string;
           key2: number;
-        }>;
-        test3: NestedValue<
-          {
-            key1: string;
-            key2: number;
-          }[]
-        >;
+        };
+        test3: {
+          key1: string;
+          key2: number;
+        }[];
       }>(),
     );
 
@@ -539,7 +537,11 @@ describe('setValue', () => {
           setError,
           setValue,
           formState: { errors },
-        } = useForm();
+        } = useForm({
+          defaultValues: {
+            test: '',
+          },
+        });
 
         return (
           <>

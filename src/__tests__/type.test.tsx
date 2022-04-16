@@ -2,36 +2,20 @@ import React from 'react';
 
 import { Controller } from '../controller';
 import {
+  Auto,
+  Control,
   FieldErrors,
   FieldPath,
   FieldValues,
-  Path,
+  PathString,
+  TypedFieldPath,
   UseFormRegister,
 } from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
-
-test('should not throw type error with path name', () => {
-  type MissingCompanyNamePath = Path<{
-    test: {
-      test: {
-        name: string;
-      }[];
-      testName: string;
-    };
-  }>;
-
-  const test: MissingCompanyNamePath[] = [
-    'test',
-    'test.test',
-    'test.testName',
-    'test.test.0',
-    'test.test.0.name',
-  ];
-
-  test;
-});
+import { of } from '../utils';
 
 test('should not throw type error with optional array fields', () => {
   type Thing = { id: string; name: string };
@@ -146,7 +130,7 @@ test('should type errors correctly with Path generic', () => {
     return (
       <>
         <input {...register(name)} />
-        {errors[name] ? errors[name].message : 'no error'}
+        {errors[name] ? errors?.[name]?.message : 'no error'}
       </>
     );
   }
@@ -194,6 +178,99 @@ test('should infer context type into control', () => {
     });
 
     return null;
+  }
+
+  App;
+});
+
+test('should work with useController with generic component', () => {
+  type FormValues = {
+    yourDetails: {
+      firstName: string;
+      lastName: string;
+    };
+    age: string;
+    pet: { name: string }[];
+  };
+
+  type InputProps<T extends FieldValues, P extends PathString> = {
+    control: Control<T>;
+    name: Auto.TypedFieldPath<T, P, string>;
+  };
+
+  const Input = <T extends FieldValues, P extends PathString>(
+    props: InputProps<T, P>,
+    ref: React.Ref<HTMLInputElement>,
+  ) => {
+    const { field } = useController({
+      name: of(props.name),
+      control: props.control,
+    });
+    const [value, setValue] = React.useState(field.value || '');
+
+    return (
+      <input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          field.onChange(e.target.value);
+        }}
+        ref={ref}
+      />
+    );
+  };
+
+  function TextInput<T>(props: {
+    control: Control<T>;
+    name: TypedFieldPath<T, string>;
+  }) {
+    const {
+      field: { onChange, value },
+    } = useController({
+      control: props.control,
+      name: props.name,
+    });
+    return <input type="text" value={value} onChange={onChange} />;
+  }
+
+  type RegisterInput<T, P extends PathString> = {
+    name: Auto.FieldPath<T, P>;
+    register: UseFormRegister<T>;
+  };
+
+  function RegisterInput<T, P extends PathString>({
+    register,
+    name,
+  }: RegisterInput<T, P>) {
+    const ofName = of(name);
+    return <input {...register(ofName)} />;
+  }
+
+  function App() {
+    const { handleSubmit, control, register } = useForm<FormValues>({
+      defaultValues: {
+        yourDetails: {
+          firstName: '',
+          lastName: '',
+        },
+        age: '',
+        pet: [],
+      },
+    });
+
+    return (
+      <div>
+        <form onSubmit={handleSubmit(() => {})}>
+          <Input name="age" control={control} />
+
+          <RegisterInput register={register} name={'age'} />
+
+          <TextInput<FormValues> name={of('age')} control={control} />
+
+          <input type="submit" />
+        </form>
+      </div>
+    );
   }
 
   App;

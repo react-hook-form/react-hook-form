@@ -10,10 +10,11 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import * as generateId from '../../logic/generateId';
-import { Control, FieldPath } from '../../types';
+import { Auto, Control, PathString } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { of } from '../../utils';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -85,7 +86,7 @@ describe('insert', () => {
         const { formState, control } = useForm<{
           test: { value: string; value1: string }[];
         }>({
-          defaultValues: { test: [{ value: '1' }] },
+          defaultValues: { test: [{ value: '1', value1: '0' }] },
         });
         const { fields, append, insert } = useFieldArray({
           control,
@@ -108,7 +109,11 @@ describe('insert', () => {
 
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
-        test: [{ value: false }, { value1: true }, { value: true }],
+        test: [
+          { value: false, value1: false },
+          { value1: true },
+          { value: true },
+        ],
       });
     },
   );
@@ -120,7 +125,7 @@ describe('insert', () => {
         const { formState, control } = useForm<{
           test: { value1: string; value2: string; value: string }[];
         }>({
-          defaultValues: { test: [{ value: '1' }] },
+          defaultValues: { test: [{ value: '1', value2: '0', value1: '2' }] },
         });
         const { fields, append, insert } = useFieldArray({
           control,
@@ -144,7 +149,7 @@ describe('insert', () => {
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
-          { value: false },
+          { value: false, value1: false, value2: false },
           { value1: true },
           { value2: true },
           { value: true },
@@ -499,33 +504,33 @@ describe('insert', () => {
       test: { name: { deep: string } }[];
     };
 
-    function Input({
+    function Input<N extends PathString>({
       name,
       control,
     }: {
-      name: FieldPath<FormValues>;
+      name: Auto.TypedFieldPath<FormValues, N, string>;
       control: Control<FormValues>;
     }) {
       const { field } = useController({
-        name: name as 'test.0.name.deep',
+        name: of(name),
         control,
       });
 
       return <input type="text" {...field} />;
     }
 
-    function FieldArray({
+    function FieldArray<N extends PathString>({
       control,
       name,
       itemDefaultValue,
     }: {
       control: Control<FormValues>;
-      name: FieldPath<FormValues>;
+      name: Auto.FieldArrayPath<FormValues, N>;
       itemDefaultValue: { name: { deep: string } };
     }) {
       const { fields, insert } = useFieldArray({
         control,
-        name: name as 'test',
+        name: of(name),
       });
 
       return (
