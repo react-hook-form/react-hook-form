@@ -324,7 +324,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   /**
   * @deprecated check `fieldState.error` instead
   * ```jsx
-  * {!!fieldState.error && <p>{fieldState.error.message}</p>}}
+  * {fieldState.error && <p>{fieldState.error.message}</p>}
   * ```
   */
   invalid: boolean;
