@@ -7,6 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { expectNotType, expectType } from 'tsd';
 
 import { Controller } from '../controller';
 import * as generateId from '../logic/generateId';
@@ -2957,8 +2958,8 @@ describe('useFieldArray', () => {
       const { control } = useForm({
         defaultValues: {
           test: [
-            { test: '1', id: '11', key: '111' },
-            { test: '2', id: '22', key: '222' },
+            { test: '1', id: '11', key: 111 },
+            { test: '2', id: '22', key: 222 },
           ],
         },
       });
@@ -2972,6 +2973,31 @@ describe('useFieldArray', () => {
       { test: '1', id: '11', key: '0' },
       { test: '2', id: '22', key: '1' },
     ]);
+  });
+
+  it('should return the type of key prop as string', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm({
+        defaultValues: {
+          test: [{ test: '1', key: 111 }],
+        },
+      });
+      return useFieldArray({
+        control,
+        name: 'test',
+      });
+    });
+
+    const key = result.current.fields[0].key;
+    expectType<string>(key);
+    expectNotType<never>(key);
+
+    const keyAsString: string = result.current.fields[0].key;
+    // 'never' is assignable to every type, but no type is assignable to 'never'.
+    // The above checks by 'tsd' does not handle it well, so the line below is needed.
+    const keyAsType: typeof key = keyAsString;
+
+    expect(keyAsType).toEqual('0');
   });
 
   describe('with rules', () => {
