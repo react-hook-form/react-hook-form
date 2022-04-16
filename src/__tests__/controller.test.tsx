@@ -634,49 +634,6 @@ describe('Controller', () => {
     await waitFor(() => expect(currentErrors.test).toBeUndefined());
   });
 
-  it('should show invalid input when there is an error', async () => {
-    const Component = () => {
-      const { control } = useForm({
-        mode: 'onChange',
-      });
-
-      return (
-        <Controller
-          defaultValue=""
-          name="test"
-          render={({ field: props, fieldState }) => (
-            <>
-              <input {...props} />
-              {fieldState.invalid && <p>Input is invalid.</p>}
-            </>
-          )}
-          control={control}
-          rules={{
-            required: true,
-          }}
-        />
-      );
-    };
-
-    render(<Component />);
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test',
-      },
-    });
-
-    expect(screen.queryByText('Input is invalid.')).not.toBeInTheDocument();
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: '',
-      },
-    });
-
-    expect(await screen.findByText('Input is invalid.')).toBeVisible();
-  });
-
   it('should show input has been touched.', async () => {
     const Component = () => {
       const { control } = useForm();
