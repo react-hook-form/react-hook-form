@@ -299,7 +299,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
  *
  * @param name - the path name to the form field value.
  *
- * @returns invalid, isDirty, isTouched and error object
+ * @returns isDirty, isTouched and error object
  *
  * @example
  * ```tsx
@@ -321,7 +321,6 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
-  invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
   error?: FieldError;
