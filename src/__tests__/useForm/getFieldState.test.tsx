@@ -85,39 +85,6 @@ describe('getFieldState', () => {
         expect(await screen.findByText('This is required')).toBeVisible();
       });
 
-      it('should display isValid state', async () => {
-        const App = () => {
-          const {
-            trigger,
-            register,
-            getFieldState,
-            formState: { errors },
-          } = useForm({
-            defaultValues: {
-              test: '',
-            },
-          });
-
-          errors;
-
-          return (
-            <form>
-              <input {...register('test', { required: 'This is required' })} />
-              <button type={'button'} onClick={() => trigger()}>
-                trigger
-              </button>
-              <p>{getFieldState('test')?.invalid ? 'error' : 'valid'}</p>
-            </form>
-          );
-        };
-
-        render(<App />);
-
-        fireEvent.click(screen.getByRole('button'));
-
-        expect(await screen.findByText('error')).toBeVisible();
-      });
-
       it('should display isTouched state', async () => {
         const App = () => {
           const {
@@ -246,42 +213,6 @@ describe('getFieldState', () => {
         fireEvent.click(screen.getByRole('button'));
 
         expect(await screen.findByText('This is required')).toBeVisible();
-      });
-
-      it('should display isValid state', async () => {
-        const App = () => {
-          const {
-            trigger,
-            control,
-            getFieldState,
-            formState: { errors },
-          } = useForm<FormValues>({
-            defaultValues: {
-              nested: {
-                first: '',
-                last: '',
-              },
-            },
-          });
-
-          errors;
-
-          return (
-            <form>
-              <NestedInput control={control} />
-              <button type={'button'} onClick={() => trigger()}>
-                trigger
-              </button>
-              <p>{getFieldState('nested')?.invalid ? 'error' : 'valid'}</p>
-            </form>
-          );
-        };
-
-        render(<App />);
-
-        fireEvent.click(screen.getByRole('button'));
-
-        expect(await screen.findByText('error')).toBeVisible();
       });
 
       it('should display isTouched state', async () => {
@@ -417,60 +348,6 @@ describe('getFieldState', () => {
         expect(await screen.findByText('This is required')).toBeVisible();
       });
 
-      it('should display isValid state', async () => {
-        const App = () => {
-          const { trigger, register, getFieldState, formState } = useForm({
-            defaultValues: {
-              test: '',
-            },
-          });
-
-          const { invalid } = getFieldState('test', formState);
-
-          return (
-            <form>
-              <input {...register('test', { required: 'This is required' })} />
-              <button type={'button'} onClick={() => trigger()}>
-                trigger
-              </button>
-              <p>{invalid ? 'error' : 'valid'}</p>
-            </form>
-          );
-        };
-
-        render(<App />);
-
-        fireEvent.click(screen.getByRole('button'));
-
-        expect(await screen.findByText('error')).toBeVisible();
-      });
-
-      it('should display isTouched state', async () => {
-        const App = () => {
-          const { register, getFieldState, formState } = useForm({
-            defaultValues: {
-              test: '',
-            },
-          });
-
-          const { isTouched } = getFieldState('test', formState);
-
-          return (
-            <form>
-              <input {...register('test')} />
-              <p>{isTouched ? 'touched' : ''}</p>
-            </form>
-          );
-        };
-
-        render(<App />);
-
-        fireEvent.focus(screen.getByRole('textbox'));
-        fireEvent.blur(screen.getByRole('textbox'));
-
-        expect(screen.getByText('touched')).toBeVisible();
-      });
-
       it('should display isDirty state', async () => {
         const App = () => {
           const { register, getFieldState, formState } = useForm({
@@ -553,38 +430,6 @@ describe('getFieldState', () => {
         fireEvent.click(screen.getByRole('button'));
 
         expect(await screen.findByText('This is required')).toBeVisible();
-      });
-
-      it('should display isValid state', async () => {
-        const App = () => {
-          const { trigger, control, getFieldState, formState } =
-            useForm<FormValues>({
-              defaultValues: {
-                nested: {
-                  first: '',
-                  last: '',
-                },
-              },
-            });
-
-          const { invalid } = getFieldState('nested', formState);
-
-          return (
-            <form>
-              <NestedInput control={control} />
-              <button type={'button'} onClick={() => trigger()}>
-                trigger
-              </button>
-              <p>{invalid ? 'error' : 'valid'}</p>
-            </form>
-          );
-        };
-
-        render(<App />);
-
-        fireEvent.click(screen.getByRole('button'));
-
-        expect(await screen.findByText('error')).toBeVisible();
       });
 
       it('should display isTouched state', async () => {
