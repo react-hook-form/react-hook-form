@@ -64,7 +64,7 @@ const Component = () => {
           <button
             type={'button'}
             onClick={() => remove(i)}
-            data-testid={item.value.value}
+            data-testid={item.value}
           >
             remove
           </button>
