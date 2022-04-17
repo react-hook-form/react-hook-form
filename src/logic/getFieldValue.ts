@@ -29,7 +29,7 @@ export default function getFieldValue(_f: Field['_f']) {
   }
 
   if (isCheckBox(ref)) {
-    return getCheckboxValue(_f.refs, _f.value).value;
+    return getCheckboxValue(_f.refs).value;
   }
 
   return getFieldValueAs(isUndefined(ref.value) ? _f.ref.value : ref.value, _f);
