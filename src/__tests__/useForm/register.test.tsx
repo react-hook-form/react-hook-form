@@ -130,11 +130,7 @@ describe('register', () => {
       });
       return (
         <div>
-          <input
-            type="checkbox"
-            value="A"
-            {...register('test')}
-          />
+          <input type="checkbox" value="A" {...register('test')} />
 
           <button onClick={handleSubmit(callback)}>submit</button>
         </div>
