@@ -321,6 +321,12 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
+  /**
+   * @deprecated check `fieldState.error` instead
+   * ```jsx
+   * {fieldState.error && <p>{fieldState.error.message}</p>}
+   * ```
+   */
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
