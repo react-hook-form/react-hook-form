@@ -123,13 +123,17 @@ describe('register', () => {
     const Component = () => {
       const { register, handleSubmit } = useForm<{
         test: string[];
-      }>();
+      }>({
+        defaultValues: {
+          test: [],
+        },
+      });
       return (
         <div>
           <input
             type="checkbox"
             value="A"
-            {...register('test', { value: [] })}
+            {...register('test')}
           />
 
           <button onClick={handleSubmit(callback)}>submit</button>
