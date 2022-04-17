@@ -12,12 +12,9 @@ const defaultResult: CheckboxFieldResult = {
 
 const validResult = { value: true, isValid: true };
 
-export default (
-  options?: HTMLInputElement[],
-  referenceValue?: any,
-): CheckboxFieldResult => {
+export default (options?: HTMLInputElement[]): CheckboxFieldResult => {
   if (Array.isArray(options)) {
-    if (Array.isArray(referenceValue) || options.length > 1) {
+    if (options.length > 1) {
       const values = options
         .filter((option) => option && option.checked && !option.disabled)
         .map((option) => option.value);
