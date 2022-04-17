@@ -1,5 +1,120 @@
 # Changelog
 
+## [7.29.0] - 2022-3-30
+
+- tsconfig config change from es2017 to es2018
+
+## [7.28.0] - 2022-3-13
+
+- `register` API options `deps` now support string
+
+```tsx
+register('test', { deps: 'test' });
+```
+
+## [7.27.0] - 2022-2-11
+
+## Added
+
+- new option for `setFocus` to select the entire field value
+
+```tsx
+setFocus('fieldName', { shouldSelect: true });
+```
+
+## [7.25.2] - 2022-1-29
+
+## Changed
+
+- `onTouched` mode will honor `focusout` event
+
+## [7.25.0] - 2022-1-22
+
+## Added
+
+- `getFieldState` get individual field state
+
+```tsx
+export default function App() {
+  const {
+    register,
+    getFieldState,
+    formState: { isDirty, isValid },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+    },
+  });
+
+  // you can invoke before render or within the render function
+  const fieldState = getFieldState('firstName');
+
+  return (
+    <form>
+      <input {...register('firstName', { required: true })} />
+      <p>{getFieldState('firstName').isDirty && 'dirty'}</p>
+      <p>{getFieldState('firstName').isTouched && 'touched'}</p>
+      <button
+        type="button"
+        onClick={() => console.log(getFieldState('firstName'))}
+      >
+        field state
+      </button>
+    </form>
+  );
+}
+```
+
+## [7.24.0] - 2022-1-14
+
+## Changed
+
+- `useController` return prop: `onChange`, `onBlur` and `ref` will be memorized with `useCallback`
+
+## [7.23.0] - 2022-1-12
+
+## Changed
+
+- `useFieldArray` change `keyName` is no longer required when field value contains `id`
+
+```tsx
+const App = () => {
+  const { control, register, handleSubmit } = useForm<FormValues>({
+    defaultValues: {
+      test: [{ id: 'UUID5678', test: 'data' }], // id value will be retained
+    },
+  });
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'test',
+  });
+
+  return (
+    <form>
+      {fields.map((field, index) => {
+        return <input key={field.id} {...register(`test.${index}.test`)} />;
+      })}
+
+      <button
+        type={'button'}
+        onClick={() => {
+          append({
+            id: 'UUID1234', // id value will be retained
+            test: '1234',
+          });
+        }}
+      >
+        append
+      </button>
+    </form>
+  );
+};
+```
+
+- `useFormState` will no longer fire state update after hook unmount
+- `UseFormHandleSubmit` type will infer formValues
+
 ## [7.22.0] - 2021-12-14
 
 ## Changed

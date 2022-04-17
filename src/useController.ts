@@ -18,6 +18,30 @@ import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
+/**
+ * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/api/usecontroller) • [Demo](https://codesandbox.io/s/usecontroller-0o8px)
+ *
+ * @param props - the path name to the form field value, and validation rules.
+ *
+ * @returns field properties, field and form state. {@link UseControllerReturn}
+ *
+ * @example
+ * ```tsx
+ * function Input(props) {
+ *   const { field, fieldState, formState } = useController(props);
+ *   return (
+ *     <div>
+ *       <input {...field} placeholder={props.name} />
+ *       <p>{fieldState.isTouched && "Touched"}</p>
+ *       <p>{formState.isSubmitted ? "submitted" : ""}</p>
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -35,20 +59,19 @@ export function useController<
       name,
       get(control._defaultValues, name, props.defaultValue),
     ),
-    exact: !isArrayField,
+    exact: true,
   }) as UnpackNestedValue<FieldPathValue<TFieldValues, TName>>;
   const formState = useFormState({
     control,
     name,
   });
-  const _name = React.useRef(name);
 
-  _name.current = name;
-
-  const registerProps = control.register(name, {
-    ...props.rules,
-    value,
-  });
+  const _registerProps = React.useRef(
+    control.register(name, {
+      ...props.rules,
+      value,
+    }),
+  );
 
   React.useEffect(() => {
     const updateMounted = (name: InternalFieldName, value: boolean) => {
@@ -65,9 +88,11 @@ export function useController<
       const _shouldUnregisterField =
         control._options.shouldUnregister || shouldUnregister;
 
-      isArrayField
-        ? _shouldUnregisterField && !control._stateFlags.action
-        : _shouldUnregisterField
+      (
+        isArrayField
+          ? _shouldUnregisterField && !control._stateFlags.action
+          : _shouldUnregisterField
+      )
         ? control.unregister(name)
         : updateMounted(name, false);
     };
@@ -75,45 +100,46 @@ export function useController<
 
   return {
     field: {
-      onChange: (event) => {
-        registerProps.onChange({
-          target: {
-            value: getEventValue(event),
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.CHANGE,
-        });
-      },
-      onBlur: () => {
-        registerProps.onBlur({
+      name,
+      value,
+      onChange: React.useCallback(
+        (event) => {
+          _registerProps.current.onChange({
+            target: {
+              value: getEventValue(event),
+              name: name as InternalFieldName,
+            },
+            type: EVENTS.CHANGE,
+          });
+        },
+        [name],
+      ),
+      onBlur: React.useCallback(() => {
+        _registerProps.current.onBlur({
           target: {
             value: get(control._formValues, name),
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
         });
-      },
-      name,
-      value,
-      ref: (elm) => {
-        const field = get(control._fields, name);
+      }, [name, control]),
+      ref: React.useCallback(
+        (elm) => {
+          const field = get(control._fields, name);
 
-        if (elm && field && elm.focus) {
-          field._f.ref = {
-            focus: () => elm.focus(),
-            setCustomValidity: (message: string) =>
-              elm.setCustomValidity(message),
-            reportValidity: () => elm.reportValidity(),
-          };
-        }
-      },
+          if (elm && field && elm.focus) {
+            field._f.ref = {
+              focus: () => elm.focus(),
+              setCustomValidity: (message: string) =>
+                elm.setCustomValidity(message),
+              reportValidity: () => elm.reportValidity(),
+            };
+          }
+        },
+        [name, control._fields],
+      ),
     },
     formState,
-    fieldState: {
-      invalid: !!get(formState.errors, name),
-      isDirty: !!get(formState.dirtyFields, name),
-      isTouched: !!get(formState.touchedFields, name),
-      error: get(formState.errors, name),
-    },
+    fieldState: control.getFieldState(name, formState),
   };
 }

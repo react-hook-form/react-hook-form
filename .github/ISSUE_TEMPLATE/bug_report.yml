@@ -1,9 +1,6 @@
 name: Bug Report
 description: File a bug report
 title: 'issue: '
-labels: ['Status: under investigation']
-assignees:
-  - bluebill1049
 body:
   - type: markdown
     attributes:

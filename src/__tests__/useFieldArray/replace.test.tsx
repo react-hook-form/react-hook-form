@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  act as actComponent,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import * as generateId from '../../logic/generateId';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { FormProvider } from '../../useFormContext';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -74,26 +69,17 @@ describe('replace', () => {
 
     render(<Component />);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: labelSingle }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: labelSingle }));
 
-    act(() => {
-      expect(currentFields).toEqual([{ id: '3', x: '201' }]);
-    });
+    expect(currentFields).toEqual([{ id: '3', x: '201' }]);
 
-    act(() => {
-      fireEvent.click(screen.getByRole('button', { name: labelBatch }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: labelBatch }));
 
-    act(() => {
-      expect(currentFields).toEqual([
-        { id: '5', x: '301' },
-        { id: '6', x: '302' },
-      ]);
-    });
+    expect(currentFields).toEqual([
+      { id: '5', x: '301' },
+      { id: '6', x: '302' },
+    ]);
   });
-
   it('should not omit keyName when provided', async () => {
     type FormValues = {
       test: {
@@ -141,11 +127,11 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'replace' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"test","test":"data"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"test","test":"data"}]}'),
+    ).toBeVisible();
   });
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
@@ -206,11 +192,11 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'replace' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    screen.getByText('{"test":[{"id":"whatever","test":"data"}]}');
+    expect(
+      await screen.findByText('{"test":[{"id":"whatever","test":"data"}]}'),
+    ).toBeVisible();
   });
 
   it('should not replace errors state', async () => {
@@ -267,14 +253,71 @@ describe('replace', () => {
 
     render(<App />);
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(async () => {
-      screen.getByText('This is required');
-    });
+    expect(await screen.findByText('This is required')).toBeVisible();
+  });
+
+  it('should not affect other formState during replace action', () => {
+    const ControlledInput = ({ index }: { index: number }) => {
+      const { field } = useController({
+        name: `fieldArray.${index}.firstName`,
+      });
+      return <input {...field} />;
+    };
+
+    const defaultValue = {
+      firstName: 'test',
+    };
+
+    const FieldArray = () => {
+      const { fields, replace } = useFieldArray({
+        name: 'fieldArray',
+      });
+
+      React.useEffect(() => {
+        replace([defaultValue]);
+      }, [replace]);
+
+      return (
+        <div>
+          {fields.map((field, index) => {
+            return <ControlledInput key={field.id} index={index} />;
+          })}
+
+          <button type="button" onClick={() => replace(defaultValue)}>
+            replace
+          </button>
+        </div>
+      );
+    };
+
+    function App() {
+      const form = useForm({
+        mode: 'onChange',
+      });
+      const [, updateState] = React.useState(0);
+
+      return (
+        <FormProvider {...form}>
+          <FieldArray />
+          <p>{JSON.stringify(form.formState.touchedFields)}</p>
+          <button onClick={() => updateState(1)}>updateState</button>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.focus(screen.getByRole('textbox'));
+    fireEvent.blur(screen.getByRole('textbox'));
+    fireEvent.click(screen.getByRole('button', { name: 'replace' }));
+    fireEvent.click(screen.getByRole('button', { name: 'updateState' }));
+
+    expect(
+      screen.getByText('{"fieldArray":[{"firstName":true}]}'),
+    ).toBeVisible();
   });
 });

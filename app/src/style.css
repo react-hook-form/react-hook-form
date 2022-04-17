@@ -17,6 +17,11 @@ input {
   max-width: 600px;
 }
 
+label {
+  display: block;
+  margin-bottom: 8px;
+}
+
 button,
 input[type='submit'],
 .button {
@@ -38,7 +43,7 @@ input[type='submit'],
   max-width: 600px;
 }
 
-button[type="button"] {
+button[type='button'] {
   background: #516391;
   color: white;
   text-transform: none;
@@ -46,13 +51,13 @@ button[type="button"] {
   letter-spacing: 2px;
 }
 
-input[type="submit"]:hover,
-button[type="button"]:hover {
+input[type='submit']:hover,
+button[type='button']:hover {
   background: #bf1650;
   color: white;
 }
 
-input[type="submit"]:active {
+input[type='submit']:active {
   transition: 0.3s all;
   top: 2px;
 }

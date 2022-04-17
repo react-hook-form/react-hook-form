@@ -289,7 +289,7 @@
        */
       "default": {
         /**
-         * Specifies whether the message should be written to the the tool's output log.  Note that
+         * Specifies whether the message should be written to the tool's output log.  Note that
          * the "addToApiReportFile" property may supersede this option.
          *
          * Possible values: "error", "warning", "none"

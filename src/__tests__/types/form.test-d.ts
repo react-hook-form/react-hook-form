@@ -1,5 +1,6 @@
 import { expectType } from 'tsd';
 
+import { FieldError } from '../../types';
 import { useForm } from '../../useForm';
 
 /** {@link UseFormHandleSubmit} */ {
@@ -23,5 +24,39 @@ import { useForm } from '../../useForm';
     }>();
 
     handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
+  }
+}
+
+/** {@link UseFormGetFieldState} */ {
+  /** it should return associated field state */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { getFieldState } = useForm({
+      defaultValues: {
+        test: '',
+      },
+    });
+
+    expectType<{
+      invalid: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
+      error?: FieldError;
+    }>(getFieldState('test'));
+  }
+
+  /** it should return associated field state when formState is supplied */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { getFieldState, formState } = useForm({
+      defaultValues: {
+        test: '',
+      },
+    });
+
+    expectType<{
+      invalid: boolean;
+      isDirty: boolean;
+      isTouched: boolean;
+      error?: FieldError;
+    }>(getFieldState('test', formState));
   }
 }

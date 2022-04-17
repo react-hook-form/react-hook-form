@@ -7,6 +7,10 @@
 import * as exported from 'react-hook-form';
 import assert from 'assert';
 import fs from 'fs';
+import path from 'path';
+import url from 'url';
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 /**
  * A shell one-liner to update this array when neccessary (run from root of repo):
@@ -14,7 +18,7 @@ import fs from 'fs';
  */
 const expected = JSON.parse(
   fs.readFileSync(
-    new URL('./all-exports.json', import.meta.url).pathname,
+    path.resolve(__dirname, './all-exports.json'),
     'utf-8',
   ),
 );

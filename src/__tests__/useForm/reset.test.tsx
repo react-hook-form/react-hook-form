@@ -90,13 +90,11 @@ describe('reset', () => {
 
     render(<Component />);
 
-    actComponent(() => {
-      screen
-        .getAllByRole('checkbox')
-        .forEach((checkbox) =>
-          expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
-        );
-    });
+    screen
+      .getAllByRole('checkbox')
+      .forEach((checkbox) =>
+        expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
+      );
   });
 
   it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
@@ -193,7 +191,7 @@ describe('reset', () => {
     );
   });
 
-  it('should not reset form defaultValues when keepDefaultValues is specified', () => {
+  it('should not reset form defaultValues when keepDefaultValues is specified', async () => {
     const Component = () => {
       const {
         register,
@@ -243,9 +241,7 @@ describe('reset', () => {
       },
     });
 
-    act(() => {
-      screen.getByText('dirty');
-    });
+    expect(await screen.findByText('dirty')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -253,7 +249,7 @@ describe('reset', () => {
       },
     });
 
-    expect(screen.queryByText('dirty')).toBeNull();
+    expect(screen.queryByText('dirty')).not.toBeInTheDocument();
   });
 
   it('should update dirty and dirtyFields when keepDefaultValues and updatedValues is provided', async () => {
@@ -297,10 +293,8 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      screen.getByText('dirty');
-      screen.getByText('{"firstName":true}');
-    });
+    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(screen.getByText('{"firstName":true}')).toBeVisible();
   });
 
   it('should not reset if keepStateOption is specified', async () => {
@@ -348,25 +342,35 @@ describe('reset', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: {
-          value: 'test',
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(formState).toEqual({
+        errors: {},
+        isDirty: true,
+        touchedFields: {
+          test: true,
         },
-      });
+      }),
+    );
 
-      fireEvent.blur(screen.getByRole('textbox'));
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    expect(formState).toEqual({
+      errors: {},
+      isDirty: true,
+      touchedFields: {
+        test: true,
+      },
     });
-
-    expect(formState).toMatchSnapshot();
-
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-    });
-
-    expect(formState).toMatchSnapshot();
   });
 
   it('should keep isValid state when keep option is presented', async () => {
@@ -403,15 +407,11 @@ describe('reset', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('invalid');
-    });
+    expect(await screen.findByText('invalid')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      screen.getByText('invalid');
-    });
+    expect(await screen.findByText('invalid')).toBeVisible();
   });
 
   it('should reset field array fine with empty value', async () => {
@@ -466,23 +466,22 @@ describe('reset', () => {
 
     render(<Component />);
 
-    screen.getByRole('button', { name: 'reset' }).click();
+    const resetButton = screen.getByRole('button', { name: 'reset' });
+    const submitButton = screen.getByRole('button', { name: 'submit' });
 
-    await actComponent(async () => {
-      screen.getByRole('button', { name: 'submit' }).click();
-    });
+    fireEvent.click(resetButton);
+    fireEvent.click(submitButton);
 
-    await expect(data).toEqual({});
+    await waitFor(() => expect(data).toEqual({}));
 
-    screen.getByRole('button', { name: 'reset with value' }).click();
+    fireEvent.click(screen.getByRole('button', { name: 'reset with value' }));
+    fireEvent.click(submitButton);
 
-    await actComponent(async () => {
-      screen.getByRole('button', { name: 'submit' }).click();
-    });
-
-    await expect(data).toEqual({
-      test: [{ firstName: 'test', lastName: 'test' }],
-    });
+    await waitFor(() =>
+      expect(data).toEqual({
+        test: [{ firstName: 'test', lastName: 'test' }],
+      }),
+    );
   });
 
   it('should return reset nested value', () => {
@@ -518,7 +517,35 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(getValuesResult).toMatchSnapshot();
+    expect(getValuesResult).toEqual([
+      {
+        names: [
+          {
+            name: 'test',
+          },
+        ],
+      },
+      {
+        names: [
+          {
+            name: 'Bill',
+          },
+          {
+            name: 'Luo',
+          },
+        ],
+      },
+      {
+        names: [
+          {
+            name: 'Bill',
+          },
+          {
+            name: 'Luo',
+          },
+        ],
+      },
+    ]);
   });
 
   it('should keep defaultValues after reset with shouldKeepDefaultValues', async () => {
@@ -559,9 +586,7 @@ describe('reset', () => {
       target: { value: 'data' },
     });
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
@@ -684,19 +709,13 @@ describe('reset', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     expect(submittedData).toEqual({});
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     expect(submittedData).toEqual({});
   });
@@ -839,9 +858,7 @@ describe('reset', () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      screen.getByText('false');
-    });
+    expect(await screen.findByText('false')).toBeVisible();
 
     expect(mounted).toEqual([false, false, true]);
   });
@@ -885,15 +902,15 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      expect(
-        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
-      ).toEqual('changed1');
-      expect(
-        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
-      ).toEqual('changed2');
-      screen.getByText('{"test":"test","test1":"test1"}');
-    });
+    expect(
+      await screen.findByText('{"test":"test","test1":"test1"}'),
+    ).toBeVisible();
+    expect(
+      (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+    ).toEqual('changed1');
+    expect(
+      (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+    ).toEqual('changed2');
   });
 
   it('should reset field array async', () => {
@@ -1031,16 +1048,16 @@ describe('reset', () => {
       target: { value: '3' },
     });
 
-    screen.getByText(/yes/i);
-    screen.getByText(
-      `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
-    );
+    expect(screen.getByText(/yes/i)).toBeVisible();
+    expect(
+      screen.getByText(
+        `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
+      ),
+    ).toBeVisible();
 
-    await actComponent(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+    fireEvent.click(screen.getByRole('button'));
 
-    screen.getByText(/no/i);
+    expect(await screen.findByText(/no/i)).toBeVisible();
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
