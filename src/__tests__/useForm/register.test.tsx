@@ -387,6 +387,95 @@ describe('register', () => {
     );
   });
 
+  describe('when defaultValue is provided', () => {
+    it('should check checkbox by default when value matches', async () => {
+      type FormValues = Partial<{
+        checkbox: string;
+      }>;
+
+      function Component() {
+        const { register } = useForm<FormValues>({
+          defaultValues: {
+            checkbox: 'A',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('checkbox')} type="checkbox" value="A" />
+            <button />
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(
+        true,
+      );
+    });
+
+    it('should not check checkboxes when defaultValue is empty array', async () => {
+      type FormValues = Partial<{
+        checkbox: string[];
+      }>;
+
+      function Component() {
+        const { register } = useForm<FormValues>({
+          defaultValues: {
+            checkbox: [],
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('checkbox')} type="checkbox" value="A" />
+            <button />
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(
+        false,
+      );
+    });
+
+    it('should only check checkboxes when array defaultValue includes input value', async () => {
+      type FormValues = Partial<{
+        checkbox: string[];
+      }>;
+
+      function Component() {
+        const { register } = useForm<FormValues>({
+          defaultValues: {
+            checkbox: ['B'],
+          },
+        });
+
+        return (
+          <form>
+            <input
+              {...register('checkbox')}
+              type="checkbox"
+              value="A"
+              aria-label="checkbox-A"
+            />
+            <input {...register('checkbox')} type="checkbox" value="B" />
+            <button />
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      expect(
+        (screen.getByLabelText('checkbox-A') as HTMLInputElement).checked,
+      ).toBe(false);
+    });
+  });
+
   it('should remove input value and reference with shouldUnregister: true', () => {
     type FormValue = {
       test: string;
