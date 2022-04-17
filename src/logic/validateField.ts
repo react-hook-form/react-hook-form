@@ -89,7 +89,7 @@ export default async <T extends NativeFieldValue>(
     required &&
     ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
       (isBoolean(inputValue) && !inputValue) ||
-      (isCheckBox && !getCheckboxValue(refs, field._f.value).isValid) ||
+      (isCheckBox && !getCheckboxValue(refs).isValid) ||
       (isRadio && !getRadioValue(refs).isValid))
   ) {
     const { value, message } = isMessage(required)
