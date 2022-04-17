@@ -1,10 +1,29 @@
 # Changelog
 
+## [7.30.0] - 2022-4-17
+
+## Changed
+
+- improve checkboxes value determine by defaultValues
+
+```tsx
+useForm({
+  defaultValues: {
+    checkboxes: [], // register checkbox will be determine as array of checkboxes
+  },
+});
+register('checkboxes'); // will return array as value
+```
+
 ## [7.29.0] - 2022-3-30
+
+## Changed
 
 - tsconfig config change from es2017 to es2018
 
 ## [7.28.0] - 2022-3-13
+
+## Changed
 
 - `register` API options `deps` now support string
 
