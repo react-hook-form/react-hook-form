@@ -148,26 +148,24 @@ import { _ } from '../../__fixtures__';
     /* eslint-disable @typescript-eslint/no-unused-vars */
     _obj: T,
     _path: Auto.TypedFieldPath<T, P, unknown, I>,
-    _value: TryInferFieldPathSetValue<T, P, I>,
     /* eslint-enable @typescript-eslint/no-unused-vars */
   ) {
     return _ as TryInferFieldPathSetValue<T, P, I>;
   }
 
   /** it should compute the value type from the path */ {
-    const x = set({ test: 42 }, 'test', 2);
-    expectType<2>(x);
+    const x = set({ test: 42 }, 'test');
+    expectType<number>(x);
   }
 
   /** it should infer the value from the path constraint in a generic context */ {
     type Constraint = string;
-    const value: Constraint = 'foo';
 
     function genericSetWrapper<T, P extends PathString>(
       obj: T,
       path: Auto.TypedFieldPath<T, P, unknown, Constraint>,
     ) {
-      const x = set(obj, path, value);
+      const x = set(obj, path);
       expectType<Constraint>(x);
     }
 
