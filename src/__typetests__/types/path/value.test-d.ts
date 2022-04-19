@@ -1,10 +1,14 @@
 import { expectType } from 'tsd';
 
 import {
+  Auto,
   Branded,
   FieldPathSetValue,
   FieldPathValue,
   FieldPathValues,
+  PathString,
+  TryInferFieldPathSetValue,
+  TryInferFieldPathValue,
 } from '../../../types';
 import { _ } from '../../__fixtures__';
 
@@ -106,5 +110,67 @@ import { _ } from '../../__fixtures__';
   /** it should evaluate to any[] if a path is any */ {
     const actual = _ as FieldPathValues<{ foo: number }, any>;
     expectType<any[]>(actual);
+  }
+}
+
+/** {@link TryInferFieldPathValue} */ {
+  function get<T, P extends PathString, I = unknown>(
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    _obj: T,
+    _path: Auto.TypedFieldPath<T, P, I, never>,
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+  ) {
+    return _ as TryInferFieldPathValue<T, P, I>;
+  }
+
+  /** it should compute the value type from the path */ {
+    const x = get({ test: 42 }, 'test');
+    expectType<number>(x);
+  }
+
+  /** it should infer the value from the path constraint in a generic context */ {
+    type Constraint = string;
+
+    function genericGetWrapper<T, P extends PathString>(
+      obj: T,
+      path: Auto.TypedFieldPath<T, P, Constraint, never>,
+    ) {
+      const x = get(obj, path);
+      expectType<Constraint>(x);
+    }
+
+    genericGetWrapper;
+  }
+}
+
+/** {@link TryInferFieldPathSetValue} */ {
+  function set<T, P extends PathString, I = never>(
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    _obj: T,
+    _path: Auto.TypedFieldPath<T, P, unknown, I>,
+    _value: TryInferFieldPathSetValue<T, P, I>,
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+  ) {
+    return _ as TryInferFieldPathSetValue<T, P, I>;
+  }
+
+  /** it should compute the value type from the path */ {
+    const x = set({ test: 42 }, 'test', 2);
+    expectType<2>(x);
+  }
+
+  /** it should infer the value from the path constraint in a generic context */ {
+    type Constraint = string;
+    const value: Constraint = 'foo';
+
+    function genericSetWrapper<T, P extends PathString>(
+      obj: T,
+      path: Auto.TypedFieldPath<T, P, unknown, Constraint>,
+    ) {
+      const x = set(obj, path, value);
+      expectType<Constraint>(x);
+    }
+
+    genericSetWrapper;
   }
 }

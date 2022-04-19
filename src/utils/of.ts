@@ -1,11 +1,9 @@
 import {
   Auto,
   Branded,
-  FieldPathSetValue,
-  FieldPathValue,
-  IsNever,
-  IsUnknown,
   PathString,
+  TryInferFieldPathSetValue,
+  TryInferFieldPathValue,
 } from '../types';
 
 /**
@@ -27,12 +25,8 @@ export default function of<
   path: Auto.TypedFieldPath<TFieldValues, TPathString, TValue, TValueSet>,
 ): Branded.TypedFieldPath<
   TFieldValues,
-  IsUnknown<TValue> extends true
-    ? FieldPathValue<TFieldValues, TPathString>
-    : TValue,
-  IsNever<TValueSet> extends true
-    ? FieldPathSetValue<TFieldValues, TPathString>
-    : TValueSet
+  TryInferFieldPathValue<TFieldValues, TPathString, TValue>,
+  TryInferFieldPathSetValue<TFieldValues, TPathString, TValueSet>
 > {
   return path as never;
 }

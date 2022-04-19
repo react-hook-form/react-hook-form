@@ -321,7 +321,7 @@ export type IsNever<T> = [T] extends [never] ? true : false;
 export type IsUnknown<T> = IsAny<T> extends true ? false : unknown extends T ? true : false;
 
 // @public
-export function join<TFieldValues, TPathString extends PathString, TChildFieldValues, TChildPathString extends PathString, TValue = unknown, TValueSet = never>(path: Auto.TypedFieldPath<TFieldValues, TPathString, TChildFieldValues, NonNullable<TChildFieldValues>>, childPath: Auto.TypedFieldPath<TChildFieldValues, TChildPathString, TValue, TValueSet>): Branded.TypedFieldPath<TFieldValues, IsUnknown<TValue> extends true ? FieldPathValue<TChildFieldValues, TChildPathString> : TValue, IsNever<TValueSet> extends true ? FieldPathSetValue<TChildFieldValues, TChildPathString> : TValueSet>;
+export function join<TFieldValues, TPathString extends PathString, TChildFieldValues, TChildPathString extends PathString, TValue = unknown, TValueSet = never>(path: Auto.TypedFieldPath<TFieldValues, TPathString, TChildFieldValues, NonNullable<TChildFieldValues>>, childPath: Auto.TypedFieldPath<TChildFieldValues, TChildPathString, TValue, TValueSet>): Branded.TypedFieldPath<TFieldValues, TryInferFieldPathValue<TChildFieldValues, TChildPathString, TValue>, TryInferFieldPathSetValue<TChildFieldValues, TChildPathString, TValueSet>>;
 
 // @public (undocumented)
 export type KeepStateOptions = Partial<{
@@ -382,7 +382,7 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 export type Noop = () => void;
 
 // @public
-export function of<TFieldValues, TPathString extends PathString, TValue = unknown, TValueSet = never>(path: Auto.TypedFieldPath<TFieldValues, TPathString, TValue, TValueSet>): Branded.TypedFieldPath<TFieldValues, IsUnknown<TValue> extends true ? FieldPathValue<TFieldValues, TPathString> : TValue, IsNever<TValueSet> extends true ? FieldPathSetValue<TFieldValues, TPathString> : TValueSet>;
+export function of<TFieldValues, TPathString extends PathString, TValue = unknown, TValueSet = never>(path: Auto.TypedFieldPath<TFieldValues, TPathString, TValue, TValueSet>): Branded.TypedFieldPath<TFieldValues, TryInferFieldPathValue<TFieldValues, TPathString, TValue>, TryInferFieldPathSetValue<TFieldValues, TPathString, TValueSet>>;
 
 // @public
 export type PathString = string;
@@ -493,6 +493,12 @@ export type SubmitHandler<TFieldValues extends FieldValues> = (data: Readonly<TF
 export type TriggerOptions = Partial<{
     shouldFocus: boolean;
 }>;
+
+// @public
+export type TryInferFieldPathSetValue<TFieldValues, TPathString extends PathString, TInferredValueSet> = IsNever<TInferredValueSet> extends false ? TInferredValueSet : FieldPathSetValue<TFieldValues, TPathString>;
+
+// @public
+export type TryInferFieldPathValue<TFieldValues, TPathString extends PathString, TInferredValue> = IsUnknown<TInferredValue> extends false ? TInferredValue : FieldPathValue<TFieldValues, TPathString>;
 
 // @public
 export type TypedFieldArrayPath<TFieldValues, TArrayValues extends FieldValues, TArrayValuesSet extends FieldValues = TArrayValues> = TypedFieldPath<TFieldValues, ReadonlyArray<TArrayValues> | null | undefined, TArrayValuesSet[]>;
