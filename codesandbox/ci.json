@@ -1,6 +1,7 @@
 {
   "sandboxes": [
-    "rhf-v7-ts-template-x9gjdy"
+    "react-hook-form-v7-js-template-quqov",
+    "react-hook-form-v7-ts-template-4tn8i"
   ],
   "node": "14"
 }
