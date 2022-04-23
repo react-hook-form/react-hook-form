@@ -1119,21 +1119,36 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (isWeb && isUndefined(formValues)) {
-        for (const name of _names.mount) {
-          const field = get(_fields, name);
-          if (field && field._f) {
-            const fieldReference = Array.isArray(field._f.refs)
-              ? field._f.refs[0]
-              : field._f.ref;
-
-            try {
-              isHTMLElement(fieldReference) &&
-                fieldReference.closest('form')!.reset();
-              break;
-            } catch {}
+      if (keepStateOptions.keepDirtyFields) {
+        for (const fieldName of _names.mount) {
+          if (get(_formState.dirtyFields, fieldName)) {
+            set(values, fieldName, get(_formValues, fieldName));
+          } else {
+            setValue(
+              fieldName as FieldPath<TFieldValues>,
+              get(values, fieldName),
+            );
           }
         }
+      } else {
+        if (isWeb && isUndefined(formValues)) {
+          for (const name of _names.mount) {
+            const field = get(_fields, name);
+            if (field && field._f) {
+              const fieldReference = Array.isArray(field._f.refs)
+                ? field._f.refs[0]
+                : field._f.ref;
+
+              try {
+                isHTMLElement(fieldReference) &&
+                  fieldReference.closest('form')!.reset();
+                break;
+              } catch {}
+            }
+          }
+        }
+
+        _fields = {};
       }
 
       _formValues = props.shouldUnregister
@@ -1142,15 +1157,15 @@ export function createFormControl<
           : {}
         : cloneUpdatedValues;
 
-      _fields = {};
+      if (keepStateOptions.keepDirtyFields) {
+        _subjects.array.next({
+          values,
+        });
 
-      _subjects.array.next({
-        values,
-      });
-
-      _subjects.watch.next({
-        values,
-      });
+        _subjects.watch.next({
+          values,
+        });
+      }
     }
 
     _names = {
@@ -1179,7 +1194,7 @@ export function createFormControl<
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields: keepStateOptions.keepDirty
+      dirtyFields: keepStateOptions.keepDirtyFields
         ? _formState.dirtyFields
         : ((keepStateOptions.keepDefaultValues && formValues
             ? Object.entries(formValues).reduce(

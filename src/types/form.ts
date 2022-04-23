@@ -6,6 +6,7 @@ import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
 import {
+  Field,
   FieldRefs,
   FieldValue,
   FieldValues,
@@ -129,6 +130,7 @@ export type FormState<TFieldValues> = {
 };
 
 export type KeepStateOptions = Partial<{
+  keepDirtyFields: boolean;
   keepErrors: boolean;
   keepDirty: boolean;
   keepValues: boolean;
@@ -560,7 +562,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[],
   options?: Omit<
-    KeepStateOptions,
+    ResetOptions,
     | 'keepIsSubmitted'
     | 'keepSubmitCount'
     | 'keepValues'
@@ -657,7 +659,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
  */
 export type UseFormReset<TFieldValues extends FieldValues> = (
   values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>,
-  keepStateOptions?: KeepStateOptions,
+  options?: ResetOptions,
 ) => void;
 
 export type WatchInternal<TFieldValues> = (
