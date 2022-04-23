@@ -285,7 +285,7 @@ export type IsNever<T> = [T] extends [never] ? true : false;
 
 // @public (undocumented)
 export type KeepStateOptions = Partial<{
-    keepDirtyFields: boolean;
+    keepDirtyValues: boolean;
     keepErrors: boolean;
     keepDirty: boolean;
     keepValues: boolean;
