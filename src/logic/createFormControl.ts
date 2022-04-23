@@ -1121,14 +1121,12 @@ export function createFormControl<
     if (!keepStateOptions.keepValues) {
       if (keepStateOptions.keepDirtyFields) {
         for (const fieldName of _names.mount) {
-          if (get(_formState.dirtyFields, fieldName)) {
-            set(values, fieldName, get(_formValues, fieldName));
-          } else {
-            setValue(
-              fieldName as FieldPath<TFieldValues>,
-              get(values, fieldName),
-            );
-          }
+          get(_formState.dirtyFields, fieldName)
+            ? setValue(
+                fieldName as FieldPath<TFieldValues>,
+                get(values, fieldName),
+              )
+            : set(values, fieldName, get(_formValues, fieldName));
         }
       } else {
         if (isWeb && isUndefined(formValues)) {
