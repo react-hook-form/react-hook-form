@@ -21,6 +21,7 @@
     "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "prettier/prettier": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-object-literal-type-assertion": "off",
     "cypress/no-unnecessary-waiting": "off",
