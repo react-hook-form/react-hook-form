@@ -1187,23 +1187,13 @@ export function createFormControl<
         : 0,
       isDirty: keepStateOptions.keepDirty
         ? _formState.isDirty
-        : keepStateOptions.keepDefaultValues
-        ? !deepEqual(formValues, _defaultValues)
-        : false,
-      isSubmitted: keepStateOptions.keepIsSubmitted
-        ? _formState.isSubmitted
-        : false,
+        : keepStateOptions.keepDefaultValues &&
+          !deepEqual(formValues, _defaultValues),
+      isSubmitted: keepStateOptions.keepIsSubmitted,
       dirtyFields: keepStateOptions.keepDirtyFields
         ? _formState.dirtyFields
-        : ((keepStateOptions.keepDefaultValues && formValues
-            ? Object.entries(formValues).reduce(
-                (previous, [key, value]) => ({
-                  ...previous,
-                  [key]: value !== get(_defaultValues, key),
-                }),
-                {},
-              )
-            : {}) as FieldNamesMarkedBoolean<TFieldValues>),
+        : keepStateOptions.keepDefaultValues &&
+          getDirtyFields(_defaultValues, formValues),
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : ({} as FieldNamesMarkedBoolean<TFieldValues>),
