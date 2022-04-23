@@ -1157,15 +1157,13 @@ export function createFormControl<
           : {}
         : cloneUpdatedValues;
 
-      if (keepStateOptions.keepDirtyFields) {
-        _subjects.array.next({
-          values,
-        });
+      _subjects.array.next({
+        values,
+      });
 
-        _subjects.watch.next({
-          values,
-        });
-      }
+      _subjects.watch.next({
+        values,
+      });
     }
 
     _names = {
