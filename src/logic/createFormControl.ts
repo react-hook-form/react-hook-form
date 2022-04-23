@@ -1119,7 +1119,7 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (keepStateOptions.keepDirtyFields) {
+      if (keepStateOptions.keepDirtyValues) {
         for (const fieldName of _names.mount) {
           if (get(_formState.dirtyFields, fieldName)) {
             set(values, fieldName, get(_formValues, fieldName));
@@ -1192,7 +1192,7 @@ export function createFormControl<
             !deepEqual(formValues, _defaultValues)
           ),
       isSubmitted: !!keepStateOptions.keepIsSubmitted,
-      dirtyFields: keepStateOptions.keepDirtyFields
+      dirtyFields: keepStateOptions.keepDirty
         ? _formState.dirtyFields
         : keepStateOptions.keepDefaultValues && formValues
         ? getDirtyFields(_defaultValues, formValues)
