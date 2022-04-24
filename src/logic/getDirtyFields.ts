@@ -53,8 +53,7 @@ function getDirtyFieldsFromDefaultValues<T>(
           );
         }
       } else {
-        dirtyFieldsFromValues[key] =
-          formValues && !deepEqual(data[key], formValues[key]);
+        dirtyFieldsFromValues[key] = !deepEqual(data[key], formValues[key]);
       }
     }
   }
