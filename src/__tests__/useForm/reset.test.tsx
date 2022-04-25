@@ -596,6 +596,88 @@ describe('reset', () => {
     ).toEqual('test1');
   });
 
+  describe('when reset optional props set to keepDirtyValues', () => {
+    function App() {
+      const [showButton, setShowButton] = React.useState(false);
+      const {
+        reset,
+        register,
+        formState: { dirtyFields },
+      } = useForm();
+
+      dirtyFields;
+
+      React.useEffect(() => {
+        setTimeout(() => {
+          reset(
+            {
+              firstName: 'bill',
+              lastName: 'luo',
+            },
+            { keepDirtyValues: true },
+          );
+          setShowButton(true);
+        }, 500);
+      }, [reset]);
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <input {...register('lastName')} placeholder="Last Name" />
+
+          {showButton && (
+            <button
+              type="button"
+              onClick={() => {
+                reset();
+              }}
+            >
+              Manual Reset
+            </button>
+          )}
+        </form>
+      );
+    }
+
+    it('should only update new reset values', async () => {
+      render(<App />);
+
+      await waitFor(() =>
+        expect(
+          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+        ).toEqual('bill'),
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(
+        (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+      ).toEqual('bill');
+    });
+
+    it('should only update none dirty fields and keep other values updated', async () => {
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('First Name'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      await waitFor(() =>
+        expect(
+          (screen.getByPlaceholderText('Last Name') as HTMLInputElement).value,
+        ).toEqual('luo'),
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(
+        (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+      ).toEqual('bill');
+    });
+  });
+
   it('should allow to reset unmounted field array', () => {
     type FormValues = {
       test: { name: string }[];
