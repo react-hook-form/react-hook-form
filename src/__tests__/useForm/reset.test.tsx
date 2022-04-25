@@ -597,102 +597,225 @@ describe('reset', () => {
   });
 
   describe('when reset optional props set to keepDirtyValues', () => {
-    let updatedDirtyFields: Record<string, boolean> = {};
-    let updatedDirty = false;
+    describe('with uncontrolled components', () => {
+      let updatedDirtyFields: Record<string, boolean> = {};
+      let updatedDirty = false;
 
-    function App() {
-      const [showButton, setShowButton] = React.useState(false);
-      const {
-        reset,
-        register,
-        formState: { dirtyFields, isDirty },
-      } = useForm();
+      function App() {
+        const [showButton, setShowButton] = React.useState(false);
+        const {
+          reset,
+          register,
+          formState: { dirtyFields, isDirty },
+        } = useForm();
 
-      updatedDirtyFields = dirtyFields;
-      updatedDirty = isDirty;
+        updatedDirtyFields = dirtyFields;
+        updatedDirty = isDirty;
 
-      React.useEffect(() => {
-        setTimeout(() => {
-          reset(
-            {
-              firstName: 'bill',
-              lastName: 'luo',
-            },
-            { keepDirtyValues: true },
-          );
-          setShowButton(true);
-        }, 500);
-      }, [reset]);
+        React.useEffect(() => {
+          setTimeout(() => {
+            reset(
+              {
+                firstName: 'bill',
+                lastName: 'luo',
+              },
+              { keepDirtyValues: true },
+            );
+            setShowButton(true);
+          }, 500);
+        }, [reset]);
 
-      return (
-        <form>
-          <input {...register('firstName')} placeholder="First Name" />
-          <input {...register('lastName')} placeholder="Last Name" />
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="First Name" />
+            <input {...register('lastName')} placeholder="Last Name" />
 
-          {showButton && (
-            <button
-              type="button"
-              onClick={() => {
-                reset();
-              }}
-            >
-              Manual Reset
-            </button>
-          )}
-        </form>
-      );
-    }
+            {showButton && (
+              <button
+                type="button"
+                onClick={() => {
+                  reset();
+                }}
+              >
+                Manual Reset
+              </button>
+            )}
+          </form>
+        );
+      }
 
-    it('should only update new reset values', async () => {
-      render(<App />);
+      it('should only update new reset values', async () => {
+        render(<App />);
 
-      await waitFor(() =>
+        await waitFor(() =>
+          expect(
+            (screen.getByPlaceholderText('First Name') as HTMLInputElement)
+              .value,
+          ).toEqual('bill'),
+        );
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect(updatedDirtyFields).toEqual({});
+        expect(updatedDirty).toBeFalsy();
+
         expect(
           (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
-        ).toEqual('bill'),
-      );
+        ).toEqual('bill');
 
-      fireEvent.click(screen.getByRole('button'));
+        expect(updatedDirtyFields).toEqual({});
+        expect(updatedDirty).toBeFalsy();
+      });
 
-      expect(updatedDirtyFields).toEqual({});
-      expect(updatedDirty).toBeFalsy();
+      it('should only update none dirty fields and keep other values updated', async () => {
+        render(<App />);
 
-      expect(
-        (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
-      ).toEqual('bill');
+        fireEvent.change(screen.getByPlaceholderText('First Name'), {
+          target: {
+            value: 'test',
+          },
+        });
 
-      expect(updatedDirtyFields).toEqual({});
-      expect(updatedDirty).toBeFalsy();
+        await waitFor(() =>
+          expect(
+            (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
+              .value,
+          ).toEqual('luo'),
+        );
+
+        expect(updatedDirtyFields).toEqual({
+          firstName: true,
+        });
+        expect(updatedDirty).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect(
+          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+        ).toEqual('bill');
+
+        expect(updatedDirtyFields).toEqual({});
+        expect(updatedDirty).toBeFalsy();
+      });
     });
 
-    it('should only update none dirty fields and keep other values updated', async () => {
-      render(<App />);
+    describe('with controlled components', () => {
+      let updatedDirtyFields: Record<string, boolean> = {};
+      let updatedDirty = false;
 
-      fireEvent.change(screen.getByPlaceholderText('First Name'), {
-        target: {
-          value: 'test',
-        },
-      });
+      function App() {
+        const [showButton, setShowButton] = React.useState(false);
+        const {
+          reset,
+          control,
+          formState: { dirtyFields, isDirty },
+        } = useForm({
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
 
-      await waitFor(() =>
+        updatedDirtyFields = dirtyFields;
+        updatedDirty = isDirty;
+
+        React.useEffect(() => {
+          setTimeout(() => {
+            reset(
+              {
+                firstName: 'bill',
+                lastName: 'luo',
+              },
+              { keepDirtyValues: true },
+            );
+            setShowButton(true);
+          }, 500);
+        }, [reset]);
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              render={({ field }) => {
+                return <input {...field} placeholder="First Name" />;
+              }}
+              name={'firstName'}
+            />
+            <Controller
+              control={control}
+              render={({ field }) => {
+                return <input {...field} placeholder="Last Name" />;
+              }}
+              name={'lastName'}
+            />
+
+            {showButton && (
+              <button
+                type="button"
+                onClick={() => {
+                  reset();
+                }}
+              >
+                Manual Reset
+              </button>
+            )}
+          </form>
+        );
+      }
+
+      it('should only update new reset values', async () => {
+        render(<App />);
+
+        await waitFor(() =>
+          expect(
+            (screen.getByPlaceholderText('First Name') as HTMLInputElement)
+              .value,
+          ).toEqual('bill'),
+        );
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect(updatedDirtyFields).toEqual({});
+        expect(updatedDirty).toBeFalsy();
+
         expect(
-          (screen.getByPlaceholderText('Last Name') as HTMLInputElement).value,
-        ).toEqual('luo'),
-      );
+          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+        ).toEqual('bill');
 
-      expect(updatedDirtyFields).toEqual({
-        firstName: true,
+        expect(updatedDirtyFields).toEqual({});
+        expect(updatedDirty).toBeFalsy();
       });
-      expect(updatedDirty).toBeTruthy();
 
-      fireEvent.click(screen.getByRole('button'));
+      it('should only update none dirty fields and keep other values updated', async () => {
+        render(<App />);
 
-      expect(
-        (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
-      ).toEqual('bill');
+        fireEvent.change(screen.getByPlaceholderText('First Name'), {
+          target: {
+            value: 'test',
+          },
+        });
 
-      expect(updatedDirtyFields).toEqual({});
-      expect(updatedDirty).toBeFalsy();
+        await waitFor(() =>
+          expect(
+            (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
+              .value,
+          ).toEqual('luo'),
+        );
+
+        expect(updatedDirtyFields).toEqual({
+          firstName: true,
+        });
+        expect(updatedDirty).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect(
+          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+        ).toEqual('bill');
+
+        expect(updatedDirtyFields).toEqual({});
+        expect(updatedDirty).toBeFalsy();
+      });
     });
   });
 
