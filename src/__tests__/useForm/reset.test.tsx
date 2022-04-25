@@ -597,15 +597,19 @@ describe('reset', () => {
   });
 
   describe('when reset optional props set to keepDirtyValues', () => {
+    let updatedDirtyFields: Record<string, boolean> = {};
+    let updatedDirty = false;
+
     function App() {
       const [showButton, setShowButton] = React.useState(false);
       const {
         reset,
         register,
-        formState: { dirtyFields },
+        formState: { dirtyFields, isDirty },
       } = useForm();
 
-      dirtyFields;
+      updatedDirtyFields = dirtyFields;
+      updatedDirty = isDirty;
 
       React.useEffect(() => {
         setTimeout(() => {
@@ -650,9 +654,15 @@ describe('reset', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
+      expect(updatedDirtyFields).toEqual({});
+      expect(updatedDirty).toBeFalsy();
+
       expect(
         (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
       ).toEqual('bill');
+
+      expect(updatedDirtyFields).toEqual({});
+      expect(updatedDirty).toBeFalsy();
     });
 
     it('should only update none dirty fields and keep other values updated', async () => {
@@ -670,11 +680,19 @@ describe('reset', () => {
         ).toEqual('luo'),
       );
 
+      expect(updatedDirtyFields).toEqual({
+        firstName: true,
+      });
+      expect(updatedDirty).toBeTruthy();
+
       fireEvent.click(screen.getByRole('button'));
 
       expect(
         (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
       ).toEqual('bill');
+
+      expect(updatedDirtyFields).toEqual({});
+      expect(updatedDirty).toBeFalsy();
     });
   });
 
