@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import {
   act as actComponent,
@@ -600,12 +601,14 @@ describe('reset', () => {
     describe('with uncontrolled components', () => {
       let updatedDirtyFields: Record<string, boolean> = {};
       let updatedDirty = false;
+      let submittedValue: unknown = {};
 
       function App() {
         const [showButton, setShowButton] = React.useState(false);
         const {
           reset,
           register,
+          handleSubmit,
           formState: { dirtyFields, isDirty },
         } = useForm();
 
@@ -626,7 +629,11 @@ describe('reset', () => {
         }, [reset]);
 
         return (
-          <form>
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
             <input {...register('firstName')} placeholder="First Name" />
             <input {...register('lastName')} placeholder="Last Name" />
 
@@ -637,9 +644,10 @@ describe('reset', () => {
                   reset();
                 }}
               >
-                Manual Reset
+                reset
               </button>
             )}
+            <button>submit</button>
           </form>
         );
       }
@@ -654,7 +662,7 @@ describe('reset', () => {
           ).toEqual('bill'),
         );
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
         expect(updatedDirtyFields).toEqual({});
         expect(updatedDirty).toBeFalsy();
@@ -665,6 +673,15 @@ describe('reset', () => {
 
         expect(updatedDirtyFields).toEqual({});
         expect(updatedDirty).toBeFalsy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() =>
+          expect(submittedValue).toEqual({
+            firstName: 'bill',
+            lastName: 'luo',
+          }),
+        );
       });
 
       it('should only update none dirty fields and keep other values updated', async () => {
@@ -688,7 +705,16 @@ describe('reset', () => {
         });
         expect(updatedDirty).toBeTruthy();
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() =>
+          expect(submittedValue).toEqual({
+            firstName: 'test',
+            lastName: 'luo',
+          }),
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
         expect(
           (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
@@ -696,18 +722,29 @@ describe('reset', () => {
 
         expect(updatedDirtyFields).toEqual({});
         expect(updatedDirty).toBeFalsy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() =>
+          expect(submittedValue).toEqual({
+            firstName: 'bill',
+            lastName: 'luo',
+          }),
+        );
       });
     });
 
     describe('with controlled components', () => {
       let updatedDirtyFields: Record<string, boolean> = {};
       let updatedDirty = false;
+      let submittedValue: unknown = {};
 
       function App() {
         const [showButton, setShowButton] = React.useState(false);
         const {
           reset,
           control,
+          handleSubmit,
           formState: { dirtyFields, isDirty },
         } = useForm({
           defaultValues: {
@@ -733,7 +770,11 @@ describe('reset', () => {
         }, [reset]);
 
         return (
-          <form>
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
             <Controller
               control={control}
               render={({ field }) => {
@@ -756,9 +797,11 @@ describe('reset', () => {
                   reset();
                 }}
               >
-                Manual Reset
+                reset
               </button>
             )}
+
+            <button>submit</button>
           </form>
         );
       }
@@ -773,7 +816,7 @@ describe('reset', () => {
           ).toEqual('bill'),
         );
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
         expect(updatedDirtyFields).toEqual({});
         expect(updatedDirty).toBeFalsy();
@@ -784,6 +827,15 @@ describe('reset', () => {
 
         expect(updatedDirtyFields).toEqual({});
         expect(updatedDirty).toBeFalsy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() =>
+          expect(submittedValue).toEqual({
+            firstName: 'bill',
+            lastName: 'luo',
+          }),
+        );
       });
 
       it('should only update none dirty fields and keep other values updated', async () => {
@@ -807,7 +859,16 @@ describe('reset', () => {
         });
         expect(updatedDirty).toBeTruthy();
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() =>
+          expect(submittedValue).toEqual({
+            firstName: 'test',
+            lastName: 'luo',
+          }),
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
         expect(
           (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
@@ -815,6 +876,15 @@ describe('reset', () => {
 
         expect(updatedDirtyFields).toEqual({});
         expect(updatedDirty).toBeFalsy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() =>
+          expect(submittedValue).toEqual({
+            firstName: 'bill',
+            lastName: 'luo',
+          }),
+        );
       });
     });
   });
