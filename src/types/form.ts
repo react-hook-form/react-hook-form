@@ -129,6 +129,7 @@ export type FormState<TFieldValues> = {
 };
 
 export type KeepStateOptions = Partial<{
+  keepDirtyValues: boolean;
   keepErrors: boolean;
   keepDirty: boolean;
   keepValues: boolean;

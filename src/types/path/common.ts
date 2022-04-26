@@ -145,7 +145,7 @@ type JoinPathTupleImpl<
  */
 export type JoinPathTuple<PT extends PathTuple> = PT extends [
   infer K,
-  ...infer R
+  ...infer R,
 ]
   ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>>
   : never;
@@ -226,7 +226,7 @@ export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
  */
 export type EvaluatePath<T, PT extends PathTuple> = PT extends [
   infer K,
-  ...infer R
+  ...infer R,
 ]
   ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
   : T;

@@ -1119,21 +1119,34 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (isWeb && isUndefined(formValues)) {
-        for (const name of _names.mount) {
-          const field = get(_fields, name);
-          if (field && field._f) {
-            const fieldReference = Array.isArray(field._f.refs)
-              ? field._f.refs[0]
-              : field._f.ref;
+      if (keepStateOptions.keepDirtyValues) {
+        for (const fieldName of _names.mount) {
+          get(_formState.dirtyFields, fieldName)
+            ? set(values, fieldName, get(_formValues, fieldName))
+            : setValue(
+                fieldName as FieldPath<TFieldValues>,
+                get(values, fieldName),
+              );
+        }
+      } else {
+        if (isWeb && isUndefined(formValues)) {
+          for (const name of _names.mount) {
+            const field = get(_fields, name);
+            if (field && field._f) {
+              const fieldReference = Array.isArray(field._f.refs)
+                ? field._f.refs[0]
+                : field._f.ref;
 
-            try {
-              isHTMLElement(fieldReference) &&
-                fieldReference.closest('form')!.reset();
-              break;
-            } catch {}
+              try {
+                isHTMLElement(fieldReference) &&
+                  fieldReference.closest('form')!.reset();
+                break;
+              } catch {}
+            }
           }
         }
+
+        _fields = {};
       }
 
       _formValues = props.shouldUnregister
@@ -1141,8 +1154,6 @@ export function createFormControl<
           ? cloneObject(_defaultValues)
           : {}
         : cloneUpdatedValues;
-
-      _fields = {};
 
       _subjects.array.next({
         values,
@@ -1171,25 +1182,20 @@ export function createFormControl<
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
-      isDirty: keepStateOptions.keepDirty
-        ? _formState.isDirty
-        : keepStateOptions.keepDefaultValues
-        ? !deepEqual(formValues, _defaultValues)
-        : false,
-      isSubmitted: keepStateOptions.keepIsSubmitted
-        ? _formState.isSubmitted
-        : false,
-      dirtyFields: keepStateOptions.keepDirty
-        ? _formState.dirtyFields
-        : ((keepStateOptions.keepDefaultValues && formValues
-            ? Object.entries(formValues).reduce(
-                (previous, [key, value]) => ({
-                  ...previous,
-                  [key]: value !== get(_defaultValues, key),
-                }),
-                {},
-              )
-            : {}) as FieldNamesMarkedBoolean<TFieldValues>),
+      isDirty:
+        keepStateOptions.keepDirty || keepStateOptions.keepDirtyValues
+          ? _formState.isDirty
+          : !!(
+              keepStateOptions.keepDefaultValues &&
+              !deepEqual(formValues, _defaultValues)
+            ),
+      isSubmitted: !!keepStateOptions.keepIsSubmitted,
+      dirtyFields:
+        keepStateOptions.keepDirty || keepStateOptions.keepDirtyValues
+          ? _formState.dirtyFields
+          : keepStateOptions.keepDefaultValues && formValues
+          ? getDirtyFields(_defaultValues, formValues)
+          : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : ({} as FieldNamesMarkedBoolean<TFieldValues>),
