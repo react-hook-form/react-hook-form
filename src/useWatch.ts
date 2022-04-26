@@ -18,6 +18,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
+console.log("TEST")
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
