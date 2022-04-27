@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -17,6 +17,7 @@ import {
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
+import { set } from './utils';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
@@ -65,6 +66,18 @@ export function useController<
     control,
     name,
   });
+
+  const defaultValueRef = useRef(props.defaultValue);
+
+  useEffect(() => {
+    // Set the defaultValue only if there is no already defined one
+    if (
+      control._defaultValues[name] === undefined &&
+      defaultValueRef.current !== undefined
+    ) {
+      set(control._defaultValues, name, defaultValueRef.current);
+    }
+  }, [control, name]);
 
   const _registerProps = React.useRef(
     control.register(name, {

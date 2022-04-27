@@ -295,6 +295,86 @@ describe('useController', () => {
     );
   });
 
+  it('should not be dirty when initializing field with controller defaultValue', async () => {
+    const App = () => {
+      const {
+        control,
+        formState: { isDirty },
+      } = useForm();
+
+      return (
+        <div>
+          <p>Form dirty: {isDirty.toString()}</p>
+          <Controller
+            render={({ field }) => {
+              return <input {...field} />;
+            }}
+            control={control}
+            name="test"
+            defaultValue="luo"
+          />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox');
+
+    expect(input).toHaveValue('luo');
+    expect(screen.getByText('Form dirty: false')).toBeVisible();
+
+    fireEvent.change(input, { target: { value: 'Bill' } });
+
+    expect(screen.getByText('Form dirty: true')).toBeVisible();
+
+    fireEvent.change(input, { target: { value: 'luo' } });
+
+    expect(screen.getByText('Form dirty: false')).toBeVisible();
+  });
+
+  it('should be dirty when initializing field with controller and useForm defaultValue', async () => {
+    const App = () => {
+      const {
+        control,
+        formState: { isDirty },
+      } = useForm({
+        defaultValues: {
+          test: 'Bill',
+        },
+      });
+
+      return (
+        <div>
+          <p>Form dirty: {isDirty.toString()}</p>
+          <Controller
+            render={({ field }) => {
+              return <input {...field} />;
+            }}
+            control={control}
+            name="test"
+            defaultValue="luo"
+          />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox');
+
+    expect(input).toHaveValue('Bill');
+    expect(screen.getByText('Form dirty: false')).toBeVisible();
+
+    fireEvent.change(input, { target: { value: 'luo' } });
+
+    expect(screen.getByText('Form dirty: true')).toBeVisible();
+
+    fireEvent.change(input, { target: { value: 'Bill' } });
+
+    expect(screen.getByText('Form dirty: false')).toBeVisible();
+  });
+
   it('should be able to update input value without ref', () => {
     const App = () => {
       const { control, setValue } = useForm();
