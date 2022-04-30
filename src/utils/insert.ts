@@ -1,6 +1,7 @@
 import convertToArrayPayload from './convertToArrayPayload';
 
 let test = 'Test'
+console.log(test)
 console.log('test')
 
 export default function insert<T>(data: T[], index: number): (T | undefined)[];
