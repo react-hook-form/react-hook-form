@@ -4,7 +4,6 @@
         </a>
 </div>
 
-
 https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-9d79-ffa3fafa498a.mp4
 
 <div align="center">
@@ -72,6 +71,9 @@ function App() {
 
 Thanks go to these kind and lovely sponsors (companies and individuals)!
 
+<a href="https://wantedlyinc.com/" target="_blank">
+  <img src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" width="94" height="94" />
+</a>
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="94" height="94" />
 </a>
