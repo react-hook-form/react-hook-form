@@ -1716,4 +1716,50 @@ describe('useForm', () => {
     screen.getByText('isValidating: false');
     screen.getByText('stateValidation: false');
   });
+
+  it('should trigger useEffect deps with errors update', async () => {
+    let called = 0;
+
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm({
+        mode: 'onChange',
+      });
+
+      React.useEffect(() => {
+        called++;
+      }, [errors]);
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('name', { required: true })} />
+          {errors.name && <p>error</p>}
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(screen.getByText('error')).toBeInTheDocument();
+
+      expect(called).toBe(2);
+    });
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test' },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('error')).not.toBeInTheDocument();
+
+      expect(called).toBe(3);
+    });
+  });
 });
