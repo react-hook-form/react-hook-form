@@ -1,5 +1,7 @@
 import convertToArrayPayload from './convertToArrayPayload';
 
+let test = 'Test'
+
 export default function insert<T>(data: T[], index: number): (T | undefined)[];
 export default function insert<T>(
   data: T[],
