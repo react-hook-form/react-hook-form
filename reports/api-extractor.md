@@ -325,6 +325,7 @@ export function join<TFieldValues, TPathString extends PathString, TChildFieldVa
 
 // @public (undocumented)
 export type KeepStateOptions = Partial<{
+    keepDirtyValues: boolean;
     keepErrors: boolean;
     keepDirty: boolean;
     keepValues: boolean;
@@ -789,7 +790,7 @@ export type WatchObserver<TFieldValues> = (value: DeepPartial<TFieldValues>, inf
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:388:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:389:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/path/branded.ts:27:3 - (ae-forgotten-export) The symbol "AccessPattern" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
