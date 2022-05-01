@@ -111,7 +111,7 @@
   },
   "resolutions": {
     "async": "^3.2.2"
-  }
+  },
   "bundlewatch": {
     "files": [
       {
