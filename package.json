@@ -109,6 +109,9 @@
     "tsd": "^0.19.1",
     "typescript": "^4.6.2"
   },
+  "resolutions": {
+    "async": "^3.2.2"
+  },
   "bundlewatch": {
     "files": [
       {
