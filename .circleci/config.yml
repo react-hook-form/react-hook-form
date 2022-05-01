@@ -10,3 +10,4 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: yarn bundlesize
+      - run: yarn bundlewatch
