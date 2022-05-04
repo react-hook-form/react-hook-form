@@ -82,7 +82,7 @@ describe('clone', () => {
     expect(copy.items).toEqual([2]);
   });
 
-  it('should skip clone if a node is instance of Blob', () => {
+  it('should skip clone if a node is instance of function', () => {
     function testFunction() {}
 
     const data = {
@@ -105,6 +105,7 @@ describe('clone', () => {
         deep: {
           test: 'deep-string',
         },
+        testFunction,
       },
       other: 'string',
     });
