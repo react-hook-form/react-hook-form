@@ -101,7 +101,6 @@ describe('clone', () => {
 
     expect(copy).toEqual({
       test: {
-        testFunction,
         test: 'inner-string',
         deep: {
           test: 'deep-string',

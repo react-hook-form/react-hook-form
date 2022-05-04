@@ -1,3 +1,4 @@
+import isFunction from './isFunction';
 import isObject from './isObject';
 
 export default function cloneObject<T>(data: T): T {
@@ -13,7 +14,9 @@ export default function cloneObject<T>(data: T): T {
   } else if (isArray || isObject(data)) {
     copy = isArray ? [] : {};
     for (const key in data) {
-      copy[key] = cloneObject(data[key]);
+      if (!isFunction(data[key])) {
+        copy[key] = cloneObject(data[key]);
+      }
     }
   } else {
     return data;
