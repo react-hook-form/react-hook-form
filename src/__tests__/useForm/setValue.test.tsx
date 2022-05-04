@@ -74,7 +74,6 @@ describe('setValue', () => {
       0: file,
       1: file,
       length: 2,
-      item: () => file,
     } as any as FileList;
 
     act(() => result.current.setValue('test', fileList));
