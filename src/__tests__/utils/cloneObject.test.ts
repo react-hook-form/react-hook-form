@@ -93,6 +93,7 @@ describe('clone', () => {
           test: 'deep-string',
         },
       },
+      testFunction,
       other: 'string',
     };
 
@@ -107,6 +108,7 @@ describe('clone', () => {
         },
         testFunction,
       },
+      testFunction,
       other: 'string',
     });
   });
