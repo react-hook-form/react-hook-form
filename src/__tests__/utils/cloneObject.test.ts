@@ -82,19 +82,29 @@ describe('clone', () => {
     expect(copy.items).toEqual([2]);
   });
 
-  it('should skip clone if a node contains function', () => {
+  it('should skip clone if a node is instance of Blob', () => {
     function testFunction() {}
 
-    const test = {
-      data: {
+    const data = {
+      test: {
         testFunction,
+        test: 'inner-string',
+        deep: {
+          test: 'deep-string',
+        },
       },
       other: 'string',
     };
 
-    expect(cloneObject(test)).toEqual({
-      data: {
-        testFunction,
+    const copy = cloneObject(data);
+    data.test.deep.test = 'changed-deep-string';
+
+    expect(copy).toEqual({
+      test: {
+        test: 'inner-string',
+        deep: {
+          test: 'deep-string',
+        },
       },
       other: 'string',
     });
