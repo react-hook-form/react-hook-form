@@ -97,7 +97,7 @@ describe('useController', () => {
 
     expect(screen.getByText('isTouched')).toBeVisible();
 
-    expect(renderCounter).toEqual([3, 3]);
+    expect(renderCounter).toEqual([1, 3]);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -107,7 +107,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([5, 5]);
+    expect(renderCounter).toEqual([2, 5]);
   });
 
   describe('checkbox', () => {

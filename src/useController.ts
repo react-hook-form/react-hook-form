@@ -5,6 +5,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
 import { EVENTS } from './constants';
 import {
+  ControllerFieldState,
   Field,
   FieldPath,
   FieldPathValue,
@@ -140,6 +141,22 @@ export function useController<
       ),
     },
     formState,
-    fieldState: control.getFieldState(name, formState),
+    fieldState: Object.defineProperties(
+      {},
+      {
+        invalid: {
+          get: () => !!get(formState.errors, name),
+        },
+        isDirty: {
+          get: () => !!get(formState.dirtyFields, name),
+        },
+        isTouched: {
+          get: () => !!get(formState.touchedFields, name),
+        },
+        error: {
+          get: () => get(formState.errors, name),
+        },
+      },
+    ) as ControllerFieldState,
   };
 }
