@@ -456,7 +456,7 @@ describe('useFieldArray', () => {
             test: [],
           },
         });
-        const { fields, remove } = useFieldArray({
+        const { fields } = useFieldArray({
           name: 'test',
           control,
         });
@@ -468,9 +468,6 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <fieldset key={item.id}>
                 <input {...register(`test.${i}.value` as const)} />
-                <button type={'button'} onClick={() => remove(i)}>
-                  delete
-                </button>
               </fieldset>
             ))}
           </form>
@@ -480,6 +477,72 @@ describe('useFieldArray', () => {
       render(<App />);
 
       expect(screen.queryByText('minLength')).not.toBeInTheDocument();
+    });
+
+    it('should update error when user action corrects it', async () => {
+      const App = () => {
+        const {
+          register,
+          control,
+          formState: { errors },
+        } = useForm<{
+          test: { value: string }[];
+        }>({
+          resolver: (data) => {
+            if (data.test.length > 1) {
+              return {
+                values: data,
+                errors: {},
+              };
+            } else {
+              return {
+                values: data,
+                errors: {
+                  test: {
+                    type: 'test',
+                    message: 'minLength',
+                  },
+                },
+              };
+            }
+          },
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {errors.test && <p>minLength</p>}
+            {fields.map((item, i) => (
+              <fieldset key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+              </fieldset>
+            ))}
+            <button type={'button'} onClick={() => append({})}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() =>
+        expect(screen.queryByText('minLength')).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() =>
+        expect(screen.queryByText('minLength')).not.toBeInTheDocument(),
+      );
     });
   });
 
