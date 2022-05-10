@@ -972,7 +972,7 @@ useWatch({
 
   - `valueAsDate`
   - `valueAsNumber`
-  - `setValue`
+  - `setValueAs`
 
 ```tsx
 register({
