@@ -1,5 +1,31 @@
 # Changelog
 
+## [7.31.0] - 2022-5-11
+
+## Added
+
+- new: `reset` optional prop: `keepDirtyValues`
+
+```tsx
+reset(
+  {
+    firstName: 'bill', // if firstName is dirty then the value will be retained
+    lastName: 'luo',
+  },
+  { keepDirtyValues: true }, // keep any changed field
+);
+```
+
+## Changed
+
+- `useFieldArray` auto-correct field array errors on user action
+
+```tsx
+const { append } = useFieldArray();
+
+append({ data: '' }); // will auto correct existing field array errors if any
+```
+
 ## [7.30.0] - 2022-4-17
 
 ## Changed
