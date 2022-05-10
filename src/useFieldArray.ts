@@ -304,10 +304,11 @@ export function useFieldArray<
     isWatched(name, control._names) && control._subjects.state.next({});
 
     if (_actioned.current) {
+      const existingError = get(control._formState.errors, name);
+
       if (control._options.resolver) {
         control._executeSchema([name]).then((result) => {
           const error = get(result.errors, name);
-          const existingError = get(control._formState.errors, name);
 
           if (
             existingError ? !error && existingError.type : error && error.type
@@ -339,7 +340,7 @@ export function useFieldArray<
             true,
           ).then(
             (error) =>
-              !isEmptyObject(error) &&
+              (existingError ? isEmptyObject(error) : !isEmptyObject(error)) &&
               control._subjects.state.next({
                 errors: updateFieldArrayRootError(
                   control._formState.errors,
