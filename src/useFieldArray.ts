@@ -19,6 +19,7 @@ import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
 import set from './utils/set';
 import swapArrayAt from './utils/swap';
+import unset from './utils/unset';
 import updateAt from './utils/update';
 import { VALIDATION_MODE } from './constants';
 import {
@@ -306,9 +307,14 @@ export function useFieldArray<
       if (control._options.resolver) {
         control._executeSchema([name]).then((result) => {
           const error = get(result.errors, name);
+          const existingError = get(control._formState.errors, name);
 
-          if (error && error.type && !get(control._formState.errors, name)) {
-            set(control._formState.errors, name, error);
+          if (
+            existingError ? !error && existingError.type : error && error.type
+          ) {
+            error
+              ? set(control._formState.errors, name, error)
+              : unset(control._formState.errors, name);
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,
             });
