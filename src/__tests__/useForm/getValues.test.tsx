@@ -204,6 +204,7 @@ describe('getValues', () => {
             firstName: 'test',
             lastName: 'test',
             time: new Date('1999-09-09'),
+            file: new File([''], 'filename'),
           },
         },
       });
@@ -233,6 +234,7 @@ describe('getValues', () => {
         firstName: 'test',
         lastName: 'test',
         time: new Date('1999-09-09'),
+        file: new File([''], 'filename'),
       },
     });
 

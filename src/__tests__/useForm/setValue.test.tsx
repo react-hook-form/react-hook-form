@@ -63,6 +63,33 @@ describe('setValue', () => {
     });
   });
 
+  it('should set value of file input correctly if value is FileList', async () => {
+    const { result } = renderHook(() => useForm<{ test: FileList }>());
+
+    result.current.register('test');
+
+    const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
+    const file = blob as File;
+    const fileList = {
+      0: file,
+      1: file,
+      length: 2,
+    } as any as FileList;
+
+    act(() => result.current.setValue('test', fileList));
+
+    await act(async () => {
+      await result.current.handleSubmit((data) => {
+        expect(data).toEqual({
+          test: fileList,
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+  });
+
   it('should set value of multiple checkbox input correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string[] }>());
 
