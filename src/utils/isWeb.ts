@@ -1,5 +1,5 @@
-const STR_UNDEFINED = 'undefined';
+const UNDEFINED = 'undefined';
 
-export default typeof window !== STR_UNDEFINED &&
-  typeof window.HTMLElement !== STR_UNDEFINED &&
-  typeof document !== STR_UNDEFINED;
+export default typeof window !== UNDEFINED &&
+  typeof window.HTMLElement !== UNDEFINED &&
+  typeof document !== UNDEFINED;
