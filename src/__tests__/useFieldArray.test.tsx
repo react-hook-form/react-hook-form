@@ -526,7 +526,7 @@ describe('useFieldArray', () => {
           <form>
             {errors.test && <p>minLength</p>}
             {fields.map((item, i) => (
-              <fieldset key={item.id}>
+              <fieldset key={item.key}>
                 <input {...register(`test.${i}.value` as const)} />
               </fieldset>
             ))}
