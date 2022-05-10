@@ -1037,10 +1037,7 @@ export function createFormControl<
           await executeBuildInValidation(_fields);
         }
 
-        if (
-          isEmptyObject(_formState.errors) &&
-          Object.keys(_formState.errors).every((name) => get(fieldValues, name))
-        ) {
+        if (isEmptyObject(_formState.errors)) {
           _subjects.state.next({
             errors: {} as FieldErrors<TFieldValues>,
             isSubmitting: true,
