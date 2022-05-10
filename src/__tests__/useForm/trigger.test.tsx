@@ -846,10 +846,17 @@ describe('trigger', () => {
       const renderCount = React.useRef(0);
       renderCount.current += 1;
 
-      useController({
+      const {
+        fieldState: { error },
+      } = useController({
         name,
         control,
+        rules: {
+          required: true,
+        },
       });
+
+      error;
 
       return <p>{renderCount.current}</p>;
     }
