@@ -258,6 +258,12 @@ resetField('test', {
 });
 ```
 
+## Changed
+
+- `useController` will return shallow clone value for the following data type on each rerender
+  - object: `{... value}`
+  - array: `[...value]`
+
 ## [7.18.1] - 2021-11-02
 
 - revert `FieldPathWithValue`
