@@ -987,11 +987,9 @@ export function createFormControl<
               ...(radioOrCheckbox
                 ? {
                     refs: [
-                      ...refs.filter(live),
+                      ...refs,
                       fieldRef,
-                      ...(!!Array.isArray(get(_defaultValues, name))
-                        ? [{}]
-                        : []),
+                      ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
                     ],
                     ref: { type: fieldRef.type, name },
                   }
