@@ -481,6 +481,13 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
       height="45"
     />
   </a>
+  <a href="https://github.com/sumant-k">
+    <img
+      src="https://avatars.githubusercontent.com/u/42692074?v=4"
+      width="45"
+      height="45"
+    />
+  </a>
 </p>
 
 ### Backers
