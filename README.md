@@ -488,6 +488,13 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
       height="45"
     />
   </a>
+  <a href="https://github.com/reichhartd">
+    <img
+      src="https://avatars.githubusercontent.com/u/34721312?v=4"
+      width="45"
+      height="45"
+    />
+  </a>
 </p>
 
 ### Backers
