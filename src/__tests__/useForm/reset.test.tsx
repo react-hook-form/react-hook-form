@@ -1367,7 +1367,8 @@ describe('reset', () => {
 
     expect(result.current.formState.isSubmitted).toBeFalsy();
 
-    await act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+    act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+
     expect(result.current.formState.isSubmitted).toBeFalsy();
 
     result.current.register('test');
@@ -1385,7 +1386,9 @@ describe('reset', () => {
     });
 
     expect(result.current.formState.isSubmitted).toBeTruthy();
-    await act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+
+    act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+
     expect(result.current.formState.isSubmitted).toBeTruthy();
   });
 });
