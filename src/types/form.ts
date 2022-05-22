@@ -697,10 +697,10 @@ export type BatchFieldArrayUpdate = <
   args?: Partial<{
     argA: unknown;
     argB: unknown;
+    value?: boolean;
+    error?: boolean;
+    dirty?: boolean;
   }>,
-  shouldSetValue?: boolean,
-  shouldUpdateFieldsAndErrors?: boolean,
-  shouldDirty?: boolean,
 ) => void;
 
 export type Control<

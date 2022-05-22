@@ -155,17 +155,10 @@ export function useFieldArray<
     ids.current = appendAt(ids.current, appendValue.map(generateId));
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
-      name,
-      updatedFieldArrayValues,
-      appendAt,
-      {
-        argA: fillEmptyArray(value),
-      },
-      false,
-      false,
-      options && options.shouldDirty,
-    );
+    control._updateFieldArray(name, updatedFieldArrayValues, appendAt, {
+      argA: fillEmptyArray(value),
+      dirty: options && options.shouldDirty,
+    });
   };
 
   const prepend = (
@@ -183,17 +176,10 @@ export function useFieldArray<
     ids.current = prependAt(ids.current, prependValue.map(generateId));
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
-      name,
-      updatedFieldArrayValues,
-      prependAt,
-      {
-        argA: fillEmptyArray(value),
-      },
-      false,
-      false,
-      options && options.shouldDirty,
-    );
+    control._updateFieldArray(name, updatedFieldArrayValues, prependAt, {
+      argA: fillEmptyArray(value),
+      dirty: options && options.shouldDirty,
+    });
   };
 
   const remove = (index?: number | number[]) => {
@@ -225,18 +211,11 @@ export function useFieldArray<
     ids.current = insertAt(ids.current, index, insertValue.map(generateId));
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
-      name,
-      updatedFieldArrayValues,
-      insertAt,
-      {
-        argA: index,
-        argB: fillEmptyArray(value),
-      },
-      false,
-      false,
-      options && options.shouldDirty,
-    );
+    control._updateFieldArray(name, updatedFieldArrayValues, insertAt, {
+      argA: index,
+      argB: fillEmptyArray(value),
+      dirty: options && options.shouldDirty,
+    });
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -245,16 +224,11 @@ export function useFieldArray<
     swapArrayAt(ids.current, indexA, indexB);
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
-      name,
-      updatedFieldArrayValues,
-      swapArrayAt,
-      {
-        argA: indexA,
-        argB: indexB,
-      },
-      false,
-    );
+    control._updateFieldArray(name, updatedFieldArrayValues, swapArrayAt, {
+      argA: indexA,
+      argB: indexB,
+      value: false,
+    });
   };
 
   const move = (from: number, to: number) => {
@@ -263,16 +237,11 @@ export function useFieldArray<
     moveArrayAt(ids.current, from, to);
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
-      name,
-      updatedFieldArrayValues,
-      moveArrayAt,
-      {
-        argA: from,
-        argB: to,
-      },
-      false,
-    );
+    control._updateFieldArray(name, updatedFieldArrayValues, moveArrayAt, {
+      argA: from,
+      argB: to,
+      value: false,
+    });
   };
 
   const update = (
@@ -290,17 +259,11 @@ export function useFieldArray<
     );
     updateValues(updatedFieldArrayValues);
     setFields([...updatedFieldArrayValues]);
-    control._updateFieldArray(
-      name,
-      updatedFieldArrayValues,
-      updateAt,
-      {
-        argA: index,
-        argB: updateValue,
-      },
-      true,
-      false,
-    );
+    control._updateFieldArray(name, updatedFieldArrayValues, updateAt, {
+      argA: index,
+      argB: updateValue,
+      error: false,
+    });
   };
 
   const replace = (
@@ -316,9 +279,9 @@ export function useFieldArray<
       name,
       [...updatedFieldArrayValues],
       <T>(data: T): T => data,
-      {},
-      true,
-      false,
+      {
+        error: false,
+      },
     );
   };
 

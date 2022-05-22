@@ -28,7 +28,10 @@ export { Auto }
 export type BatchFieldArrayUpdate = <T extends Function, TFieldValues, TFieldArrayName extends PathString>(name: Auto.FieldArrayPath<TFieldValues, TFieldArrayName>, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], method?: T, args?: Partial<{
     argA: unknown;
     argB: unknown;
-}>, shouldSetValue?: boolean, shouldUpdateFieldsAndErrors?: boolean) => void;
+    value?: boolean;
+    error?: boolean;
+    dirty?: boolean;
+}>) => void;
 
 declare namespace Branded {
     export {
@@ -172,6 +175,7 @@ export type FieldArray<TFieldValues extends FieldValues, TFieldArrayName extends
 // @public
 export type FieldArrayMethodProps = {
     shouldFocus?: boolean;
+    shouldDirty?: boolean;
     focusIndex?: number;
     focusName?: string;
 };
