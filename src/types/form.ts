@@ -700,6 +700,7 @@ export type BatchFieldArrayUpdate = <
   }>,
   shouldSetValue?: boolean,
   shouldUpdateFieldsAndErrors?: boolean,
+  shouldDirty?: boolean,
 ) => void;
 
 export type Control<

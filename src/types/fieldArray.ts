@@ -39,6 +39,7 @@ export type FieldArray<
  */
 export type FieldArrayMethodProps = {
   shouldFocus?: boolean;
+  shouldDirty?: boolean;
   focusIndex?: number;
   focusName?: string;
 };

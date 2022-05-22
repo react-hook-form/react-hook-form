@@ -181,6 +181,7 @@ export function createFormControl<
     args,
     shouldSetValues = true,
     shouldUpdateFieldsAndState = true,
+    shouldDirty,
   ) => {
     if (args && method) {
       _stateFlags.action = true;
@@ -216,7 +217,7 @@ export function createFormControl<
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
-      if (_proxyFormState.dirtyFields) {
+      if (_proxyFormState.dirtyFields && shouldDirty) {
         _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
       }
 
