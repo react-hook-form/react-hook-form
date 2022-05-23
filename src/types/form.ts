@@ -486,7 +486,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
  * // Update a single field
  * setValue('name', 'value', {
  *   shouldValidate: true, // trigger validation
- *   shouldTOuch: true, // update touched fields form state
+ *   shouldTouch: true, // update touched fields form state
  *   shouldDirty: true, // update dirty and dirty fields form state
  * });
  *
