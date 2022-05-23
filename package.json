@@ -19,7 +19,8 @@
     "./package.json": "./package.json",
     ".": {
       "import": "./dist/index.esm.mjs",
-      "require": "./dist/index.cjs.js"
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
