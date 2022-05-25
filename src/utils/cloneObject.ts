@@ -1,5 +1,6 @@
 import isFunction from './isFunction';
 import isObject from './isObject';
+import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
   let copy: any;
@@ -9,9 +10,9 @@ export default function cloneObject<T>(data: T): T {
     copy = new Date(data);
   } else if (data instanceof Set) {
     copy = new Set(data);
-  } else if (globalThis.Blob && data instanceof Blob) {
+  } else if (isWeb && data instanceof Blob) {
     copy = data;
-  } else if (globalThis.FileList && data instanceof FileList) {
+  } else if (isWeb && data instanceof FileList) {
     copy = data;
   } else if (isArray || isObject(data)) {
     copy = isArray ? [] : {};
