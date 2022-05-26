@@ -4,6 +4,7 @@ describe('isObject', () => {
   it('should return true when value is an object', () => {
     expect(isObject({})).toBeTruthy();
     expect(isObject({ foo: 'bar' })).toBeTruthy();
+    expect(isObject(new Blob())).toBeTruthy();
   });
 
   it('should return false when value is not an object or is null', () => {

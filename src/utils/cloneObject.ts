@@ -10,11 +10,10 @@ export default function cloneObject<T>(data: T): T {
     copy = new Date(data);
   } else if (data instanceof Set) {
     copy = new Set(data);
-  } else if (isWeb && data instanceof Blob) {
-    copy = data;
-  } else if (isWeb && data instanceof FileList) {
-    copy = data;
-  } else if (isArray || isObject(data)) {
+  } else if (
+    !(isWeb && (data instanceof Blob || data instanceof FileList)) &&
+    (isArray || isObject(data))
+  ) {
     copy = isArray ? [] : {};
     for (const key in data) {
       copy[key] = isFunction(data[key]) ? data[key] : cloneObject(data[key]);
