@@ -16,5 +16,6 @@ describe('isObject', () => {
     expect(isObject([])).toBeFalsy();
     expect(isObject(['foo', 'bar'])).toBeFalsy();
     expect(isObject(() => null)).toBeFalsy();
+    expect(isObject(new Blob())).toBeFalsy();
   });
 });
