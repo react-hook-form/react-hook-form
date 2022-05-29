@@ -90,6 +90,9 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
 <a href="https://www.feathery.io/" target="_blank">
   <img src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" width="94" height="94" />
 </a>
+<a href="https://getform.io/" target="_blank">
+  <img src="https://images.opencollective.com/getformio2/3c978c8/avatar/256.png" width="94" height="94" />
+</a>
 
 <p>
   <a href="https://github.com/sayav">
