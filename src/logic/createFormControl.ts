@@ -150,9 +150,9 @@ export function createFormControl<
 
   const debounce =
     <T extends Function>(callback: T) =>
-    (...args: any) => {
+    (wait: number) => {
       clearTimeout(timer);
-      timer = window.setTimeout(() => callback(...args), props.delayError);
+      timer = window.setTimeout(() => callback(), wait);
     };
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
@@ -334,8 +334,9 @@ export function createFormControl<
       _proxyFormState.isValid && _formState.isValid !== isValid;
 
     if (props.delayError && error) {
-      delayErrorCallback = delayErrorCallback || debounce(updateErrors);
-      delayErrorCallback(name, error);
+      delayErrorCallback =
+        delayErrorCallback || debounce(() => updateErrors(name, error));
+      delayErrorCallback(props.delayError);
     } else {
       clearTimeout(timer);
       error
@@ -675,6 +676,7 @@ export function createFormControl<
 
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
+        delayErrorCallback && delayErrorCallback(0);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }

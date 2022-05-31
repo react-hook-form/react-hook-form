@@ -78,10 +78,7 @@ export type ChangeHandler = (event: {
   type?: any;
 }) => Promise<void | boolean>;
 
-export type DelayCallback = (
-  name: InternalFieldName,
-  error: FieldError,
-) => void;
+export type DelayCallback = (wait: number) => void;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
