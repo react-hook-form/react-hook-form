@@ -149,10 +149,10 @@ export function createFormControl<
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
-    <T extends Function>(callback: T, wait: number) =>
+    <T extends Function>(callback: T) =>
     (...args: any) => {
       clearTimeout(timer);
-      timer = window.setTimeout(() => callback(...args), wait);
+      timer = window.setTimeout(() => callback(...args), props.delayError);
     };
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
@@ -334,8 +334,7 @@ export function createFormControl<
       _proxyFormState.isValid && _formState.isValid !== isValid;
 
     if (props.delayError && error) {
-      delayErrorCallback =
-        delayErrorCallback || debounce(updateErrors, props.delayError);
+      delayErrorCallback = delayErrorCallback || debounce(updateErrors);
       delayErrorCallback(name, error);
     } else {
       clearTimeout(timer);
