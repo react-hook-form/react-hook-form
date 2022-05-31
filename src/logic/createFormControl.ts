@@ -152,7 +152,7 @@ export function createFormControl<
     <T extends Function>(callback: T) =>
     (wait: number) => {
       clearTimeout(timer);
-      timer = window.setTimeout(() => callback(), wait);
+      timer = window.setTimeout(callback, wait);
     };
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
