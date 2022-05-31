@@ -1,6 +1,7 @@
 export default (value: unknown): value is HTMLElement => {
-  const ElementClass =
-    (value as HTMLElement)?.ownerDocument?.defaultView?.HTMLElement ??
-    HTMLElement;
+  const owner = (value as HTMLElement).ownerDocument;
+  const ElementClass = owner.defaultView
+    ? owner.defaultView.HTMLElement
+    : HTMLElement;
   return value instanceof ElementClass;
 };
