@@ -320,7 +320,6 @@ export function createFormControl<
   };
 
   const shouldRenderByError = async (
-    shouldSkipRender: boolean,
     name: InternalFieldName,
     isValid: boolean,
     error?: FieldError,
@@ -346,10 +345,9 @@ export function createFormControl<
     }
 
     if (
-      ((error ? !deepEqual(previousFieldError, error) : previousFieldError) ||
-        !isEmptyObject(fieldState) ||
-        shouldUpdateValid) &&
-      !shouldSkipRender
+      (error ? !deepEqual(previousFieldError, error) : previousFieldError) ||
+      !isEmptyObject(fieldState) ||
+      shouldUpdateValid
     ) {
       const updatedFormState = {
         ...fieldState,
@@ -747,7 +745,7 @@ export function createFormControl<
           field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
         );
 
-      shouldRenderByError(false, name, isValid, error, fieldState);
+      shouldRenderByError(name, isValid, error, fieldState);
     }
   };
 
