@@ -682,6 +682,43 @@ describe('formState', () => {
       expect(await screen.findByText(message)).toBeVisible();
     });
 
+    it('should flush out error when user switch input', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+        });
+
+        return (
+          <div>
+            <input
+              {...register('test', {
+                maxLength: 4,
+              })}
+            />
+            {errors.test && <p>{message}</p>}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123456',
+        },
+      });
+
+      fireEvent.blur(screen.getByRole('textbox'));
+
+      expect(await screen.findByText(message)).toBeVisible();
+    });
+
     it('should only show error after 500ms with register and render formState instantly', async () => {
       const App = () => {
         const {

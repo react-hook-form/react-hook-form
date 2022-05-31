@@ -149,10 +149,10 @@ export function createFormControl<
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
-    <T extends Function>(callback: T, wait: number) =>
-    (...args: any) => {
+    <T extends Function>(callback: T) =>
+    (wait: number) => {
       clearTimeout(timer);
-      timer = window.setTimeout(() => callback(...args), wait);
+      timer = window.setTimeout(callback, wait);
     };
 
   const _updateValid = async (shouldSkipRender?: boolean) => {
@@ -320,7 +320,6 @@ export function createFormControl<
   };
 
   const shouldRenderByError = async (
-    shouldSkipRender: boolean,
     name: InternalFieldName,
     isValid: boolean,
     error?: FieldError,
@@ -336,8 +335,8 @@ export function createFormControl<
 
     if (props.delayError && error) {
       delayErrorCallback =
-        delayErrorCallback || debounce(updateErrors, props.delayError);
-      delayErrorCallback(name, error);
+        delayErrorCallback || debounce(() => updateErrors(name, error));
+      delayErrorCallback(props.delayError);
     } else {
       clearTimeout(timer);
       error
@@ -346,10 +345,9 @@ export function createFormControl<
     }
 
     if (
-      ((error ? !deepEqual(previousFieldError, error) : previousFieldError) ||
-        !isEmptyObject(fieldState) ||
-        shouldUpdateValid) &&
-      !shouldSkipRender
+      (error ? !deepEqual(previousFieldError, error) : previousFieldError) ||
+      !isEmptyObject(fieldState) ||
+      shouldUpdateValid
     ) {
       const updatedFormState = {
         ...fieldState,
@@ -678,6 +676,7 @@ export function createFormControl<
 
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
+        delayErrorCallback && delayErrorCallback(0);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
@@ -747,7 +746,7 @@ export function createFormControl<
           field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
         );
 
-      shouldRenderByError(false, name, isValid, error, fieldState);
+      shouldRenderByError(name, isValid, error, fieldState);
     }
   };
 
