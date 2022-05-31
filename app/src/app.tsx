@@ -4,6 +4,7 @@ import AutoUnregister from './autoUnregister';
 import Basic from './basic';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
+import CrossFrameForm from './crossFrameForm';
 import SetError from './setError';
 import SetFocus from './setFocus';
 import SetValue from './setValue';
@@ -51,6 +52,7 @@ const App: React.FC = () => {
           path="/re-validate-mode/:mode/:reValidateMode"
           element={<ReValidateMode />}
         />
+        <Route path="/crossFrameForm" element={<CrossFrameForm />} />
         <Route path="/manual-register-form" element={<ManualRegisterForm />} />
         <Route path="/watch" element={<Watch />} />
         <Route
