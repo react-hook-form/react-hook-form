@@ -400,7 +400,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * @example
    * ```tsx
    * useEffect(() => {
-   *   const unsubscribe = watch((value) => {
+   *   const { unsubscribe } = watch((value) => {
    *     console.log(value);
    *   });
    *   return () => unsubscribe();
