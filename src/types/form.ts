@@ -141,11 +141,13 @@ export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
 
 export type RefCallBack = (instance: any) => void;
 
-export type UseFormRegisterReturn = {
+export type UseFormRegisterReturn<
+  TFieldName extends InternalFieldName = InternalFieldName,
+> = {
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
   ref: RefCallBack;
-  name: InternalFieldName;
+  name: TFieldName;
   min?: string | number;
   max?: string | number;
   maxLength?: number;
@@ -193,7 +195,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 >(
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
-) => UseFormRegisterReturn;
+) => UseFormRegisterReturn<TFieldName>;
 
 export type SetFocusOptions = Partial<{
   shouldSelect: boolean;
