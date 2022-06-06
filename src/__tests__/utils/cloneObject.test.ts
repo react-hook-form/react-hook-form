@@ -90,6 +90,7 @@ describe('clone', () => {
         testFunction,
         test: 'inner-string',
         deep: {
+          testFunction,
           test: 'deep-string',
         },
       },
@@ -104,7 +105,8 @@ describe('clone', () => {
       test: {
         test: 'inner-string',
         deep: {
-          test: 'deep-string',
+          test: 'changed-deep-string',
+          testFunction,
         },
         testFunction,
       },

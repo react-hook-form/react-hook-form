@@ -16,7 +16,11 @@ export default function cloneObject<T>(data: T): T {
   ) {
     copy = isArray ? [] : {};
     for (const key in data) {
-      copy[key] = isFunction(data[key]) ? data[key] : cloneObject(data[key]);
+      if (isFunction(data[key])) {
+        copy = data;
+        break;
+      }
+      copy[key] = cloneObject(data[key]);
     }
   } else {
     return data;
