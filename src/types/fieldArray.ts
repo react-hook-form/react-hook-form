@@ -95,7 +95,7 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
  * ```
  */
 export type UseFieldArrayPrepend<
-  TFieldValues,
+  TFieldValues extends FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
@@ -126,7 +126,7 @@ export type UseFieldArrayPrepend<
  * ```
  */
 export type UseFieldArrayAppend<
-  TFieldValues,
+  TFieldValues extends FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
@@ -179,7 +179,7 @@ export type UseFieldArrayRemove = (index?: number | number[]) => void;
  * ```
  */
 export type UseFieldArrayInsert<
-  TFieldValues,
+  TFieldValues extends FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   index: number,
@@ -210,7 +210,7 @@ export type UseFieldArrayInsert<
  * ```
  */
 export type UseFieldArrayUpdate<
-  TFieldValues,
+  TFieldValues extends FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   index: number,
@@ -236,7 +236,7 @@ export type UseFieldArrayUpdate<
  * ```
  */
 export type UseFieldArrayReplace<
-  TFieldValues,
+  TFieldValues extends FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:

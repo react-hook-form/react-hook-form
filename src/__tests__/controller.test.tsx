@@ -8,13 +8,13 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, NestedValue } from '../types';
+import { ControllerRenderProps, FieldValues, NestedValue } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
-function Input<TFieldValues>({
+function Input<TFieldValues extends FieldValues>({
   onChange,
   onBlur,
   placeholder,

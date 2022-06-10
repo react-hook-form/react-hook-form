@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {useForm} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 const FRAME_CONTENT = `
   <style>
@@ -24,7 +24,10 @@ const CrossFrameForm: React.FC = () => {
   const ref = React.useRef<HTMLIFrameElement>(null);
 
   function renderFormInFrame() {
-    ReactDOM.render(<FrameForm/>, ref.current!.contentDocument!.getElementById('inner-root'));
+    ReactDOM.render(
+      <FrameForm />,
+      ref.current!.contentDocument!.getElementById('inner-root'),
+    );
   }
 
   return (
@@ -38,36 +41,43 @@ const CrossFrameForm: React.FC = () => {
 };
 
 const FrameForm: React.FC = () => {
-  const {
-    register,
-    watch,
-  } = useForm();
+  const { register, watch } = useForm();
 
   const value = watch();
 
-  return <>
-    <form>
-      <label>
-        Free text
-        <input type="text" {...register('input', {required: true})}/>
-      </label>
+  return (
+    <>
+      <form>
+        <label>
+          Free text
+          <input type="text" {...register('input', { required: true })} />
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            value="a"
+            {...register('radio', { required: true })}
+          />
+          Choice A
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            value="b"
+            {...register('radio', { required: true })}
+          />
+          Choice B
+        </label>
+      </form>
 
       <label>
-        <input type="radio" value="a" {...register('radio', {required: true})}/>
-        Choice A
+        Form value
+        <pre>{JSON.stringify(value)}</pre>
       </label>
-
-      <label>
-        <input type="radio" value="b" {...register('radio', {required: true})}/>
-        Choice B
-      </label>
-    </form>
-
-    <label>
-      Form value
-      <pre>{JSON.stringify(value)}</pre>
-    </label>
-  </>;
-}
+    </>
+  );
+};
 
 export default CrossFrameForm;
