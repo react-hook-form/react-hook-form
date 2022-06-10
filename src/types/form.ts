@@ -137,7 +137,8 @@ export type KeepStateOptions = Partial<{
   keepSubmitCount: boolean;
 }>;
 
-export type SetFieldValue<TFieldValues extends FieldValues> = FieldValue<TFieldValues>;
+export type SetFieldValue<TFieldValues extends FieldValues> =
+  FieldValue<TFieldValues>;
 
 export type RefCallBack = (instance: any) => void;
 
@@ -791,7 +792,8 @@ export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
   exact?: boolean;
 }>;
 
-export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState<TFieldValues>;
+export type UseFormStateReturn<TFieldValues extends FieldValues> =
+  FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
