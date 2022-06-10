@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath } from '../types';
+import { Control, FieldPath, FieldValues } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -554,7 +554,7 @@ describe('useController', () => {
   it('should remount with input with current formValue', () => {
     let data: unknown;
 
-    function Input<T>({
+    function Input<T extends FieldValues>({
       control,
       name,
     }: {

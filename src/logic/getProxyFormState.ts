@@ -1,7 +1,7 @@
 import { VALIDATION_MODE } from '../constants';
-import { FormState, ReadFormState } from '../types';
+import { FieldValues, FormState, ReadFormState } from '../types';
 
-export default <TFieldValues>(
+export default <TFieldValues extends FieldValues>(
   formState: FormState<TFieldValues>,
   _proxyFormState: ReadFormState,
   localProxyFormState?: ReadFormState,

@@ -144,7 +144,7 @@ export function useWatch<
  * })
  * ```
  */
-export function useWatch<TFieldValues>(props?: UseWatchProps<TFieldValues>) {
+export function useWatch<TFieldValues extends FieldValues>(props?: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
   const {
     control = methods.control,

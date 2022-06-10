@@ -3,12 +3,13 @@ import {
   Field,
   FieldName,
   FieldRefs,
+  FieldValues,
   InternalFieldName,
 } from '../types';
 import { get } from '../utils';
 import set from '../utils/set';
 
-export default <TFieldValues>(
+export default <TFieldValues extends FieldValues>(
   fieldsNames: Set<InternalFieldName> | InternalFieldName[],
   _fields: FieldRefs,
   criteriaMode?: CriteriaMode,

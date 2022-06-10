@@ -584,7 +584,7 @@ export function createFormControl<
   const setValues = <
     T extends InternalFieldName,
     K extends SetFieldValue<TFieldValues>,
-    U,
+    U extends SetValueConfig,
   >(
     name: T,
     value: K,

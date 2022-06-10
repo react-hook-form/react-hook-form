@@ -112,7 +112,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
-export type FormState<TFieldValues> = {
+export type FormState<TFieldValues extends FieldValues> = {
   isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
@@ -137,7 +137,7 @@ export type KeepStateOptions = Partial<{
   keepSubmitCount: boolean;
 }>;
 
-export type SetFieldValue<TFieldValues> = FieldValue<TFieldValues>;
+export type SetFieldValue<TFieldValues extends FieldValues> = FieldValue<TFieldValues>;
 
 export type RefCallBack = (instance: any) => void;
 
@@ -674,7 +674,7 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(
   data?: TData,
 ) => boolean;
 
-export type FormStateSubjectRef<TFieldValues> = Subject<
+export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<
   Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
 >;
 
@@ -702,7 +702,7 @@ export type Names = {
 
 export type BatchFieldArrayUpdate = <
   T extends Function,
-  TFieldValues,
+  TFieldValues extends FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
@@ -751,7 +751,7 @@ export type Control<
   getFieldState: UseFormGetFieldState<TFieldValues>;
 };
 
-export type WatchObserver<TFieldValues> = (
+export type WatchObserver<TFieldValues extends FieldValues> = (
   value: UnpackNestedValue<DeepPartial<TFieldValues>>,
   info: {
     name?: FieldPath<TFieldValues>;
@@ -781,7 +781,7 @@ export type UseFormReturn<
   setFocus: UseFormSetFocus<TFieldValues>;
 };
 
-export type UseFormStateProps<TFieldValues> = Partial<{
+export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
   control?: Control<TFieldValues>;
   disabled?: boolean;
   name?:
@@ -791,7 +791,7 @@ export type UseFormStateProps<TFieldValues> = Partial<{
   exact?: boolean;
 }>;
 
-export type UseFormStateReturn<TFieldValues> = FormState<TFieldValues>;
+export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
