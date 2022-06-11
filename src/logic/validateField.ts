@@ -116,7 +116,7 @@ export default async <T extends NativeFieldValue>(
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNaN(inputValue as number)) {
+    if (!isNullOrUndefined(inputValue) && !isNaN(inputValue as number)) {
       const valueNumber =
         (ref as HTMLInputElement).valueAsNumber || +inputValue;
       if (!isNullOrUndefined(maxOutput.value)) {
