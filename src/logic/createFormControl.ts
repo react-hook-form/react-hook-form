@@ -126,7 +126,7 @@ export function createFormControl<
     array: new Set(),
     watch: new Set(),
   } as Names;
-  let delayErrorCallback: DelayCallback;
+  let delayErrorCallback: DelayCallback | null;
   let timer = 0;
   let validateFields: Record<InternalFieldName, number> = {};
   const _proxyFormState = {
@@ -339,6 +339,7 @@ export function createFormControl<
       delayErrorCallback(props.delayError);
     } else {
       clearTimeout(timer);
+      delayErrorCallback = null;
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
