@@ -119,6 +119,11 @@ const items: Item[] = [
     slugs: ['/setError'],
   },
   {
+    title: 'DelayError',
+    description: 'Form showing delay error',
+    slugs: ['/delayError'],
+  },
+  {
     title: 'setFocus',
     description: 'Form setFocus',
     slugs: ['/setFocus'],

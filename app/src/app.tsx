@@ -36,6 +36,7 @@ import Test from './test';
 import Welcome from './welcome';
 import { UseFormState } from './useFormState';
 import SetValueAsyncStrictMode from './setValueStrictMode';
+import { DelayError } from './delayError';
 import './style.css';
 
 const App: React.FC = () => {
@@ -60,6 +61,7 @@ const App: React.FC = () => {
           element={<BasicSchemaValidation />}
         />
         <Route path="/setError" element={<SetError />} />
+        <Route path="/delayError" element={<DelayError />} />
         <Route path="/setFocus" element={<SetFocus />} />
         <Route path="/setValueWithTrigger" element={<SetValueWithTrigger />} />
         <Route path="/conditionalField" element={<ConditionalField />} />
