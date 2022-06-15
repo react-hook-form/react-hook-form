@@ -30,7 +30,11 @@ export function DelayError() {
         autoComplete="off"
         {...register('last', {
           maxLength: {
-            value: 1,
+            value: 5,
+            message: 'Last too long.',
+          },
+          minLength: {
+            value: 2,
             message: 'Last too long.',
           },
         })}
