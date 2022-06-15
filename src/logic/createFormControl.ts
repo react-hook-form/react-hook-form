@@ -231,12 +231,12 @@ export function createFormControl<
     }
   };
 
-  const updateErrors = (name: InternalFieldName, error: FieldError) => (
-    set(_formState.errors, name, error),
+  const updateErrors = (name: InternalFieldName, error: FieldError) => {
+    set(_formState.errors, name, error);
     _subjects.state.next({
       errors: _formState.errors,
-    })
-  );
+    });
+  };
 
   const updateValidAndValue = (
     name: InternalFieldName,
@@ -334,8 +334,7 @@ export function createFormControl<
       _proxyFormState.isValid && _formState.isValid !== isValid;
 
     if (props.delayError && error) {
-      delayErrorCallback =
-        delayErrorCallback || debounce(() => updateErrors(name, error));
+      delayErrorCallback = debounce(() => updateErrors(name, error));
       delayErrorCallback(props.delayError);
     } else {
       clearTimeout(timer);
