@@ -26,6 +26,7 @@ export function createRollupConfig(options, callback) {
       typescript({
         tsconfig: options.tsconfig,
         clean: true,
+        exclude: ['**/__tests__', '**/*.test.ts'],
       }),
       options.format === 'umd' &&
         commonjs({
