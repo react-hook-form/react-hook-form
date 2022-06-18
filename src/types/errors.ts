@@ -1,5 +1,5 @@
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { DeepMap, DeepPartial, LiteralUnion } from './utils';
+import { LiteralUnion, Merge } from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -23,8 +23,11 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type FieldErrors<TFieldValues extends FieldValues = FieldValues> =
-  DeepMap<DeepPartial<TFieldValues>, FieldError>;
+export type FieldErrors<T extends FieldValues = FieldValues> = {
+  [K in keyof T]?: T[K] extends object
+    ? Merge<FieldError, FieldErrors<T[K]>>
+    : FieldError;
+};
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>
