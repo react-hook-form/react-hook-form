@@ -11,7 +11,6 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { VALIDATION_MODE } from '../constants';
 import {
   Control,
-  NestedValue,
   RegisterOptions,
   UseFormRegister,
   UseFormReturn,
