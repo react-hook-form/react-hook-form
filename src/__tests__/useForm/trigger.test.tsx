@@ -795,7 +795,14 @@ describe('trigger', () => {
         register,
         trigger,
         formState: { errors },
-      } = useForm();
+      } = useForm({
+        defaultValues: {
+          test: {
+            firstName: '',
+            lastName: '',
+          },
+        },
+      });
 
       const onTrigger = async () => {
         isValid = await trigger('test');
