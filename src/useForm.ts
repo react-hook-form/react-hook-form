@@ -44,7 +44,7 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext extends object = object,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {
@@ -76,7 +76,7 @@ export function useForm<
   const control = _formControl.current.control;
 
   const callback = React.useCallback(
-    (value) => {
+    (value: FieldValues) => {
       if (shouldRenderFormState(value, control._proxyFormState, true)) {
         control._formState = {
           ...control._formState,

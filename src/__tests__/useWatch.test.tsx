@@ -139,7 +139,7 @@ describe('useWatch', () => {
   });
 
   it('should render with FormProvider', () => {
-    const Provider: React.FC = ({ children }) => {
+    const Provider = ({ children }: { children: React.ReactNode }) => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
     };
