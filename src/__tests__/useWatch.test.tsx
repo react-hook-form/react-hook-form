@@ -491,10 +491,12 @@ describe('useWatch', () => {
         parentCount++;
         return (
           <form onSubmit={handleSubmit(() => {})}>
-            <input {...register('parent')} />
-            <Child register={register} control={control} />
-            {errors.parent}
-            <button>submit</button>
+            <>
+              <input {...register('parent')} />
+              <Child register={register} control={control} />
+              {errors.parent}
+              <button>submit</button>
+            </>
           </form>
         );
       };
@@ -515,8 +517,8 @@ describe('useWatch', () => {
 
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
-      await waitFor(() => expect(parentCount).toBe(2));
-      expect(childCount).toBe(2);
+      await waitFor(() => expect(parentCount).toBe(1));
+      expect(childCount).toBe(1);
 
       parentCount = 0;
       childCount = 0;
@@ -807,6 +809,8 @@ describe('useWatch', () => {
       expect(inputValues).toEqual([
         'Type',
         'Number',
+        'Totals',
+        'Type',
         'Totals',
         'Type',
         'Totals',

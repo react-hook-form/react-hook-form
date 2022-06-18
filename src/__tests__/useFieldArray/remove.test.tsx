@@ -365,13 +365,13 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
-
     expect(await screen.findByText('notValid')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
     const inputs = screen.getAllByRole('textbox');
 
@@ -427,16 +427,18 @@ describe('remove', () => {
     render(<Component />);
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await waitFor(() => expect(isValid).toBeFalsy());
+    expect(screen.getAllByRole('textbox')).toHaveLength(1);
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    expect(screen.getAllByRole('textbox')).toHaveLength(2);
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-
-    expect(isValid).toBeFalsy();
+    await waitFor(() => expect(isValid).toBeFalsy());
+    expect(screen.getAllByRole('textbox')).toHaveLength(3);
 
     fireEvent.click(screen.getByRole('button', { name: 'remove' }));
-
-    await waitFor(() => expect(isValid).toBeTruthy());
+    await waitFor(() => expect(isValid).toBe(true));
   });
 
   it('should remove error', async () => {
@@ -544,10 +546,15 @@ describe('remove', () => {
                     {errors.test[index].nested[i].test.message}
                   </span>
                 )}
-              <button onClick={() => remove(i)}>nested delete</button>
+              <button type="button" onClick={() => remove(i)}>
+                nested delete
+              </button>
             </div>
           ))}
-          <button onClick={() => append({ test: 'test', key: mockKey++ })}>
+          <button
+            type="button"
+            onClick={() => append({ test: 'test', key: mockKey++ })}
+          >
             nested append
           </button>
         </fieldset>
@@ -556,7 +563,7 @@ describe('remove', () => {
 
     const Component = () => {
       const {
-        formState: { errors },
+        formState: { errors, isValid },
         handleSubmit,
         control,
       } = useForm<FormValues>({
@@ -567,37 +574,37 @@ describe('remove', () => {
       const { fields } = useFieldArray({ name: 'test', control });
 
       return (
-        <form onSubmit={handleSubmit(callback)}>
-          {fields.map((_, i) => (
-            <Nested
-              key={i.toString()}
-              errors={errors}
-              control={control}
-              index={i}
-            />
-          ))}
-          <button>submit</button>
-        </form>
+        <>
+          <p>Valid: {isValid.toString()}</p>
+          <form onSubmit={handleSubmit(callback)}>
+            {fields.map((_, i) => (
+              <Nested
+                key={i.toString()}
+                errors={errors}
+                control={control}
+                index={i}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        </>
       );
     };
 
     render(<Component />);
 
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-
     expect(await screen.findByTestId('nested-error')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
-
     await waitFor(() =>
       expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument(),
     );
+    expect(await screen.findByText('Valid: true')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
 
-    await waitFor(() =>
-      expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument(),
-    );
+    expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
   });
 
   it('should trigger reRender when user is watching the all field array', () => {

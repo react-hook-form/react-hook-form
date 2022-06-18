@@ -62,7 +62,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   _name.current = name;
 
   const callback = React.useCallback(
-    (value) =>
+    (value: { name?: InternalFieldName }) =>
       _mounted.current &&
       shouldSubscribeByName(
         _name.current as InternalFieldName,

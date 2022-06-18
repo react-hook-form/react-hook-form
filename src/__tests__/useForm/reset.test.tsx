@@ -294,6 +294,7 @@ describe('reset', () => {
 
   it('should not reset if keepStateOption is specified', async () => {
     let formState = {};
+    const onSubmit = jest.fn();
 
     const App = () => {
       const {
@@ -310,7 +311,7 @@ describe('reset', () => {
       formState = { touchedFields, errors, isDirty };
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input {...register('test', { required: true, minLength: 3 })} />
           <button>submit</button>
           <button
@@ -322,7 +323,6 @@ describe('reset', () => {
                   keepDirty: true,
                   keepIsSubmitted: true,
                   keepTouched: true,
-                  keepIsValid: true,
                   keepSubmitCount: true,
                 },
               );
@@ -347,6 +347,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     await waitFor(() =>
       expect(formState).toEqual({
         errors: {},
@@ -366,47 +367,6 @@ describe('reset', () => {
         test: true,
       },
     });
-  });
-
-  it('should keep isValid state when keep option is presented', async () => {
-    const App = () => {
-      const {
-        register,
-        reset,
-        formState: { isValid },
-      } = useForm({
-        mode: 'onChange',
-      });
-
-      return (
-        <>
-          <input {...register('test', { required: true })} />
-          {isValid ? 'valid' : 'invalid'}
-          <button
-            onClick={() => {
-              reset(
-                {
-                  test: 'test',
-                },
-                {
-                  keepIsValid: true,
-                },
-              );
-            }}
-          >
-            reset
-          </button>
-        </>
-      );
-    };
-
-    render(<App />);
-
-    expect(await screen.findByText('invalid')).toBeVisible();
-
-    fireEvent.click(screen.getByRole('button'));
-
-    expect(await screen.findByText('invalid')).toBeVisible();
   });
 
   it('should reset field array fine with empty value', async () => {
@@ -1122,6 +1082,7 @@ describe('reset', () => {
 
   it('should update isMounted when isValid is subscribed', async () => {
     const mounted: unknown[] = [];
+    let tempControl: Control = {} as Control;
 
     const App = () => {
       const {
@@ -1131,6 +1092,7 @@ describe('reset', () => {
       } = useForm();
 
       mounted.push(control._stateFlags.mount);
+      tempControl = control;
 
       React.useEffect(() => {
         reset({});
@@ -1147,7 +1109,9 @@ describe('reset', () => {
 
     expect(await screen.findByText('false')).toBeVisible();
 
-    expect(mounted).toEqual([false, false, true]);
+    expect(mounted).toEqual([false, false]);
+
+    expect(tempControl._stateFlags.mount).toBeTruthy();
   });
 
   it('should reset values but keep defaultValues', async () => {
@@ -1362,8 +1326,7 @@ describe('reset', () => {
 
     expect(result.current.formState.isSubmitted).toBeFalsy();
 
-    act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
-
+    await act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
     expect(result.current.formState.isSubmitted).toBeFalsy();
 
     result.current.register('test');
