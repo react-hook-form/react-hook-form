@@ -1,9 +1,9 @@
 import { FieldErrors } from './errors';
 import { Field, FieldName, FieldValues, InternalFieldName } from './fields';
-import { CriteriaMode, UnpackNestedValue } from './form';
+import { CriteriaMode } from './form';
 
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
-  values: UnpackNestedValue<TFieldValues>;
+  values: TFieldValues;
   errors: {};
 };
 
@@ -27,7 +27,7 @@ export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
 > = (
-  values: UnpackNestedValue<TFieldValues>,
+  values: TFieldValues,
   context: TContext | undefined,
   options: ResolverOptions<TFieldValues>,
 ) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
