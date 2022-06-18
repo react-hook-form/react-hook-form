@@ -43,11 +43,11 @@ import { useSubscribe } from './useSubscribe';
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
 >(props: {
-  defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
-}): UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+}): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *

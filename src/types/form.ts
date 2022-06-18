@@ -23,10 +23,16 @@ import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
 
+/**
+ * @deprecated to be removed in the next major version
+ */
 export type NestedValue<TValue extends object = object> = {
   [$NestedValue]: never;
 } & TValue;
 
+/**
+ * @deprecated to be removed in the next major version
+ */
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
   : T extends Date | FileList | File | Blob
@@ -35,9 +41,7 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValues<TFieldValues> = UnpackNestedValue<
-  DeepPartial<TFieldValues>
->;
+export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
 
 export type InternalNameSet = Set<InternalFieldName>;
 
@@ -54,7 +58,7 @@ export type Mode = keyof ValidationMode;
 export type CriteriaMode = 'firstError' | 'all';
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (
-  data: UnpackNestedValue<TFieldValues>,
+  data: TFieldValues,
   event?: React.BaseSyntheticEvent,
 ) => any | Promise<any>;
 
@@ -245,7 +249,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * })} />
    * ```
    */
-  (): UnpackNestedValue<TFieldValues>;
+  (): TFieldValues;
   /**
    * Get a single field value.
    *
@@ -348,7 +352,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * const formValues = watch();
    * ```
    */
-  (): UnpackNestedValue<TFieldValues>;
+  (): TFieldValues;
   /**
    * Watch and subscribe to an array of fields used outside of render.
    *
@@ -367,7 +371,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    */
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
-    defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    defaultValue?: DeepPartial<TFieldValues>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
   /**
    * Watch a single field update and used it outside of render.
@@ -412,7 +416,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    */
   (
     callback: WatchObserver<TFieldValues>,
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    defaultValues?: DeepPartial<TFieldValues>,
   ): Subscription;
 };
 
@@ -504,7 +508,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  value: UnpackNestedValue<FieldPathValue<TFieldValues, TFieldName>>,
+  value: FieldPathValue<TFieldValues, TFieldName>,
   options?: SetValueConfig,
 ) => void;
 
@@ -657,13 +661,13 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormReset<TFieldValues extends FieldValues> = (
-  values?: DefaultValues<TFieldValues> | UnpackNestedValue<TFieldValues>,
+  values?: DefaultValues<TFieldValues> | TFieldValues,
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
 export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
-  defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  defaultValue?: DeepPartial<TFieldValues>,
   isMounted?: boolean,
   isGlobal?: boolean,
 ) =>
@@ -753,7 +757,7 @@ export type Control<
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  value: DeepPartial<TFieldValues>,
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
