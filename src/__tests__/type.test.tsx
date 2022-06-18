@@ -15,7 +15,7 @@ import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
-import { join, of } from '../utils';
+import { of } from '../utils';
 
 test('should not throw type error with optional array fields', () => {
   type Thing = { id: string; name: string };
@@ -269,131 +269,6 @@ test('should work with useController with generic component', () => {
 
           <input type="submit" />
         </form>
-      </div>
-    );
-  }
-
-  App;
-});
-
-test('join should work in generic contexts', () => {
-  interface Address {
-    street: string;
-    houseNumber: number;
-    city: string;
-    country: string;
-  }
-
-  interface Order {
-    item: string;
-    shippingAddress: Address;
-    billingAddress: Address;
-  }
-
-  function AddressFields<T, P extends PathString>(props: {
-    register: UseFormRegister<T>;
-    path: Auto.TypedFieldPath<T, P, Address>;
-  }) {
-    const { register, path } = props;
-    return (
-      <div>
-        <input type="text" {...register(join(path, 'street'))} />
-        <input type="number" {...register(join(path, 'houseNumber'))} />
-        <input type="text" {...register(join(path, 'city'))} />
-        <input type="text" {...register(join(path, 'country'))} />
-      </div>
-    );
-  }
-
-  function AddressDisplay<T, P extends PathString>(props: {
-    control: Control<T>;
-    path: Auto.TypedFieldPath<T, P, Address>;
-  }) {
-    const { control, path } = props;
-    const street = useWatch({ control, name: join(path, 'street') });
-    const houseNumber = useWatch({ control, name: join(path, 'houseNumber') });
-    const city = useWatch({ control, name: join(path, 'city') });
-    const country = useWatch({ control, name: join(path, 'country') });
-
-    return (
-      <p>
-        {street} {houseNumber}, {city}, {country}
-      </p>
-    );
-  }
-
-  const address: Address = {
-    street: 'George St',
-    houseNumber: 483,
-    city: 'Sydney',
-    country: 'Australia',
-  };
-
-  function App() {
-    const { register, control } = useForm<Order>({
-      defaultValues: {
-        item: 'Foobar Plushy',
-        shippingAddress: address,
-        billingAddress: address,
-      },
-    });
-    return (
-      <div>
-        <input type="text" {...register('item')} />
-        <AddressFields register={register} path={'billingAddress'} />
-        <AddressDisplay control={control} path={'billingAddress'} />
-        <AddressFields register={register} path={'shippingAddress'} />
-        <AddressDisplay control={control} path={'shippingAddress'} />
-      </div>
-    );
-  }
-
-  App;
-});
-
-test('branded types should be inferred from context', () => {
-  interface TextFieldDescriptor<T extends FieldValues> {
-    type: 'text';
-    label: string;
-    path: TypedFieldPath<T, string>;
-  }
-
-  interface NumberFieldDescriptor<T extends FieldValues> {
-    type: 'number';
-    label: string;
-    path: TypedFieldPath<T, number>;
-  }
-
-  type FormDescriptor<T extends FieldValues> = Array<
-    TextFieldDescriptor<T> | NumberFieldDescriptor<T>
-  >;
-
-  interface FooBar {
-    foo: string;
-    bar: number;
-  }
-
-  const fooBarForm: FormDescriptor<FooBar> = [
-    { type: 'text', label: 'Foo', path: of('foo') },
-    { type: 'number', label: 'Bar', path: of('bar') },
-  ];
-
-  function App() {
-    const { register } = useForm<FooBar>({
-      defaultValues: {
-        foo: 'foo',
-        bar: 42,
-      },
-    });
-
-    return (
-      <div>
-        {fooBarForm.map(({ type, label, path }) => (
-          <label key={path}>
-            {label}
-            <input type={type} {...register(path)} />
-          </label>
-        ))}
       </div>
     );
   }
