@@ -273,17 +273,15 @@ describe('setValue', () => {
   it('should set nested value correctly ', () => {
     const { result } = renderHook(() =>
       useForm<{
-        test1: NestedValue<string[]>;
-        test2: NestedValue<{
+        test1: string[];
+        test2: {
           key1: string;
           key2: number;
-        }>;
-        test3: NestedValue<
-          {
-            key1: string;
-            key2: number;
-          }[]
-        >;
+        };
+        test3: {
+          key1: string;
+          key2: number;
+        }[];
       }>(),
     );
 

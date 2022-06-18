@@ -73,7 +73,7 @@ describe('reset', () => {
   it('should set array value of multiple checkbox inputs correctly', async () => {
     const Component = () => {
       const { register } = useForm<{
-        test: NestedValue<string[]>;
+        test: string[];
       }>({
         defaultValues: {
           test: ['1', '2'],

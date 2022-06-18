@@ -1370,7 +1370,7 @@ describe('useForm', () => {
           register,
           handleSubmit,
         } = useForm<{
-          checkbox: NestedValue<string[]>;
+          checkbox: string[];
         }>({
           mode: 'onChange',
           resolver: (data) => {

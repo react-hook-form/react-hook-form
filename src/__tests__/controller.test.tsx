@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues, NestedValue } from '../types';
+import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -1170,7 +1170,7 @@ describe('Controller', () => {
         test: string;
       };
       todos: string[];
-      nestedValue: NestedValue<{ test: string }>;
+      nestedValue: { test: string };
     };
 
     function App() {
