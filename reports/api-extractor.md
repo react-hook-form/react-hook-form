@@ -192,7 +192,9 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<TFieldValues extends FieldValues = FieldValues> = DeepMap<DeepPartial<TFieldValues>, FieldError>;
+export type FieldErrors<T extends FieldValues = FieldValues> = {
+    [K in keyof T]?: T[K] extends object ? Merge<FieldError, FieldErrors<T[K]>> : FieldError;
+};
 
 // @public (undocumented)
 export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<TFieldValues> extends true ? Extract<keyof TFieldValues, string> : string;
@@ -300,6 +302,11 @@ export type KeepStateOptions = Partial<{
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
     _?: never;
 });
+
+// @public (undocumented)
+export type Merge<A, B> = {
+    [K in keyof A | keyof B]?: K extends keyof A ? K extends keyof B ? [A[K], B[K]] extends [object, object] ? Merge<A[K], B[K]> : A[K] | B[K] : A[K] : K extends keyof B ? B[K] : never;
+};
 
 // @public (undocumented)
 export type Message = string;
