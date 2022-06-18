@@ -25,6 +25,7 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  InternalFieldName,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -96,13 +97,22 @@ export function useFieldArray<
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  const callback = React.useCallback(({ values, name: fieldArrayName }) => {
-    if (fieldArrayName === _name.current || !fieldArrayName) {
-      const fieldValues = get(values, _name.current, []);
-      setFields(fieldValues);
-      ids.current = fieldValues.map(generateId);
-    }
-  }, []);
+  const callback = React.useCallback(
+    ({
+      values,
+      name: fieldArrayName,
+    }: {
+      values?: FieldValues;
+      name?: InternalFieldName;
+    }) => {
+      if (fieldArrayName === _name.current || !fieldArrayName) {
+        const fieldValues = get(values, _name.current, []);
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      }
+    },
+    [],
+  );
 
   useSubscribe({
     callback,

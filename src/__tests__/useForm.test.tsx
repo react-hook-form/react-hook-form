@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act as actComponent,
   fireEvent,
   render,
   screen,
@@ -388,12 +389,14 @@ describe('useForm', () => {
     });
 
     it('should keep validation during unmount', async () => {
+      const onSubmit = jest.fn();
+
       function Component() {
         const {
           register,
           handleSubmit,
           watch,
-          formState: { errors },
+          formState: { errors, submitCount },
         } = useForm<{
           firstName: string;
           moreDetail: boolean;
@@ -403,21 +406,24 @@ describe('useForm', () => {
         const moreDetail = watch('moreDetail');
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
-            <input
-              placeholder="firstName"
-              {...register('firstName', { maxLength: 3 })}
-            />
-            {errors.firstName && <p>max length</p>}
-            <input
-              type="checkbox"
-              {...register('moreDetail')}
-              placeholder={'checkbox'}
-            />
+          <>
+            <p>Submit count: {submitCount}</p>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <input
+                placeholder="firstName"
+                {...register('firstName', { maxLength: 3 })}
+              />
+              {errors.firstName && <p>max length</p>}
+              <input
+                type="checkbox"
+                {...register('moreDetail')}
+                placeholder={'checkbox'}
+              />
 
-            {moreDetail && <p>show more</p>}
-            <button>Submit</button>
-          </form>
+              {moreDetail && <p>show more</p>}
+              <button>Submit</button>
+            </form>
+          </>
         );
       }
 
@@ -431,13 +437,17 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      expect(await screen.findByText('max length')).toBeVisible();
+      expect(await screen.findByText('Submit count: 1')).toBeVisible();
+      expect(screen.getByText('max length')).toBeVisible();
 
       fireEvent.click(screen.getByPlaceholderText('checkbox'));
 
+      expect(screen.getByText('show more')).toBeVisible();
+
       fireEvent.click(screen.getByRole('button'));
 
-      expect(await screen.findByText('max length')).toBeVisible();
+      expect(await screen.findByText('Submit count: 2')).toBeVisible();
+      expect(screen.getByText('max length')).toBeVisible();
     });
 
     it('should only unregister inputs when all checkboxes are unmounted', async () => {
@@ -542,16 +552,14 @@ describe('useForm', () => {
 
   describe('handleChangeRef', () => {
     const Component = ({
-      name = 'test',
       resolver,
       mode,
       rules = { required: 'required' },
       onSubmit = () => {},
     }: {
-      name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
-      rules?: RegisterOptions;
+      rules?: RegisterOptions<{ test: string }, 'test'>;
       onSubmit?: () => void;
     }) => {
       const internationalMethods = useForm<{ test: string }>({
@@ -561,21 +569,19 @@ describe('useForm', () => {
       const {
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors, isValid, isDirty },
       } = internationalMethods;
       methods = internationalMethods;
 
       return (
         <div>
-          <input
-            type="text"
-            {...register(name as 'test', resolver ? {} : rules)}
-          />
+          <input type="text" {...register('test', resolver ? {} : rules)} />
           <span role="alert">
             {errors?.test?.message && errors.test.message}
           </span>
           <button onClick={handleSubmit(onSubmit)}>button</button>
           <p>{isValid ? 'valid' : 'invalid'}</p>
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
         </div>
       );
     };
@@ -583,13 +589,17 @@ describe('useForm', () => {
 
     describe('onSubmit mode', () => {
       it('should not contain error if value is valid', async () => {
-        render(<Component />);
+        const onSubmit = jest.fn();
+
+        render(<Component onSubmit={onSubmit} />);
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
         });
 
         fireEvent.click(screen.getByRole('button'));
+
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         const alert = await screen.findByRole('alert');
         expect(alert.textContent).toBe('');
@@ -602,13 +612,17 @@ describe('useForm', () => {
       });
 
       it('should not contain error if name is invalid', async () => {
-        render(<Component />);
+        const onSubmit = jest.fn();
+
+        render(<Component onSubmit={onSubmit} />);
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
         });
 
         fireEvent.click(screen.getByRole('button'));
+
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         const alert = await screen.findByRole('alert');
         expect(alert.textContent).toBe('');
@@ -661,11 +675,15 @@ describe('useForm', () => {
       });
 
       it('should set name to formState.touchedFields when formState.touchedFields is defined', async () => {
-        render(<Component rules={{}} />);
+        const onSubmit = jest.fn();
+
+        render(<Component onSubmit={onSubmit} rules={{}} />);
 
         methods.formState.touchedFields;
 
         fireEvent.click(screen.getByRole('button'));
+
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         fireEvent.blur(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
@@ -930,16 +948,20 @@ describe('useForm', () => {
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
         });
+        expect(await screen.findByText('dirty')).toBeVisible();
+        expect(resolver).toHaveBeenCalled();
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
+        expect(methods.formState.isValid).toBeTruthy();
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(resolver).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('resolver error');
+        await waitFor(() => {
+          expect(screen.getByRole('alert')).toHaveTextContent('resolver error');
+        });
+        expect(resolver).toHaveBeenCalled();
         expect(methods.formState.isValid).toBeFalsy();
       });
 
@@ -966,17 +988,17 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
+        await waitFor(() => expect(methods.formState.isValid).toBe(true));
         expect(screen.getByRole('alert').textContent).toBe('');
-        await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(resolver).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('resolver error');
-
         expect(await screen.findByText('invalid')).toBeVisible();
+        expect(methods.formState.isValid).toBe(false);
+        expect(screen.getByRole('alert')).toHaveTextContent('resolver error');
+        expect(resolver).toHaveBeenCalled();
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
@@ -1002,22 +1024,27 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
-        expect(screen.getByRole('alert').textContent).toBe('');
         await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
+        expect(screen.getByRole('alert').textContent).toBe('');
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(resolver).toHaveBeenCalled());
+        await waitFor(() => expect(methods.formState.isValid).toBeFalsy());
+        expect(resolver).toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(methods.formState.isValid).toBeFalsy();
       });
 
       it("should call the resolver with the field being validated when an input's value change", async () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
+        const onSubmit = jest.fn();
 
-        render(<Component resolver={resolver} mode="onChange" />);
+        render(
+          <Component resolver={resolver} onSubmit={onSubmit} mode="onChange" />,
+        );
+
+        expect(await screen.findByText('valid')).toBeVisible();
 
         const input = screen.getByRole('textbox');
 
@@ -1046,6 +1073,8 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
+        expect(await screen.findByText('dirty')).toBeVisible();
+
         expect(resolver).toHaveBeenCalledWith(
           {
             test: 'test',
@@ -1069,25 +1098,25 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByText(/button/i));
 
-        await waitFor(() =>
-          expect(resolver).toHaveBeenCalledWith(
-            {
-              test: 'test',
-            },
-            undefined,
-            {
-              criteriaMode: undefined,
-              fields: {
-                test: {
-                  mount: true,
-                  name: 'test',
-                  ref: input,
-                },
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+
+        expect(resolver).toHaveBeenCalledWith(
+          {
+            test: 'test',
+          },
+          undefined,
+          {
+            criteriaMode: undefined,
+            fields: {
+              test: {
+                mount: true,
+                name: 'test',
+                ref: input,
               },
-              names: ['test'],
-              shouldUseNativeValidation: undefined,
             },
-          ),
+            names: ['test'],
+            shouldUseNativeValidation: undefined,
+          },
         );
       });
 
@@ -1626,5 +1655,65 @@ describe('useForm', () => {
     unmount();
 
     expect(tempControl._subjects.state.observers.length).toBeFalsy();
+  });
+
+  it('should update isValidating to true when other validation still running', async () => {
+    jest.useFakeTimers();
+
+    function App() {
+      const [stateValidation, setStateValidation] = React.useState(false);
+      const {
+        register,
+        formState: { isValidating },
+      } = useForm({ mode: 'all' });
+
+      return (
+        <div>
+          <p>isValidating: {String(isValidating)}</p>
+          <p>stateValidation: {String(stateValidation)}</p>
+          <form>
+            <input
+              {...register('lastName', {
+                required: true,
+                validate: () => {
+                  setStateValidation(true);
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      setStateValidation(false);
+                      resolve(true);
+                    }, 5000);
+                  });
+                },
+              })}
+              placeholder="async"
+            />
+
+            <input
+              {...register('firstName', { required: true })}
+              placeholder="required"
+            />
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test' },
+    });
+
+    screen.getByText('isValidating: true');
+    screen.getByText('stateValidation: true');
+
+    await actComponent(async () => {
+      jest.runAllTimers();
+    });
+
+    screen.getByText('isValidating: false');
+    screen.getByText('stateValidation: false');
   });
 });

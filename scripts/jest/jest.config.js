@@ -50,7 +50,7 @@ const native = {
 const getProjects = () => {
   const testEnv = process.env.TEST_ENV;
   if (!testEnv) {
-    return [web, server, native];
+    return [web, server];
   }
 
   switch (testEnv) {

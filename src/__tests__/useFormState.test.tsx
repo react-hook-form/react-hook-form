@@ -401,7 +401,7 @@ describe('useFormState', () => {
       },
     });
 
-    await waitFor(() => expect(count).toEqual(3));
+    await waitFor(() => expect(count).toEqual(2));
   });
 
   it('should only re-render when subscribed field names updated', async () => {
