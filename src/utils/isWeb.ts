@@ -1,3 +1,3 @@
 export default typeof window !== 'undefined' &&
-  typeof window.HTMLElement !== 'undefined' &&
+  typeof window.HTMLDivElement !== 'undefined' &&
   typeof document !== 'undefined';
