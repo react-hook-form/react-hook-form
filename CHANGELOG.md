@@ -4,7 +4,7 @@
 
 ## Changed
 
-- Rely on presence of presence of `window.HTMLDivElement` instead of `window.HTMLElement` to infer browser environment. See [#8551](https://github.com/react-hook-form/react-hook-form/issues/8551).
+- Rely on presence of `window.HTMLDivElement` instead of `window.HTMLElement` to infer browser environment. See [#8551](https://github.com/react-hook-form/react-hook-form/issues/8551).
 
 ## [7.31.0] - 2022-5-11
 
