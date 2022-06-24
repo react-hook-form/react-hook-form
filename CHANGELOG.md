@@ -6,6 +6,21 @@
 
 - Rely on presence of `window.HTMLDivElement` instead of `window.HTMLElement` to infer browser environment. See [#8551](https://github.com/react-hook-form/react-hook-form/issues/8551).
 
+## [7.33.0] - 2022-6-24
+
+## Changed
+
+- deprecate `NestedValue` and `UnpackNestedValue` type, will be removed in the next major version
+- `formState`'s `errors` is now mapped/merged with `FieldError`
+- `UseFormHandleSubmit` has removed unused function generic
+
+## [7.32.0] - 2022-6-10
+
+## Changed
+
+- `UseFormRegisterReturn` name type change from `string` to `TFieldName`
+
+
 ## [7.31.0] - 2022-5-11
 
 ## Added
