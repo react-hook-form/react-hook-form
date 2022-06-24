@@ -643,4 +643,38 @@ describe('useController', () => {
       },
     ]);
   });
+
+  it('should focus and select the input text', () => {
+    const select = jest.fn();
+    const focus = jest.fn();
+
+    const App = () => {
+      const { control, setFocus } = useForm({
+        defaultValues: {
+          test: 'data',
+        },
+      });
+      const { field } = useController({
+        control,
+        name: 'test',
+      });
+
+      field.ref({
+        select,
+        focus,
+      });
+
+      React.useEffect(() => {
+        setFocus('test');
+        setFocus('test', { shouldSelect: true });
+      }, [setFocus]);
+
+      return null;
+    };
+
+    render(<App />);
+
+    expect(select).toBeCalled();
+    expect(focus).toBeCalled();
+  });
 });
