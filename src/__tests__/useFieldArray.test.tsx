@@ -62,7 +62,7 @@ describe('useFieldArray', () => {
     });
 
     it('should render with FormProvider', () => {
-      const Provider: React.FC = ({ children }) => {
+      const Provider = ({ children }: { children: React.ReactNode }) => {
         const methods = useForm();
         return <FormProvider {...methods}>{children}</FormProvider>;
       };
