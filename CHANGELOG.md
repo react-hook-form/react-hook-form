@@ -1,12 +1,18 @@
 # Changelog
 
-## [7.32.0] - 2022-6-24
+## [7.33.0] - 2022-6-24
 
 ## Changed
 
 - deprecate `NestedValue` and `UnpackNestedValue` type, will be removed in the next major version
 - `formState`'s `errors` is now mapped/merged with `FieldError`
 - `UseFormHandleSubmit` has removed unused function generic
+
+## [7.32.0] - 2022-6-10
+
+## Changed
+
+- `UseFormRegisterReturn` name type change from `string` to `TFieldName`
 
 ## [7.31.0] - 2022-5-11
 
