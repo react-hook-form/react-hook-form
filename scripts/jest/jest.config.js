@@ -4,7 +4,6 @@ const jestDefaultConfig = {
   restoreMocks: true,
   rootDir: '.',
   roots: ['<rootDir>/src'],
-  preset: 'ts-jest',
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
 };
 
@@ -15,6 +14,9 @@ const web = {
     color: 'cyan',
   },
   testMatch: ['**/__tests__/**/*.(spec|test).ts?(x)'],
+  transform: {
+    '^.+\\.tsx?$': '@swc/jest',
+  },
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
   testEnvironment: 'jsdom',
 };
@@ -26,6 +28,9 @@ const server = {
     color: 'blue',
   },
   testMatch: ['**/+([a-zA-Z]).server.(spec|test).ts?(x)'],
+  transform: {
+    '^.+\\.tsx?$': '@swc/jest',
+  },
   testEnvironment: 'node',
 };
 
@@ -38,7 +43,7 @@ const native = {
   preset: 'react-native',
   testMatch: ['**/+([a-zA-Z]).native.(spec|test).ts?(x)'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': '@swc/jest',
     '^.+\\.jsx?$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
   },
   transformIgnorePatterns: [
