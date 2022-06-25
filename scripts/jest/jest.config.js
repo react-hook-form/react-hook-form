@@ -73,4 +73,8 @@ module.exports = {
     '!**/__tests__/**',
   ],
   projects: getProjects(),
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname',
+  ],
 };
