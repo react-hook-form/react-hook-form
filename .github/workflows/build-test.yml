@@ -3,7 +3,37 @@ name: Unit Test / Lint
 on: [pull_request]
 
 jobs:
-  build:
+  react-16-17:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        react-version: [^16.8.0, ^17]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Install React v${{ matrix.react-version }}
+        run: |
+          yarn add --dev \
+            react@${{ matrix.react-version }} \
+            react-dom@${{ matrix.react-version }} \
+            react-test-renderer@${{ matrix.react-version }} \
+            @testing-library/react@12
+
+      - name: Lint
+        run: |
+          yarn lint
+          yarn type
+
+      - name: Test
+        run: |
+          yarn test --ci
+          yarn tsd
+  react-18:
     runs-on: ubuntu-latest
 
     steps:
