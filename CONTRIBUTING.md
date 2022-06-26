@@ -24,9 +24,10 @@ Here is a quick guide to doing code contributions to the library.
 
    > yarn lint
 
-7. Ensure the automation suite passes.
+7. Ensure the automation suite passes by running two following commands in parallel:
 
-   > yarn start:app && yarn cypress
+   > yarn start:app
+   > yarn cypress
 
 8. Ensure build passes.
 
