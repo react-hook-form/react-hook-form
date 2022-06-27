@@ -33,8 +33,8 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
     : FieldError;
 };
 
-export type FieldErrors<T extends FieldValues = FieldValues> = DeepRequired<
-  FieldErrorsImpl<T>
+export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<
+  DeepRequired<T>
 >;
 
 export type InternalFieldErrors = Partial<
