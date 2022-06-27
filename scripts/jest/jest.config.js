@@ -16,6 +16,9 @@ const web = {
   testMatch: ['**/__tests__/**/*.(spec|test).ts?(x)'],
   transform: {
     '^.+\\.tsx?$': '@swc/jest',
+    '^.+\\.(css|scss|sass)$': 'jest-preview/transforms/css',
+    '^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)':
+      'jest-preview/transforms/file',
   },
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
   testEnvironment: 'jsdom',
