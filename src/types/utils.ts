@@ -91,7 +91,7 @@ export type IsFlatObject<T extends object> = Extract<
 
 export type Merge<A, B> = {
   [K in keyof A | keyof B]?: K extends keyof A & keyof B
-    ? [A[K], B[K]] extends [object, object]
+    ? [A[K], B[K]] extends [any, any]
       ? Merge<A[K], B[K]>
       : A[K] | B[K]
     : K extends keyof A
