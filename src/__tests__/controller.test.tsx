@@ -7,7 +7,6 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 
-// import { debug } from 'jest-preview';
 import { Controller } from '../controller';
 import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
@@ -537,12 +536,6 @@ describe('Controller', () => {
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
     expect(screen.getByRole('textbox')).toHaveValue('test');
-    // To see the actual UI in Jest, do the following:
-    // 1. Run `yarn jest-preview` to open Jest Preview Dashboard
-    // 2. Uncomment `debug()`
-    // 3. Run `yarn test:watch src/__tests__/controller.test.tsx`
-    // You should see the UI in your default browser.
-    // debug();
   });
 
   it('should not assign default value when field is removed with useFieldArray', () => {
