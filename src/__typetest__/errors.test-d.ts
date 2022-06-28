@@ -10,10 +10,18 @@ import { _ } from './__fixtures__';
     const actual = _ as FieldErrors<{
       test?: string;
       test1?: string;
+      attachment: {
+        data: string;
+        type: string;
+      };
     }>;
     expectType<{
       test?: FieldError;
       test1?: FieldError;
+      attachment?: {
+        data?: FieldError;
+        type?: FieldError;
+      };
     }>(actual);
   }
 }
