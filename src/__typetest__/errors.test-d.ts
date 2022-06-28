@@ -12,7 +12,7 @@ import { _ } from './__fixtures__';
       test1?: string;
       attachment: {
         data: string;
-        type: string;
+        data1: string;
       };
     }>;
     expectType<{
@@ -20,7 +20,7 @@ import { _ } from './__fixtures__';
       test1?: FieldError;
       attachment?: {
         data?: FieldError;
-        type?: FieldError;
+        data1?: FieldError;
       };
     }>(actual);
   }
