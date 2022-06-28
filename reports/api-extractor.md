@@ -131,6 +131,11 @@ export type DeepPartialSkipArrayKey<T> = T extends Date | FileList_2 | File_2 | 
 };
 
 // @public (undocumented)
+export type DeepRequired<T> = {
+    [K in keyof T]-?: DeepRequired<T[K]>;
+};
+
+// @public (undocumented)
 export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
 
 // @public (undocumented)
@@ -192,8 +197,11 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends object ? Merge<FieldError, FieldErrors<T[K]>> : FieldError;
+export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<DeepRequired<T>>;
+
+// @public (undocumented)
+export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
+    [K in keyof T]?: T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
 };
 
 // @public (undocumented)
