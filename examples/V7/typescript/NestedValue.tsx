@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm, NestedValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   TextField,
   FormControl,
@@ -22,8 +22,8 @@ const options = [
 
 export default function App() {
   const { register, handleSubmit, watch, setValue, errors } = useForm<{
-    autocomplete: NestedValue<Option[]>;
-    select: NestedValue<number[]>;
+    autocomplete: Option[];
+    select: number[];
   }>({
     defaultValues: { autocomplete: [], select: [] },
   });
