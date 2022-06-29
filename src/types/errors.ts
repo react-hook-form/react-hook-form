@@ -1,3 +1,4 @@
+import { UnionToIntersection } from './path/common';
 import { FieldValues, InternalFieldName, Ref } from './fields';
 import { LiteralUnion, Merge } from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
@@ -23,10 +24,12 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
+type FieldErrorsRecursiveStep<T> = UnionToIntersection<
+  T extends object ? Merge<FieldError, FieldErrors<T>> : FieldError
+>;
+
 export type FieldErrors<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends object
-    ? Merge<FieldError, FieldErrors<T[K]>>
-    : FieldError;
+  [K in keyof T]?: FieldErrorsRecursiveStep<T[K]>;
 };
 
 export type InternalFieldErrors = Partial<

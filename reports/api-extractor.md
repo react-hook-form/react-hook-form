@@ -191,9 +191,11 @@ export type FieldError = {
     message?: Message;
 };
 
+// Warning: (ae-forgotten-export) The symbol "FieldErrorsRecursiveStep" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends object ? Merge<FieldError, FieldErrors<T[K]>> : FieldError;
+    [K in keyof T]?: FieldErrorsRecursiveStep<T[K]>;
 };
 
 // @public (undocumented)
