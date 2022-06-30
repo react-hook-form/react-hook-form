@@ -198,3 +198,36 @@ test('should infer context type into control', () => {
 
   App;
 });
+
+test('should support optional field errors', () => {
+  type Errors = FieldErrors<{
+    steps?: { action: string }[];
+    foo?: {
+      bar: string;
+    };
+    baz: { action: string };
+  }>;
+
+  const error = {
+    type: 'test',
+    message: 'test',
+  };
+
+  let errors: Errors = {
+    steps: error,
+    foo: error,
+    baz: error,
+  };
+
+  errors = {
+    steps: [{ action: error }],
+    foo: {
+      bar: error,
+    },
+    baz: {
+      action: error,
+    },
+  };
+
+  errors;
+});

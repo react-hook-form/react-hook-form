@@ -23,11 +23,19 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type FieldErrors<T extends FieldValues = FieldValues> = {
+export type DeepRequired<T> = {
+  [K in keyof T]-?: DeepRequired<T[K]>;
+};
+
+export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
   [K in keyof T]?: T[K] extends object
-    ? Merge<FieldError, FieldErrors<T[K]>>
+    ? Merge<FieldError, FieldErrorsImpl<T[K]>>
     : FieldError;
 };
+
+export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<
+  DeepRequired<T>
+>;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>
