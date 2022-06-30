@@ -201,13 +201,11 @@ test('should infer context type into control', () => {
 
 test('should support optional field errors', () => {
   type Errors = FieldErrors<{
-    steps?: { action: string }[] | string;
-    foo?:
-      | {
-          bar: string;
-        }
-      | string;
-    baz: { action: string } | string;
+    steps?: { action: string }[];
+    foo?: {
+      bar: string;
+    };
+    baz: { action: string };
   }>;
 
   const error = {
