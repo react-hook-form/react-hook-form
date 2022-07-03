@@ -1,5 +1,4 @@
 import { Field, NativeFieldValue } from '../types';
-import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 
@@ -10,9 +9,11 @@ export default <T extends NativeFieldValue>(
   isUndefined(value)
     ? value
     : valueAsNumber
-    ? value === '' || isNullOrUndefined(value)
+    ? value === ''
       ? NaN
-      : +value
+      : value
+      ? +value
+      : value
     : valueAsDate && isString(value)
     ? new Date(value)
     : setValueAs
