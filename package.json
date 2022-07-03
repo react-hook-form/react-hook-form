@@ -113,7 +113,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.32.1",
     "tsd": "^0.21.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.0-beta"
   },
   "resolutions": {
     "async": "^3.2.2"
