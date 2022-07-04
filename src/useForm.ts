@@ -1,8 +1,10 @@
 import React from 'react';
 
 import { createFormControl } from './logic/createFormControl';
+import generateId from './logic/generateId';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
+import { MessageData, UpdatePayload } from './types/extensionMessage';
 import {
   FieldErrors,
   FieldNamesMarkedBoolean,
@@ -12,6 +14,7 @@ import {
   UseFormReturn,
 } from './types';
 import { useSubscribe } from './useSubscribe';
+import { useWatch } from './useWatch';
 
 /**
  * Custom hook to mange the entire form.
@@ -42,6 +45,7 @@ import { useSubscribe } from './useSubscribe';
  * }
  * ```
  */
+const id = generateId();
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object,
@@ -94,6 +98,29 @@ export function useForm<
     callback,
   });
 
+  const [isExtensionEnabled, setIsExtensionEnabled] = React.useState(false);
+  const handleInitExtensionMessage = (message: MessageEvent<MessageData>) => {
+    if (
+      message.data.source !== 'react-hook-form-bridge' ||
+      message.data.type !== 'INIT'
+    ) {
+      return;
+    }
+    window.postMessage({
+      source: 'react-hook-form-bridge',
+      type: 'WELCOME',
+    } as MessageData);
+    setIsExtensionEnabled(true);
+  };
+
+  React.useEffect(() => {
+    // if(!props.debug) return;
+    window.addEventListener('message', handleInitExtensionMessage);
+    return () =>
+      window.removeEventListener('message', handleInitExtensionMessage);
+  }, []);
+
+  const formValues = useWatch({ control });
   React.useEffect(() => {
     if (!control._stateFlags.mount) {
       control._proxyFormState.isValid && control._updateValid();
@@ -102,6 +129,31 @@ export function useForm<
     if (control._stateFlags.watch) {
       control._stateFlags.watch = false;
       control._subjects.state.next({});
+    }
+    if (isExtensionEnabled) {
+      const { errors, ...formStateWithoutError } = formState;
+      const filteredErrors = Object.entries(errors).reduce(
+        (perv, [key, value]) => {
+          perv[key] = {
+            type: value?.type as string,
+            message: value?.message as string,
+          };
+          return perv;
+        },
+        {} as Record<string, { type?: string; message?: string }>,
+      );
+      const updateMessagePayload: UpdatePayload = {
+        id,
+        data: {
+          formValues,
+          formState: { ...formStateWithoutError, errors: filteredErrors },
+        },
+      };
+      window.postMessage({
+        source: 'react-hook-form-bridge',
+        type: 'UPDATE',
+        payload: updateMessagePayload,
+      } as MessageData);
     }
     control._removeUnmounted();
   });
