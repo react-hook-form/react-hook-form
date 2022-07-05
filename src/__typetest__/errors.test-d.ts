@@ -16,4 +16,10 @@ import { _ } from './__fixtures__';
       test1?: FieldError;
     }>(actual);
   }
+
+  /** it should return any if any provided */
+  {
+    const actual = _ as FieldErrors<any>;
+    expectType<any>(actual);
+  }
 }
