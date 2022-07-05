@@ -718,7 +718,7 @@ export function createFormControl<
           name,
         );
         const errorLookupResult = schemaErrorLookup(
-          errors,
+          errors as FieldErrors<TFieldValues>,
           _fields,
           previousErrorLookupResult.name || name,
         );
