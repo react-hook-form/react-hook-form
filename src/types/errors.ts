@@ -1,5 +1,5 @@
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { LiteralUnion, Merge } from './utils';
+import { IsAny, LiteralUnion, Merge } from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -33,9 +33,8 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
     : FieldError;
 };
 
-export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<
-  DeepRequired<T>
->;
+export type FieldErrors<T extends FieldValues = FieldValues> =
+  IsAny<T> extends true ? T : FieldErrorsImpl<DeepRequired<T>>;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>
