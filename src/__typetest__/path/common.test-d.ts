@@ -22,7 +22,7 @@ import {
   TupleKeys,
   UnionToIntersection,
   ValidPathPrefix,
-} from '../../../types/path/common';
+} from '../../types/path/common';
 import {
   _,
   HundredPathString,
