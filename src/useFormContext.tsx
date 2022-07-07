@@ -75,7 +75,7 @@ export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
   const { children, ...data } = props;
   return (
     <HookFormContext.Provider value={data as unknown as UseFormReturn}>
-      {props.children}
+      {children}
     </HookFormContext.Provider>
   );
 };

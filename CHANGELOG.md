@@ -2,9 +2,27 @@
 
 ## [7.33.0] - 2022-6-24
 
+## Breaking Change
+
+- `@hookform/resolvesrs` needs to upgraded to version `^2.9.3` above
+
 ## Changed
 
-- deprecate `NestedValue` and `UnpackNestedValue` type, will be removed in the next major version
+- Deprecate `NestedValue` and `UnpackNestedValue` type, will be **removed** in the next major version. **Important**: If you are using them, it may cause TS compile error, so please just remove the type usage.
+
+```diff
+type FormValues = {
+-  select: NestedValue<{
+-    nested: string
+-  }>
++  select: {
++    nested: string
++  }
+}
+
+type Data = UnpackNestedValue<FieldValues>
+```
+
 - `formState`'s `errors` is now mapped/merged with `FieldError`
 - `UseFormHandleSubmit` has removed unused function generic
 

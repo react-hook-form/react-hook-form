@@ -3,7 +3,11 @@ import schemaErrorLookup from '../../logic/schemaErrorLookup';
 describe('errorsLookup', () => {
   it('should be able to look up the error', () => {
     expect(
-      schemaErrorLookup(
+      schemaErrorLookup<{
+        test: {
+          deep: string;
+        };
+      }>(
         {
           test: {
             type: 'test',
@@ -64,7 +68,16 @@ describe('errorsLookup', () => {
     });
 
     expect(
-      schemaErrorLookup(
+      schemaErrorLookup<{
+        test: {
+          deep: string;
+        };
+        test1: {
+          nested: {
+            deepNested: string;
+          };
+        };
+      }>(
         {
           test: {
             type: 'test',
@@ -122,7 +135,12 @@ describe('errorsLookup', () => {
     });
 
     expect(
-      schemaErrorLookup(
+      schemaErrorLookup<{
+        test: {
+          test: string;
+          test1: string;
+        };
+      }>(
         {
           test: {
             test: {
@@ -145,7 +163,12 @@ describe('errorsLookup', () => {
 
   it('should prevent error from reported when field is identified', () => {
     expect(
-      schemaErrorLookup(
+      schemaErrorLookup<{
+        test: {
+          test: string;
+          test1: string;
+        };
+      }>(
         {
           test: {
             test: {
@@ -175,7 +198,12 @@ describe('errorsLookup', () => {
     });
 
     expect(
-      schemaErrorLookup(
+      schemaErrorLookup<{
+        test: {
+          test: string;
+          test1: string;
+        };
+      }>(
         {
           test: {
             test: {

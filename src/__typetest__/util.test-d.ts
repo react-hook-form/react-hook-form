@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { IsAny, IsNever } from '../../types';
+import { IsAny, IsNever } from '../types';
 
 import { _ } from './__fixtures__';
 

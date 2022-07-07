@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 
-import { FieldError } from '../../types';
-import { useForm } from '../../useForm';
+import { FieldError } from '../types';
+import { useForm } from '../useForm';
 
 /** {@link UseFormHandleSubmit} */ {
   /** it should infer the correct defaultValues from useForm */ {

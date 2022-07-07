@@ -665,7 +665,6 @@ describe('useController', () => {
       });
 
       React.useEffect(() => {
-        setFocus('test');
         setFocus('test', { shouldSelect: true });
       }, [setFocus]);
 
