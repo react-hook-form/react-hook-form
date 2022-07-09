@@ -10,6 +10,7 @@ import {
 } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
 test('should not throw type error with path name', () => {
@@ -230,4 +231,16 @@ test('should support optional field errors', () => {
   };
 
   errors;
+});
+
+test('should allow useFormContext without generic', () => {
+  const Test = () => {
+    const context1 = useFormContext();
+    const context2 = useFormContext<any>();
+
+    context1.formState?.errors?.firstName?.message;
+    context2.formState?.errors?.firstName?.message;
+  };
+
+  Test;
 });
