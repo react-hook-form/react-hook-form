@@ -5,6 +5,14 @@
 ## Breaking Change
 
 - `@hookform/resolvesrs` needs to upgraded to version `^2.9.3` above
+- `useFormContext` do always required to provide a generic type check for your form, without providing generic will now require developers to convert error messages to `String` to pass the type check
+
+```tsx
+useFormContext<FormValues>(); // ✅ correct usage by provide form type defination
+
+const { formState } = useFormContext(); // if generic is missing
+String(formState.errors?.input?.message); // will need to convert to string
+```
 
 ## Changed
 
