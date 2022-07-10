@@ -99,8 +99,8 @@ export type UseFieldArrayPrepend<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -130,8 +130,8 @@ export type UseFieldArrayAppend<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -184,8 +184,8 @@ export type UseFieldArrayInsert<
 > = (
   index: number,
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -237,8 +237,8 @@ export type UseFieldArrayReplace<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
 ) => void;
 
 export type UseFieldArrayReturn<
