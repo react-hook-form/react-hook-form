@@ -1900,4 +1900,117 @@ describe('validateField', () => {
       ).toEqual({});
     });
   });
+
+  it('should validate field array with required attribute', async () => {
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'test',
+              value: '',
+            },
+            value: undefined,
+            required: true,
+            mount: true,
+          },
+        },
+        undefined,
+        false,
+        false,
+        true,
+      ),
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          value: '',
+        },
+        type: 'required',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'test',
+              value: '',
+            },
+            value: [],
+            required: true,
+            mount: true,
+          },
+        },
+        [],
+        false,
+        false,
+        true,
+      ),
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          value: '',
+        },
+        type: 'required',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'test',
+              value: '',
+            },
+            value: null,
+            required: true,
+            mount: true,
+          },
+        },
+        null,
+        false,
+        false,
+        true,
+      ),
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          value: '',
+        },
+        type: 'required',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'test',
+              value: '',
+            },
+            value: [],
+            required: true,
+            mount: true,
+          },
+        },
+        [{}],
+        false,
+        false,
+        true,
+      ),
+    ).toEqual({});
+  });
 });
