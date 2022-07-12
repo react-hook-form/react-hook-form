@@ -88,7 +88,7 @@ export default async <T extends NativeFieldValue>(
 
   if (
     isFieldArray
-      ? Array.isArray(inputValue) && !inputValue.length
+      ? !Array.isArray(inputValue) || !inputValue.length
       : required &&
         ((!isRadioOrCheckbox && (isEmpty || isNullOrUndefined(inputValue))) ||
           (isBoolean(inputValue) && !inputValue) ||
