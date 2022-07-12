@@ -341,7 +341,7 @@ export type Names = {
 };
 
 // @public (undocumented)
-export type NativeFieldValue = string | number | boolean | null | undefined;
+export type NativeFieldValue = string | number | boolean | null | undefined | unknown[];
 
 // @public @deprecated (undocumented)
 export type NestedValue<TValue extends object = object> = {
