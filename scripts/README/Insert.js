@@ -1,7 +1,4 @@
-
-import generators from './Generators.js'
-
-
+import generators from './Generators.js';
 
 /*
  *  Match lines starting with `~`
@@ -9,27 +6,18 @@ import generators from './Generators.js'
 
 const insert_id = /^~\S*$/gm;
 
-const comment_unknown = (type) =>
-    `<!-- Unknown Insertion Type : '${ type }' -->`;
+const comment_unknown = (type) => `<!-- Unknown Insertion Type : '${type}' -->`;
 
+function insert(raw) {
+  const type = toType(raw);
 
-
-function insert(raw){
-    
-    const type = toType(raw);
-    
-    return generators[type]?.() 
-        ?? comment_unknown(type);
+  return generators[type]?.() ?? comment_unknown(type);
 }
 
-function toType(string){
-    return string
-        .trim()
-        .substring(1);
+function toType(string) {
+  return string.trim().substring(1);
 }
 
-
-export default function insertInto(template){
-    return template.replace(insert_id,insert);
+export default function insertInto(template) {
+  return template.replace(insert_id, insert);
 }
-
