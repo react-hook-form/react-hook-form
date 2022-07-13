@@ -15,6 +15,12 @@ jobs:
             -   uses : denoland/setup-deno@v1
                 with:
                     deno-version : 1.23.4
+                    
+            -   run : ls
+            
+            -   run : ls scripts
+            
+            -   run : ls scripts/README
                 
             -   name : Run README updater
                 run : 'deno run 
