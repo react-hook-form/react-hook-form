@@ -79,6 +79,7 @@ import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
+import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
 
 const defaultOptions = {
@@ -418,17 +419,19 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const { _f: fieldReference, ...fieldValue } = field;
+        const { _f, ...fieldValue } = field;
 
-        if (fieldReference) {
+        if (_f) {
+          const isFieldArrayRoot = _names.array.has(_f.name);
           const fieldError = await validateField(
             field,
-            get(_formValues, fieldReference.name),
+            get(_formValues, _f.name),
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
+            isFieldArrayRoot,
           );
 
-          if (fieldError[fieldReference.name]) {
+          if (fieldError[_f.name]) {
             context.valid = false;
 
             if (shouldOnlyCheckValid) {
@@ -436,15 +439,16 @@ export function createFormControl<
             }
           }
 
-          if (!shouldOnlyCheckValid) {
-            fieldError[fieldReference.name]
-              ? set(
-                  _formState.errors,
-                  fieldReference.name,
-                  fieldError[fieldReference.name],
-                )
-              : unset(_formState.errors, fieldReference.name);
-          }
+          !shouldOnlyCheckValid &&
+            (get(fieldError, _f.name)
+              ? isFieldArrayRoot
+                ? updateFieldArrayRootError(
+                    _formState.errors,
+                    fieldError,
+                    _f.name,
+                  )
+                : set(_formState.errors, _f.name, fieldError[_f.name])
+              : unset(_formState.errors, _f.name));
         }
 
         fieldValue &&

@@ -105,6 +105,7 @@ describe('basicSchemaValidation form validation', () => {
     cy.get('input[name="lastName"] + p').contains('lastName error');
     cy.get('input[name="lastName"]').type('luo123456');
     cy.get('input[name="lastName"] + p').contains('lastName error');
+    cy.get('select[name="selectNumber"]').select('1');
     cy.get('select[name="selectNumber"]').select('');
     cy.get('select[name="selectNumber"] + p').contains('selectNumber error');
     cy.get('select[name="selectNumber"]').select('1');
