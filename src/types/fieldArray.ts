@@ -1,6 +1,7 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
 import { FieldArrayPath, FieldArrayPathValue } from './path';
+import { RegisterOptions } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -10,6 +11,10 @@ export type UseFieldArrayProps<
   name: TFieldArrayName;
   keyName?: TKeyName;
   control?: Control<TFieldValues>;
+  rules?: Pick<
+    RegisterOptions<TFieldValues>,
+    'maxLength' | 'minLength' | 'validate' | 'required'
+  >;
   shouldUnregister?: boolean;
 };
 

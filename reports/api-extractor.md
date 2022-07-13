@@ -191,6 +191,7 @@ export type FieldElement<TFieldValues extends FieldValues = FieldValues> = HTMLI
 // @public (undocumented)
 export type FieldError = {
     type: LiteralUnion<keyof RegisterOptions, string>;
+    root?: FieldError;
     ref?: Ref;
     types?: MultipleFieldErrors;
     message?: Message;
@@ -340,7 +341,7 @@ export type Names = {
 };
 
 // @public (undocumented)
-export type NativeFieldValue = string | number | boolean | null | undefined;
+export type NativeFieldValue = string | number | boolean | null | undefined | unknown[];
 
 // @public @deprecated (undocumented)
 export type NestedValue<TValue extends object = object> = {
@@ -519,6 +520,7 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     name: TFieldArrayName;
     keyName?: TKeyName;
     control?: Control<TFieldValues>;
+    rules?: Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'validate' | 'required'>;
     shouldUnregister?: boolean;
 };
 
