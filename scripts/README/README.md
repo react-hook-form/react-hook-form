@@ -14,6 +14,33 @@ with linked icons generated from the data found in <br>
 <br>
 <br>
 
+## Markers
+
+A marker is placed at the start of a line.
+
+<br>
+
+### Syntax
+
+```markdown
+~Marker_Id
+```
+
+<br>
+
+### Types
+
+-   `Sponsors`
+
+    *Generates icons for sponsors.*
+
+-   `Helpers`
+
+    *Generates icons for helpers.*
+
+<br>
+<br>
+
 ## Requirements
 
 *Things you need if you run it manually.*
