@@ -17,8 +17,8 @@ jobs:
                     deno-version : 1.23.4
                 
             -   name : Run README updater
-                run : deno run                              |
-                    --allow-read                            |
-                    --allow-write                           |
-                    --importmap=scripts/README/Imports.json |
-                    scripts/README/Updater.js
+                run : 'deno run 
+                    --allow-read 
+                    --allow-write 
+                    --importmap=scripts/README/Imports.json 
+                    scripts/README/Updater.js'
