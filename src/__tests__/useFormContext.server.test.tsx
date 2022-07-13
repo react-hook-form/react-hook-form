@@ -8,52 +8,50 @@ import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 
 describe('FormProvider', () => {
-    it('should work correctly with Controller, useWatch, useFormState.', () => {
-        const App = () => {
-            const { field } = useController({
-                name: 'test',
-                defaultValue: '',
-            });
-            return <input {...field} />;
-        };
+  it('should work correctly with Controller, useWatch, useFormState.', () => {
+    const App = () => {
+      const { field } = useController({
+        name: 'test',
+        defaultValue: '',
+      });
+      return <input {...field} />;
+    };
 
-        const TestWatch = () => {
-            const value = useWatch({
-                name: 'test',
-            });
+    const TestWatch = () => {
+      const value = useWatch({
+        name: 'test',
+      });
 
-            return <p>{value}</p>;
-        };
+      return <p>{value}</p>;
+    };
 
-        const TestFormState = () => {
-            const { isDirty } = useFormState();
+    const TestFormState = () => {
+      const { isDirty } = useFormState();
 
-            return <div>{isDirty ? 'yes' : 'no'}</div>;
-        };
+      return <div>{isDirty ? 'yes' : 'no'}</div>;
+    };
 
-        const TestUseFormContext = () => {
-            const methods = useFormContext();
-            methods.register('test');
-            return null;
-        };
+    const TestUseFormContext = () => {
+      const methods = useFormContext();
+      methods.register('test');
+      return null;
+    };
 
-        const Component = () => {
-            const methods = useForm();
+    const Component = () => {
+      const methods = useForm();
 
-            return (
-                <FormProvider {...methods}>
-                    <App />
-                    <TestUseFormContext />
-                    <TestWatch />
-                    <TestFormState />
-                </FormProvider>
-            );
-        };
+      return (
+        <FormProvider {...methods}>
+          <App />
+          <TestUseFormContext />
+          <TestWatch />
+          <TestFormState />
+        </FormProvider>
+      );
+    };
 
-        const output = renderToString(<Component />);
+    const output = renderToString(<Component />);
 
-        expect(output).toEqual(
-            '<input name="test" value=""/><p></p><div>no</div>',
-        );
-    });
+    expect(output).toEqual('<input name="test" value=""/><p></p><div>no</div>');
+  });
 });

@@ -4,148 +4,144 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { useForm } from '../../useForm';
 
 describe('resolver', () => {
-    it('should update context within the resolver', async () => {
-        type FormValues = {
-            test: string;
-        };
+  it('should update context within the resolver', async () => {
+    type FormValues = {
+      test: string;
+    };
 
-        const App = () => {
-            const [test, setTest] = React.useState('');
-            const [data, setData] = React.useState({});
-            const { handleSubmit } = useForm<FormValues>({
-                resolver: (_, context) => {
-                    return {
-                        errors: {},
-                        values: context as FormValues,
-                    };
-                },
-                context: {
-                    test,
-                },
-            });
+    const App = () => {
+      const [test, setTest] = React.useState('');
+      const [data, setData] = React.useState({});
+      const { handleSubmit } = useForm<FormValues>({
+        resolver: (_, context) => {
+          return {
+            errors: {},
+            values: context as FormValues,
+          };
+        },
+        context: {
+          test,
+        },
+      });
 
-            return (
-                <>
-                    <input
-                        value={test}
-                        onChange={(e) => {
-                            setTest(e.target.value);
-                        }}
-                    />
-                    <button onClick={handleSubmit((data) => setData(data))}>
-                        Test
-                    </button>
-                    <p>{JSON.stringify(data)}</p>
-                </>
-            );
-        };
+      return (
+        <>
+          <input
+            value={test}
+            onChange={(e) => {
+              setTest(e.target.value);
+            }}
+          />
+          <button onClick={handleSubmit((data) => setData(data))}>Test</button>
+          <p>{JSON.stringify(data)}</p>
+        </>
+      );
+    };
 
-        render(<App />);
+    render(<App />);
 
-        fireEvent.change(screen.getByRole('textbox'), {
-            target: { value: 'test' },
-        });
-        fireEvent.click(screen.getByRole('button'));
-
-        expect(
-            await screen.findByText('{"test":"test"}', undefined, {
-                timeout: 3000,
-            }),
-        ).toBeVisible();
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'test' },
     });
+    fireEvent.click(screen.getByRole('button'));
 
-    it('should support resolver schema switching', async () => {
-        type FormValues = {
-            test: string;
-        };
+    expect(
+      await screen.findByText('{"test":"test"}', undefined, { timeout: 3000 }),
+    ).toBeVisible();
+  });
 
-        const fakeResolver = (schema: boolean) => async () => {
-            return schema
-                ? {
-                      values: { test: 'ok' },
-                      errors: {},
-                  }
-                : {
-                      values: {},
-                      errors: {
-                          test: {
-                              type: 'test',
-                              value: { message: 'wrong', type: 'test' },
-                          },
-                      },
-                  };
-        };
+  it('should support resolver schema switching', async () => {
+    type FormValues = {
+      test: string;
+    };
 
-        const App = () => {
-            const [schema, setSchema] = React.useState(false);
-            const [submit, setSubmit] = React.useState(false);
-            const {
-                register,
-                handleSubmit,
-                formState: { errors },
-            } = useForm<FormValues>({
-                resolver: fakeResolver(schema),
-            });
+    const fakeResolver = (schema: boolean) => async () => {
+      return schema
+        ? {
+            values: { test: 'ok' },
+            errors: {},
+          }
+        : {
+            values: {},
+            errors: {
+              test: {
+                type: 'test',
+                value: { message: 'wrong', type: 'test' },
+              },
+            },
+          };
+    };
 
-            return (
-                <form
-                    onSubmit={handleSubmit(() => {
-                        setSubmit(true);
-                    })}
-                >
-                    <input {...register('test')} />
-                    {errors.test && <p>Error</p>}
-                    {submit && <p>Submitted</p>}
-                    <button onClick={() => setSchema(!schema)}>Toggle</button>
-                    <button>Submit</button>
-                </form>
-            );
-        };
+    const App = () => {
+      const [schema, setSchema] = React.useState(false);
+      const [submit, setSubmit] = React.useState(false);
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<FormValues>({
+        resolver: fakeResolver(schema),
+      });
 
-        render(<App />);
+      return (
+        <form
+          onSubmit={handleSubmit(() => {
+            setSubmit(true);
+          })}
+        >
+          <input {...register('test')} />
+          {errors.test && <p>Error</p>}
+          {submit && <p>Submitted</p>}
+          <button onClick={() => setSchema(!schema)}>Toggle</button>
+          <button>Submit</button>
+        </form>
+      );
+    };
 
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    render(<App />);
 
-        expect(await screen.findByText('Error')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-        fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
+    expect(await screen.findByText('Error')).toBeVisible();
 
-        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
 
-        expect(await screen.findByText('Submitted')).toBeVisible();
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    it('should be called with the shouldUseNativeValidation option to true', async () => {
-        const test = jest.fn();
-        const resolver = (a: any, b: any, c: any) => {
-            test(a, b, c);
-            return {
-                errors: {},
-                values: {},
-            };
-        };
+    expect(await screen.findByText('Submitted')).toBeVisible();
+  });
 
-        const App = () => {
-            const { register, handleSubmit } = useForm({
-                resolver: async (data, context, options) =>
-                    resolver(data, context, options),
-                shouldUseNativeValidation: true,
-            });
+  it('should be called with the shouldUseNativeValidation option to true', async () => {
+    const test = jest.fn();
+    const resolver = (a: any, b: any, c: any) => {
+      test(a, b, c);
+      return {
+        errors: {},
+        values: {},
+      };
+    };
 
-            return (
-                <form onSubmit={handleSubmit(() => {})}>
-                    <input {...register('test')} />
-                    <button>Submit</button>
-                </form>
-            );
-        };
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        resolver: async (data, context, options) =>
+          resolver(data, context, options),
+        shouldUseNativeValidation: true,
+      });
 
-        render(<App />);
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('test')} />
+          <button>Submit</button>
+        </form>
+      );
+    };
 
-        fireEvent.click(screen.getByRole('button'));
+    render(<App />);
 
-        expect(test.mock.calls[0][2]).toEqual(
-            expect.objectContaining({ shouldUseNativeValidation: true }),
-        );
-    });
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(test.mock.calls[0][2]).toEqual(
+      expect.objectContaining({ shouldUseNativeValidation: true }),
+    );
+  });
 });

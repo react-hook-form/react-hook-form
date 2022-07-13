@@ -19,21 +19,21 @@ checkLineEndings(config);
  * @param config {ExtractorConfig}
  */
 function checkReportMatchesApi(config) {
-    const result = Extractor.invoke(config, {
-        localBuild: false, // validate report, fail on warnings or errors
-        messageCallback: (message) => {
-            // suppress all error or warnings
-            message.handled = true;
-        },
-    });
+  const result = Extractor.invoke(config, {
+    localBuild: false, // validate report, fail on warnings or errors
+    messageCallback: (message) => {
+      // suppress all error or warnings
+      message.handled = true;
+    },
+  });
 
-    if (result.apiReportChanged) {
-        exit(
-            `The API Extractor report does not match the exported API.`,
-            `Please run \`${API_EXTRACTOR_YARN_COMMAND}\` to generate an`,
-            `updated report and commit it.`,
-        );
-    }
+  if (result.apiReportChanged) {
+    exit(
+      `The API Extractor report does not match the exported API.`,
+      `Please run \`${API_EXTRACTOR_YARN_COMMAND}\` to generate an`,
+      `updated report and commit it.`,
+    );
+  }
 }
 
 /**
@@ -42,16 +42,16 @@ function checkReportMatchesApi(config) {
  * @param config {ExtractorConfig}
  */
 function checkNoErrorsAndWarnings(config) {
-    const result = Extractor.invoke(config, {
-        localBuild: false, // validate report, fail on warnings or errors,
-    });
+  const result = Extractor.invoke(config, {
+    localBuild: false, // validate report, fail on warnings or errors,
+  });
 
-    if (!result.succeeded) {
-        exit(
-            `API Extractor completed with ${result.errorCount} errors and`,
-            `${result.warningCount} warnings.`,
-        );
-    }
+  if (!result.succeeded) {
+    exit(
+      `API Extractor completed with ${result.errorCount} errors and`,
+      `${result.warningCount} warnings.`,
+    );
+  }
 }
 
 /**
@@ -61,31 +61,31 @@ function checkNoErrorsAndWarnings(config) {
  * @param config {ExtractorConfig}
  */
 function checkLineEndings(config) {
-    const report = fs.readFileSync(config.reportFilePath);
+  const report = fs.readFileSync(config.reportFilePath);
 
-    const LF = '\n';
-    const CRLF = '\r\n';
+  const LF = '\n';
+  const CRLF = '\r\n';
 
-    const containsLf = report.includes(LF);
-    const containsCrLf = report.includes(CRLF);
+  const containsLf = report.includes(LF);
+  const containsCrLf = report.includes(CRLF);
 
-    const relativeReportPath = path.relative(
-        process.cwd(),
-        config.reportFilePath,
+  const relativeReportPath = path.relative(
+    process.cwd(),
+    config.reportFilePath,
+  );
+
+  if (config.newlineKind === LF && containsCrLf) {
+    exit(
+      `${relativeReportPath} contains CRLF.`,
+      `Please convert its line endings to LF.`,
     );
-
-    if (config.newlineKind === LF && containsCrLf) {
-        exit(
-            `${relativeReportPath} contains CRLF.`,
-            `Please convert its line endings to LF.`,
-        );
-    }
-    if (config.newlineKind === CRLF && containsLf && !containsCrLf) {
-        exit(
-            `${relativeReportPath} contains LF.`,
-            `Please convert its line endings to CRLF.`,
-        );
-    }
+  }
+  if (config.newlineKind === CRLF && containsLf && !containsCrLf) {
+    exit(
+      `${relativeReportPath} contains LF.`,
+      `Please convert its line endings to CRLF.`,
+    );
+  }
 }
 
 /**
@@ -94,16 +94,16 @@ function checkLineEndings(config) {
  * @returns {ExtractorConfig}
  */
 function loadExtractorConfig() {
-    const rawConfig = ExtractorConfig.tryLoadForFolder({
-        startingFolder: process.cwd(),
-    });
-    if (!rawConfig) {
-        exit(
-            `No API Extractor config could be found for the`,
-            `current working directory.`,
-        );
-    }
-    return ExtractorConfig.prepare(rawConfig);
+  const rawConfig = ExtractorConfig.tryLoadForFolder({
+    startingFolder: process.cwd(),
+  });
+  if (!rawConfig) {
+    exit(
+      `No API Extractor config could be found for the`,
+      `current working directory.`,
+    );
+  }
+  return ExtractorConfig.prepare(rawConfig);
 }
 
 /**
@@ -113,7 +113,7 @@ function loadExtractorConfig() {
  * @param message {string}
  */
 function red(message) {
-    return `\u001b[31m${message}\u001b[0m`;
+  return `\u001b[31m${message}\u001b[0m`;
 }
 
 /**
@@ -121,7 +121,7 @@ function red(message) {
  * @param message {string}
  */
 function exit(...message) {
-    /* eslint-disable-next-line no-console */
-    console.log(`${red('FAILURE REASON')} ${message.join(' ')}`);
-    process.exit(1);
+  /* eslint-disable-next-line no-console */
+  console.log(`${red('FAILURE REASON')} ${message.join(' ')}`);
+  process.exit(1);
 }

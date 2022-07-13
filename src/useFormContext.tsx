@@ -35,9 +35,9 @@ const HookFormContext = React.createContext<UseFormReturn | null>(null);
  * ```
  */
 export const useFormContext = <
-    TFieldValues extends FieldValues,
+  TFieldValues extends FieldValues,
 >(): UseFormReturn<TFieldValues> =>
-    React.useContext(HookFormContext) as unknown as UseFormReturn<TFieldValues>;
+  React.useContext(HookFormContext) as unknown as UseFormReturn<TFieldValues>;
 
 /**
  * A provider component that propagates the `useForm` methods to all children components via [React Context](https://reactjs.org/docs/context.html) API. To be used with {@link useFormContext}.
@@ -70,12 +70,12 @@ export const useFormContext = <
  * ```
  */
 export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
-    props: FormProviderProps<TFieldValues, TContext>,
+  props: FormProviderProps<TFieldValues, TContext>,
 ) => {
-    const { children, ...data } = props;
-    return (
-        <HookFormContext.Provider value={data as unknown as UseFormReturn}>
-            {children}
-        </HookFormContext.Provider>
-    );
+  const { children, ...data } = props;
+  return (
+    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
+      {children}
+    </HookFormContext.Provider>
+  );
 };

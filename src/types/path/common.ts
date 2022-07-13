@@ -22,8 +22,8 @@ export type Traversable = object;
  * ```
  */
 export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
-    ? false
-    : true;
+  ? false
+  : true;
 
 /**
  * Type which can be used to index an array or tuple type.
@@ -70,10 +70,10 @@ export type AsPathTuple<T> = Extract<T, PathTuple>;
  * ```
  */
 export type UnionToIntersection<U> = (
-    U extends any ? (_: U) => any : never
+  U extends any ? (_: U) => any : never
 ) extends (_: infer I) => any
-    ? I
-    : never;
+  ? I
+  : never;
 
 /**
  * Type which appends a {@link Key} to the {@link PathTuple} only if it is not
@@ -87,8 +87,8 @@ export type UnionToIntersection<U> = (
  * ```
  */
 type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
-    ? PT
-    : [...PT, K];
+  ? PT
+  : [...PT, K];
 
 /**
  * Type to implement {@link SplitPathString} tail recursively.
@@ -98,11 +98,11 @@ type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
  *                 the original {@link PathString} already
  */
 type SplitPathStringImpl<
-    PS extends PathString,
-    PT extends PathTuple,
+  PS extends PathString,
+  PT extends PathTuple,
 > = PS extends `${infer K}.${infer R}`
-    ? SplitPathStringImpl<R, AppendNonBlankKey<PT, K>>
-    : AppendNonBlankKey<PT, PS>;
+  ? SplitPathStringImpl<R, AppendNonBlankKey<PT, K>>
+  : AppendNonBlankKey<PT, PS>;
 
 /**
  * Type to split a {@link PathString} into a {@link PathTuple}.
@@ -117,8 +117,8 @@ type SplitPathStringImpl<
  * ```
  */
 export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
-    PS,
-    []
+  PS,
+  []
 >;
 
 /**
@@ -127,11 +127,11 @@ export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
  * @typeParam PS - accumulator of the already joined {@link Key}s
  */
 type JoinPathTupleImpl<
-    PT extends PathTuple,
-    PS extends PathString,
+  PT extends PathTuple,
+  PS extends PathString,
 > = PT extends [infer K, ...infer R]
-    ? JoinPathTupleImpl<AsPathTuple<R>, `${PS}.${AsKey<K>}`>
-    : PS;
+  ? JoinPathTupleImpl<AsPathTuple<R>, `${PS}.${AsKey<K>}`>
+  : PS;
 
 /**
  * Type to join a {@link PathTuple} to a {@link PathString}.
@@ -144,11 +144,11 @@ type JoinPathTupleImpl<
  * ```
  */
 export type JoinPathTuple<PT extends PathTuple> = PT extends [
-    infer K,
-    ...infer R,
+  infer K,
+  ...infer R,
 ]
-    ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>>
-    : never;
+  ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>>
+  : never;
 
 /**
  * Type which converts all keys of an object to {@link Key}s.
@@ -175,10 +175,10 @@ type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
  * ```
  */
 type TryAccess<T, K> = K extends keyof T
-    ? T[K]
-    : T extends null
-    ? null
-    : undefined;
+  ? T[K]
+  : T extends null
+  ? null
+  : undefined;
 
 /**
  * Type to access an array type by a key.
@@ -191,8 +191,8 @@ type TryAccess<T, K> = K extends keyof T
  * ```
  */
 type TryAccessArray<
-    T extends ReadonlyArray<any>,
-    K extends Key,
+  T extends ReadonlyArray<any>,
+  K extends Key,
 > = K extends `${ArrayKey}` ? T[number] : TryAccess<T, K>;
 
 /**
@@ -207,10 +207,10 @@ type TryAccessArray<
  * ```
  */
 export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
-    ? IsTuple<T> extends true
-        ? TryAccess<T, K>
-        : TryAccessArray<T, K>
-    : TryAccess<MapKeys<T>, K>;
+  ? IsTuple<T> extends true
+    ? TryAccess<T, K>
+    : TryAccessArray<T, K>
+  : TryAccess<MapKeys<T>, K>;
 
 /**
  * Type to evaluate the type which the given path points to.
@@ -225,11 +225,11 @@ export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
  * ```
  */
 export type EvaluatePath<T, PT extends PathTuple> = PT extends [
-    infer K,
-    ...infer R,
+  infer K,
+  ...infer R,
 ]
-    ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
-    : T;
+  ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
+  : T;
 
 /**
  * Type which given a tuple type returns its own keys, i.e. only its indices.
@@ -240,8 +240,8 @@ export type EvaluatePath<T, PT extends PathTuple> = PT extends [
  * ```
  */
 export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
-    keyof T,
-    keyof any[]
+  keyof T,
+  keyof any[]
 >;
 
 /**
@@ -253,7 +253,7 @@ export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
  * ```
  */
 type NumericObjectKeys<T extends Traversable> = ToKey<
-    Extract<keyof T, ArrayKey | `${ArrayKey}`>
+  Extract<keyof T, ArrayKey | `${ArrayKey}`>
 >;
 
 /**
@@ -269,11 +269,11 @@ type NumericObjectKeys<T extends Traversable> = ToKey<
  * ```
  */
 export type NumericKeys<T extends Traversable> = UnionToIntersection<
-    T extends ReadonlyArray<any>
-        ? IsTuple<T> extends true
-            ? [TupleKeys<T>]
-            : [ToKey<ArrayKey>]
-        : [NumericObjectKeys<T>]
+  T extends ReadonlyArray<any>
+    ? IsTuple<T> extends true
+      ? [TupleKeys<T>]
+      : [ToKey<ArrayKey>]
+    : [NumericObjectKeys<T>]
 >[never];
 
 /**
@@ -287,8 +287,8 @@ export type NumericKeys<T extends Traversable> = UnionToIntersection<
  * ```
  */
 export type ObjectKeys<T extends Traversable> = Exclude<
-    ToKey<keyof T>,
-    `${string}.${string}` | ''
+  ToKey<keyof T>,
+  `${string}.${string}` | ''
 >;
 
 /**
@@ -305,10 +305,10 @@ export type ObjectKeys<T extends Traversable> = Exclude<
  * ```
  */
 export type CheckKeyConstraint<T, K extends Key, U> = K extends any
-    ? EvaluateKey<T, K> extends U
-        ? K
-        : never
-    : never;
+  ? EvaluateKey<T, K> extends U
+    ? K
+    : never
+  : never;
 
 /**
  * Type which evaluates to true when the type is an array or tuple or is a union
@@ -321,20 +321,20 @@ export type CheckKeyConstraint<T, K extends Key, U> = K extends any
  * ```
  */
 export type ContainsIndexable<T> = IsNever<
-    Extract<T, ReadonlyArray<any>>
+  Extract<T, ReadonlyArray<any>>
 > extends true
-    ? false
-    : true;
+  ? false
+  : true;
 
 /**
  * Type to implement {@link Keys} for non-nullable values.
  * @typeParam T - non-nullable type whose property should be checked
  */
 type KeysImpl<T> = [T] extends [Traversable]
-    ? ContainsIndexable<T> extends true
-        ? NumericKeys<T>
-        : ObjectKeys<T>
-    : never;
+  ? ContainsIndexable<T> extends true
+    ? NumericKeys<T>
+    : ObjectKeys<T>
+  : never;
 
 /**
  * Type to find all properties of a type that match the constraint type
@@ -353,12 +353,12 @@ type KeysImpl<T> = [T] extends [Traversable]
  * ```
  */
 export type Keys<T, U = unknown> = IsAny<T> extends true
-    ? Key
-    : IsNever<T> extends true
-    ? Key
-    : IsNever<NonNullable<T>> extends true
-    ? never
-    : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, U>;
+  ? Key
+  : IsNever<T> extends true
+  ? Key
+  : IsNever<NonNullable<T>> extends true
+  ? never
+  : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, U>;
 
 /**
  * Type to check whether a {@link Key} is present in a type.
@@ -383,18 +383,18 @@ export type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
  *                  confirmed to exist already
  */
 type ValidPathPrefixImpl<
-    T,
-    PT extends PathTuple,
-    VPT extends PathTuple,
+  T,
+  PT extends PathTuple,
+  VPT extends PathTuple,
 > = PT extends [infer K, ...infer R]
-    ? HasKey<T, AsKey<K>> extends true
-        ? ValidPathPrefixImpl<
-              EvaluateKey<T, AsKey<K>>,
-              AsPathTuple<R>,
-              AsPathTuple<[...VPT, K]>
-          >
-        : VPT
-    : VPT;
+  ? HasKey<T, AsKey<K>> extends true
+    ? ValidPathPrefixImpl<
+        EvaluateKey<T, AsKey<K>>,
+        AsPathTuple<R>,
+        AsPathTuple<[...VPT, K]>
+      >
+    : VPT
+  : VPT;
 
 /**
  * Type to find the longest path prefix which is still valid,
@@ -408,9 +408,9 @@ type ValidPathPrefixImpl<
  * ```
  */
 export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
-    T,
-    PT,
-    []
+  T,
+  PT,
+  []
 >;
 
 /**
@@ -424,5 +424,5 @@ export type ValidPathPrefix<T, PT extends PathTuple> = ValidPathPrefixImpl<
  * ```
  */
 export type HasPath<T, PT extends PathTuple> = ValidPathPrefix<T, PT> extends PT
-    ? true
-    : false;
+  ? true
+  : false;

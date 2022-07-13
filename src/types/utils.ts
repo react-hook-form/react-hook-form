@@ -12,46 +12,46 @@ If you want type definitions for various properties, you need to add `--lib DOM`
 export type Noop = () => void;
 
 interface File extends Blob {
-    readonly lastModified: number;
-    readonly name: string;
+  readonly lastModified: number;
+  readonly name: string;
 }
 
 interface FileList {
-    readonly length: number;
-    item(index: number): File | null;
-    [index: number]: File;
+  readonly length: number;
+  item(index: number): File | null;
+  [index: number]: File;
 }
 
 export type Primitive =
-    | null
-    | undefined
-    | string
-    | number
-    | boolean
-    | symbol
-    | bigint;
+  | null
+  | undefined
+  | string
+  | number
+  | boolean
+  | symbol
+  | bigint;
 
 export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
 
 export type LiteralUnion<T extends U, U extends Primitive> =
-    | T
-    | (U & { _?: never });
+  | T
+  | (U & { _?: never });
 
 export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
-    ? T
-    : { [K in keyof T]?: DeepPartial<T[K]> };
+  ? T
+  : { [K in keyof T]?: DeepPartial<T[K]> };
 
 export type DeepPartialSkipArrayKey<T> = T extends
-    | Date
-    | FileList
-    | File
-    | NestedValue
-    ? T
-    : T extends ReadonlyArray<any>
-    ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
-    : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+  | Date
+  | FileList
+  | File
+  | NestedValue
+  ? T
+  : T extends ReadonlyArray<any>
+  ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+  : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
 /**
  * Checks whether the type is any
@@ -75,28 +75,28 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
 export type IsNever<T> = [T] extends [never] ? true : false;
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
-    ? any
-    : T extends Date | FileList | File | NestedValue
-    ? TValue
-    : T extends object
-    ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
-    : TValue;
+  ? any
+  : T extends Date | FileList | File | NestedValue
+  ? TValue
+  : T extends object
+  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+  : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
-    Exclude<T[keyof T], NestedValue | Date | FileList>,
-    any[] | object
+  Exclude<T[keyof T], NestedValue | Date | FileList>,
+  any[] | object
 > extends never
-    ? true
-    : false;
+  ? true
+  : false;
 
 export type Merge<A, B> = {
-    [K in keyof A | keyof B]?: K extends keyof A & keyof B
-        ? [A[K], B[K]] extends [object, object]
-            ? Merge<A[K], B[K]>
-            : A[K] | B[K]
-        : K extends keyof A
-        ? A[K]
-        : K extends keyof B
-        ? B[K]
-        : never;
+  [K in keyof A | keyof B]?: K extends keyof A & keyof B
+    ? [A[K], B[K]] extends [object, object]
+      ? Merge<A[K], B[K]>
+      : A[K] | B[K]
+    : K extends keyof A
+    ? A[K]
+    : K extends keyof B
+    ? B[K]
+    : never;
 };

@@ -3,26 +3,26 @@ import get from '../utils/get';
 import isString from '../utils/isString';
 
 export default (
-    names: string | string[] | undefined,
-    _names: Names,
-    formValues?: FieldValues,
-    isGlobal?: boolean,
+  names: string | string[] | undefined,
+  _names: Names,
+  formValues?: FieldValues,
+  isGlobal?: boolean,
 ) => {
-    const isArray = Array.isArray(names);
-    if (isString(names)) {
-        isGlobal && _names.watch.add(names as InternalFieldName);
-        return get(formValues, names as InternalFieldName);
-    }
+  const isArray = Array.isArray(names);
+  if (isString(names)) {
+    isGlobal && _names.watch.add(names as InternalFieldName);
+    return get(formValues, names as InternalFieldName);
+  }
 
-    if (isArray) {
-        return names.map(
-            (fieldName) => (
-                isGlobal && _names.watch.add(fieldName as InternalFieldName),
-                get(formValues, fieldName as InternalFieldName)
-            ),
-        );
-    }
+  if (isArray) {
+    return names.map(
+      (fieldName) => (
+        isGlobal && _names.watch.add(fieldName as InternalFieldName),
+        get(formValues, fieldName as InternalFieldName)
+      ),
+    );
+  }
 
-    isGlobal && (_names.watchAll = true);
-    return formValues;
+  isGlobal && (_names.watchAll = true);
+  return formValues;
 };
