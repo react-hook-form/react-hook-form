@@ -2,6 +2,7 @@ name : README
 
 on:
     pull_request:
+        types : [ opened , synchronize ]
         paths:
             -   docs/Helpers.yaml
             -   docs/Sponsors.yaml
