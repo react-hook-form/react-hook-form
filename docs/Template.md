@@ -102,5 +102,3 @@ Thanks go to these wonderful organizations! [[Contribute](https://opencollective
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
 </a>
-
-<!--  -->
