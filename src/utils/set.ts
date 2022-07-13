@@ -5,30 +5,30 @@ import isObject from './isObject';
 import stringToPath from './stringToPath';
 
 export default function set(
-  object: FieldValues,
-  path: string,
-  value?: unknown,
+    object: FieldValues,
+    path: string,
+    value?: unknown,
 ) {
-  let index = -1;
-  const tempPath = isKey(path) ? [path] : stringToPath(path);
-  const length = tempPath.length;
-  const lastIndex = length - 1;
+    let index = -1;
+    const tempPath = isKey(path) ? [path] : stringToPath(path);
+    const length = tempPath.length;
+    const lastIndex = length - 1;
 
-  while (++index < length) {
-    const key = tempPath[index];
-    let newValue = value;
+    while (++index < length) {
+        const key = tempPath[index];
+        let newValue = value;
 
-    if (index !== lastIndex) {
-      const objValue = object[key];
-      newValue =
-        isObject(objValue) || Array.isArray(objValue)
-          ? objValue
-          : !isNaN(+tempPath[index + 1])
-          ? []
-          : {};
+        if (index !== lastIndex) {
+            const objValue = object[key];
+            newValue =
+                isObject(objValue) || Array.isArray(objValue)
+                    ? objValue
+                    : !isNaN(+tempPath[index + 1])
+                    ? []
+                    : {};
+        }
+        object[key] = newValue;
+        object = object[key];
     }
-    object[key] = newValue;
-    object = object[key];
-  }
-  return object;
+    return object;
 }

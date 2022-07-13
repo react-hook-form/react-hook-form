@@ -8,602 +8,620 @@ import { useForm } from '../useForm';
 import { useFormState } from '../useFormState';
 
 describe('useFormState', () => {
-  it('should render correct form state with isDirty, dirty, touched', () => {
-    let count = 0;
-    const Test = ({
-      control,
-    }: {
-      control: Control<{
-        test: string;
-      }>;
-    }) => {
-      const { isDirty, dirtyFields, touchedFields } = useFormState({
-        control,
-      });
+    it('should render correct form state with isDirty, dirty, touched', () => {
+        let count = 0;
+        const Test = ({
+            control,
+        }: {
+            control: Control<{
+                test: string;
+            }>;
+        }) => {
+            const { isDirty, dirtyFields, touchedFields } = useFormState({
+                control,
+            });
 
-      return (
-        <>
-          <div>{isDirty ? 'isDirty' : ''}</div>
-          <div>{dirtyFields['test'] ? 'dirty field' : ''}</div>
-          <div>{touchedFields['test'] ? 'isTouched' : ''}</div>
-        </>
-      );
-    };
+            return (
+                <>
+                    <div>{isDirty ? 'isDirty' : ''}</div>
+                    <div>{dirtyFields['test'] ? 'dirty field' : ''}</div>
+                    <div>{touchedFields['test'] ? 'isTouched' : ''}</div>
+                </>
+            );
+        };
 
-    const Component = () => {
-      const { register, control } = useForm<{
-        test: string;
-      }>();
+        const Component = () => {
+            const { register, control } = useForm<{
+                test: string;
+            }>();
 
-      count++;
+            count++;
 
-      return (
-        <div>
-          <input aria-label="test" {...register('test')} />
-          <Test control={control} />
-        </div>
-      );
-    };
+            return (
+                <div>
+                    <input aria-label="test" {...register('test')} />
+                    <Test control={control} />
+                </div>
+            );
+        };
 
-    render(<Component />);
+        render(<Component />);
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'test',
-      },
+        fireEvent.input(screen.getByLabelText('test'), {
+            target: {
+                value: 'test',
+            },
+        });
+
+        expect(screen.getByText('isDirty')).toBeVisible();
+        expect(screen.getByText('dirty field')).toBeVisible();
+        expect(count).toEqual(1);
+
+        fireEvent.blur(screen.getByLabelText('test'));
+        expect(screen.getByText('isTouched')).toBeVisible();
+        expect(count).toEqual(1);
     });
 
-    expect(screen.getByText('isDirty')).toBeVisible();
-    expect(screen.getByText('dirty field')).toBeVisible();
-    expect(count).toEqual(1);
+    it('should render correct isolated errors message', async () => {
+        let count = 0;
+        const Test = ({ control }: { control: Control }) => {
+            const { errors, isValid } = useFormState({
+                control,
+            });
 
-    fireEvent.blur(screen.getByLabelText('test'));
-    expect(screen.getByText('isTouched')).toBeVisible();
-    expect(count).toEqual(1);
-  });
+            return (
+                <>
+                    <div>{errors['test'] ? 'error' : 'valid'}</div>
+                    <div>{isValid ? 'yes' : 'no'}</div>
+                </>
+            );
+        };
 
-  it('should render correct isolated errors message', async () => {
-    let count = 0;
-    const Test = ({ control }: { control: Control }) => {
-      const { errors, isValid } = useFormState({
-        control,
-      });
+        const Component = () => {
+            const { register, control } = useForm({
+                mode: 'onChange',
+            });
 
-      return (
-        <>
-          <div>{errors['test'] ? 'error' : 'valid'}</div>
-          <div>{isValid ? 'yes' : 'no'}</div>
-        </>
-      );
-    };
+            count++;
 
-    const Component = () => {
-      const { register, control } = useForm({
-        mode: 'onChange',
-      });
+            return (
+                <div>
+                    <input
+                        aria-label="test"
+                        {...register('test', { minLength: 5 })}
+                    />
+                    <Test control={control} />
+                </div>
+            );
+        };
+        render(<Component />);
 
-      count++;
+        fireEvent.input(screen.getByLabelText('test'), {
+            target: {
+                value: 'test',
+            },
+        });
 
-      return (
-        <div>
-          <input aria-label="test" {...register('test', { minLength: 5 })} />
-          <Test control={control} />
-        </div>
-      );
-    };
-    render(<Component />);
+        expect(await screen.findByText('error')).toBeVisible();
+        expect(screen.getByText('no')).toBeVisible();
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'test',
-      },
+        fireEvent.input(screen.getByLabelText('test'), {
+            target: {
+                value: 'testtest',
+            },
+        });
+
+        expect(await screen.findByText('valid')).toBeVisible();
+        expect(screen.getByText('yes')).toBeVisible();
+
+        expect(count).toEqual(1);
     });
 
-    expect(await screen.findByText('error')).toBeVisible();
-    expect(screen.getByText('no')).toBeVisible();
+    it('should update formState separately with useFormState', async () => {
+        let count = 0;
+        let testCount = 0;
+        let test1Count = 0;
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'testtest',
-      },
+        const Test1 = ({ control }: { control: Control }) => {
+            const { isDirty, dirtyFields } = useFormState({
+                control,
+            });
+
+            testCount++;
+
+            return (
+                <>
+                    <div>
+                        {dirtyFields['test']
+                            ? 'hasDirtyField'
+                            : 'notHasDirtyField'}
+                    </div>
+                    <div>{isDirty ? 'isDirty' : 'notDirty'}</div>
+                </>
+            );
+        };
+
+        const Test = ({ control }: { control: Control }) => {
+            const { touchedFields } = useFormState({
+                control,
+            });
+
+            test1Count++;
+
+            return (
+                <>
+                    <div>
+                        {touchedFields['test'] ? 'isTouched' : 'notTouched'}
+                    </div>
+                </>
+            );
+        };
+
+        const Component = () => {
+            const { register, control } = useForm({
+                mode: 'onChange',
+            });
+
+            count++;
+
+            return (
+                <div>
+                    <input
+                        aria-label="test"
+                        {...register('test', { minLength: 5 })}
+                    />
+                    <Test control={control} />
+                    <Test1 control={control} />
+                </div>
+            );
+        };
+
+        render(<Component />);
+
+        fireEvent.input(screen.getByLabelText('test'), {
+            target: {
+                value: 'test',
+            },
+        });
+
+        expect(await screen.findByText('hasDirtyField')).toBeVisible();
+        expect(screen.getByText('isDirty')).toBeVisible();
+
+        expect(count).toEqual(1);
+        expect(testCount).toEqual(2);
+        expect(test1Count).toEqual(1);
+
+        fireEvent.blur(screen.getByLabelText('test'));
+        expect(screen.getByText('isTouched')).toBeVisible();
+
+        expect(count).toEqual(1);
+        expect(testCount).toEqual(3);
+        expect(test1Count).toEqual(2);
+
+        fireEvent.input(screen.getByLabelText('test'), {
+            target: {
+                value: '',
+            },
+        });
+
+        expect(count).toEqual(1);
+        expect(testCount).toEqual(3);
+        expect(test1Count).toEqual(2);
     });
 
-    expect(await screen.findByText('valid')).toBeVisible();
-    expect(screen.getByText('yes')).toBeVisible();
+    it('should render correct submit state', async () => {
+        let count = 0;
+        const Test = ({ control }: { control: Control }) => {
+            const { isSubmitted, submitCount } = useFormState({
+                control,
+            });
 
-    expect(count).toEqual(1);
-  });
+            return (
+                <>
+                    <div>{isSubmitted ? 'isSubmitted' : ''}</div>
+                    <div>{submitCount}</div>
+                </>
+            );
+        };
 
-  it('should update formState separately with useFormState', async () => {
-    let count = 0;
-    let testCount = 0;
-    let test1Count = 0;
+        const Component = () => {
+            const { control, handleSubmit } = useForm();
 
-    const Test1 = ({ control }: { control: Control }) => {
-      const { isDirty, dirtyFields } = useFormState({
-        control,
-      });
+            count++;
 
-      testCount++;
+            return (
+                <form onSubmit={handleSubmit(() => {})}>
+                    <Test control={control} />
+                    <button>Submit</button>
+                </form>
+            );
+        };
 
-      return (
-        <>
-          <div>
-            {dirtyFields['test'] ? 'hasDirtyField' : 'notHasDirtyField'}
-          </div>
-          <div>{isDirty ? 'isDirty' : 'notDirty'}</div>
-        </>
-      );
-    };
+        render(<Component />);
 
-    const Test = ({ control }: { control: Control }) => {
-      const { touchedFields } = useFormState({
-        control,
-      });
+        fireEvent.click(screen.getByRole('button'));
 
-      test1Count++;
+        expect(await screen.findByText('isSubmitted')).toBeVisible();
+        expect(screen.getByText('1')).toBeVisible();
 
-      return (
-        <>
-          <div>{touchedFields['test'] ? 'isTouched' : 'notTouched'}</div>
-        </>
-      );
-    };
-
-    const Component = () => {
-      const { register, control } = useForm({
-        mode: 'onChange',
-      });
-
-      count++;
-
-      return (
-        <div>
-          <input aria-label="test" {...register('test', { minLength: 5 })} />
-          <Test control={control} />
-          <Test1 control={control} />
-        </div>
-      );
-    };
-
-    render(<Component />);
-
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'test',
-      },
+        expect(count).toEqual(1);
     });
 
-    expect(await screen.findByText('hasDirtyField')).toBeVisible();
-    expect(screen.getByText('isDirty')).toBeVisible();
+    it('should only re-render when subscribed field name updated', async () => {
+        let count = 0;
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
-    expect(test1Count).toEqual(1);
+        type FormValues = {
+            firstName: string;
+            lastName: string;
+        };
 
-    fireEvent.blur(screen.getByLabelText('test'));
-    expect(screen.getByText('isTouched')).toBeVisible();
+        const Test = ({ control }: { control: Control<FormValues> }) => {
+            const { errors } = useFormState({
+                control,
+                name: 'firstName',
+            });
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
-    expect(test1Count).toEqual(2);
+            count++;
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: '',
-      },
+            return <>{errors?.firstName?.message}</>;
+        };
+
+        const Component = () => {
+            const { control, register } = useForm<FormValues>({
+                mode: 'onChange',
+                defaultValues: {
+                    firstName: 'a',
+                    lastName: 'b',
+                },
+            });
+
+            return (
+                <form>
+                    <Test control={control} />
+                    <input
+                        {...register('firstName', { required: true })}
+                        placeholder={'firstName'}
+                    />
+                    <input {...register('lastName')} />
+                </form>
+            );
+        };
+
+        render(<Component />);
+
+        fireEvent.change(screen.getByPlaceholderText('firstName'), {
+            target: {
+                value: '',
+            },
+        });
+
+        await waitFor(() => expect(count).toEqual(2));
     });
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
-    expect(test1Count).toEqual(2);
-  });
+    it('should not re-render when subscribed field name is not included', async () => {
+        let count = 0;
 
-  it('should render correct submit state', async () => {
-    let count = 0;
-    const Test = ({ control }: { control: Control }) => {
-      const { isSubmitted, submitCount } = useFormState({
-        control,
-      });
+        type FormValues = {
+            firstName: string;
+            lastName: string;
+        };
 
-      return (
-        <>
-          <div>{isSubmitted ? 'isSubmitted' : ''}</div>
-          <div>{submitCount}</div>
-        </>
-      );
-    };
+        const Test = ({ control }: { control: Control<FormValues> }) => {
+            const { errors } = useFormState({
+                control,
+                name: 'lastName',
+            });
 
-    const Component = () => {
-      const { control, handleSubmit } = useForm();
+            count++;
 
-      count++;
+            return <>{errors?.lastName?.message}</>;
+        };
 
-      return (
-        <form onSubmit={handleSubmit(() => {})}>
-          <Test control={control} />
-          <button>Submit</button>
-        </form>
-      );
-    };
+        const Component = () => {
+            const { control, register } = useForm<FormValues>({
+                mode: 'onChange',
+                defaultValues: {
+                    firstName: 'a',
+                    lastName: 'b',
+                },
+            });
 
-    render(<Component />);
+            return (
+                <form>
+                    <Test control={control} />
+                    <input
+                        {...register('firstName', { required: true })}
+                        placeholder={'firstName'}
+                    />
+                    <input {...register('lastName')} />
+                </form>
+            );
+        };
 
-    fireEvent.click(screen.getByRole('button'));
+        render(<Component />);
 
-    expect(await screen.findByText('isSubmitted')).toBeVisible();
-    expect(screen.getByText('1')).toBeVisible();
+        fireEvent.change(screen.getByPlaceholderText('firstName'), {
+            target: {
+                value: '',
+            },
+        });
 
-    expect(count).toEqual(1);
-  });
-
-  it('should only re-render when subscribed field name updated', async () => {
-    let count = 0;
-
-    type FormValues = {
-      firstName: string;
-      lastName: string;
-    };
-
-    const Test = ({ control }: { control: Control<FormValues> }) => {
-      const { errors } = useFormState({
-        control,
-        name: 'firstName',
-      });
-
-      count++;
-
-      return <>{errors?.firstName?.message}</>;
-    };
-
-    const Component = () => {
-      const { control, register } = useForm<FormValues>({
-        mode: 'onChange',
-        defaultValues: {
-          firstName: 'a',
-          lastName: 'b',
-        },
-      });
-
-      return (
-        <form>
-          <Test control={control} />
-          <input
-            {...register('firstName', { required: true })}
-            placeholder={'firstName'}
-          />
-          <input {...register('lastName')} />
-        </form>
-      );
-    };
-
-    render(<Component />);
-
-    fireEvent.change(screen.getByPlaceholderText('firstName'), {
-      target: {
-        value: '',
-      },
+        expect(count).toEqual(1);
     });
 
-    await waitFor(() => expect(count).toEqual(2));
-  });
+    it('should only re-render when subscribed field names updated', async () => {
+        let count = 0;
 
-  it('should not re-render when subscribed field name is not included', async () => {
-    let count = 0;
+        type FormValues = {
+            firstName: string;
+            lastName: string;
+            age: number;
+        };
 
-    type FormValues = {
-      firstName: string;
-      lastName: string;
-    };
+        const Test = ({ control }: { control: Control<FormValues> }) => {
+            const { errors } = useFormState({
+                control,
+                name: ['firstName', 'lastName'],
+            });
 
-    const Test = ({ control }: { control: Control<FormValues> }) => {
-      const { errors } = useFormState({
-        control,
-        name: 'lastName',
-      });
+            count++;
 
-      count++;
+            return <>{errors?.firstName?.message}</>;
+        };
 
-      return <>{errors?.lastName?.message}</>;
-    };
+        const Component = () => {
+            const { control, register } = useForm<FormValues>({
+                mode: 'onChange',
+                defaultValues: {
+                    firstName: 'a',
+                    lastName: 'b',
+                },
+            });
 
-    const Component = () => {
-      const { control, register } = useForm<FormValues>({
-        mode: 'onChange',
-        defaultValues: {
-          firstName: 'a',
-          lastName: 'b',
-        },
-      });
+            return (
+                <form>
+                    <Test control={control} />
+                    <input
+                        {...register('firstName', { required: true })}
+                        placeholder={'firstName'}
+                    />
+                    <input
+                        {...register('lastName', { required: true })}
+                        placeholder={'lastName'}
+                    />
+                    <input
+                        {...register('age', {
+                            valueAsNumber: true,
+                            required: true,
+                        })}
+                        type="number"
+                    />
+                </form>
+            );
+        };
 
-      return (
-        <form>
-          <Test control={control} />
-          <input
-            {...register('firstName', { required: true })}
-            placeholder={'firstName'}
-          />
-          <input {...register('lastName')} />
-        </form>
-      );
-    };
+        render(<Component />);
 
-    render(<Component />);
+        fireEvent.change(screen.getByPlaceholderText('firstName'), {
+            target: {
+                value: '',
+            },
+        });
 
-    fireEvent.change(screen.getByPlaceholderText('firstName'), {
-      target: {
-        value: '',
-      },
+        fireEvent.change(screen.getByPlaceholderText('lastName'), {
+            target: {
+                value: '',
+            },
+        });
+
+        await waitFor(() => expect(count).toEqual(2));
     });
 
-    expect(count).toEqual(1);
-  });
+    it('should only re-render when subscribed field names updated', async () => {
+        let count = 0;
 
-  it('should only re-render when subscribed field names updated', async () => {
-    let count = 0;
+        type FormValues = {
+            firstName: string;
+            lastName: string;
+            age: number;
+        };
 
-    type FormValues = {
-      firstName: string;
-      lastName: string;
-      age: number;
-    };
+        const Test = ({ control }: { control: Control<FormValues> }) => {
+            const { errors } = useFormState({
+                control,
+                name: ['age', 'lastName'],
+            });
 
-    const Test = ({ control }: { control: Control<FormValues> }) => {
-      const { errors } = useFormState({
-        control,
-        name: ['firstName', 'lastName'],
-      });
+            count++;
 
-      count++;
+            return <>{errors?.firstName?.message}</>;
+        };
 
-      return <>{errors?.firstName?.message}</>;
-    };
+        const Component = () => {
+            const { control, register } = useForm<FormValues>({
+                mode: 'onChange',
+                defaultValues: {
+                    firstName: 'a',
+                    lastName: 'b',
+                },
+            });
 
-    const Component = () => {
-      const { control, register } = useForm<FormValues>({
-        mode: 'onChange',
-        defaultValues: {
-          firstName: 'a',
-          lastName: 'b',
-        },
-      });
+            return (
+                <form>
+                    <Test control={control} />
+                    <input
+                        {...register('firstName', { required: true })}
+                        placeholder={'firstName'}
+                    />
+                    <input {...register('lastName')} placeholder={'lastName'} />
+                    <input
+                        {...register('age', {
+                            valueAsNumber: true,
+                            required: true,
+                        })}
+                        type="number"
+                    />
+                </form>
+            );
+        };
 
-      return (
-        <form>
-          <Test control={control} />
-          <input
-            {...register('firstName', { required: true })}
-            placeholder={'firstName'}
-          />
-          <input
-            {...register('lastName', { required: true })}
-            placeholder={'lastName'}
-          />
-          <input
-            {...register('age', { valueAsNumber: true, required: true })}
-            type="number"
-          />
-        </form>
-      );
-    };
+        render(<Component />);
 
-    render(<Component />);
+        fireEvent.change(screen.getByPlaceholderText('firstName'), {
+            target: {
+                value: '',
+            },
+        });
 
-    fireEvent.change(screen.getByPlaceholderText('firstName'), {
-      target: {
-        value: '',
-      },
+        expect(count).toEqual(1);
     });
 
-    fireEvent.change(screen.getByPlaceholderText('lastName'), {
-      target: {
-        value: '',
-      },
+    it('should be able to stop the formState subscription', async () => {
+        type FormValues = {
+            test: string;
+        };
+
+        function Child({ control }: { control: Control<FormValues> }) {
+            const [disabled, setDisabled] = React.useState(true);
+            const { errors } = useFormState({
+                control,
+                name: 'test',
+                disabled,
+            });
+
+            return (
+                <div>
+                    {errors.test && <p>error</p>}
+                    <button onClick={() => setDisabled(!disabled)}>
+                        toggle
+                    </button>
+                </div>
+            );
+        }
+
+        const App = () => {
+            const { trigger, register, control } = useForm<FormValues>();
+
+            return (
+                <div>
+                    <input {...register('test', { required: true })} />
+                    <Child control={control} />
+                    <button
+                        onClick={() => {
+                            trigger();
+                        }}
+                    >
+                        trigger
+                    </button>
+                </div>
+            );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+
+        expect(screen.queryByText('error')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+
+        expect(await screen.findByText('error')).toBeVisible();
     });
 
-    await waitFor(() => expect(count).toEqual(2));
-  });
+    it('should not start early subscription and throw warning at strict mode', async () => {
+        type FormValues = { test: { data: string }[] };
 
-  it('should only re-render when subscribed field names updated', async () => {
-    let count = 0;
+        function FieldArray() {
+            const { reset, control } = useForm<FormValues>({
+                defaultValues: { test: [] },
+            });
+            const { fields, append } = useFieldArray({ control, name: 'test' });
+            return (
+                <div>
+                    {fields.map((field, index) => (
+                        <div key={field.id}>
+                            <Controller
+                                control={control}
+                                name={`test.${index}.data` as const}
+                                render={({ field }) => <input {...field} />}
+                            />
+                        </div>
+                    ))}
+                    <button
+                        onClick={() =>
+                            append({
+                                data: 'data',
+                            })
+                        }
+                    >
+                        add
+                    </button>
+                    <button onClick={() => reset({})}>reset</button>
+                </div>
+            );
+        }
 
-    type FormValues = {
-      firstName: string;
-      lastName: string;
-      age: number;
-    };
+        const App = () => {
+            return (
+                <React.StrictMode>
+                    <FieldArray />
+                </React.StrictMode>
+            );
+        };
 
-    const Test = ({ control }: { control: Control<FormValues> }) => {
-      const { errors } = useFormState({
-        control,
-        name: ['age', 'lastName'],
-      });
+        render(<App />);
 
-      count++;
+        fireEvent.click(screen.getByRole('button', { name: 'add' }));
 
-      return <>{errors?.firstName?.message}</>;
-    };
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    const Component = () => {
-      const { control, register } = useForm<FormValues>({
-        mode: 'onChange',
-        defaultValues: {
-          firstName: 'a',
-          lastName: 'b',
-        },
-      });
+        fireEvent.click(screen.getByRole('button', { name: 'add' }));
 
-      return (
-        <form>
-          <Test control={control} />
-          <input
-            {...register('firstName', { required: true })}
-            placeholder={'firstName'}
-          />
-          <input {...register('lastName')} placeholder={'lastName'} />
-          <input
-            {...register('age', { valueAsNumber: true, required: true })}
-            type="number"
-          />
-        </form>
-      );
-    };
-
-    render(<Component />);
-
-    fireEvent.change(screen.getByPlaceholderText('firstName'), {
-      target: {
-        value: '',
-      },
+        expect(await screen.findAllByRole('textbox')).toHaveLength(1);
     });
 
-    expect(count).toEqual(1);
-  });
+    it('should subscribe to exact form state update', () => {
+        const App = () => {
+            const { control, register } = useForm();
+            const [exact, setExact] = React.useState(true);
+            const { touchedFields } = useFormState({
+                name: 'test',
+                control,
+                exact,
+            });
 
-  it('should be able to stop the formState subscription', async () => {
-    type FormValues = {
-      test: string;
-    };
+            return (
+                <div>
+                    <input {...register('testData')} />
+                    <p>{touchedFields.testData && 'touched'}</p>
 
-    function Child({ control }: { control: Control<FormValues> }) {
-      const [disabled, setDisabled] = React.useState(true);
-      const { errors } = useFormState({
-        control,
-        name: 'test',
-        disabled,
-      });
+                    <button
+                        onClick={() => {
+                            setExact(false);
+                        }}
+                    >
+                        toggle
+                    </button>
+                </div>
+            );
+        };
 
-      return (
-        <div>
-          {errors.test && <p>error</p>}
-          <button onClick={() => setDisabled(!disabled)}>toggle</button>
-        </div>
-      );
-    }
+        render(<App />);
 
-    const App = () => {
-      const { trigger, register, control } = useForm<FormValues>();
+        fireEvent.focus(screen.getByRole('textbox'));
 
-      return (
-        <div>
-          <input {...register('test', { required: true })} />
-          <Child control={control} />
-          <button
-            onClick={() => {
-              trigger();
-            }}
-          >
-            trigger
-          </button>
-        </div>
-      );
-    };
+        fireEvent.blur(screen.getByRole('textbox'));
 
-    render(<App />);
+        expect(screen.queryByText('touched')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+        fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.queryByText('error')).not.toBeInTheDocument();
+        fireEvent.focus(screen.getByRole('textbox'));
 
-    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+        fireEvent.blur(screen.getByRole('textbox'));
 
-    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
-
-    expect(await screen.findByText('error')).toBeVisible();
-  });
-
-  it('should not start early subscription and throw warning at strict mode', async () => {
-    type FormValues = { test: { data: string }[] };
-
-    function FieldArray() {
-      const { reset, control } = useForm<FormValues>({
-        defaultValues: { test: [] },
-      });
-      const { fields, append } = useFieldArray({ control, name: 'test' });
-      return (
-        <div>
-          {fields.map((field, index) => (
-            <div key={field.id}>
-              <Controller
-                control={control}
-                name={`test.${index}.data` as const}
-                render={({ field }) => <input {...field} />}
-              />
-            </div>
-          ))}
-          <button
-            onClick={() =>
-              append({
-                data: 'data',
-              })
-            }
-          >
-            add
-          </button>
-          <button onClick={() => reset({})}>reset</button>
-        </div>
-      );
-    }
-
-    const App = () => {
-      return (
-        <React.StrictMode>
-          <FieldArray />
-        </React.StrictMode>
-      );
-    };
-
-    render(<App />);
-
-    fireEvent.click(screen.getByRole('button', { name: 'add' }));
-
-    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-
-    fireEvent.click(screen.getByRole('button', { name: 'add' }));
-
-    expect(await screen.findAllByRole('textbox')).toHaveLength(1);
-  });
-
-  it('should subscribe to exact form state update', () => {
-    const App = () => {
-      const { control, register } = useForm();
-      const [exact, setExact] = React.useState(true);
-      const { touchedFields } = useFormState({
-        name: 'test',
-        control,
-        exact,
-      });
-
-      return (
-        <div>
-          <input {...register('testData')} />
-          <p>{touchedFields.testData && 'touched'}</p>
-
-          <button
-            onClick={() => {
-              setExact(false);
-            }}
-          >
-            toggle
-          </button>
-        </div>
-      );
-    };
-
-    render(<App />);
-
-    fireEvent.focus(screen.getByRole('textbox'));
-
-    fireEvent.blur(screen.getByRole('textbox'));
-
-    expect(screen.queryByText('touched')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button'));
-
-    fireEvent.focus(screen.getByRole('textbox'));
-
-    fireEvent.blur(screen.getByRole('textbox'));
-
-    expect(screen.getByText('touched')).toBeVisible();
-  });
+        expect(screen.getByText('touched')).toBeVisible();
+    });
 });

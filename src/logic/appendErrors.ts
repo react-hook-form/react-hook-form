@@ -1,22 +1,24 @@
 import {
-  InternalFieldErrors,
-  InternalFieldName,
-  ValidateResult,
+    InternalFieldErrors,
+    InternalFieldName,
+    ValidateResult,
 } from '../types';
 
 export default (
-  name: InternalFieldName,
-  validateAllFieldCriteria: boolean,
-  errors: InternalFieldErrors,
-  type: string,
-  message: ValidateResult,
+    name: InternalFieldName,
+    validateAllFieldCriteria: boolean,
+    errors: InternalFieldErrors,
+    type: string,
+    message: ValidateResult,
 ) =>
-  validateAllFieldCriteria
-    ? {
-        ...errors[name],
-        types: {
-          ...(errors[name] && errors[name]!.types ? errors[name]!.types : {}),
-          [type]: message || true,
-        },
-      }
-    : {};
+    validateAllFieldCriteria
+        ? {
+              ...errors[name],
+              types: {
+                  ...(errors[name] && errors[name]!.types
+                      ? errors[name]!.types
+                      : {}),
+                  [type]: message || true,
+              },
+          }
+        : {};

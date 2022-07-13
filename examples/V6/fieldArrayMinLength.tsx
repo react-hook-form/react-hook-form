@@ -4,83 +4,83 @@ import { object, array, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers';
 
 const validationSchema = object().shape({
-  questions: array()
-    .of(
-      object().shape({
-        text: string().required('Some text is required'),
-      }),
-    )
-    .required(),
+    questions: array()
+        .of(
+            object().shape({
+                text: string().required('Some text is required'),
+            }),
+        )
+        .required(),
 });
 
 function App() {
-  const {
-    control,
-    register,
-    errors,
-    clearErrors,
-    setValue,
-    unregister,
-    handleSubmit,
-    trigger,
-  } = useForm({
-    mode: 'onChange',
-    resolver: yupResolver(validationSchema),
-  });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'questions',
-  });
-
-  const isInitialRender = React.useRef(true);
-  const appendQuestion = () => {
-    append({
-      text: '',
+    const {
+        control,
+        register,
+        errors,
+        clearErrors,
+        setValue,
+        unregister,
+        handleSubmit,
+        trigger,
+    } = useForm({
+        mode: 'onChange',
+        resolver: yupResolver(validationSchema),
+    });
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'questions',
     });
 
-    if (errors.questions?.type === 'min') {
-      clearErrors('questions'); // always clear errors when there is add action.
-    }
-  };
+    const isInitialRender = React.useRef(true);
+    const appendQuestion = () => {
+        append({
+            text: '',
+        });
 
-  React.useEffect(() => {
-    if (!fields.length && !isInitialRender.current) {
-      trigger('questions');
-    }
+        if (errors.questions?.type === 'min') {
+            clearErrors('questions'); // always clear errors when there is add action.
+        }
+    };
 
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-    }
-  }, [fields, register, setValue, unregister, trigger]);
+    React.useEffect(() => {
+        if (!fields.length && !isInitialRender.current) {
+            trigger('questions');
+        }
 
-  return (
-    <form onSubmit={handleSubmit(console.log)}>
-      <h1>Yup Validation - Field Array</h1>
-      {fields.map((question, questionIndex) => (
-        <div key={question.id}>
-          <input
-            ref={register()}
-            name={`questions[${questionIndex}].text`}
-            control={control}
-            defaultValue=""
-          />
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+        }
+    }, [fields, register, setValue, unregister, trigger]);
 
-          <button
-            type="button"
-            onClick={() => {
-              remove(questionIndex);
-              trigger();
-            }}
-          >
-            Remove question {question.id}
-          </button>
-        </div>
-      ))}
-      <p>Errors: {JSON.stringify(errors)}</p>
-      <button type="button" onClick={appendQuestion}>
-        Add question
-      </button>
-      <input type="submit" />
-    </form>
-  );
+    return (
+        <form onSubmit={handleSubmit(console.log)}>
+            <h1>Yup Validation - Field Array</h1>
+            {fields.map((question, questionIndex) => (
+                <div key={question.id}>
+                    <input
+                        ref={register()}
+                        name={`questions[${questionIndex}].text`}
+                        control={control}
+                        defaultValue=""
+                    />
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            remove(questionIndex);
+                            trigger();
+                        }}
+                    >
+                        Remove question {question.id}
+                    </button>
+                </div>
+            ))}
+            <p>Errors: {JSON.stringify(errors)}</p>
+            <button type="button" onClick={appendQuestion}>
+                Add question
+            </button>
+            <input type="submit" />
+        </form>
+    );
 }

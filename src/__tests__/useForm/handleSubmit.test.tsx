@@ -8,520 +8,533 @@ import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 
 describe('handleSubmit', () => {
-  it('should invoke the callback when validation pass', async () => {
-    const { result } = renderHook(() => useForm());
-    const callback = jest.fn();
+    it('should invoke the callback when validation pass', async () => {
+        const { result } = renderHook(() => useForm());
+        const callback = jest.fn();
 
-    await act(async () => {
-      await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-    expect(callback).toBeCalled();
-  });
-
-  it('should pass default value', async () => {
-    const { result } = renderHook(() =>
-      useForm<{ test: string; deep: { nested: string; values: string } }>({
-        mode: VALIDATION_MODE.onSubmit,
-        defaultValues: {
-          test: 'data',
-          deep: {
-            values: '5',
-          },
-        },
-      }),
-    );
-
-    result.current.register('test');
-    result.current.register('deep.nested');
-    result.current.register('deep.values');
-
-    await act(async () => {
-      await result.current.handleSubmit((data: any) => {
-        expect(data).toEqual({
-          test: 'data',
-          deep: {
-            nested: undefined,
-            values: '5',
-          },
+        await act(async () => {
+            await result.current.handleSubmit(callback)({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
         });
-      })({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
+        expect(callback).toBeCalled();
     });
-  });
 
-  it('should not pass default value when field is not registered', async () => {
-    const { result } = renderHook(() =>
-      useForm<{ test: string; deep: { nested: string; values: string } }>({
-        mode: VALIDATION_MODE.onSubmit,
-        defaultValues: {
-          test: 'data',
-          deep: {
-            values: '5',
-          },
-        },
-      }),
-    );
+    it('should pass default value', async () => {
+        const { result } = renderHook(() =>
+            useForm<{ test: string; deep: { nested: string; values: string } }>(
+                {
+                    mode: VALIDATION_MODE.onSubmit,
+                    defaultValues: {
+                        test: 'data',
+                        deep: {
+                            values: '5',
+                        },
+                    },
+                },
+            ),
+        );
 
-    await act(async () => {
-      await result.current.handleSubmit((data: any) => {
-        expect(data).toEqual({
-          test: 'data',
-          deep: {
-            values: '5',
-          },
+        result.current.register('test');
+        result.current.register('deep.nested');
+        result.current.register('deep.values');
+
+        await act(async () => {
+            await result.current.handleSubmit((data: any) => {
+                expect(data).toEqual({
+                    test: 'data',
+                    deep: {
+                        nested: undefined,
+                        values: '5',
+                    },
+                });
+            })({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
         });
-      })({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-  });
-
-  it('should not provide reference to _formValues as data', async () => {
-    const { result } = renderHook(() =>
-      useForm<{ test: string; deep: { values: string } }>({
-        mode: VALIDATION_MODE.onSubmit,
-        defaultValues: {
-          test: 'data',
-          deep: {
-            values: '5',
-          },
-        },
-      }),
-    );
-
-    await act(async () => {
-      await result.current.handleSubmit((data: any) => {
-        data.deep.values = '12';
-      })({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
     });
 
-    await act(async () => {
-      await result.current.handleSubmit((data: any) => {
-        expect(data.deep).toEqual({ values: '5' });
-      })({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-  });
+    it('should not pass default value when field is not registered', async () => {
+        const { result } = renderHook(() =>
+            useForm<{ test: string; deep: { nested: string; values: string } }>(
+                {
+                    mode: VALIDATION_MODE.onSubmit,
+                    defaultValues: {
+                        test: 'data',
+                        deep: {
+                            values: '5',
+                        },
+                    },
+                },
+            ),
+        );
 
-  it('should not invoke callback when there are errors', async () => {
-    const { result } = renderHook(() => useForm<{ test: string }>());
-
-    result.current.register('test', { required: true });
-
-    const callback = jest.fn();
-
-    await act(async () => {
-      await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-    expect(callback).not.toBeCalled();
-  });
-
-  it('should not focus if errors is exist', async () => {
-    const focus = jest.fn();
-    const { result } = renderHook(() => useForm<{ test: string }>());
-    const { ref } = result.current.register('test', { required: true });
-
-    result.current.formState;
-
-    isFunction(ref) &&
-      ref({
-        focus,
-      });
-
-    const callback = jest.fn();
-    await act(async () => {
-      await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-
-    expect(callback).not.toBeCalled();
-    expect(focus).toBeCalled();
-    expect(result.current.control._formState.errors?.test?.type).toBe(
-      'required',
-    );
-  });
-
-  it('should not focus if shouldFocusError is false', async () => {
-    const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
-
-    const { result } = renderHook(() =>
-      useForm<{ test: string }>({ shouldFocusError: false }),
-    );
-
-    result.current.register('test', { required: true });
-    result.current.formState;
-
-    const callback = jest.fn();
-    await act(async () => {
-      await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-
-    expect(callback).not.toBeCalled();
-    expect(mockFocus).not.toBeCalled();
-    expect(result.current.control._formState.errors?.test?.type).toBe(
-      'required',
-    );
-  });
-
-  it('should submit form data when inputs are removed', async () => {
-    const { result, unmount } = renderHook(() =>
-      useForm<{
-        test: string;
-      }>(),
-    );
-
-    result.current.register('test');
-    result.current.setValue('test', 'test');
-
-    unmount();
-
-    await act(async () =>
-      result.current.handleSubmit((data) => {
-        expect(data).toEqual({
-          test: 'test',
+        await act(async () => {
+            await result.current.handleSubmit((data: any) => {
+                expect(data).toEqual({
+                    test: 'data',
+                    deep: {
+                        values: '5',
+                    },
+                });
+            })({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
         });
-      })({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent),
-    );
-  });
-
-  it('should invoke onSubmit callback and reset nested errors when submit with valid form values', async () => {
-    const callback = jest.fn();
-    const { result } = renderHook(() =>
-      useForm<{
-        test: { firstName: string; lastName: string }[];
-      }>(),
-    );
-    const validate = () => {
-      return !!result.current
-        .getValues()
-        .test.some(({ firstName }) => firstName);
-    };
-
-    result.current.register('test.0.firstName', {
-      validate,
-    });
-    result.current.register('test.0.lastName', {
-      validate,
-    });
-    result.current.register('test.1.firstName', {
-      validate,
-    });
-    result.current.register('test.1.lastName', {
-      validate,
     });
 
-    await act(async () => {
-      await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
+    it('should not provide reference to _formValues as data', async () => {
+        const { result } = renderHook(() =>
+            useForm<{ test: string; deep: { values: string } }>({
+                mode: VALIDATION_MODE.onSubmit,
+                defaultValues: {
+                    test: 'data',
+                    deep: {
+                        values: '5',
+                    },
+                },
+            }),
+        );
+
+        await act(async () => {
+            await result.current.handleSubmit((data: any) => {
+                data.deep.values = '12';
+            })({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
+
+        await act(async () => {
+            await result.current.handleSubmit((data: any) => {
+                expect(data.deep).toEqual({ values: '5' });
+            })({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
     });
 
-    expect(callback).not.toBeCalled();
+    it('should not invoke callback when there are errors', async () => {
+        const { result } = renderHook(() => useForm<{ test: string }>());
 
-    result.current.setValue('test.0.firstName', 'test');
+        result.current.register('test', { required: true });
 
-    await act(async () => {
-      await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
+        const callback = jest.fn();
+
+        await act(async () => {
+            await result.current.handleSubmit(callback)({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
+        expect(callback).not.toBeCalled();
     });
 
-    expect(callback).toBeCalled();
-  });
+    it('should not focus if errors is exist', async () => {
+        const focus = jest.fn();
+        const { result } = renderHook(() => useForm<{ test: string }>());
+        const { ref } = result.current.register('test', { required: true });
 
-  it('should bubble the error up when an error occurs in the provided handleSubmit function', async () => {
-    const errorMsg = 'this is an error';
-    const App = () => {
-      const [error, setError] = React.useState('');
-      const { register, handleSubmit } = useForm();
+        result.current.formState;
 
-      const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
+        isFunction(ref) &&
+            ref({
+                focus,
+            });
 
-      return (
-        <form>
-          <input {...register('test')} />
-          <p>{error}</p>
-          <button
-            type={'button'}
-            onClick={() =>
-              handleSubmit(rejectPromiseFn)().catch((err) =>
-                setError(err.message),
-              )
-            }
-          >
-            Submit
-          </button>
-        </form>
-      );
-    };
+        const callback = jest.fn();
+        await act(async () => {
+            await result.current.handleSubmit(callback)({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
 
-    render(<App />);
+        expect(callback).not.toBeCalled();
+        expect(focus).toBeCalled();
+        expect(result.current.control._formState.errors?.test?.type).toBe(
+            'required',
+        );
+    });
 
-    fireEvent.click(screen.getByRole('button'));
+    it('should not focus if shouldFocusError is false', async () => {
+        const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
 
-    expect(await screen.findByText(errorMsg)).toBeVisible();
-  });
+        const { result } = renderHook(() =>
+            useForm<{ test: string }>({ shouldFocusError: false }),
+        );
 
-  describe('with validationSchema', () => {
-    it('should invoke callback when error not found', async () => {
-      const resolver = async (data: any) => {
-        return {
-          values: data,
-          errors: {},
+        result.current.register('test', { required: true });
+        result.current.formState;
+
+        const callback = jest.fn();
+        await act(async () => {
+            await result.current.handleSubmit(callback)({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
+
+        expect(callback).not.toBeCalled();
+        expect(mockFocus).not.toBeCalled();
+        expect(result.current.control._formState.errors?.test?.type).toBe(
+            'required',
+        );
+    });
+
+    it('should submit form data when inputs are removed', async () => {
+        const { result, unmount } = renderHook(() =>
+            useForm<{
+                test: string;
+            }>(),
+        );
+
+        result.current.register('test');
+        result.current.setValue('test', 'test');
+
+        unmount();
+
+        await act(async () =>
+            result.current.handleSubmit((data) => {
+                expect(data).toEqual({
+                    test: 'test',
+                });
+            })({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent),
+        );
+    });
+
+    it('should invoke onSubmit callback and reset nested errors when submit with valid form values', async () => {
+        const callback = jest.fn();
+        const { result } = renderHook(() =>
+            useForm<{
+                test: { firstName: string; lastName: string }[];
+            }>(),
+        );
+        const validate = () => {
+            return !!result.current
+                .getValues()
+                .test.some(({ firstName }) => firstName);
         };
-      };
 
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: VALIDATION_MODE.onSubmit,
-          resolver,
-        }),
-      );
+        result.current.register('test.0.firstName', {
+            validate,
+        });
+        result.current.register('test.0.lastName', {
+            validate,
+        });
+        result.current.register('test.1.firstName', {
+            validate,
+        });
+        result.current.register('test.1.lastName', {
+            validate,
+        });
 
-      result.current.register('test', { required: true });
+        await act(async () => {
+            await result.current.handleSubmit(callback)({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
 
-      const callback = jest.fn();
+        expect(callback).not.toBeCalled();
 
-      await act(async () => {
-        await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-      expect(callback).toBeCalled();
+        result.current.setValue('test.0.firstName', 'test');
+
+        await act(async () => {
+            await result.current.handleSubmit(callback)({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
+
+        expect(callback).toBeCalled();
     });
 
-    it('should invoke callback with transformed values', async () => {
-      const resolver = async () => {
-        return {
-          values: { test: 'test' },
-          errors: {},
-        };
-      };
+    it('should bubble the error up when an error occurs in the provided handleSubmit function', async () => {
+        const errorMsg = 'this is an error';
+        const App = () => {
+            const [error, setError] = React.useState('');
+            const { register, handleSubmit } = useForm();
 
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: VALIDATION_MODE.onSubmit,
-          resolver,
-        }),
-      );
+            const rejectPromiseFn = jest
+                .fn()
+                .mockRejectedValue(new Error(errorMsg));
 
-      result.current.register('test', { required: true });
-
-      const callback = jest.fn();
-
-      await act(async () => {
-        await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-      expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
-    });
-  });
-
-  describe('with onInvalid callback', () => {
-    it('should invoke the onValid callback when validation pass', async () => {
-      const { result } = renderHook(() => useForm());
-      const onValidCallback = jest.fn();
-      const onInvalidCallback = jest.fn();
-
-      await act(async () => {
-        await result.current.handleSubmit(
-          onValidCallback,
-          onInvalidCallback,
-        )({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-      expect(onValidCallback).toBeCalledTimes(1);
-      expect(onInvalidCallback).not.toBeCalledTimes(1);
-    });
-
-    it('should invoke the onInvalid callback when validation failed', async () => {
-      const { result } = renderHook(() =>
-        useForm<{
-          test: string;
-        }>(),
-      );
-      result.current.register('test', { required: true });
-      const onValidCallback = jest.fn();
-      const onInvalidCallback = jest.fn();
-
-      await act(async () => {
-        await result.current.handleSubmit(
-          onValidCallback,
-          onInvalidCallback,
-        )({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-
-      expect(onValidCallback).not.toBeCalledTimes(1);
-      expect(onInvalidCallback).toBeCalledTimes(1);
-    });
-  });
-
-  it('should not provide internal errors reference to onInvalid callback', async () => {
-    const { result } = renderHook(() =>
-      useForm<{
-        test: string;
-      }>(),
-    );
-    result.current.register('test', { required: true });
-
-    await act(async () => {
-      await result.current.handleSubmit(
-        () => {},
-        (errors) => {
-          Object.freeze(errors);
-        },
-      )({
-        preventDefault: () => {},
-        persist: () => {},
-      } as React.SyntheticEvent);
-    });
-
-    await act(async () => {
-      expect(() =>
-        result.current.setError('test', { message: 'Not enough', type: 'min' }),
-      ).not.toThrow();
-    });
-  });
-
-  it('should be able to submit correctly when errors contains empty array object', async () => {
-    const onSubmit = jest.fn();
-
-    const App = () => {
-      const { register, control, handleSubmit } = useForm({
-        defaultValues: {
-          test: [{ name: '1234' }],
-        },
-        mode: 'onChange',
-      });
-      const { fields, remove } = useFieldArray({ control, name: 'test' });
-
-      return (
-        <form
-          onSubmit={handleSubmit(() => {
-            onSubmit();
-          })}
-        >
-          {fields.map((field, index) => {
             return (
-              <input
-                key={field.id}
-                {...register(`test.${index}.name`, { required: true })}
-              />
+                <form>
+                    <input {...register('test')} />
+                    <p>{error}</p>
+                    <button
+                        type={'button'}
+                        onClick={() =>
+                            handleSubmit(rejectPromiseFn)().catch((err) =>
+                                setError(err.message),
+                            )
+                        }
+                    >
+                        Submit
+                    </button>
+                </form>
             );
-          })}
+        };
 
-          <button type={'button'} onClick={() => remove(0)}>
-            remove
-          </button>
-          <button>submit</button>
-        </form>
-      );
-    };
+        render(<App />);
 
-    render(<App />);
+        fireEvent.click(screen.getByRole('button'));
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: '',
-      },
+        expect(await screen.findByText(errorMsg)).toBeVisible();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    describe('with validationSchema', () => {
+        it('should invoke callback when error not found', async () => {
+            const resolver = async (data: any) => {
+                return {
+                    values: data,
+                    errors: {},
+                };
+            };
 
-    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+            const { result } = renderHook(() =>
+                useForm<{ test: string }>({
+                    mode: VALIDATION_MODE.onSubmit,
+                    resolver,
+                }),
+            );
 
-    expect(onSubmit).not.toBeCalled();
-  });
+            result.current.register('test', { required: true });
 
-  it('should be able to submit correctly when errors contains empty array object and errors state is subscribed', async () => {
-    const onSubmit = jest.fn();
+            const callback = jest.fn();
 
-    const App = () => {
-      const {
-        register,
-        control,
-        handleSubmit,
-        formState: { errors },
-      } = useForm({
-        defaultValues: {
-          test: [{ name: '1234' }],
-        },
-        mode: 'onChange',
-      });
-      const { fields, remove } = useFieldArray({ control, name: 'test' });
+            await act(async () => {
+                await result.current.handleSubmit(callback)({
+                    preventDefault: () => {},
+                    persist: () => {},
+                } as React.SyntheticEvent);
+            });
+            expect(callback).toBeCalled();
+        });
 
-      return (
-        <>
-          <p>Number of errors: {Object.keys(errors).length}</p>
-          <form
-            onSubmit={handleSubmit(() => {
-              onSubmit();
-            })}
-          >
-            {fields.map((field, index) => {
-              return (
-                <input
-                  key={field.id}
-                  {...register(`test.${index}.name`, { required: true })}
-                />
-              );
-            })}
+        it('should invoke callback with transformed values', async () => {
+            const resolver = async () => {
+                return {
+                    values: { test: 'test' },
+                    errors: {},
+                };
+            };
 
-            <button type={'button'} onClick={() => remove(0)}>
-              remove
-            </button>
-            <button>submit</button>
-          </form>
-        </>
-      );
-    };
+            const { result } = renderHook(() =>
+                useForm<{ test: string }>({
+                    mode: VALIDATION_MODE.onSubmit,
+                    resolver,
+                }),
+            );
 
-    render(<App />);
+            result.current.register('test', { required: true });
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: '',
-      },
+            const callback = jest.fn();
+
+            await act(async () => {
+                await result.current.handleSubmit(callback)({
+                    preventDefault: () => {},
+                    persist: () => {},
+                } as React.SyntheticEvent);
+            });
+            expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
+        });
     });
 
-    expect(await screen.findByText('Number of errors: 1')).toBeVisible();
+    describe('with onInvalid callback', () => {
+        it('should invoke the onValid callback when validation pass', async () => {
+            const { result } = renderHook(() => useForm());
+            const onValidCallback = jest.fn();
+            const onInvalidCallback = jest.fn();
 
-    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+            await act(async () => {
+                await result.current.handleSubmit(
+                    onValidCallback,
+                    onInvalidCallback,
+                )({
+                    preventDefault: () => {},
+                    persist: () => {},
+                } as React.SyntheticEvent);
+            });
+            expect(onValidCallback).toBeCalledTimes(1);
+            expect(onInvalidCallback).not.toBeCalledTimes(1);
+        });
 
-    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        it('should invoke the onInvalid callback when validation failed', async () => {
+            const { result } = renderHook(() =>
+                useForm<{
+                    test: string;
+                }>(),
+            );
+            result.current.register('test', { required: true });
+            const onValidCallback = jest.fn();
+            const onInvalidCallback = jest.fn();
 
-    await waitFor(() => expect(onSubmit).toBeCalled());
-  });
+            await act(async () => {
+                await result.current.handleSubmit(
+                    onValidCallback,
+                    onInvalidCallback,
+                )({
+                    preventDefault: () => {},
+                    persist: () => {},
+                } as React.SyntheticEvent);
+            });
+
+            expect(onValidCallback).not.toBeCalledTimes(1);
+            expect(onInvalidCallback).toBeCalledTimes(1);
+        });
+    });
+
+    it('should not provide internal errors reference to onInvalid callback', async () => {
+        const { result } = renderHook(() =>
+            useForm<{
+                test: string;
+            }>(),
+        );
+        result.current.register('test', { required: true });
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                () => {},
+                (errors) => {
+                    Object.freeze(errors);
+                },
+            )({
+                preventDefault: () => {},
+                persist: () => {},
+            } as React.SyntheticEvent);
+        });
+
+        await act(async () => {
+            expect(() =>
+                result.current.setError('test', {
+                    message: 'Not enough',
+                    type: 'min',
+                }),
+            ).not.toThrow();
+        });
+    });
+
+    it('should be able to submit correctly when errors contains empty array object', async () => {
+        const onSubmit = jest.fn();
+
+        const App = () => {
+            const { register, control, handleSubmit } = useForm({
+                defaultValues: {
+                    test: [{ name: '1234' }],
+                },
+                mode: 'onChange',
+            });
+            const { fields, remove } = useFieldArray({ control, name: 'test' });
+
+            return (
+                <form
+                    onSubmit={handleSubmit(() => {
+                        onSubmit();
+                    })}
+                >
+                    {fields.map((field, index) => {
+                        return (
+                            <input
+                                key={field.id}
+                                {...register(`test.${index}.name`, {
+                                    required: true,
+                                })}
+                            />
+                        );
+                    })}
+
+                    <button type={'button'} onClick={() => remove(0)}>
+                        remove
+                    </button>
+                    <button>submit</button>
+                </form>
+            );
+        };
+
+        render(<App />);
+
+        fireEvent.change(screen.getByRole('textbox'), {
+            target: {
+                value: '',
+            },
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        expect(onSubmit).not.toBeCalled();
+    });
+
+    it('should be able to submit correctly when errors contains empty array object and errors state is subscribed', async () => {
+        const onSubmit = jest.fn();
+
+        const App = () => {
+            const {
+                register,
+                control,
+                handleSubmit,
+                formState: { errors },
+            } = useForm({
+                defaultValues: {
+                    test: [{ name: '1234' }],
+                },
+                mode: 'onChange',
+            });
+            const { fields, remove } = useFieldArray({ control, name: 'test' });
+
+            return (
+                <>
+                    <p>Number of errors: {Object.keys(errors).length}</p>
+                    <form
+                        onSubmit={handleSubmit(() => {
+                            onSubmit();
+                        })}
+                    >
+                        {fields.map((field, index) => {
+                            return (
+                                <input
+                                    key={field.id}
+                                    {...register(`test.${index}.name`, {
+                                        required: true,
+                                    })}
+                                />
+                            );
+                        })}
+
+                        <button type={'button'} onClick={() => remove(0)}>
+                            remove
+                        </button>
+                        <button>submit</button>
+                    </form>
+                </>
+            );
+        };
+
+        render(<App />);
+
+        fireEvent.change(screen.getByRole('textbox'), {
+            target: {
+                value: '',
+            },
+        });
+
+        expect(await screen.findByText('Number of errors: 1')).toBeVisible();
+
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+        await waitFor(() => expect(onSubmit).toBeCalled());
+    });
 });

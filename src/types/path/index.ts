@@ -2,12 +2,12 @@
 
 export { PathString } from './common';
 export {
-  ArrayPath,
-  FieldArrayPath,
-  FieldArrayPathValue,
-  FieldPath,
-  FieldPathValue,
-  FieldPathValues,
-  Path,
-  PathValue,
+    ArrayPath,
+    FieldArrayPath,
+    FieldArrayPathValue,
+    FieldPath,
+    FieldPathValue,
+    FieldPathValues,
+    Path,
+    PathValue,
 } from './eager';

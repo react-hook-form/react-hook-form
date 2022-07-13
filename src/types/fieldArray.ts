@@ -4,46 +4,46 @@ import { FieldArrayPath, FieldArrayPathValue } from './path';
 import { RegisterOptions } from './validator';
 
 export type UseFieldArrayProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+    TFieldValues extends FieldValues = FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TKeyName extends string = 'id',
 > = {
-  name: TFieldArrayName;
-  keyName?: TKeyName;
-  control?: Control<TFieldValues>;
-  rules?: Pick<
-    RegisterOptions<TFieldValues>,
-    'maxLength' | 'minLength' | 'validate' | 'required'
-  >;
-  shouldUnregister?: boolean;
+    name: TFieldArrayName;
+    keyName?: TKeyName;
+    control?: Control<TFieldValues>;
+    rules?: Pick<
+        RegisterOptions<TFieldValues>,
+        'maxLength' | 'minLength' | 'validate' | 'required'
+    >;
+    shouldUnregister?: boolean;
 };
 
 /**
  * `useFieldArray` returned `fields` with unique id
  */
 export type FieldArrayWithId<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+    TFieldValues extends FieldValues = FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TKeyName extends string = 'id',
 > = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
 export type FieldArray<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TFieldValues extends FieldValues = FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends
-  | ReadonlyArray<infer U>
-  | null
-  | undefined
-  ? U
-  : never;
+    | ReadonlyArray<infer U>
+    | null
+    | undefined
+    ? U
+    : never;
 
 /**
  * `useFieldArray` focus option, ability to toggle focus on and off with `shouldFocus` and setting focus by either field index or name.
  */
 export type FieldArrayMethodProps = {
-  shouldFocus?: boolean;
-  focusIndex?: number;
-  focusName?: string;
+    shouldFocus?: boolean;
+    focusIndex?: number;
+    focusName?: string;
 };
 
 /**
@@ -100,13 +100,13 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
  * ```
  */
 export type UseFieldArrayPrepend<
-  TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TFieldValues extends FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
-  value:
-    | FieldArray<TFieldValues, TFieldArrayName>
-    | FieldArray<TFieldValues, TFieldArrayName>[],
-  options?: FieldArrayMethodProps,
+    value:
+        | FieldArray<TFieldValues, TFieldArrayName>
+        | FieldArray<TFieldValues, TFieldArrayName>[],
+    options?: FieldArrayMethodProps,
 ) => void;
 
 /**
@@ -131,13 +131,13 @@ export type UseFieldArrayPrepend<
  * ```
  */
 export type UseFieldArrayAppend<
-  TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TFieldValues extends FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
-  value:
-    | FieldArray<TFieldValues, TFieldArrayName>
-    | FieldArray<TFieldValues, TFieldArrayName>[],
-  options?: FieldArrayMethodProps,
+    value:
+        | FieldArray<TFieldValues, TFieldArrayName>
+        | FieldArray<TFieldValues, TFieldArrayName>[],
+    options?: FieldArrayMethodProps,
 ) => void;
 
 /**
@@ -184,14 +184,14 @@ export type UseFieldArrayRemove = (index?: number | number[]) => void;
  * ```
  */
 export type UseFieldArrayInsert<
-  TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TFieldValues extends FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
-  index: number,
-  value:
-    | FieldArray<TFieldValues, TFieldArrayName>
-    | FieldArray<TFieldValues, TFieldArrayName>[],
-  options?: FieldArrayMethodProps,
+    index: number,
+    value:
+        | FieldArray<TFieldValues, TFieldArrayName>
+        | FieldArray<TFieldValues, TFieldArrayName>[],
+    options?: FieldArrayMethodProps,
 ) => void;
 
 /**
@@ -215,8 +215,8 @@ export type UseFieldArrayInsert<
  * ```
  */
 export type UseFieldArrayUpdate<
-  TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TFieldValues extends FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 /**
@@ -238,26 +238,26 @@ export type UseFieldArrayUpdate<
  * ```
  */
 export type UseFieldArrayReplace<
-  TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TFieldValues extends FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
-  value:
-    | FieldArray<TFieldValues, TFieldArrayName>
-    | FieldArray<TFieldValues, TFieldArrayName>[],
+    value:
+        | FieldArray<TFieldValues, TFieldArrayName>
+        | FieldArray<TFieldValues, TFieldArrayName>[],
 ) => void;
 
 export type UseFieldArrayReturn<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+    TFieldValues extends FieldValues = FieldValues,
+    TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+    TKeyName extends string = 'id',
 > = {
-  swap: UseFieldArraySwap;
-  move: UseFieldArrayMove;
-  prepend: UseFieldArrayPrepend<TFieldValues, TFieldArrayName>;
-  append: UseFieldArrayAppend<TFieldValues, TFieldArrayName>;
-  remove: UseFieldArrayRemove;
-  insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
-  update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
-  replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+    swap: UseFieldArraySwap;
+    move: UseFieldArrayMove;
+    prepend: UseFieldArrayPrepend<TFieldValues, TFieldArrayName>;
+    append: UseFieldArrayAppend<TFieldValues, TFieldArrayName>;
+    remove: UseFieldArrayRemove;
+    insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
+    update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
+    replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
+    fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
 };

@@ -15,69 +15,72 @@ const FRAME_CONTENT = `
 `;
 
 const FRAME_STYLE = {
-  width: '640px',
-  height: '480px',
-  background: 'white',
+    width: '640px',
+    height: '480px',
+    background: 'white',
 };
 
 const CrossFrameForm: React.FC = () => {
-  const ref = React.useRef<HTMLIFrameElement>(null);
+    const ref = React.useRef<HTMLIFrameElement>(null);
 
-  function renderFormInFrame() {
-    ReactDOM.render(
-      <FrameForm />,
-      ref.current!.contentDocument!.getElementById('inner-root'),
+    function renderFormInFrame() {
+        ReactDOM.render(
+            <FrameForm />,
+            ref.current!.contentDocument!.getElementById('inner-root'),
+        );
+    }
+
+    return (
+        <iframe
+            ref={ref}
+            style={FRAME_STYLE}
+            srcDoc={FRAME_CONTENT}
+            onLoad={renderFormInFrame}
+        />
     );
-  }
-
-  return (
-    <iframe
-      ref={ref}
-      style={FRAME_STYLE}
-      srcDoc={FRAME_CONTENT}
-      onLoad={renderFormInFrame}
-    />
-  );
 };
 
 const FrameForm: React.FC = () => {
-  const { register, watch } = useForm();
+    const { register, watch } = useForm();
 
-  const value = watch();
+    const value = watch();
 
-  return (
-    <>
-      <form>
-        <label>
-          Free text
-          <input type="text" {...register('input', { required: true })} />
-        </label>
+    return (
+        <>
+            <form>
+                <label>
+                    Free text
+                    <input
+                        type="text"
+                        {...register('input', { required: true })}
+                    />
+                </label>
 
-        <label>
-          <input
-            type="radio"
-            value="a"
-            {...register('radio', { required: true })}
-          />
-          Choice A
-        </label>
+                <label>
+                    <input
+                        type="radio"
+                        value="a"
+                        {...register('radio', { required: true })}
+                    />
+                    Choice A
+                </label>
 
-        <label>
-          <input
-            type="radio"
-            value="b"
-            {...register('radio', { required: true })}
-          />
-          Choice B
-        </label>
-      </form>
+                <label>
+                    <input
+                        type="radio"
+                        value="b"
+                        {...register('radio', { required: true })}
+                    />
+                    Choice B
+                </label>
+            </form>
 
-      <label>
-        Form value
-        <pre>{JSON.stringify(value)}</pre>
-      </label>
-    </>
-  );
+            <label>
+                Form value
+                <pre>{JSON.stringify(value)}</pre>
+            </label>
+        </>
+    );
 };
 
 export default CrossFrameForm;
