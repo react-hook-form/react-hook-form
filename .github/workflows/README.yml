@@ -5,6 +5,7 @@ on:
         paths:
             -   docs/Helpers.yaml
             -   docs/Sponsors.yaml
+            -   docs/Template.md
 
 jobs:
     Update-README:
