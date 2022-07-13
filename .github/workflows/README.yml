@@ -16,11 +16,7 @@ jobs:
                 with:
                     deno-version : 1.23.4
                     
-            -   run : ls
-            
-            -   run : ls scripts
-            
-            -   run : ls scripts/README
+            -   uses: actions/checkout@v3
                 
             -   name : Run README updater
                 run : 'deno run 
