@@ -3569,7 +3569,15 @@ describe('useFieldArray', () => {
                 </div>
               );
             })}
-            <button onClick={() => append({})} type={'button'}>
+            <button
+              onClick={() =>
+                append({
+                  value: '',
+                  nestedFieldArray: [],
+                })
+              }
+              type={'button'}
+            >
               append
             </button>
             <button>submit</button>
@@ -3622,7 +3630,15 @@ describe('useFieldArray', () => {
                 </div>
               );
             })}
-            <button onClick={() => append({})} type={'button'}>
+            <button
+              onClick={() =>
+                append({
+                  value: '',
+                  nestedFieldArray: [],
+                })
+              }
+              type={'button'}
+            >
               append
             </button>
             <button>submit</button>
