@@ -1,0 +1,23 @@
+name : README
+
+on:
+    commit:
+        paths:
+            -   docs/Helpers.yaml
+            -   docs/Sponsors.yaml
+
+jobs:
+    Update-README:
+        runs-on : ubuntu-latest
+        steps:
+            
+            -   uses : denoland/setup-deno@v1
+                with:
+                    deno-version : 1.23.4
+                
+            -   name : Run README updater
+                run : deno run                              |
+                    --allow-read                            |
+                    --allow-write                           |
+                    --importmap=scripts/README/Imports.json |
+                    scripts/README/Updater.js
