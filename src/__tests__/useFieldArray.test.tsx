@@ -523,7 +523,14 @@ describe('useFieldArray', () => {
                 <input {...register(`test.${i}.value` as const)} />
               </fieldset>
             ))}
-            <button type={'button'} onClick={() => append({})}>
+            <button
+              type={'button'}
+              onClick={() =>
+                append({
+                  value: '',
+                })
+              }
+            >
               append
             </button>
           </form>
@@ -722,7 +729,10 @@ describe('useFieldArray', () => {
                 </div>
               );
             })}
-            <button type="button" onClick={() => append({ title: 'test' })}>
+            <button
+              type="button"
+              onClick={() => append({ title: 'test', nested: [] })}
+            >
               Add child
             </button>
           </form>
@@ -1385,6 +1395,7 @@ describe('useFieldArray', () => {
               onClick={() => {
                 append({
                   value: `fieldArray[${fields.length}].value`,
+                  nestedFieldArray: [],
                 });
               }}
             >
@@ -1490,7 +1501,10 @@ describe('useFieldArray', () => {
               </div>
             ))}
 
-            <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+            <button
+              type={'button'}
+              onClick={() => prepend({ value: 'test', nestedArray: [] })}
+            >
               prepend
             </button>
           </>
@@ -1581,7 +1595,10 @@ describe('useFieldArray', () => {
               </div>
             ))}
 
-            <button type={'button'} onClick={() => append({ value: 'test' })}>
+            <button
+              type={'button'}
+              onClick={() => append({ value: 'test', nestedArray: [] })}
+            >
               append
             </button>
           </div>
@@ -2100,6 +2117,7 @@ describe('useFieldArray', () => {
         append({
           test: 'append',
           test1: 'append',
+          test2: [],
         });
       }, [append]);
 
@@ -2111,6 +2129,7 @@ describe('useFieldArray', () => {
               prepend({
                 test: 'prepend',
                 test1: 'prepend',
+                test2: [],
               })
             }
           >
@@ -2122,6 +2141,7 @@ describe('useFieldArray', () => {
               insert(1, {
                 test: 'insert',
                 test1: 'insert',
+                test2: [],
               })
             }
           >
@@ -2138,6 +2158,7 @@ describe('useFieldArray', () => {
                     test: 'test',
                   },
                 ],
+                test1: '',
               })
             }
           >
@@ -2153,6 +2174,7 @@ describe('useFieldArray', () => {
                     test: 'test',
                   },
                 ],
+                test1: '',
               })
             }
           >
@@ -2168,6 +2190,7 @@ describe('useFieldArray', () => {
                     test: 'test',
                   },
                 ],
+                test1: '',
               })
             }
           >
@@ -2183,47 +2206,54 @@ describe('useFieldArray', () => {
       {
         test: 'append',
         test1: 'append',
+        test2: [],
       },
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
     expect(watchValues.at(-1)).toEqual([
-      { test: 'prepend', test1: 'prepend' },
+      { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'append',
         test1: 'append',
+        test2: [],
       },
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
     expect(watchValues.at(-1)).toEqual([
-      { test: 'prepend', test1: 'prepend' },
+      { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'insert',
         test1: 'insert',
+        test2: [],
       },
       {
         test: 'append',
         test1: 'append',
+        test2: [],
       },
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
 
     expect(watchValues.at(-1)).toEqual([
-      { test: 'prepend', test1: 'prepend' },
+      { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'insert',
         test1: 'insert',
+        test2: [],
       },
       {
         test: 'append',
         test1: 'append',
+        test2: [],
       },
       {
         test: 'append',
+        test1: '',
         test2: [
           {
             test: 'test',
@@ -2237,23 +2267,27 @@ describe('useFieldArray', () => {
     expect(watchValues.at(-1)).toEqual([
       {
         test: 'prepend',
+        test1: '',
         test2: [
           {
             test: 'test',
           },
         ],
       },
-      { test: 'prepend', test1: 'prepend' },
+      { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'insert',
         test1: 'insert',
+        test2: [],
       },
       {
         test: 'append',
         test1: 'append',
+        test2: [],
       },
       {
         test: 'append',
+        test1: '',
         test2: [
           {
             test: 'test',
@@ -2267,6 +2301,7 @@ describe('useFieldArray', () => {
     expect(watchValues.at(-1)).toEqual([
       {
         test: 'prepend',
+        test1: '',
         test2: [
           {
             test: 'test',
@@ -2275,23 +2310,27 @@ describe('useFieldArray', () => {
       },
       {
         test: 'insert',
+        test1: '',
         test2: [
           {
             test: 'test',
           },
         ],
       },
-      { test: 'prepend', test1: 'prepend' },
+      { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'insert',
         test1: 'insert',
+        test2: [],
       },
       {
         test: 'append',
         test1: 'append',
+        test2: [],
       },
       {
         test: 'append',
+        test1: '',
         test2: [
           {
             test: 'test',
@@ -2943,6 +2982,7 @@ describe('useFieldArray', () => {
                     setTimeout(() => {
                       insert(index + 1, {
                         name: 'test',
+                        id: '',
                       });
                     });
                   }}
@@ -3529,7 +3569,15 @@ describe('useFieldArray', () => {
                 </div>
               );
             })}
-            <button onClick={() => append({})} type={'button'}>
+            <button
+              onClick={() =>
+                append({
+                  value: '',
+                  nestedFieldArray: [],
+                })
+              }
+              type={'button'}
+            >
               append
             </button>
             <button>submit</button>
@@ -3582,7 +3630,15 @@ describe('useFieldArray', () => {
                 </div>
               );
             })}
-            <button onClick={() => append({})} type={'button'}>
+            <button
+              onClick={() =>
+                append({
+                  value: '',
+                  nestedFieldArray: [],
+                })
+              }
+              type={'button'}
+            >
               append
             </button>
             <button>submit</button>

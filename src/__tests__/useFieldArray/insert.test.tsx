@@ -99,16 +99,20 @@ describe('insert', () => {
       result.current.formState.dirtyFields;
 
       act(() => {
-        result.current.append({ value: '2' });
+        result.current.append({ value: '2', value1: '' });
       });
 
       act(() => {
-        result.current.insert(1, { value1: '3' });
+        result.current.insert(1, { value1: '3', value: '' });
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
-        test: [{ value: false }, { value1: true }, { value: true }],
+        test: [
+          { value: false },
+          { value1: true, value: true },
+          { value: true, value1: true },
+        ],
       });
     },
   );
@@ -134,20 +138,23 @@ describe('insert', () => {
       result.current.formState.dirtyFields;
 
       act(() => {
-        result.current.append({ value: '2' });
+        result.current.append({ value: '2', value1: '', value2: '' });
       });
 
       act(() => {
-        result.current.insert(1, [{ value1: '3' }, { value2: '4' }]);
+        result.current.insert(1, [
+          { value1: '3', value: '', value2: '' },
+          { value2: '4', value: '', value1: '' },
+        ]);
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
           { value: false },
-          { value1: true },
-          { value2: true },
-          { value: true },
+          { value1: true, value: true, value2: true },
+          { value2: true, value: true, value1: true },
+          { value: true, value1: true, value2: true },
         ],
       });
     },
