@@ -1134,7 +1134,7 @@ export function createFormControl<
                 : field._f.ref;
 
               try {
-                if(isHTMLElement(fieldReference)){
+                if (isHTMLElement(fieldReference)) {
                   fieldReference.closest('form')!.reset();
                   break;
                 }
