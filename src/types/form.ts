@@ -725,7 +725,7 @@ export type BatchFieldArrayUpdate = <
 
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = object,
 > = {
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: Noop;
