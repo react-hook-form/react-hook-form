@@ -673,7 +673,8 @@ export function createFormControl<
           validationModeAfterSubmit,
           validationModeBeforeSubmit,
         );
-      const watched = isWatched(name, _names, isBlurEvent);
+      const changed = get(_formValues, name) !== fieldValue;
+      const watched = isWatched(name, _names, isBlurEvent && !changed);
 
       set(_formValues, name, fieldValue);
 
@@ -693,7 +694,7 @@ export function createFormControl<
 
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
-      !isBlurEvent &&
+      (!isBlurEvent || changed) &&
         _subjects.watch.next({
           name,
           type: event.type,
@@ -706,7 +707,7 @@ export function createFormControl<
         );
       }
 
-      !isBlurEvent && watched && _subjects.state.next({});
+      watched && _subjects.state.next({});
 
       validateFields[name] = validateFields[name] ? +1 : 1;
 
