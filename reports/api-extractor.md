@@ -132,7 +132,7 @@ export type DeepPartialSkipArrayKey<T> = T extends Date | FileList_2 | File_2 | 
 
 // @public (undocumented)
 export type DeepRequired<T> = {
-    [K in keyof T]-?: DeepRequired<T[K]>;
+    [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
 // @public (undocumented)

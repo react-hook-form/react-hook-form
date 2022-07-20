@@ -25,7 +25,7 @@ export type ErrorOption = {
 };
 
 export type DeepRequired<T> = {
-  [K in keyof T]-?: DeepRequired<T[K]>;
+  [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
