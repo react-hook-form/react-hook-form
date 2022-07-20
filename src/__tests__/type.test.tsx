@@ -231,3 +231,36 @@ test('should support optional field errors', () => {
 
   errors;
 });
+
+test('should support nullable field errors', () => {
+  type Errors = FieldErrors<{
+    steps?: { action: string }[] | null;
+    foo: {
+      bar: string;
+    } | null;
+    baz: { action: string };
+  }>;
+
+  const error = {
+    type: 'test',
+    message: 'test',
+  };
+
+  let errors: Errors = {
+    steps: error,
+    foo: error,
+    baz: error,
+  };
+
+  errors = {
+    steps: [{ action: error }],
+    foo: {
+      bar: error,
+    },
+    baz: {
+      action: error,
+    },
+  };
+
+  errors;
+});

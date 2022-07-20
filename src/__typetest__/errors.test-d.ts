@@ -16,4 +16,18 @@ import { _ } from './__fixtures__';
       test1?: FieldError;
     }>(actual);
   }
+
+  /** it should support nullable record fields */
+  {
+    const actual = _ as FieldErrors<{
+      test?: string;
+      test1?: string | null;
+      test2: string | null;
+    }>;
+    expectType<{
+      test?: FieldError;
+      test1?: FieldError;
+      test2?: FieldError;
+    }>(actual);
+  }
 }
