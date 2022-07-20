@@ -18,10 +18,13 @@ import { _ } from './__fixtures__';
     expectType<{
       test?: FieldError;
       test1?: FieldError;
-      attachment?: Merge<FieldError, {
-        data?: FieldError;
-        data1?: FieldError;
-      }>;
+      attachment?: Merge<
+        FieldError,
+        {
+          data?: FieldError;
+          data1?: FieldError;
+        }
+      >;
     }>(actual);
   }
 
@@ -38,10 +41,13 @@ import { _ } from './__fixtures__';
     expectType<{
       test?: FieldError;
       test1?: FieldError;
-      attachment?: Merge<FieldError, {
-        data?: FieldError;
-        data1?: FieldError;
-      }>;
+      attachment?: Merge<
+        FieldError,
+        {
+          data?: FieldError;
+          data1?: FieldError;
+        }
+      >;
     }>(actual);
   }
 }
