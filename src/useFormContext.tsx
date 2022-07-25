@@ -36,7 +36,7 @@ const HookFormContext = React.createContext<UseFormReturn | null>(null);
  */
 export const useFormContext = <
   TFieldValues extends FieldValues,
->(): UseFormReturn<TFieldValues> =>
+  >(): UseFormReturn<TFieldValues> =>
   React.useContext(HookFormContext) as unknown as UseFormReturn<TFieldValues>;
 
 /**
@@ -69,7 +69,7 @@ export const useFormContext = <
  * }
  * ```
  */
-export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
+export const FormProvider = React.memo(<TFieldValues extends FieldValues, TContext = any>(
   props: FormProviderProps<TFieldValues, TContext>,
 ) => {
   const { children, ...data } = props;
@@ -78,4 +78,4 @@ export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
       {children}
     </HookFormContext.Provider>
   );
-};
+});

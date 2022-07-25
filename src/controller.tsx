@@ -1,6 +1,6 @@
 import { ControllerProps, FieldPath, FieldValues } from './types';
 import { useController } from './useController';
-
+import { memo } from "react"
 /**
  * Component based on `useController` hook to work with controlled component.
  *
@@ -43,11 +43,11 @@ import { useController } from './useController';
  * }
  * ```
  */
-const Controller = <
+const Controller = memo(<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  props: ControllerProps<TFieldValues, TName>,
-) => props.render(useController<TFieldValues, TName>(props));
+  >(
+    props: ControllerProps<TFieldValues, TName>,
+) => props.render(useController<TFieldValues, TName>(props)));
 
 export { Controller };
