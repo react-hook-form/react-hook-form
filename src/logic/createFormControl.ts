@@ -161,7 +161,7 @@ export function createFormControl<
     if (_proxyFormState.isValid) {
       isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
-        : await executeBuildInValidation(_fields, true);
+        : await executeBuiltInValidation(_fields, true);
 
       if (!shouldSkipRender && isValid !== _formState.isValid) {
         _formState.isValid = isValid;
@@ -408,7 +408,7 @@ export function createFormControl<
     return errors;
   };
 
-  const executeBuildInValidation = async (
+  const executeBuiltInValidation = async (
     fields: FieldRefs,
     shouldOnlyCheckValid?: boolean,
     context = {
@@ -452,7 +452,7 @@ export function createFormControl<
         }
 
         fieldValue &&
-          (await executeBuildInValidation(
+          (await executeBuiltInValidation(
             fieldValue,
             shouldOnlyCheckValid,
             context,
@@ -776,7 +776,7 @@ export function createFormControl<
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field = get(_fields, fieldName);
-            return await executeBuildInValidation(
+            return await executeBuiltInValidation(
               field && field._f ? { [fieldName]: field } : field,
             );
           }),
@@ -784,7 +784,7 @@ export function createFormControl<
       ).every(Boolean);
       !(!validationResult && !_formState.isValid) && _updateValid();
     } else {
-      validationResult = isValid = await executeBuildInValidation(_fields);
+      validationResult = isValid = await executeBuiltInValidation(_fields);
     }
 
     _subjects.state.next({
@@ -1033,7 +1033,7 @@ export function createFormControl<
           _formState.errors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
         } else {
-          await executeBuildInValidation(_fields);
+          await executeBuiltInValidation(_fields);
         }
 
         if (isEmptyObject(_formState.errors)) {
