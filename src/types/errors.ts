@@ -29,7 +29,9 @@ export type DeepRequired<T> = {
 };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends object
+  [K in keyof T]?: T[K] extends Date | FileList | File | Blob
+    ? FieldError
+    : T[K] extends object
     ? Merge<FieldError, FieldErrorsImpl<T[K]>>
     : FieldError;
 };

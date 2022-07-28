@@ -202,7 +202,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<D
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
+    [K in keyof T]?: T[K] extends Date | FileList | File | Blob ? FieldError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
 };
 
 // @public (undocumented)
