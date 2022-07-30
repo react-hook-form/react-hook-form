@@ -86,7 +86,7 @@
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "bundlewatch": "^0.3.3",
-    "cypress": "9.4.1",
+    "cypress": "10.3.1",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-cypress": "^2.12.1",
