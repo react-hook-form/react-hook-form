@@ -63,15 +63,11 @@ import { _ } from './__fixtures__';
         fileList: FileList;
       };
     }>;
-    expectType<{
-      date?: FieldError;
-      file?: FieldError;
-      fileList?: FieldError;
-      record?: {
-        date?: FieldError;
-        file?: FieldError;
-        fileList?: FieldError;
-      };
-    }>(actual);
+    expectType<FieldError | undefined>(actual.date);
+    expectType<FieldError | undefined>(actual.file);
+    expectType<FieldError | undefined>(actual.fileList);
+    expectType<FieldError | undefined>(actual.record?.date);
+    expectType<FieldError | undefined>(actual.record?.file);
+    expectType<FieldError | undefined>(actual.record?.fileList);
   }
 }
