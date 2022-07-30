@@ -24,9 +24,11 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type DeepRequired<T> = {
-  [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
-};
+export type DeepRequired<T> = T extends Date | FileList | File | Blob
+  ? T
+  : {
+      [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
+    };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
   [K in keyof T]?: T[K] extends Date | FileList | File | Blob
