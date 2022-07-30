@@ -131,7 +131,7 @@ export type DeepPartialSkipArrayKey<T> = T extends Date | FileList_2 | File_2 | 
 };
 
 // @public (undocumented)
-export type DeepRequired<T> = {
+export type DeepRequired<T> = T extends Date | FileList | File | Blob ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 

@@ -50,4 +50,24 @@ import { _ } from './__fixtures__';
       >;
     }>(actual);
   }
+
+  /** it should not treat Date, File, FileList or Blob as record fields */
+  {
+    const actual = _ as FieldErrors<{
+      date: Date;
+      file: File;
+      fileList: FileList;
+      record: {
+        date: Date;
+        file: File;
+        fileList: FileList;
+      };
+    }>;
+    expectType<FieldError | undefined>(actual.date);
+    expectType<FieldError | undefined>(actual.file);
+    expectType<FieldError | undefined>(actual.fileList);
+    expectType<FieldError | undefined>(actual.record?.date);
+    expectType<FieldError | undefined>(actual.record?.file);
+    expectType<FieldError | undefined>(actual.record?.fileList);
+  }
 }
