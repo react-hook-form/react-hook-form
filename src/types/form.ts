@@ -374,7 +374,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     defaultValue?: DeepPartial<TFieldValues>,
   ): FieldPathValues<TFieldValues, TFieldNames>;
   /**
-   * Watch a single field update and used it outside of render.
+   * Watch and subscribe to a single field used outside of render.
    *
    * @remarks
    * [API](https://react-hook-form.com/api/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
