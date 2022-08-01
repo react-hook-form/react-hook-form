@@ -1,16 +1,10 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import * as generateId from '../../logic/generateId';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
-
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
 
 interface TestValue {
   x: string;
@@ -20,9 +14,13 @@ interface DefaultValues {
   test: TestValue[];
 }
 
+let i = 0;
+
+jest.mock('../../logic/generateId', () => () => String(i++));
+
 describe('replace', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   it('should replace fields correctly', () => {

@@ -8,7 +8,6 @@ import {
 } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
-import * as generateId from '../logic/generateId';
 import {
   Control,
   UseFieldArrayReturn,
@@ -21,18 +20,13 @@ import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
+let i = 0;
+
+jest.mock('../logic/generateId', () => () => String(i++));
 
 describe('useWatch', () => {
   beforeEach(() => {
-    mockGenerateId();
-  });
-
-  afterEach(() => {
-    (generateId.default as jest.Mock<any>).mockRestore();
+    i = 0;
   });
 
   it('should return default value in useForm', () => {

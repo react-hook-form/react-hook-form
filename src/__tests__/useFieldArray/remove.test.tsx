@@ -10,21 +10,19 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import * as generateId from '../../logic/generateId';
 import { Control, DeepMap, FieldError } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
-
 jest.useFakeTimers();
+
+let i = 0;
+
+jest.mock('../../logic/generateId', () => () => String(i++));
 
 describe('remove', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   it('should update isDirty formState when item removed', () => {

@@ -9,7 +9,6 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../controller';
-import * as generateId from '../logic/generateId';
 import {
   Control,
   FieldValues,
@@ -21,14 +20,13 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
+let i = 0;
+
+jest.mock('../logic/generateId', () => () => String(i++));
 
 describe('useFieldArray', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   describe('initialize', () => {
