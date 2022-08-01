@@ -3,20 +3,18 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import * as generateId from '../../logic/generateId';
 import { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
+let i = 0;
+
+jest.mock('../../logic/generateId', () => () => String(i++));
 
 describe('append', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   it('should append dirtyFields fields correctly', async () => {

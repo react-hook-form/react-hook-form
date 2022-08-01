@@ -9,22 +9,20 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import * as generateId from '../../logic/generateId';
 import { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
-
 jest.useFakeTimers();
+
+let i = 0;
+
+jest.mock('../../logic/generateId', () => () => String(i++));
 
 describe('insert', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   it('should insert data at index with single value', () => {

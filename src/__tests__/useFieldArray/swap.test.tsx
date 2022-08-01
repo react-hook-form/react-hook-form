@@ -3,18 +3,16 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import * as generateId from '../../logic/generateId';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
+let i = 0;
+
+jest.mock('../../logic/generateId', () => () => String(i++));
 
 describe('swap', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   it('should swap into pointed position', () => {
