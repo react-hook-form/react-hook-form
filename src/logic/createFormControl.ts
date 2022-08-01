@@ -934,14 +934,7 @@ export function createFormControl<
     _names.mount.add(name);
 
     field
-      ? disabledIsDefined &&
-        set(
-          _formValues,
-          name,
-          options.disabled
-            ? undefined
-            : get(_formValues, name, getFieldValue(field._f)),
-        )
+      ? disabledIsDefined && set(_formValues, name, undefined)
       : updateValidAndValue(name, true, options.value);
 
     return {
