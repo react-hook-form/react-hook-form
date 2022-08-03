@@ -31,7 +31,7 @@
 
 ## Funcionalidades
 
-- Contruído com performance e experiência do desenvolvedor em mente
+- Construído com performance e experiência do desenvolvedor em mente
 - Validação de formulários incontrolados
 - Melhore o desempenho do formulário controlado
 - [Baixo Custo](https://bundlephobia.com/result?p=react-hook-form@latest) sem nenhuma dependência

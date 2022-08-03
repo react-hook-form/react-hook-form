@@ -95,6 +95,10 @@ it('should render correctly', () => {
 });
 ```
 
+## Documentation
+
+In case you want to change the `README.md`, please instead modify the `docs/Template.md` file, as the README is generated from it upon committing.
+
 ## License
 
 By contributing your code to the react-hook-form GitHub repository, you agree to license your contribution under the MIT license.

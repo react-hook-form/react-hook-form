@@ -79,6 +79,7 @@ import isWatched from './isWatched';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
+import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
 
 const defaultOptions = {
@@ -160,7 +161,7 @@ export function createFormControl<
     if (_proxyFormState.isValid) {
       isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
-        : await executeBuildInValidation(_fields, true);
+        : await executeBuiltInValidation(_fields, true);
 
       if (!shouldSkipRender && isValid !== _formState.isValid) {
         _formState.isValid = isValid;
@@ -407,7 +408,7 @@ export function createFormControl<
     return errors;
   };
 
-  const executeBuildInValidation = async (
+  const executeBuiltInValidation = async (
     fields: FieldRefs,
     shouldOnlyCheckValid?: boolean,
     context = {
@@ -418,17 +419,19 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const { _f: fieldReference, ...fieldValue } = field;
+        const { _f, ...fieldValue } = field;
 
-        if (fieldReference) {
+        if (_f) {
+          const isFieldArrayRoot = _names.array.has(_f.name);
           const fieldError = await validateField(
             field,
-            get(_formValues, fieldReference.name),
+            get(_formValues, _f.name),
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
+            isFieldArrayRoot,
           );
 
-          if (fieldError[fieldReference.name]) {
+          if (fieldError[_f.name]) {
             context.valid = false;
 
             if (shouldOnlyCheckValid) {
@@ -436,19 +439,20 @@ export function createFormControl<
             }
           }
 
-          if (!shouldOnlyCheckValid) {
-            fieldError[fieldReference.name]
-              ? set(
-                  _formState.errors,
-                  fieldReference.name,
-                  fieldError[fieldReference.name],
-                )
-              : unset(_formState.errors, fieldReference.name);
-          }
+          !shouldOnlyCheckValid &&
+            (get(fieldError, _f.name)
+              ? isFieldArrayRoot
+                ? updateFieldArrayRootError(
+                    _formState.errors,
+                    fieldError,
+                    _f.name,
+                  )
+                : set(_formState.errors, _f.name, fieldError[_f.name])
+              : unset(_formState.errors, _f.name));
         }
 
         fieldValue &&
-          (await executeBuildInValidation(
+          (await executeBuiltInValidation(
             fieldValue,
             shouldOnlyCheckValid,
             context,
@@ -772,7 +776,7 @@ export function createFormControl<
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field = get(_fields, fieldName);
-            return await executeBuildInValidation(
+            return await executeBuiltInValidation(
               field && field._f ? { [fieldName]: field } : field,
             );
           }),
@@ -780,7 +784,7 @@ export function createFormControl<
       ).every(Boolean);
       !(!validationResult && !_formState.isValid) && _updateValid();
     } else {
-      validationResult = isValid = await executeBuildInValidation(_fields);
+      validationResult = isValid = await executeBuiltInValidation(_fields);
     }
 
     _subjects.state.next({
@@ -1029,7 +1033,7 @@ export function createFormControl<
           _formState.errors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
         } else {
-          await executeBuildInValidation(_fields);
+          await executeBuiltInValidation(_fields);
         }
 
         if (isEmptyObject(_formState.errors)) {
@@ -1130,9 +1134,10 @@ export function createFormControl<
                 : field._f.ref;
 
               try {
-                isHTMLElement(fieldReference) &&
+                if (isHTMLElement(fieldReference)) {
                   fieldReference.closest('form')!.reset();
-                break;
+                  break;
+                }
               } catch {}
             }
           }

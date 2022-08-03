@@ -12,6 +12,7 @@ export type MultipleFieldErrors = {
 
 export type FieldError = {
   type: LiteralUnion<keyof RegisterOptions, string>;
+  root?: FieldError;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
@@ -23,12 +24,16 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type DeepRequired<T> = {
-  [K in keyof T]-?: DeepRequired<T[K]>;
-};
+export type DeepRequired<T> = T extends Date | FileList | File | Blob
+  ? T
+  : {
+      [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
+    };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends object
+  [K in keyof T]?: T[K] extends Date | FileList | File | Blob
+    ? FieldError
+    : T[K] extends object
     ? Merge<FieldError, FieldErrorsImpl<T[K]>>
     : FieldError;
 };

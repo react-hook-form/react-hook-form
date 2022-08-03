@@ -9,22 +9,20 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import * as generateId from '../../logic/generateId';
 import { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-const mockGenerateId = () => {
-  let id = 0;
-  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
-};
-
 jest.useFakeTimers();
+
+let i = 0;
+
+jest.mock('../../logic/generateId', () => () => String(i++));
 
 describe('insert', () => {
   beforeEach(() => {
-    mockGenerateId();
+    i = 0;
   });
 
   it('should insert data at index with single value', () => {
@@ -99,16 +97,20 @@ describe('insert', () => {
       result.current.formState.dirtyFields;
 
       act(() => {
-        result.current.append({ value: '2' });
+        result.current.append({ value: '2', value1: '' });
       });
 
       act(() => {
-        result.current.insert(1, { value1: '3' });
+        result.current.insert(1, { value1: '3', value: '' });
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
-        test: [{ value: false }, { value1: true }, { value: true }],
+        test: [
+          { value: false },
+          { value1: true, value: true },
+          { value: true, value1: true },
+        ],
       });
     },
   );
@@ -134,20 +136,23 @@ describe('insert', () => {
       result.current.formState.dirtyFields;
 
       act(() => {
-        result.current.append({ value: '2' });
+        result.current.append({ value: '2', value1: '', value2: '' });
       });
 
       act(() => {
-        result.current.insert(1, [{ value1: '3' }, { value2: '4' }]);
+        result.current.insert(1, [
+          { value1: '3', value: '', value2: '' },
+          { value2: '4', value: '', value1: '' },
+        ]);
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
           { value: false },
-          { value1: true },
-          { value2: true },
-          { value: true },
+          { value1: true, value: true, value2: true },
+          { value2: true, value: true, value1: true },
+          { value: true, value1: true, value2: true },
         ],
       });
     },

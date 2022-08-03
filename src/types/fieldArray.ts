@@ -1,6 +1,7 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
 import { FieldArrayPath, FieldArrayPathValue } from './path';
+import { RegisterOptions } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -10,6 +11,10 @@ export type UseFieldArrayProps<
   name: TFieldArrayName;
   keyName?: TKeyName;
   control?: Control<TFieldValues>;
+  rules?: Pick<
+    RegisterOptions<TFieldValues>,
+    'maxLength' | 'minLength' | 'validate' | 'required'
+  >;
   shouldUnregister?: boolean;
 };
 
@@ -99,8 +104,8 @@ export type UseFieldArrayPrepend<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -130,8 +135,8 @@ export type UseFieldArrayAppend<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -184,8 +189,8 @@ export type UseFieldArrayInsert<
 > = (
   index: number,
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
   options?: FieldArrayMethodProps,
 ) => void;
 
@@ -237,8 +242,8 @@ export type UseFieldArrayReplace<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 > = (
   value:
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-    | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    | FieldArray<TFieldValues, TFieldArrayName>
+    | FieldArray<TFieldValues, TFieldArrayName>[],
 ) => void;
 
 export type UseFieldArrayReturn<

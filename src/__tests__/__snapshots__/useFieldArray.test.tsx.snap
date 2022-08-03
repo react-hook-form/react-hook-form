@@ -109,99 +109,93 @@ Array [
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
   ],
   Array [
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
   ],
   Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
   ],
   Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
   ],
   Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
   ],
   Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
   ],
   Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
     Object {
       "test": "append",
-      "test2": Array [
-        Object {
-          "test": "test",
-        },
-      ],
-    },
-  ],
-  Array [
-    Object {
-      "test": "prepend",
-      "test1": "prepend",
-    },
-    Object {
-      "test": "insert",
-      "test1": "insert",
-    },
-    Object {
-      "test": "append",
-      "test1": "append",
-    },
-    Object {
-      "test": "append",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -212,26 +206,22 @@ Array [
   Array [
     Object {
       "test": "prepend",
-      "test2": Array [
-        Object {
-          "test": "test",
-        },
-      ],
-    },
-    Object {
-      "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
     Object {
       "test": "append",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -242,6 +232,7 @@ Array [
   Array [
     Object {
       "test": "prepend",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -251,17 +242,21 @@ Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
     Object {
       "test": "append",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -272,14 +267,7 @@ Array [
   Array [
     Object {
       "test": "prepend",
-      "test2": Array [
-        Object {
-          "test": "test",
-        },
-      ],
-    },
-    Object {
-      "test": "insert",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -289,17 +277,21 @@ Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
     Object {
       "test": "append",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -310,6 +302,7 @@ Array [
   Array [
     Object {
       "test": "prepend",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -318,6 +311,7 @@ Array [
     },
     Object {
       "test": "insert",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
@@ -327,17 +321,65 @@ Array [
     Object {
       "test": "prepend",
       "test1": "prepend",
+      "test2": Array [],
     },
     Object {
       "test": "insert",
       "test1": "insert",
+      "test2": Array [],
     },
     Object {
       "test": "append",
       "test1": "append",
+      "test2": Array [],
     },
     Object {
       "test": "append",
+      "test1": "",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  Array [
+    Object {
+      "test": "prepend",
+      "test1": "",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "insert",
+      "test1": "",
+      "test2": Array [
+        Object {
+          "test": "test",
+        },
+      ],
+    },
+    Object {
+      "test": "prepend",
+      "test1": "prepend",
+      "test2": Array [],
+    },
+    Object {
+      "test": "insert",
+      "test1": "insert",
+      "test2": Array [],
+    },
+    Object {
+      "test": "append",
+      "test1": "append",
+      "test2": Array [],
+    },
+    Object {
+      "test": "append",
+      "test1": "",
       "test2": Array [
         Object {
           "test": "test",
