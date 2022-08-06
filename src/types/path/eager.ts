@@ -7,7 +7,11 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
  * Helper type for recursively constructing paths through a type.
  * See {@link Path}
  */
-type PathImpl<K extends string | number, V> = V extends Primitive
+type PathImpl<K extends string | number, V> = V extends
+  | Primitive
+  | Date
+  | FileList
+  | File
   ? `${K}`
   : `${K}` | `${K}.${Path<V>}`;
 
@@ -38,10 +42,14 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
  * Helper type for recursively constructing paths through a type.
  * See {@link ArrayPath}
  */
-type ArrayPathImpl<K extends string | number, V> = V extends Primitive
+type ArrayPathImpl<K extends string | number, V> = V extends
+  | Primitive
+  | Date
+  | FileList
+  | File
   ? never
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive
+  ? U extends Primitive | Date | FileList | File
     ? never
     : `${K}` | `${K}.${ArrayPath<V>}`
   : `${K}.${ArrayPath<V>}`;
