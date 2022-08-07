@@ -1,5 +1,5 @@
 import { FieldValues } from '../fields';
-import { Primitive } from '../utils';
+import { BrowserNativeObject, Primitive } from '../utils';
 
 import { ArrayKey, IsTuple, TupleKeys } from './common';
 
@@ -9,9 +9,7 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
  */
 type PathImpl<K extends string | number, V> = V extends
   | Primitive
-  | Date
-  | FileList
-  | File
+  | BrowserNativeObject
   ? `${K}`
   : `${K}` | `${K}.${Path<V>}`;
 
@@ -44,12 +42,10 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
  */
 type ArrayPathImpl<K extends string | number, V> = V extends
   | Primitive
-  | Date
-  | FileList
-  | File
+  | BrowserNativeObject
   ? never
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive | Date | FileList | File
+  ? U extends Primitive | BrowserNativeObject
     ? never
     : `${K}` | `${K}.${ArrayPath<V>}`
   : `${K}.${ArrayPath<V>}`;
