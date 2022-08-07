@@ -1,5 +1,5 @@
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { LiteralUnion, Merge } from './utils';
+import { BrowserNativeObject, LiteralUnion, Merge } from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -24,14 +24,14 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type DeepRequired<T> = T extends Date | FileList | File | Blob
+export type DeepRequired<T> = T extends BrowserNativeObject | Blob
   ? T
   : {
       [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
     };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends Date | FileList | File | Blob
+  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
     ? FieldError
     : T[K] extends object
     ? Merge<FieldError, FieldErrorsImpl<T[K]>>
