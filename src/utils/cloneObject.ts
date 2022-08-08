@@ -9,7 +9,9 @@ export default function cloneObject<T>(data: T): T {
   if (data instanceof Date) {
     copy = new Date(data);
   } else if (data instanceof Set) {
-    copy = new Set(data);
+      copy = new Set(data);
+  } else if (data instanceof Map) {
+    copy = new Map(data);
   } else if (
     !(isWeb && (data instanceof Blob || data instanceof FileList)) &&
     (isArray || isObject(data))
