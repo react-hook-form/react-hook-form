@@ -496,6 +496,38 @@ describe('formState', () => {
     expect(await screen.findByText('valid')).toBeVisible();
   });
 
+  it('should remind isSubmitting when form is invalid', async () => {
+    const submittingState: boolean[] = [];
+
+    function App() {
+      const {
+        register,
+        formState: { isSubmitting },
+        handleSubmit,
+      } = useForm();
+
+      submittingState.push(isSubmitting);
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input
+            {...register('value', { required: true })}
+            defaultValue="Any default value!"
+          />
+          <button>Submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await actComponent(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(submittingState).toEqual([false, false]);
+  });
+
   describe('when defaultValue supplied', () => {
     it('should update isValid to true for validation with inline defaultValue', async () => {
       function App() {
