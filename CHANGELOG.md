@@ -1,5 +1,29 @@
 # Changelog
 
+## [7.34.0] - 2022-7-28
+
+## Added
+
+- Build in validation support for `useFieldArray` with `rules` prop
+
+```tsx
+useFieldArray({
+  name: 'test',
+  rules: {
+    required: true,
+    minLength: 2,
+    maxLength: 10,
+    validate: (fieldArrayValues) => {
+      if (fieldArrayValues[2].title === 'test') {
+        return 'validate Error';
+      }
+    },
+  },
+});
+
+errors?.test?.root?.message; // access root level errors
+```
+
 ## [7.33.0] - 2022-6-24
 
 ## Breaking Change
