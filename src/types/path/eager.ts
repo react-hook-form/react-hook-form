@@ -151,10 +151,7 @@ export type FieldPathValues<
  *   = 'foo.bar' | 'baz'
  * ```
  */
-export type FieldPathByValue<
-  TFieldValues extends FieldValues,
-  TValue,
-> = {
+export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
   [Key in FieldPath<TFieldValues>]: FieldPathValue<
     TFieldValues,
     Key
