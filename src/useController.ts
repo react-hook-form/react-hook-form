@@ -2,8 +2,8 @@ import React from 'react';
 
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
-import get from './utils/get';
 import createElementRef from './utils/createElementRef';
+import get from './utils/get';
 import { EVENTS } from './constants';
 import {
   ControllerFieldState,
@@ -130,7 +130,7 @@ export function useController<
           const field = get(control._fields, name);
 
           if (elm && field && elm.focus) {
-            field._f.ref = createElementRef(elm);
+            field._f.ref = /*#__NOINLINE__*/ createElementRef(elm);
           }
         },
         [name, control._fields],
