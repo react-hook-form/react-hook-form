@@ -42,6 +42,16 @@ import { useWatch } from './useWatch';
  * }
  * ```
  */
+function createElementRef(elm: any) {
+  return {
+    focus: () => elm.focus(),
+    select: () => elm.select(),
+    setCustomValidity: (message: string) =>
+      elm.setCustomValidity(message),
+    reportValidity: () => elm.reportValidity(),
+  } 
+}
+
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -128,13 +138,7 @@ export function useController<
           const field = get(control._fields, name);
 
           if (elm && field && elm.focus) {
-            field._f.ref = {
-              focus: () => elm.focus(),
-              select: () => elm.select(),
-              setCustomValidity: (message: string) =>
-                elm.setCustomValidity(message),
-              reportValidity: () => elm.reportValidity(),
-            };
+            field._f.ref = createElementRef(elm);
           }
         },
         [name, control._fields],
