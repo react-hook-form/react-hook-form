@@ -1024,6 +1024,10 @@ export function createFormControl<
       let fieldValues: any = cloneObject(_formValues);
 
       try {
+        _subjects.state.next({
+          isValidating: true,
+        });
+
         if (_options.resolver) {
           const { errors, values } = await _executeSchema();
           _formState.errors = errors as FieldErrors<TFieldValues>;
@@ -1031,6 +1035,11 @@ export function createFormControl<
         } else {
           await executeBuiltInValidation(_fields);
         }
+
+        _subjects.state.next({
+          // TODO: Discss if this is the ideal placement for setting the flag back to false
+          isValidating: false,
+        });
 
         if (isEmptyObject(_formState.errors)) {
           _subjects.state.next({
