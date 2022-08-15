@@ -3,6 +3,7 @@ import React from 'react';
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import get from './utils/get';
+import createElementRef from './utils/createElementRef';
 import { EVENTS } from './constants';
 import {
   ControllerFieldState,
@@ -42,15 +43,6 @@ import { useWatch } from './useWatch';
  * }
  * ```
  */
-function createElementRef(elm: any) {
-  return {
-    focus: () => elm.focus(),
-    select: () => elm.select(),
-    setCustomValidity: (message: string) =>
-      elm.setCustomValidity(message),
-    reportValidity: () => elm.reportValidity(),
-  } 
-}
 
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
