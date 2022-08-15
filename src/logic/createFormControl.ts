@@ -1023,6 +1023,10 @@ export function createFormControl<
       let hasNoPromiseError = true;
       let fieldValues: any = cloneObject(_formValues);
 
+      _subjects.state.next({
+        isSubmitting: true,
+      });
+
       try {
         if (_options.resolver) {
           const { errors, values } = await _executeSchema();
@@ -1050,10 +1054,6 @@ export function createFormControl<
               _names.mount,
             );
         }
-
-        _subjects.state.next({
-          isSubmitting: true,
-        });
       } catch (err) {
         hasNoPromiseError = false;
         throw err;
