@@ -921,22 +921,19 @@ export function createFormControl<
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
-    const isRegisterd = !!field; 
     const disabledIsDefined = isBoolean(options.disabled);
-    
-    field = {
+
+    set(_fields, name, {
       _f: {
         ...(field && field._f ? field._f : { ref: { name } }),
         name,
         mount: true,
         ...options,
       },
-    };
-
-    set(_fields, name, field);
+    });
     _names.mount.add(name);
 
-    isRegisterd
+    field
       ? disabledIsDefined &&
         set(
           _formValues,
