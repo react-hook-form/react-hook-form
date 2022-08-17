@@ -6,6 +6,7 @@ export {
   FieldArrayPath,
   FieldArrayPathValue,
   FieldPath,
+  FieldPathByValue,
   FieldPathValue,
   FieldPathValues,
   Path,

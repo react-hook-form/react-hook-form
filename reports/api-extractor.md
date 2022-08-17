@@ -218,6 +218,11 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
 // @public
+export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
+    [Key in FieldPath<TFieldValues>]: FieldPathValue<TFieldValues, Key> extends TValue ? Key : never;
+}[FieldPath<TFieldValues>];
+
+// @public
 export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;
 
 // @public
