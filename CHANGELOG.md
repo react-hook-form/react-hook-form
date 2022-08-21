@@ -28,7 +28,7 @@ errors?.test?.root?.message; // access root level errors
 
 ## Breaking Change
 
-- `@hookform/resolvesrs` needs to upgraded to version `^2.9.3` above
+- `@hookform/resolvers` needs to upgraded to version `^2.9.3` above
 - `useFormContext` do always required to provide a generic type check for your form, without providing generic will now require developers to convert error messages to `String` to pass the type check
 
 ```tsx
@@ -1402,7 +1402,7 @@ getValues(['test', 'test1']); // { test: 'test', test1: 'test1' }
 ```
 
 - `setError` will focus one error at a time and remove confusing set multiple errors, behavior change.
-  - setError will persis an error if it's not part of the form, which requires manual remove with clearError
+  - setError will persist an error if it's not part of the form, which requires manual remove with clearError
   - setError error will be removed by validation rules, rules always take over errors
 
 ```diff
