@@ -1,5 +1,5 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React from 'react';
+import { useForm } from 'react-hook-form';
 
 export function FormSection1({ register }) {
   return (
@@ -8,14 +8,14 @@ export function FormSection1({ register }) {
         <label>First name</label>
         <input
           type="text"
-          {...register("firstName", { required: true, maxLength: 80 })}
+          {...register('firstName', { required: true, maxLength: 80 })}
         />
       </div>
       <div>
         <label>Last name</label>
         <input
           type="text"
-          {...register("lastName", { required: true, maxLength: 100 })}
+          {...register('lastName', { required: true, maxLength: 100 })}
         />
       </div>
     </>
@@ -29,8 +29,8 @@ export function FormSection2({ register }) {
         <label>Email</label>
         <input
           type="email"
-          {...register("email", {
-            required: true
+          {...register('email', {
+            required: true,
           })}
         />
       </div>
@@ -38,16 +38,16 @@ export function FormSection2({ register }) {
         <label>Mobile number</label>
         <input
           type="tel"
-          {...register("mobileNumber", {
+          {...register('mobileNumber', {
             required: true,
             maxLength: 11,
-            minLength: 8
+            minLength: 8,
           })}
         />
       </div>
       <div>
         <label>Title</label>
-        <select {...register("title", { required: true })}>
+        <select {...register('title', { required: true })}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
@@ -60,12 +60,12 @@ export function FormSection2({ register }) {
         <input
           type="radio"
           value="Yes"
-          {...register("developer", { required: true })}
+          {...register('developer', { required: true })}
         />
         <input
           type="radio"
           value="No"
-          {...register("developer", { required: true })}
+          {...register('developer', { required: true })}
         />
       </div>
     </>
