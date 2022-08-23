@@ -244,7 +244,7 @@ export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(pr
 
 // @public (undocumented)
 export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
-    children: React_2.ReactNode;
+    children: React_2.ReactNode | React_2.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext>;
 
 // @public (undocumented)
