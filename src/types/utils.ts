@@ -1,3 +1,4 @@
+import { UnionToIntersection } from './path/common';
 import { NestedValue } from './form';
 
 /*
@@ -76,10 +77,15 @@ export type IsNever<T> = [T] extends [never] ? true : false;
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
-  : T extends BrowserNativeObject | NestedValue
+  : [T] extends [BrowserNativeObject | NestedValue]
   ? TValue
-  : T extends object
-  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+  : [T] extends [object]
+  ? {
+      [K in keyof UnionToIntersection<T>]: DeepMap<
+        NonUndefined<UnionToIntersection<T>[K]>,
+        TValue
+      >;
+    }
   : TValue;
 
 export type IsFlatObject<T extends object> = Extract<

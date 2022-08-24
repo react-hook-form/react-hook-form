@@ -60,3 +60,69 @@ import { useForm } from '../useForm';
     }>(getFieldState('test', formState));
   }
 }
+
+/** {@link FieldNamesMarkedBoolean} */ {
+  /** It should infer the correct types if there is an union type */ {
+    type FormWithUnion = {
+      always: string;
+      nested: {
+        foo: number;
+        bar: {
+          foo: boolean;
+          bar: boolean;
+        };
+      };
+      union:
+        | {
+            data: 'A';
+            data1: string;
+          }
+        | {
+            data: 'B';
+            data2: string;
+          };
+    };
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const {
+      formState: { touchedFields },
+    } = useForm<FormWithUnion>({
+      defaultValues: {
+        always: '',
+        nested: {
+          foo: 0,
+          bar: {
+            foo: true,
+            bar: false,
+          },
+        },
+        union: {
+          data: 'A',
+          data1: '',
+        },
+      },
+    });
+
+    expectType<{
+      always?: boolean;
+      nested?: {
+        foo?: boolean;
+        bar?: {
+          foo?: boolean;
+          bar?: boolean;
+        };
+      };
+      union?: {
+        data?: boolean;
+        data1?: boolean;
+        data2?: boolean;
+      };
+    }>(touchedFields);
+    expectType<boolean | undefined>(touchedFields.always);
+    expectType<boolean | undefined>(touchedFields.nested?.foo);
+    expectType<boolean | undefined>(touchedFields.nested?.bar?.foo);
+    expectType<boolean | undefined>(touchedFields.nested?.bar?.bar);
+    expectType<boolean | undefined>(touchedFields.union?.data);
+    expectType<boolean | undefined>(touchedFields.union?.data1);
+    expectType<boolean | undefined>(touchedFields.union?.data2);
+  }
+}

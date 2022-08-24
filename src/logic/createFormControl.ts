@@ -213,7 +213,12 @@ export function createFormControl<
           args.argA,
           args.argB,
         );
-        shouldSetValues && set(_formState.touchedFields, name, touchedFields);
+        shouldSetValues &&
+          set(
+            _formState.touchedFields as unknown as TFieldValues,
+            name,
+            touchedFields,
+          );
       }
 
       if (_proxyFormState.dirtyFields) {
@@ -298,7 +303,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields as TFieldValues, name, true);
+        : set(_formState.dirtyFields as unknown as TFieldValues, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -306,7 +311,11 @@ export function createFormControl<
     }
 
     if (isBlurEvent && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isBlurEvent);
+      set(
+        _formState.touchedFields as unknown as TFieldValues,
+        name,
+        isBlurEvent,
+      );
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
