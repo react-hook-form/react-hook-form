@@ -116,9 +116,11 @@ export type CustomElement<TFieldValues extends FieldValues> = {
     focus?: Noop;
 };
 
+// Warning: (ae-forgotten-export) The symbol "UnionToIntersection" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends BrowserNativeObject | NestedValue ? TValue : T extends object ? {
-    [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue>;
+export type DeepMap<T, TValue> = IsAny<T> extends true ? any : [T] extends [BrowserNativeObject | NestedValue] ? TValue : [T] extends [object] ? {
+    [K in keyof UnionToIntersection<T>]: DeepMap<NonUndefined<UnionToIntersection<T>[K]>, TValue>;
 } : TValue;
 
 // @public (undocumented)
