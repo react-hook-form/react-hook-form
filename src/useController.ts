@@ -145,15 +145,19 @@ export function useController<
       {},
       {
         invalid: {
+          enumerable: true,
           get: () => !!get(formState.errors, name),
         },
         isDirty: {
+          enumerable: true,
           get: () => !!get(formState.dirtyFields, name),
         },
         isTouched: {
+          enumerable: true,
           get: () => !!get(formState.touchedFields, name),
         },
         error: {
+          enumerable: true,
           get: () => get(formState.errors, name),
         },
       },
