@@ -201,7 +201,7 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<DeepRequired<T>>;
+export type FieldErrors<T extends FieldValues = FieldValues> = FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>;
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
