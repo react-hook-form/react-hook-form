@@ -75,7 +75,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://wantedlyinc.com'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/wantedly/d94e44e/logo/256.png'
     />
@@ -84,7 +84,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://underbelly.is'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/underbelly/989a4a6/logo/256.png'
     />
@@ -93,7 +93,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://leniolabs.com'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png'
     />
@@ -102,7 +102,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://graphcms.com'
 />
-    <img
+<img
         width = 94
         src = 'https://avatars.githubusercontent.com/u/31031438'
     />
@@ -111,7 +111,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://kanamekey.com'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/kaname/d15fd98/logo/256.png'
     />
@@ -120,7 +120,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://feathery.io'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/feathery1/c29b0a1/logo/256.png'
     />
@@ -129,7 +129,7 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     target = _blank
     href = 'https://getform.io'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/getformio2/3c978c8/avatar/256.png'
     />
@@ -150,80 +150,3 @@ Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
 </a>
-
-### Helpers
-
-Thank you for helping and answering questions from the community.
-
-<a href = 'https://github.com/leapful'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/18494222'
-    />
-</a>
-<a href = 'https://github.com/thanh-nguyen-95'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/44762180'
-    />
-</a>
-<a href = 'https://github.com/slugmandrew'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/153625'
-    />
-</a>
-<a href = 'https://github.com/lundn'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/4386964'
-    />
-</a>
-<a href = 'https://github.com/ritikbanger'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/47841501'
-    />
-</a>
-<a href = 'https://github.com/fahadsohail482'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/46647496'
-    />
-</a>
-<a href = 'https://github.com/getTobiasNielsen'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/54803528'
-    />
-</a>
-<a href = 'https://github.com/jfreedman0212'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/31392256'
-    />
-</a>
-<a href = 'https://github.com/marr'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/44376'
-    />
-</a>
-<a href = 'https://github.com/Moshyfawn'>
-    <img
-        width = 25
-        src = 'https://avatars.githubusercontent.com/u/16290753'
-    />
-</a>
-
-### Organizations
-
-Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
-
-<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
-</a>
-
-<!--  -->
-
-<!-- Generated @ 2022 / 08 / 27  23:12:32 -->
