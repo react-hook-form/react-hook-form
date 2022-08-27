@@ -10,7 +10,9 @@ function Sponsors() {
 }
 
 function toPreviews(type) {
-  return Data[type].map(Previews[type]).join('\n');
+  return Array.isArray(Data[type])
+    ? Data[type].map(Previews[type]).join('\n')
+    : '';
 }
 
 export default { Sponsors, Helpers };
