@@ -716,7 +716,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
 }): FieldPathValues<TFieldValues, TFieldNames>;
 
 // @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[]>(): FieldPathValues<TFieldValues, TFieldNames>;
+export function useWatch<TFieldValues extends FieldValues = FieldValues>(): DeepPartialSkipArrayKey<TFieldValues>;
 
 // @public (undocumented)
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {

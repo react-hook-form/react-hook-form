@@ -126,8 +126,7 @@ export function useWatch<
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[],
->(): FieldPathValues<TFieldValues, TFieldNames>;
+>(): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
