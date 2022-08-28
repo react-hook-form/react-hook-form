@@ -25,29 +25,29 @@ describe('getFielfs', () => {
 
     expect(getResolverOptions(fieldNames, fieldsRef, undefined, true))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "criteriaMode": undefined,
-        "fields": Object {
-          "test": Object {
-            "sub": Object {
+        "fields": {
+          "test": {
+            "sub": {
               "name": "test.sub",
-              "ref": Object {
+              "ref": {
                 "name": "test.sub",
                 "value": "test",
               },
               "value": "test",
             },
           },
-          "test1": Object {
+          "test1": {
             "name": "test1",
-            "ref": Object {
+            "ref": {
               "name": "test1",
               "value": "test1",
             },
             "value": "test1",
           },
         },
-        "names": Array [
+        "names": [
           "test.sub",
           "test1",
         ],
