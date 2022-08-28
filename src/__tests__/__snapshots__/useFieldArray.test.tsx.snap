@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
-Array [
-  Object {},
-  Object {
-    "test": Array [],
+[
+  {},
+  {
+    "test": [],
   },
-  Object {
-    "test": Array [
-      Object {
-        "yourDetails": Object {
-          "firstName": Array [
+  {
+    "test": [
+      {
+        "yourDetails": {
+          "firstName": [
             "test",
             "test1",
           ],
-          "lastName": Array [
+          "lastName": [
             "test",
             "test1",
           ],
@@ -22,15 +22,15 @@ Array [
       },
     ],
   },
-  Object {
-    "test": Array [
-      Object {
-        "yourDetails": Object {
-          "firstName": Array [
+  {
+    "test": [
+      {
+        "yourDetails": {
+          "firstName": [
             "test",
             "test1",
           ],
-          "lastName": Array [
+          "lastName": [
             "test",
             "test1",
           ],
@@ -38,15 +38,15 @@ Array [
       },
     ],
   },
-  Object {
-    "test": Array [
-      Object {
-        "yourDetails": Object {
-          "firstName": Array [
+  {
+    "test": [
+      {
+        "yourDetails": {
+          "firstName": [
             "test",
             "test1",
           ],
-          "lastName": Array [
+          "lastName": [
             "test",
             "test1",
           ],
@@ -58,43 +58,43 @@ Array [
 `;
 
 exports[`useFieldArray should append multiple inputs correctly 1`] = `
-Array [
-  Object {
-    "test": Array [
-      Object {
+[
+  {
+    "test": [
+      {
         "value": "data",
       },
     ],
   },
-  Object {
-    "test": Array [
-      Object {
+  {
+    "test": [
+      {
         "value": "data",
       },
     ],
   },
-  Object {
-    "test": Array [
-      Object {
+  {
+    "test": [
+      {
         "value": "data",
       },
-      Object {
+      {
         "value": "test",
       },
-      Object {
+      {
         "value": "test1",
       },
     ],
   },
-  Object {
-    "test": Array [
-      Object {
+  {
+    "test": [
+      {
         "value": "data",
       },
-      Object {
+      {
         "value": "test",
       },
-      Object {
+      {
         "value": "test1",
       },
     ],
@@ -103,285 +103,285 @@ Array [
 `;
 
 exports[`useFieldArray should custom register append, prepend and insert inputs with values 1`] = `
-Array [
-  Array [],
-  Array [
-    Object {
+[
+  [],
+  [
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "",
-      "test2": Array [
-        Object {
-          "test": "test",
-        },
-      ],
-    },
-  ],
-  Array [
-    Object {
-      "test": "prepend",
-      "test1": "prepend",
-      "test2": Array [],
-    },
-    Object {
-      "test": "insert",
-      "test1": "insert",
-      "test2": Array [],
-    },
-    Object {
-      "test": "append",
-      "test1": "append",
-      "test2": Array [],
-    },
-    Object {
-      "test": "append",
-      "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
   ],
-  Array [
-    Object {
-      "test": "prepend",
-      "test1": "",
-      "test2": Array [
-        Object {
-          "test": "test",
-        },
-      ],
-    },
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
-    Object {
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
-    Object {
-      "test": "insert",
-      "test1": "",
-      "test2": Array [
-        Object {
-          "test": "test",
-        },
-      ],
-    },
-    Object {
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "test": "prepend",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
           "test": "test",
         },
       ],
     },
-    Object {
+    {
       "test": "prepend",
       "test1": "prepend",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "insert",
       "test1": "insert",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "append",
-      "test2": Array [],
+      "test2": [],
     },
-    Object {
+    {
       "test": "append",
       "test1": "",
-      "test2": Array [
-        Object {
+      "test2": [
+        {
+          "test": "test",
+        },
+      ],
+    },
+  ],
+  [
+    {
+      "test": "prepend",
+      "test1": "",
+      "test2": [
+        {
+          "test": "test",
+        },
+      ],
+    },
+    {
+      "test": "insert",
+      "test1": "",
+      "test2": [
+        {
+          "test": "test",
+        },
+      ],
+    },
+    {
+      "test": "prepend",
+      "test1": "prepend",
+      "test2": [],
+    },
+    {
+      "test": "insert",
+      "test1": "insert",
+      "test2": [],
+    },
+    {
+      "test": "append",
+      "test1": "append",
+      "test2": [],
+    },
+    {
+      "test": "append",
+      "test1": "",
+      "test2": [
+        {
           "test": "test",
         },
       ],
