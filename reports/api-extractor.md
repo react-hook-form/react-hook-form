@@ -31,6 +31,12 @@ export type BatchFieldArrayUpdate = <T extends Function, TFieldValues extends Fi
     argB: unknown;
 }>, shouldSetValue?: boolean, shouldUpdateFieldsAndErrors?: boolean) => void;
 
+// Warning: (ae-forgotten-export) The symbol "FileList" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "File" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type BrowserNativeObject = Date | FileList_2 | File_2;
+
 // @public (undocumented)
 export type ChangeHandler = (event: {
     target: any;
@@ -110,28 +116,25 @@ export type CustomElement<TFieldValues extends FieldValues> = {
     focus?: Noop;
 };
 
-// Warning: (ae-forgotten-export) The symbol "FileList" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "File" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends Date | FileList_2 | File_2 | NestedValue ? TValue : T extends object ? {
+export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends BrowserNativeObject | NestedValue ? TValue : T extends object ? {
     [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue>;
 } : TValue;
 
 // @public (undocumented)
-export type DeepPartial<T> = T extends Date | FileList_2 | File_2 | NestedValue ? T : {
+export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue ? T : {
     [K in keyof T]?: DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepPartialSkipArrayKey<T> = T extends Date | FileList_2 | File_2 | NestedValue ? T : T extends ReadonlyArray<any> ? {
+export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
     [K in keyof T]: DeepPartialSkipArrayKey<T[K]>;
 } : {
     [K in keyof T]?: DeepPartialSkipArrayKey<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepRequired<T> = T extends Date | FileList | File | Blob ? T : {
+export type DeepRequired<T> = T extends BrowserNativeObject | Blob ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
@@ -198,11 +201,11 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = FieldErrorsImpl<DeepRequired<T>>;
+export type FieldErrors<T extends FieldValues = FieldValues> = FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>;
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends Date | FileList | File | Blob ? FieldError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
+    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
 };
 
 // @public (undocumented)
@@ -213,6 +216,11 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 
 // @public
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
+
+// @public
+export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
+    [Key in FieldPath<TFieldValues>]: FieldPathValue<TFieldValues, Key> extends TValue ? Key : never;
+}[FieldPath<TFieldValues>];
 
 // @public
 export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;
@@ -236,7 +244,7 @@ export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(pr
 
 // @public (undocumented)
 export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
-    children: React_2.ReactNode;
+    children: React_2.ReactNode | React_2.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext>;
 
 // @public (undocumented)
@@ -708,7 +716,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
 }): FieldPathValues<TFieldValues, TFieldNames>;
 
 // @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends FieldPath<TFieldValues>[] = FieldPath<TFieldValues>[]>(): FieldPathValues<TFieldValues, TFieldNames>;
+export function useWatch<TFieldValues extends FieldValues = FieldValues>(): DeepPartialSkipArrayKey<TFieldValues>;
 
 // @public (undocumented)
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {

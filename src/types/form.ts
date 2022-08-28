@@ -814,5 +814,5 @@ export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
 > = {
-  children: React.ReactNode;
+  children: React.ReactNode | React.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext>;

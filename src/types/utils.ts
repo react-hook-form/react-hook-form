@@ -31,6 +31,8 @@ export type Primitive =
   | symbol
   | bigint;
 
+export type BrowserNativeObject = Date | FileList | File;
+
 export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
@@ -39,14 +41,12 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends Date | FileList | File | NestedValue
+export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
   ? T
   : { [K in keyof T]?: DeepPartial<T[K]> };
 
 export type DeepPartialSkipArrayKey<T> = T extends
-  | Date
-  | FileList
-  | File
+  | BrowserNativeObject
   | NestedValue
   ? T
   : T extends ReadonlyArray<any>
@@ -76,7 +76,7 @@ export type IsNever<T> = [T] extends [never] ? true : false;
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
-  : T extends Date | FileList | File | NestedValue
+  : T extends BrowserNativeObject | NestedValue
   ? TValue
   : T extends object
   ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }

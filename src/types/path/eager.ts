@@ -1,5 +1,5 @@
 import { FieldValues } from '../fields';
-import { Primitive } from '../utils';
+import { BrowserNativeObject, Primitive } from '../utils';
 
 import { ArrayKey, IsTuple, TupleKeys } from './common';
 
@@ -7,7 +7,9 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
  * Helper type for recursively constructing paths through a type.
  * See {@link Path}
  */
-type PathImpl<K extends string | number, V> = V extends Primitive
+type PathImpl<K extends string | number, V> = V extends
+  | Primitive
+  | BrowserNativeObject
   ? `${K}`
   : `${K}` | `${K}.${Path<V>}`;
 
@@ -38,10 +40,12 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
  * Helper type for recursively constructing paths through a type.
  * See {@link ArrayPath}
  */
-type ArrayPathImpl<K extends string | number, V> = V extends Primitive
+type ArrayPathImpl<K extends string | number, V> = V extends
+  | Primitive
+  | BrowserNativeObject
   ? never
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive
+  ? U extends Primitive | BrowserNativeObject
     ? never
     : `${K}` | `${K}.${ArrayPath<V>}`
   : `${K}.${ArrayPath<V>}`;
@@ -136,3 +140,22 @@ export type FieldPathValues<
     TPath[K] & FieldPath<TFieldValues>
   >;
 };
+
+/**
+ * Type which eagerly collects all paths through a fieldType that matches a give type
+ * @typeParam TFieldValues - field values which are indexed by the paths
+ * @typeParam TValue       - the value you want to match into each type
+ * @example
+ * ```typescript
+ * FieldPathByValue<{foo: {bar: number}, baz: number, bar: string}, number>
+ *   = 'foo.bar' | 'baz'
+ * ```
+ */
+export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
+  [Key in FieldPath<TFieldValues>]: FieldPathValue<
+    TFieldValues,
+    Key
+  > extends TValue
+    ? Key
+    : never;
+}[FieldPath<TFieldValues>];

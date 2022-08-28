@@ -1,10 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
-import FormSection1 from './formSection1';
-import FormSection2 from './formSection2';
 
-export default function Section1({ register }) {
+export function FormSection1({ register }) {
   return (
     <>
       <div>
@@ -25,17 +22,15 @@ export default function Section1({ register }) {
   );
 }
 
-export default function formSection2({ register }) {
+export function FormSection2({ register }) {
   return (
     <>
       <div>
         <label>Email</label>
         <input
-          type="text"
+          type="email"
           {...register('email', {
             required: true,
-            pattern:
-              /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           })}
         />
       </div>
@@ -78,11 +73,10 @@ export default function formSection2({ register }) {
 }
 
 export default function App() {
-  const { register, errors, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm();
   const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
-  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
