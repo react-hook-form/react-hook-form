@@ -62,6 +62,7 @@ export function useForm<
     isSubmitSuccessful: false,
     isValid: false,
     errors: {} as FieldErrors<TFieldValues>,
+    defaultValues: props.defaultValues,
   });
 
   if (_formControl.current) {
