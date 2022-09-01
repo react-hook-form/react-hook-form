@@ -109,6 +109,7 @@ export function createFormControl<
     isSubmitSuccessful: false,
     isValid: false,
     errors: {} as FieldErrors<TFieldValues>,
+    defaultValues: _options.defaultValues,
   };
   let _fields = {};
   let _defaultValues = cloneObject(_options.defaultValues) || {};
