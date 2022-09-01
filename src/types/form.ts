@@ -127,7 +127,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   defaultValues?: Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Readonly<FieldNamesMarkedBoolean<TFieldValues>>;
   touchedFields: Readonly<FieldNamesMarkedBoolean<TFieldValues>>;
-  errors: Readonly<FieldErrors<TFieldValues>>;
+  errors: FieldErrors<TFieldValues>;
 };
 
 export type KeepStateOptions = Partial<{

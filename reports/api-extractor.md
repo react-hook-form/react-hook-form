@@ -250,14 +250,15 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = {
     isDirty: boolean;
-    dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     isSubmitted: boolean;
     isSubmitSuccessful: boolean;
-    submitCount: number;
-    touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
     isSubmitting: boolean;
     isValidating: boolean;
     isValid: boolean;
+    submitCount: number;
+    defaultValues?: Readonly<DeepPartial<TFieldValues>>;
+    dirtyFields: Readonly<FieldNamesMarkedBoolean<TFieldValues>>;
+    touchedFields: Readonly<FieldNamesMarkedBoolean<TFieldValues>>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -766,7 +767,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:417:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:418:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
