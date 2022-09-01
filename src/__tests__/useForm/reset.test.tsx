@@ -1349,4 +1349,34 @@ describe('reset', () => {
 
     expect(result.current.formState.isSubmitted).toBeTruthy();
   });
+
+  it.only('should keep track on updated defaultValues', () => {
+    function App() {
+      const {
+        handleSubmit,
+        reset,
+        formState: { defaultValues },
+      } = useForm({
+        defaultValues: { firstName: 'Bill', lastName: 'Luo' },
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit(() => {
+            reset({ firstName: 'Bill1', lastName: 'Luo1' });
+          })}
+        >
+          <button>Submit</button>
+          <p>{defaultValues?.firstName}</p>
+          <p>{defaultValues?.lastName}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(screen.getByText('Bill1')).toBeVisible();
+    expect(screen.getByText('Luo1')).toBeVisible();
+  });
 });

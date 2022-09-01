@@ -99,16 +99,16 @@ export function createFormControl<
     ...props,
   };
   let _formState: FormState<TFieldValues> = {
+    submitCount: 0,
     isDirty: false,
     isValidating: false,
-    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
-    submitCount: 0,
-    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
-    errors: {} as FieldErrors<TFieldValues>,
+    touchedFields: {},
+    dirtyFields: {},
+    errors: {},
     defaultValues: _options.defaultValues,
   };
   let _fields = {};
@@ -299,7 +299,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields as TFieldValues, name, true);
+        : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -307,7 +307,7 @@ export function createFormControl<
     }
 
     if (isBlurEvent && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isBlurEvent);
+      set(_formState.touchedFields, name, isBlurEvent);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
@@ -1113,6 +1113,7 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
+      _formState.defaultValues = formValues;
     }
 
     if (!keepStateOptions.keepValues) {

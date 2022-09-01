@@ -201,7 +201,7 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>;
+export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>>;
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
@@ -256,9 +256,9 @@ export type FormState<TFieldValues extends FieldValues> = {
     isValidating: boolean;
     isValid: boolean;
     submitCount: number;
-    defaultValues?: Readonly<DeepPartial<TFieldValues>>;
-    dirtyFields: Readonly<FieldNamesMarkedBoolean<TFieldValues>>;
-    touchedFields: Readonly<FieldNamesMarkedBoolean<TFieldValues>>;
+    defaultValues?: Readonly<DeepPartial<TFieldValues>> | TFieldValues;
+    dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+    touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
 };
 

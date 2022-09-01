@@ -3,14 +3,7 @@ import React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import {
-  FieldErrors,
-  FieldNamesMarkedBoolean,
-  FieldValues,
-  FormState,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -54,14 +47,14 @@ export function useForm<
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
-    submitCount: 0,
-    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
-    errors: {} as FieldErrors<TFieldValues>,
+    submitCount: 0,
+    dirtyFields: {},
+    touchedFields: {},
+    errors: {},
     defaultValues: props.defaultValues,
   });
 
