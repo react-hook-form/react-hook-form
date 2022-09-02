@@ -109,7 +109,6 @@ export function createFormControl<
     touchedFields: {},
     dirtyFields: {},
     errors: {},
-    defaultValues: _options.defaultValues,
   };
   let _fields = {};
   let _defaultValues = cloneObject(_options.defaultValues) || {};
