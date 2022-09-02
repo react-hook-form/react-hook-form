@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import {
+  fireEvent,
+  getByText,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { useController } from '../useController';
 import { useForm } from '../useForm';
@@ -157,6 +163,17 @@ describe('FormProvider', () => {
         <FormProvider {...methods}>
           <Test />
           <Test1 />
+          <button
+            onClick={() => {
+              methods.reset({
+                firstName: 'c',
+                lastName: 'd',
+              });
+            }}
+          >
+            reset
+          </button>
+          <p>{JSON.stringify(defaultValues)}</p>
         </FormProvider>
       );
     };
@@ -165,5 +182,21 @@ describe('FormProvider', () => {
 
     expect(screen.getByText('yes')).toBeVisible();
     expect(screen.getByText('context-yes')).toBeVisible();
+
+    screen.getByText(JSON.stringify(defaultValues));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => {
+      expect(screen.getByText('yes')).not.toBeValid();
+      expect(screen.getByText('context-yes')).not.toBeVisible();
+
+      screen.getByText(
+        JSON.stringify({
+          firstName: 'c',
+          lastName: 'd',
+        }),
+      );
+    });
   });
 });
