@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  fireEvent,
-  getByText,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { useController } from '../useController';
 import { useForm } from '../useForm';
