@@ -100,10 +100,7 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  _formControl.current.formState = getProxyFormState(
-    formState,
-    control._proxyFormState,
-  );
+  _formControl.current.formState = getProxyFormState(formState, control);
 
   return _formControl.current;
 }

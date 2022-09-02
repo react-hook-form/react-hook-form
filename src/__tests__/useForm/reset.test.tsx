@@ -1350,7 +1350,7 @@ describe('reset', () => {
     expect(result.current.formState.isSubmitted).toBeTruthy();
   });
 
-  it.only('should keep track on updated defaultValues', () => {
+  it('should keep track on updated defaultValues', async () => {
     function App() {
       const {
         handleSubmit,
@@ -1376,7 +1376,10 @@ describe('reset', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(screen.getByText('Bill1')).toBeVisible();
-    expect(screen.getByText('Luo1')).toBeVisible();
+
+    await waitFor(() => {
+      expect(screen.getByText('Bill1')).toBeVisible();
+      expect(screen.getByText('Luo1')).toBeVisible();
+    });
   });
 });

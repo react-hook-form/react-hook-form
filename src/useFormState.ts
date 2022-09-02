@@ -92,7 +92,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   return getProxyFormState(
     formState,
-    control._proxyFormState,
+    control,
     _localProxyFormState.current,
     false,
   );
