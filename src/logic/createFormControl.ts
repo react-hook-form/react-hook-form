@@ -1111,7 +1111,6 @@ export function createFormControl<
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
-      _formState.defaultValues = formValues;
     }
 
     if (!keepStateOptions.keepValues) {
