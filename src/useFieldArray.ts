@@ -90,9 +90,10 @@ export function useFieldArray<
     keyName = 'id' as TKeyName,
     shouldUnregister,
   } = props;
-  const fieldArrayValues = control._getFieldArray(name);
-  const [fields, setFields] = React.useState(fieldArrayValues);
-  const ids = React.useRef<string[]>(fieldArrayValues.map(generateId));
+  const [fields, setFields] = React.useState(control._getFieldArray(name));
+  const ids = React.useRef<string[]>(
+    control._getFieldArray(name).map(generateId),
+  );
   const _fieldIds = React.useRef(fields);
   const _name = React.useRef(name);
   const _actioned = React.useRef(false);
