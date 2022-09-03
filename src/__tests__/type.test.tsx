@@ -266,28 +266,34 @@ test('should support nullable field errors', () => {
 });
 
 test('should provide correct type for validate function with useFieldArray', () => {
-  const { control } = useForm<{
-    test: {
-      first: string;
-      last: string;
-    }[];
-  }>({
-    defaultValues: {
-      test: [
-        {
-          first: 'value',
-          last: 'test',
-        },
-      ],
-    },
-  });
-  useFieldArray({
-    control,
-    name: 'test',
-    rules: {
-      validate: (data) => {
-        return !!data.find((test) => test.first && test.last);
+  const App = () => {
+    const { control } = useForm<{
+      test: {
+        first: string;
+        last: string;
+      }[];
+    }>({
+      defaultValues: {
+        test: [
+          {
+            first: 'value',
+            last: 'test',
+          },
+        ],
       },
-    },
-  });
+    });
+    useFieldArray({
+      control,
+      name: 'test',
+      rules: {
+        validate: (data) => {
+          return !!data.find((test) => test.first && test.last);
+        },
+      },
+    });
+
+    return null;
+  };
+
+  App;
 });
