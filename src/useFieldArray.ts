@@ -101,7 +101,6 @@ export function useFieldArray<
       (control as Control).register(name as InternalFieldName, props.rules),
   );
 
-  _name.current = name;
   _fieldIds.current = fields;
   control._names.array.add(name);
 
