@@ -33,6 +33,7 @@ import {
   FieldPath,
   FieldValues,
   InternalFieldName,
+  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -103,7 +104,10 @@ export function useFieldArray<
   control._names.array.add(name);
 
   props.rules &&
-    (control as Control).register(name as InternalFieldName, props.rules);
+    (control as Control).register(
+      name as FieldPath<TFieldValues>,
+      props.rules as RegisterOptions<TFieldValues>,
+    );
 
   const callback = React.useCallback(
     ({
