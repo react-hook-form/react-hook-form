@@ -3659,4 +3659,60 @@ describe('useFieldArray', () => {
       screen.getByText('Min length of 3');
     });
   });
+
+  it('should update isValid correctly with rules props and inline validation', async () => {
+    const App = () => {
+      const {
+        control,
+        register,
+        formState: { isValid },
+      } = useForm({
+        defaultValues: {
+          test: [{ value: '1' }],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'test',
+        rules: {
+          required: true,
+        },
+      });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <input
+              key={field.id}
+              {...register(`test.${index}.value`, { required: true })}
+            />
+          ))}
+
+          <button
+            onClick={() =>
+              append({
+                value: '',
+              })
+            }
+          >
+            Append
+          </button>
+
+          <p>{isValid ? 'valid' : 'invalid'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('valid');
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      screen.getByText('invalid');
+    });
+  });
 });

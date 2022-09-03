@@ -33,7 +33,6 @@ import {
   FieldPath,
   FieldValues,
   InternalFieldName,
-  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -88,12 +87,10 @@ export function useFieldArray<
   const {
     control = methods.control,
     name,
-    keyName = 'id' as TKeyName,
+    keyName = 'id',
     shouldUnregister,
   } = props;
-  const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-  >(control._getFieldArray(name));
+  const [fields, setFields] = React.useState(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
   );
