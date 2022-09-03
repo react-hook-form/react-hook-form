@@ -924,6 +924,7 @@ export function createFormControl<
     const disabledIsDefined = isBoolean(options.disabled);
 
     set(_fields, name, {
+      ...(field || {}),
       _f: {
         ...(field && field._f ? field._f : { ref: { name } }),
         name,
