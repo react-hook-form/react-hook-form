@@ -33,6 +33,7 @@ import {
   FieldPath,
   FieldValues,
   InternalFieldName,
+  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
