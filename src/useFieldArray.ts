@@ -99,14 +99,14 @@ export function useFieldArray<
   const _fieldIds = React.useRef(fields);
   const _name = React.useRef(name);
   const _actioned = React.useRef(false);
+  React.useRef(
+    props.rules &&
+      (control as Control).register(name as InternalFieldName, props.rules),
+  );
 
   _name.current = name;
   _fieldIds.current = fields;
   control._names.array.add(name);
-
-  props.rules &&
-    !fieldArrayValues &&
-    (control as Control).register(name as InternalFieldName, props.rules);
 
   const callback = React.useCallback(
     ({
