@@ -528,7 +528,9 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     name: TFieldArrayName;
     keyName?: TKeyName;
     control?: Control<TFieldValues>;
-    rules?: Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'validate' | 'required'>;
+    rules?: {
+        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[]> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>>>;
+    } & Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'required'>;
     shouldUnregister?: boolean;
 };
 
