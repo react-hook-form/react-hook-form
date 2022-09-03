@@ -91,10 +91,7 @@ export function useFieldArray<
     shouldUnregister,
   } = props;
   const fieldArrayValues = control._getFieldArray(name);
-  const [fields, setFields] =
-    React.useState<
-      Partial<FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>>[]
-    >(fieldArrayValues);
+  const [fields, setFields] = React.useState(fieldArrayValues);
   const ids = React.useRef<string[]>(fieldArrayValues.map(generateId));
   const _fieldIds = React.useRef(fields);
   const _name = React.useRef(name);
