@@ -1,7 +1,7 @@
 import { FieldValues } from './fields';
 import { Control } from './form';
 import { FieldArrayPath, FieldArrayPathValue } from './path';
-import { RegisterOptions } from './validator';
+import { RegisterOptions, Validate } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -11,9 +11,13 @@ export type UseFieldArrayProps<
   name: TFieldArrayName;
   keyName?: TKeyName;
   control?: Control<TFieldValues>;
-  rules?: Pick<
+  rules?: {
+    validate?:
+      | Validate<FieldArray<TFieldValues, TFieldArrayName>[]>
+      | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>>>;
+  } & Pick<
     RegisterOptions<TFieldValues>,
-    'maxLength' | 'minLength' | 'validate' | 'required'
+    'maxLength' | 'minLength' | 'required'
   >;
   shouldUnregister?: boolean;
 };
