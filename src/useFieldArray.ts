@@ -87,7 +87,7 @@ export function useFieldArray<
   const {
     control = methods.control,
     name,
-    keyName = 'id' as TKeyName,
+    keyName = 'id',
     shouldUnregister,
   } = props;
   const [fields, setFields] = React.useState(control._getFieldArray(name));
