@@ -8,7 +8,11 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues } from '../types';
+import {
+  ControllerRenderProps,
+  FieldValues,
+  UseControllerReturn,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -1428,5 +1432,35 @@ describe('Controller', () => {
     expect(getValueFn).toBeCalledWith({
       show: false,
     });
+  });
+
+  it('should render correctly with custom props', () => {
+    const dataCp = 'test-cp';
+    const Wrapped = ({
+      field,
+      customProps,
+    }: UseControllerReturn<FieldValues, any>) => {
+      return <input {...field} data-cp={customProps.cp} />;
+    };
+
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={Wrapped}
+          control={control}
+          customProps={{ cp: dataCp }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+
+    expect(input).toBeVisible();
+    expect(input.dataset.cp).toBe(dataCp);
   });
 });

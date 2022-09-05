@@ -85,10 +85,11 @@ export type ControllerFieldState = {
 
 // @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    render: ({ field, fieldState, formState, }: {
+    render: ({ field, fieldState, formState, customProps, }: {
         field: ControllerRenderProps<TFieldValues, TName>;
         fieldState: ControllerFieldState;
         formState: UseFormStateReturn<TFieldValues>;
+        customProps: Record<string, any>;
     }) => React_2.ReactElement;
 } & UseControllerProps<TFieldValues, TName>;
 
@@ -499,6 +500,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     shouldUnregister?: boolean;
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues>;
+    customProps?: Record<string, any>;
 };
 
 // @public (undocumented)
@@ -506,6 +508,7 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
     field: ControllerRenderProps<TFieldValues, TName>;
     formState: UseFormStateReturn<TFieldValues>;
     fieldState: ControllerFieldState;
+    customProps: Record<string, any>;
 };
 
 // @public

@@ -98,6 +98,8 @@ export function useController<
     };
   }, [name, control, isArrayField, shouldUnregister]);
 
+  const customProps = props.customProps || {};
+
   return {
     field: {
       name,
@@ -162,5 +164,6 @@ export function useController<
         },
       },
     ) as ControllerFieldState,
+    customProps,
   };
 }

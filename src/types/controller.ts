@@ -48,6 +48,7 @@ export type UseControllerProps<
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
+  customProps?: Record<string, any>;
 };
 
 export type UseControllerReturn<
@@ -57,6 +58,7 @@ export type UseControllerReturn<
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
   fieldState: ControllerFieldState;
+  customProps: Record<string, any>;
 };
 
 /**
@@ -66,15 +68,16 @@ export type UseControllerReturn<
  *
  * @example
  * ```tsx
- * const { field, fieldState, formState } = useController();
+ * const { field, fieldState, formState, customProps } = useController();
  *
  * <Controller
- *   render={({ field, formState, fieldState }) => ({
+ *   render={({ field, formState, fieldState, customProps }) => ({
  *     <input
  *       onChange={field.onChange}
  *       onBlur={field.onBlur}
  *       name={field.name}
  *       ref={field.ref} // optional for focus management
+ *       data-foo={customProps.foo} // optional to pass down props
  *     />
  *   })}
  * />
@@ -88,9 +91,11 @@ export type ControllerProps<
     field,
     fieldState,
     formState,
+    customProps,
   }: {
     field: ControllerRenderProps<TFieldValues, TName>;
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
+    customProps: Record<string, any>;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues, TName>;
