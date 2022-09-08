@@ -66,7 +66,7 @@ export function useController<
     name,
   });
 
-  const _registerProps = React.useRef(
+  const [registerProps] = React.useState(() =>
     control.register(name, {
       ...props.rules,
       value,
@@ -104,7 +104,7 @@ export function useController<
       value,
       onChange: React.useCallback(
         (event) => {
-          _registerProps.current.onChange({
+          registerProps.onChange({
             target: {
               value: getEventValue(event),
               name: name as InternalFieldName,
@@ -112,17 +112,17 @@ export function useController<
             type: EVENTS.CHANGE,
           });
         },
-        [name],
+        [registerProps, name],
       ),
       onBlur: React.useCallback(() => {
-        _registerProps.current.onBlur({
+        registerProps.onBlur({
           target: {
             value: get(control._formValues, name),
             name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
         });
-      }, [name, control]),
+      }, [registerProps, control, name]),
       ref: React.useCallback(
         (elm) => {
           const field = get(control._fields, name);
