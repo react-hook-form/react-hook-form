@@ -147,8 +147,5 @@
     "type": "opencollective",
     "url": "https://opencollective.com/react-hook-form"
   },
-  "engines": {
-    "node": ">=16.13.0"
-  },
   "packageManager": "yarn@1.22.15"
 }
