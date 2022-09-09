@@ -48,10 +48,9 @@ function App() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(data => console.log(data))}>
       <input {...register('firstName')} />
       <input {...register('lastName', { required: true })} />
       {errors.lastName && <p>Last name is required.</p>}
