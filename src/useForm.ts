@@ -58,9 +58,7 @@ export function useForm<
     defaultValues: props.defaultValues,
   });
 
-  if (_formControl.current) {
-    _formControl.current.control._options = props;
-  } else {
+  if (!_formControl.current) {
     _formControl.current = {
       ...createFormControl(props),
       formState,
@@ -68,24 +66,23 @@ export function useForm<
   }
 
   const control = _formControl.current.control;
-
-  const callback = React.useCallback(
-    (value: FieldValues) => {
-      if (shouldRenderFormState(value, control._proxyFormState, true)) {
-        control._formState = {
-          ...control._formState,
-          ...value,
-        };
-
-        updateFormState({ ...control._formState });
-      }
-    },
-    [control],
-  );
+  control._options = props;
 
   useSubscribe({
     subject: control._subjects.state,
-    callback,
+    callback: React.useCallback(
+      (value: FieldValues) => {
+        if (shouldRenderFormState(value, control._proxyFormState, true)) {
+          control._formState = {
+            ...control._formState,
+            ...value,
+          };
+
+          updateFormState({ ...control._formState });
+        }
+      },
+      [control],
+    ),
   });
 
   React.useEffect(() => {
@@ -93,10 +90,12 @@ export function useForm<
       control._proxyFormState.isValid && control._updateValid();
       control._stateFlags.mount = true;
     }
+
     if (control._stateFlags.watch) {
       control._stateFlags.watch = false;
       control._subjects.state.next({});
     }
+
     control._removeUnmounted();
   });
 
