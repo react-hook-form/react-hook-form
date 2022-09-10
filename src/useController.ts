@@ -103,26 +103,27 @@ export function useController<
       name,
       value,
       onChange: React.useCallback(
-        (event) => {
+        (event) =>
           _registerProps.current.onChange({
             target: {
               value: getEventValue(event),
               name: name as InternalFieldName,
             },
             type: EVENTS.CHANGE,
-          });
-        },
+          }),
         [name],
       ),
-      onBlur: React.useCallback(() => {
-        _registerProps.current.onBlur({
-          target: {
-            value: get(control._formValues, name),
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.BLUR,
-        });
-      }, [name, control]),
+      onBlur: React.useCallback(
+        () =>
+          _registerProps.current.onBlur({
+            target: {
+              value: get(control._formValues, name),
+              name: name as InternalFieldName,
+            },
+            type: EVENTS.BLUR,
+          }),
+        [name, control],
+      ),
       ref: React.useCallback(
         (elm) => {
           const field = get(control._fields, name);
