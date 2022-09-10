@@ -79,10 +79,8 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/react-hooks": "^8.0.1",
-    "@testing-library/react-native": "^11.0.0",
     "@types/jest": "^29.0.0",
     "@types/react": "^18.0.19",
-    "@types/react-native": "^0.69.8",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "bundlewatch": "^0.3.3",
@@ -100,11 +98,9 @@
     "jest-preview": "^0.3.1",
     "jest-watch-typeahead": "^2.1.1",
     "lint-staged": "^13.0.3",
-    "metro-babel-register": "^0.72.2",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-native": "^0.70.0",
     "react-test-renderer": "^18.2.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.0",
@@ -114,9 +110,6 @@
     "rollup-plugin-typescript2": "^0.33.0",
     "tsd": "^0.23.0",
     "typescript": "^4.8.3"
-  },
-  "resolutions": {
-    "async": "^3.2.2"
   },
   "bundlewatch": {
     "files": [
