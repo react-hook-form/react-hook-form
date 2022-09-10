@@ -31,8 +31,8 @@ export type BatchFieldArrayUpdate = <T extends Function, TFieldValues extends Fi
     argB: unknown;
 }>, shouldSetValue?: boolean, shouldUpdateFieldsAndErrors?: boolean) => void;
 
-// Warning: (ae-forgotten-export) The symbol "FileList" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "File" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "FileList_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "File_2" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type BrowserNativeObject = Date | FileList_2 | File_2;

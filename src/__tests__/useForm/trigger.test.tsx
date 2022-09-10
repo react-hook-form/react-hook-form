@@ -890,7 +890,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(await screen.findByText('2')).toBeVisible();
+    expect(await screen.findByText('1')).toBeVisible();
     expect(screen.getByText('1')).toBeVisible();
   });
 
