@@ -57,19 +57,26 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
+  const _name = React.useRef(name);
+
+  _name.current = name;
 
   useSubscribe({
     disabled,
     callback: React.useCallback(
       (value: { name?: InternalFieldName }) =>
         _mounted.current &&
-        shouldSubscribeByName(name as InternalFieldName, value.name, exact) &&
+        shouldSubscribeByName(
+          _name.current as InternalFieldName,
+          value.name,
+          exact,
+        ) &&
         shouldRenderFormState(value, _localProxyFormState.current) &&
         updateFormState({
           ...control._formState,
           ...value,
         }),
-      [control, exact, name],
+      [control, exact],
     ),
     subject: control._subjects.state,
   });
