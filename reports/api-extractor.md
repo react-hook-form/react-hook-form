@@ -712,7 +712,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[]>(props: {
     name: readonly [...TFieldNames];
-    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
     control?: Control<TFieldValues>;
     disabled?: boolean;
     exact?: boolean;
