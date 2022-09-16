@@ -68,7 +68,7 @@ function App() {
 
 ### Sponsors
 
-Thanks go to these kind and lovely sponsors (companies and individuals)!
+Thanks go to these kind and lovely sponsors!
 
 <a
     target = _blank
@@ -86,15 +86,6 @@ Thanks go to these kind and lovely sponsors (companies and individuals)!
     <img
         width = 94
         src = 'https://images.opencollective.com/underbelly/989a4a6/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
-    href = 'https://leniolabs.com'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png'
     />
 </a>
 <a
