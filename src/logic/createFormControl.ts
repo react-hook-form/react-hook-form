@@ -1100,7 +1100,7 @@ export function createFormControl<
     }
   };
 
-  const reset: UseFormReset<TFieldValues> = (
+  const _reset: UseFormReset<TFieldValues> = (
     formValues,
     keepStateOptions = {},
   ) => {
@@ -1206,6 +1206,14 @@ export function createFormControl<
       isSubmitSuccessful: false,
     });
   };
+
+  const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
+    _reset(
+      isFunction(formValues)
+        ? formValues(_formValues as TFieldValues)
+        : formValues,
+      keepStateOptions,
+    );
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
     const field = get(_fields, name)._f;

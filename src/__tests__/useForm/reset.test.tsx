@@ -42,7 +42,7 @@ describe('reset', () => {
 
   it('should reset form value', () => {
     let methods: any;
-    const Component = () => {
+    const App = () => {
       methods = useForm<{
         test: string;
       }>();
@@ -52,7 +52,7 @@ describe('reset', () => {
         </form>
       );
     };
-    render(<Component />);
+    render(<App />);
 
     actComponent(() =>
       methods.reset({
@@ -65,8 +65,39 @@ describe('reset', () => {
     });
   });
 
+  it('should reset the form with callback action', () => {
+    const App = () => {
+      const { register, reset } = useForm({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      React.useEffect(() => {
+        reset((formValues) => {
+          return {
+            ...formValues,
+            test: 'test',
+          };
+        });
+      }, [reset]);
+
+      return (
+        <form>
+          <input {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'test',
+    );
+  });
+
   it('should set array value of multiple checkbox inputs correctly', async () => {
-    const Component = () => {
+    const App = () => {
       const { register } = useForm<{
         test: string[];
       }>({
@@ -83,7 +114,7 @@ describe('reset', () => {
       );
     };
 
-    render(<Component />);
+    render(<App />);
 
     screen
       .getAllByRole('checkbox')
@@ -97,13 +128,13 @@ describe('reset', () => {
     let methods: UseFormReturn<{
       test: string;
     }>;
-    const Component = () => {
+    const App = () => {
       methods = useForm<{
         test: string;
       }>();
       return <input {...methods.register('test')} />;
     };
-    render(<Component />);
+    render(<App />);
 
     actComponent(() => methods.reset());
 
@@ -151,7 +182,7 @@ describe('reset', () => {
   });
 
   it('should not reset form values when keepValues is specified', () => {
-    const Component = () => {
+    const App = () => {
       const { register, reset } = useForm();
 
       return (
@@ -171,7 +202,7 @@ describe('reset', () => {
       );
     };
 
-    render(<Component />);
+    render(<App />);
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -187,7 +218,7 @@ describe('reset', () => {
   });
 
   it('should not reset form defaultValues when keepDefaultValues is specified', async () => {
-    const Component = () => {
+    const App = () => {
       const {
         register,
         reset,
@@ -216,7 +247,7 @@ describe('reset', () => {
       );
     };
 
-    render(<Component />);
+    render(<App />);
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -371,7 +402,7 @@ describe('reset', () => {
 
   it('should reset field array fine with empty value', async () => {
     let data: unknown;
-    const Component = () => {
+    const App = () => {
       const { control, register, reset, handleSubmit } = useForm<{
         test: {
           firstName: string;
@@ -419,7 +450,7 @@ describe('reset', () => {
       );
     };
 
-    render(<Component />);
+    render(<App />);
 
     const resetButton = screen.getByRole('button', { name: 'reset' });
     const submitButton = screen.getByRole('button', { name: 'submit' });
