@@ -84,13 +84,22 @@ export type ChangeHandler = (event: {
 
 export type DelayCallback = (wait: number) => void;
 
+type AsyncDefaultValuesReturn<TFieldValues> = {
+  values: TFieldValues;
+  resetOptions?: KeepStateOptions;
+};
+
+type AsyncDefaultValues<TFieldValues> = () => Promise<
+  AsyncDefaultValuesReturn<TFieldValues>
+>;
+
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-  defaultValues: DefaultValues<TFieldValues>;
+  defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
