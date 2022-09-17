@@ -108,6 +108,7 @@ export function createFormControl<
     touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
+    isLoading: true,
     isValid: false,
     errors: {} as FieldErrors<TFieldValues>,
   };
@@ -1219,9 +1220,12 @@ export function createFormControl<
   };
 
   if (isFunction(_options.defaultValues)) {
-    _options
-      .defaultValues()
-      .then(({ values, resetOptions }) => reset(values, resetOptions));
+    _options.defaultValues().then(({ values, resetOptions }) => {
+      reset(values, resetOptions);
+      _subjects.state.next({
+        isLoading: false,
+      });
+    });
   }
 
   return {

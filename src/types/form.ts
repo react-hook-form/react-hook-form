@@ -135,6 +135,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
+  isLoading: boolean;
   errors: FieldErrors<TFieldValues>;
 };
 

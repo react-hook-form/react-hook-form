@@ -1723,7 +1723,10 @@ describe('useForm', () => {
     }
 
     const App = () => {
-      const { register } = useForm<{ test: string }>({
+      const {
+        register,
+        formState: { isLoading },
+      } = useForm<{ test: string }>({
         defaultValues: async () => {
           await sleep(100);
 
@@ -1735,15 +1738,28 @@ describe('useForm', () => {
         },
       });
 
-      return <input {...register('test')} />;
+      return (
+        <form>
+          <input {...register('test')} />
+          <p>{isLoading ? 'loading...' : 'done'}</p>
+        </form>
+      );
     };
 
     render(<App />);
 
     await waitFor(() => {
+      screen.getByText('loading...');
+    });
+
+    await waitFor(() => {
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         'test',
       );
+    });
+
+    await waitFor(() => {
+      screen.getByText('done');
     });
   });
 });

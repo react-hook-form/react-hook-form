@@ -60,6 +60,7 @@ export function useForm<
     touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
+    isLoading: true,
     isValid: false,
     errors: {} as FieldErrors<TFieldValues>,
   });
