@@ -46,8 +46,8 @@ import { memo } from 'react';
 const Controller = memo(<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
- >(
-   props: ControllerProps<TFieldValues, TName>,
+>(
+  props: ControllerProps<TFieldValues, TName>,
 ) => props.render(useController<TFieldValues, TName>(props)));
 
 export { Controller };
