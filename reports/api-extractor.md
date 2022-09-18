@@ -618,8 +618,10 @@ export type UseFormRegisterReturn<TFieldName extends InternalFieldName = Interna
     disabled?: boolean;
 };
 
+// Warning: (ae-forgotten-export) The symbol "ResetAction" needs to be exported by the entry point index.d.ts
+//
 // @public
-export type UseFormReset<TFieldValues extends FieldValues> = (values?: DefaultValues<TFieldValues> | TFieldValues, keepStateOptions?: KeepStateOptions) => void;
+export type UseFormReset<TFieldValues extends FieldValues> = (values?: DefaultValues<TFieldValues> | TFieldValues | ResetAction<TFieldValues>, keepStateOptions?: KeepStateOptions) => void;
 
 // @public
 export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: Partial<{
