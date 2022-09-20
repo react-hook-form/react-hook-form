@@ -627,6 +627,8 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   }>,
 ) => void;
 
+type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
+
 /**
  * Reset at the entire form state.
  *
@@ -662,7 +664,10 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormReset<TFieldValues extends FieldValues> = (
-  values?: DefaultValues<TFieldValues> | TFieldValues,
+  values?:
+    | DefaultValues<TFieldValues>
+    | TFieldValues
+    | ResetAction<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
