@@ -1,6 +1,6 @@
-import isEmptyObject from './isEmptyObject';
 import isFunction from './isFunction';
 import isObject from './isObject';
+import { isPlainObject } from './isPlainObject';
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
@@ -17,11 +17,7 @@ export default function cloneObject<T>(data: T): T {
   ) {
     copy = isArray ? [] : {};
 
-    if (
-      !Array.isArray(data) &&
-      data.constructor &&
-      !isEmptyObject(data.constructor.prototype)
-    ) {
+    if (!Array.isArray(data) && !isPlainObject(data)) {
       copy = data;
     } else {
       for (const key in data) {
