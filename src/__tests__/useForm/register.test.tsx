@@ -825,7 +825,7 @@ describe('register', () => {
       );
     });
 
-    it('should not affect checked attribute with disabled attribute', () => {
+    it('should affect a group of checked attribute with disabled attribute', () => {
       const App = () => {
         const { register } = useForm();
         const options = [
@@ -857,7 +857,64 @@ describe('register', () => {
       render(<App />);
 
       expect(
+        (screen.getByTestId('checkbox0') as HTMLInputElement).checked,
+      ).toBeFalsy();
+      expect(
         (screen.getByTestId('checkbox1') as HTMLInputElement).checked,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('checkbox2') as HTMLInputElement).checked,
+      ).toBeFalsy();
+    });
+
+    it('should affect a single checked attribute with disabled attribute', () => {
+      const App = () => {
+        const { register } = useForm<{
+          test: boolean;
+          test1: boolean;
+          test2: boolean;
+        }>({
+          defaultValues: {
+            test: true,
+            test1: true,
+          },
+        });
+
+        return (
+          <div>
+            <input
+              {...register('test')}
+              type="checkbox"
+              disabled={true}
+              data-testid="checkbox1"
+            />
+            <input
+              {...register('test1')}
+              type="checkbox"
+              disabled={true}
+              data-testid="checkbox2"
+            />
+            <input
+              {...register('test2')}
+              type="checkbox"
+              disabled={true}
+              defaultChecked={true}
+              data-testid="checkbox3"
+            />
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      expect(
+        (screen.getByTestId('checkbox1') as HTMLInputElement).checked,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('checkbox2') as HTMLInputElement).checked,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('checkbox2') as HTMLInputElement).checked,
       ).toBeTruthy();
     });
 
