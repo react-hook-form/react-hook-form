@@ -914,7 +914,7 @@ describe('register', () => {
         (screen.getByTestId('checkbox2') as HTMLInputElement).checked,
       ).toBeTruthy();
       expect(
-        (screen.getByTestId('checkbox2') as HTMLInputElement).checked,
+        (screen.getByTestId('checkbox3') as HTMLInputElement).checked,
       ).toBeTruthy();
     });
 
