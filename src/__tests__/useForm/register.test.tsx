@@ -753,7 +753,7 @@ describe('register', () => {
       fireEvent.click(screen.getByText('Toggle Edit'));
       fireEvent.click(screen.getByText('Submit'));
 
-      expect(validate).toBeCalledWith(defaultValue);
+      expect(validate).toBeCalledWith(defaultValue, { test: 'Test' });
       await waitFor(() =>
         expect(submit).toBeCalledWith({ test: defaultValue }),
       );
@@ -1085,6 +1085,58 @@ describe('register', () => {
       });
 
       expect(await screen.findByText('Number length')).toBeVisible();
+    });
+
+    it('should be able to validate against formValues', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: '',
+            test1: '',
+          },
+        });
+
+        return (
+          <>
+            <input
+              {...register('test', {
+                validate: (data, formValues) => data === formValues.test1,
+              })}
+            />
+            <span role="alert">{errors.test ? 'Not number' : 'No error'}</span>
+
+            <input {...register('test1')} />
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: '1',
+        },
+      });
+
+      await waitFor(() => screen.findByText('Not number'));
+
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: '11',
+        },
+      });
+
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: '11',
+        },
+      });
+
+      await waitFor(() => screen.findByText('No error'));
     });
 
     it('should send valueAs fields to schema validation', () => {

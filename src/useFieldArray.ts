@@ -104,7 +104,7 @@ export function useFieldArray<
   control._names.array.add(name);
 
   props.rules &&
-    (control as Control).register(
+    (control as Control<TFieldValues>).register(
       name as FieldPath<TFieldValues>,
       props.rules as RegisterOptions<TFieldValues>,
     );

@@ -2144,7 +2144,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        [{}],
+        {
+          test: [{}],
+        },
         false,
         false,
         true,
