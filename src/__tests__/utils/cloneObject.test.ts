@@ -105,8 +105,8 @@ describe('clone', () => {
       test: {
         test: 'inner-string',
         deep: {
-          test: 'changed-deep-string',
           testFunction,
+          test: 'deep-string',
         },
         testFunction,
       },
