@@ -19,6 +19,7 @@ export type ValidateResult = Message | Message[] | boolean | undefined;
 
 export type Validate<TFieldValue> = (
   value: TFieldValue,
+  formValues: TFieldValue,
 ) => ValidateResult | Promise<ValidateResult>;
 
 export type RegisterOptions<
