@@ -542,7 +542,7 @@ export function createFormControl<
             fieldReference.refs.length > 1
               ? fieldReference.refs.forEach(
                   (checkboxRef) =>
-                    !checkboxRef.disabled &&
+                    (!checkboxRef.defaultChecked || !checkboxRef.disabled) &&
                     (checkboxRef.checked = Array.isArray(fieldValue)
                       ? !!(fieldValue as []).find(
                           (data: string) => data === checkboxRef.value,
@@ -1213,10 +1213,16 @@ export function createFormControl<
     );
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
-    const field = get(_fields, name)._f;
-    const fieldRef = field.refs ? field.refs[0] : field.ref;
-    fieldRef.focus();
-    options.shouldSelect && fieldRef.select();
+    const field = get(_fields, name);
+    const fieldReference = field && field._f;
+
+    if (fieldReference) {
+      const fieldRef = fieldReference.refs
+        ? fieldReference.refs[0]
+        : fieldReference.ref;
+      fieldRef.focus();
+      options.shouldSelect && fieldRef.select();
+    }
   };
 
   return {
