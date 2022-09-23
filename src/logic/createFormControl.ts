@@ -7,7 +7,6 @@ import {
   EventType,
   Field,
   FieldError,
-  FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -99,16 +98,16 @@ export function createFormControl<
     ...props,
   };
   let _formState: FormState<TFieldValues> = {
+    submitCount: 0,
     isDirty: false,
     isValidating: false,
-    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
-    submitCount: 0,
-    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
-    errors: {} as FieldErrors<TFieldValues>,
+    touchedFields: {},
+    dirtyFields: {},
+    errors: {},
   };
   let _fields = {};
   let _defaultValues = cloneObject(_options.defaultValues) || {};
@@ -298,7 +297,7 @@ export function createFormControl<
 
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields as TFieldValues, name, true);
+        : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
       isFieldDirty =
         isFieldDirty ||
@@ -306,7 +305,7 @@ export function createFormControl<
     }
 
     if (isBlurEvent && !isPreviousFieldTouched) {
-      set(_formState.touchedFields as TFieldValues, name, isBlurEvent);
+      set(_formState.touchedFields, name, isBlurEvent);
       output.touchedFields = _formState.touchedFields;
       isFieldDirty =
         isFieldDirty ||
@@ -402,7 +401,7 @@ export function createFormControl<
           : unset(_formState.errors, name);
       }
     } else {
-      _formState.errors = errors as FieldErrors<TFieldValues>;
+      _formState.errors = errors;
     }
 
     return errors;
@@ -840,7 +839,7 @@ export function createFormControl<
       ? convertToArrayPayload(name).forEach((inputName) =>
           unset(_formState.errors, inputName),
         )
-      : (_formState.errors = {} as FieldErrors<TFieldValues>);
+      : (_formState.errors = {});
 
     _subjects.state.next({
       errors: _formState.errors,
@@ -1031,7 +1030,7 @@ export function createFormControl<
       try {
         if (_options.resolver) {
           const { errors, values } = await _executeSchema();
-          _formState.errors = errors as FieldErrors<TFieldValues>;
+          _formState.errors = errors;
           fieldValues = values;
         } else {
           await executeBuiltInValidation(_fields);
@@ -1039,7 +1038,7 @@ export function createFormControl<
 
         if (isEmptyObject(_formState.errors)) {
           _subjects.state.next({
-            errors: {} as FieldErrors<TFieldValues>,
+            errors: {},
             isSubmitting: true,
           });
           await onValid(fieldValues, e);
@@ -1198,10 +1197,8 @@ export function createFormControl<
           : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
-        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
-      errors: keepStateOptions.keepErrors
-        ? _formState.errors
-        : ({} as FieldErrors<TFieldValues>),
+        : {},
+      errors: keepStateOptions.keepErrors ? _formState.errors : {},
       isSubmitting: false,
       isSubmitSuccessful: false,
     });

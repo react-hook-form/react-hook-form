@@ -118,14 +118,15 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues extends FieldValues> = {
   isDirty: boolean;
-  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
   isSubmitSuccessful: boolean;
-  submitCount: number;
-  touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
+  submitCount: number;
+  defaultValues?: Readonly<DeepPartial<TFieldValues>> | TFieldValues;
+  dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+  touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
 };
 

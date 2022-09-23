@@ -1,21 +1,23 @@
 import { VALIDATION_MODE } from '../constants';
-import { FieldValues, FormState, ReadFormState } from '../types';
+import { Control, FieldValues, FormState, ReadFormState } from '../types';
 
 export default <TFieldValues extends FieldValues>(
   formState: FormState<TFieldValues>,
-  _proxyFormState: ReadFormState,
+  control: Control<TFieldValues>,
   localProxyFormState?: ReadFormState,
   isRoot = true,
 ) => {
-  const result = {} as typeof formState;
+  const result = {
+    defaultValues: control._defaultValues,
+  } as typeof formState;
 
   for (const key in formState) {
     Object.defineProperty(result, key, {
       get: () => {
         const _key = key as keyof FormState<TFieldValues> & keyof ReadFormState;
 
-        if (_proxyFormState[_key] !== VALIDATION_MODE.all) {
-          _proxyFormState[_key] = !isRoot || VALIDATION_MODE.all;
+        if (control._proxyFormState[_key] !== VALIDATION_MODE.all) {
+          control._proxyFormState[_key] = !isRoot || VALIDATION_MODE.all;
         }
 
         localProxyFormState && (localProxyFormState[_key] = true);
