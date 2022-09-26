@@ -124,8 +124,8 @@ export type UseFieldArrayPrepend<
  *
  * @example
  * ```tsx
- * <button type="button" onClick={() => prepend({ name: "data" })}>Append</button>
- * <button type="button" onClick={() => prepend({ name: "data" }, { shouldFocus: false })}>Append</button>
+ * <button type="button" onClick={() => append({ name: "data" })}>Append</button>
+ * <button type="button" onClick={() => append({ name: "data" }, { shouldFocus: false })}>Append</button>
  * <button
  *   type="button"
  *   onClick={() => append([{ name: "data" }, { name: "data" }])}
