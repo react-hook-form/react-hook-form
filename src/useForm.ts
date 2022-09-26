@@ -3,14 +3,7 @@ import React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import {
-  FieldErrors,
-  FieldNamesMarkedBoolean,
-  FieldValues,
-  FormState,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -54,19 +47,18 @@ export function useForm<
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
-    submitCount: 0,
-    touchedFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
-    errors: {} as FieldErrors<TFieldValues>,
+    submitCount: 0,
+    dirtyFields: {},
+    touchedFields: {},
+    errors: {},
+    defaultValues: props.defaultValues,
   });
 
-  if (_formControl.current) {
-    _formControl.current.control._options = props;
-  } else {
+  if (!_formControl.current) {
     _formControl.current = {
       ...createFormControl(props),
       formState,
@@ -74,24 +66,23 @@ export function useForm<
   }
 
   const control = _formControl.current.control;
-
-  const callback = React.useCallback(
-    (value: FieldValues) => {
-      if (shouldRenderFormState(value, control._proxyFormState, true)) {
-        control._formState = {
-          ...control._formState,
-          ...value,
-        };
-
-        updateFormState({ ...control._formState });
-      }
-    },
-    [control],
-  );
+  control._options = props;
 
   useSubscribe({
     subject: control._subjects.state,
-    callback,
+    callback: React.useCallback(
+      (value: FieldValues) => {
+        if (shouldRenderFormState(value, control._proxyFormState, true)) {
+          control._formState = {
+            ...control._formState,
+            ...value,
+          };
+
+          updateFormState({ ...control._formState });
+        }
+      },
+      [control],
+    ),
   });
 
   React.useEffect(() => {
@@ -99,17 +90,16 @@ export function useForm<
       control._proxyFormState.isValid && control._updateValid();
       control._stateFlags.mount = true;
     }
+
     if (control._stateFlags.watch) {
       control._stateFlags.watch = false;
       control._subjects.state.next({});
     }
+
     control._removeUnmounted();
   });
 
-  _formControl.current.formState = getProxyFormState(
-    formState,
-    control._proxyFormState,
-  );
+  _formControl.current.formState = getProxyFormState(formState, control);
 
   return _formControl.current;
 }

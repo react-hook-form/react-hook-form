@@ -38,10 +38,11 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
     : FieldError;
 };
 
-export type FieldErrors<T extends FieldValues = FieldValues> =
+export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
   FieldValues extends IsAny<FieldValues>
     ? any
-    : FieldErrorsImpl<DeepRequired<T>>;
+    : FieldErrorsImpl<DeepRequired<T>>
+>;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>
