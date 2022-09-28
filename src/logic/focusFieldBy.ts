@@ -17,7 +17,7 @@ const focusFieldBy = (
       if (_f && callback(_f.name)) {
         if (_f.ref.focus && isUndefined(_f.ref.focus())) {
           break;
-        } else if (_f.refs) {
+        } else if (_f.refs && _f.refs[0].focus) {
           _f.refs[0].focus();
           break;
         }
