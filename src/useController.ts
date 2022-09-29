@@ -135,6 +135,7 @@ export function useController<
               setCustomValidity: (message: string) =>
                 elm.setCustomValidity(message),
               reportValidity: () => elm.reportValidity(),
+              blur: () => elm.blur(),
             };
           }
         },
