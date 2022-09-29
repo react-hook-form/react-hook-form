@@ -1220,8 +1220,11 @@ export function createFormControl<
       const fieldRef = fieldReference.refs
         ? fieldReference.refs[0]
         : fieldReference.ref;
-      fieldRef.focus();
-      options.shouldSelect && fieldRef.select();
+
+      if (fieldRef.focus) {
+        fieldRef.focus();
+        options.shouldSelect && fieldRef.select();
+      }
     }
   };
 
