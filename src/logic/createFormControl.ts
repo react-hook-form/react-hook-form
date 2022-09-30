@@ -1047,13 +1047,11 @@ export function createFormControl<
       let hasNoPromiseError = true;
       let fieldValues: any = cloneObject(_formValues);
 
-      if (_options.shouldDisableOnSubmit) {
-        _disableForm(true);
-      }
-
       _subjects.state.next({
         isSubmitting: true,
       });
+
+      _options.shouldDisableOnSubmit && _disableForm(true);
 
       try {
         if (_options.resolver) {
@@ -1086,18 +1084,19 @@ export function createFormControl<
         hasNoPromiseError = false;
         throw err;
       } finally {
-        if (_options.shouldDisableOnSubmit) {
-          _disableForm(false);
-        }
-        _formState.isSubmitted = true;
-        _subjects.state.next({
+        _options.shouldDisableOnSubmit && _disableForm(false);
+
+        _formState = {
+          ..._formState,
           isSubmitted: true,
           isSubmitting: false,
           isSubmitSuccessful:
             isEmptyObject(_formState.errors) && hasNoPromiseError,
           submitCount: _formState.submitCount + 1,
           errors: _formState.errors,
-        });
+        };
+
+        _subjects.state.next(_formState);
       }
     };
 
