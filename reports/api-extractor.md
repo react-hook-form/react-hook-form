@@ -56,6 +56,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _options: UseFormProps<TFieldValues, TContext>;
     _getDirty: GetIsDirty;
     _formState: FormState<TFieldValues>;
+    _disableForm: (disabled: boolean) => void;
     _updateValid: Noop;
     _fields: FieldRefs;
     _formValues: FieldValues;
@@ -81,6 +82,7 @@ export type ControllerFieldState = {
     isTouched: boolean;
     isDirty: boolean;
     error?: FieldError;
+    disabled?: boolean;
 };
 
 // @public
@@ -232,6 +234,9 @@ export type FieldPathValues<TFieldValues extends FieldValues, TPath extends Fiel
 
 // @public (undocumented)
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;
+
+// @public (undocumented)
+export type Fields = Record<string, Field>;
 
 // @public (undocumented)
 export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[InternalFieldName];
@@ -599,6 +604,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldUseNativeValidation: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
+    disabled: boolean;
 }>;
 
 // @public
@@ -771,7 +777,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:418:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:419:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
