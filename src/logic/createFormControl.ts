@@ -70,6 +70,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getFormStateSubscriptionDetails from './getFormStateSubscriptionDetails';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import hasValidation from './hasValidation';
@@ -128,14 +129,7 @@ export function createFormControl<
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
   let validateFields: Record<InternalFieldName, number> = {};
-  const _proxyFormState = {
-    isDirty: false,
-    dirtyFields: false,
-    touchedFields: false,
-    isValidating: false,
-    isValid: false,
-    errors: false,
-  };
+  const _proxyFormState = getFormStateSubscriptionDetails(props.subscribe);
   const _subjects: Subjects<TFieldValues> = {
     watch: createSubject(),
     array: createSubject(),

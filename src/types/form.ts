@@ -84,6 +84,15 @@ export type ChangeHandler = (event: {
 
 export type DelayCallback = (wait: number) => void;
 
+export type FormStateSubscription = {
+  dirtyFields: boolean;
+  touchedFields: boolean;
+  isValid: boolean;
+  isDirty: boolean;
+  isValidating: boolean;
+  errors: boolean;
+};
+
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
@@ -98,6 +107,7 @@ export type UseFormProps<
   shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  subscribe: FormStateSubscription;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -800,6 +810,7 @@ export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
   exact?: boolean;
+  subscribe?: FormStateSubscription;
 }>;
 
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
