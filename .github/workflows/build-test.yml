@@ -21,4 +21,4 @@ jobs:
       - name: Test
         run: |
           yarn test --ci
-          yarn tsd
+          yarn test:type
