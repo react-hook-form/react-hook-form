@@ -64,7 +64,6 @@ import live from '../utils/live';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
-import focusFieldBy from './focusFieldBy';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
@@ -75,6 +74,7 @@ import getRuleValue from './getRuleValue';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
+import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
@@ -752,6 +752,19 @@ export function createFormControl<
     }
   };
 
+  const focusOnError = () =>
+    iterateFieldsByAction(
+      _fields,
+      (ref) => {
+        if (ref.focus) {
+          ref.focus();
+          return 1;
+        }
+        return 0;
+      },
+      Object.keys(_formState.errors),
+    );
+
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
     let isValid;
     let validationResult;
@@ -796,13 +809,7 @@ export function createFormControl<
       isValidating: false,
     });
 
-    options.shouldFocus &&
-      !validationResult &&
-      focusFieldBy(
-        _fields,
-        (key) => get(_formState.errors, key),
-        name ? fieldNames : _names.mount,
-      );
+    options.shouldFocus && !validationResult && focusOnError();
 
     return validationResult;
   };
@@ -1047,12 +1054,7 @@ export function createFormControl<
             await onInvalid({ ..._formState.errors }, e);
           }
 
-          _options.shouldFocusError &&
-            focusFieldBy(
-              _fields,
-              (key) => get(_formState.errors, key),
-              _names.mount,
-            );
+          _options.shouldFocusError && focusOnError();
         }
       } catch (err) {
         hasNoPromiseError = false;

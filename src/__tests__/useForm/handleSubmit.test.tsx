@@ -130,7 +130,7 @@ describe('handleSubmit', () => {
     expect(callback).not.toBeCalled();
   });
 
-  it('should not focus if errors is exist', async () => {
+  it('should focus if errors is exist', async () => {
     const focus = jest.fn();
     const { result } = renderHook(() => useForm<{ test: string }>());
     const { ref } = result.current.register('test', { required: true });
