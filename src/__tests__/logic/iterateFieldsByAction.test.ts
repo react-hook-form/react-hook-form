@@ -1,5 +1,4 @@
 import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
-import { Ref } from '../../types';
 
 describe('iterateFieldsByAction', () => {
   it('should focus on the first error it encounter', () => {
