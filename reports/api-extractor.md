@@ -280,14 +280,14 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
-export type FormStateSubscription = {
+export type FormStateSubscription = Partial<{
     dirtyFields: boolean;
     touchedFields: boolean;
     isValid: boolean;
     isDirty: boolean;
     isValidating: boolean;
     errors: boolean;
-};
+}>;
 
 // @public (undocumented)
 export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
@@ -510,6 +510,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     shouldUnregister?: boolean;
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues>;
+    subscribe?: FormStateSubscription;
 };
 
 // @public (undocumented)
