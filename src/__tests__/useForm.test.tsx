@@ -19,6 +19,8 @@ import {
 import isFunction from '../utils/isFunction';
 import { Controller, useFieldArray, useForm } from '../';
 
+jest.useFakeTimers();
+
 describe('useForm', () => {
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
@@ -1657,8 +1659,6 @@ describe('useForm', () => {
   });
 
   it('should update isValidating to true when other validation still running', async () => {
-    jest.useFakeTimers();
-
     function App() {
       const [stateValidation, setStateValidation] = React.useState(false);
       const {
@@ -1718,13 +1718,12 @@ describe('useForm', () => {
 
   it('should be able to disable the entire form', async () => {
     const App = () => {
-      const [disabled, setDisabled] = React.useState(false);
-      const { register } = useForm({
-        disabled,
+      const { register, handleSubmit } = useForm({
+        shouldDisableOnSubmit: true,
       });
 
       return (
-        <form>
+        <form onSubmit={handleSubmit(() => {})}>
           <input
             type={'checkbox'}
             {...register('checkbox')}
@@ -1734,14 +1733,7 @@ describe('useForm', () => {
           <input type={'range'} {...register('range')} data-testid={'range'} />
           <select {...register('select')} data-testid={'select'} />
           <textarea {...register('textarea')} data-testid={'textarea'} />
-          <button
-            type={'button'}
-            onClick={() => {
-              setDisabled(!disabled);
-            }}
-          >
-            setDisabled
-          </button>
+          <button>Submit</button>
         </form>
       );
     };
@@ -1776,6 +1768,21 @@ describe('useForm', () => {
       expect(
         (screen.getByTestId('textarea') as HTMLInputElement).disabled,
       ).toBeTruthy();
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeFalsy();
     });
   });
 });

@@ -95,10 +95,10 @@ export type UseFormProps<
   context: TContext;
   shouldFocusError: boolean;
   shouldUnregister: boolean;
+  shouldDisableOnSubmit: boolean;
   shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
-  disabled: boolean;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<

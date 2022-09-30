@@ -3,7 +3,6 @@ import React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import isBoolean from './utils/isBoolean';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
@@ -85,12 +84,6 @@ export function useForm<
       [control],
     ),
   });
-
-  React.useEffect(() => {
-    if (isBoolean(props.disabled)) {
-      control._disableForm(props.disabled);
-    }
-  }, [props.disabled, control]);
 
   React.useEffect(() => {
     if (!control._stateFlags.mount) {

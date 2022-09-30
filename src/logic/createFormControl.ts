@@ -1016,6 +1016,28 @@ export function createFormControl<
     };
   };
 
+  const _disableForm = (disabled?: boolean, fields = _fields) => {
+    for (const key in fields) {
+      const field: Field = fields[key];
+
+      if (isObject(field)) {
+        const { _f, ...currentField } = field;
+
+        if (_f) {
+          if (_f.ref) {
+            _f.ref.disabled = disabled;
+          } else if (_f.refs) {
+            _f.refs.forEach((ref) => {
+              ref.disabled = !!disabled;
+            });
+          }
+        } else if (isObject(currentField)) {
+          _disableForm(disabled, currentField as Fields);
+        }
+      }
+    }
+  };
+
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
       if (e) {
@@ -1024,6 +1046,10 @@ export function createFormControl<
       }
       let hasNoPromiseError = true;
       let fieldValues: any = cloneObject(_formValues);
+
+      if (_options.shouldDisableOnSubmit) {
+        _disableForm(true);
+      }
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1060,6 +1086,9 @@ export function createFormControl<
         hasNoPromiseError = false;
         throw err;
       } finally {
+        if (_options.shouldDisableOnSubmit) {
+          _disableForm(false);
+        }
         _formState.isSubmitted = true;
         _subjects.state.next({
           isSubmitted: true,
@@ -1226,28 +1255,6 @@ export function createFormControl<
       if (fieldRef.focus) {
         fieldRef.focus();
         options.shouldSelect && fieldRef.select();
-      }
-    }
-  };
-
-  const _disableForm = (disabled?: boolean, fields = _fields) => {
-    for (const key in fields) {
-      const field: Field = fields[key];
-
-      if (isObject(field)) {
-        const { _f, ...currentField } = field;
-
-        if (_f) {
-          if (_f.ref) {
-            _f.ref.disabled = disabled;
-          } else if (_f.refs) {
-            _f.refs.forEach((ref) => {
-              ref.disabled = !!disabled;
-            });
-          }
-        } else if (isObject(currentField)) {
-          _disableForm(disabled, currentField as Fields);
-        }
       }
     }
   };
