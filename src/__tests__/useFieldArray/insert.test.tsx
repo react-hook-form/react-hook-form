@@ -84,6 +84,10 @@ describe('insert', () => {
           test: { value: string; value1: string }[];
         }>({
           defaultValues: { test: [{ value: '1' }] },
+          subscribe: {
+            isDirty: true,
+            dirtyFields: true,
+          },
         });
         const { fields, append, insert } = useFieldArray({
           control,
@@ -92,9 +96,6 @@ describe('insert', () => {
 
         return { formState, fields, append, insert };
       });
-
-      result.current.formState.isDirty;
-      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ value: '2', value1: '' });
@@ -123,6 +124,10 @@ describe('insert', () => {
           test: { value1: string; value2: string; value: string }[];
         }>({
           defaultValues: { test: [{ value: '1' }] },
+          subscribe: {
+            isDirty: true,
+            dirtyFields: true,
+          },
         });
         const { fields, append, insert } = useFieldArray({
           control,
@@ -131,9 +136,6 @@ describe('insert', () => {
 
         return { formState, fields, append, insert };
       });
-
-      result.current.formState.isDirty;
-      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ value: '2', value1: '', value2: '' });

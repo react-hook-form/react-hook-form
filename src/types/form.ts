@@ -84,14 +84,14 @@ export type ChangeHandler = (event: {
 
 export type DelayCallback = (wait: number) => void;
 
-export type FormStateSubscription = {
+export type FormStateSubscription = Partial<{
   dirtyFields: boolean;
   touchedFields: boolean;
   isValid: boolean;
   isDirty: boolean;
   isValidating: boolean;
   errors: boolean;
-};
+}>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,

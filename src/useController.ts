@@ -64,6 +64,7 @@ export function useController<
   const formState = useFormState({
     control,
     name,
+    subscribe: props.subscribe,
   });
 
   const _registerProps = React.useRef(

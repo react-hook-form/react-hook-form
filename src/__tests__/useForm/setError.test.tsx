@@ -48,9 +48,13 @@ describe('setError', () => {
   ];
 
   it.each(tests)('%s', (_, input, output) => {
-    const { result } = renderHook(() => useForm<{ input: string }>());
-
-    result.current.formState.errors;
+    const { result } = renderHook(() =>
+      useForm<{ input: string }>({
+        subscribe: {
+          errors: true,
+        },
+      }),
+    );
 
     act(() => {
       result.current.setError('input', input);

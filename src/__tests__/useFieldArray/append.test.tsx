@@ -426,12 +426,13 @@ describe('append', () => {
         const { formState, control } = useForm({
           mode: VALIDATION_MODE.onChange,
           resolver,
+          subscribe: {
+            isValid: true,
+          },
         });
         const { append } = useFieldArray({ control, name: 'test' });
         return { formState, append };
       });
-
-      result.current.formState.isValid;
 
       await act(async () => {
         result.current.append({ value: '1' });
@@ -445,7 +446,8 @@ describe('append', () => {
         {
           criteriaMode: undefined,
           fields: {},
-          names: [],
+          names: ['test'],
+          shouldUseNativeValidation: undefined,
         },
       );
     });

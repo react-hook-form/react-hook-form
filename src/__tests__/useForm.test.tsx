@@ -50,10 +50,13 @@ describe('useForm', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
-        }>(),
+        }>({
+          subscribe: {
+            errors: true,
+          },
+        }),
       );
 
-      result.current.formState.errors;
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -74,10 +77,13 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
-        }>(),
+        }>({
+          subscribe: {
+            errors: true,
+          },
+        }),
       );
 
-      result.current.formState.errors;
       result.current.register('test', { required: true });
 
       await act(async () => {
@@ -134,11 +140,13 @@ describe('useForm', () => {
       const Component = () => {
         const { register, formState: tempFormState } = useForm<{
           test: string;
-        }>();
+        }>({
+          subscribe: {
+            isDirty: true,
+            dirtyFields: true,
+          },
+        });
         formState = tempFormState;
-
-        formState.isDirty;
-        formState.dirtyFields;
 
         return <input {...register('test', { required: true })} />;
       };
@@ -927,7 +935,7 @@ describe('useForm', () => {
 
     describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
-        const resolver = jest.fn(async (data: any) => {
+        const resolver = jest.fn(async (data) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
@@ -1552,7 +1560,7 @@ describe('useForm', () => {
           mode: 'onChange',
           resolver: async (values) => {
             if (!values.test) {
-              const result = {
+              return {
                 values: {},
                 errors: {
                   test: {
@@ -1560,7 +1568,6 @@ describe('useForm', () => {
                   },
                 },
               };
-              return result;
             }
 
             return {

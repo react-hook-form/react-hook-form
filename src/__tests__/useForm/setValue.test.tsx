@@ -507,7 +507,12 @@ describe('setValue', () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
-        }>(),
+        }>({
+          subscribe: {
+            dirtyFields: true,
+            errors: true,
+          },
+        }),
       );
 
       result.current.register('test', {
@@ -516,9 +521,6 @@ describe('setValue', () => {
           message: 'min',
         },
       });
-
-      result.current.formState.dirtyFields;
-      result.current.formState.errors;
 
       await act(async () =>
         result.current.setValue('test', 'abc', {
@@ -598,7 +600,11 @@ describe('setValue', () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string[];
-        }>(),
+        }>({
+          subscribe: {
+            errors: true,
+          },
+        }),
       );
 
       const rules = {
@@ -611,8 +617,6 @@ describe('setValue', () => {
       result.current.register('test.0', rules);
       result.current.register('test.1', rules);
       result.current.register('test.2', rules);
-
-      result.current.formState.errors;
 
       await act(async () =>
         result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
@@ -652,12 +656,15 @@ describe('setValue', () => {
   describe('with dirty', () => {
     it.each(['isDirty', 'dirtyFields'])(
       'should be dirtyFields when %s is defined when shouldDirty is true',
-      (property) => {
-        const { result } = renderHook(() => useForm<{ test: string }>());
-
-        result.current.formState[property as 'dirtyFields' | 'isDirty'];
-        result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+      () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            subscribe: {
+              dirtyFields: true,
+              isDirty: true,
+            },
+          }),
+        );
 
         result.current.register('test');
 
@@ -677,7 +684,7 @@ describe('setValue', () => {
       ['dirty', ['test1', '', 'test3'], [true, undefined, true]],
     ])(
       'should be dirtyFields when %s is defined when shouldDirty is true with array fields',
-      (property, values, dirtyFields) => {
+      (_, values, dirtyFields) => {
         const { result } = renderHook(() =>
           useForm<{
             test: string[];
@@ -685,12 +692,12 @@ describe('setValue', () => {
             defaultValues: {
               test: ['', '', ''],
             },
+            subscribe: {
+              isDirty: true,
+              dirtyFields: true,
+            },
           }),
         );
-
-        result.current.formState[property as 'isDirty' | 'dirtyFields'];
-        result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
 
         result.current.register('test.0');
         result.current.register('test.1');
@@ -711,14 +718,17 @@ describe('setValue', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should not be dirtyFields when %s is defined when shouldDirty is false',
-      (property) => {
+      () => {
         const { result } = renderHook(() =>
           useForm<{
             test: string;
-          }>(),
+          }>({
+            subscribe: {
+              isDirty: true,
+              dirtyFields: true,
+            },
+          }),
         );
-
-        result.current.formState[property as 'isDirty' | 'dirtyFields'];
 
         result.current.register('test');
 
@@ -733,15 +743,16 @@ describe('setValue', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined',
-      (property) => {
+      () => {
         const { result } = renderHook(() =>
           useForm<{ test: string }>({
             defaultValues: { test: 'default' },
+            subscribe: {
+              dirtyFields: true,
+              isDirty: true,
+            },
           }),
         );
-        result.current.formState[property as 'dirtyFields' | 'isDirty'];
-        result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
 
         result.current.register('test');
 
@@ -754,15 +765,16 @@ describe('setValue', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined',
-      (property) => {
+      () => {
         const { result } = renderHook(() =>
           useForm<{ test: string }>({
             defaultValues: { test: 'default' },
+            subscribe: {
+              isDirty: true,
+              dirtyFields: true,
+            },
           }),
         );
-        result.current.formState[property as 'isDirty' | 'dirtyFields'];
-        result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
 
         result.current.register('test');
 

@@ -36,6 +36,9 @@ describe('remove', () => {
         defaultValues: {
           test: [{ name: 'default' }],
         },
+        subscribe: {
+          isDirty: true,
+        },
       });
       const { fields, remove, append } = useFieldArray({
         name: 'test',
@@ -43,7 +46,6 @@ describe('remove', () => {
       });
 
       formState = tempFormState;
-      formState.isDirty;
 
       return (
         <form>
@@ -332,13 +334,14 @@ describe('remove', () => {
     const Component = () => {
       const { register, formState, control } = useForm({
         mode: VALIDATION_MODE.onChange,
+        subscribe: {
+          isValid: true,
+        },
       });
       const { fields, append, remove } = useFieldArray({
         control,
         name: 'test',
       });
-
-      formState.isValid;
 
       return (
         <form>

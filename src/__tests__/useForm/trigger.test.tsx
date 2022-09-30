@@ -92,10 +92,11 @@ describe('trigger', () => {
     const { result } = renderHook(() =>
       useForm<{ test: string; test1: string }>({
         mode: VALIDATION_MODE.onChange,
+        subscribe: {
+          errors: true,
+        },
       }),
     );
-
-    result.current.formState.errors;
 
     result.current.register('test', { required: 'required' });
     result.current.register('test1', { required: 'required' });
@@ -125,10 +126,11 @@ describe('trigger', () => {
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
           resolver,
+          subscribe: {
+            errors: true,
+          },
         }),
       );
-
-      result.current.formState.errors;
 
       result.current.register('test', { required: true });
 
@@ -156,10 +158,11 @@ describe('trigger', () => {
         useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
           resolver,
+          subscribe: {
+            errors: true,
+          },
         }),
       );
-
-      result.current.formState.errors;
 
       result.current.register('test1', { required: false });
       result.current.register('test2', { required: true });
@@ -220,10 +223,11 @@ describe('trigger', () => {
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
           resolver,
+          subscribe: {
+            errors: true,
+          },
         }),
       );
-
-      result.current.formState.errors;
 
       result.current.register('test', { required: true });
 
@@ -304,10 +308,11 @@ describe('trigger', () => {
         useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
           resolver,
+          subscribe: {
+            errors: true,
+          },
         }),
       );
-
-      result.current.formState.errors;
 
       result.current.register('test', { required: true });
       result.current.register('test1', { required: true });
@@ -706,9 +711,11 @@ describe('trigger', () => {
   it('should return isValid for the entire form', async () => {
     const App = () => {
       const [isValid, setIsValid] = React.useState(true);
-      const { register, trigger, formState } = useForm();
-
-      formState.isValid;
+      const { register, trigger } = useForm({
+        subscribe: {
+          isValid: true,
+        },
+      });
 
       return (
         <div>
@@ -853,17 +860,16 @@ describe('trigger', () => {
       const renderCount = React.useRef(0);
       renderCount.current += 1;
 
-      const {
-        fieldState: { error },
-      } = useController({
+      useController({
         name,
         control,
         rules: {
           required: true,
         },
+        subscribe: {
+          errors: true,
+        },
       });
-
-      error;
 
       return <p>{renderCount.current}</p>;
     }

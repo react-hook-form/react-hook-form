@@ -7,6 +7,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  FormStateSubscription,
   Noop,
   RefCallBack,
   UseFormStateReturn,
@@ -48,6 +49,7 @@ export type UseControllerProps<
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
+  subscribe?: FormStateSubscription;
 };
 
 export type UseControllerReturn<

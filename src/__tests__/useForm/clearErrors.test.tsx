@@ -22,9 +22,12 @@ describe('clearErrors', () => {
 
   it('should remove nested error', () => {
     const { result } = renderHook(() =>
-      useForm<{ input: { nested: string } }>(),
+      useForm<{ input: { nested: string } }>({
+        subscribe: {
+          errors: true,
+        },
+      }),
     );
-    result.current.formState.errors;
     act(() =>
       result.current.setError('input.nested', {
         type: 'test',
@@ -90,10 +93,12 @@ describe('clearErrors', () => {
         input1: string;
         input2: string;
         nest: { data: string; data1: string };
-      }>(),
+      }>({
+        subscribe: {
+          errors: true,
+        },
+      }),
     );
-
-    result.current.formState.errors;
 
     const error = {
       type: 'test',
@@ -161,10 +166,12 @@ describe('clearErrors', () => {
 
   it('should remove all error', () => {
     const { result } = renderHook(() =>
-      useForm<{ input: string; input1: string; input2: string }>(),
+      useForm<{ input: string; input1: string; input2: string }>({
+        subscribe: {
+          errors: true,
+        },
+      }),
     );
-
-    result.current.formState.errors;
 
     const error = {
       type: 'test',
