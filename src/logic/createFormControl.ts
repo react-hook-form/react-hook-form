@@ -10,6 +10,7 @@ import {
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
+  Fields,
   FieldValues,
   FormState,
   GetIsDirty,
@@ -55,6 +56,7 @@ import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
@@ -109,7 +111,7 @@ export function createFormControl<
     dirtyFields: {},
     errors: {},
   };
-  let _fields = {};
+  let _fields: Fields = {};
   let _defaultValues = cloneObject(_options.defaultValues) || {};
   let _formValues = _options.shouldUnregister
     ? {}
@@ -1228,6 +1230,28 @@ export function createFormControl<
     }
   };
 
+  const _disableForm = (disabled?: boolean, fields = _fields) => {
+    for (const key in fields) {
+      const field: Field = fields[key];
+
+      if (isObject(field)) {
+        const { _f, ...currentField } = field;
+
+        if (_f) {
+          if (_f.ref) {
+            _f.ref.disabled = disabled;
+          } else if (_f.refs) {
+            _f.refs.forEach((ref) => {
+              ref.disabled = !!disabled;
+            });
+          }
+        } else if (isObject(currentField)) {
+          _disableForm(disabled, currentField as Fields);
+        }
+      }
+    }
+  };
+
   return {
     control: {
       register,
@@ -1240,6 +1264,7 @@ export function createFormControl<
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,
+      _disableForm,
       _subjects,
       _proxyFormState,
       get _fields() {

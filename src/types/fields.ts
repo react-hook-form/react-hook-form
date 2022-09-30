@@ -49,4 +49,6 @@ export type Field = {
   } & RegisterOptions;
 };
 
+export type Fields = Record<string, Field>;
+
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;

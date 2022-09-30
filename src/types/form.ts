@@ -98,6 +98,7 @@ export type UseFormProps<
   shouldUseNativeValidation: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  disabled: boolean;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -744,6 +745,7 @@ export type Control<
   _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
+  _disableForm: (disabled: boolean) => void;
   _updateValid: Noop;
   _fields: FieldRefs;
   _formValues: FieldValues;

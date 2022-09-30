@@ -1552,7 +1552,7 @@ describe('useForm', () => {
           mode: 'onChange',
           resolver: async (values) => {
             if (!values.test) {
-              const result = {
+              return {
                 values: {},
                 errors: {
                   test: {
@@ -1560,7 +1560,6 @@ describe('useForm', () => {
                   },
                 },
               };
-              return result;
             }
 
             return {
@@ -1715,5 +1714,68 @@ describe('useForm', () => {
 
     screen.getByText('isValidating: false');
     screen.getByText('stateValidation: false');
+  });
+
+  it('should be able to disable the entire form', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = React.useState(false);
+      const { register } = useForm({
+        disabled,
+      });
+
+      return (
+        <form>
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+          <button
+            type={'button'}
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+          >
+            setDisabled
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(
+      (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('range') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('select') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
   });
 });
