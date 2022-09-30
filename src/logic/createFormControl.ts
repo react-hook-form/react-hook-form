@@ -755,14 +755,14 @@ export function createFormControl<
   const focusOnError = () =>
     iterateFieldsByAction(
       _fields,
-      (ref) => {
-        if (ref.focus) {
+      (ref, name) => {
+        if (get(_formState.errors, name) && ref.focus) {
           ref.focus();
           return 1;
         }
         return 0;
       },
-      Object.keys(_formState.errors),
+      _names.mount,
     );
 
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {

@@ -371,12 +371,8 @@ export function useFieldArray<
     control._names.focus &&
       iterateFieldsByAction(
         control._fields,
-        (ref) => {
-          if (
-            ref.focus &&
-            ref.name &&
-            ref.name.startsWith(control._names.focus)
-          ) {
+        (ref, name) => {
+          if (ref.focus && name.startsWith(control._names.focus)) {
             ref.focus();
             return 1;
           }
