@@ -280,6 +280,16 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
+export type FormStateSubscription = {
+    dirtyFields: boolean;
+    touchedFields: boolean;
+    isValid: boolean;
+    isDirty: boolean;
+    isValidating: boolean;
+    errors: boolean;
+};
+
+// @public (undocumented)
 export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
@@ -599,6 +609,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldUseNativeValidation: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
+    subscribe: FormStateSubscription;
 }>;
 
 // @public
@@ -671,6 +682,7 @@ export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
     disabled?: boolean;
     name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[];
     exact?: boolean;
+    subscribe?: FormStateSubscription;
 }>;
 
 // @public (undocumented)
@@ -771,7 +783,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:418:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:428:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
