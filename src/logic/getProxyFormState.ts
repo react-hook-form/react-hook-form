@@ -14,14 +14,17 @@ export default <TFieldValues extends FieldValues>(
   for (const key in formState) {
     Object.defineProperty(result, key, {
       get: () => {
-        const _key = key as keyof FormState<TFieldValues> & keyof ReadFormState;
-
-        if (control._proxyFormState[_key] !== VALIDATION_MODE.all) {
-          control._proxyFormState[_key] = !isRoot || VALIDATION_MODE.all;
+        if (
+          control._proxyFormState[key as keyof ReadFormState] !==
+          VALIDATION_MODE.all
+        ) {
+          control._proxyFormState[key as keyof ReadFormState] =
+            !isRoot || VALIDATION_MODE.all;
         }
 
-        localProxyFormState && (localProxyFormState[_key] = true);
-        return formState[_key];
+        localProxyFormState &&
+          (localProxyFormState[key as keyof ReadFormState] = true);
+        return formState[key as keyof ReadFormState];
       },
     });
   }
