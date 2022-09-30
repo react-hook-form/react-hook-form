@@ -5,7 +5,6 @@ export default <TFieldValues extends FieldValues>(
   formState: FormState<TFieldValues>,
   control: Control<TFieldValues>,
   localProxyFormState?: ReadFormState,
-  isRoot = true,
 ) => {
   const result = {
     defaultValues: control._defaultValues,
@@ -19,7 +18,7 @@ export default <TFieldValues extends FieldValues>(
           VALIDATION_MODE.all
         ) {
           control._proxyFormState[key as keyof ReadFormState] =
-            !isRoot || VALIDATION_MODE.all;
+            !localProxyFormState || VALIDATION_MODE.all;
         }
 
         localProxyFormState &&

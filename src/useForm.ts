@@ -72,7 +72,7 @@ export function useForm<
     subject: control._subjects.state,
     callback: React.useCallback(
       (value: FieldValues) => {
-        if (shouldRenderFormState(value, control._proxyFormState, true)) {
+        if (shouldRenderFormState(value, control._proxyFormState)) {
           control._formState = {
             ...control._formState,
             ...value,
