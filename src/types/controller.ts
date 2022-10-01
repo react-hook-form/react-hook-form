@@ -23,7 +23,6 @@ export type ControllerFieldState = {
   isTouched: boolean;
   isDirty: boolean;
   error?: FieldError;
-  disabled?: boolean;
 };
 
 export type ControllerRenderProps<
