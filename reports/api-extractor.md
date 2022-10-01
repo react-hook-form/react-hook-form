@@ -56,7 +56,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _options: UseFormProps<TFieldValues, TContext>;
     _getDirty: GetIsDirty;
     _formState: FormState<TFieldValues>;
-    _disableForm: (disabled: boolean) => void;
     _updateValid: Noop;
     _fields: FieldRefs;
     _formValues: FieldValues;
@@ -234,9 +233,6 @@ export type FieldPathValues<TFieldValues extends FieldValues, TPath extends Fiel
 
 // @public (undocumented)
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;
-
-// @public (undocumented)
-export type Fields = Record<string, Field>;
 
 // @public (undocumented)
 export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[InternalFieldName];
