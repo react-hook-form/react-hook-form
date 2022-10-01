@@ -10,7 +10,6 @@ import {
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
-  Fields,
   FieldValues,
   FormState,
   GetIsDirty,
@@ -110,7 +109,7 @@ export function createFormControl<
     dirtyFields: {},
     errors: {},
   };
-  let _fields: Fields = {};
+  let _fields: FieldRefs = {};
   let _defaultValues = cloneObject(_options.defaultValues) || {};
   let _formValues = _options.shouldUnregister
     ? {}
@@ -1262,7 +1261,6 @@ export function createFormControl<
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,
-      _disableForm,
       _subjects,
       _proxyFormState,
       get _fields() {
