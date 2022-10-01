@@ -75,7 +75,7 @@ import getRuleValue from './getRuleValue';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
-import iterateFieldsByAction from './iterateFieldsByAction';
+import { iterateFieldsByAction } from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';

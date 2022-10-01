@@ -2,7 +2,7 @@ import { FieldRefs, InternalFieldName, Ref } from '../types';
 import { get } from '../utils';
 import isObject from '../utils/isObject';
 
-const iterateFieldsByAction = (
+export const iterateFieldsByAction = (
   fields: FieldRefs,
   action: (ref: Ref, name: string) => 1 | undefined | void,
   fieldsNames?: Set<InternalFieldName> | InternalFieldName[] | 0,
@@ -26,5 +26,3 @@ const iterateFieldsByAction = (
     }
   }
 };
-
-export default iterateFieldsByAction;

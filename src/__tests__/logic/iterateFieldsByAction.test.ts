@@ -1,4 +1,4 @@
-import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
+import { iterateFieldsByAction } from '../../logic/iterateFieldsByAction';
 
 describe('focusFieldBy', () => {
   it('should focus on the first error it encounter', () => {

@@ -3,7 +3,7 @@ import React from 'react';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
-import iterateFieldsByAction from './logic/iterateFieldsByAction';
+import { iterateFieldsByAction } from './logic/iterateFieldsByAction';
 import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
 import appendAt from './utils/append';
