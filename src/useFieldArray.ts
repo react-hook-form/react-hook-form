@@ -1,9 +1,9 @@
 import React from 'react';
 
-import focusFieldBy from './logic/focusFieldBy';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import isWatched from './logic/isWatched';
+import iterateFieldsByAction from './logic/iterateFieldsByAction';
 import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
 import appendAt from './utils/append';
@@ -369,9 +369,13 @@ export function useFieldArray<
     });
 
     control._names.focus &&
-      focusFieldBy(control._fields, (key: string) =>
-        key.startsWith(control._names.focus),
-      );
+      iterateFieldsByAction(control._fields, (ref, key: string) => {
+        if (key.startsWith(control._names.focus) && ref.focus) {
+          ref.focus();
+          return 1;
+        }
+        return;
+      });
 
     control._names.focus = '';
 

@@ -601,10 +601,10 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     context: TContext;
     shouldFocusError: boolean;
     shouldUnregister: boolean;
+    shouldDisableOnSubmit: boolean;
     shouldUseNativeValidation: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
-    disabled: boolean;
 }>;
 
 // @public

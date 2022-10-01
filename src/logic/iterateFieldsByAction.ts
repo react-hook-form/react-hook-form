@@ -1,10 +1,10 @@
-import { FieldRefs, InternalFieldName } from '../types';
+import { FieldRefs, InternalFieldName, Ref } from '../types';
 import { get } from '../utils';
 import isObject from '../utils/isObject';
 
-const focusFieldBy = (
+const iterateFieldsByAction = (
   fields: FieldRefs,
-  callback: (name: string) => boolean,
+  action: (ref: Ref, name: string) => 1 | undefined,
   fieldsNames?: Set<InternalFieldName> | InternalFieldName[],
 ) => {
   for (const key of fieldsNames || Object.keys(fields)) {
@@ -13,19 +13,17 @@ const focusFieldBy = (
     if (field) {
       const { _f, ...currentField } = field;
 
-      if (_f && callback(_f.name)) {
-        if (_f.ref.focus) {
-          _f.ref.focus();
+      if (_f) {
+        if (_f.refs && _f.refs[0] && action(_f.refs[0], key)) {
           break;
-        } else if (_f.refs && _f.refs[0].focus) {
-          _f.refs[0].focus();
+        } else if (_f.ref && action(_f.ref, _f.name)) {
           break;
         }
       } else if (isObject(currentField)) {
-        focusFieldBy(currentField, callback);
+        iterateFieldsByAction(currentField, action);
       }
     }
   }
 };
 
-export default focusFieldBy;
+export default iterateFieldsByAction;
