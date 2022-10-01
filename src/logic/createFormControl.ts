@@ -1086,17 +1086,16 @@ export function createFormControl<
       } finally {
         _options.shouldDisableOnSubmit && _disableForm(false);
 
-        _formState = {
-          ..._formState,
+        _formState.isSubmitted = true;
+
+        _subjects.state.next({
           isSubmitted: true,
           isSubmitting: false,
           isSubmitSuccessful:
             isEmptyObject(_formState.errors) && hasNoPromiseError,
           submitCount: _formState.submitCount + 1,
           errors: _formState.errors,
-        };
-
-        _subjects.state.next(_formState);
+        });
       }
     };
 
