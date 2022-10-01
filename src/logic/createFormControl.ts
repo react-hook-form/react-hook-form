@@ -56,7 +56,6 @@ import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
-import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
@@ -1024,27 +1023,17 @@ export function createFormControl<
     };
   };
 
-  const _disableForm = (disabled?: boolean, fields = _fields) => {
-    for (const key in fields) {
-      const field: Field = fields[key];
-
-      if (isObject(field)) {
-        const { _f, ...currentField } = field;
-
-        if (_f) {
-          if (_f.ref) {
-            _f.ref.disabled = disabled;
-          } else if (_f.refs) {
-            _f.refs.forEach((ref) => {
-              ref.disabled = !!disabled;
-            });
-          }
-        } else if (isObject(currentField)) {
-          _disableForm(disabled, currentField as Fields);
+  const _disableForm = (disabled?: boolean) =>
+    iterateFieldsByAction(
+      _fields,
+      (ref) => {
+        if (!isUndefined(ref.disabled)) {
+          ref.disabled = disabled;
         }
-      }
-    }
-  };
+      },
+      0,
+      false,
+    );
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
