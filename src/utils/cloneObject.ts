@@ -1,5 +1,5 @@
 import isObject from './isObject';
-import { isPlainObject } from './isPlainObject';
+import isPlainObject from './isPlainObject';
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
