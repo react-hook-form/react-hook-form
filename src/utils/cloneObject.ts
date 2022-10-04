@@ -1,5 +1,5 @@
-import isFunction from './isFunction';
 import isObject from './isObject';
+import isPlainObject from './isPlainObject';
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
@@ -15,12 +15,13 @@ export default function cloneObject<T>(data: T): T {
     (isArray || isObject(data))
   ) {
     copy = isArray ? [] : {};
-    for (const key in data) {
-      if (isFunction(data[key])) {
-        copy = data;
-        break;
+
+    if (!Array.isArray(data) && !isPlainObject(data)) {
+      copy = data;
+    } else {
+      for (const key in data) {
+        copy[key] = cloneObject(data[key]);
       }
-      copy[key] = cloneObject(data[key]);
     }
   } else {
     return data;
