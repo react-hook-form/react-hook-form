@@ -124,22 +124,19 @@ export function useController<
           }),
         [name, control],
       ),
-      ref: React.useCallback(
-        (elm) => {
-          const field = get(control._fields, name);
+      ref: (elm) => {
+        const field = get(control._fields, name);
 
-          if (elm && field && elm.focus) {
-            field._f.ref = {
-              focus: () => elm.focus(),
-              select: () => elm.select(),
-              setCustomValidity: (message: string) =>
-                elm.setCustomValidity(message),
-              reportValidity: () => elm.reportValidity(),
-            };
-          }
-        },
-        [name, control._fields],
-      ),
+        if (field && elm) {
+          field._f.ref = {
+            focus: () => elm.focus(),
+            select: () => elm.select(),
+            setCustomValidity: (message: string) =>
+              elm.setCustomValidity(message),
+            reportValidity: () => elm.reportValidity(),
+          };
+        }
+      },
     },
     formState,
     fieldState: Object.defineProperties(

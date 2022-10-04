@@ -39,7 +39,6 @@ https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-
 ### Quickstart
 
 ```jsx
-import React from 'react';
 import { useForm } from 'react-hook-form';
 
 function App() {
