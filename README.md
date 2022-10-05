@@ -80,15 +80,6 @@ Thanks go to these kind and lovely sponsors!
 </a>
 <a
     target = _blank
-    href = 'https://underbelly.is'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/underbelly/989a4a6/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
     href = 'https://graphcms.com'
 />
     <img
@@ -103,24 +94,6 @@ Thanks go to these kind and lovely sponsors!
     <img
         width = 94
         src = 'https://images.opencollective.com/kaname/d15fd98/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
-    href = 'https://feathery.io'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/feathery1/c29b0a1/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
-    href = 'https://getform.io'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/getformio2/3c978c8/avatar/256.png'
     />
 </a>
 
