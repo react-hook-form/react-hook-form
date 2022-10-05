@@ -135,6 +135,7 @@ export function createFormControl<
     isValidating: false,
     isValid: false,
     errors: false,
+    submitCount: true,
   };
   const _subjects: Subjects<TFieldValues> = {
     watch: createSubject(),
@@ -1046,13 +1047,6 @@ export function createFormControl<
           if (onInvalid) {
             await onInvalid({ ..._formState.errors }, e);
           }
-
-          _options.shouldFocusError &&
-            focusFieldBy(
-              _fields,
-              (key) => get(_formState.errors, key),
-              _names.mount,
-            );
         }
       } catch (err) {
         hasNoPromiseError = false;

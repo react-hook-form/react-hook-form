@@ -1,8 +1,10 @@
 import React from 'react';
 
 import { createFormControl } from './logic/createFormControl';
+import focusFieldBy from './logic/focusFieldBy';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
+import get from './utils/get';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
@@ -41,6 +43,7 @@ export function useForm<
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {
+  const { defaultValues, shouldFocusError } = props;
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext> | undefined
   >();
@@ -55,7 +58,7 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     errors: {},
-    defaultValues: props.defaultValues,
+    defaultValues,
   });
 
   if (!_formControl.current) {
@@ -98,6 +101,17 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    if (formState.submitCount) {
+      shouldFocusError !== false &&
+        focusFieldBy(
+          control._fields,
+          (key) => get(control._formState.errors, key),
+          control._names.mount,
+        );
+    }
+  }, [control, shouldFocusError, formState]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
