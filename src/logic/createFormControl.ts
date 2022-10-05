@@ -532,10 +532,10 @@ export function createFormControl<
 
         if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach(
-            (selectRef) =>
-              (selectRef.selected = (
+            (optionRef) =>
+              (optionRef.selected = (
                 fieldValue as InternalFieldName[]
-              ).includes(selectRef.value)),
+              ).includes(optionRef.value)),
           );
         } else if (fieldReference.refs) {
           if (isCheckBoxInput(fieldReference.ref)) {
