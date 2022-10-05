@@ -154,7 +154,7 @@ export function createFormControl<
       timer = window.setTimeout(callback, wait);
     };
 
-  const _updateValid = async (shouldSkipRender?: boolean) => {
+  const _updateValid = async (shouldSkipRender?: 1) => {
     let isValid = false;
 
     if (_proxyFormState.isValid) {
@@ -239,7 +239,7 @@ export function createFormControl<
 
   const updateValidAndValue = (
     name: InternalFieldName,
-    shouldSkipSetValueAs: boolean,
+    shouldSkipSetValueAs?: 1 | 0,
     value?: unknown,
     ref?: Ref,
   ) => {
@@ -740,7 +740,7 @@ export function createFormControl<
           )
         )[name];
 
-        isValid = await _updateValid(true);
+        isValid = await _updateValid(1);
       }
 
       field._f.deps &&
@@ -942,7 +942,7 @@ export function createFormControl<
             ? undefined
             : get(_formValues, name, getFieldValue(field._f)),
         )
-      : updateValidAndValue(name, true, options.value);
+      : updateValidAndValue(name, 1, options.value);
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
@@ -998,7 +998,7 @@ export function createFormControl<
             },
           });
 
-          updateValidAndValue(name, false, undefined, fieldRef);
+          updateValidAndValue(name, 0, undefined, fieldRef);
         } else {
           field = get(_fields, name, {});
 
