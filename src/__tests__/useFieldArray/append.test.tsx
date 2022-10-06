@@ -71,12 +71,7 @@ describe('append', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(dirtyInputs).toEqual({
-      test: [
-        { value: true },
-        { value: false },
-        { value: false },
-        { value: true },
-      ],
+      test: [{ value: true }, {}, {}, { value: true }],
     });
   });
 
