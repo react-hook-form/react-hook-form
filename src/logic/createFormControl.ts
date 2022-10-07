@@ -1014,6 +1014,10 @@ export function createFormControl<
     };
   };
 
+  const _focusError = () =>
+    _options.shouldFocusError &&
+    focusFieldBy(_fields, (key) => get(_formState.errors, key), _names.mount);
+
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
       if (e) {
@@ -1047,12 +1051,7 @@ export function createFormControl<
             await onInvalid({ ..._formState.errors }, e);
           }
 
-          _options.shouldFocusError &&
-            focusFieldBy(
-              _fields,
-              (key) => get(_formState.errors, key),
-              _names.mount,
-            );
+          _focusError();
         }
       } catch (err) {
         hasNoPromiseError = false;
@@ -1234,6 +1233,7 @@ export function createFormControl<
       unregister,
       getFieldState,
       _executeSchema,
+      _focusError,
       _getWatch,
       _getDirty,
       _updateValid,
