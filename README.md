@@ -18,10 +18,9 @@ https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-
 <p align="center">
   <a href="https://react-hook-form.com/get-started">Get started</a> | 
   <a href="https://react-hook-form.com/api">API</a> |
-  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">Examples</a> |
-  <a href="https://react-hook-form.com">Demo</a> |
   <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
-  <a href="https://react-hook-form.com/faqs">FAQs</a>
+  <a href="https://react-hook-form.com/faqs">FAQs</a> |
+  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">Examples</a>
 </p>
 
 ### Features
@@ -30,7 +29,7 @@ https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-
 - Embraces native HTML form [validation](https://react-hook-form.com/get-started#Applyvalidation)
 - Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
 - [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
-- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [AJV](https://github.com/ajv-validator/ajv), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) and custom build
+- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/colinhacks/zod), [AJV](https://github.com/ajv-validator/ajv), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) and [others](https://github.com/react-hook-form/resolvers)
 
 ### Install
 
@@ -39,7 +38,6 @@ https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-
 ### Quickstart
 
 ```jsx
-import React from 'react';
 import { useForm } from 'react-hook-form';
 
 function App() {
@@ -81,15 +79,6 @@ Thanks go to these kind and lovely sponsors!
 </a>
 <a
     target = _blank
-    href = 'https://underbelly.is'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/underbelly/989a4a6/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
     href = 'https://graphcms.com'
 />
     <img
@@ -104,24 +93,6 @@ Thanks go to these kind and lovely sponsors!
     <img
         width = 94
         src = 'https://images.opencollective.com/kaname/d15fd98/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
-    href = 'https://feathery.io'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/feathery1/c29b0a1/logo/256.png'
-    />
-</a>
-<a
-    target = _blank
-    href = 'https://getform.io'
-/>
-    <img
-        width = 94
-        src = 'https://images.opencollective.com/getformio2/3c978c8/avatar/256.png'
     />
 </a>
 

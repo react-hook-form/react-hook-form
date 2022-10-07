@@ -1,5 +1,31 @@
 # Changelog
 
+## [7.37.0] - 2022-10-07
+
+## Added
+
+- new formState `defaultValues`
+
+```tsx
+const { formState, watch } = useForm({
+  defaultValues: { name: 'test' },
+});
+const { defaultValues } = useFormState();
+
+const name = watch('name');
+
+return (
+  <div>
+    <p>Your name was {defaultValues.name}</p>
+    <p>Updated name is {name}</p>
+  </div>
+);
+```
+
+## Changed
+
+- defaultValues: complex object data contains prototype methods will not be cloned internally
+
 ## [7.36.0] - 2022-9-20
 
 ## Added

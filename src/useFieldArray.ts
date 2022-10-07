@@ -314,7 +314,11 @@ export function useFieldArray<
 
     isWatched(name, control._names) && control._subjects.state.next({});
 
-    if (_actioned.current) {
+    if (
+      _actioned.current &&
+      (!getValidationModes(control._options.mode).isOnSubmit ||
+        control._formState.isSubmitted)
+    ) {
       if (control._options.resolver) {
         control._executeSchema([name]).then((result) => {
           const error = get(result.errors, name);
@@ -333,15 +337,7 @@ export function useFieldArray<
         });
       } else {
         const field: Field = get(control._fields, name);
-        const validationModeBeforeSubmit = getValidationModes(
-          control._options.mode,
-        );
-        if (
-          (!validationModeBeforeSubmit.isOnSubmit ||
-            control._formState.isSubmitted) &&
-          field &&
-          field._f
-        ) {
+        if (field && field._f) {
           validateField(
             field,
             get(control._formValues, name),

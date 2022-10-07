@@ -99,6 +99,10 @@ export function useForm<
     control._removeUnmounted();
   });
 
+  React.useEffect(() => {
+    formState.submitCount && control._focusError();
+  }, [control, formState.submitCount]);
+
   _formControl.current.formState = getProxyFormState(formState, control);
 
   return _formControl.current;

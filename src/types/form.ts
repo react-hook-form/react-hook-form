@@ -745,6 +745,7 @@ export type Control<
 > = {
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: Noop;
+  _focusError: Noop;
   _names: Names;
   _stateFlags: {
     mount: boolean;

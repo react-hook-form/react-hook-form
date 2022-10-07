@@ -385,6 +385,7 @@ describe('useFieldArray', () => {
         } = useForm<{
           test: { value: string }[];
         }>({
+          mode: 'onChange',
           resolver: (data) => {
             return {
               values: data,
@@ -439,6 +440,7 @@ describe('useFieldArray', () => {
         } = useForm<{
           test: { value: string }[];
         }>({
+          mode: 'onChange',
           resolver: (data) => {
             return {
               values: data,
@@ -486,6 +488,7 @@ describe('useFieldArray', () => {
         } = useForm<{
           test: { value: string }[];
         }>({
+          mode: 'onChange',
           resolver: (data) => {
             if (data.test.length > 1) {
               return {
@@ -517,9 +520,7 @@ describe('useFieldArray', () => {
           <form>
             {errors.test && <p>minLength</p>}
             {fields.map((item, i) => (
-              <fieldset key={item.id}>
-                <input {...register(`test.${i}.value` as const)} />
-              </fieldset>
+              <input key={item.id} {...register(`test.${i}.value` as const)} />
             ))}
             <button
               type={'button'}
