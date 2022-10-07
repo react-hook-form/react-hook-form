@@ -6,6 +6,7 @@ import { Control } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { useFormState } from '../useFormState';
+import deepEqual from '../utils/deepEqual';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -605,5 +606,41 @@ describe('useFormState', () => {
     fireEvent.blur(screen.getByRole('textbox'));
 
     expect(screen.getByText('touched')).toBeVisible();
+  });
+
+  it('should be able to access defaultValues', () => {
+    type FormValues = {
+      firstName: string;
+      lastName: string;
+    };
+
+    const defaultValues = {
+      firstName: 'a',
+      lastName: 'b',
+    };
+
+    const Test = ({ control }: { control: Control<FormValues> }) => {
+      const formState = useFormState({
+        control,
+      });
+
+      return (
+        <p>
+          {deepEqual(formState.defaultValues, defaultValues) ? 'yes' : 'no'}
+        </p>
+      );
+    };
+
+    const Component = () => {
+      const { control } = useForm<FormValues>({
+        defaultValues,
+      });
+
+      return <Test control={control} />;
+    };
+
+    render(<Component />);
+
+    expect(screen.getByText('yes')).toBeVisible();
   });
 });

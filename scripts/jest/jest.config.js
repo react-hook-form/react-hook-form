@@ -37,24 +37,6 @@ const server = {
   testEnvironment: 'node',
 };
 
-const native = {
-  ...jestDefaultConfig,
-  displayName: {
-    name: 'React Native',
-    color: 'magenta',
-  },
-  preset: 'react-native',
-  testMatch: ['**/+([a-zA-Z]).native.(spec|test).ts?(x)'],
-  transform: {
-    '^.+\\.tsx?$': '@swc/jest',
-    '^.+\\.jsx?$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
-  },
-  transformIgnorePatterns: [
-    '[/\\\\]node_modules[/\\\\](?!(@react-native|react-native)[/\\\\])',
-  ],
-  setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.native.ts'],
-};
-
 const getProjects = () => {
   const testEnv = process.env.TEST_ENV;
   if (!testEnv) {
@@ -66,8 +48,6 @@ const getProjects = () => {
       return [web];
     case 'server':
       return [server];
-    case 'native':
-      return [native];
   }
 };
 

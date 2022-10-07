@@ -31,8 +31,8 @@ export type BatchFieldArrayUpdate = <T extends Function, TFieldValues extends Fi
     argB: unknown;
 }>, shouldSetValue?: boolean, shouldUpdateFieldsAndErrors?: boolean) => void;
 
-// Warning: (ae-forgotten-export) The symbol "FileList" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "File" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "FileList_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "File_2" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type BrowserNativeObject = Date | FileList_2 | File_2;
@@ -201,7 +201,7 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>;
+export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>>;
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
@@ -250,14 +250,15 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = {
     isDirty: boolean;
-    dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     isSubmitted: boolean;
     isSubmitSuccessful: boolean;
-    submitCount: number;
-    touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
     isSubmitting: boolean;
     isValidating: boolean;
     isValid: boolean;
+    submitCount: number;
+    defaultValues?: Readonly<DeepPartial<TFieldValues>> | TFieldValues;
+    dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+    touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -713,7 +714,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[]>(props: {
     name: readonly [...TFieldNames];
-    defaultValue?: UnpackNestedValue<DeepPartialSkipArrayKey<TFieldValues>>;
+    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
     control?: Control<TFieldValues>;
     disabled?: boolean;
     exact?: boolean;
@@ -770,7 +771,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:417:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:418:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

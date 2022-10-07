@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Subject, Subscription } from './utils/createSubject';
+import { Subject } from './utils/createSubject';
 
 type Props<T> = {
   disabled?: boolean;
@@ -13,18 +13,14 @@ export function useSubscribe<T>(props: Props<T>) {
   _props.current = props;
 
   React.useEffect(() => {
-    const tearDown = (subscription: Subscription | false) => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-
     const subscription =
       !props.disabled &&
       _props.current.subject.subscribe({
         next: _props.current.callback,
       });
 
-    return () => tearDown(subscription);
+    return () => {
+      subscription && subscription.unsubscribe();
+    };
   }, [props.disabled]);
 }
