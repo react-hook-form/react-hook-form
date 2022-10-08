@@ -28,6 +28,7 @@ export default function App() {
               <div>
                 <label htmlFor="firstName">First Name</label>
                 <input
+                  id="firstName"
                   name={`firstName[${number}]`}
                   placeholder="first name"
                   ref={register({ required: true })}
@@ -37,6 +38,7 @@ export default function App() {
               <div>
                 <label htmlFor="lastName">Last Name</label>
                 <input
+                  id="lastName"
                   name={`lastName[${number}]`}
                   placeholder="last name"
                   ref={register({ required: true })}
@@ -46,6 +48,7 @@ export default function App() {
               <div>
                 <label htmlFor="email">Email</label>
                 <input
+                  id="email"
                   name={`email[${number}]`}
                   placeholder="email"
                   ref={register({ required: true })}
