@@ -13,17 +13,18 @@ export default function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input placeholder="bill" {...register('firstName')} />
+          <input id="firstName" placeholder="bill" {...register('firstName')} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input placeholder="luo" {...register('lastName')} />
+          <input id="lastName" placeholder="luo" {...register('lastName')} />
         </div>
 
         <div>
           <label htmlFor="email">Email</label>
           <input
+            id="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"
             {...register('email')}
