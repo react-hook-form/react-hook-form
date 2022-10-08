@@ -29,7 +29,7 @@ export default function App() {
                 <label htmlFor="firstName">First Name</label>
                 <input
                   placeholder="first name"
-                  {...register(`firstName[${number}]`, { required: true })}
+                  {...register(`firstName.${number}`, { required: true })}
                 />
               </div>
 
@@ -37,7 +37,7 @@ export default function App() {
                 <label htmlFor="lastName">Last Name</label>
                 <input
                   placeholder="last name"
-                  {...register(`lastName[${number}]`, { required: true })}
+                  {...register(`lastName.${number}`, { required: true })}
                 />
               </div>
 
