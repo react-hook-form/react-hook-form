@@ -118,9 +118,11 @@ export function useFieldArray<
       name?: InternalFieldName;
     }) => {
       if (fieldArrayName === _name.current || !fieldArrayName) {
-        const fieldValues = get(values, _name.current, []);
-        setFields(fieldValues);
-        ids.current = fieldValues.map(generateId);
+        const fieldValues = get(values, _name.current);
+        if (Array.isArray(fieldValues)) {
+          setFields(fieldValues);
+          ids.current = fieldValues.map(generateId);
+        }
       }
     },
     [],
