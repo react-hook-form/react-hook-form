@@ -28,20 +28,16 @@ export default function App() {
               <div>
                 <label htmlFor="firstName">First Name</label>
                 <input
-                  id="firstName"
-                  name={`firstName[${number}]`}
                   placeholder="first name"
-                  ref={register({ required: true })}
+                  {...register(`firstName[${number}]`, { required: true })}
                 />
               </div>
 
               <div>
                 <label htmlFor="lastName">Last Name</label>
                 <input
-                  id="lastName"
-                  name={`lastName[${number}]`}
                   placeholder="last name"
-                  ref={register({ required: true })}
+                  {...register(`lastName[${number}]`, { required: true })}
                 />
               </div>
 
