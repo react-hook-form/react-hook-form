@@ -44,10 +44,8 @@ export default function App() {
               <div>
                 <label htmlFor="email">Email</label>
                 <input
-                  id="email"
-                  name={`email[${number}]`}
                   placeholder="email"
-                  ref={register({ required: true })}
+                  {...register(`email.${number}`, { required: true })}
                 />
               </div>
 
