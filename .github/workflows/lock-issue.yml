@@ -19,4 +19,3 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-inactive-days: 60
-          log-output: true
