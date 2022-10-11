@@ -1,8 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
 export default function Form() {
   const { register, errors, handleSubmit } = useForm();
@@ -13,14 +13,12 @@ export default function Form() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      
-      
       <div>
         <label htmlFor="firstName">First name</label>
         <input
           id="firstName"
           type="text"
-          {...register("firstName", { required: true, maxLength: 80 })}
+          {...register('firstName', { required: true, maxLength: 80 })}
         />
       </div>
       <div>
@@ -28,7 +26,7 @@ export default function Form() {
         <input
           id="lastName"
           type="text"
-          {...register("lastName", { required: true, maxLength: 100 })}
+          {...register('lastName', { required: true, maxLength: 100 })}
         />
       </div>
       <div>
@@ -36,9 +34,10 @@ export default function Form() {
         <input
           id="email"
           type="text"
-          {...register("email", {
+          {...register('email', {
             required: true,
-            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            pattern:
+              /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           })}
         />
       </div>
@@ -47,16 +46,16 @@ export default function Form() {
         <input
           id="mobileNumber"
           type="tel"
-          {...register("mobileNumber", {
+          {...register('mobileNumber', {
             required: true,
             maxLength: 11,
-            minLength: 8
+            minLength: 8,
           })}
         />
       </div>
       <div>
         <label htmlFor="title">Title</label>
-        <select id="title" {...register("title", { required: true })}>
+        <select id="title" {...register('title', { required: true })}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
@@ -73,7 +72,7 @@ export default function Form() {
               id="devYes"
               type="radio"
               value="Yes"
-              {...register("developer", { required: true })}
+              {...register('developer', { required: true })}
             />
             <label htmlFor="devYes">Yes</label>
           </div>
@@ -83,7 +82,7 @@ export default function Form() {
               id="devNo"
               type="radio"
               value="No"
-              {...register("developer", { required: true })}
+              {...register('developer', { required: true })}
             />
             <label htmlFor="devNo">No</label>
           </div>
@@ -94,6 +93,3 @@ export default function Form() {
     </form>
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<Form />, rootElement);
