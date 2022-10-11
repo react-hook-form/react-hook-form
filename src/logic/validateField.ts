@@ -134,8 +134,8 @@ export default async <T extends NativeFieldValue>(
         (ref as HTMLInputElement).valueAsDate || new Date(inputValue as string);
       const convertTimeToDate = (time: unknown) =>
         new Date(new Date().toDateString() + ' ' + time);
-      const isTime = ref.type === 'time';
-      const isWeek = ref.type === 'week';
+      const isTime = ref.type == 'time';
+      const isWeek = ref.type == 'week';
 
       if (isString(maxOutput.value) && inputValue) {
         exceedMax = isTime
