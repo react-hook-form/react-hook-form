@@ -558,6 +558,70 @@ describe('validateField', () => {
         },
       },
     });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'week',
+              name: 'test',
+            },
+            value: '2022-W18',
+            required: true,
+            max: {
+              value: '2022-W17',
+              message: 'max',
+            },
+          },
+        },
+        '2022-W18',
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: 'max',
+        ref: {
+          type: 'week',
+          name: 'test',
+        },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'time',
+              name: 'test',
+            },
+            value: '14:00',
+            required: true,
+            max: {
+              value: '13:00',
+              message: 'max',
+            },
+          },
+        },
+        '14:00',
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: 'max',
+        ref: {
+          type: 'time',
+          name: 'test',
+        },
+      },
+    });
   });
 
   it('should return min error', async () => {
@@ -752,6 +816,70 @@ describe('validateField', () => {
           type: 'date',
           name: 'test',
           valueAsDate: new Date('2019-2-12'),
+        },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'week',
+              name: 'test',
+            },
+            value: '2022-W15',
+            required: true,
+            min: {
+              value: '2022-W17',
+              message: 'min',
+            },
+          },
+        },
+        '2022-W15',
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'min',
+        message: 'min',
+        ref: {
+          type: 'week',
+          name: 'test',
+        },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'time',
+              name: 'test',
+            },
+            value: '12:00',
+            required: true,
+            min: {
+              value: '13:00',
+              message: 'min',
+            },
+          },
+        },
+        '12:00',
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'min',
+        message: 'min',
+        ref: {
+          type: 'time',
+          name: 'test',
         },
       },
     });

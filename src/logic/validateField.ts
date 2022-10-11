@@ -132,33 +132,25 @@ export default async <T extends NativeFieldValue>(
     } else {
       const valueDate =
         (ref as HTMLInputElement).valueAsDate || new Date(inputValue as string);
-      const convertTimeToDate = (time: string) =>
+      const convertTimeToDate = (time: unknown) =>
         new Date(new Date().toDateString() + ' ' + time);
       const isTime = ref.type === 'time';
       const isWeek = ref.type === 'week';
 
       if (isString(maxOutput.value) && inputValue) {
-        if (isTime) {
-          exceedMax =
-            convertTimeToDate(inputValue as string) >
-            convertTimeToDate(maxOutput.value);
-        } else if (isWeek) {
-          exceedMax = inputValue > maxOutput.value;
-        } else {
-          exceedMax = valueDate > new Date(maxOutput.value);
-        }
+        exceedMax = isTime
+          ? convertTimeToDate(inputValue) > convertTimeToDate(maxOutput.value)
+          : isWeek
+          ? inputValue > maxOutput.value
+          : valueDate > new Date(maxOutput.value);
       }
 
       if (isString(minOutput.value) && inputValue) {
-        if (isTime) {
-          exceedMin =
-            convertTimeToDate(inputValue as string) <
-            convertTimeToDate(minOutput.value);
-        } else if (isWeek) {
-          exceedMin = inputValue < minOutput.value;
-        } else {
-          exceedMin = valueDate < new Date(minOutput.value);
-        }
+        exceedMin = isTime
+          ? convertTimeToDate(inputValue) < convertTimeToDate(minOutput.value)
+          : isWeek
+          ? inputValue < minOutput.value
+          : valueDate < new Date(minOutput.value);
       }
     }
 
