@@ -35,7 +35,7 @@ export default function App() {
               </div>
 
               <div>
-                <label htmlFor={`firstName.${number}`}>Last Name</label>
+                <label htmlFor={`lastName.${number}`}>Last Name</label>
                 <input
                   id={`firstName.${number}`}
                   placeholder="last name"
