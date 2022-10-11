@@ -47,6 +47,7 @@ export type ChangeHandler = (event: {
 export type Control<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
     _subjects: Subjects<TFieldValues>;
     _removeUnmounted: Noop;
+    _focusError: Noop;
     _names: Names;
     _stateFlags: {
         mount: boolean;
