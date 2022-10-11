@@ -7,7 +7,6 @@ import "./styles.css";
 export default function Form() {
   const { register, errors, handleSubmit } = useForm();
   const onSubmit = (data) => {
-    console.log("RESULT", data);
     alert(JSON.stringify(data));
   };
   console.log(errors);
