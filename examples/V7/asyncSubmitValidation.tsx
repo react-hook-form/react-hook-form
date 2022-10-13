@@ -1,5 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -29,20 +27,12 @@ export default function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="username">User Name</label>
-          <input
-            id"username"
-            placeholder="Bill"
-            {...register('username')}
-           />
+          <input id="username" placeholder="Bill" {...register('username')} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input
-            id="lastName"
-            placeholder="Luo"
-            {...register('lastName')}
-           />
+          <input id="lastName" placeholder="Luo" {...register('lastName')} />
         </div>
 
         <div>

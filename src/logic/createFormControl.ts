@@ -791,7 +791,7 @@ export function createFormControl<
       (_proxyFormState.isValid && isValid !== _formState.isValid)
         ? {}
         : { name }),
-      ...(_options.resolver ? { isValid } : {}),
+      ...(_options.resolver || !name ? { isValid } : {}),
       errors: _formState.errors,
       isValidating: false,
     });
