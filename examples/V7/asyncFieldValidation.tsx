@@ -35,11 +35,7 @@ export default function App() {
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input 
-            id="lastName"
-            placeholder="Luo"
-            {...register('lastName')}
-           />
+          <input id="lastName" placeholder="Luo" {...register('lastName')} />
         </div>
 
         <div>

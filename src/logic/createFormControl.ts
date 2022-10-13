@@ -699,6 +699,10 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
+        if (_proxyFormState.isValid) {
+          _updateValid();
+        }
+
         return (
           shouldRender &&
           _subjects.state.next({ name, ...(watched ? {} : fieldState) })
