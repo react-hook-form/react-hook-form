@@ -699,9 +699,7 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        if (_proxyFormState.isValid) {
-          _updateValid();
-        }
+        _proxyFormState.isValid && _updateValid();
 
         return (
           shouldRender &&
