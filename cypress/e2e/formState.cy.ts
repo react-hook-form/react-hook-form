@@ -56,7 +56,7 @@ describe('form state', () => {
         isDirty: true,
         isSubmitting: false,
         isSubmitSuccessful: false,
-        isValid: false,
+        isValid: true,
       }),
     );
 
@@ -90,7 +90,7 @@ describe('form state', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should return correct form state with onChange mode', () => {

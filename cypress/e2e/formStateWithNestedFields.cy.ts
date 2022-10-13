@@ -58,7 +58,7 @@ describe('form state with nested fields', () => {
         touched: ['left.test1', 'left.test2'],
         isSubmitting: false,
         isSubmitSuccessful: false,
-        isValid: false,
+        isValid: true,
       }),
     );
 
@@ -92,7 +92,7 @@ describe('form state with nested fields', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should return correct form state with onChange mode', () => {
@@ -280,7 +280,7 @@ describe('form state with nested fields', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -299,7 +299,7 @@ describe('form state with nested fields', () => {
         touched: ['left.test1', 'left.test2'],
         isSubmitting: false,
         isSubmitSuccessful: false,
-        isValid: false,
+        isValid: true,
       }),
     );
 
@@ -319,7 +319,7 @@ describe('form state with nested fields', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('9');
   });
 
   it('should reset dirty value when inputs reset back to default with onBlur mode', () => {
@@ -358,7 +358,7 @@ describe('form state with nested fields', () => {
         isValid: false,
       }),
     );
-    cy.get('#renderCount').contains('8');
+    cy.get('#renderCount').contains('9');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
