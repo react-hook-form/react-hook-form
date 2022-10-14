@@ -24,7 +24,7 @@ describe('focusFieldBy', () => {
               type: 'required',
             },
           },
-          key,
+          String(key),
         ),
     );
 
@@ -58,7 +58,7 @@ describe('focusFieldBy', () => {
               type: 'required',
             },
           },
-          key,
+          String(key),
         ),
     );
 
@@ -79,7 +79,7 @@ describe('focusFieldBy', () => {
                 type: 'required',
               },
             },
-            key,
+            String(key),
           ),
       );
     }).not.toThrow();

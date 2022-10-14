@@ -800,7 +800,7 @@ export function createFormControl<
       !validationResult &&
       focusFieldBy(
         _fields,
-        (key) => get(_formState.errors, key),
+        (key) => key && get(_formState.errors, key),
         name ? fieldNames : _names.mount,
       );
 
@@ -1016,7 +1016,11 @@ export function createFormControl<
 
   const _focusError = () =>
     _options.shouldFocusError &&
-    focusFieldBy(_fields, (key) => get(_formState.errors, key), _names.mount);
+    focusFieldBy(
+      _fields,
+      (key) => key && get(_formState.errors, key),
+      _names.mount,
+    );
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
