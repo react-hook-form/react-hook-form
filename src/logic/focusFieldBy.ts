@@ -4,7 +4,7 @@ import isObject from '../utils/isObject';
 
 const focusFieldBy = (
   fields: FieldRefs,
-  callback: (name: string) => boolean,
+  callback: (name?: string) => boolean,
   fieldsNames?: Set<InternalFieldName> | InternalFieldName[],
 ) => {
   for (const key of fieldsNames || Object.keys(fields)) {
