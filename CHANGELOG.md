@@ -1,5 +1,16 @@
 # Changelog
 
+## [7.38.0] - 2022-10-19
+
+## Added
+
+- support build-in validation with input type week and time
+
+```tsx
+<input {...register("week", { min: "2022-W40" })} type="week" />
+<input {...register("time", { min: "11:00" })} type="time" />
+```
+
 ## [7.37.0] - 2022-10-07
 
 ## Added

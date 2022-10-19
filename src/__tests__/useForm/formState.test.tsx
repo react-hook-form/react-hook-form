@@ -362,6 +362,62 @@ describe('formState', () => {
     expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
   });
 
+  it('should update isValid even with mode set to onSubmit', async () => {
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { isValid, errors },
+      } = useForm({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('test', { required: true })} />
+          {errors.test && <p>error</p>}
+
+          <p>{isValid ? 'valid' : 'invalid'}</p>
+
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => screen.getByText('invalid'));
+    expect(screen.queryByText('error')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'value',
+      },
+    });
+
+    await waitFor(() => screen.getByText('valid'));
+    expect(screen.queryByText('error')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '',
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+    await waitFor(() =>
+      expect(screen.queryByText('error')).toBeInTheDocument(),
+    );
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'value',
+      },
+    });
+    await waitFor(() =>
+      expect(screen.queryByText('error')).not.toBeInTheDocument(),
+    );
+  });
+
   it('should update correct isValid formState with dynamic fields', async () => {
     const Component = () => {
       const {

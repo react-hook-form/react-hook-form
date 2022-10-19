@@ -4,8 +4,6 @@
         </a>
 </div>
 
-https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-9d79-ffa3fafa498a.mp4
-
 <div align="center">
 
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
@@ -48,7 +46,7 @@ function App() {
   } = useForm();
 
   return (
-    <form onSubmit={handleSubmit(data => console.log(data))}>
+    <form onSubmit={handleSubmit((data) => console.log(data))}>
       <input {...register('firstName')} />
       <input {...register('lastName', { required: true })} />
       {errors.lastName && <p>Last name is required.</p>}
@@ -72,7 +70,7 @@ Thanks go to these kind and lovely sponsors!
     target = _blank
     href = 'https://wantedlyinc.com'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/wantedly/d94e44e/logo/256.png'
     />
@@ -81,7 +79,7 @@ Thanks go to these kind and lovely sponsors!
     target = _blank
     href = 'https://graphcms.com'
 />
-    <img
+<img
         width = 94
         src = 'https://avatars.githubusercontent.com/u/31031438'
     />
@@ -90,9 +88,18 @@ Thanks go to these kind and lovely sponsors!
     target = _blank
     href = 'https://kanamekey.com'
 />
-    <img
+<img
         width = 94
         src = 'https://images.opencollective.com/kaname/d15fd98/logo/256.png'
+    />
+</a>
+<a
+    target = _blank
+    href = 'https://formcarry.com/'
+/>
+<img
+        width = 94
+        src = 'https://images.opencollective.com/formcarry/a40a4ea/logo/256.png'
     />
 </a>
 
