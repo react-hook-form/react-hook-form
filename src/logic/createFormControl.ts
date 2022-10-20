@@ -532,10 +532,10 @@ export function createFormControl<
 
         if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach(
-            (selectRef) =>
-              (selectRef.selected = (
+            (optionRef) =>
+              (optionRef.selected = (
                 fieldValue as InternalFieldName[]
-              ).includes(selectRef.value)),
+              ).includes(optionRef.value)),
           );
         } else if (fieldReference.refs) {
           if (isCheckBoxInput(fieldReference.ref)) {
@@ -699,6 +699,8 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
+        _proxyFormState.isValid && _updateValid();
+
         return (
           shouldRender &&
           _subjects.state.next({ name, ...(watched ? {} : fieldState) })
@@ -791,7 +793,7 @@ export function createFormControl<
       (_proxyFormState.isValid && isValid !== _formState.isValid)
         ? {}
         : { name }),
-      ...(_options.resolver ? { isValid } : {}),
+      ...(_options.resolver || !name ? { isValid } : {}),
       errors: _formState.errors,
       isValidating: false,
     });
@@ -800,7 +802,7 @@ export function createFormControl<
       !validationResult &&
       focusFieldBy(
         _fields,
-        (key) => get(_formState.errors, key),
+        (key) => key && get(_formState.errors, key),
         name ? fieldNames : _names.mount,
       );
 
@@ -1014,6 +1016,14 @@ export function createFormControl<
     };
   };
 
+  const _focusError = () =>
+    _options.shouldFocusError &&
+    focusFieldBy(
+      _fields,
+      (key) => key && get(_formState.errors, key),
+      _names.mount,
+    );
+
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
       if (e) {
@@ -1047,12 +1057,7 @@ export function createFormControl<
             await onInvalid({ ..._formState.errors }, e);
           }
 
-          _options.shouldFocusError &&
-            focusFieldBy(
-              _fields,
-              (key) => get(_formState.errors, key),
-              _names.mount,
-            );
+          _focusError();
         }
       } catch (err) {
         hasNoPromiseError = false;
@@ -1234,6 +1239,7 @@ export function createFormControl<
       unregister,
       getFieldState,
       _executeSchema,
+      _focusError,
       _getWatch,
       _getDirty,
       _updateValid,

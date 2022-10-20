@@ -41,7 +41,7 @@ import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 
 /**
- * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc.
+ * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
  *
  * @remarks
  * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
@@ -118,9 +118,11 @@ export function useFieldArray<
       name?: InternalFieldName;
     }) => {
       if (fieldArrayName === _name.current || !fieldArrayName) {
-        const fieldValues = get(values, _name.current, []);
-        setFields(fieldValues);
-        ids.current = fieldValues.map(generateId);
+        const fieldValues = get(values, _name.current);
+        if (Array.isArray(fieldValues)) {
+          setFields(fieldValues);
+          ids.current = fieldValues.map(generateId);
+        }
       }
     },
     [],
@@ -314,7 +316,11 @@ export function useFieldArray<
 
     isWatched(name, control._names) && control._subjects.state.next({});
 
-    if (_actioned.current) {
+    if (
+      _actioned.current &&
+      (!getValidationModes(control._options.mode).isOnSubmit ||
+        control._formState.isSubmitted)
+    ) {
       if (control._options.resolver) {
         control._executeSchema([name]).then((result) => {
           const error = get(result.errors, name);
@@ -333,15 +339,7 @@ export function useFieldArray<
         });
       } else {
         const field: Field = get(control._fields, name);
-        const validationModeBeforeSubmit = getValidationModes(
-          control._options.mode,
-        );
-        if (
-          (!validationModeBeforeSubmit.isOnSubmit ||
-            control._formState.isSubmitted) &&
-          field &&
-          field._f
-        ) {
+        if (field && field._f) {
           validateField(
             field,
             get(control._formValues, name),
@@ -369,8 +367,9 @@ export function useFieldArray<
     });
 
     control._names.focus &&
-      focusFieldBy(control._fields, (key: string) =>
-        key.startsWith(control._names.focus),
+      focusFieldBy(
+        control._fields,
+        (key) => !!key && key.startsWith(control._names.focus),
       );
 
     control._names.focus = '';

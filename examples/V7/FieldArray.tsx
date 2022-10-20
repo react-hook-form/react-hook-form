@@ -26,29 +26,29 @@ export default function App() {
           return (
             <div key={number}>
               <div>
-                <label htmlFor="firstName">First Name</label>
+                <label htmlFor={`firstName.${number}`}>First Name</label>
                 <input
-                  name={`firstName[${number}]`}
+                  id={`firstName.${number}`}
                   placeholder="first name"
-                  ref={register({ required: true })}
+                  {...register(`firstName.${number}`, { required: true })}
                 />
               </div>
 
               <div>
-                <label htmlFor="lastName">Last Name</label>
+                <label htmlFor={`lastName.${number}`}>Last Name</label>
                 <input
-                  name={`lastName[${number}]`}
+                  id={`firstName.${number}`}
                   placeholder="last name"
-                  ref={register({ required: true })}
+                  {...register(`lastName.${number}`, { required: true })}
                 />
               </div>
 
               <div>
-                <label htmlFor="email">Email</label>
+                <label htmlFor={`email.${number}`}>Email</label>
                 <input
-                  name={`email[${number}]`}
+                  id={`email.${number}`}
                   placeholder="email"
-                  ref={register({ required: true })}
+                  {...register(`email.${number}`, { required: true })}
                 />
               </div>
 
