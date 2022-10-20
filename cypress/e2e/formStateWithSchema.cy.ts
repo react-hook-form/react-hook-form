@@ -279,7 +279,7 @@ describe('form state with schema validation', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -298,7 +298,7 @@ describe('form state with schema validation', () => {
         isDirty: true,
         isSubmitting: false,
         isSubmitSuccessful: false,
-        isValid: false,
+        isValid: true,
       }),
     );
 
@@ -456,7 +456,7 @@ describe('form state with schema validation', () => {
         isValid: false,
       }),
     );
-    cy.get('#renderCount').contains('18');
+    cy.get('#renderCount').contains('20');
   });
 
   it('should reset dirty value when inputs reset back to default with onBlur mode', () => {
@@ -495,7 +495,7 @@ describe('form state with schema validation', () => {
         isValid: false,
       }),
     );
-    cy.get('#renderCount').contains('8');
+    cy.get('#renderCount').contains('9');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
