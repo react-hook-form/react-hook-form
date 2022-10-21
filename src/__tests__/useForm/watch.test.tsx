@@ -217,9 +217,7 @@ describe('watch', () => {
           output.push(data);
         });
 
-        return () => {
-          subscription.unsubscribe();
-        };
+        return () => subscription();
       }, [watch]);
 
       return <input {...register('test')} />;
