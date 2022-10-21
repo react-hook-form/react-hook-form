@@ -20,7 +20,7 @@ export function useSubscribe<T>(props: Props<T>) {
       });
 
     return () => {
-      subscription && subscription.unsubscribe();
+      subscription && subscription();
     };
   }, [props.disabled]);
 }
