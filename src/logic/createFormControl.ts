@@ -709,7 +709,9 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({});
 
-      validateFields[name] = validateFields[name] ? +1 : 1;
+      validateFields[name] = validateFields[name]
+        ? validateFields[name] + 1
+        : 1;
 
       _subjects.state.next({
         isValidating: true,

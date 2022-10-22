@@ -17,6 +17,7 @@ import {
   UseFormReturn,
 } from '../types';
 import isFunction from '../utils/isFunction';
+import { sleep } from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
 
 describe('useForm', () => {
@@ -1715,5 +1716,61 @@ describe('useForm', () => {
 
     screen.getByText('isValidating: false');
     screen.getByText('stateValidation: false');
+  });
+
+  it('should update isValidating to true when using with resolver', async () => {
+    jest.useFakeTimers();
+
+    function App() {
+      const {
+        register,
+        formState: { isValidating },
+      } = useForm({
+        mode: 'all',
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+        resolver: async () => {
+          await sleep(2000);
+
+          return {
+            errors: {},
+            values: {},
+          };
+        },
+      });
+
+      return (
+        <div>
+          <p>isValidating: {String(isValidating)}</p>
+          <input {...register('lastName')} placeholder="async" />
+          <input {...register('firstName')} placeholder="required" />
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test2' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test3' },
+    });
+
+    screen.getByText('isValidating: true');
+
+    await actComponent(async () => {
+      jest.runAllTimers();
+    });
+
+    screen.getByText('isValidating: false');
   });
 });
