@@ -65,12 +65,10 @@ describe('getDirtyFields', () => {
     ).toEqual({
       test: {
         test1: true,
-        test2: false,
       },
-      test1: [false, true, true],
+      test1: [undefined, true, true],
       test2: [
         {
-          test1: false,
           test2: true,
         },
       ],
@@ -106,7 +104,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'luo', data1: 'luo1' }] },
         { test: [{ data: 'luo', data1: 'luo1' }] },
       ),
-    ).toEqual({ test: [{ data: false, data1: false }] });
+    ).toEqual({ test: [{}] });
   });
 
   it('should unset dirtyFields fields when value matches', () => {
@@ -115,7 +113,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }] },
         { test: [{ data: 'bill1' }, { data: 'luo2' }] },
       ),
-    ).toEqual({ test: [{ data: true }, { data: false, data1: true }] });
+    ).toEqual({ test: [{ data: true }, { data1: true }] });
   });
 
   it('should works in reverse dirtyFields fields check', () => {
@@ -131,7 +129,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'bill1' }, { data: 'luo2' }] },
         { test: [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }] },
       ),
-    ).toEqual({ test: [{ data: true }, { data: false, data1: true }] });
+    ).toEqual({ test: [{ data: true }, { data1: true }] });
   });
 
   it('should work for empty values compare with defaultValues', () => {
@@ -216,8 +214,7 @@ describe('getDirtyFields', () => {
         },
         {
           data: true,
-          data1: false,
-          nested: [{ data: false, data1: false }],
+          nested: [{}],
           nested1: [{ data: true, data1: true }],
         },
       ],
@@ -230,7 +227,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'bill' }] },
         { test: [{ data: 'bill' }] },
       ),
-    ).toEqual({ test: [{ data: false }] });
+    ).toEqual({ test: [{}] });
   });
 
   it('should reset dirtyFields fields', () => {
