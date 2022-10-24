@@ -54,6 +54,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         action: boolean;
         watch: boolean;
     };
+    _reset: UseFormReset<TFieldValues>;
     _options: UseFormProps<TFieldValues, TContext>;
     _getDirty: GetIsDirty;
     _formState: FormState<TFieldValues>;
@@ -593,6 +594,8 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     mode: Mode;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues>;
+    values: TFieldValues;
+    resetValuesOptions: Parameters<UseFormReset<TFieldValues>>[1];
     resolver: Resolver<TFieldValues, TContext>;
     context: TContext;
     shouldFocusError: boolean;
@@ -772,7 +775,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:418:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:420:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
