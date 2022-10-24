@@ -595,7 +595,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues>;
     values: TFieldValues;
-    resetValuesOptions: Parameters<UseFormReset<TFieldValues>>[1];
+    resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
     resolver: Resolver<TFieldValues, TContext>;
     context: TContext;
     shouldFocusError: boolean;
