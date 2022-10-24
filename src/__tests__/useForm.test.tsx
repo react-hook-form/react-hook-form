@@ -1723,10 +1723,6 @@ describe('useForm', () => {
       test: string;
     };
 
-    function sleep(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
     function Loader() {
       const [values, setValues] = React.useState<FormValues>({
         test: '',
