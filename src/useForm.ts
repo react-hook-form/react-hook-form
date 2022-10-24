@@ -4,7 +4,7 @@ import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
-import isNullOrUndefined from './utils/isNullOrUndefined';
+import isObject from './utils/isObject';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
@@ -103,7 +103,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (
-      !isNullOrUndefined(props.values) &&
+      isObject(props.values) &&
       !Object.is(props.values, control._defaultValues) &&
       !deepEqual(props.values, control._defaultValues)
     ) {
