@@ -5,13 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import {
-  DefaultValues,
-  FieldValues,
-  FormState,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -114,7 +108,6 @@ export function useForm<
       !deepEqual(props.values, control._defaultValues)
     ) {
       control._reset(props.values, control._options.resetValuesOptions);
-      control._defaultValues = props.values as DefaultValues<TFieldValues>;
     }
   }, [props.values, control]);
 
