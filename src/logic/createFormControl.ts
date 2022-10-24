@@ -1248,6 +1248,7 @@ export function createFormControl<
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,
+      _reset,
       _subjects,
       _proxyFormState,
       get _fields() {
@@ -1264,6 +1265,9 @@ export function createFormControl<
       },
       get _defaultValues() {
         return _defaultValues;
+      },
+      set _defaultValues(value) {
+        _defaultValues = value;
       },
       get _names() {
         return _names;

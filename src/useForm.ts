@@ -3,7 +3,15 @@ import React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import deepEqual from './utils/deepEqual';
+import isNullOrUndefined from './utils/isNullOrUndefined';
+import {
+  DefaultValues,
+  FieldValues,
+  FormState,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -98,6 +106,17 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    if (
+      !isNullOrUndefined(props.values) &&
+      !Object.is(props.values, control._defaultValues) &&
+      !deepEqual(props.values, control._defaultValues)
+    ) {
+      control._reset(props.values, control._options.resetValuesOptions);
+      control._defaultValues = props.values as DefaultValues<TFieldValues>;
+    }
+  }, [props.values, control]);
 
   React.useEffect(() => {
     formState.submitCount && control._focusError();
