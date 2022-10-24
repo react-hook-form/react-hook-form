@@ -4,7 +4,9 @@ export type Observer<T> = {
   next: (value: T) => void;
 };
 
-export type Subscription = Noop;
+export type Subscription = {
+  unsubscribe: Noop;
+};
 
 export type Subject<T> = {
   readonly observers: Observer<T>[];
@@ -23,9 +25,10 @@ export default function createSubject<T>(): Subject<T> {
 
   const subscribe = (observer: Observer<T>): Subscription => {
     _observers.push(observer);
-
-    return () => {
-      _observers = _observers.filter((o) => o !== observer);
+    return {
+      unsubscribe: () => {
+        _observers = _observers.filter((o) => o !== observer);
+      },
     };
   };
 

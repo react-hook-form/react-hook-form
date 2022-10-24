@@ -36,7 +36,7 @@ describe('createSubject', () => {
 
     expect(subject.observers.length).toBe(2);
 
-    subscription();
+    subscription.unsubscribe();
 
     expect(subject.observers.length).toBe(1);
 
