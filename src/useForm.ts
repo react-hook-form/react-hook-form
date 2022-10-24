@@ -71,19 +71,16 @@ export function useForm<
 
   useSubscribe({
     subject: control._subjects.state,
-    callback: React.useCallback(
-      (value: FieldValues) => {
-        if (shouldRenderFormState(value, control._proxyFormState, true)) {
-          control._formState = {
-            ...control._formState,
-            ...value,
-          };
+    next: (value: FieldValues) => {
+      if (shouldRenderFormState(value, control._proxyFormState, true)) {
+        control._formState = {
+          ...control._formState,
+          ...value,
+        };
 
-          updateFormState({ ...control._formState });
-        }
-      },
-      [control],
-    ),
+        updateFormState({ ...control._formState });
+      }
+    },
   });
 
   React.useEffect(() => {

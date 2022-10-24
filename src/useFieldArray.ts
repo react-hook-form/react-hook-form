@@ -109,8 +109,8 @@ export function useFieldArray<
       props.rules as RegisterOptions<TFieldValues>,
     );
 
-  const callback = React.useCallback(
-    ({
+  useSubscribe({
+    next: ({
       values,
       name: fieldArrayName,
     }: {
@@ -125,11 +125,6 @@ export function useFieldArray<
         }
       }
     },
-    [],
-  );
-
-  useSubscribe({
-    callback,
     subject: control._subjects.array,
   });
 
