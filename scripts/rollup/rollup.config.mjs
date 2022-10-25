@@ -1,6 +1,6 @@
-import pkg from '../../package.json';
+import pkg from '../../package.json' assert { type: "json" };
 
-import { createRollupConfig } from './createRollupConfig';
+import { createRollupConfig } from './createRollupConfig.mjs';
 
 const name = 'index';
 const options = [
