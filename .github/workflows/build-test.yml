@@ -22,3 +22,7 @@ jobs:
         run: |
           yarn test --ci
           yarn tsd
+
+      - name: Bundle watch
+        run: |
+          yarn bundlewatch
