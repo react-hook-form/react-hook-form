@@ -9,6 +9,7 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
+import { sleep } from '../../utils/sleep';
 
 jest.useFakeTimers();
 
@@ -814,10 +815,6 @@ describe('setValue', () => {
 
   describe('with strict mode', () => {
     it('should be able to set input value async', async () => {
-      function sleep(ms: number) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      }
-
       function App() {
         const { control, setValue } = useForm();
 
