@@ -258,7 +258,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     isValidating: boolean;
     isValid: boolean;
     submitCount: number;
-    defaultValues?: Readonly<DeepPartial<TFieldValues>> | TFieldValues;
+    defaultValues?: Readonly<DeepPartial<TFieldValues>> | TFieldValues | undefined;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
@@ -593,7 +593,7 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (onValid: Su
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
     mode: Mode;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-    defaultValues: DefaultValues<TFieldValues>;
+    defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
     values: TFieldValues;
     resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
     resolver: Resolver<TFieldValues, TContext>;
@@ -775,7 +775,8 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:420:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:95:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:425:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
