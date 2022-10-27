@@ -154,7 +154,7 @@ export function createFormControl<
       timer = window.setTimeout(callback, wait);
     };
 
-  const _updateValid = async (shouldSkipRender?: boolean) => {
+  const _updateValid = async () => {
     let isValid = false;
 
     if (_proxyFormState.isValid) {
@@ -162,7 +162,7 @@ export function createFormControl<
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuiltInValidation(_fields, true);
 
-      if (!shouldSkipRender && isValid !== _formState.isValid) {
+      if (isValid !== _formState.isValid) {
         _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
@@ -350,7 +350,7 @@ export function createFormControl<
     ) {
       const updatedFormState = {
         ...fieldState,
-        ...(shouldUpdateValid ? { isValid } : {}),
+        ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
         name,
       };
