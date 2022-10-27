@@ -4,6 +4,7 @@ import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
+import isFunction from './utils/isFunction';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
@@ -56,7 +57,9 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     errors: {},
-    defaultValues: props.defaultValues,
+    defaultValues: isFunction(props.defaultValues)
+      ? undefined
+      : props.defaultValues,
   });
 
   if (!_formControl.current) {
