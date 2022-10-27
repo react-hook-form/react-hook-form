@@ -55,6 +55,7 @@ import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
@@ -110,7 +111,9 @@ export function createFormControl<
     errors: {},
   };
   let _fields = {};
-  let _defaultValues = cloneObject(_options.defaultValues) || {};
+  let _defaultValues = isObject(_options.defaultValues)
+    ? cloneObject(_options.defaultValues) || {}
+    : {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
@@ -1234,6 +1237,12 @@ export function createFormControl<
       }
     }
   };
+
+  if (isFunction(_options.defaultValues)) {
+    _options.defaultValues().then((values) => {
+      reset(values, _options.resetOptions);
+    });
+  }
 
   return {
     control: {

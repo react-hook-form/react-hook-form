@@ -1718,6 +1718,38 @@ describe('useForm', () => {
     screen.getByText('stateValidation: false');
   });
 
+  it('should update defaultValues async', async () => {
+    function sleep(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    const App = () => {
+      const { register } = useForm<{ test: string }>({
+        defaultValues: async () => {
+          await sleep(100);
+
+          return {
+            test: 'test',
+          };
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
   it('should update async form values', async () => {
     type FormValues = {
       test: string;
