@@ -128,7 +128,10 @@ export type FormState<TFieldValues extends FieldValues> = {
   isValidating: boolean;
   isValid: boolean;
   submitCount: number;
-  defaultValues: Readonly<DeepPartial<TFieldValues>> | TFieldValues | undefined;
+  defaultValues?:
+    | Readonly<DeepPartial<TFieldValues>>
+    | TFieldValues
+    | undefined;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
