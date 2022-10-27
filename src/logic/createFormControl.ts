@@ -318,19 +318,21 @@ export function createFormControl<
     return isFieldDirty ? output : {};
   };
 
-  const shouldRenderByError = async (
+  const shouldRenderByError = (
     name: InternalFieldName,
-    isValid: boolean,
+    isValid: boolean | Promise<boolean>,
     error?: FieldError,
     fieldState?: {
       dirty?: FieldNamesMarkedBoolean<TFieldValues>;
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-  ): Promise<void> => {
+  ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
-      _proxyFormState.isValid && _formState.isValid !== isValid;
+      _proxyFormState.isValid &&
+      isBoolean(isValid) &&
+      _formState.isValid !== isValid;
 
     if (props.delayError && error) {
       delayErrorCallback = debounce(() => updateErrors(name, error));
@@ -744,14 +746,7 @@ export function createFormControl<
           )
         )[name];
 
-        isValid = await _updateValid(true);
-
-        if (!isValid !== _formState.isValid) {
-          _formState.isValid = isValid;
-          _subjects.state.next({
-            isValid,
-          });
-        }
+        isValid = _updateValid();
       }
 
       field._f.deps &&
