@@ -154,7 +154,7 @@ export function createFormControl<
       timer = window.setTimeout(callback, wait);
     };
 
-  const _updateValid = async (shouldSkipRender?: boolean) => {
+  const _updateValid = async () => {
     let isValid = false;
 
     if (_proxyFormState.isValid) {
@@ -162,7 +162,7 @@ export function createFormControl<
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuiltInValidation(_fields, true);
 
-      if (!shouldSkipRender && isValid !== _formState.isValid) {
+      if (isValid !== _formState.isValid) {
         _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
@@ -318,16 +318,16 @@ export function createFormControl<
     return isFieldDirty ? output : {};
   };
 
-  const shouldRenderByError = async (
+  const shouldRenderByError = (
     name: InternalFieldName,
-    isValid: boolean,
+    isValid?: boolean,
     error?: FieldError,
     fieldState?: {
       dirty?: FieldNamesMarkedBoolean<TFieldValues>;
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-  ): Promise<void> => {
+  ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
       _proxyFormState.isValid && _formState.isValid !== isValid;
@@ -350,7 +350,7 @@ export function createFormControl<
     ) {
       const updatedFormState = {
         ...fieldState,
-        ...(shouldUpdateValid ? { isValid } : {}),
+        ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
         name,
       };
@@ -744,7 +744,7 @@ export function createFormControl<
           )
         )[name];
 
-        isValid = await _updateValid(true);
+        _updateValid();
       }
 
       field._f.deps &&
