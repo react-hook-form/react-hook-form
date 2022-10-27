@@ -745,6 +745,13 @@ export function createFormControl<
         )[name];
 
         isValid = await _updateValid(true);
+
+        if (!isValid !== _formState.isValid) {
+          _formState.isValid = isValid;
+          _subjects.state.next({
+            isValid,
+          });
+        }
       }
 
       field._f.deps &&
