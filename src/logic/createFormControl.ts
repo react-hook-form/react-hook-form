@@ -1140,12 +1140,13 @@ export function createFormControl<
                 ? field._f.refs[0]
                 : field._f.ref;
 
-              try {
-                if (isHTMLElement(fieldReference)) {
-                  fieldReference.closest('form')!.reset();
+              if (isHTMLElement(fieldReference)) {
+                const form = fieldReference.closest('form');
+                if (form) {
+                  form.reset();
                   break;
                 }
-              } catch {}
+              }
             }
           }
         }
