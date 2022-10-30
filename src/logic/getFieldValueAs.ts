@@ -9,7 +9,7 @@ export default <T extends NativeFieldValue>(
   isUndefined(value)
     ? value
     : valueAsNumber
-    ? value === ''
+    ? isString(value) && value.trim() === ''
       ? NaN
       : value
       ? +value
