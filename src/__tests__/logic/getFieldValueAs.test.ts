@@ -13,4 +13,28 @@ describe('getFieldValueAs', () => {
       }),
     ).toBeUndefined();
   });
+  it('should return NaN when value is empty string ""', () => {
+    expect(
+      getFieldValueAs('', {
+        ref: {
+          name: 'test',
+        },
+        name: 'test',
+        valueAsNumber: true,
+        valueAsDate: false,
+      }),
+    ).toBeNaN();
+  });
+  it('should return NaN when value is whitespace string " "', () => {
+    expect(
+      getFieldValueAs(' ', {
+        ref: {
+          name: 'test',
+        },
+        name: 'test',
+        valueAsNumber: true,
+        valueAsDate: false,
+      }),
+    ).toBeNaN();
+  });
 });
