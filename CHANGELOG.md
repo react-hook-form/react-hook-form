@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.39.0] - 2022-11-2
+
+## Changed
+
+- `isValid` formState is no longer only applicable with `onChange`, `onTouched`, and `onBlur` mode.
+
 ## [7.38.0] - 2022-10-19
 
 ## Added
