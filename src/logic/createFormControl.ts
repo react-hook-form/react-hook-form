@@ -330,7 +330,9 @@ export function createFormControl<
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
-      _proxyFormState.isValid && _formState.isValid !== isValid;
+      _proxyFormState.isValid &&
+      isBoolean(isValid) &&
+      _formState.isValid !== isValid;
 
     if (props.delayError && error) {
       delayErrorCallback = debounce(() => updateErrors(name, error));
