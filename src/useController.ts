@@ -124,11 +124,17 @@ export function useController<
           }),
         [name, control],
       ),
-      ref: (ref) => {
+      ref: (elm) => {
         const field = get(control._fields, name);
 
-        if (field && ref) {
-          field._f.ref = ref;
+        if (field && elm) {
+          field._f.ref = {
+            focus: () => elm.focus(),
+            select: () => elm.select(),
+            setCustomValidity: (message: string) =>
+              elm.setCustomValidity(message),
+            reportValidity: () => elm.reportValidity(),
+          };
         }
       },
     },
