@@ -1044,7 +1044,7 @@ describe('Controller', () => {
               rules={{ required: true }}
               control={control}
               render={({ field }) => (
-                <input value={field.value as any} onChange={field.onChange} />
+                <input value={String(field.value)} onChange={field.onChange} />
               )}
             />
           )}

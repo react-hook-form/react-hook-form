@@ -8,7 +8,6 @@ import {
   ControllerFieldState,
   Field,
   FieldPath,
-  FieldPathValue,
   FieldValues,
   InternalFieldName,
   UseControllerProps,
@@ -60,18 +59,22 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
     exact: true,
-  }) as FieldPathValue<TFieldValues, TName>;
+  });
   const formState = useFormState({
     control,
     name,
   });
-
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
       value,
     }),
   );
+  const field = get(control._fields, name);
+
+  if (field) {
+    field._f._c = true;
+  }
 
   React.useEffect(() => {
     const updateMounted = (name: InternalFieldName, value: boolean) => {
@@ -125,8 +128,6 @@ export function useController<
         [name, control],
       ),
       ref: (ref) => {
-        const field = get(control._fields, name);
-
         if (field && ref) {
           field._f.ref = ref;
         }
