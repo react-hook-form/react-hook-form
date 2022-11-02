@@ -412,6 +412,44 @@ describe('setValue', () => {
     });
   });
 
+  it('should update nested controller value without ref', () => {
+    const App = () => {
+      const { control, setValue } = useForm({
+        defaultValues: {
+          nest: {
+            test: '',
+          },
+        },
+      });
+      return (
+        <>
+          <button
+            onClick={() => {
+              setValue('nest.test', 'data');
+            }}
+          >
+            update
+          </button>
+          <Controller
+            control={control}
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            name={'nest.test'}
+          />
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'data',
+    );
+  });
+
   it('should work with object fields', () => {
     const { result } = renderHook(() =>
       useForm<{
