@@ -69,13 +69,16 @@ describe('setValue', () => {
 
     result.current.register('test');
 
-    const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
+    const blob = new Blob([''], {
+      type: 'image/png',
+      lastModified: 1,
+    } as BlobPropertyBag);
     const file = blob as File;
     const fileList = {
       0: file,
       1: file,
       length: 2,
-    } as any as FileList;
+    } as unknown as FileList;
 
     act(() => result.current.setValue('test', fileList));
 
@@ -1269,8 +1272,15 @@ describe('setValue', () => {
   });
 
   it('should only be able to update value of object which is not registered', async () => {
+    type FormValues = {
+      test: {
+        data: string;
+        data1: string;
+      };
+    };
+
     const App = () => {
-      const { setValue, watch } = useForm({
+      const { setValue, watch } = useForm<FormValues>({
         defaultValues: {
           test: {
             data: '1',
@@ -1282,7 +1292,7 @@ describe('setValue', () => {
       React.useEffect(() => {
         setValue('test', {
           data: '2',
-        } as any);
+        } as FormValues['test']);
       }, [setValue]);
 
       const result = watch('test');
