@@ -564,7 +564,7 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type) {
+          if (fieldReference._c) {
             _subjects.watch.next({
               name,
             });
