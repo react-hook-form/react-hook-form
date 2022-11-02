@@ -163,6 +163,7 @@ export type EventType = 'focus' | 'blur' | 'change' | 'changeText' | 'valueChang
 // @public (undocumented)
 export type Field = {
     _f: {
+        _c?: boolean;
         ref: Ref;
         name: InternalFieldName;
         refs?: HTMLInputElement[];

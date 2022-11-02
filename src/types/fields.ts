@@ -42,6 +42,7 @@ export type Ref = FieldElement;
 
 export type Field = {
   _f: {
+    _c?: boolean;
     ref: Ref;
     name: InternalFieldName;
     refs?: HTMLInputElement[];

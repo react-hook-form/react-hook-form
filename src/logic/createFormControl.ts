@@ -562,12 +562,13 @@ export function createFormControl<
         } else if (isFileInput(fieldReference.ref)) {
           fieldReference.ref.value = '';
         } else {
-          fieldReference.ref.value = fieldValue;
-
-          if (!fieldReference.ref.type) {
-            _subjects.watch.next({
-              name,
-            });
+          if (fieldReference._c) {
+            fieldReference._c &&
+              _subjects.watch.next({
+                name,
+              });
+          } else {
+            fieldReference.ref.value = fieldValue;
           }
         }
       }
