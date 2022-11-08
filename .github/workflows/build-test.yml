@@ -10,19 +10,35 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+
+      - name: Get pnpm directory
+        id: pnpm-cache
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Lint
         run: |
-          yarn lint
-          yarn type
+          pnpm lint
+          pnpm type
 
       - name: Test
         run: |
-          yarn test --ci
-          yarn tsd
+          pnpm test --ci
+          pnpm tsd
 
       - name: Bundle watch
         run: |
-          yarn bundlewatch
+          pnpm bundlewatch
