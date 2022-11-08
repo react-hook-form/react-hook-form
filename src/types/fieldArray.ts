@@ -14,7 +14,7 @@ export type UseFieldArrayProps<
   rules?: {
     validate?:
       | Validate<FieldArray<TFieldValues, TFieldArrayName>[]>
-      | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>>>;
+      | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[]>>;
   } & Pick<
     RegisterOptions<TFieldValues>,
     'maxLength' | 'minLength' | 'required'
