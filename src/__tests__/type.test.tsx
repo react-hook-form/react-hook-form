@@ -272,6 +272,10 @@ test('should provide correct type for validate function with useFieldArray', () 
         first: string;
         last: string;
       }[];
+      test1: {
+        first: string;
+        last: string;
+      }[];
     }>({
       defaultValues: {
         test: [
@@ -288,6 +292,17 @@ test('should provide correct type for validate function with useFieldArray', () 
       rules: {
         validate: (data) => {
           return !!data.find((test) => test.first && test.last);
+        },
+      },
+    });
+    useFieldArray({
+      control,
+      name: 'test1',
+      rules: {
+        validate: {
+          test: (data) => {
+            return !!data.find((test) => test.first && test.last);
+          },
         },
       },
     });
