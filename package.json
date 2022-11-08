@@ -25,33 +25,33 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "prebuild": "yarn clean",
-    "build": "yarn build:modern",
+    "prebuild": "pnpm clean",
+    "build": "pnpm build:modern",
     "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
-    "lint:fix": "yarn lint -- --fix",
+    "lint:fix": "pnpm lint -- --fix",
     "type": "tsc --noEmit",
     "coverage": "jest --coverage --coverageReporters=text-lcov",
     "jest-preview": "jest-preview",
     "test": "jest --config ./scripts/jest/jest.config.js",
-    "test:coverage": "yarn test -- --coverage",
-    "test:watch": "yarn test -- --onlyChanged --watch",
-    "test:web": "TEST_ENV=web yarn test",
-    "test:server": "TEST_ENV=server yarn test",
-    "test:native": "TEST_ENV=native yarn test",
+    "test:coverage": "pnpm test -- --coverage",
+    "test:watch": "pnpm test -- --onlyChanged --watch",
+    "test:web": "TEST_ENV=web pnpm test",
+    "test:server": "TEST_ENV=server pnpm test",
+    "test:native": "TEST_ENV=native pnpm test",
     "tsd": "tsd src/__typetest__",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "api-extractor": "api-extractor run --local",
-    "api-extractor:build": "yarn build:esm && yarn api-extractor",
+    "api-extractor:build": "pnpm build:esm && pnpm api-extractor",
     "api-extractor:ci": "node scripts/apiExtractor.js",
     "postversion": "git push && git push origin v$npm_package_version",
-    "prepublishOnly": "yarn && yarn lint:fix && yarn type && yarn test && yarn build",
-    "bundlewatch": "yarn build:modern && bundlewatch",
-    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
+    "prepublishOnly": "pnpm && pnpm lint:fix && pnpm type && pnpm test && pnpm build",
+    "bundlewatch": "pnpm build:modern && bundlewatch",
+    "start:app": "pnpm build:esm && pnpm link && pnpm --cwd node_modules/react link && pnpm --cwd ./app link react react-hook-form && pnpm --cwd ./app && pnpm --cwd ./app run dev"
   },
   "keywords": [
     "react",
@@ -124,8 +124,8 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "yarn lint:fix",
-      "yarn prettier:fix"
+      "pnpm lint:fix",
+      "pnpm prettier:fix"
     ],
     "*.{md,json,yml}": [
       "prettier --write"

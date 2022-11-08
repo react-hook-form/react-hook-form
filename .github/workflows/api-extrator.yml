@@ -13,6 +13,9 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Build
         run: pnpm build:esm
 
