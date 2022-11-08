@@ -143,5 +143,5 @@
   "engines": {
     "node": ">=12.22.0"
   },
-  "packageManager": "yarn@1.22.15"
+  "packageManager": "pnpm@7.14.2"
 }
