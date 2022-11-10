@@ -644,6 +644,36 @@ describe('useController', () => {
     ]);
   });
 
+  it('should be able to set controlled input value with custom ref object', () => {
+    const App = () => {
+      const { control, setValue } = useForm({
+        defaultValues: {
+          test: 'data',
+        },
+      });
+      const { field } = useController({
+        control,
+        name: 'test',
+      });
+
+      field.ref({
+        value: '',
+      });
+
+      React.useEffect(() => {
+        setValue('test', 'data');
+      }, [setValue]);
+
+      return <input onChange={field.onChange} value={field.value} />;
+    };
+
+    render(<App />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'data',
+    );
+  });
+
   it('should focus and select the input text', () => {
     const select = jest.fn();
     const focus = jest.fn();
