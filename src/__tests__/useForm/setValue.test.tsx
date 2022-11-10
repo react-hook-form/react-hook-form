@@ -69,16 +69,13 @@ describe('setValue', () => {
 
     result.current.register('test');
 
-    const blob = new Blob([''], {
-      type: 'image/png',
-      lastModified: 1,
-    } as BlobPropertyBag);
+    const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
     const file = blob as File;
     const fileList = {
       0: file,
       1: file,
       length: 2,
-    } as unknown as FileList;
+    } as any as FileList;
 
     act(() => result.current.setValue('test', fileList));
 
@@ -413,44 +410,6 @@ describe('setValue', () => {
         name: 'test.2.test',
       },
     });
-  });
-
-  it('should update nested controller value without ref', () => {
-    const App = () => {
-      const { control, setValue } = useForm({
-        defaultValues: {
-          nest: {
-            test: '',
-          },
-        },
-      });
-      return (
-        <>
-          <button
-            onClick={() => {
-              setValue('nest.test', 'data');
-            }}
-          >
-            update
-          </button>
-          <Controller
-            control={control}
-            render={({ field }) => (
-              <input value={field.value} onChange={field.onChange} />
-            )}
-            name={'nest.test'}
-          />
-        </>
-      );
-    };
-
-    render(<App />);
-
-    fireEvent.click(screen.getByRole('button'));
-
-    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-      'data',
-    );
   });
 
   it('should work with object fields', () => {
@@ -1272,15 +1231,8 @@ describe('setValue', () => {
   });
 
   it('should only be able to update value of object which is not registered', async () => {
-    type FormValues = {
-      test: {
-        data: string;
-        data1: string;
-      };
-    };
-
     const App = () => {
-      const { setValue, watch } = useForm<FormValues>({
+      const { setValue, watch } = useForm({
         defaultValues: {
           test: {
             data: '1',
@@ -1292,7 +1244,7 @@ describe('setValue', () => {
       React.useEffect(() => {
         setValue('test', {
           data: '2',
-        } as FormValues['test']);
+        } as any);
       }, [setValue]);
 
       const result = watch('test');

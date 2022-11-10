@@ -1465,7 +1465,6 @@ describe('register', () => {
     expect(inputs).toEqual({
       test: {
         _f: {
-          _c: true,
           mount: true,
           name: 'test',
           ref: {
