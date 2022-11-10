@@ -129,7 +129,10 @@ export function useController<
       ),
       ref: (ref) => {
         if (field && ref) {
-          field._f.ref = ref;
+          field._f.ref = {
+            ...ref,
+            value,
+          };
         }
       },
     },
