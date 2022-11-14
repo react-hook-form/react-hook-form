@@ -437,8 +437,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(1));
-    expect(reportValidity).toBeCalledTimes(1);
+    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
+    expect(reportValidity).toBeCalledTimes(3);
     expect(focus).toBeCalledTimes(1);
   });
 
