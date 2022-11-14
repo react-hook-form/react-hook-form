@@ -1426,6 +1426,30 @@ describe('useWatch', () => {
       expect(await screen.findByText('no')).toBeVisible();
     });
 
+    it('should keep set type after set value', async () => {
+      const Form = () => {
+        const { control, setValue } = useForm({
+          defaultValues: { test: new Set(['test']) },
+        });
+        const { field } = useController({
+          control,
+          name: 'test',
+        });
+
+        React.useEffect(() => {
+          setValue('test', new Set(['test']));
+        }, [setValue]);
+
+        return <>{field.value instanceof Set ? 'yes' : 'no'}</>;
+      };
+
+      render(<Form />);
+
+      await waitFor(() => {
+        screen.getByText('yes');
+      });
+    });
+
     it('should watch nested object field update', () => {
       interface FormData {
         one: {

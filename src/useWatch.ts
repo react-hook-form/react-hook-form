@@ -2,9 +2,8 @@ import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import isObject from './utils/isObject';
+import cloneObject from './utils/cloneObject';
 import isUndefined from './utils/isUndefined';
-import objectHasFunction from './utils/objectHasFunction';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -176,11 +175,8 @@ export function useWatch<TFieldValues extends FieldValues>(
           );
 
           updateValue(
-            isUndefined(_name.current) ||
-              (isObject(fieldValues) && !objectHasFunction(fieldValues))
-              ? { ...fieldValues }
-              : Array.isArray(fieldValues)
-              ? [...fieldValues]
+            isUndefined(_name.current) || !isUndefined(fieldValues)
+              ? cloneObject(fieldValues)
               : isUndefined(fieldValues)
               ? defaultValue
               : fieldValues,
