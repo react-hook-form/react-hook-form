@@ -1947,7 +1947,7 @@ describe('validateField', () => {
         true,
       );
 
-      expect(setCustomValidity).toBeCalledWith(' ');
+      expect(setCustomValidity).toBeCalledWith('');
       expect(reportValidity).toBeCalled();
     });
 
