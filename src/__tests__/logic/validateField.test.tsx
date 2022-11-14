@@ -1979,7 +1979,7 @@ describe('validateField', () => {
       expect(reportValidity).toBeCalled();
     });
 
-    it('should not invoke setCustomValidity with empty string for a valid input', () => {
+    it('should invoke setCustomValidity with empty string for a valid input', () => {
       const setCustomValidity = jest.fn();
       const reportValidity = jest.fn();
 
@@ -1994,7 +1994,7 @@ describe('validateField', () => {
               value: 'test',
             },
             value: 'test',
-            required: 'This is a message',
+            required: true,
             mount: true,
           },
         },
@@ -2003,8 +2003,8 @@ describe('validateField', () => {
         true,
       );
 
-      expect(setCustomValidity).not.toBeCalledWith('');
-      expect(reportValidity).not.toBeCalled();
+      expect(setCustomValidity).toBeCalledWith('');
+      expect(reportValidity).toBeCalled();
     });
 
     it('should abort validation early when input is disabled', async () => {
