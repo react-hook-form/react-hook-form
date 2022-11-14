@@ -177,7 +177,9 @@ export function useWatch<TFieldValues extends FieldValues>(
           updateValue(
             isUndefined(_name.current) || !isUndefined(fieldValues)
               ? cloneObject(fieldValues)
-              : fieldValues || defaultValue,
+              : isUndefined(fieldValues)
+              ? defaultValue
+              : fieldValues,
           );
         }
       },
