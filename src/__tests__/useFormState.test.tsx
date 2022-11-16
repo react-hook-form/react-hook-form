@@ -645,7 +645,7 @@ describe('useFormState', () => {
     expect(screen.getByText('yes')).toBeVisible();
   });
 
-  it.only('should conditionally update formState after mount', async () => {
+  it('should conditionally update formState after mount', async () => {
     function DirtyState() {
       const { isDirty } = useFormState();
       return <p>{isDirty ? 'dirty' : 'pristine'}</p>;
