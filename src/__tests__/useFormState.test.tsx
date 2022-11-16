@@ -673,7 +673,7 @@ describe('useFormState', () => {
 
     render(<App />);
 
-    expect(screen.getByText('pristine')).not.toBeInTheDocument();
+    expect(screen.queryByRole('pristine')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button'));
 
