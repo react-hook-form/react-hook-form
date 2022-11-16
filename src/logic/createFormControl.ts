@@ -275,47 +275,48 @@ export function createFormControl<
   ): Partial<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
-    let isFieldDirty = false;
+    let shouldUpdateField = false;
+    let isPreviousDirty = false;
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
-    const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
     if (_proxyFormState.isDirty) {
-      const isPreviousFormDirty = _formState.isDirty;
-
+      isPreviousDirty = _formState.isDirty;
       _formState.isDirty = output.isDirty = _getDirty();
-      isFieldDirty = isPreviousFormDirty !== output.isDirty;
+      shouldUpdateField = isPreviousDirty !== output.isDirty;
     }
 
     if (_proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty)) {
-      const isPreviousFieldDirty = get(_formState.dirtyFields, name);
+      isPreviousDirty = get(_formState.dirtyFields, name);
       const isCurrentFieldPristine = deepEqual(
         get(_defaultValues, name),
         fieldValue,
       );
-
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
         : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
-      isFieldDirty =
-        isFieldDirty ||
-        isPreviousFieldDirty !== get(_formState.dirtyFields, name);
+      shouldUpdateField =
+        shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
     }
 
-    if (isBlurEvent && !isPreviousFieldTouched) {
-      set(_formState.touchedFields, name, isBlurEvent);
-      output.touchedFields = _formState.touchedFields;
-      isFieldDirty =
-        isFieldDirty ||
-        (_proxyFormState.touchedFields &&
-          isPreviousFieldTouched !== isBlurEvent);
+    if (isBlurEvent) {
+      const isPreviousFieldTouched = get(_formState.touchedFields, name);
+
+      if (!isPreviousFieldTouched) {
+        set(_formState.touchedFields, name, isBlurEvent);
+        output.touchedFields = _formState.touchedFields;
+        shouldUpdateField =
+          shouldUpdateField ||
+          (_proxyFormState.touchedFields &&
+            isPreviousFieldTouched !== isBlurEvent);
+      }
     }
 
-    isFieldDirty && shouldRender && _subjects.state.next(output);
+    shouldUpdateField && shouldRender && _subjects.state.next(output);
 
-    return isFieldDirty ? output : {};
+    return shouldUpdateField ? output : {};
   };
 
   const shouldRenderByError = (
