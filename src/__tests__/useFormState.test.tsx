@@ -5,6 +5,7 @@ import { Controller } from '../controller';
 import { Control } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
 
@@ -179,14 +180,14 @@ describe('useFormState', () => {
     expect(screen.getByText('isDirty')).toBeVisible();
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
+    expect(testCount).toEqual(3);
     expect(test1Count).toEqual(1);
 
     fireEvent.blur(screen.getByLabelText('test'));
     expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(4);
     expect(test1Count).toEqual(2);
 
     fireEvent.input(screen.getByLabelText('test'), {
@@ -196,7 +197,7 @@ describe('useFormState', () => {
     });
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(4);
     expect(test1Count).toEqual(2);
   });
 
@@ -642,5 +643,48 @@ describe('useFormState', () => {
     render(<Component />);
 
     expect(screen.getByText('yes')).toBeVisible();
+  });
+
+  it.only('should conditionally update formState after mount', async () => {
+    function DirtyState() {
+      const { isDirty } = useFormState();
+      return <p>{isDirty ? 'dirty' : 'pristine'}</p>;
+    }
+
+    function App() {
+      const [showDirty, toggleShowDirty] = React.useReducer(
+        (prev) => !prev,
+        false,
+      );
+      const formMethods = useForm({
+        defaultValues: {
+          firstname: '',
+        },
+      });
+
+      return (
+        <FormProvider {...formMethods}>
+          {showDirty && <DirtyState />}
+          <input {...formMethods.register('firstname')} />
+          <button type="button" onClick={toggleShowDirty} />
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getByText('pristine')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    await waitFor(() => {
+      screen.getByText('dirty');
+    });
   });
 });
