@@ -5,6 +5,7 @@ import { Controller } from '../controller';
 import { Control } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
 
@@ -642,5 +643,54 @@ describe('useFormState', () => {
     render(<Component />);
 
     expect(screen.getByText('yes')).toBeVisible();
+  });
+
+  it('should conditionally update formState after mount', async () => {
+    function DirtyState() {
+      const { isDirty, isValid } = useFormState();
+      return (
+        <div>
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{isValid ? 'valid' : 'error'}</p>
+        </div>
+      );
+    }
+
+    function App() {
+      const [showDirty, toggleShowDirty] = React.useReducer(
+        (prev) => !prev,
+        false,
+      );
+      const formMethods = useForm({
+        defaultValues: {
+          firstname: '',
+        },
+      });
+
+      return (
+        <FormProvider {...formMethods}>
+          {showDirty && <DirtyState />}
+          <input {...formMethods.register('firstname', { required: true })} />
+          <button type="button" onClick={toggleShowDirty} />
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.queryByRole('pristine')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    await waitFor(() => {
+      screen.getByText('dirty');
+      screen.getByText('valid');
+    });
   });
 });
