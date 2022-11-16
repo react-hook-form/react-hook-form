@@ -180,14 +180,14 @@ describe('useFormState', () => {
     expect(screen.getByText('isDirty')).toBeVisible();
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(2);
     expect(test1Count).toEqual(1);
 
     fireEvent.blur(screen.getByLabelText('test'));
     expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(4);
+    expect(testCount).toEqual(3);
     expect(test1Count).toEqual(2);
 
     fireEvent.input(screen.getByLabelText('test'), {
@@ -197,7 +197,7 @@ describe('useFormState', () => {
     });
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(4);
+    expect(testCount).toEqual(3);
     expect(test1Count).toEqual(2);
   });
 
@@ -647,8 +647,13 @@ describe('useFormState', () => {
 
   it('should conditionally update formState after mount', async () => {
     function DirtyState() {
-      const { isDirty } = useFormState();
-      return <p>{isDirty ? 'dirty' : 'pristine'}</p>;
+      const { isDirty, isValid } = useFormState();
+      return (
+        <div>
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{isValid ? 'valid' : 'error'}</p>
+        </div>
+      );
     }
 
     function App() {
@@ -665,7 +670,7 @@ describe('useFormState', () => {
       return (
         <FormProvider {...formMethods}>
           {showDirty && <DirtyState />}
-          <input {...formMethods.register('firstname')} />
+          <input {...formMethods.register('firstname', { required: true })} />
           <button type="button" onClick={toggleShowDirty} />
         </FormProvider>
       );
@@ -685,6 +690,7 @@ describe('useFormState', () => {
 
     await waitFor(() => {
       screen.getByText('dirty');
+      screen.getByText('valid');
     });
   });
 });
