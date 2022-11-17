@@ -98,6 +98,8 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
+  const shouldCaptureDirtyFields =
+    props.resetOptions && props.resetOptions.keepDirtyValues;
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
@@ -283,6 +285,8 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
+    const shouldRenderDirtyFields =
+      _proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty);
 
     if (_proxyFormState.isDirty) {
       isPreviousDirty = _formState.isDirty;
@@ -290,7 +294,7 @@ export function createFormControl<
       shouldUpdateField = isPreviousDirty !== output.isDirty;
     }
 
-    if (_proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty)) {
+    if (shouldRenderDirtyFields || shouldCaptureDirtyFields) {
       isPreviousDirty = get(_formState.dirtyFields, name);
       const isCurrentFieldPristine = deepEqual(
         get(_defaultValues, name),
@@ -300,8 +304,11 @@ export function createFormControl<
         ? unset(_formState.dirtyFields, name)
         : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
-      shouldUpdateField =
-        shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
+
+      if (shouldRenderDirtyFields) {
+        shouldUpdateField =
+          shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
+      }
     }
 
     if (isBlurEvent) {
@@ -1128,7 +1135,7 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (keepStateOptions.keepDirtyValues) {
+      if (keepStateOptions.keepDirtyValues || shouldCaptureDirtyFields) {
         for (const fieldName of _names.mount) {
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
