@@ -339,7 +339,12 @@ export function useFieldArray<
         });
       } else {
         const field: Field = get(control._fields, name);
-        if (field && field._f) {
+        if (Array.isArray(field) && field.length === 0) {
+          unset(control._formState.errors, name);
+          control._subjects.state.next({
+            errors: control._formState.errors as FieldErrors<TFieldValues>,
+          });
+        } else if (field && field._f) {
           validateField(
             field,
             get(control._formValues, name),
