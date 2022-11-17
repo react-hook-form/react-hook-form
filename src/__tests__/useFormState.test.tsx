@@ -680,17 +680,15 @@ describe('useFormState', () => {
 
     expect(screen.queryByRole('pristine')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button'));
-
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: 'test',
       },
     });
 
-    await waitFor(() => {
-      screen.getByText('dirty');
-      screen.getByText('valid');
-    });
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible();
   });
 });
