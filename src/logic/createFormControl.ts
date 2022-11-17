@@ -285,8 +285,6 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
-    const shouldRenderDirtyFields =
-      _proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty);
 
     if (_proxyFormState.isDirty) {
       isPreviousDirty = _formState.isDirty;
@@ -294,21 +292,21 @@ export function createFormControl<
       shouldUpdateField = isPreviousDirty !== output.isDirty;
     }
 
-    if (shouldRenderDirtyFields || shouldCaptureDirtyFields) {
-      isPreviousDirty = get(_formState.dirtyFields, name);
+    if (!isBlurEvent || shouldDirty) {
       const isCurrentFieldPristine = deepEqual(
         get(_defaultValues, name),
         fieldValue,
       );
+
+      isPreviousDirty = get(_formState.dirtyFields, name);
       isCurrentFieldPristine
         ? unset(_formState.dirtyFields, name)
         : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
-
-      if (shouldRenderDirtyFields) {
-        shouldUpdateField =
-          shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
-      }
+      shouldUpdateField =
+        shouldUpdateField ||
+        (_proxyFormState.dirtyFields &&
+          isPreviousDirty !== !isCurrentFieldPristine);
     }
 
     if (isBlurEvent) {
