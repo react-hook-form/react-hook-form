@@ -1724,7 +1724,7 @@ describe('useForm', () => {
     }
 
     const App = () => {
-      const { register } = useForm<{ test: string }>({
+      const { register } = useForm({
         defaultValues: async () => {
           await sleep(100);
 

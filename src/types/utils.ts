@@ -53,6 +53,11 @@ export type DeepPartialSkipArrayKey<T> = T extends
   ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
   : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
+export type UnPackDefaultValues<TFieldValues> =
+  TFieldValues extends () => Promise<any>
+    ? Awaited<ReturnType<TFieldValues>>
+    : TFieldValues;
+
 /**
  * Checks whether the type is any
  * See {@link https://stackoverflow.com/a/49928360/3406963}
