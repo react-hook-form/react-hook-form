@@ -195,7 +195,6 @@ export function createFormControl<
       }
 
       if (
-        _proxyFormState.errors &&
         shouldUpdateFieldsAndState &&
         Array.isArray(get(_formState.errors, name))
       ) {
