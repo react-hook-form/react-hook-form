@@ -15,6 +15,7 @@ import {
   GetIsDirty,
   InternalFieldName,
   Names,
+  NativeEventWithSubmitter,
   Path,
   Ref,
   SetFieldValue,
@@ -1040,12 +1041,16 @@ export function createFormControl<
       let hasNoPromiseError = true;
       let fieldValues: any = cloneObject(_formValues);
 
+      const submitter = (e?.nativeEvent as NativeEventWithSubmitter)?.submitter;
+      const noValidate = submitter?.formNoValidate;
+
       _subjects.state.next({
         isSubmitting: true,
       });
 
       try {
-        if (_options.resolver) {
+        if (noValidate) {
+        } else if (_options.resolver) {
           const { errors, values } = await _executeSchema();
           _formState.errors = errors;
           fieldValues = values;

@@ -23,3 +23,10 @@ export type EventType =
   | 'error'
   | 'progress'
   | 'custom';
+
+// the nativeEvent is not included in the type definition of synthetic events
+export type NativeEventWithSubmitter = {
+  submitter: React.ReactNode & {
+    formNoValidate?: boolean;
+  };
+};

@@ -353,6 +353,13 @@ export type Names = {
 };
 
 // @public (undocumented)
+export type NativeEventWithSubmitter = {
+    submitter: React.ReactNode & {
+        formNoValidate?: boolean;
+    };
+};
+
+// @public (undocumented)
 export type NativeFieldValue = string | number | boolean | null | undefined | unknown[];
 
 // @public @deprecated (undocumented)
