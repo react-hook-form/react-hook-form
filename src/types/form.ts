@@ -84,7 +84,9 @@ export type ChangeHandler = (event: {
 
 export type DelayCallback = (wait: number) => void;
 
-type AsyncDefaultValues<TFieldValues> = () => Promise<TFieldValues>;
+type AsyncDefaultValues<TFieldValues> = (
+  payload?: unknown,
+) => Promise<TFieldValues>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
