@@ -258,7 +258,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     isValidating: boolean;
     isValid: boolean;
     submitCount: number;
-    defaultValues?: (TFieldValues extends () => Promise<any> ? Awaited<ReturnType<TFieldValues>> : TFieldValues) | undefined | Readonly<DeepPartial<TFieldValues>>;
+    defaultValues?: UnPackDefaultValues<TFieldValues> | undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
@@ -488,7 +488,7 @@ export type TriggerConfig = Partial<{
 }>;
 
 // @public (undocumented)
-export type UnPackDefaultValues<TFieldValues> = TFieldValues extends () => Promise<any> ? Awaited<ReturnType<TFieldValues>> : TFieldValues;
+export type UnPackDefaultValues<TFieldValues> = TFieldValues extends () => Promise<infer U> ? U : TFieldValues;
 
 // @public @deprecated (undocumented)
 export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File | Blob ? T : T extends object ? {
@@ -778,7 +778,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:95:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:427:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
