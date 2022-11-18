@@ -129,9 +129,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   isValid: boolean;
   submitCount: number;
   defaultValues?:
-    | (TFieldValues extends () => Promise<any>
-        ? Awaited<ReturnType<TFieldValues>>
-        : TFieldValues)
+    | UnPackDefaultValues<TFieldValues>
     | undefined
     | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
