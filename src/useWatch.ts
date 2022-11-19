@@ -159,32 +159,28 @@ export function useWatch<TFieldValues extends FieldValues>(
   useSubscribe({
     disabled,
     subject: control._subjects.watch,
-    callback: React.useCallback(
-      (formState: { name?: InternalFieldName; values?: FieldValues }) => {
-        if (
-          shouldSubscribeByName(
-            _name.current as InternalFieldName,
-            formState.name,
-            exact,
-          )
-        ) {
-          const fieldValues = generateWatchOutput(
-            _name.current as InternalFieldName | InternalFieldName[],
-            control._names,
-            formState.values || control._formValues,
-          );
+    callback: (formState: {
+      name?: InternalFieldName;
+      values?: FieldValues;
+    }) => {
+      if (
+        shouldSubscribeByName(
+          _name.current as InternalFieldName,
+          formState.name,
+          exact,
+        )
+      ) {
+        const fieldValues = generateWatchOutput(
+          _name.current as InternalFieldName,
+          control._names,
+          formState.values || control._formValues,
+        );
 
-          updateValue(
-            isUndefined(_name.current) || !isUndefined(fieldValues)
-              ? cloneObject(fieldValues)
-              : isUndefined(fieldValues)
-              ? defaultValue
-              : fieldValues,
-          );
-        }
-      },
-      [control, exact, defaultValue],
-    ),
+        updateValue(
+          isUndefined(fieldValues) ? defaultValue : cloneObject(fieldValues),
+        );
+      }
+    },
   });
 
   const [value, updateValue] = React.useState<unknown>(
