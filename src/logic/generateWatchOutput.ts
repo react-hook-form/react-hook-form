@@ -1,4 +1,4 @@
-import { FieldValues, InternalFieldName, Names } from '../types';
+import { FieldValues, Names } from '../types';
 import get from '../utils/get';
 import isString from '../utils/isString';
 
@@ -8,21 +8,20 @@ export default (
   formValues?: FieldValues,
   isGlobal?: boolean,
 ) => {
-  const isArray = Array.isArray(names);
   if (isString(names)) {
-    isGlobal && _names.watch.add(names as InternalFieldName);
-    return get(formValues, names as InternalFieldName);
+    isGlobal && _names.watch.add(names);
+    return get(formValues, names);
   }
 
-  if (isArray) {
+  if (Array.isArray(names)) {
     return names.map(
       (fieldName) => (
-        isGlobal && _names.watch.add(fieldName as InternalFieldName),
-        get(formValues, fieldName as InternalFieldName)
+        isGlobal && _names.watch.add(fieldName), get(formValues, fieldName)
       ),
     );
   }
 
-  isGlobal && (_names.watchAll = true);
+  _names.watchAll = !!isGlobal;
+
   return formValues;
 };
