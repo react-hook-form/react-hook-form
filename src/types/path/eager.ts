@@ -1,5 +1,5 @@
 import { FieldValues } from '../fields';
-import { BrowserNativeObject, Primitive } from '../utils';
+import { BrowserNativeObject, Primitive, UnPackDefaultValues } from '../utils';
 
 import { ArrayKey, IsTuple, TupleKeys } from './common';
 
@@ -34,7 +34,9 @@ export type Path<T> = T extends ReadonlyArray<infer V>
 /**
  * See {@link Path}
  */
-export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
+export type FieldPath<TFieldValues extends FieldValues> = Path<
+  UnPackDefaultValues<TFieldValues>
+>;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -111,7 +113,7 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
 export type FieldPathValue<
   TFieldValues extends FieldValues,
   TFieldPath extends FieldPath<TFieldValues>,
-> = PathValue<TFieldValues, TFieldPath>;
+> = PathValue<UnPackDefaultValues<TFieldValues>, TFieldPath>;
 
 /**
  * See {@link PathValue}
