@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.39.5] - 2022-11-21
+
+## Changed
+
+- Conditional render `useFormState` will trigger an extra re-render to reflect the current `formState`
+
 ## [7.39.0] - 2022-11-2
 
 ## Changed
