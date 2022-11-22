@@ -755,7 +755,7 @@ export function createFormControl<
               valid: true,
             },
           );
-          error = buildInValidationResult.error;
+          error = buildInValidationResult.error || {};
           _updateValidFormState(buildInValidationResult.valid);
         }
 
