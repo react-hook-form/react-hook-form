@@ -759,7 +759,7 @@ export function createFormControl<
           _updateValidFormState(buildInValidationResult.valid);
         }
 
-        if (!error) {
+        if (!error || isEmptyObject(error)) {
           error = (
             await validateField(
               field,
