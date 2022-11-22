@@ -73,8 +73,9 @@ export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
   props: FormProviderProps<TFieldValues, TContext>,
 ) => {
   const { children, ...data } = props;
+  const [methods] = React.useState(data);
   return (
-    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
+    <HookFormContext.Provider value={methods as unknown as UseFormReturn}>
       {children}
     </HookFormContext.Provider>
   );
