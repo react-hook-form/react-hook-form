@@ -155,12 +155,10 @@ export function createFormControl<
     };
 
   const _updateValid = async () => {
-    let isValid = false;
-
     if (_proxyFormState.isValid) {
-      isValid = _options.resolver
+      const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
-        : await executeBuiltInValidation(_fields, true);
+        : (await executeBuiltInValidation(_fields, true)).valid;
 
       if (isValid !== _formState.isValid) {
         _formState.isValid = isValid;
@@ -169,8 +167,6 @@ export function createFormControl<
         });
       }
     }
-
-    return isValid;
   };
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
@@ -412,7 +408,11 @@ export function createFormControl<
   const executeBuiltInValidation = async (
     fields: FieldRefs,
     shouldOnlyCheckValid?: boolean,
-    context = {
+    context: {
+      name?: string;
+      error?: undefined | FieldError;
+      valid: boolean;
+    } = {
       valid: true,
     },
   ) => {
@@ -433,6 +433,10 @@ export function createFormControl<
           );
 
           if (fieldError[_f.name]) {
+            if (_f.name === context.name) {
+              context.error = fieldError[context.name];
+            }
+
             context.valid = false;
 
             if (shouldOnlyCheckValid) {
@@ -461,7 +465,7 @@ export function createFormControl<
       }
     }
 
-    return context.valid;
+    return context;
   };
 
   const _removeUnmounted = () => {
@@ -739,16 +743,29 @@ export function createFormControl<
 
         isValid = isEmptyObject(errors);
       } else {
-        error = (
-          await validateField(
-            field,
-            get(_formValues, name),
-            shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation,
-          )
-        )[name];
+        if (_proxyFormState.isValid) {
+          const buildInValidationResult = await executeBuiltInValidation(
+            _fields,
+            true,
+            {
+              name,
+              valid: true,
+            },
+          );
+          error = buildInValidationResult.error || ({} as FieldError);
+          isValid = buildInValidationResult.valid;
+        }
 
-        _updateValid();
+        if (!error || isEmptyObject(error)) {
+          error = (
+            await validateField(
+              field,
+              get(_formValues, name),
+              shouldDisplayAllAssociatedErrors,
+              _options.shouldUseNativeValidation,
+            )
+          )[name];
+        }
       }
 
       field._f.deps &&
@@ -783,15 +800,18 @@ export function createFormControl<
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field = get(_fields, fieldName);
-            return await executeBuiltInValidation(
-              field && field._f ? { [fieldName]: field } : field,
-            );
+            return (
+              await executeBuiltInValidation(
+                field && field._f ? { [fieldName]: field } : field,
+              )
+            ).valid;
           }),
         )
       ).every(Boolean);
       !(!validationResult && !_formState.isValid) && _updateValid();
     } else {
-      validationResult = isValid = await executeBuiltInValidation(_fields);
+      validationResult = isValid = (await executeBuiltInValidation(_fields))
+        .valid;
     }
 
     _subjects.state.next({
