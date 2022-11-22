@@ -154,21 +154,18 @@ export function createFormControl<
       timer = window.setTimeout(callback, wait);
     };
 
-  const _updateValidFormState = (isValid: boolean) => {
-    if (isValid !== _formState.isValid) {
-      _formState.isValid = isValid;
-      _subjects.state.next({
-        isValid,
-      });
-    }
-  };
-
   const _updateValid = async () => {
     if (_proxyFormState.isValid) {
       const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
         : (await executeBuiltInValidation(_fields, true)).valid;
-      _updateValidFormState(isValid);
+
+      if (isValid !== _formState.isValid) {
+        _formState.isValid = isValid;
+        _subjects.state.next({
+          isValid,
+        });
+      }
     }
   };
 
@@ -756,7 +753,7 @@ export function createFormControl<
             },
           );
           error = buildInValidationResult.error || ({} as FieldError);
-          _updateValidFormState(buildInValidationResult.valid);
+          isValid = buildInValidationResult.valid;
         }
 
         if (!error || isEmptyObject(error)) {
