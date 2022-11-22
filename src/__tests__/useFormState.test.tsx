@@ -95,6 +95,8 @@ describe('useFormState', () => {
     };
     render(<Component />);
 
+    await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
+
     fireEvent.input(screen.getByLabelText('test'), {
       target: {
         value: 'test',
