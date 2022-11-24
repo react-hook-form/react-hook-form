@@ -74,8 +74,9 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V>
 /**
  * See {@link ArrayPath}
  */
-export type FieldArrayPath<TFieldValues extends FieldValues> =
-  ArrayPath<TFieldValues>;
+export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<
+  UnPackDefaultValues<TFieldValues>
+>;
 
 /**
  * Type to evaluate the type which the given path points to.
@@ -121,7 +122,7 @@ export type FieldPathValue<
 export type FieldArrayPathValue<
   TFieldValues extends FieldValues,
   TFieldArrayPath extends FieldArrayPath<TFieldValues>,
-> = PathValue<TFieldValues, TFieldArrayPath>;
+> = PathValue<UnPackDefaultValues<TFieldValues>, TFieldArrayPath>;
 
 /**
  * Type to evaluate the type which the given paths point to.
