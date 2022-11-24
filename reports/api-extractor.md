@@ -182,10 +182,10 @@ export type FieldArrayMethodProps = {
 };
 
 // @public
-export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
+export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<UnPackDefaultValues<TFieldValues>>;
 
 // @public
-export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
+export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<UnPackDefaultValues<TFieldValues>, TFieldArrayPath>;
 
 // @public
 export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
