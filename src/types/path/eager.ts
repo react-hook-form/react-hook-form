@@ -21,7 +21,7 @@ type PathImpl<K extends string | number, V> = V extends
  * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
  * ```
  */
-export type Path<T> = T extends ReadonlyArray<infer V>
+export type Path<T> = T extends UnPackDefaultValues<ReadonlyArray<infer V>>
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
@@ -34,9 +34,7 @@ export type Path<T> = T extends ReadonlyArray<infer V>
 /**
  * See {@link Path}
  */
-export type FieldPath<TFieldValues extends FieldValues> = Path<
-  UnPackDefaultValues<TFieldValues>
->;
+export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -61,7 +59,7 @@ type ArrayPathImpl<K extends string | number, V> = V extends
  * Path<{foo: {bar: string[], baz: number[]}}> = 'foo.bar' | 'foo.baz'
  * ```
  */
-export type ArrayPath<T> = T extends ReadonlyArray<infer V>
+export type ArrayPath<T> = T extends UnPackDefaultValues<ReadonlyArray<infer V>>
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
@@ -113,7 +111,7 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
 export type FieldPathValue<
   TFieldValues extends FieldValues,
   TFieldPath extends FieldPath<TFieldValues>,
-> = PathValue<UnPackDefaultValues<TFieldValues>, TFieldPath>;
+> = PathValue<TFieldValues, TFieldPath>;
 
 /**
  * See {@link PathValue}
