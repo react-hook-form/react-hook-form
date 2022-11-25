@@ -86,7 +86,7 @@ export type DelayCallback = (wait: number) => void;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown,
+  TContext = any,
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
@@ -731,7 +731,7 @@ export type BatchFieldArrayUpdate = <
 
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown,
+  TContext = any,
 > = {
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: Noop;
@@ -774,7 +774,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (
 
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown,
+  TContext = any,
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
@@ -819,7 +819,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown,
+  TContext = any,
 > = {
   children: React.ReactNode | React.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext>;

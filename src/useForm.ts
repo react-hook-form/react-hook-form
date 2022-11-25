@@ -37,7 +37,7 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown,
+  TContext = any,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext> {

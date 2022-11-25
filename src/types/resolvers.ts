@@ -25,7 +25,7 @@ export interface ResolverOptions<TFieldValues extends FieldValues> {
 
 export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown,
+  TContext = any,
 > = (
   values: TFieldValues,
   context: TContext | undefined,
