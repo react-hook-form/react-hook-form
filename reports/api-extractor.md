@@ -347,8 +347,8 @@ export type Names = {
     unMount: InternalNameSet;
     array: InternalNameSet;
     watch: InternalNameSet;
-    focus: InternalFieldName;
-    watchAll: boolean;
+    focus?: InternalFieldName;
+    watchAll?: boolean;
 };
 
 // @public (undocumented)

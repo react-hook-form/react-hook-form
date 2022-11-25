@@ -17,7 +17,6 @@ import {
   Names,
   Path,
   Ref,
-  ResolverResult,
   SetFieldValue,
   SetValueConfig,
   Subjects,
@@ -130,7 +129,7 @@ export function createFormControl<
     unMount: new Set(),
     array: new Set(),
     watch: new Set(),
-  } as Names;
+  };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
   let validateFields: Record<InternalFieldName, number> = {};
@@ -147,7 +146,6 @@ export function createFormControl<
     array: createSubject(),
     state: createSubject(),
   };
-
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
@@ -384,18 +382,16 @@ export function createFormControl<
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
-    _options.resolver
-      ? await _options.resolver(
-          { ..._formValues } as TFieldValues,
-          _options.context,
-          getResolverOptions(
-            name || _names.mount,
-            _fields,
-            _options.criteriaMode,
-            _options.shouldUseNativeValidation,
-          ),
-        )
-      : ({} as ResolverResult<TFieldValues>);
+    await _options.resolver!(
+      _formValues as TFieldValues,
+      _options.context,
+      getResolverOptions(
+        name || _names.mount,
+        _fields,
+        _options.criteriaMode,
+        _options.shouldUseNativeValidation,
+      ),
+    );
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const { errors } = await _executeSchema();
@@ -612,7 +608,7 @@ export function createFormControl<
   ) => {
     for (const fieldKey in value) {
       const fieldValue = value[fieldKey];
-      const fieldName = `${name}.${fieldKey}` as Path<TFieldValues>;
+      const fieldName = `${name}.${fieldKey}`;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
@@ -858,8 +854,8 @@ export function createFormControl<
     return isUndefined(fieldNames)
       ? values
       : isString(fieldNames)
-      ? get(values, fieldNames as InternalFieldName)
-      : fieldNames.map((name) => get(values, name as InternalFieldName));
+      ? get(values, fieldNames)
+      : fieldNames.map((name) => get(values, name));
   };
 
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
@@ -885,7 +881,7 @@ export function createFormControl<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    const ref = ((get(_fields, name, { _f: {} }) as Field)._f || {}).ref;
+    const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
 
     set(_formState.errors, name, {
       ...error,
@@ -906,14 +902,14 @@ export function createFormControl<
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>
       | WatchObserver<TFieldValues>,
-    defaultValue?: unknown,
+    defaultValue?: DeepPartial<TFieldValues>,
   ) =>
     isFunction(name)
       ? _subjects.watch.subscribe({
-          next: (info) =>
+          next: (payload) =>
             name(
-              _getWatch(undefined, defaultValue as DeepPartial<TFieldValues>),
-              info as {
+              _getWatch(undefined, defaultValue),
+              payload as {
                 name?: FieldPath<TFieldValues>;
                 type?: EventType;
                 value?: unknown;
@@ -922,7 +918,7 @@ export function createFormControl<
         })
       : _getWatch(
           name as InternalFieldName | InternalFieldName[],
-          defaultValue as DeepPartial<TFieldValues>,
+          defaultValue,
           true,
         );
 

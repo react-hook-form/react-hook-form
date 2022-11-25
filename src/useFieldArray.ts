@@ -364,7 +364,7 @@ export function useFieldArray<
     control._names.focus &&
       focusFieldBy(
         control._fields,
-        (key) => !!key && key.startsWith(control._names.focus),
+        (key) => !!key && key.startsWith(control._names.focus || ''),
       );
 
     control._names.focus = '';
