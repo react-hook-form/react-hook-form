@@ -18,7 +18,7 @@ import {
   FieldPathValues,
 } from './path';
 import { Resolver } from './resolvers';
-import { DeepMap, DeepPartial, Noop, UnPackDefaultValues } from './utils';
+import { DeepMap, DeepPartial, Noop, UnPackAsyncDefaultValues } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -89,7 +89,7 @@ type AsyncDefaultValues<TFieldValues> = (
 ) => Promise<TFieldValues>;
 
 export type UseFormProps<
-  TFieldValues extends UnPackDefaultValues<FieldValues> = UnPackDefaultValues<FieldValues>,
+  TFieldValues extends UnPackAsyncDefaultValues<FieldValues> = UnPackAsyncDefaultValues<FieldValues>,
   TContext = any,
 > = Partial<{
   mode: Mode;
@@ -131,16 +131,16 @@ export type FormState<TFieldValues extends FieldValues> = {
   isValid: boolean;
   submitCount: number;
   defaultValues?:
-    | UnPackDefaultValues<TFieldValues>
+    | UnPackAsyncDefaultValues<TFieldValues>
     | undefined
     | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<
-    Readonly<FieldNamesMarkedBoolean<UnPackDefaultValues<TFieldValues>>>
+    Readonly<FieldNamesMarkedBoolean<UnPackAsyncDefaultValues<TFieldValues>>>
   >;
   touchedFields: Partial<
-    Readonly<FieldNamesMarkedBoolean<UnPackDefaultValues<TFieldValues>>>
+    Readonly<FieldNamesMarkedBoolean<UnPackAsyncDefaultValues<TFieldValues>>>
   >;
-  errors: FieldErrors<UnPackDefaultValues<TFieldValues>>;
+  errors: FieldErrors<TFieldValues>;
 };
 
 export type KeepStateOptions = Partial<{

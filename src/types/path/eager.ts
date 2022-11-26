@@ -1,5 +1,9 @@
 import { FieldValues } from '../fields';
-import { BrowserNativeObject, Primitive, UnPackDefaultValues } from '../utils';
+import {
+  BrowserNativeObject,
+  Primitive,
+  UnPackAsyncDefaultValues,
+} from '../utils';
 
 import { ArrayKey, IsTuple, TupleKeys } from './common';
 
@@ -35,7 +39,7 @@ export type Path<T> = T extends ReadonlyArray<infer V>
  * See {@link Path}
  */
 export type FieldPath<TFieldValues extends FieldValues> = Path<
-  UnPackDefaultValues<TFieldValues>
+  UnPackAsyncDefaultValues<TFieldValues>
 >;
 
 /**
@@ -75,7 +79,7 @@ export type ArrayPath<T> = T extends ReadonlyArray<infer V>
  * See {@link ArrayPath}
  */
 export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<
-  UnPackDefaultValues<TFieldValues>
+  UnPackAsyncDefaultValues<TFieldValues>
 >;
 
 /**
@@ -114,7 +118,7 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
 export type FieldPathValue<
   TFieldValues extends FieldValues,
   TFieldPath extends FieldPath<TFieldValues>,
-> = PathValue<UnPackDefaultValues<TFieldValues>, TFieldPath>;
+> = PathValue<UnPackAsyncDefaultValues<TFieldValues>, TFieldPath>;
 
 /**
  * See {@link PathValue}
@@ -122,7 +126,7 @@ export type FieldPathValue<
 export type FieldArrayPathValue<
   TFieldValues extends FieldValues,
   TFieldArrayPath extends FieldArrayPath<TFieldValues>,
-> = PathValue<UnPackDefaultValues<TFieldValues>, TFieldArrayPath>;
+> = PathValue<UnPackAsyncDefaultValues<TFieldValues>, TFieldArrayPath>;
 
 /**
  * Type to evaluate the type which the given paths point to.

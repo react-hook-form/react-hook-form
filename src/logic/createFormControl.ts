@@ -20,7 +20,7 @@ import {
   SetFieldValue,
   SetValueConfig,
   Subjects,
-  UnPackDefaultValues,
+  UnPackAsyncDefaultValues,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -594,7 +594,7 @@ export function createFormControl<
       );
 
     options.shouldValidate &&
-      trigger(name as Path<UnPackDefaultValues<TFieldValues>>);
+      trigger(name as Path<UnPackAsyncDefaultValues<TFieldValues>>);
   };
 
   const setValues = <

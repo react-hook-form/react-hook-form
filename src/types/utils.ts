@@ -53,7 +53,7 @@ export type DeepPartialSkipArrayKey<T> = T extends
   ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
   : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
-export type UnPackDefaultValues<TFieldValues> =
+export type UnPackAsyncDefaultValues<TFieldValues> =
   TFieldValues extends () => Promise<infer U> ? U : TFieldValues;
 
 /**

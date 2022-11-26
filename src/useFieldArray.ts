@@ -346,7 +346,7 @@ export function useFieldArray<
               !isEmptyObject(error) &&
               control._subjects.state.next({
                 errors: updateFieldArrayRootError(
-                  control._formState.errors,
+                  control._formState.errors as FieldErrors<TFieldValues>,
                   error,
                   name,
                 ) as FieldErrors<TFieldValues>,
