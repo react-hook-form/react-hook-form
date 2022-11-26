@@ -19,6 +19,7 @@ import {
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
+import { useFormState } from '../useFormState';
 
 let i = 0;
 
@@ -3704,6 +3705,183 @@ describe('useFieldArray', () => {
 
     await waitFor(() => {
       screen.getByText('invalid');
+    });
+  });
+
+  describe('with formState observers', () => {
+    it('should trigger reRender when user subscribes to root formState', async () => {
+      type FormValues = { test: { value: string }[] };
+
+      const FieldArray = ({
+        register,
+        control,
+      }: {
+        register: UseFormRegister<FormValues>;
+        control: Control<FormValues>;
+      }) => {
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </>
+        );
+      };
+
+      let renderCount = 0;
+      const Component = () => {
+        const { register, control, formState } = useForm<FormValues>();
+
+        formState.isDirty;
+        formState.dirtyFields;
+        formState.errors;
+
+        renderCount++;
+
+        return (
+          <form>
+            <FieldArray register={register} control={control} />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      await waitFor(() => expect(renderCount).toEqual(2));
+    });
+
+    it('should trigger reRender on components that subscribe to useFieldArray fieldState', async () => {
+      type FormValues = { test: { value: string }[] };
+      let rootRenderCount = 0;
+      let observerRenderCount = 0;
+
+      const FieldArray = ({
+        register,
+        control,
+      }: {
+        register: UseFormRegister<FormValues>;
+        control: Control<FormValues>;
+      }) => {
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </>
+        );
+      };
+
+      const Observer = ({ control }: { control: Control<FormValues> }) => {
+        const { isDirty, dirtyFields, errors } = useFormState({
+          name: 'test',
+          control,
+        });
+
+        observerRenderCount++;
+
+        return <p>{JSON.stringify({ isDirty, dirtyFields, errors })}</p>;
+      };
+
+      const Component = () => {
+        const { register, control } = useForm<FormValues>();
+
+        rootRenderCount++;
+
+        return (
+          <form>
+            <FieldArray register={register} control={control} />
+            <Observer control={control} />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      await waitFor(() => {
+        expect(rootRenderCount).toEqual(1);
+        expect(observerRenderCount).toEqual(2);
+      });
+    });
+
+    it('should not trigger reRender on components that do not subscribe to useFieldArray fieldState', async () => {
+      type FormValues = { test: { value: string }[]; other: string };
+      let rootRenderCount = 0;
+      let notObserverRenderCount = 0;
+
+      const FieldArray = ({
+        register,
+        control,
+      }: {
+        register: UseFormRegister<FormValues>;
+        control: Control<FormValues>;
+      }) => {
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </>
+        );
+      };
+
+      const NotObserver = ({ control }: { control: Control<FormValues> }) => {
+        const { isDirty, dirtyFields, errors } = useFormState({
+          name: 'other',
+          control,
+        });
+
+        notObserverRenderCount++;
+
+        return <p>{JSON.stringify({ isDirty, dirtyFields, errors })}</p>;
+      };
+
+      const Component = () => {
+        const { register, control } = useForm<FormValues>();
+
+        rootRenderCount++;
+
+        return (
+          <form>
+            <FieldArray register={register} control={control} />
+            <NotObserver control={control} />
+            <input {...register('other')} />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(rootRenderCount).toEqual(1);
+      expect(notObserverRenderCount).toEqual(1);
     });
   });
 });
