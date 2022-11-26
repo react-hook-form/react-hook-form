@@ -9,8 +9,10 @@ import {
   PathValue,
   UseFormRegister,
 } from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 
 test('should not throw type error with path name', () => {
@@ -307,8 +309,25 @@ test('should infer async default values', () => {
           test1: {
             nested: 'test',
           },
+          fieldArray: [{ test: '' }],
         };
       },
+    });
+    useFieldArray({
+      name: 'fieldArray' as const,
+      control,
+    });
+    useController({
+      name: 'test1.nested',
+      control,
+    });
+    useWatch({
+      name: 'test1',
+      control,
+    });
+    useFormState({
+      name: 'fieldArray',
+      control,
     });
 
     setValue('test', 'data');
