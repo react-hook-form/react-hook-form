@@ -134,9 +134,13 @@ export type FormState<TFieldValues extends FieldValues> = {
     | UnPackDefaultValues<TFieldValues>
     | undefined
     | Readonly<DeepPartial<TFieldValues>>;
-  dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-  touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-  errors: FieldErrors<TFieldValues>;
+  dirtyFields: Partial<
+    Readonly<FieldNamesMarkedBoolean<UnPackDefaultValues<TFieldValues>>>
+  >;
+  touchedFields: Partial<
+    Readonly<FieldNamesMarkedBoolean<UnPackDefaultValues<TFieldValues>>>
+  >;
+  errors: FieldErrors<UnPackDefaultValues<TFieldValues>>;
 };
 
 export type KeepStateOptions = Partial<{
