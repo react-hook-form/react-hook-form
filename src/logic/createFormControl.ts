@@ -213,6 +213,7 @@ export function createFormControl<
       }
 
       _subjects.state.next({
+        name,
         isDirty: _getDirty(name, values),
         dirtyFields: _formState.dirtyFields,
         errors: _formState.errors,
