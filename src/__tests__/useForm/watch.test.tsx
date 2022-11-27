@@ -3,8 +3,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
+import { Control, FieldValues } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useWatch } from '../../useWatch';
 import isFunction from '../../utils/isFunction';
 
 describe('watch', () => {
@@ -503,5 +505,45 @@ describe('watch', () => {
     expect(await screen.findByText('1234')).toBeVisible();
 
     expect(watchedData).toEqual([{}, {}, { test: '1234' }]);
+  });
+
+  it('should not be able to overwrite global watch state', () => {
+    function Watcher<T extends FieldValues>({
+      control,
+    }: {
+      control: Control<T>;
+    }) {
+      useWatch({
+        control,
+      });
+      return null;
+    }
+
+    function App() {
+      const { register, watch, control } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+      const { firstName } = watch();
+
+      return (
+        <form>
+          <p>{firstName}</p>
+          <Watcher control={control} />
+          <input {...register('firstName')} />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill',
+      },
+    });
+
+    screen.getByText('bill');
   });
 });
