@@ -21,7 +21,7 @@ export default (
     );
   }
 
-  _names.watchAll = !!isGlobal;
+  isGlobal && (_names.watchAll = true);
 
   return formValues;
 };
