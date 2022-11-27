@@ -1013,9 +1013,7 @@ export function createFormControl<
                     refs: [
                       ...refs.filter(live),
                       fieldRef,
-                      ...(!!Array.isArray(get(_defaultValues, name))
-                        ? [{}]
-                        : []),
+                      ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
                     ],
                     ref: { type: fieldRef.type, name },
                   }
