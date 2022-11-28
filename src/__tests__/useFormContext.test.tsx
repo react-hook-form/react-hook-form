@@ -193,4 +193,40 @@ describe('FormProvider', () => {
       );
     });
   });
+
+  it('should report errors correctly', async () => {
+    const Child = () => {
+      const {
+        formState: { errors },
+        register,
+        handleSubmit,
+      } = useFormContext<{
+        test: string;
+      }>();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('test', { required: 'This is required' })} />
+          <p>{errors.test?.message}</p>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm();
+
+      return (
+        <FormProvider {...methods}>
+          <Child />
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => screen.getByText('This is required'));
+  });
 });
