@@ -409,7 +409,6 @@ export function createFormControl<
       name?: string;
       error?: undefined | FieldError;
       valid: boolean;
-      fieldValidated?: boolean;
     } = {
       valid: true,
     },
