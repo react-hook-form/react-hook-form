@@ -435,11 +435,10 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (_f.name === context.name) {
-            context.error = fieldError[context.name];
-          }
-
           if (fieldError[_f.name]) {
+            if (_f.name === context.name) {
+              context.error = fieldError[context.name];
+            }
             context.valid = false;
             if (shouldOnlyCheckValid) {
               break;
