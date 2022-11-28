@@ -739,12 +739,13 @@ export function createFormControl<
         }
       }
 
-      field._f.deps &&
-        trigger(
-          field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-        );
-
       if (!isPrimitive(fieldValue) || getCurrentFieldValue() === fieldValue) {
+        field._f.deps &&
+          trigger(
+            field._f.deps as
+              | FieldPath<TFieldValues>
+              | FieldPath<TFieldValues>[],
+          );
         shouldRenderByError(name, isValid, error, fieldState);
       } else {
         _updateIsValidating(false);
