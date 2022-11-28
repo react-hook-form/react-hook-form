@@ -127,7 +127,6 @@ export function createFormControl<
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
   let validateFields: Record<InternalFieldName, number> = {};
-  let controller: AbortController | undefined;
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -415,10 +414,6 @@ export function createFormControl<
       valid: true,
     },
   ) => {
-    if (!controller) {
-      controller = new AbortController();
-    }
-
     for (const name in fields) {
       const field = fields[name];
 
@@ -744,11 +739,18 @@ export function createFormControl<
 
         isValid = isEmptyObject(errors);
       } else {
-        if (_proxyFormState.isValid) {
-          if (controller) {
-            controller.abort();
-            controller = undefined;
-          }
+        error = (
+          await validateField(
+            field,
+            get(_formValues, name),
+            shouldDisplayAllAssociatedErrors,
+            _options.shouldUseNativeValidation,
+          )
+        )[name];
+
+        if (error) {
+          isValid = false;
+        } else if (_proxyFormState.isValid) {
           const buildInValidationResult = await executeBuiltInValidation(
             _fields,
             true,
@@ -759,17 +761,6 @@ export function createFormControl<
           );
           error = buildInValidationResult.error;
           isValid = buildInValidationResult.valid;
-        }
-
-        if (!error || isEmptyObject(error)) {
-          error = (
-            await validateField(
-              field,
-              get(_formValues, name),
-              shouldDisplayAllAssociatedErrors,
-              _options.shouldUseNativeValidation,
-            )
-          )[name];
         }
       }
 
