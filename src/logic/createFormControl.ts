@@ -126,7 +126,6 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  let validateFields: Record<InternalFieldName, number> = {};
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -360,16 +359,10 @@ export function createFormControl<
       _subjects.state.next(updatedFormState);
     }
 
-    validateFields[name]--;
-
-    if (
-      _proxyFormState.isValidating &&
-      !Object.values(validateFields).some((v) => v)
-    ) {
+    if (_proxyFormState.isValidating) {
       _subjects.state.next({
         isValidating: false,
       });
-      validateFields = {};
     }
   };
 
@@ -711,10 +704,6 @@ export function createFormControl<
       }
 
       !isBlurEvent && watched && _subjects.state.next({});
-
-      validateFields[name] = validateFields[name]
-        ? validateFields[name] + 1
-        : 1;
 
       _subjects.state.next({
         isValidating: true,
