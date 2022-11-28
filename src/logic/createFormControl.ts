@@ -655,13 +655,13 @@ export function createFormControl<
     const target = event.target;
     let name = target.name;
     const field: Field = get(_fields, name);
+    const getCurrentFieldValue = () =>
+      target.type ? getFieldValue(field._f) : getEventValue(event);
 
     if (field) {
       let error;
       let isValid;
-      const fieldValue = target.type
-        ? getFieldValue(field._f)
-        : getEventValue(event);
+      const fieldValue = getCurrentFieldValue();
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
@@ -769,7 +769,14 @@ export function createFormControl<
           field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
         );
 
-      shouldRenderByError(name, isValid, error, fieldState);
+      if (!isPrimitive(fieldValue) || getCurrentFieldValue() === fieldValue) {
+        shouldRenderByError(name, isValid, error, fieldState);
+      } else {
+        _proxyFormState.isValidating &&
+          _subjects.state.next({
+            isValidating: false,
+          });
+      }
     }
   };
 
