@@ -166,6 +166,13 @@ export function createFormControl<
     }
   };
 
+  const _updateIsValidating = (value: boolean) =>
+    _proxyFormState.isValidating &&
+    value !== _formState.isValidating &&
+    _subjects.state.next({
+      isValidating: value,
+    });
+
   const _updateFieldArray: BatchFieldArrayUpdate = (
     name,
     values = [],
@@ -359,11 +366,7 @@ export function createFormControl<
       _subjects.state.next(updatedFormState);
     }
 
-    if (_proxyFormState.isValidating) {
-      _subjects.state.next({
-        isValidating: false,
-      });
-    }
+    _updateIsValidating(false);
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
@@ -705,9 +708,7 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({});
 
-      _subjects.state.next({
-        isValidating: true,
-      });
+      _updateIsValidating(true);
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
@@ -760,10 +761,7 @@ export function createFormControl<
       if (!isPrimitive(fieldValue) || getCurrentFieldValue() === fieldValue) {
         shouldRenderByError(name, isValid, error, fieldState);
       } else {
-        _proxyFormState.isValidating &&
-          _subjects.state.next({
-            isValidating: false,
-          });
+        _updateIsValidating(false);
       }
     }
   };
@@ -773,9 +771,7 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    _subjects.state.next({
-      isValidating: true,
-    });
+    _updateIsValidating(true);
 
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
