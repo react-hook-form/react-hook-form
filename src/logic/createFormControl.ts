@@ -735,9 +735,7 @@ export function createFormControl<
         if (error) {
           isValid = false;
         } else if (_proxyFormState.isValid) {
-          isValid = await executeBuiltInValidation(_fields, true, {
-            valid: true,
-          });
+          isValid = await executeBuiltInValidation(_fields, true);
         }
       }
 
