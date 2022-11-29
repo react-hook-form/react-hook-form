@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.40.0] - 2022-11-30
+
+## Changed
+
+- async validation (or combined with sync) will always the take the latest validation result and abort the previous
+
 ## [7.39.5] - 2022-11-21
 
 ## Changed
