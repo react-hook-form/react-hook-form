@@ -26,7 +26,7 @@ Here is a quick guide to doing code contributions to the library.
 
 7. Ensure the automation suite passes by running two following commands in parallel:
 
-   > yarn start:app
+   > yarn start
    > yarn cypress
 
 8. Ensure build passes.

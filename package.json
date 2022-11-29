@@ -43,15 +43,15 @@
     "test:server": "TEST_ENV=server yarn test",
     "test:native": "TEST_ENV=native yarn test",
     "tsd": "tsd src/__typetest__",
-    "cypress": "cypress run",
-    "cypress:open": "cypress open",
+    "e2e": "cypress run",
+    "e2e:watch": "cypress open",
     "api-extractor": "api-extractor run --local",
     "api-extractor:build": "yarn build:esm && yarn api-extractor",
     "api-extractor:ci": "node scripts/apiExtractor.js",
     "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "yarn && yarn lint:fix && yarn type && yarn test && yarn build",
     "bundlewatch": "yarn build:modern && bundlewatch",
-    "start:app": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
+    "start": "yarn build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run dev"
   },
   "keywords": [
     "react",
