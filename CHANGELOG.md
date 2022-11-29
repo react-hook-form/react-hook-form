@@ -1,11 +1,5 @@
 # Changelog
 
-## [7.39.6] - 2022-11-27
-
-## Changed
-
-- `FormProvider` no longer re-create `useForm` methods for better performance
-
 ## [7.39.5] - 2022-11-21
 
 ## Changed
