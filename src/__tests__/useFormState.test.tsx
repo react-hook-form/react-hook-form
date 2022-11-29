@@ -189,7 +189,7 @@ describe('useFormState', () => {
     expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(2);
     expect(test1Count).toEqual(2);
 
     fireEvent.input(screen.getByLabelText('test'), {
@@ -199,7 +199,7 @@ describe('useFormState', () => {
     });
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(2);
     expect(test1Count).toEqual(2);
   });
 
