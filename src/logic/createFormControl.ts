@@ -287,13 +287,13 @@ export function createFormControl<
       name,
     };
 
-    if (_proxyFormState.isDirty) {
-      isPreviousDirty = _formState.isDirty;
-      _formState.isDirty = output.isDirty = _getDirty();
-      shouldUpdateField = isPreviousDirty !== output.isDirty;
-    }
-
     if (!isBlurEvent || shouldDirty) {
+      if (_proxyFormState.isDirty) {
+        isPreviousDirty = _formState.isDirty;
+        _formState.isDirty = output.isDirty = _getDirty();
+        shouldUpdateField = isPreviousDirty !== output.isDirty;
+      }
+
       const isCurrentFieldPristine = deepEqual(
         get(_defaultValues, name),
         fieldValue,
