@@ -281,24 +281,26 @@ export function createFormControl<
       name,
     };
 
-    if (_proxyFormState.isDirty) {
-      isPreviousDirty = _formState.isDirty;
-      _formState.isDirty = output.isDirty = _getDirty();
-      shouldUpdateField = isPreviousDirty !== output.isDirty;
-    }
+    if (!isBlurEvent || shouldDirty) {
+      if (_proxyFormState.isDirty) {
+        isPreviousDirty = _formState.isDirty;
+        _formState.isDirty = output.isDirty = _getDirty();
+        shouldUpdateField = isPreviousDirty !== output.isDirty;
+      }
 
-    if (_proxyFormState.dirtyFields && (!isBlurEvent || shouldDirty)) {
-      isPreviousDirty = get(_formState.dirtyFields, name);
-      const isCurrentFieldPristine = deepEqual(
-        get(_defaultValues, name),
-        fieldValue,
-      );
-      isCurrentFieldPristine
-        ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields, name, true);
-      output.dirtyFields = _formState.dirtyFields;
-      shouldUpdateField =
-        shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
+      if (_proxyFormState.dirtyFields) {
+        isPreviousDirty = get(_formState.dirtyFields, name);
+        const isCurrentFieldPristine = deepEqual(
+          get(_defaultValues, name),
+          fieldValue,
+        );
+        isCurrentFieldPristine
+          ? unset(_formState.dirtyFields, name)
+          : set(_formState.dirtyFields, name, true);
+        output.dirtyFields = _formState.dirtyFields;
+        shouldUpdateField =
+          shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
+      }
     }
 
     if (isBlurEvent) {
