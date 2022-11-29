@@ -132,7 +132,6 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  let validateFields: Record<InternalFieldName, number> = {};
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -162,7 +161,7 @@ export function createFormControl<
     if (_proxyFormState.isValid) {
       const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
-        : (await executeBuiltInValidation(_fields, true)).valid;
+        : await executeBuiltInValidation(_fields, true);
 
       if (isValid !== _formState.isValid) {
         _formState.isValid = isValid;
@@ -172,6 +171,13 @@ export function createFormControl<
       }
     }
   };
+
+  const _updateIsValidating = (value: boolean) =>
+    _proxyFormState.isValidating &&
+    value !== _formState.isValidating &&
+    _subjects.state.next({
+      isValidating: value,
+    });
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
     name,
@@ -369,17 +375,7 @@ export function createFormControl<
       _subjects.state.next(updatedFormState);
     }
 
-    validateFields[name]--;
-
-    if (
-      _proxyFormState.isValidating &&
-      !Object.values(validateFields).some((v) => v)
-    ) {
-      _subjects.state.next({
-        isValidating: false,
-      });
-      validateFields = {};
-    }
+    _updateIsValidating(false);
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
@@ -415,8 +411,6 @@ export function createFormControl<
     fields: FieldRefs,
     shouldOnlyCheckValid?: boolean,
     context: {
-      name?: string;
-      error?: undefined | FieldError;
       valid: boolean;
     } = {
       valid: true,
@@ -439,12 +433,7 @@ export function createFormControl<
           );
 
           if (fieldError[_f.name]) {
-            if (_f.name === context.name) {
-              context.error = fieldError[context.name];
-            }
-
             context.valid = false;
-
             if (shouldOnlyCheckValid) {
               break;
             }
@@ -471,7 +460,7 @@ export function createFormControl<
       }
     }
 
-    return context;
+    return context.valid;
   };
 
   const _removeUnmounted = () => {
@@ -666,13 +655,13 @@ export function createFormControl<
     const target = event.target;
     let name = target.name;
     const field: Field = get(_fields, name);
+    const getCurrentFieldValue = () =>
+      target.type ? getFieldValue(field._f) : getEventValue(event);
 
     if (field) {
       let error;
       let isValid;
-      const fieldValue = target.type
-        ? getFieldValue(field._f)
-        : getEventValue(event);
+      const fieldValue = getCurrentFieldValue();
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
@@ -724,13 +713,7 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({});
 
-      validateFields[name] = validateFields[name]
-        ? validateFields[name] + 1
-        : 1;
-
-      _subjects.state.next({
-        isValidating: true,
-      });
+      _updateIsValidating(true);
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
@@ -750,37 +733,33 @@ export function createFormControl<
 
         isValid = isEmptyObject(errors);
       } else {
-        if (_proxyFormState.isValid) {
-          const buildInValidationResult = await executeBuiltInValidation(
-            _fields,
-            true,
-            {
-              name,
-              valid: true,
-            },
-          );
-          error = buildInValidationResult.error || ({} as FieldError);
-          isValid = buildInValidationResult.valid;
-        }
+        error = (
+          await validateField(
+            field,
+            get(_formValues, name),
+            shouldDisplayAllAssociatedErrors,
+            _options.shouldUseNativeValidation,
+          )
+        )[name];
 
-        if (!error || isEmptyObject(error)) {
-          error = (
-            await validateField(
-              field,
-              get(_formValues, name),
-              shouldDisplayAllAssociatedErrors,
-              _options.shouldUseNativeValidation,
-            )
-          )[name];
+        if (error) {
+          isValid = false;
+        } else if (_proxyFormState.isValid) {
+          isValid = await executeBuiltInValidation(_fields, true);
         }
       }
 
-      field._f.deps &&
-        trigger(
-          field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-        );
-
-      shouldRenderByError(name, isValid, error, fieldState);
+      if (!isPrimitive(fieldValue) || getCurrentFieldValue() === fieldValue) {
+        field._f.deps &&
+          trigger(
+            field._f.deps as
+              | FieldPath<TFieldValues>
+              | FieldPath<TFieldValues>[],
+          );
+        shouldRenderByError(name, isValid, error, fieldState);
+      } else {
+        _updateIsValidating(false);
+      }
     }
   };
 
@@ -789,9 +768,7 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    _subjects.state.next({
-      isValidating: true,
-    });
+    _updateIsValidating(true);
 
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
@@ -807,18 +784,15 @@ export function createFormControl<
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field = get(_fields, fieldName);
-            return (
-              await executeBuiltInValidation(
-                field && field._f ? { [fieldName]: field } : field,
-              )
-            ).valid;
+            return await executeBuiltInValidation(
+              field && field._f ? { [fieldName]: field } : field,
+            );
           }),
         )
       ).every(Boolean);
       !(!validationResult && !_formState.isValid) && _updateValid();
     } else {
-      validationResult = isValid = (await executeBuiltInValidation(_fields))
-        .valid;
+      validationResult = isValid = await executeBuiltInValidation(_fields);
     }
 
     _subjects.state.next({
