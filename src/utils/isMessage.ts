@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { Message } from '../types';
 import isString from '../utils/isString';
