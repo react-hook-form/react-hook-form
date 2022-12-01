@@ -93,6 +93,7 @@ export function createFormControl<
   TContext = any,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
+  flushRootRender: () => void,
 ): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
   let _options = {
     ...defaultOptions,
@@ -649,6 +650,7 @@ export function createFormControl<
     _subjects.watch.next({
       name,
     });
+    !_stateFlags.mount && flushRootRender();
   };
 
   const onChange: ChangeHandler = async (event) => {
@@ -1180,6 +1182,8 @@ export function createFormControl<
       watchAll: false,
       focus: '',
     };
+
+    !_stateFlags.mount && flushRootRender();
 
     _stateFlags.mount =
       !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
