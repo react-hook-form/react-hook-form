@@ -1719,10 +1719,6 @@ describe('useForm', () => {
   });
 
   it('should update defaultValues async', async () => {
-    function sleep(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
     const App = () => {
       const { register } = useForm({
         defaultValues: async () => {
@@ -1737,6 +1733,39 @@ describe('useForm', () => {
       return (
         <form>
           <input {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
+  it('should update async default values for controlled components', async () => {
+    const App = () => {
+      const { control } = useForm({
+        defaultValues: async () => {
+          await sleep(100);
+
+          return {
+            test: 'test',
+          };
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            render={({ field }) => <input {...field} />}
+            defaultValue=""
+            name={'test'}
+          />
         </form>
       );
     };
