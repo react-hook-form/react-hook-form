@@ -768,7 +768,6 @@ export type WatchObserver<TFieldValues extends FieldValues> = (
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
-    value?: unknown;
   },
 ) => void;
 
