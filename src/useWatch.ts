@@ -159,10 +159,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   useSubscribe({
     disabled,
     subject: control._subjects.watch,
-    callback: (formState: {
-      name?: InternalFieldName;
-      values?: FieldValues;
-    }) => {
+    next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
       if (
         shouldSubscribeByName(
           _name.current as InternalFieldName,
@@ -171,7 +168,7 @@ export function useWatch<TFieldValues extends FieldValues>(
         )
       ) {
         const fieldValues = generateWatchOutput(
-          _name.current as InternalFieldName,
+          _name.current as InternalFieldName | InternalFieldName[],
           control._names,
           formState.values || control._formValues,
         );

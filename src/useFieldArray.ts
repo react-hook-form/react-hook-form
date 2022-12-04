@@ -3,6 +3,7 @@ import React from 'react';
 import focusFieldBy from './logic/focusFieldBy';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
+import getValidationModes from './logic/getValidationModes';
 import isWatched from './logic/isWatched';
 import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
@@ -11,7 +12,6 @@ import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
-import getValidationModes from './utils/getValidationModes';
 import insertAt from './utils/insert';
 import isEmptyObject from './utils/isEmptyObject';
 import moveArrayAt from './utils/move';
@@ -109,8 +109,8 @@ export function useFieldArray<
       props.rules as RegisterOptions<TFieldValues>,
     );
 
-  const callback = React.useCallback(
-    ({
+  useSubscribe({
+    next: ({
       values,
       name: fieldArrayName,
     }: {
@@ -125,11 +125,6 @@ export function useFieldArray<
         }
       }
     },
-    [],
-  );
-
-  useSubscribe({
-    callback,
     subject: control._subjects.array,
   });
 
@@ -351,7 +346,7 @@ export function useFieldArray<
               !isEmptyObject(error) &&
               control._subjects.state.next({
                 errors: updateFieldArrayRootError(
-                  control._formState.errors,
+                  control._formState.errors as FieldErrors<TFieldValues>,
                   error,
                   name,
                 ) as FieldErrors<TFieldValues>,

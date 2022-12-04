@@ -20,6 +20,7 @@ import {
   SetFieldValue,
   SetValueConfig,
   Subjects,
+  UnPackAsyncDefaultValues,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -44,7 +45,6 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
-import getValidationModes from '../utils/getValidationModes';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
@@ -54,6 +54,7 @@ import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
@@ -71,6 +72,7 @@ import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
+import getValidationModes from './getValidationModes';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
@@ -97,6 +99,8 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
+  const shouldCaptureDirtyFields =
+    props.resetOptions && props.resetOptions.keepDirtyValues;
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
@@ -110,7 +114,9 @@ export function createFormControl<
     errors: {},
   };
   let _fields = {};
-  let _defaultValues = cloneObject(_options.defaultValues) || {};
+  let _defaultValues = isObject(_options.defaultValues)
+    ? cloneObject(_options.defaultValues) || {}
+    : {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
@@ -289,19 +295,20 @@ export function createFormControl<
         shouldUpdateField = isPreviousDirty !== output.isDirty;
       }
 
-      if (_proxyFormState.dirtyFields) {
-        isPreviousDirty = get(_formState.dirtyFields, name);
-        const isCurrentFieldPristine = deepEqual(
-          get(_defaultValues, name),
-          fieldValue,
-        );
-        isCurrentFieldPristine
-          ? unset(_formState.dirtyFields, name)
-          : set(_formState.dirtyFields, name, true);
-        output.dirtyFields = _formState.dirtyFields;
-        shouldUpdateField =
-          shouldUpdateField || isPreviousDirty !== !isCurrentFieldPristine;
-      }
+      const isCurrentFieldPristine = deepEqual(
+        get(_defaultValues, name),
+        fieldValue,
+      );
+
+      isPreviousDirty = get(_formState.dirtyFields, name);
+      isCurrentFieldPristine
+        ? unset(_formState.dirtyFields, name)
+        : set(_formState.dirtyFields, name, true);
+      output.dirtyFields = _formState.dirtyFields;
+      shouldUpdateField =
+        shouldUpdateField ||
+        (_proxyFormState.dirtyFields &&
+          isPreviousDirty !== !isCurrentFieldPristine);
     }
 
     if (isBlurEvent) {
@@ -577,7 +584,8 @@ export function createFormControl<
         true,
       );
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate &&
+      trigger(name as Path<UnPackAsyncDefaultValues<TFieldValues>>);
   };
 
   const setValues = <
@@ -1119,7 +1127,7 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (keepStateOptions.keepDirtyValues) {
+      if (keepStateOptions.keepDirtyValues || shouldCaptureDirtyFields) {
         for (const fieldName of _names.mount) {
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
@@ -1235,6 +1243,12 @@ export function createFormControl<
     }
   };
 
+  if (isFunction(_options.defaultValues)) {
+    _options.defaultValues().then((values) => {
+      reset(values, _options.resetOptions);
+    });
+  }
+
   return {
     control: {
       register,
@@ -1248,6 +1262,7 @@ export function createFormControl<
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,
+      _reset,
       _subjects,
       _proxyFormState,
       get _fields() {

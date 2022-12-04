@@ -18,7 +18,7 @@ import {
   FieldPathValues,
 } from './path';
 import { Resolver } from './resolvers';
-import { DeepMap, DeepPartial, Noop } from './utils';
+import { DeepMap, DeepPartial, Noop, UnPackAsyncDefaultValues } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -84,13 +84,19 @@ export type ChangeHandler = (event: {
 
 export type DelayCallback = (wait: number) => void;
 
+type AsyncDefaultValues<TFieldValues> = (
+  payload?: unknown,
+) => Promise<TFieldValues>;
+
 export type UseFormProps<
-  TFieldValues extends FieldValues = FieldValues,
+  TFieldValues extends UnPackAsyncDefaultValues<FieldValues> = UnPackAsyncDefaultValues<FieldValues>,
   TContext = any,
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-  defaultValues: DefaultValues<TFieldValues>;
+  defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
+  values: TFieldValues;
+  resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
@@ -124,9 +130,16 @@ export type FormState<TFieldValues extends FieldValues> = {
   isValidating: boolean;
   isValid: boolean;
   submitCount: number;
-  defaultValues?: Readonly<DeepPartial<TFieldValues>> | TFieldValues;
-  dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-  touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+  defaultValues?:
+    | UnPackAsyncDefaultValues<TFieldValues>
+    | undefined
+    | Readonly<DeepPartial<TFieldValues>>;
+  dirtyFields: Partial<
+    Readonly<FieldNamesMarkedBoolean<UnPackAsyncDefaultValues<TFieldValues>>>
+  >;
+  touchedFields: Partial<
+    Readonly<FieldNamesMarkedBoolean<UnPackAsyncDefaultValues<TFieldValues>>>
+  >;
   errors: FieldErrors<TFieldValues>;
 };
 
@@ -742,6 +755,7 @@ export type Control<
     action: boolean;
     watch: boolean;
   };
+  _reset: UseFormReset<TFieldValues>;
   _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;

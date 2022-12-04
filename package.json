@@ -42,7 +42,7 @@
     "test:web": "TEST_ENV=web yarn test",
     "test:server": "TEST_ENV=server yarn test",
     "test:native": "TEST_ENV=native yarn test",
-    "tsd": "tsd src/__typetest__",
+    "test:type": "tsd src/__typetest__",
     "e2e": "cypress run",
     "e2e:watch": "cypress open",
     "api-extractor": "api-extractor run --local",

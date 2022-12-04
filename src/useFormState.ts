@@ -63,21 +63,18 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   useSubscribe({
     disabled,
-    callback: React.useCallback(
-      (value: { name?: InternalFieldName }) =>
-        _mounted.current &&
-        shouldSubscribeByName(
-          _name.current as InternalFieldName,
-          value.name,
-          exact,
-        ) &&
-        shouldRenderFormState(value, _localProxyFormState.current) &&
-        updateFormState({
-          ...control._formState,
-          ...value,
-        }),
-      [control, exact],
-    ),
+    next: (value: { name?: InternalFieldName }) =>
+      _mounted.current &&
+      shouldSubscribeByName(
+        _name.current as InternalFieldName,
+        value.name,
+        exact,
+      ) &&
+      shouldRenderFormState(value, _localProxyFormState.current) &&
+      updateFormState({
+        ...control._formState,
+        ...value,
+      }),
     subject: control._subjects.state,
   });
 

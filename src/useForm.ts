@@ -3,6 +3,8 @@ import React from 'react';
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
+import deepEqual from './utils/deepEqual';
+import isFunction from './utils/isFunction';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 import { useSubscribe } from './useSubscribe';
 
@@ -55,7 +57,9 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     errors: {},
-    defaultValues: props.defaultValues,
+    defaultValues: isFunction(props.defaultValues)
+      ? undefined
+      : props.defaultValues,
   });
 
   if (!_formControl.current) {
@@ -72,19 +76,16 @@ export function useForm<
 
   useSubscribe({
     subject: control._subjects.state,
-    callback: React.useCallback(
-      (value: FieldValues) => {
-        if (shouldRenderFormState(value, control._proxyFormState, true)) {
-          control._formState = {
-            ...control._formState,
-            ...value,
-          };
+    next: (value: FieldValues) => {
+      if (shouldRenderFormState(value, control._proxyFormState, true)) {
+        control._formState = {
+          ...control._formState,
+          ...value,
+        };
 
-          updateFormState({ ...control._formState });
-        }
-      },
-      [control],
-    ),
+        updateFormState({ ...control._formState });
+      }
+    },
   });
 
   React.useEffect(() => {
@@ -100,6 +101,12 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    if (props.values && !deepEqual(props.values, control._defaultValues)) {
+      control._reset(props.values, control._options.resetOptions);
+    }
+  }, [props.values, control]);
 
   React.useEffect(() => {
     formState.submitCount && control._focusError();

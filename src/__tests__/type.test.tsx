@@ -6,10 +6,13 @@ import {
   FieldPath,
   FieldValues,
   Path,
+  PathValue,
   UseFormRegister,
 } from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 
 test('should not throw type error with path name', () => {
@@ -265,10 +268,124 @@ test('should support nullable field errors', () => {
   errors;
 });
 
+test('should work with generic component path assertion', () => {
+  function App<T extends FieldValues>() {
+    const { register } = useForm<T>();
+    const FIELD_DATA_EXTENSION = '__data';
+    const item = {
+      value: 'data',
+    };
+
+    register(`FieldName${FIELD_DATA_EXTENSION}` as FieldPath<T>, {
+      value: item as PathValue<T, Path<T>>,
+    });
+
+    return null;
+  }
+
+  App;
+});
+
+test('should infer async default values', () => {
+  function App() {
+    const {
+      register,
+      control,
+      formState,
+      setValue,
+      reset,
+      watch,
+      getValues,
+      getFieldState,
+      clearErrors,
+      unregister,
+      setFocus,
+      trigger,
+      setError,
+    } = useForm({
+      defaultValues: async () => {
+        return {
+          test: 'test',
+          test1: {
+            nested: 'test',
+          },
+          fieldArray: [{ test: '' }],
+        };
+      },
+    });
+    useFieldArray({
+      name: 'fieldArray' as const,
+      control,
+    });
+    useController({
+      name: 'test1.nested',
+      control,
+    });
+    useWatch({
+      name: 'test1',
+      control,
+    });
+    useFormState({
+      name: 'fieldArray',
+      control,
+    });
+
+    setValue('test', 'data');
+    setValue('test1.nested', 'data');
+    reset({
+      test: 'test',
+      test1: 'test1',
+    });
+
+    watch('test');
+    watch('test1.nested');
+
+    getValues('test');
+    getValues('test1.nested');
+
+    getFieldState('test');
+    getFieldState('test1.nested');
+
+    clearErrors('test');
+    clearErrors('test1.nested');
+
+    unregister('test');
+    unregister('test1.nested');
+
+    setFocus('test');
+    setFocus('test1.nested');
+
+    trigger('test');
+    trigger('test1.nested');
+
+    setError('test', { type: 'test ' });
+    setError('test1.nested', { type: 'test ' });
+
+    return (
+      <form>
+        <input {...register('test')} />
+        <Controller render={() => <input />} name={'test1'} control={control} />
+        <p>{formState.errors?.test?.message}</p>
+        <p>{formState.errors?.test1?.message}</p>
+        <p>{formState.touchedFields.test}</p>
+        <p>{formState.touchedFields.test1?.nested}</p>
+        <p>{formState.dirtyFields.test}</p>
+        <p>{formState.dirtyFields.test1?.nested}</p>
+      </form>
+    );
+  }
+
+  App;
+});
+
 test('should provide correct type for validate function with useFieldArray', () => {
   const App = () => {
     const { control } = useForm<{
       test: {
+        first: string;
+        last: string;
+      }[];
+      test1: {
         first: string;
         last: string;
       }[];
@@ -288,6 +405,17 @@ test('should provide correct type for validate function with useFieldArray', () 
       rules: {
         validate: (data) => {
           return !!data.find((test) => test.first && test.last);
+        },
+      },
+    });
+    useFieldArray({
+      control,
+      name: 'test1',
+      rules: {
+        validate: {
+          test: (data) => {
+            return !!data.find((test) => test.first && test.last);
+          },
         },
       },
     });

@@ -1718,6 +1718,178 @@ describe('useForm', () => {
     screen.getByText('stateValidation: false');
   });
 
+  it('should update defaultValues async', async () => {
+    const App = () => {
+      const { register } = useForm({
+        defaultValues: async () => {
+          await sleep(100);
+
+          return {
+            test: 'test',
+          };
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
+  it('should update async default values for controlled components', async () => {
+    const App = () => {
+      const { control } = useForm({
+        defaultValues: async () => {
+          await sleep(100);
+
+          return {
+            test: 'test',
+          };
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            render={({ field }) => <input {...field} />}
+            defaultValue=""
+            name={'test'}
+          />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
+  it('should update async form values', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    function Loader() {
+      const [values, setValues] = React.useState<FormValues>({
+        test: '',
+      });
+
+      const loadData = React.useCallback(async () => {
+        await sleep(100);
+
+        setValues({
+          test: 'test',
+        });
+      }, []);
+
+      React.useEffect(() => {
+        loadData();
+      }, [loadData]);
+
+      return <App values={values} />;
+    }
+
+    const App = ({ values }: { values: FormValues }) => {
+      const { register } = useForm({
+        values,
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<Loader />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
+  it('should only update async form values which are not interacted', async () => {
+    type FormValues = {
+      test: string;
+      test1: string;
+    };
+
+    function Loader() {
+      const [values, setValues] = React.useState<FormValues>({
+        test: '',
+        test1: '',
+      });
+
+      const loadData = React.useCallback(async () => {
+        await sleep(100);
+
+        setValues({
+          test: 'test',
+          test1: 'data',
+        });
+      }, []);
+
+      React.useEffect(() => {
+        loadData();
+      }, [loadData]);
+
+      return <App values={values} />;
+    }
+
+    const App = ({ values }: { values: FormValues }) => {
+      const { register } = useForm({
+        values,
+        resetOptions: {
+          keepDirtyValues: true,
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <input {...register('test1')} />
+        </form>
+      );
+    };
+
+    render(<Loader />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: {
+        value: 'test1',
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test1');
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+      ).toEqual('data');
+    });
+  });
+
   it('should update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 
