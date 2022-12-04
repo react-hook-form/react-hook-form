@@ -5,7 +5,7 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-  strategy:
+    strategy:
       matrix:
         # Do we want to run with multiple versions of node?
         node-version: [16]
@@ -33,8 +33,8 @@ jobs:
           pnpm lint
           pnpm type
 
+        # What is --ci?
       - name: Test
-          # What is --ci?
         run: |
           pnpm run test --ci
           pnpm test:type
