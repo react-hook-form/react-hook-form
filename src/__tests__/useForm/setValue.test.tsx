@@ -40,7 +40,7 @@ describe('setValue', () => {
 
     expect(elm).not.toHaveValue();
 
-    result.current.setValue('test', undefined);
+    result.current.unregister('test');
 
     expect(elm).not.toHaveValue();
   });
