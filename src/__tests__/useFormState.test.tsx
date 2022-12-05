@@ -118,6 +118,57 @@ describe('useFormState', () => {
     expect(count).toEqual(1);
   });
 
+  it('should update isValidating correctly', async () => {
+    function Child() {
+      const { isDirty, isValid, isValidating } = useFormState();
+      const enabled = !isValidating && isDirty && isValid;
+
+      return (
+        <button disabled={!enabled} type="submit">
+          Submit
+        </button>
+      );
+    }
+
+    function App() {
+      const formFunctions = useForm({
+        mode: 'onChange',
+      });
+      const { register } = formFunctions;
+
+      return (
+        <FormProvider {...formFunctions}>
+          <form>
+            <input {...register('value', { required: true })} />
+            <Child />
+          </form>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '1',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button')).not.toBeDisabled();
+    });
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '12',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button')).not.toBeDisabled();
+    });
+  });
+
   it('should update formState separately with useFormState', async () => {
     let count = 0;
     let testCount = 0;
