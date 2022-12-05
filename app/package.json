@@ -1,5 +1,6 @@
 {
-  "name": "react-hook-form",
+  "name": "@react-hook-for/app",
+  "private": true,
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --force",
@@ -13,7 +14,7 @@
     "joi": "^17.5.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-hook-form": "file:..",
+    "react-hook-form": "workspace:*",
     "react-router-dom": "^6.2.1",
     "react-select": "^5.2.2",
     "yup": "^0.32.8"

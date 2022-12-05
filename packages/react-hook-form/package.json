@@ -1,12 +1,43 @@
 {
-  "name": "@react-hook-form/workspace",
+  "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "private": "true",
-  "version": "0.0.1",
+  "version": "7.40.0",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.mjs",
+  "umd:main": "dist/index.umd.js",
+  "unpkg": "dist/index.umd.js",
+  "jsdelivr": "dist/index.umd.js",
+  "jsnext:main": "dist/index.esm.mjs",
+  "source": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "dist/__tests__"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.mjs",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "scripts": {
-    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css}\"",
-    "lint": "eslint '**/*.{js,ts,tsx}'",
-    "lint:fix": "pnpm lint --fix",
+    "clean": "rimraf dist",
+    "prebuild": "pnpm clean",
+    "build": "pnpm build:modern",
+    "build:watch": "pnpm build:modern -w",
+    "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
+    "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
+    "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
+    "type": "tsc --noEmit",
+    "jest-preview": "jest-preview",
+    "test": "jest --config ./scripts/jest/jest.config.js",
+    "test:coverage": "pnpm test -- --coverage",
+    "test:watch": "pnpm test -- --onlyChanged --watch",
+    "test:web": "TEST_ENV=web pnpm test",
+    "test:type": "tsd src/__typetest__",
     "e2e": "cypress run",
     "e2e:watch": "cypress open",
     "api-extractor": "api-extractor run --local",
@@ -14,6 +45,7 @@
     "api-extractor:ci": "node scripts/apiExtractor.js",
     "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "pnpm install && pnpm lint:fix && pnpm type && pnpm test && pnpm build",
+    "bundlewatch": "pnpm build:modern && bundlewatch",
     "start": "pnpm build:esm && pnpm --dir ./app install && pnpm --dir ./app run dev"
   },
   "keywords": [
