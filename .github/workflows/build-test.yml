@@ -5,24 +5,40 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Do we want to run with multiple versions of node?
+        node-version: [16]
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Lint
         run: |
-          yarn lint
-          yarn type
+          pnpm lint
+          pnpm type
 
+        # What is --ci?
       - name: Test
         run: |
-          yarn test --ci
-          yarn test:type
+          pnpm run test --ci
+          pnpm test:type
 
       - name: Bundle watch
         run: |
-          yarn bundlewatch
+          pnpm bundlewatch

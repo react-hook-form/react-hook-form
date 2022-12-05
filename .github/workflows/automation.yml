@@ -7,9 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
-          start: npm run start
+          start: pnpm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
