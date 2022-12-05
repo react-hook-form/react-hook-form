@@ -175,7 +175,6 @@ export function createFormControl<
 
   const _updateIsValidating = (value: boolean) =>
     _proxyFormState.isValidating &&
-    value !== _formState.isValidating &&
     _subjects.state.next({
       isValidating: value,
     });
