@@ -252,6 +252,7 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = {
     isDirty: boolean;
+    isLoading: boolean;
     isSubmitted: boolean;
     isSubmitSuccessful: boolean;
     isSubmitting: boolean;
@@ -778,7 +779,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:432:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
