@@ -11,28 +11,34 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
  * Helper type for recursively constructing paths through a type.
  * See {@link Path}
  */
-type PathImpl<K extends string | number, V> = V extends
+type PathImpl<K extends string | number, V, TraversedTypes> = V extends
   | Primitive
   | BrowserNativeObject
   ? `${K}`
-  : `${K}` | `${K}.${Path<V>}`;
+  : V extends TraversedTypes
+  ? [Extract<V, TraversedTypes>] extends [Extract<TraversedTypes, V>]
+    ? `${K}`
+    : `${K}` | `${K}.${Path<V, TraversedTypes | V>}`
+  : `${K}` | `${K}.${Path<V, TraversedTypes | V>}`;
 
 /**
  * Type which eagerly collects all paths through a type
  * @typeParam T - type which should be introspected
+ * @typeParam TraversedTypes - types which have already been traversed to avoid infinite
+ * recursion
  * @example
  * ```
  * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
  * ```
  */
-export type Path<T> = T extends ReadonlyArray<infer V>
+export type Path<T, TraversedTypes = never> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
+        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
       }[TupleKeys<T>]
-    : PathImpl<ArrayKey, V>
+    : PathImpl<ArrayKey, V, TraversedTypes>
   : {
-      [K in keyof T]-?: PathImpl<K & string, T[K]>;
+      [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
     }[keyof T];
 
 /**
@@ -46,33 +52,45 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<
  * Helper type for recursively constructing paths through a type.
  * See {@link ArrayPath}
  */
-type ArrayPathImpl<K extends string | number, V> = V extends
+type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
   | Primitive
   | BrowserNativeObject
   ? never
   : V extends ReadonlyArray<infer U>
   ? U extends Primitive | BrowserNativeObject
     ? never
-    : `${K}` | `${K}.${ArrayPath<V>}`
-  : `${K}.${ArrayPath<V>}`;
+    : V extends TraversedTypes
+    ? [Extract<V, TraversedTypes>] extends [Extract<TraversedTypes, V>]
+      ? never
+      : `${K}` | `${K}.${ArrayPath<V, TraversedTypes | V>}`
+    : `${K}` | `${K}.${ArrayPath<V, TraversedTypes | V>}`
+  : V extends TraversedTypes
+  ? [Extract<V, TraversedTypes>] extends [Extract<TraversedTypes, V>]
+    ? never
+    : `${K}.${ArrayPath<V, TraversedTypes | V>}`
+  : `${K}.${ArrayPath<V, TraversedTypes | V>}`;
 
 /**
  * Type which eagerly collects all paths through a type which point to an array
  * type.
  * @typeParam T - type which should be introspected
+ * @typeParam TraversedTypes - types which have already been traversed to avoid infinite
+ * recursion
  * @example
  * ```
  * Path<{foo: {bar: string[], baz: number[]}}> = 'foo.bar' | 'foo.baz'
  * ```
  */
-export type ArrayPath<T> = T extends ReadonlyArray<infer V>
+export type ArrayPath<T, TraversedTypes = never> = T extends ReadonlyArray<
+  infer V
+>
   ? IsTuple<T> extends true
     ? {
-        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
+        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
       }[TupleKeys<T>]
-    : ArrayPathImpl<ArrayKey, V>
+    : ArrayPathImpl<ArrayKey, V, TraversedTypes>
   : {
-      [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
+      [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
     }[keyof T];
 
 /**
