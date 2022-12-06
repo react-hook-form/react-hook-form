@@ -19,10 +19,10 @@ export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: b
 // Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type ArrayPath<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
-    [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
-}[TupleKeys<T>] : ArrayPathImpl<ArrayKey, V> : {
-    [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
+export type ArrayPath<T, TraversedTypes = never> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
+    [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
+}[TupleKeys<T>] : ArrayPathImpl<ArrayKey, V, TraversedTypes> : {
+    [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
 }[keyof T];
 
 // @public (undocumented)
@@ -75,7 +75,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
 };
 
 // @public
-export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends Path<UnPackAsyncDefaultValues<TFieldValues>> = Path<UnPackAsyncDefaultValues<TFieldValues>>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
+export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends Path<UnPackAsyncDefaultValues<TFieldValues>, never> = Path<UnPackAsyncDefaultValues<TFieldValues>, never>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
 
 // @public (undocumented)
 export type ControllerFieldState = {
@@ -368,10 +368,10 @@ export type Noop = () => void;
 // Warning: (ae-forgotten-export) The symbol "PathImpl" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Path<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
-    [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
-}[TupleKeys<T>] : PathImpl<ArrayKey, V> : {
-    [K in keyof T]-?: PathImpl<K & string, T[K]>;
+export type Path<T, TraversedTypes = never> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
+    [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
+}[TupleKeys<T>] : PathImpl<ArrayKey, V, TraversedTypes> : {
+    [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
 }[keyof T];
 
 // @public
