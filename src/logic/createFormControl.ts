@@ -104,7 +104,7 @@ export function createFormControl<
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
-    isLoading: false,
+    isLoading: true,
     isValidating: false,
     isSubmitted: false,
     isSubmitting: false,
@@ -1244,9 +1244,6 @@ export function createFormControl<
   };
 
   if (isFunction(_options.defaultValues)) {
-    _subjects.state.next({
-      isLoading: true,
-    });
     _options.defaultValues().then((values) => {
       reset(values, _options.resetOptions);
       _subjects.state.next({
