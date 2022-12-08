@@ -181,12 +181,10 @@ export function useWatch<TFieldValues extends FieldValues>(
   });
 
   const [value, updateValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? control._getWatch(name as InternalFieldName)
-      : control._getWatch(
-          name as InternalFieldName,
-          defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
-        ),
+    control._getWatch(
+      name as InternalFieldName,
+      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
+    ),
   );
 
   React.useEffect(() => control._removeUnmounted());
