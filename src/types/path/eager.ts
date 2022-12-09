@@ -1,6 +1,7 @@
 import { FieldValues } from '../fields';
 import {
   BrowserNativeObject,
+  IsExactlyAssignable,
   Primitive,
   UnPackAsyncDefaultValues,
 } from '../utils';
@@ -9,29 +10,29 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
 
 /**
  * Helper type for recursively constructing paths through a type.
+ * This actually constructs the strings and recurses into nested
+ * object types.
+ *
  * See {@link Path}
  */
 type PathImpl<K extends string | number, V, TraversedTypes> = V extends
   | Primitive
   | BrowserNativeObject
   ? `${K}`
-  : V extends TraversedTypes
-  ? [Extract<V, TraversedTypes>] extends [Extract<TraversedTypes, V>]
-    ? `${K}`
-    : `${K}` | `${K}.${Path<V, TraversedTypes | V>}`
-  : `${K}` | `${K}.${Path<V, TraversedTypes | V>}`;
+  : // Check so that we don't recurse into the same type
+  // by ensuring that the types are mutually assignable
+  // mutually required to avoid false positives of subtypes
+  IsExactlyAssignable<V, TraversedTypes> extends true
+  ? `${K}`
+  : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
 
 /**
- * Type which eagerly collects all paths through a type
- * @typeParam T - type which should be introspected
- * @typeParam TraversedTypes - types which have already been traversed to avoid infinite
- * recursion
- * @example
- * ```
- * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
- * ```
+ * Helper type for recursively constructing paths through a type.
+ * This obsucres the internal type param TraversedTypes from exported contract.
+ *
+ * See {@link Path}
  */
-export type Path<T, TraversedTypes = never> = T extends ReadonlyArray<infer V>
+type PathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
@@ -42,6 +43,18 @@ export type Path<T, TraversedTypes = never> = T extends ReadonlyArray<infer V>
     }[keyof T];
 
 /**
+ * Type which eagerly collects all paths through a type
+ * @typeParam T - type which should be introspected
+ * @example
+ * ```
+ * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
+ * ```
+ */
+// We want to explode the union type and process each individually
+// so assignable types don't leak onto the stack from the base.
+export type Path<T> = T extends any ? PathInternal<T> : never;
+
+/**
  * See {@link Path}
  */
 export type FieldPath<TFieldValues extends FieldValues> = Path<
@@ -50,6 +63,9 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<
 
 /**
  * Helper type for recursively constructing paths through a type.
+ * This actually constructs the strings and recurses into nested
+ * object types.
+ *
  * See {@link ArrayPath}
  */
 type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
@@ -59,31 +75,23 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
   : V extends ReadonlyArray<infer U>
   ? U extends Primitive | BrowserNativeObject
     ? never
-    : V extends TraversedTypes
-    ? [Extract<V, TraversedTypes>] extends [Extract<TraversedTypes, V>]
-      ? never
-      : `${K}` | `${K}.${ArrayPath<V, TraversedTypes | V>}`
-    : `${K}` | `${K}.${ArrayPath<V, TraversedTypes | V>}`
-  : V extends TraversedTypes
-  ? [Extract<V, TraversedTypes>] extends [Extract<TraversedTypes, V>]
+    : // Check so that we don't recurse into the same type
+    // by ensuring that the types are mutually assignable
+    // mutually required to avoid false positives of subtypes
+    IsExactlyAssignable<V, TraversedTypes> extends true
     ? never
-    : `${K}.${ArrayPath<V, TraversedTypes | V>}`
-  : `${K}.${ArrayPath<V, TraversedTypes | V>}`;
+    : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
+  : IsExactlyAssignable<V, TraversedTypes> extends true
+  ? never
+  : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
 
 /**
- * Type which eagerly collects all paths through a type which point to an array
- * type.
- * @typeParam T - type which should be introspected
- * @typeParam TraversedTypes - types which have already been traversed to avoid infinite
- * recursion
- * @example
- * ```
- * Path<{foo: {bar: string[], baz: number[]}}> = 'foo.bar' | 'foo.baz'
- * ```
+ * Helper type for recursively constructing paths through a type.
+ * This obsucres the internal type param TraversedTypes from exported contract.
+ *
+ * See {@link ArrayPath}
  */
-export type ArrayPath<T, TraversedTypes = never> = T extends ReadonlyArray<
-  infer V
->
+type ArrayPathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
@@ -92,6 +100,19 @@ export type ArrayPath<T, TraversedTypes = never> = T extends ReadonlyArray<
   : {
       [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
     }[keyof T];
+
+/**
+ * Type which eagerly collects all paths through a type which point to an array
+ * type.
+ * @typeParam T - type which should be introspected.
+ * @example
+ * ```
+ * Path<{foo: {bar: string[], baz: number[]}}> = 'foo.bar' | 'foo.baz'
+ * ```
+ */
+// We want to explode the union type and process each individually
+// so assignable types don't leak onto the stack from the base.
+export type ArrayPath<T> = T extends any ? ArrayPathInternal<T> : never;
 
 /**
  * See {@link ArrayPath}

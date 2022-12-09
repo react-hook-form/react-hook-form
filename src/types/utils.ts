@@ -77,6 +77,26 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
  */
 export type IsNever<T> = [T] extends [never] ? true : false;
 
+/**
+ * Checks whether T1 can be exactly (mutually) assigned to T2
+ * @typeParam T1 - type to check
+ * @typeParam T2 - type to check against
+ * ```
+ * IsExactlyAssignable<string, string> = true
+ * IsExactlyAssignable<'foo', 'foo'> = true
+ * IsExactlyAssignable<string, number> = false
+ * IsExactlyAssignable<string, number> = false
+ * IsExactlyAssignable<string, 'foo'> = false
+ * IsExactlyAssignable<'foo', string> = false
+ * IsExactlyAssignable<'foo' | 'bar', 'foo'> = boolean // 'foo' is assignable, but 'bar' is not (true | false) -> boolean
+ * ```
+ */
+export type IsExactlyAssignable<T1, T2> = T1 extends T2
+  ? T1 extends Extract<T2, T1>
+    ? true
+    : false
+  : false;
+
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
   : T extends BrowserNativeObject | NestedValue
