@@ -17,6 +17,13 @@ describe('deepEqual', () => {
 
     expect(deepEqual([], [{}])).toBeFalsy();
     expect(deepEqual(new Date(), new Date('1999'))).toBeFalsy();
+    expect(deepEqual(new Date(), null)).toBeFalsy();
+    expect(
+      deepEqual(
+        new Date('2022-12-09T09:00:00.000Z'),
+        new Date('2022-12-09T09:00:00.000Z'),
+      ),
+    ).toBeTruthy();
   });
 
   it('should return false when either type is primitive', () => {
