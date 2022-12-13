@@ -1,12 +1,24 @@
 import { FieldValues } from '../fields';
 import {
   BrowserNativeObject,
-  IsExactlyAssignable,
+  IsAny,
+  IsEqual,
   Primitive,
   UnPackAsyncDefaultValues,
 } from '../utils';
 
 import { ArrayKey, IsTuple, TupleKeys } from './common';
+
+/**
+ * Helper function to break apart T1 and check if any are equal to T2
+ *
+ * See {@link IsEqual}
+ */
+type AnyIsEqual<T1, T2> = T1 extends T2
+  ? IsEqual<T1, T2> extends true
+    ? true
+    : never
+  : never;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -22,7 +34,7 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
   : // Check so that we don't recurse into the same type
   // by ensuring that the types are mutually assignable
   // mutually required to avoid false positives of subtypes
-  IsExactlyAssignable<V, TraversedTypes> extends true
+  true extends AnyIsEqual<TraversedTypes, V>
   ? `${K}`
   : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
 
@@ -71,17 +83,21 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<
 type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
   | Primitive
   | BrowserNativeObject
-  ? never
+  ? IsAny<V> extends true
+    ? string
+    : never
   : V extends ReadonlyArray<infer U>
   ? U extends Primitive | BrowserNativeObject
-    ? never
+    ? IsAny<V> extends true
+      ? string
+      : never
     : // Check so that we don't recurse into the same type
     // by ensuring that the types are mutually assignable
     // mutually required to avoid false positives of subtypes
-    IsExactlyAssignable<V, TraversedTypes> extends true
+    true extends AnyIsEqual<TraversedTypes, V>
     ? never
     : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
-  : IsExactlyAssignable<V, TraversedTypes> extends true
+  : true extends AnyIsEqual<TraversedTypes, V>
   ? never
   : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
 

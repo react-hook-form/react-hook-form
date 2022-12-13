@@ -82,17 +82,17 @@ export type IsNever<T> = [T] extends [never] ? true : false;
  * @typeParam T1 - type to check
  * @typeParam T2 - type to check against
  * ```
- * IsExactlyAssignable<string, string> = true
- * IsExactlyAssignable<'foo', 'foo'> = true
- * IsExactlyAssignable<string, number> = false
- * IsExactlyAssignable<string, number> = false
- * IsExactlyAssignable<string, 'foo'> = false
- * IsExactlyAssignable<'foo', string> = false
- * IsExactlyAssignable<'foo' | 'bar', 'foo'> = boolean // 'foo' is assignable, but 'bar' is not (true | false) -> boolean
+ * IsEqual<string, string> = true
+ * IsEqual<'foo', 'foo'> = true
+ * IsEqual<string, number> = false
+ * IsEqual<string, number> = false
+ * IsEqual<string, 'foo'> = false
+ * IsEqual<'foo', string> = false
+ * IsEqual<'foo' | 'bar', 'foo'> = boolean // 'foo' is assignable, but 'bar' is not (true | false) -> boolean
  * ```
  */
-export type IsExactlyAssignable<T1, T2> = T1 extends T2
-  ? T1 extends Extract<T2, T1>
+export type IsEqual<T1, T2> = T1 extends T2
+  ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2
     ? true
     : false
   : false;
