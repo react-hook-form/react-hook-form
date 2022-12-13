@@ -743,7 +743,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type Validate<TFieldValue> = (value: TFieldValue) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
-export type ValidateResult = Message | Message[] | boolean | undefined;
+export type ValidateResult = Message | boolean | undefined;
 
 // @public (undocumented)
 export type ValidationMode = {
