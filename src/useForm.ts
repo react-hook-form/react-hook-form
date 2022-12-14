@@ -49,6 +49,7 @@ export function useForm<
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
+    isLoading: true,
     isSubmitted: false,
     isSubmitting: false,
     isSubmitSuccessful: false,
