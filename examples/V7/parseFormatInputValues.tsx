@@ -24,7 +24,7 @@ export default function App() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller
         name="emails"
-        as={ParseFormatTextarea}
+        render={ParseFormatTextarea}
         control={control}
         defaultValue={[]}
       />

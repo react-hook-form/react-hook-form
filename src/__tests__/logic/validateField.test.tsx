@@ -61,6 +61,22 @@ describe('validateField', () => {
       await validateField(
         {
           _f: {
+            valueAsNumber: true,
+            mount: true,
+            name: 'test',
+            ref: { name: 'test' },
+            required: 'required',
+          },
+        },
+        2,
+        false,
+      ),
+    ).toEqual({});
+
+    expect(
+      await validateField(
+        {
+          _f: {
             mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
