@@ -51,6 +51,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const _mounted = React.useRef(true);
   const _localProxyFormState = React.useRef({
     isDirty: false,
+    isLoading: false,
     dirtyFields: false,
     touchedFields: false,
     isValidating: false,
