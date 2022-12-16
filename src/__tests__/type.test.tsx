@@ -60,7 +60,7 @@ test('should not throw type error with optional array fields', () => {
 
         {fields.map((field, index) => (
           <div key={field.id}>
-            <input {...register(`things.${index}.name`)} />
+            <input {...register(`things.${index}.name` as const)} />
           </div>
         ))}
         {fieldArray.fields.map((item) => {

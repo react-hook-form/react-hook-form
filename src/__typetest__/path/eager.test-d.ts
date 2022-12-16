@@ -23,6 +23,25 @@ import { _, Depth3Type } from '../__fixtures__';
     const actual = _ as Path<{ foo: string[] }>;
     expectType<'foo' | `foo.${number}`>(actual);
   }
+
+  /** it should be able to avoid self-referencing/recursion, not crashing on self-referencing types. */ {
+    type Foo = { foo: Foo };
+    const actual = _ as Path<Foo>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not erroneously match subtypes as traversed */ {
+    type Foo =
+      | {
+          foo?: Foo;
+          bar?: {
+            baz: 1;
+          };
+        }
+      | {};
+    const actual = _ as Path<Foo>;
+    expectType<'foo' | 'bar' | 'bar.baz'>(actual);
+  }
 }
 
 /** {@link ArrayPath} */ {
@@ -41,6 +60,25 @@ import { _, Depth3Type } from '../__fixtures__';
   /** it should include paths through arrays */ {
     const actual = _ as ArrayPath<{ foo: string[][][] }>;
     expectType<'foo' | `foo.${number}`>(actual);
+  }
+
+  /** it should be able to avoid self-referencing/recursion, not crashing on self-referencing types. */ {
+    type Foo = { foo: Foo[] };
+    const actual = _ as ArrayPath<Foo>;
+    expectType<'foo'>(actual);
+  }
+
+  /** it should not erroneously match subtypes as traversed */ {
+    type Foo =
+      | {
+          bar?: {
+            baz?: 1;
+            fooArr?: Foo[];
+          };
+        }
+      | {};
+    const actual = _ as ArrayPath<Foo>;
+    expectType<'bar.fooArr'>(actual);
   }
 }
 
