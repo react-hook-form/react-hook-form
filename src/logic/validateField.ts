@@ -17,6 +17,7 @@ import isObject from '../utils/isObject';
 import isRadioInput from '../utils/isRadioInput';
 import isRegex from '../utils/isRegex';
 import isString from '../utils/isString';
+import isUndefined from '../utils/isUndefined';
 
 import appendErrors from './appendErrors';
 import getCheckboxValue from './getCheckboxValue';
@@ -61,7 +62,9 @@ export default async <T extends NativeFieldValue>(
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    ((valueAsNumber || isFileInput(ref)) && !ref.value) ||
+    ((valueAsNumber || isFileInput(ref)) &&
+      isUndefined(ref.value) &&
+      isUndefined(inputValue)) ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(

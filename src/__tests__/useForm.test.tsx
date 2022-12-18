@@ -1553,7 +1553,7 @@ describe('useForm', () => {
           mode: 'onChange',
           resolver: async (values) => {
             if (!values.test) {
-              const result = {
+              return {
                 values: {},
                 errors: {
                   test: {
@@ -1561,7 +1561,6 @@ describe('useForm', () => {
                   },
                 },
               };
-              return result;
             }
 
             return {
@@ -1720,7 +1719,10 @@ describe('useForm', () => {
 
   it('should update defaultValues async', async () => {
     const App = () => {
-      const { register } = useForm({
+      const {
+        register,
+        formState: { isLoading },
+      } = useForm({
         defaultValues: async () => {
           await sleep(100);
 
@@ -1733,6 +1735,7 @@ describe('useForm', () => {
       return (
         <form>
           <input {...register('test')} />
+          <p>{isLoading ? 'loading...' : 'done'}</p>
         </form>
       );
     };
@@ -1740,9 +1743,17 @@ describe('useForm', () => {
     render(<App />);
 
     await waitFor(() => {
+      screen.getByText('loading...');
+    });
+
+    await waitFor(() => {
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         'test',
       );
+    });
+
+    await waitFor(() => {
+      screen.getByText('done');
     });
   });
 
