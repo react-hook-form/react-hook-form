@@ -12,30 +12,30 @@ Here is a quick guide to doing code contributions to the library.
 
 3. Install packages by running:
 
-   > yarn
+   > pnpm install
 
 4. If you've added a code that should be tested, ensure the test suite still passes.
 
-   > yarn test && yarn tsd
+   > pnpm test && pnpm tsd
 
 5. Try to write some unit tests to cover as much of your code as possible.
 
 6. Ensure your code lints without errors.
 
-   > yarn lint
+   > pnpm lint
 
 7. Ensure the automation suite passes by running two following commands in parallel:
 
-   > yarn start
-   > yarn cypress
+   > pnpm start
+   > pnpm cypress
 
 8. Ensure build passes.
 
-   > yarn build
+   > pnpm build
 
 9. Ensure exports are documented. (requires build)
 
-   > yarn api-extractor
+   > pnpm api-extractor
 
 10. Push your branch: `git push -u origin your-meaningful-branch-name`
 
@@ -45,7 +45,7 @@ Here is a quick guide to doing code contributions to the library.
 
 ## Coding style
 
-Please follow the coding style of the project. React Hook Form uses eslint and prettier. If possible, enable their respective plugins in your editor to get real-time feedback. The linting can be run manually with the following command: `yarn lint:fix` and `yarn prettier:fix`
+Please follow the coding style of the project. React Hook Form uses eslint and prettier. If possible, enable their respective plugins in your editor to get real-time feedback. The linting can be run manually with the following command: `pnpm lint:fix` and `pnpm prettier:fix`
 
 ## Visual Debugging Jest
 
@@ -68,11 +68,11 @@ it('should render correctly', () => {
 
 2. Open Jest Preview Dashboard
 
-   > yarn jest-preview
+   > pnpm jest-preview
 
 3. Run the tests
 
-   > yarn test:watch
+   > pnpm test:watch
 
 The browser will reloads automatically when `debug()` is executed.
 
