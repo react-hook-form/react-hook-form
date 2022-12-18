@@ -832,7 +832,7 @@ describe('useForm', () => {
         const { result } = renderHook(() =>
           useForm<{
             test: string | null;
-            test1?: string;
+            test1: string;
           }>(),
         );
 
@@ -844,7 +844,7 @@ describe('useForm', () => {
         });
 
         act(() => {
-          result.current.setValue('test1', undefined);
+          result.current.unregister('test1');
         });
 
         const test = result.current.watch('test');
