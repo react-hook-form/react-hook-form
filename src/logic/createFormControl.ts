@@ -501,6 +501,7 @@ export function createFormControl<
           : defaultValue),
       },
       isGlobal,
+      defaultValue,
     );
 
   const _getFieldArray = <TFieldArrayValues>(

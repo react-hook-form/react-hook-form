@@ -1,16 +1,17 @@
-import { FieldValues, Names } from '../types';
+import { DeepPartial, FieldValues, Names } from '../types';
 import get from '../utils/get';
 import isString from '../utils/isString';
 
-export default (
+export default <T>(
   names: string | string[] | undefined,
   _names: Names,
   formValues?: FieldValues,
   isGlobal?: boolean,
+  defaultValue?: DeepPartial<T>,
 ) => {
   if (isString(names)) {
     isGlobal && _names.watch.add(names);
-    return get(formValues, names);
+    return get(formValues, names, defaultValue);
   }
 
   if (Array.isArray(names)) {
