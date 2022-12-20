@@ -314,6 +314,7 @@ export type KeepStateOptions = Partial<{
     keepValues: boolean;
     keepDefaultValues: boolean;
     keepIsSubmitted: boolean;
+    keepIsSubmitSuccessful: boolean;
     keepTouched: boolean;
     keepIsValid: boolean;
     keepSubmitCount: boolean;
@@ -779,7 +780,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:432:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:433:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
