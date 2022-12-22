@@ -18,13 +18,7 @@ import {
   FieldPathValues,
 } from './path';
 import { Resolver } from './resolvers';
-import {
-  DeepMap,
-  DeepPartial,
-  NonUndefined,
-  Noop,
-  UnPackAsyncDefaultValues,
-} from './utils';
+import { DeepMap, DeepPartial, Noop, UnPackAsyncDefaultValues } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -529,7 +523,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  value: NonUndefined<FieldPathValue<TFieldValues, TFieldName>>,
+  value: FieldPathValue<TFieldValues, TFieldName>,
   options?: SetValueConfig,
 ) => void;
 
