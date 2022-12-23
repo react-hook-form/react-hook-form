@@ -72,7 +72,9 @@ describe('validateField', () => {
             required: 'required',
           },
         },
-        2,
+        {
+          test: 2,
+        },
         false,
       ),
     ).toEqual({});
@@ -641,7 +643,9 @@ describe('validateField', () => {
             },
           },
         },
-        '2022-W18',
+        {
+          test: '2022-W18',
+        },
         false,
       ),
     ).toEqual({
@@ -673,7 +677,9 @@ describe('validateField', () => {
             },
           },
         },
-        '14:00',
+        {
+          test: '14:00',
+        },
         false,
       ),
     ).toEqual({
@@ -916,7 +922,9 @@ describe('validateField', () => {
             },
           },
         },
-        '2022-W15',
+        {
+          test: '2022-W15',
+        },
         false,
       ),
     ).toEqual({
@@ -948,7 +956,9 @@ describe('validateField', () => {
             },
           },
         },
-        '12:00',
+        {
+          test: '12:00',
+        },
         false,
       ),
     ).toEqual({
