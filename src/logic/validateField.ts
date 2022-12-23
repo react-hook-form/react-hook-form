@@ -19,6 +19,7 @@ import isObject from '../utils/isObject';
 import isRadioInput from '../utils/isRadioInput';
 import isRegex from '../utils/isRegex';
 import isString from '../utils/isString';
+import isUndefined from '../utils/isUndefined';
 
 import appendErrors from './appendErrors';
 import getCheckboxValue from './getCheckboxValue';
@@ -55,7 +56,7 @@ export default async <T extends FieldValues>(
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
   const setCustomValidity = (message?: string | boolean) => {
     if (shouldUseNativeValidation && inputRef.reportValidity) {
-      inputRef.setCustomValidity(isBoolean(message) ? '' : message || ' ');
+      inputRef.setCustomValidity(isBoolean(message) ? '' : message || '');
       inputRef.reportValidity();
     }
   };
@@ -64,7 +65,9 @@ export default async <T extends FieldValues>(
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
-    ((valueAsNumber || isFileInput(ref)) && !ref.value) ||
+    ((valueAsNumber || isFileInput(ref)) &&
+      isUndefined(ref.value) &&
+      isUndefined(inputValue)) ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
@@ -135,11 +138,25 @@ export default async <T extends FieldValues>(
     } else {
       const valueDate =
         (ref as HTMLInputElement).valueAsDate || new Date(inputValue as string);
-      if (isString(maxOutput.value)) {
-        exceedMax = valueDate > new Date(maxOutput.value);
+      const convertTimeToDate = (time: unknown) =>
+        new Date(new Date().toDateString() + ' ' + time);
+      const isTime = ref.type == 'time';
+      const isWeek = ref.type == 'week';
+
+      if (isString(maxOutput.value) && inputValue) {
+        exceedMax = isTime
+          ? convertTimeToDate(inputValue) > convertTimeToDate(maxOutput.value)
+          : isWeek
+          ? inputValue > maxOutput.value
+          : valueDate > new Date(maxOutput.value);
       }
-      if (isString(minOutput.value)) {
-        exceedMin = valueDate < new Date(minOutput.value);
+
+      if (isString(minOutput.value) && inputValue) {
+        exceedMin = isTime
+          ? convertTimeToDate(inputValue) < convertTimeToDate(minOutput.value)
+          : isWeek
+          ? inputValue < minOutput.value
+          : valueDate < new Date(minOutput.value);
       }
     }
 

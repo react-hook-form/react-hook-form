@@ -5,7 +5,7 @@ import { Subject } from './utils/createSubject';
 type Props<T> = {
   disabled?: boolean;
   subject: Subject<T>;
-  callback: (value: T) => void;
+  next: (value: T) => void;
 };
 
 export function useSubscribe<T>(props: Props<T>) {
@@ -16,7 +16,7 @@ export function useSubscribe<T>(props: Props<T>) {
     const subscription =
       !props.disabled &&
       _props.current.subject.subscribe({
-        next: _props.current.callback,
+        next: _props.current.next,
       });
 
     return () => {

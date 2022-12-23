@@ -67,7 +67,7 @@ exports[`useWatch reset with useFieldArray should return current value with radi
   {
     "options": [
       {
-        "option": "no",
+        "option": "yes",
       },
       {
         "option": "yes",
@@ -77,7 +77,7 @@ exports[`useWatch reset with useFieldArray should return current value with radi
   {
     "options": [
       {
-        "option": "no",
+        "option": "yes",
       },
       {
         "option": "yes",

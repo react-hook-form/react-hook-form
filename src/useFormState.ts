@@ -51,6 +51,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const _mounted = React.useRef(true);
   const _localProxyFormState = React.useRef({
     isDirty: false,
+    isLoading: false,
     dirtyFields: false,
     touchedFields: false,
     isValidating: false,
@@ -63,30 +64,36 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   useSubscribe({
     disabled,
-    callback: React.useCallback(
-      (value: { name?: InternalFieldName }) =>
-        _mounted.current &&
-        shouldSubscribeByName(
-          _name.current as InternalFieldName,
-          value.name,
-          exact,
-        ) &&
-        shouldRenderFormState(value, _localProxyFormState.current) &&
-        updateFormState({
-          ...control._formState,
-          ...value,
-        }),
-      [control, exact],
-    ),
+    next: (value: { name?: InternalFieldName }) =>
+      _mounted.current &&
+      shouldSubscribeByName(
+        _name.current as InternalFieldName,
+        value.name,
+        exact,
+      ) &&
+      shouldRenderFormState(value, _localProxyFormState.current) &&
+      updateFormState({
+        ...control._formState,
+        ...value,
+      }),
     subject: control._subjects.state,
   });
 
   React.useEffect(() => {
     _mounted.current = true;
+    const isDirty = control._proxyFormState.isDirty && control._getDirty();
+
+    if (isDirty !== control._formState.isDirty) {
+      control._subjects.state.next({
+        isDirty,
+      });
+    }
+    control._updateValid();
+
     return () => {
       _mounted.current = false;
     };
-  }, []);
+  }, [control]);
 
   return getProxyFormState(
     formState,

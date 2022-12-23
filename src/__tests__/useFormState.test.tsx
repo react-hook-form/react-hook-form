@@ -5,6 +5,7 @@ import { Controller } from '../controller';
 import { Control } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
 
@@ -94,6 +95,8 @@ describe('useFormState', () => {
     };
     render(<Component />);
 
+    await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
+
     fireEvent.input(screen.getByLabelText('test'), {
       target: {
         value: 'test',
@@ -113,6 +116,57 @@ describe('useFormState', () => {
     expect(screen.getByText('yes')).toBeVisible();
 
     expect(count).toEqual(1);
+  });
+
+  it('should update isValidating correctly', async () => {
+    function Child() {
+      const { isDirty, isValid, isValidating } = useFormState();
+      const enabled = !isValidating && isDirty && isValid;
+
+      return (
+        <button disabled={!enabled} type="submit">
+          Submit
+        </button>
+      );
+    }
+
+    function App() {
+      const formFunctions = useForm({
+        mode: 'onChange',
+      });
+      const { register } = formFunctions;
+
+      return (
+        <FormProvider {...formFunctions}>
+          <form>
+            <input {...register('value', { required: true })} />
+            <Child />
+          </form>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '1',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button')).not.toBeDisabled();
+    });
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '12',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button')).not.toBeDisabled();
+    });
   });
 
   it('should update formState separately with useFormState', async () => {
@@ -186,7 +240,7 @@ describe('useFormState', () => {
     expect(screen.getByText('isTouched')).toBeVisible();
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(2);
     expect(test1Count).toEqual(2);
 
     fireEvent.input(screen.getByLabelText('test'), {
@@ -196,7 +250,7 @@ describe('useFormState', () => {
     });
 
     expect(count).toEqual(1);
-    expect(testCount).toEqual(3);
+    expect(testCount).toEqual(2);
     expect(test1Count).toEqual(2);
   });
 
@@ -642,5 +696,52 @@ describe('useFormState', () => {
     render(<Component />);
 
     expect(screen.getByText('yes')).toBeVisible();
+  });
+
+  it('should conditionally update formState after mount', async () => {
+    function DirtyState() {
+      const { isDirty, isValid } = useFormState();
+      return (
+        <div>
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{isValid ? 'valid' : 'error'}</p>
+        </div>
+      );
+    }
+
+    function App() {
+      const [showDirty, toggleShowDirty] = React.useReducer(
+        (prev) => !prev,
+        false,
+      );
+      const formMethods = useForm({
+        defaultValues: {
+          firstname: '',
+        },
+      });
+
+      return (
+        <FormProvider {...formMethods}>
+          {showDirty && <DirtyState />}
+          <input {...formMethods.register('firstname', { required: true })} />
+          <button type="button" onClick={toggleShowDirty} />
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.queryByRole('pristine')).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible();
   });
 });

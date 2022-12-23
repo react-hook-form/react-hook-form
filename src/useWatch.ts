@@ -2,9 +2,8 @@ import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import isObject from './utils/isObject';
+import cloneObject from './utils/cloneObject';
 import isUndefined from './utils/isUndefined';
-import objectHasFunction from './utils/objectHasFunction';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -160,41 +159,32 @@ export function useWatch<TFieldValues extends FieldValues>(
   useSubscribe({
     disabled,
     subject: control._subjects.watch,
-    callback: React.useCallback(
-      (formState: { name?: InternalFieldName; values?: FieldValues }) => {
-        if (
-          shouldSubscribeByName(
-            _name.current as InternalFieldName,
-            formState.name,
-            exact,
-          )
-        ) {
-          const fieldValues = generateWatchOutput(
-            _name.current as InternalFieldName | InternalFieldName[],
-            control._names,
-            formState.values || control._formValues,
-          );
+    next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
+      if (
+        shouldSubscribeByName(
+          _name.current as InternalFieldName,
+          formState.name,
+          exact,
+        )
+      ) {
+        const fieldValues = generateWatchOutput(
+          _name.current as InternalFieldName | InternalFieldName[],
+          control._names,
+          formState.values || control._formValues,
+        );
 
-          updateValue(
-            isUndefined(_name.current) ||
-              (isObject(fieldValues) && !objectHasFunction(fieldValues))
-              ? { ...fieldValues }
-              : Array.isArray(fieldValues)
-              ? [...fieldValues]
-              : isUndefined(fieldValues)
-              ? defaultValue
-              : fieldValues,
-          );
-        }
-      },
-      [control, exact, defaultValue],
-    ),
+        updateValue(
+          isUndefined(fieldValues) ? defaultValue : cloneObject(fieldValues),
+        );
+      }
+    },
   });
 
   const [value, updateValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? control._getWatch(name as InternalFieldName)
-      : defaultValue,
+    control._getWatch(
+      name as InternalFieldName,
+      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
+    ),
   );
 
   React.useEffect(() => control._removeUnmounted());

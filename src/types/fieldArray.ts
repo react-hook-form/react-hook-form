@@ -16,7 +16,7 @@ export type UseFieldArrayProps<
       | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
       | Record<
           string,
-          Validate<FieldArray<TFieldValues, TFieldArrayName>, TFieldValues>
+          Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
         >;
   } & Pick<
     RegisterOptions<TFieldValues>,

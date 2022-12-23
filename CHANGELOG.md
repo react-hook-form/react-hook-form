@@ -1,5 +1,34 @@
 # Changelog
 
+## [7.40.0] - 2022-11-30
+
+## Changed
+
+- async validation (or combined with sync) will always the take the latest validation result and abort the previous
+
+## [7.39.5] - 2022-11-21
+
+## Changed
+
+- Conditional render `useFormState` will trigger an extra re-render to reflect the current `formState`
+
+## [7.39.0] - 2022-11-2
+
+## Changed
+
+- `isValid` formState is no longer only applicable with `onChange`, `onTouched`, and `onBlur` mode.
+
+## [7.38.0] - 2022-10-19
+
+## Added
+
+- support build-in validation with input type week and time
+
+```tsx
+<input {...register("week", { min: "2022-W40" })} type="week" />
+<input {...register("time", { min: "11:00" })} type="time" />
+```
+
 ## [7.37.0] - 2022-10-07
 
 ## Added

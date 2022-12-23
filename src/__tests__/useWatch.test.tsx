@@ -92,6 +92,35 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['test', 'test1']);
   });
 
+  it('should return own default value for single input', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm<{ test: string; test1: string }>({});
+      return useWatch({
+        control,
+        name: 'test',
+        defaultValue: 'test',
+      });
+    });
+
+    expect(result.current).toEqual('test');
+  });
+
+  it('should return own default value for array of inputs', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm<{ test: string; test1: string }>({});
+      return useWatch({
+        control,
+        name: ['test', 'test1'],
+        defaultValue: {
+          test: 'test',
+          test1: 'test1',
+        },
+      });
+    });
+
+    expect(result.current).toEqual(['test', 'test1']);
+  });
+
   it('should return default value when name is undefined', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
@@ -1424,6 +1453,30 @@ describe('useWatch', () => {
       render(<Form />);
 
       expect(await screen.findByText('no')).toBeVisible();
+    });
+
+    it('should keep set type after set value', async () => {
+      const Form = () => {
+        const { control, setValue } = useForm({
+          defaultValues: { test: new Set(['test']) },
+        });
+        const { field } = useController({
+          control,
+          name: 'test',
+        });
+
+        React.useEffect(() => {
+          setValue('test', new Set(['test']));
+        }, [setValue]);
+
+        return <>{field.value instanceof Set ? 'yes' : 'no'}</>;
+      };
+
+      render(<Form />);
+
+      await waitFor(() => {
+        screen.getByText('yes');
+      });
     });
 
     it('should watch nested object field update', () => {

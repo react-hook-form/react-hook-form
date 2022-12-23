@@ -17,6 +17,7 @@ import {
   UseFormReturn,
 } from '../types';
 import isFunction from '../utils/isFunction';
+import { sleep } from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
 
 describe('useForm', () => {
@@ -1552,7 +1553,7 @@ describe('useForm', () => {
           mode: 'onChange',
           resolver: async (values) => {
             if (!values.test) {
-              const result = {
+              return {
                 values: {},
                 errors: {
                   test: {
@@ -1560,7 +1561,6 @@ describe('useForm', () => {
                   },
                 },
               };
-              return result;
             }
 
             return {
@@ -1715,5 +1715,245 @@ describe('useForm', () => {
 
     screen.getByText('isValidating: false');
     screen.getByText('stateValidation: false');
+  });
+
+  it('should update defaultValues async', async () => {
+    const App = () => {
+      const {
+        register,
+        formState: { isLoading },
+      } = useForm({
+        defaultValues: async () => {
+          await sleep(100);
+
+          return {
+            test: 'test',
+          };
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <p>{isLoading ? 'loading...' : 'done'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('loading...');
+    });
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+
+    await waitFor(() => {
+      screen.getByText('done');
+    });
+  });
+
+  it('should update async default values for controlled components', async () => {
+    const App = () => {
+      const { control } = useForm({
+        defaultValues: async () => {
+          await sleep(100);
+
+          return {
+            test: 'test',
+          };
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            render={({ field }) => <input {...field} />}
+            defaultValue=""
+            name={'test'}
+          />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
+  it('should update async form values', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    function Loader() {
+      const [values, setValues] = React.useState<FormValues>({
+        test: '',
+      });
+
+      const loadData = React.useCallback(async () => {
+        await sleep(100);
+
+        setValues({
+          test: 'test',
+        });
+      }, []);
+
+      React.useEffect(() => {
+        loadData();
+      }, [loadData]);
+
+      return <App values={values} />;
+    }
+
+    const App = ({ values }: { values: FormValues }) => {
+      const { register } = useForm({
+        values,
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<Loader />);
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+  });
+
+  it('should only update async form values which are not interacted', async () => {
+    type FormValues = {
+      test: string;
+      test1: string;
+    };
+
+    function Loader() {
+      const [values, setValues] = React.useState<FormValues>({
+        test: '',
+        test1: '',
+      });
+
+      const loadData = React.useCallback(async () => {
+        await sleep(100);
+
+        setValues({
+          test: 'test',
+          test1: 'data',
+        });
+      }, []);
+
+      React.useEffect(() => {
+        loadData();
+      }, [loadData]);
+
+      return <App values={values} />;
+    }
+
+    const App = ({ values }: { values: FormValues }) => {
+      const { register } = useForm({
+        values,
+        resetOptions: {
+          keepDirtyValues: true,
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <input {...register('test1')} />
+        </form>
+      );
+    };
+
+    render(<Loader />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: {
+        value: 'test1',
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test1');
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+      ).toEqual('data');
+    });
+  });
+
+  it('should update isValidating to true when using with resolver', async () => {
+    jest.useFakeTimers();
+
+    function App() {
+      const {
+        register,
+        formState: { isValidating },
+      } = useForm({
+        mode: 'all',
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+        resolver: async () => {
+          await sleep(2000);
+
+          return {
+            errors: {},
+            values: {},
+          };
+        },
+      });
+
+      return (
+        <div>
+          <p>isValidating: {String(isValidating)}</p>
+          <input {...register('lastName')} placeholder="async" />
+          <input {...register('firstName')} placeholder="required" />
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test2' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test3' },
+    });
+
+    screen.getByText('isValidating: true');
+
+    await actComponent(async () => {
+      jest.runAllTimers();
+    });
+
+    screen.getByText('isValidating: false');
   });
 });

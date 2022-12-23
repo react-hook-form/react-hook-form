@@ -1,5 +1,11 @@
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
+import {
+  BrowserNativeObject,
+  IsAny,
+  LiteralUnion,
+  Merge,
+  UnPackAsyncDefaultValues,
+} from './utils';
 import { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -41,7 +47,7 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
   FieldValues extends IsAny<FieldValues>
     ? any
-    : FieldErrorsImpl<DeepRequired<T>>
+    : FieldErrorsImpl<DeepRequired<UnPackAsyncDefaultValues<T>>>
 >;
 
 export type InternalFieldErrors = Partial<
