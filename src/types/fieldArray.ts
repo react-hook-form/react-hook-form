@@ -13,8 +13,11 @@ export type UseFieldArrayProps<
   control?: Control<TFieldValues>;
   rules?: {
     validate?:
-      | Validate<FieldArray<TFieldValues, TFieldArrayName>[]>
-      | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[]>>;
+      | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
+      | Record<
+          string,
+          Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
+        >;
   } & Pick<
     RegisterOptions<TFieldValues>,
     'maxLength' | 'minLength' | 'required'

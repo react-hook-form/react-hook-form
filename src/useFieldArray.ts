@@ -104,7 +104,7 @@ export function useFieldArray<
   control._names.array.add(name);
 
   props.rules &&
-    (control as Control).register(
+    (control as Control<TFieldValues>).register(
       name as FieldPath<TFieldValues>,
       props.rules as RegisterOptions<TFieldValues>,
     );
@@ -337,7 +337,7 @@ export function useFieldArray<
         if (field && field._f) {
           validateField(
             field,
-            get(control._formValues, name),
+            control._formValues,
             control._options.criteriaMode === VALIDATION_MODE.all,
             control._options.shouldUseNativeValidation,
             true,

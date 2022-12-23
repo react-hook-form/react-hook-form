@@ -427,7 +427,7 @@ export function createFormControl<
           const isFieldArrayRoot = _names.array.has(_f.name);
           const fieldError = await validateField(
             field,
-            get(_formValues, _f.name),
+            _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
             isFieldArrayRoot,
@@ -739,7 +739,7 @@ export function createFormControl<
         error = (
           await validateField(
             field,
-            get(_formValues, name),
+            _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
           )

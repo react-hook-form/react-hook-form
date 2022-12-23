@@ -397,7 +397,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     maxLength: ValidationRule<number>;
     minLength: ValidationRule<number>;
     pattern: ValidationRule<RegExp>;
-    validate: Validate<FieldPathValue<TFieldValues, TFieldName>> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>;
+    validate: Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>>;
     valueAsNumber: boolean;
     valueAsDate: boolean;
     value: FieldPathValue<TFieldValues, TFieldName>;
@@ -530,7 +530,7 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     keyName?: TKeyName;
     control?: Control<TFieldValues>;
     rules?: {
-        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[]> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[]>>;
+        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>>;
     } & Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'required'>;
     shouldUnregister?: boolean;
 };
@@ -735,7 +735,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type Validate<TFieldValue> = (value: TFieldValue) => ValidateResult | Promise<ValidateResult>;
+export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
 export type ValidateResult = Message | boolean | undefined;
