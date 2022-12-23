@@ -3,7 +3,6 @@ import React from 'react';
 import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import cloneObject from './utils/cloneObject';
-import isUndefined from './utils/isUndefined';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -167,14 +166,16 @@ export function useWatch<TFieldValues extends FieldValues>(
           exact,
         )
       ) {
-        const fieldValues = generateWatchOutput(
-          _name.current as InternalFieldName | InternalFieldName[],
-          control._names,
-          formState.values || control._formValues,
-        );
-
         updateValue(
-          isUndefined(fieldValues) ? defaultValue : cloneObject(fieldValues),
+          cloneObject(
+            generateWatchOutput(
+              _name.current as InternalFieldName | InternalFieldName[],
+              control._names,
+              formState.values || control._formValues,
+              false,
+              defaultValue,
+            ),
+          ),
         );
       }
     },

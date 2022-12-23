@@ -751,9 +751,11 @@ describe('useForm', () => {
 
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
-            value: ' ',
+            value: 'test',
           },
         });
+
+        await waitFor(() => screen.getByText('valid'));
 
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
