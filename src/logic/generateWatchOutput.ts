@@ -7,7 +7,7 @@ export default <T>(
   _names: Names,
   formValues?: FieldValues,
   isGlobal?: boolean,
-  defaultValue?: DeepPartial<T>,
+  defaultValue?: DeepPartial<T> | unknown,
 ) => {
   if (isString(names)) {
     isGlobal && _names.watch.add(names);
