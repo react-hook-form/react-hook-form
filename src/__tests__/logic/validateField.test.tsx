@@ -43,6 +43,28 @@ describe('validateField', () => {
             mount: true,
             name: 'test',
             ref: { type: 'text', value: '', name: 'test' },
+            required: true,
+            valueAsNumber: true,
+          },
+        },
+        NaN,
+        false,
+      ),
+    ).toEqual({
+      test: {
+        ref: { type: 'text', value: '', name: 'test' },
+        message: '',
+        type: 'required',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
             required: 'required',
           },
         },
