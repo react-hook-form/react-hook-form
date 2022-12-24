@@ -66,6 +66,7 @@ export default async <T extends NativeFieldValue>(
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
     inputValue === '' ||
+    ref.value === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
