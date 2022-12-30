@@ -1724,7 +1724,9 @@ describe('useForm', () => {
       const {
         register,
         formState: { isLoading },
-      } = useForm({
+      } = useForm<{
+        test: string;
+      }>({
         defaultValues: async () => {
           await sleep(100);
 
@@ -1761,7 +1763,9 @@ describe('useForm', () => {
 
   it('should update async default values for controlled components', async () => {
     const App = () => {
-      const { control } = useForm({
+      const { control } = useForm<{
+        test: string;
+      }>({
         defaultValues: async () => {
           await sleep(100);
 
