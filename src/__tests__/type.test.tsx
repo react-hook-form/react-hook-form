@@ -287,6 +287,14 @@ test('should work with generic component path assertion', () => {
 });
 
 test('should infer async default values', () => {
+  const formValues = {
+    test: 'test',
+    test1: {
+      nested: 'test',
+    },
+    fieldArray: [{ test: '' }],
+  };
+
   function App() {
     const {
       register,
@@ -302,15 +310,9 @@ test('should infer async default values', () => {
       setFocus,
       trigger,
       setError,
-    } = useForm({
+    } = useForm<typeof formValues>({
       defaultValues: async () => {
-        return {
-          test: 'test',
-          test1: {
-            nested: 'test',
-          },
-          fieldArray: [{ test: '' }],
-        };
+        return formValues;
       },
     });
     useFieldArray({
@@ -334,7 +336,9 @@ test('should infer async default values', () => {
     setValue('test1.nested', 'data');
     reset({
       test: 'test',
-      test1: 'test1',
+      test1: {
+        nested: 'test1',
+      },
     });
 
     watch('test');
