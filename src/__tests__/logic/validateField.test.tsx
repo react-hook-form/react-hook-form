@@ -49,7 +49,7 @@ describe('validateField', () => {
             valueAsNumber: true,
           },
         },
-        NaN,
+        NaN as any,
         false,
       ),
     ).toEqual({

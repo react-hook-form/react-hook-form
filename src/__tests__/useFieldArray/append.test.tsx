@@ -76,7 +76,7 @@ describe('append', () => {
   });
 
   it('should append data into the fields', () => {
-    let currentFields: any = [];
+    let currentFields: unknown[] = [];
     const Component = () => {
       const { register, control } = useForm<{
         test: { test: string }[];
@@ -191,7 +191,7 @@ describe('append', () => {
   );
 
   it('should trigger reRender when user is watching the all field array', () => {
-    const watched: any[] = [];
+    const watched: unknown[] = [];
     const Component = () => {
       const { register, watch, control } = useForm<{
         test: { value: string }[];

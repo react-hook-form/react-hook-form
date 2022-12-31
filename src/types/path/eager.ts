@@ -1,10 +1,5 @@
 import { FieldValues } from '../fields';
-import {
-  BrowserNativeObject,
-  IsAny,
-  IsEqual,
-  Primitive,
-} from '../utils';
+import { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
 
 import { ArrayKey, IsTuple, TupleKeys } from './common';
 
