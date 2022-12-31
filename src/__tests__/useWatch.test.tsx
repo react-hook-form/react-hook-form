@@ -30,8 +30,8 @@ describe('useWatch', () => {
   });
 
   it('should return default value in useForm', () => {
-    let method: any;
-    let watched: any;
+    let method;
+    let watched;
     const Component = () => {
       method = useForm<{ test: string }>({ defaultValues: { test: 'test' } });
       watched = useWatch({ control: method.control });

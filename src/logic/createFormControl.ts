@@ -1045,6 +1045,9 @@ export function createFormControl<
       }
 
       if (isEmptyObject(_formState.errors)) {
+        _subjects.state.next({
+          errors: {},
+        });
         await onValid(fieldValues as TFieldValues, e);
       } else {
         if (onInvalid) {

@@ -154,20 +154,18 @@ describe('register', () => {
   });
 
   it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
-    const resolver = async (data: any) => {
-      return {
-        values: data,
-        errors: {
-          test: {
-            type: 'test',
-          },
-        },
-      };
-    };
-
     const Component = () => {
       const { register, formState } = useForm<{ test: string }>({
-        resolver,
+        resolver: async (data) => {
+          return {
+            values: data,
+            errors: {
+              test: {
+                type: 'test',
+              },
+            },
+          };
+        },
       });
 
       return (
