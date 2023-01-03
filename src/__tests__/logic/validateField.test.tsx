@@ -36,13 +36,15 @@ describe('validateField', () => {
       },
     });
 
+    const input = document.createElement('input');
+
     expect(
       await validateField(
         {
           _f: {
             mount: true,
             name: 'test',
-            ref: { type: 'text', value: '', name: 'test' },
+            ref: input,
             required: true,
             valueAsNumber: true,
           },
@@ -52,7 +54,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', value: '', name: 'test' },
+        ref: input,
         message: '',
         type: 'required',
       },
