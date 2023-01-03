@@ -24,6 +24,7 @@ import getCheckboxValue from './getCheckboxValue';
 import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
+import isHTMLElement from '../utils/isHTMLElement';
 
 export default async <T extends NativeFieldValue>(
   field: Field,
@@ -65,6 +66,7 @@ export default async <T extends NativeFieldValue>(
     ((valueAsNumber || isFileInput(ref)) &&
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
+    (isHTMLElement(ref) && ref.value === '') ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
