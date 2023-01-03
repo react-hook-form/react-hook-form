@@ -36,7 +36,7 @@ describe('validateField', () => {
       },
     });
 
-    const input = document.createElement("input");
+    const input = document.createElement('input');
 
     expect(
       await validateField(
