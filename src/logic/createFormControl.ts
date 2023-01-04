@@ -530,7 +530,7 @@ export function createFormControl<
           set(_formValues, name, getFieldValueAs(value, fieldReference));
 
         fieldValue =
-          isWeb && isHTMLElement(fieldReference.ref) && isNullOrUndefined(value)
+          isHTMLElement(fieldReference.ref) && isNullOrUndefined(value)
             ? ''
             : value;
 
