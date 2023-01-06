@@ -1250,6 +1250,7 @@ export function createFormControl<
       register,
       unregister,
       getFieldState,
+      handleSubmit,
       _executeSchema,
       _focusError,
       _getWatch,
