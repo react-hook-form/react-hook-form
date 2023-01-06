@@ -768,6 +768,7 @@ export type Control<
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
+  handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
 };
