@@ -950,7 +950,7 @@ export function createFormControl<
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
-      ...(_options.shouldUseNativeValidation
+      ...(_options.shouldUseNativeValidation || _options.progressiveEnhancement
         ? {
             required: !!options.required,
             min: getRuleValue(options.min),
