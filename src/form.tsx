@@ -1,11 +1,18 @@
 import * as React from 'react';
 
-type Props = {
-  children: React.ReactNode | React.ReactNode[];
-  onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
-};
+import { Control, FieldValues, SubmitHandler } from './types';
 
-export function Form({ onSubmit, children }: Props) {
+type Props<T extends FieldValues> = {
+  control: Control<T>;
+  children: React.ReactNode | React.ReactNode[];
+  onSubmit: SubmitHandler<T>;
+} & React.FormHTMLAttributes<HTMLFieldSetElement>;
+
+export function Form<T extends FieldValues>({
+  control,
+  onSubmit,
+  children,
+}: Props<T>) {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -13,7 +20,7 @@ export function Form({ onSubmit, children }: Props) {
   }, []);
 
   return (
-    <form onSubmit={onSubmit} noValidate={mounted}>
+    <form onSubmit={control.handleSubmit(onSubmit)} noValidate={mounted}>
       {children}
     </form>
   );
