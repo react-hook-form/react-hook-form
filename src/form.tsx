@@ -1,18 +1,23 @@
 import * as React from 'react';
 
 import { Control, FieldValues, SubmitHandler } from './types';
+import { useFormContext } from './useFormContext';
 
-type Props<T extends FieldValues> = {
-  control: Control<T>;
-  children: React.ReactNode | React.ReactNode[];
-  onSubmit: SubmitHandler<T>;
-} & React.FormHTMLAttributes<HTMLFieldSetElement>;
+type Props<
+  T extends FieldValues,
+  U extends FieldValues | undefined = undefined,
+> = {
+  control?: Control<T>;
+  children?: React.ReactNode | React.ReactNode[];
+  onSubmit?: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
+};
 
-export function Form<T extends FieldValues>({
-  control,
-  onSubmit,
-  children,
-}: Props<T>) {
+export function Form<
+  T extends FieldValues,
+  U extends FieldValues | undefined = undefined,
+>(props: Props<T, U>) {
+  const methods = useFormContext<T>();
+  const { control = methods.control, onSubmit, children } = props;
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -20,7 +25,10 @@ export function Form<T extends FieldValues>({
   }, []);
 
   return (
-    <form onSubmit={control.handleSubmit(onSubmit)} noValidate={mounted}>
+    <form
+      onSubmit={onSubmit ? control.handleSubmit(onSubmit) : undefined}
+      noValidate={mounted}
+    >
       {children}
     </form>
   );
