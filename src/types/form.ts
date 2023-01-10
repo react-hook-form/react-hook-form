@@ -253,7 +253,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * <button onClick={() => getValues()}>getValues</button>
    *
    * <input {...register("name", {
-   *   validate: () => getValues().otherField === "test";
+   *   validate: (value, formValues) => formValues.otherField === value;
    * })} />
    * ```
    */

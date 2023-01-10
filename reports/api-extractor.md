@@ -13,17 +13,10 @@ import { ReactElement } from 'react';
 // @public (undocumented)
 export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: boolean, errors: InternalFieldErrors, type: string, message: ValidateResult) => {};
 
-// Warning: (ae-forgotten-export) The symbol "IsTuple" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "TupleKeys" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "ArrayPathImpl" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ArrayPathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type ArrayPath<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
-    [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
-}[TupleKeys<T>] : ArrayPathImpl<ArrayKey, V> : {
-    [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
-}[keyof T];
+export type ArrayPath<T> = T extends any ? ArrayPathInternal<T> : never;
 
 // @public (undocumented)
 export type BatchFieldArrayUpdate = <T extends Function, TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], method?: T, args?: Partial<{
@@ -300,6 +293,9 @@ export type InternalNameSet = Set<InternalFieldName>;
 // @public
 export type IsAny<T> = 0 extends 1 & T ? true : false;
 
+// @public
+export type IsEqual<T1, T2> = T1 extends T2 ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2 ? true : false : false;
+
 // @public (undocumented)
 export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedValue | Date | FileList_2>, any[] | object> extends never ? true : false;
 
@@ -366,18 +362,16 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 // @public (undocumented)
 export type Noop = () => void;
 
-// Warning: (ae-forgotten-export) The symbol "PathImpl" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Path<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
-    [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
-}[TupleKeys<T>] : PathImpl<ArrayKey, V> : {
-    [K in keyof T]-?: PathImpl<K & string, T[K]>;
-}[keyof T];
+export type Path<T> = T extends any ? PathInternal<T> : never;
 
 // @public
 export type PathString = string;
 
+// Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
+//
 // @public
 export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any ? P extends `${infer K}.${infer R}` ? K extends keyof T ? R extends Path<T[K]> ? PathValue<T[K], R> : never : K extends `${ArrayKey}` ? T extends ReadonlyArray<infer V> ? PathValue<V, R & Path<V>> : never : never : P extends keyof T ? T[P] : P extends `${ArrayKey}` ? T extends ReadonlyArray<infer V> ? V : never : never : never;
 
@@ -403,7 +397,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     maxLength: ValidationRule<number>;
     minLength: ValidationRule<number>;
     pattern: ValidationRule<RegExp>;
-    validate: Validate<FieldPathValue<TFieldValues, TFieldName>> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>;
+    validate: Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>>;
     valueAsNumber: boolean;
     valueAsDate: boolean;
     value: FieldPathValue<TFieldValues, TFieldName>;
@@ -533,7 +527,7 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     keyName?: TKeyName;
     control?: Control<TFieldValues>;
     rules?: {
-        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[]> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[]>>;
+        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>>;
     } & Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'required'>;
     shouldUnregister?: boolean;
 };
@@ -738,7 +732,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type Validate<TFieldValue> = (value: TFieldValue) => ValidateResult | Promise<ValidateResult>;
+export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
 export type ValidateResult = Message | boolean | undefined;

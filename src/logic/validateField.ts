@@ -2,10 +2,12 @@ import { INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
   FieldError,
+  FieldValues,
   InternalFieldErrors,
   Message,
   NativeFieldValue,
 } from '../types';
+import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -26,9 +28,9 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
-export default async <T extends NativeFieldValue>(
+export default async <T extends FieldValues>(
   field: Field,
-  inputValue: T,
+  formValues: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
   isFieldArray?: boolean,
@@ -48,6 +50,7 @@ export default async <T extends NativeFieldValue>(
     mount,
     disabled,
   } = field._f;
+  const inputValue: NativeFieldValue = get(formValues, name);
   if (!mount || disabled) {
     return {};
   }
@@ -220,7 +223,7 @@ export default async <T extends NativeFieldValue>(
 
   if (validate) {
     if (isFunction(validate)) {
-      const result = await validate(inputValue);
+      const result = await validate(inputValue, formValues);
       const validateError = getValidateError(result, inputRef);
 
       if (validateError) {
@@ -245,7 +248,7 @@ export default async <T extends NativeFieldValue>(
         }
 
         const validateError = getValidateError(
-          await validate[key](inputValue),
+          await validate[key](inputValue, formValues),
           inputRef,
           key,
         );
