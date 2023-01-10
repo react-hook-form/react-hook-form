@@ -1044,6 +1044,8 @@ export function createFormControl<
         await executeBuiltInValidation(_fields);
       }
 
+      unset(_formState.errors, 'root');
+
       if (isEmptyObject(_formState.errors)) {
         _subjects.state.next({
           errors: {},

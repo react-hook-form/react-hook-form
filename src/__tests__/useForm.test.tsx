@@ -1914,7 +1914,10 @@ describe('useForm', () => {
       const {
         register,
         formState: { isValidating },
-      } = useForm({
+      } = useForm<{
+        firstName: string;
+        lastName: string;
+      }>({
         mode: 'all',
         defaultValues: {
           lastName: '',
