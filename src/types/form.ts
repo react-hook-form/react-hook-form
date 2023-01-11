@@ -134,6 +134,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+  invalidFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
 };
 
@@ -334,12 +335,6 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
-  /**
-   * @deprecated check `fieldState.error` instead
-   * ```jsx
-   * {fieldState.error && <p>{fieldState.error.message}</p>}
-   * ```
-   */
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;

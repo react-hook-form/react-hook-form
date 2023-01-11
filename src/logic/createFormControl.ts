@@ -69,6 +69,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getInvalidFields from './getInvalidFields';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -111,6 +112,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
+    invalidFields: {},
     errors: {},
   };
   let _fields = {};
@@ -159,6 +161,18 @@ export function createFormControl<
     };
 
   const _updateValid = async () => {
+    const invalidFields = await getInvalidFields(
+      _fields,
+      _formValues,
+      shouldDisplayAllAssociatedErrors,
+    );
+
+    _formState.invalidFields = invalidFields;
+
+    _subjects.state.next({
+      invalidFields,
+    });
+
     if (_proxyFormState.isValid) {
       const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
@@ -449,6 +463,11 @@ export function createFormControl<
                   )
                 : set(_formState.errors, _f.name, fieldError[_f.name])
               : unset(_formState.errors, _f.name));
+
+          !shouldOnlyCheckValid &&
+            (get(fieldError, _f.name)
+              ? set(_formState.invalidFields, _f.name, field)
+              : unset(_formState.invalidFields, _f.name));
         }
 
         fieldValue &&
@@ -797,6 +816,7 @@ export function createFormControl<
         : { name }),
       ...(_options.resolver || !name ? { isValid } : {}),
       errors: _formState.errors,
+      invalidFields: _formState.invalidFields,
       isValidating: false,
     });
 
@@ -832,7 +852,7 @@ export function createFormControl<
     name,
     formState,
   ) => ({
-    invalid: !!get((formState || _formState).errors, name),
+    invalid: !!get((formState || _formState).invalidFields, name),
     isDirty: !!get((formState || _formState).dirtyFields, name),
     isTouched: !!get((formState || _formState).touchedFields, name),
     error: get((formState || _formState).errors, name),

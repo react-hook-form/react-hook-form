@@ -144,7 +144,7 @@ export function useController<
       {
         invalid: {
           enumerable: true,
-          get: () => !!get(formState.errors, name),
+          get: () => !!get(formState.invalidFields, name),
         },
         isDirty: {
           enumerable: true,
