@@ -1,5 +1,71 @@
 # Changelog
 
+## [7.42.0] - 2023-01-13
+
+## Added
+
+- build in validation `validate` support second argument for form values
+
+```tsx
+// Making exported validate function isolated for validation
+export function validateNumber(_: number, formValus: FormValues) {
+  return formValus.number1 + formValus.number2 === 3;
+}
+
+<input
+  type="number"
+  {...register('number1', {
+    validate: validateNumber,
+    valueAsNumber: true,
+  })}
+/>;
+```
+
+## Changed
+
+- `handleSubmit` no longer catch `onSubmit` callback error
+- Remove deprecated for `fieldState.invalid`
+
+## [7.41.0] - 2022-12-17
+
+## Added
+
+- `useForm` added `values` props
+
+```tsx
+const values = await fetch('API');
+
+useForm({
+  values, // will reset the form when values updates
+  // resetOptions: {
+  //   keepDirtyValues: true
+  // }
+});
+```
+
+- new `isLoading` formState for async `defaultValues`
+
+```tsx
+const {
+  formState: { isLoading },
+} = useForm();
+```
+
+## Changed
+
+- `useForm` support async `defaultValues` props
+
+```tsx
+const {
+  formState: { isLoading },
+} = useForm({
+  defaultValues: fetch('API'),
+  // resetOptions: {
+  //   keepDirtyValues: true
+  // }
+});
+```
+
 ## [7.40.0] - 2022-11-30
 
 ## Changed
