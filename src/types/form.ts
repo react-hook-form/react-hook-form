@@ -747,7 +747,7 @@ export type Control<
   _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
-  _updateValid: Noop;
+  _updateValid: (shouldUpdateValid?: boolean) => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;

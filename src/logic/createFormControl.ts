@@ -158,8 +158,8 @@ export function createFormControl<
       timer = window.setTimeout(callback, wait);
     };
 
-  const _updateValid = async () => {
-    if (_proxyFormState.isValid) {
+  const _updateValid = async (shouldUpdateValid?: boolean) => {
+    if (_proxyFormState.isValid || shouldUpdateValid) {
       const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuiltInValidation(_fields, true);

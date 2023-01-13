@@ -88,7 +88,8 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
         isDirty,
       });
     }
-    control._updateValid();
+
+    _localProxyFormState.current.isValid && control._updateValid(true);
 
     return () => {
       _mounted.current = false;

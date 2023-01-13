@@ -676,4 +676,39 @@ describe('useController', () => {
     expect(select).toBeCalled();
     expect(focus).toBeCalled();
   });
+
+  it('should update isValid correctly with strict mode', async () => {
+    const App = () => {
+      const form = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          name: '',
+        },
+      });
+      const { isValid } = form.formState;
+
+      return (
+        <React.StrictMode>
+          <FormProvider {...form}>
+            <Controller
+              render={({ field }) => (
+                <input value={field.value} onChange={field.onChange} />
+              )}
+              name="name"
+              rules={{
+                required: true,
+              }}
+            />
+            <p>{isValid ? 'valid' : 'not'}</p>
+          </FormProvider>
+        </React.StrictMode>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('not');
+    });
+  });
 });
