@@ -91,7 +91,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (!control._stateFlags.mount) {
-      control._proxyFormState.isValid && control._updateValid();
+      control._updateValid();
       control._stateFlags.mount = true;
     }
 
