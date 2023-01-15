@@ -1226,6 +1226,15 @@ export function createFormControl<
     }
   };
 
+  const _updateFormState = (
+    updatedFormState: Partial<FormState<TFieldValues>>,
+  ) => {
+    _formState = {
+      ..._formState,
+      ...updatedFormState,
+    };
+  };
+
   if (isFunction(_options.defaultValues)) {
     _options.defaultValues().then((values) => {
       reset(values, _options.resetOptions);
@@ -1249,6 +1258,7 @@ export function createFormControl<
       _updateFieldArray,
       _getFieldArray,
       _reset,
+      _updateFormState,
       _subjects,
       _proxyFormState,
       get _fields() {
