@@ -52,6 +52,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _getDirty: GetIsDirty;
     _formState: FormState<TFieldValues>;
     _updateValid: (shouldUpdateValid?: boolean) => void;
+    _updateFormState: (formState: Partial<FormState<TFieldValues>>) => void;
     _fields: FieldRefs;
     _formValues: FieldValues;
     _proxyFormState: ReadFormState;
