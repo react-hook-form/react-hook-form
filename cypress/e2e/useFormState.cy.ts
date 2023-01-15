@@ -47,9 +47,9 @@ describe('useFormState', () => {
           'maxDate',
           'minLength',
         ],
-        isSubmitted: false,
+        isSubmitted: true,
         isSubmitSuccessful: false,
-        submitCount: 0,
+        submitCount: 1,
         isValid: false,
       }),
     );
@@ -93,9 +93,9 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        isSubmitted: false,
+        isSubmitted: true,
         isSubmitSuccessful: false,
-        submitCount: 0,
+        submitCount: 1,
         isValid: true,
       }),
     );
@@ -135,7 +135,7 @@ describe('useFormState', () => {
         ],
         isSubmitted: true,
         isSubmitSuccessful: true,
-        submitCount: 1,
+        submitCount: 2,
         isValid: true,
       }),
     );
