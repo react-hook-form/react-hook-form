@@ -1429,4 +1429,28 @@ describe('Controller', () => {
       show: false,
     });
   });
+
+  it('should set up defaultValues for controlled component with values prop', () => {
+    function App() {
+      const { control } = useForm<any>({
+        values: {
+          firstName: 'test',
+        },
+      });
+
+      return (
+        <Controller
+          render={({ field }) => <input {...field} />}
+          control={control}
+          name="firstName"
+        />
+      );
+    }
+
+    render(<App />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'test',
+    );
+  });
 });
