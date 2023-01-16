@@ -5,7 +5,13 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import {
+  FieldValues,
+  FormState,
+  InternalFieldName,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -77,13 +83,17 @@ export function useForm<
 
   useSubscribe({
     subject: control._subjects.state,
-    next: (value: FieldValues) => {
-      if (shouldRenderFormState(value, control._proxyFormState, true)) {
-        control._formState = {
-          ...control._formState,
-          ...value,
-        };
-
+    next: (
+      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
+    ) => {
+      if (
+        shouldRenderFormState(
+          value,
+          control._proxyFormState,
+          control._updateFormState,
+          true,
+        )
+      ) {
         updateFormState({ ...control._formState });
       }
     },

@@ -744,4 +744,37 @@ describe('useFormState', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
     expect(await screen.findByText('valid')).toBeVisible();
   });
+
+  it('should subscribe and update formState', async () => {
+    function App() {
+      const { register, control, handleSubmit } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+      const { errors } = useFormState({ control });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('firstName', { required: 'Required' })} />
+          <p>{errors.firstName?.message}</p>
+          <button>Submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => screen.getByText('Required'));
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'data' },
+    });
+
+    waitFor(() =>
+      expect(screen.queryByText('Required')).not.toBeInTheDocument(),
+    );
+  });
 });

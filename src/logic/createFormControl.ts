@@ -114,9 +114,10 @@ export function createFormControl<
     errors: {},
   };
   let _fields = {};
-  let _defaultValues = isObject(_options.defaultValues)
-    ? cloneObject(_options.defaultValues) || {}
-    : {};
+  let _defaultValues =
+    isObject(_options.defaultValues) || isObject(_options.values)
+      ? cloneObject(_options.defaultValues || _options.values) || {}
+      : {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
@@ -165,7 +166,6 @@ export function createFormControl<
         : await executeBuiltInValidation(_fields, true);
 
       if (isValid !== _formState.isValid) {
-        _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
         });
@@ -631,11 +631,9 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
-
         _subjects.state.next({
           name,
-          dirtyFields: _formState.dirtyFields,
+          dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
         });
       }
@@ -839,14 +837,13 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name
-      ? convertToArrayPayload(name).forEach((inputName) =>
-          unset(_formState.errors, inputName),
-        )
-      : (_formState.errors = {});
+    name &&
+      convertToArrayPayload(name).forEach((inputName) =>
+        unset(_formState.errors, inputName),
+      );
 
     _subjects.state.next({
-      errors: _formState.errors,
+      errors: name ? _formState.errors : {},
     });
   };
 
@@ -1228,6 +1225,15 @@ export function createFormControl<
     }
   };
 
+  const _updateFormState = (
+    updatedFormState: Partial<FormState<TFieldValues>>,
+  ) => {
+    _formState = {
+      ..._formState,
+      ...updatedFormState,
+    };
+  };
+
   if (isFunction(_options.defaultValues)) {
     _options.defaultValues().then((values) => {
       reset(values, _options.resetOptions);
@@ -1251,6 +1257,7 @@ export function createFormControl<
       _updateFieldArray,
       _getFieldArray,
       _reset,
+      _updateFormState,
       _subjects,
       _proxyFormState,
       get _fields() {

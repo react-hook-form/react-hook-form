@@ -5,6 +5,7 @@ import shouldRenderFormState from './logic/shouldRenderFormState';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import {
   FieldValues,
+  FormState,
   InternalFieldName,
   UseFormStateProps,
   UseFormStateReturn,
@@ -64,14 +65,20 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   useSubscribe({
     disabled,
-    next: (value: { name?: InternalFieldName }) =>
+    next: (
+      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
+    ) =>
       _mounted.current &&
       shouldSubscribeByName(
         _name.current as InternalFieldName,
         value.name,
         exact,
       ) &&
-      shouldRenderFormState(value, _localProxyFormState.current) &&
+      shouldRenderFormState(
+        value,
+        _localProxyFormState.current,
+        control._updateFormState,
+      ) &&
       updateFormState({
         ...control._formState,
         ...value,
