@@ -114,9 +114,10 @@ export function createFormControl<
     errors: {},
   };
   let _fields = {};
-  let _defaultValues = isObject(_options.defaultValues)
-    ? cloneObject(_options.defaultValues) || {}
-    : {};
+  let _defaultValues =
+    isObject(_options.defaultValues) || isObject(_options.values)
+      ? cloneObject(_options.defaultValues || _options.values) || {}
+      : {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
