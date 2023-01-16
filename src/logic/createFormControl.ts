@@ -166,7 +166,6 @@ export function createFormControl<
         : await executeBuiltInValidation(_fields, true);
 
       if (isValid !== _formState.isValid) {
-        _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
         });
@@ -632,11 +631,9 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
-
         _subjects.state.next({
           name,
-          dirtyFields: _formState.dirtyFields,
+          dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
         });
       }
@@ -840,14 +837,13 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name
-      ? convertToArrayPayload(name).forEach((inputName) =>
-          unset(_formState.errors, inputName),
-        )
-      : (_formState.errors = {});
+    name &&
+      convertToArrayPayload(name).forEach((inputName) =>
+        unset(_formState.errors, inputName),
+      );
 
     _subjects.state.next({
-      errors: _formState.errors,
+      errors: name ? _formState.errors : {},
     });
   };
 
