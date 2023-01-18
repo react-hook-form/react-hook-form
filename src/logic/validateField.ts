@@ -207,7 +207,12 @@ export default async <T extends FieldValues>(
   if (pattern && !isEmpty && (isString(inputValue) || valueAsNumber)) {
     const { value: patternValue, message } = getValueAndMessage(pattern);
 
-    if (isRegex(patternValue) && !(isString(inputValue) ? inputValue : String(inputValue)).match(patternValue)) {
+    if (
+      isRegex(patternValue) &&
+      !(isString(inputValue) ? inputValue : String(inputValue))?.match(
+        patternValue,
+      )
+    ) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message,
