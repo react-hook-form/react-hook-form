@@ -397,10 +397,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     max: ValidationRule<number | string>;
     maxLength: ValidationRule<number>;
     minLength: ValidationRule<number>;
-    pattern: ValidationRule<RegExp>;
     validate: Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>>;
-    valueAsNumber: boolean;
-    valueAsDate: boolean;
     value: FieldPathValue<TFieldValues, TFieldName>;
     setValueAs: (value: any) => any;
     shouldUnregister?: boolean;
@@ -408,7 +405,19 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     onBlur?: (event: any) => void;
     disabled: boolean;
     deps: InternalFieldName | InternalFieldName[];
-}>;
+}> & ({
+    pattern?: ValidationRule<RegExp>;
+    valueAsNumber?: false;
+    valueAsDate?: false;
+} | {
+    pattern?: undefined;
+    valueAsNumber?: false;
+    valueAsDate?: true;
+} | {
+    pattern?: undefined;
+    valueAsNumber?: true;
+    valueAsDate?: false;
+});
 
 // @public (undocumented)
 export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = any> = (values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
