@@ -7,10 +7,10 @@ jest.mock('../../logic/getCheckboxValue');
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '2',
     }));
-    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
       value: false,
       isValid: false,
     }));
@@ -51,7 +51,8 @@ describe('validateField', () => {
             valueAsNumber: true,
           },
         },
-        NaN as any,
+        // @ts-expect-error
+        NaN,
         false,
       ),
     ).toEqual({
@@ -308,7 +309,7 @@ describe('validateField', () => {
       ),
     ).toEqual({});
 
-    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
@@ -1520,7 +1521,7 @@ describe('validateField', () => {
       },
     });
 
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => {
+    (getRadioValue as jest.Mock).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',
@@ -1804,7 +1805,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation errors', async () => {
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
 
@@ -1881,7 +1882,7 @@ describe('validateField', () => {
   it('should handle pattern with g flag', async () => {
     const reusedRe = /a/g;
 
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
     expect(
@@ -1954,7 +1955,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation error messages', async () => {
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
     expect(
