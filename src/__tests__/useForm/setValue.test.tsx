@@ -71,13 +71,14 @@ describe('setValue', () => {
 
     result.current.register('test');
 
-    const blob = new Blob([''], { type: 'image/png', lastModified: 1 } as any);
+    // @ts-expect-error
+    const blob = new Blob([''], { type: 'image/png', lastModified: 1 });
     const file = blob as File;
     const fileList = {
       0: file,
       1: file,
       length: 2,
-    } as any as FileList;
+    } as unknown as FileList;
 
     act(() => result.current.setValue('test', fileList));
 
@@ -1234,7 +1235,13 @@ describe('setValue', () => {
 
   it('should only be able to update value of object which is not registered', async () => {
     const App = () => {
-      const { setValue, watch } = useForm({
+      const { setValue, watch } = useForm<{
+        test: {
+          data: string;
+          data1: string;
+          data2: string;
+        };
+      }>({
         defaultValues: {
           test: {
             data: '1',
@@ -1246,7 +1253,9 @@ describe('setValue', () => {
       React.useEffect(() => {
         setValue('test', {
           data: '2',
-        } as any);
+          data1: '2',
+          data2: '3',
+        });
       }, [setValue]);
 
       const result = watch('test');
@@ -1256,7 +1265,9 @@ describe('setValue', () => {
 
     render(<App />);
 
-    expect(await screen.findByText('{"data":"2"}')).toBeVisible();
+    expect(
+      await screen.findByText('{"data":"2","data1":"2","data2":"3"}'),
+    ).toBeVisible();
   });
 
   it('should update nested object which contain date object without register', () => {

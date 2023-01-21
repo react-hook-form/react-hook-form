@@ -1029,10 +1029,7 @@ describe('Controller', () => {
       const { control } = useForm({
         mode: 'onChange',
         defaultValues: {
-          test: {
-            firstName: '',
-            lastName: '',
-          },
+          test: '',
         },
       });
 
@@ -1044,7 +1041,7 @@ describe('Controller', () => {
               rules={{ required: true }}
               control={control}
               render={({ field }) => (
-                <input value={field.value as any} onChange={field.onChange} />
+                <input value={field.value} onChange={field.onChange} />
               )}
             />
           )}
@@ -1236,7 +1233,7 @@ describe('Controller', () => {
 
   it('should not cause type error with any', () => {
     function App() {
-      const { control } = useForm<any>({
+      const { control } = useForm({
         defaultValues: {
           firstName: '',
           deepNested: { test: '' },
@@ -1432,7 +1429,7 @@ describe('Controller', () => {
 
   it('should set up defaultValues for controlled component with values prop', () => {
     function App() {
-      const { control } = useForm<any>({
+      const { control } = useForm({
         values: {
           firstName: 'test',
         },
