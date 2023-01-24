@@ -181,7 +181,7 @@ export function useWatch<TFieldValues extends FieldValues>(
     },
   });
 
-  const [value, updateValue] = React.useState<unknown>(
+  const [value, updateValue] = React.useState(
     control._getWatch(
       name as InternalFieldName,
       defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
