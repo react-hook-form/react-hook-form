@@ -20,7 +20,7 @@ const validationSchema = Joi.object({
   checkbox: Joi.required(),
 });
 
-const resolver = async (data: any) => {
+const resolver = async (data: unknown) => {
   const { error, value: values } = validationSchema.validate(data, {
     abortEarly: false,
   });

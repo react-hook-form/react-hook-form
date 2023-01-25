@@ -16,6 +16,7 @@ import {
   InternalFieldName,
   Names,
   Path,
+  PathValue,
   Ref,
   SetFieldValue,
   SetValueConfig,
@@ -1069,7 +1070,13 @@ export function createFormControl<
       if (isUndefined(options.defaultValue)) {
         setValue(name, get(_defaultValues, name));
       } else {
-        setValue(name, options.defaultValue);
+        setValue(
+          name,
+          options.defaultValue as PathValue<
+            TFieldValues,
+            FieldPath<TFieldValues>
+          >,
+        );
         set(_defaultValues, name, options.defaultValue);
       }
 

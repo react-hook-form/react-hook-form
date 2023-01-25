@@ -625,7 +625,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
     keepDirty: boolean;
     keepTouched: boolean;
     keepError: boolean;
-    defaultValue: any;
+    defaultValue: unknown;
   }>,
 ) => void;
 
