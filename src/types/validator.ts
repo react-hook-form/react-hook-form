@@ -17,8 +17,9 @@ export type ValidationValueMessage<
 
 export type ValidateResult = Message | boolean | undefined;
 
-export type Validate<TFieldValue> = (
+export type Validate<TFieldValue, TFormValues> = (
   value: TFieldValue,
+  formValues: TFormValues,
 ) => ValidateResult | Promise<ValidateResult>;
 
 export type RegisterOptions<
@@ -30,12 +31,12 @@ export type RegisterOptions<
   max: ValidationRule<number | string>;
   maxLength: ValidationRule<number>;
   minLength: ValidationRule<number>;
-  pattern: ValidationRule<RegExp>;
   validate:
-    | Validate<FieldPathValue<TFieldValues, TFieldName>>
-    | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>;
-  valueAsNumber: boolean;
-  valueAsDate: boolean;
+    | Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>
+    | Record<
+        string,
+        Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>
+      >;
   value: FieldPathValue<TFieldValues, TFieldName>;
   setValueAs: (value: any) => any;
   shouldUnregister?: boolean;
@@ -43,4 +44,21 @@ export type RegisterOptions<
   onBlur?: (event: any) => void;
   disabled: boolean;
   deps: InternalFieldName | InternalFieldName[];
-}>;
+}> &
+  (
+    | {
+        pattern?: ValidationRule<RegExp>;
+        valueAsNumber?: false;
+        valueAsDate?: false;
+      }
+    | {
+        pattern?: undefined;
+        valueAsNumber?: false;
+        valueAsDate?: true;
+      }
+    | {
+        pattern?: undefined;
+        valueAsNumber?: true;
+        valueAsDate?: false;
+      }
+  );

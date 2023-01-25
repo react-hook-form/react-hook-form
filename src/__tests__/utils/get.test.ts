@@ -33,7 +33,9 @@ describe('get', () => {
       bill: 'test',
     };
     expect(get(test, '')).toEqual(undefined);
-    expect(get(test, undefined as any)).toEqual(undefined);
-    expect(get(test, null as any)).toEqual(undefined);
+    // @ts-expect-error
+    expect(get(test, undefined)).toEqual(undefined);
+    // @ts-expect-error
+    expect(get(test, null)).toEqual(undefined);
   });
 });

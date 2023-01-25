@@ -323,7 +323,7 @@ describe('formState', () => {
     });
   });
 
-  it('should set isSubmitSuccessful to false when there is a promise reject', async () => {
+  it('should not update form state when there is a promise reject', async () => {
     const rejectPromiseFn = jest
       .fn()
       .mockRejectedValue(new Error('this is an error'));
@@ -358,7 +358,6 @@ describe('formState', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(await screen.findByText('isSubmitted')).toBeVisible();
     expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
   });
 

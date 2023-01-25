@@ -254,7 +254,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * <button onClick={() => getValues()}>getValues</button>
    *
    * <input {...register("name", {
-   *   validate: () => getValues().otherField === "test";
+   *   validate: (value, formValues) => formValues.otherField === value;
    * })} />
    * ```
    */
@@ -335,12 +335,6 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
-  /**
-   * @deprecated check `fieldState.error` instead
-   * ```jsx
-   * {fieldState.error && <p>{fieldState.error.message}</p>}
-   * ```
-   */
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
@@ -543,7 +537,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues>,
+  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -754,7 +748,8 @@ export type Control<
   _options: UseFormProps<TFieldValues, TContext>;
   _getDirty: GetIsDirty;
   _formState: FormState<TFieldValues>;
-  _updateValid: Noop;
+  _updateValid: (shouldUpdateValid?: boolean) => void;
+  _updateFormState: (formState: Partial<FormState<TFieldValues>>) => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;

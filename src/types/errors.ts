@@ -33,16 +33,25 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
   [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
     ? FieldError
+    : T[K] extends GlobalError
+    ? GlobalError
     : T[K] extends object
     ? Merge<FieldError, FieldErrorsImpl<T[K]>>
     : FieldError;
 };
 
+export type GlobalError = Partial<{
+  type: string | number;
+  message: string;
+}>;
+
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
   FieldValues extends IsAny<FieldValues>
     ? any
     : FieldErrorsImpl<DeepRequired<T>>
->;
+> & {
+  root?: Record<string, GlobalError>;
+};
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>

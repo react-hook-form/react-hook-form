@@ -114,9 +114,10 @@ export function createFormControl<
     errors: {},
   };
   let _fields = {};
-  let _defaultValues = isObject(_options.defaultValues)
-    ? cloneObject(_options.defaultValues) || {}
-    : {};
+  let _defaultValues =
+    isObject(_options.defaultValues) || isObject(_options.values)
+      ? cloneObject(_options.defaultValues || _options.values) || {}
+      : {};
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
@@ -158,14 +159,13 @@ export function createFormControl<
       timer = window.setTimeout(callback, wait);
     };
 
-  const _updateValid = async () => {
-    if (_proxyFormState.isValid) {
+  const _updateValid = async (shouldUpdateValid?: boolean) => {
+    if (_proxyFormState.isValid || shouldUpdateValid) {
       const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuiltInValidation(_fields, true);
 
       if (isValid !== _formState.isValid) {
-        _formState.isValid = isValid;
         _subjects.state.next({
           isValid,
         });
@@ -426,7 +426,7 @@ export function createFormControl<
           const isFieldArrayRoot = _names.array.has(_f.name);
           const fieldError = await validateField(
             field,
-            get(_formValues, _f.name),
+            _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
             isFieldArrayRoot,
@@ -631,11 +631,9 @@ export function createFormControl<
         (_proxyFormState.isDirty || _proxyFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
-
         _subjects.state.next({
           name,
-          dirtyFields: _formState.dirtyFields,
+          dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
         });
       }
@@ -737,7 +735,7 @@ export function createFormControl<
         error = (
           await validateField(
             field,
-            get(_formValues, name),
+            _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
           )
@@ -839,14 +837,13 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name
-      ? convertToArrayPayload(name).forEach((inputName) =>
-          unset(_formState.errors, inputName),
-        )
-      : (_formState.errors = {});
+    name &&
+      convertToArrayPayload(name).forEach((inputName) =>
+        unset(_formState.errors, inputName),
+      );
 
     _subjects.state.next({
-      errors: _formState.errors,
+      errors: name ? _formState.errors : {},
     });
   };
 
@@ -1030,49 +1027,41 @@ export function createFormControl<
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
       }
-      let hasNoPromiseError = true;
-      let fieldValues: any = cloneObject(_formValues);
+      let fieldValues = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
       });
 
-      try {
-        if (_options.resolver) {
-          const { errors, values } = await _executeSchema();
-          _formState.errors = errors;
-          fieldValues = values;
-        } else {
-          await executeBuiltInValidation(_fields);
-        }
-
-        if (isEmptyObject(_formState.errors)) {
-          _subjects.state.next({
-            errors: {},
-            isSubmitting: true,
-          });
-          await onValid(fieldValues, e);
-        } else {
-          if (onInvalid) {
-            await onInvalid({ ..._formState.errors }, e);
-          }
-
-          _focusError();
-        }
-      } catch (err) {
-        hasNoPromiseError = false;
-        throw err;
-      } finally {
-        _formState.isSubmitted = true;
-        _subjects.state.next({
-          isSubmitted: true,
-          isSubmitting: false,
-          isSubmitSuccessful:
-            isEmptyObject(_formState.errors) && hasNoPromiseError,
-          submitCount: _formState.submitCount + 1,
-          errors: _formState.errors,
-        });
+      if (_options.resolver) {
+        const { errors, values } = await _executeSchema();
+        _formState.errors = errors;
+        fieldValues = values;
+      } else {
+        await executeBuiltInValidation(_fields);
       }
+
+      unset(_formState.errors, 'root');
+
+      if (isEmptyObject(_formState.errors)) {
+        _subjects.state.next({
+          errors: {},
+        });
+        await onValid(fieldValues as TFieldValues, e);
+      } else {
+        if (onInvalid) {
+          await onInvalid({ ..._formState.errors }, e);
+        }
+        _focusError();
+      }
+
+      _subjects.state.next({
+        isSubmitted: true,
+        isSubmitting: false,
+        isSubmitSuccessful: isEmptyObject(_formState.errors),
+        submitCount: _formState.submitCount + 1,
+        errors: _formState.errors,
+      });
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
@@ -1236,6 +1225,15 @@ export function createFormControl<
     }
   };
 
+  const _updateFormState = (
+    updatedFormState: Partial<FormState<TFieldValues>>,
+  ) => {
+    _formState = {
+      ..._formState,
+      ...updatedFormState,
+    };
+  };
+
   if (isFunction(_options.defaultValues)) {
     _options.defaultValues().then((values) => {
       reset(values, _options.resetOptions);
@@ -1260,6 +1258,7 @@ export function createFormControl<
       _updateFieldArray,
       _getFieldArray,
       _reset,
+      _updateFormState,
       _subjects,
       _proxyFormState,
       get _fields() {

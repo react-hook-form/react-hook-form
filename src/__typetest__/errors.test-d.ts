@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { FieldError, FieldErrors, Merge } from '../types';
+import { FieldError, FieldErrors, GlobalError, Merge } from '../types';
 
 import { _ } from './__fixtures__';
 
@@ -15,17 +15,21 @@ import { _ } from './__fixtures__';
         data1: string;
       };
     }>;
-    expectType<{
-      test?: FieldError;
-      test1?: FieldError;
-      attachment?: Merge<
-        FieldError,
-        {
-          data?: FieldError;
-          data1?: FieldError;
-        }
-      >;
-    }>(actual);
+    expectType<
+      {
+        test?: FieldError;
+        test1?: FieldError;
+        attachment?: Merge<
+          FieldError,
+          {
+            data?: FieldError;
+            data1?: FieldError;
+          }
+        >;
+      } & {
+        root?: Record<string, GlobalError>;
+      }
+    >(actual);
   }
 
   /** it should support nullable record fields */
@@ -38,17 +42,21 @@ import { _ } from './__fixtures__';
         data1: string;
       } | null;
     }>;
-    expectType<{
-      test?: FieldError;
-      test1?: FieldError;
-      attachment?: Merge<
-        FieldError,
-        {
-          data?: FieldError;
-          data1?: FieldError;
-        }
-      >;
-    }>(actual);
+    expectType<
+      {
+        test?: FieldError;
+        test1?: FieldError;
+        attachment?: Merge<
+          FieldError,
+          {
+            data?: FieldError;
+            data1?: FieldError;
+          }
+        >;
+      } & {
+        root?: Record<string, GlobalError>;
+      }
+    >(actual);
   }
 
   /** it should not treat Date, File, FileList or Blob as record fields */

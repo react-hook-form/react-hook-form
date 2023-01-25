@@ -13,12 +13,6 @@ import {
 } from './';
 
 export type ControllerFieldState = {
-  /**
-   * @deprecated check `fieldState.error` instead
-   * ```jsx
-   * {fieldState.error && <p>{fieldState.error.message}</p>}
-   * ```
-   */
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
