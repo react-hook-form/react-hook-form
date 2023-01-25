@@ -536,7 +536,7 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues>,
+  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;

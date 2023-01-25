@@ -197,11 +197,13 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>>;
+export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>> & {
+    root?: Record<string, GlobalError>;
+};
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
+    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : T[K] extends GlobalError ? GlobalError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
 };
 
 // @public (undocumented)
@@ -281,6 +283,12 @@ export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
+
+// @public (undocumented)
+export type GlobalError = Partial<{
+    type: string | number;
+    message: string;
+}>;
 
 // @public (undocumented)
 export type InternalFieldErrors = Partial<Record<InternalFieldName, FieldError>>;
@@ -661,7 +669,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 };
 
 // @public
-export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues>, error: ErrorOption, options?: {
+export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root', error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
