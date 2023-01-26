@@ -1,8 +1,8 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { DeepMap, ErrorOption, FieldError } from '../../types';
+import { DeepMap, ErrorOption, FieldError, GlobalError } from '../../types';
 import { useForm } from '../../useForm';
 
 describe('setError', () => {
@@ -90,5 +90,78 @@ describe('setError', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(await screen.findByText('no')).toBeVisible();
+  });
+
+  it('should allow to set global error', async () => {
+    const onSubmit = jest.fn();
+
+    type Errors = {
+      root: {
+        customError: GlobalError;
+        serverError: GlobalError;
+      };
+    };
+
+    type FormValues = {
+      test: string;
+    };
+
+    const App = () => {
+      const {
+        formState: { errors },
+        handleSubmit,
+        setError,
+      } = useForm<FormValues & Errors>({
+        mode: 'onChange',
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit(() => {
+            onSubmit();
+            setError('root.serverError', {
+              type: '404',
+              message: 'not found',
+            });
+          })}
+        >
+          <button
+            type={'button'}
+            onClick={() => {
+              setError('root.customError', {
+                type: 'custom',
+                message: 'custom error',
+              });
+            }}
+          >
+            setError
+          </button>
+
+          <p>{errors?.root?.customError?.message}</p>
+          <p>{errors?.root?.serverError?.message}</p>
+
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'setError' }));
+
+    await waitFor(() => {
+      screen.findByText('custom error');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => {
+      expect(onSubmit).toBeCalled();
+      expect(screen.queryByText('custom error')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      screen.findByText('not found');
+    });
   });
 });
