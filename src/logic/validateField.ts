@@ -186,10 +186,10 @@ export default async <T extends FieldValues>(
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =
       !isNullOrUndefined(maxLengthOutput.value) &&
-      inputValue.length > maxLengthOutput.value;
+      inputValue.length > +maxLengthOutput.value;
     const exceedMin =
       !isNullOrUndefined(minLengthOutput.value) &&
-      inputValue.length < minLengthOutput.value;
+      inputValue.length < +minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
