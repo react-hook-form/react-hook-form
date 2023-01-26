@@ -218,6 +218,11 @@ const items: Item[] = [
     description: 'should watch the correct nested field array',
     slugs: ['/watchUseFieldArrayNested'],
   },
+  {
+    title: 'Form',
+    description: 'should validate form and submit the request',
+    slugs: ['/form'],
+  },
 ];
 
 const Component: React.FC = () => {

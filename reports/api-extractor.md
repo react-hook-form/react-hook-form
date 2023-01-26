@@ -8,6 +8,7 @@
 
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
+import * as React_3 from 'react';
 import { ReactElement } from 'react';
 
 // @public (undocumented)
@@ -67,6 +68,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     handleSubmit: UseFormHandleSubmit<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
+    setError: UseFormSetError<TFieldValues>;
 };
 
 // @public
@@ -237,6 +239,11 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 
 // @public (undocumented)
 export type FieldValues = Record<string, any>;
+
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: Props<T, U>): JSX.Element;
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
