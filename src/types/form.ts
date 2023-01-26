@@ -766,6 +766,7 @@ export type Control<
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
+  setError: UseFormSetError<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
