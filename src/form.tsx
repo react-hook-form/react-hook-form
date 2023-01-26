@@ -11,13 +11,12 @@ type Props<
   control: Control<T>;
   children: React.ReactNode | React.ReactNode[];
   onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
-  onValid: (response: Response) => void;
-  onError: (response?: Response) => void;
+  resolve: (response: Response) => void;
+  reject: (response?: Response) => void;
   headers: Record<string, string>;
   validateStatus: (status: number) => boolean;
 }> &
-  React.FormHTMLAttributes<HTMLFormElement> &
-  Required<Pick<React.FormHTMLAttributes<HTMLFormElement>, 'action'>>;
+  React.FormHTMLAttributes<HTMLFormElement>;
 
 export function Form<
   T extends FieldValues,
@@ -32,10 +31,10 @@ export function Form<
     action,
     method,
     headers,
-    onError,
-    noValidate,
-    onValid,
+    reject,
+    resolve,
     validateStatus,
+    ...rest
   } = props;
 
   React.useEffect(() => {
@@ -44,13 +43,14 @@ export function Form<
 
   return (
     <form
+      noValidate={mounted}
       action={action}
       method={method}
-      noValidate={noValidate || mounted}
       onSubmit={
         onSubmit
           ? control.handleSubmit(onSubmit)
-          : (e) => {
+          : action
+          ? (e) => {
               e.preventDefault();
               const type = 'root.server' as const;
               control.handleSubmit(async (data) => {
@@ -72,20 +72,22 @@ export function Form<
                     control.setError(type, {
                       type: String(response.status),
                     });
-                    onError && onError(response);
+                    reject && reject(response);
                   } else {
-                    onValid && onValid(response);
+                    resolve && resolve(response);
                   }
                 } catch (e: unknown) {
                   control.setError(type, {
                     type: 'error',
                     message: isObject(e) ? (e as Error).message : '',
                   });
-                  onError && onError();
+                  reject && reject();
                 }
               })(e);
             }
+          : undefined
       }
+      {...rest}
     >
       {children}
     </form>
