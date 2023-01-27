@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import isObject from './utils/isObject';
+import { SERVER_ERROR_TYPE } from './constants';
 import { Control, FieldValues, SubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -49,13 +49,10 @@ export function Form<
       onSubmit={
         onSubmit
           ? control.handleSubmit(onSubmit)
-          : action
-          ? (e) => {
-              e.preventDefault();
-              const type = 'root.server' as const;
+          : (e) => {
               control.handleSubmit(async (data) => {
                 try {
-                  const response = await fetch(action, {
+                  const response = await fetch(String(action), {
                     method: method || 'post',
                     headers: {
                       'Content-Type': 'application/json',
@@ -69,7 +66,7 @@ export function Form<
                       ? !validateStatus(response.status)
                       : response.status < 200 || response.status >= 300
                   ) {
-                    control.setError(type, {
+                    control.setError(SERVER_ERROR_TYPE, {
                       type: String(response.status),
                     });
                     reject && reject(response);
@@ -77,15 +74,13 @@ export function Form<
                     resolve && resolve(response);
                   }
                 } catch (e: unknown) {
-                  control.setError(type, {
+                  control.setError(SERVER_ERROR_TYPE, {
                     type: 'error',
-                    message: isObject(e) ? (e as Error).message : '',
                   });
                   reject && reject();
                 }
               })(e);
             }
-          : undefined
       }
       {...rest}
     >

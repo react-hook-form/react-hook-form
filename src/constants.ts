@@ -23,3 +23,5 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 };
+
+export const SERVER_ERROR_TYPE = 'root.server' as const;
