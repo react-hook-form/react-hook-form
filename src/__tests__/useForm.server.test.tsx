@@ -82,7 +82,7 @@ describe('useForm with SSR', () => {
       const { register } = useForm<{
         test: string;
       }>({
-        progressiveEnhancement: true,
+        progressive: true,
       });
 
       return (

@@ -622,7 +622,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldFocusError: boolean;
     shouldUnregister: boolean;
     shouldUseNativeValidation: boolean;
-    progressiveEnhancement: boolean;
+    progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
 }>;
