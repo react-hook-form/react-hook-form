@@ -243,7 +243,7 @@ export type FieldValues = Record<string, any>;
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: Props<T, U>): JSX.Element;
+export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: Props<T, U>): string | number | boolean | React_3.ReactFragment | JSX.Element | null | undefined;
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
