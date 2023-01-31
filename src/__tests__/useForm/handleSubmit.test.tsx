@@ -268,9 +268,9 @@ describe('handleSubmit', () => {
           <button
             type={'button'}
             onClick={() =>
-              handleSubmit(rejectPromiseFn)().catch((err) =>
-                setError(err.message),
-              )
+              handleSubmit(rejectPromiseFn, (_, __, err) => {
+                setError((err as Error).message);
+              })()
             }
           >
             Submit

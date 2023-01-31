@@ -346,7 +346,7 @@ describe('formState', () => {
           </p>
           <button
             type={'button'}
-            onClick={() => handleSubmit(rejectPromiseFn)().catch(() => {})}
+            onClick={() => handleSubmit(rejectPromiseFn)()}
           >
             Submit
           </button>
@@ -356,9 +356,14 @@ describe('formState', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    act(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
-    expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
+    await waitFor(async () => {
+      screen.getByText('isSubmitted');
+      screen.getByText('isNotSubmitSuccessful');
+    });
   });
 
   it('should update isValid even with mode set to onSubmit', async () => {
