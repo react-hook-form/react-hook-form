@@ -1059,15 +1059,15 @@ export function createFormControl<
       } catch (error) {
         onInvalid && onInvalid(_formState.errors, e, error);
         runTimeError = true;
-      } finally {
-        _subjects.state.next({
-          isSubmitted: true,
-          isSubmitting: false,
-          isSubmitSuccessful: isEmptyObject(_formState.errors) && !runTimeError,
-          submitCount: _formState.submitCount + 1,
-          errors: _formState.errors,
-        });
       }
+
+      _subjects.state.next({
+        isSubmitted: true,
+        isSubmitting: false,
+        isSubmitSuccessful: isEmptyObject(_formState.errors) && !runTimeError,
+        submitCount: _formState.submitCount + 1,
+        errors: _formState.errors,
+      });
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
