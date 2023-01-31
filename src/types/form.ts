@@ -474,7 +474,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
   name?:
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[],
+    | readonly FieldPath<TFieldValues>[]
+    | `root.${string}`
+    | 'root',
 ) => void;
 
 /**
