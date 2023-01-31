@@ -1028,40 +1028,46 @@ export function createFormControl<
         e.persist && e.persist();
       }
       let fieldValues = cloneObject(_formValues);
+      let runTimeError = false;
 
       _subjects.state.next({
         isSubmitting: true,
       });
 
-      if (_options.resolver) {
-        const { errors, values } = await _executeSchema();
-        _formState.errors = errors;
-        fieldValues = values;
-      } else {
-        await executeBuiltInValidation(_fields);
-      }
-
-      unset(_formState.errors, 'root');
-
-      if (isEmptyObject(_formState.errors)) {
-        _subjects.state.next({
-          errors: {},
-        });
-        await onValid(fieldValues as TFieldValues, e);
-      } else {
-        if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
+      try {
+        if (_options.resolver) {
+          const { errors, values } = await _executeSchema();
+          _formState.errors = errors;
+          fieldValues = values;
+        } else {
+          await executeBuiltInValidation(_fields);
         }
-        _focusError();
-      }
 
-      _subjects.state.next({
-        isSubmitted: true,
-        isSubmitting: false,
-        isSubmitSuccessful: isEmptyObject(_formState.errors),
-        submitCount: _formState.submitCount + 1,
-        errors: _formState.errors,
-      });
+        unset(_formState.errors, 'root');
+
+        if (isEmptyObject(_formState.errors)) {
+          _subjects.state.next({
+            errors: {},
+          });
+          await onValid(fieldValues as TFieldValues, e);
+        } else {
+          if (onInvalid) {
+            await onInvalid({ ..._formState.errors }, e);
+          }
+          _focusError();
+        }
+      } catch (error) {
+        onInvalid && onInvalid(_formState.errors, e, error);
+        runTimeError = true;
+      } finally {
+        _subjects.state.next({
+          isSubmitted: true,
+          isSubmitting: false,
+          isSubmitSuccessful: isEmptyObject(_formState.errors) && !runTimeError,
+          submitCount: _formState.submitCount + 1,
+          errors: _formState.errors,
+        });
+      }
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {

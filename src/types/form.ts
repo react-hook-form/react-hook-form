@@ -65,6 +65,7 @@ export type SubmitHandler<TFieldValues extends FieldValues> = (
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
+  error?: unknown,
 ) => any | Promise<any>;
 
 export type SetValueConfig = Partial<{
