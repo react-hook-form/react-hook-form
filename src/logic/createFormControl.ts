@@ -1051,11 +1051,11 @@ export function createFormControl<
           });
           await onValid(fieldValues as TFieldValues, e);
         } else {
-          onInvalid && onInvalid(_formState.errors, e);
+          onInvalid && onInvalid({ ..._formState.errors }, e);
           _focusError();
         }
       } catch (error) {
-        onInvalid && onInvalid(_formState.errors, e, error);
+        onInvalid && onInvalid({ ..._formState.errors }, e, error);
         runTimeError = true;
       }
 
