@@ -1051,9 +1051,7 @@ export function createFormControl<
           });
           await onValid(fieldValues as TFieldValues, e);
         } else {
-          if (onInvalid) {
-            await onInvalid({ ..._formState.errors }, e);
-          }
+          onInvalid && onInvalid(_formState.errors, e);
           _focusError();
         }
       } catch (error) {
