@@ -48,47 +48,48 @@ export function Form<
     ...rest
   } = props;
 
-  const submit = control.handleSubmit(
-    onSubmit ||
-      (async (data) => {
-        const formData = new FormData();
-        let includeJsonHeader = false;
+  const submit = control.handleSubmit(async (data) => {
+    onSubmit && onSubmit(data);
 
-        if (headers) {
-          includeJsonHeader = headers['Content-Type'].includes('json');
-        } else {
-          control._names.mount.forEach((name) => {
-            formData.append(name, get(data, name));
-          });
-        }
+    if (action) {
+      const formData = new FormData();
+      let includeJsonHeader = false;
 
-        try {
-          const response = await fetch(String(action), {
-            method: method || 'post',
-            headers,
-            body: includeJsonHeader ? JSON.stringify(data) : formData,
-          });
+      if (headers) {
+        includeJsonHeader = headers['Content-Type'].includes('json');
+      } else {
+        control._names.mount.forEach((name) => {
+          formData.append(name, get(data, name));
+        });
+      }
 
-          if (
-            validateStatus
-              ? !validateStatus(response.status)
-              : response.status < 200 || response.status >= 300
-          ) {
-            control.setError(SERVER_ERROR_TYPE, {
-              type: String(response.status),
-            });
-            onError && onError({ response });
-          } else {
-            onSuccess && onSuccess({ response });
-          }
-        } catch (error: unknown) {
+      try {
+        const response = await fetch(action, {
+          method: method || 'post',
+          headers,
+          body: includeJsonHeader ? JSON.stringify(data) : formData,
+        });
+
+        if (
+          validateStatus
+            ? !validateStatus(response.status)
+            : response.status < 200 || response.status >= 300
+        ) {
           control.setError(SERVER_ERROR_TYPE, {
-            type: 'error',
+            type: String(response.status),
           });
-          onError && onError({ error });
+          onError && onError({ response });
+        } else {
+          onSuccess && onSuccess({ response });
         }
-      }),
-  );
+      } catch (error: unknown) {
+        control.setError(SERVER_ERROR_TYPE, {
+          type: 'error',
+        });
+        onError && onError({ error });
+      }
+    }
+  });
 
   React.useEffect(() => {
     setMounted(true);
