@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import get from './utils/get';
 import { SERVER_ERROR_TYPE } from './constants';
 import { Control, FieldValues, SubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
@@ -14,8 +15,8 @@ type Props<
     submit: (e?: React.FormEvent) => void;
   }) => React.ReactNode | React.ReactNode[];
   onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
-  resolve: (response: Response) => void;
-  reject: (response?: Response) => void;
+  onSuccess: (response: Response) => void;
+  onError: (response?: Response) => void;
   headers: Record<string, string>;
   validateStatus: (status: number) => boolean;
 }> &
@@ -34,9 +35,9 @@ export function Form<
     action,
     method,
     headers,
+    onError,
     render,
-    reject,
-    resolve,
+    onSuccess,
     validateStatus,
     ...rest
   } = props;
@@ -44,14 +45,22 @@ export function Form<
   const submit = control.handleSubmit(
     onSubmit ||
       (async (data) => {
+        const formData = new FormData();
+        let includeJsonHeader = false;
+
+        if (headers) {
+          includeJsonHeader = headers['Content-Type'].includes('json');
+        } else {
+          control._names.mount.forEach((name) => {
+            formData.append(name, get(data, name));
+          });
+        }
+
         try {
           const response = await fetch(String(action), {
             method: method || 'post',
-            headers: {
-              'Content-Type': 'application/json',
-              ...headers,
-            },
-            body: JSON.stringify(data),
+            headers,
+            body: includeJsonHeader ? JSON.stringify(data) : formData,
           });
 
           if (
@@ -62,15 +71,15 @@ export function Form<
             control.setError(SERVER_ERROR_TYPE, {
               type: String(response.status),
             });
-            reject && reject(response);
+            onError && onError(response);
           } else {
-            resolve && resolve(response);
+            onSuccess && onSuccess(response);
           }
         } catch (e: unknown) {
           control.setError(SERVER_ERROR_TYPE, {
             type: 'error',
           });
-          reject && reject();
+          onError && onError();
         }
       }),
   );
