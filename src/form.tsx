@@ -15,8 +15,14 @@ type Props<
     submit: (e?: React.FormEvent) => void;
   }) => React.ReactNode | React.ReactNode[];
   onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
-  onSuccess: (response: Response) => void;
-  onError: (response?: Response) => void;
+  onSuccess: ({ response }: { response: Response }) => void;
+  onError: ({
+    response,
+    error,
+  }: {
+    response?: Response;
+    error?: unknown;
+  }) => void;
   headers: Record<string, string>;
   validateStatus: (status: number) => boolean;
 }> &
@@ -71,15 +77,15 @@ export function Form<
             control.setError(SERVER_ERROR_TYPE, {
               type: String(response.status),
             });
-            onError && onError(response);
+            onError && onError({ response });
           } else {
-            onSuccess && onSuccess(response);
+            onSuccess && onSuccess({ response });
           }
-        } catch (e: unknown) {
+        } catch (error: unknown) {
           control.setError(SERVER_ERROR_TYPE, {
             type: 'error',
           });
-          onError && onError();
+          onError && onError({ error });
         }
       }),
   );
