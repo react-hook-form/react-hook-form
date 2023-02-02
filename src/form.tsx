@@ -39,7 +39,7 @@ export function Form<
     onSubmit,
     children,
     action,
-    method,
+    method = 'post',
     headers,
     onError,
     render,
@@ -65,7 +65,7 @@ export function Form<
 
       try {
         const response = await fetch(action, {
-          method: method || 'post',
+          method,
           headers,
           body: includeJsonHeader ? JSON.stringify(data) : formData,
         });
