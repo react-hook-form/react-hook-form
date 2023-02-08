@@ -96,9 +96,11 @@ export function Form<
   }, []);
 
   return render ? (
-    render({
-      submit,
-    })
+    <>
+      {render({
+        submit,
+      })}
+    </>
   ) : (
     <form
       noValidate={mounted}
