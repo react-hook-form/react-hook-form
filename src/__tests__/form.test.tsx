@@ -80,7 +80,7 @@ describe('Form', () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm<{ test: string }>();
+      } = useForm();
 
       return (
         <Form
@@ -120,7 +120,7 @@ describe('Form', () => {
       const {
         control,
         formState: { isSubmitSuccessful, errors },
-      } = useForm<{ test: string }>();
+      } = useForm();
 
       return (
         <Form
@@ -153,7 +153,7 @@ describe('Form', () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm<{ test: string }>();
+      } = useForm();
 
       return (
         <Form
@@ -181,13 +181,47 @@ describe('Form', () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm<{ test: string }>();
+      } = useForm();
 
       return (
         <Form action={'/get'} method={'get'} control={control}>
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      screen.getByText('submitSuccessful');
+    });
+  });
+
+  it('should support render props for react native', async () => {
+    const App = () => {
+      const {
+        control,
+        formState: { isSubmitSuccessful },
+      } = useForm();
+
+      return (
+        <Form
+          action={'/success'}
+          control={control}
+          render={({ submit }) => {
+            return (
+              <>
+                <button onClick={() => submit()}>Submit</button>
+                <p>
+                  {isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}
+                </p>
+              </>
+            );
+          }}
+        />
       );
     };
 
