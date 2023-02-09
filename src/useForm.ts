@@ -37,7 +37,7 @@ import { useSubscribe } from './useSubscribe';
  *       <input defaultValue="test" {...register("example")} />
  *       <input {...register("exampleRequired", { required: true })} />
  *       {errors.exampleRequired && <span>This field is required</span>}
- *       <input type="submit" />
+ *       <button>Submit</button>
  *     </form>
  *   );
  * }

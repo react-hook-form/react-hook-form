@@ -35,6 +35,28 @@ type Props<
 
 const POST_REQUEST = 'post';
 
+/**
+ * Form component to manage submission.
+ *
+ * @param props - to setup submission detail. {@link Props}
+ *
+ * @returns form component or headless render prop.
+ *
+ * @example
+ * ```tsx
+ * function App() {
+ *   const { control, formState: { errors } } = useForm();
+ *
+ *   return (
+ *     <Form action="/api" control={control}>
+ *       <input {...register("name")} />
+ *       <p>{errors?.root?.server && 'Server error'}</p>
+ *       <button>Submit</button>
+ *     </form>
+ *   );
+ * }
+ * ```
+ */
 export function Form<
   T extends FieldValues,
   U extends FieldValues | undefined = undefined,
