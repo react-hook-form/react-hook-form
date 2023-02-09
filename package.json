@@ -98,6 +98,7 @@
     "jest-preview": "^0.3.1",
     "jest-watch-typeahead": "^2.2.1",
     "lint-staged": "^13.1.0",
+    "msw": "^1.0.0",
     "prettier": "^2.8.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -143,5 +144,8 @@
   "engines": {
     "node": ">=12.22.0"
   },
-  "packageManager": "pnpm@7.18.0"
+  "packageManager": "pnpm@7.18.0",
+  "dependencies": {
+    "whatwg-fetch": "^3.6.2"
+  }
 }

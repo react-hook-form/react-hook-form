@@ -19,14 +19,21 @@ type Props<
   onError: ({
     response,
     error,
-  }: {
-    response?: Response;
-    error?: unknown;
-  }) => void;
+  }:
+    | {
+        response: Response;
+        error?: undefined;
+      }
+    | {
+        response?: undefined;
+        error: unknown;
+      }) => void;
   headers: Record<string, string>;
   validateStatus: (status: number) => boolean;
 }> &
-  React.FormHTMLAttributes<HTMLFormElement>;
+  Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'>;
+
+const POST_REQUEST = 'post';
 
 export function Form<
   T extends FieldValues,
@@ -39,35 +46,47 @@ export function Form<
     onSubmit,
     children,
     action,
-    method = 'post',
+    method = POST_REQUEST,
     headers,
+    encType,
     onError,
     render,
     onSuccess,
     validateStatus,
     ...rest
   } = props;
+  const isPostRequest = method === POST_REQUEST;
 
   const submit = control.handleSubmit(async (data) => {
     onSubmit && onSubmit(data);
 
     if (action) {
       const formData = new FormData();
-      let includeJsonHeader = false;
+      let shouldStringifySubmissionData = false;
 
       if (headers) {
-        includeJsonHeader = headers['Content-Type'].includes('json');
+        shouldStringifySubmissionData =
+          headers['Content-Type'].includes('json');
       } else {
-        control._names.mount.forEach((name) => {
-          formData.append(name, get(data, name));
-        });
+        control._names.mount.forEach((name) =>
+          formData.append(name, get(data, name)),
+        );
       }
 
       try {
         const response = await fetch(action, {
           method,
-          headers,
-          body: includeJsonHeader ? JSON.stringify(data) : formData,
+          headers: {
+            ...headers,
+            ...(encType ? { 'Content-Type': encType } : {}),
+          },
+          ...(isPostRequest
+            ? {
+                body: shouldStringifySubmissionData
+                  ? JSON.stringify(data)
+                  : formData,
+              }
+            : {}),
         });
 
         if (
@@ -106,6 +125,7 @@ export function Form<
       noValidate={mounted}
       action={action}
       method={method}
+      encType={encType}
       onSubmit={submit}
       {...rest}
     >
