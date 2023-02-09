@@ -5,7 +5,7 @@ import { SERVER_ERROR_TYPE } from './constants';
 import { Control, FieldValues, SubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
-type Props<
+export type FormProps<
   T extends FieldValues,
   U extends FieldValues | undefined = undefined,
 > = Partial<{
@@ -38,7 +38,7 @@ const POST_REQUEST = 'post';
 /**
  * Form component to manage submission.
  *
- * @param props - to setup submission detail. {@link Props}
+ * @param props - to setup submission detail. {@link FormProps}
  *
  * @returns form component or headless render prop.
  *
@@ -60,7 +60,7 @@ const POST_REQUEST = 'post';
 export function Form<
   T extends FieldValues,
   U extends FieldValues | undefined = undefined,
->(props: Props<T, U>) {
+>(props: FormProps<T, U>) {
   const methods = useFormContext<T>();
   const [mounted, setMounted] = React.useState(false);
   const {
