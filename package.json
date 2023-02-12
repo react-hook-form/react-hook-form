@@ -85,7 +85,6 @@
     "@typescript-eslint/parser": "^5.48.1",
     "bundlewatch": "^0.3.3",
     "cypress": "10.9.0",
-    "dependencies": "^0.0.1",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-cypress": "^2.12.1",
@@ -111,7 +110,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.34.1",
     "tsd": "^0.25.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "whatwg-fetch": "^3.6.2"
   },
   "bundlewatch": {
     "files": [
@@ -145,8 +145,5 @@
   "engines": {
     "node": ">=12.22.0"
   },
-  "packageManager": "pnpm@7.18.0",
-  "dependencies": {
-    "whatwg-fetch": "^3.6.2"
-  }
+  "packageManager": "pnpm@7.18.0"
 }
