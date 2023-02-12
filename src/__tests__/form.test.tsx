@@ -119,7 +119,7 @@ describe('Form', () => {
     const App = () => {
       const {
         control,
-        formState: { isSubmitSuccessful, errors },
+        formState: { isSubmitSuccessful },
       } = useForm();
 
       return (
@@ -131,7 +131,6 @@ describe('Form', () => {
         >
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
-          <p>{errors?.root?.server?.type}</p>
         </Form>
       );
     };
@@ -144,7 +143,6 @@ describe('Form', () => {
       expect(onSubmit).toBeCalled();
       expect(onSuccess).not.toBeCalled();
       screen.getByText('submitFailed');
-      screen.getByText('500');
     });
   });
 

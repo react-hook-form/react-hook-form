@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import get from './utils/get';
-import { SERVER_ERROR_TYPE } from './constants';
 import { Control, FieldValues, SubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -79,58 +78,64 @@ export function Form<
   } = props;
   const isPostRequest = method === POST_REQUEST;
 
-  const submit = control.handleSubmit(async (data) => {
-    onSubmit && onSubmit(data);
+  const submit = async (e?: React.BaseSyntheticEvent) => {
+    let serverError = false;
 
-    if (action) {
-      const formData = new FormData();
-      let shouldStringifySubmissionData = false;
+    await control.handleSubmit(async (data) => {
+      onSubmit && onSubmit(data);
 
-      if (headers) {
-        shouldStringifySubmissionData =
-          headers['Content-Type'].includes('json');
-      } else {
-        control._names.mount.forEach((name) =>
-          formData.append(name, get(data, name)),
-        );
-      }
+      if (action) {
+        const formData = new FormData();
+        let shouldStringifySubmissionData = false;
 
-      try {
-        const response = await fetch(action, {
-          method,
-          headers: {
-            ...headers,
-            ...(encType ? { 'Content-Type': encType } : {}),
-          },
-          ...(isPostRequest
-            ? {
-                body: shouldStringifySubmissionData
-                  ? JSON.stringify(data)
-                  : formData,
-              }
-            : {}),
-        });
-
-        if (
-          validateStatus
-            ? !validateStatus(response.status)
-            : response.status < 200 || response.status >= 300
-        ) {
-          control.setError(SERVER_ERROR_TYPE, {
-            type: String(response.status),
-          });
-          onError && onError({ response });
+        if (headers) {
+          shouldStringifySubmissionData =
+            headers['Content-Type'].includes('json');
         } else {
-          onSuccess && onSuccess({ response });
+          control._names.mount.forEach((name) =>
+            formData.append(name, get(data, name)),
+          );
         }
-      } catch (error: unknown) {
-        control.setError(SERVER_ERROR_TYPE, {
-          type: 'error',
-        });
-        onError && onError({ error });
+
+        try {
+          const response = await fetch(action, {
+            method,
+            headers: {
+              ...headers,
+              ...(encType ? { 'Content-Type': encType } : {}),
+            },
+            ...(isPostRequest
+              ? {
+                  body: shouldStringifySubmissionData
+                    ? JSON.stringify(data)
+                    : formData,
+                }
+              : {}),
+          });
+
+          if (
+            validateStatus
+              ? !validateStatus(response.status)
+              : response.status < 200 || response.status >= 300
+          ) {
+            serverError = true;
+            onError && onError({ response });
+          } else {
+            onSuccess && onSuccess({ response });
+          }
+        } catch (error: unknown) {
+          serverError = true;
+          onError && onError({ error });
+        }
       }
-    }
-  });
+    })(e);
+
+    serverError &&
+      props.control &&
+      props.control._subjects.state.next({
+        isSubmitSuccessful: false,
+      });
+  };
 
   React.useEffect(() => {
     setMounted(true);

@@ -1,4 +1,4 @@
-import { EVENTS, SERVER_ERROR_TYPE, VALIDATION_MODE } from '../constants';
+import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
   ChangeHandler,
@@ -860,9 +860,6 @@ export function createFormControl<
       name,
       errors: _formState.errors,
       isValid: false,
-      ...(error.type === SERVER_ERROR_TYPE
-        ? { isSubmitSuccessful: false }
-        : {}),
     });
 
     options && options.shouldFocus && ref && ref.focus && ref.focus();
