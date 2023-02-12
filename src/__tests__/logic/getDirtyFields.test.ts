@@ -1,4 +1,4 @@
-import getDirtyFields from '../../logic/getDirtyFields';
+import getDirtyFields from '../../core/logic/getDirtyFields';
 
 describe('getDirtyFields', () => {
   it('should return all the dirty fields', () => {

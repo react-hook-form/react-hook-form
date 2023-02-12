@@ -1,4 +1,4 @@
-import getRuleValue from '../../logic/getRuleValue';
+import getRuleValue from '../../core/logic/getRuleValue';
 
 describe('getRuleValue', () => {
   it('should return associated rule value', () => {

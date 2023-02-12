@@ -1,5 +1,5 @@
-import { VALIDATION_MODE } from '../../constants';
-import validationModeChecker from '../../logic/getValidationModes';
+import { VALIDATION_MODE } from '../../core/constants';
+import validationModeChecker from '../../core/logic/getValidationModes';
 
 describe('validationModeChecker', () => {
   it('should return correct mode', () => {

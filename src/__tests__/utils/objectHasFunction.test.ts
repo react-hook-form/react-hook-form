@@ -1,4 +1,4 @@
-import objectHasFunction from '../../utils/objectHasFunction';
+import objectHasFunction from '../../core/utils/objectHasFunction';
 
 describe('objectHasFunction', () => {
   it('should detect if any object has function', () => {

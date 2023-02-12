@@ -1,9 +1,9 @@
-import getCheckboxValue from '../../logic/getCheckboxValue';
-import getRadioValue from '../../logic/getRadioValue';
-import validateField from '../../logic/validateField';
+import getCheckboxValue from '../../core/logic/getCheckboxValue';
+import getRadioValue from '../../core/logic/getRadioValue';
+import validateField from '../../core/logic/validateField';
 
-jest.mock('../../logic/getRadioValue');
-jest.mock('../../logic/getCheckboxValue');
+jest.mock('../../core/logic/getRadioValue');
+jest.mock('../../core/logic/getCheckboxValue');
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {

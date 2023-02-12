@@ -1,4 +1,4 @@
-import getFocusFieldName from '../../logic/getFocusFieldName';
+import getFocusFieldName from '../../core/logic/getFocusFieldName';
 
 describe('getFocusFieldName', () => {
   it('should return expected focus name', () => {

@@ -1,17 +1,17 @@
 import React from 'react';
 
-import { createFormControl } from './logic/createFormControl';
-import getProxyFormState from './logic/getProxyFormState';
-import shouldRenderFormState from './logic/shouldRenderFormState';
-import deepEqual from './utils/deepEqual';
-import isFunction from './utils/isFunction';
 import {
+  createFormControl,
+  deepEqual,
   FieldValues,
   FormState,
+  getProxyFormState,
   InternalFieldName,
+  isFunction,
+  shouldRenderFormState,
   UseFormProps,
   UseFormReturn,
-} from './types';
+} from './core';
 import { useSubscribe } from './useSubscribe';
 
 /**

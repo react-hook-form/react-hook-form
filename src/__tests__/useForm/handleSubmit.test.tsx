@@ -2,10 +2,10 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../constants';
+import { VALIDATION_MODE } from '../../core/constants';
+import isFunction from '../../core/utils/isFunction';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import isFunction from '../../utils/isFunction';
 
 describe('handleSubmit', () => {
   it('should invoke the callback when validation pass', async () => {

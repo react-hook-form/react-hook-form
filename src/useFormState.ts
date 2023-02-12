@@ -1,15 +1,15 @@
 import React from 'react';
 
-import getProxyFormState from './logic/getProxyFormState';
-import shouldRenderFormState from './logic/shouldRenderFormState';
-import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import {
   FieldValues,
   FormState,
+  getProxyFormState,
   InternalFieldName,
+  shouldRenderFormState,
+  shouldSubscribeByName,
   UseFormStateProps,
   UseFormStateReturn,
-} from './types';
+} from './core';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 

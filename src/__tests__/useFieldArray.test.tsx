@@ -15,7 +15,7 @@ import {
   SubmitHandler,
   UseFormRegister,
   UseFormReturn,
-} from '../types';
+} from '../core';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';

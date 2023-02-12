@@ -1,4 +1,4 @@
-import isMultipleSelect from '../../utils/isMultipleSelect';
+import isMultipleSelect from '../../core/utils/isMultipleSelect';
 
 describe('isMultipleSelect', () => {
   it('should return true when type is select-multiple', () => {

@@ -2,13 +2,13 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../constants';
+import { VALIDATION_MODE } from '../../core/constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 let i = 0;
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../core/logic/generateId', () => () => String(i++));
 
 describe('move', () => {
   beforeEach(() => {

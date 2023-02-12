@@ -8,8 +8,8 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../constants';
-import { Control, FieldPath } from '../../types';
+import { VALIDATION_MODE } from '../../core/constants';
+import { Control, FieldPath } from '../../core/types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -18,7 +18,7 @@ jest.useFakeTimers();
 
 let i = 0;
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../core/logic/generateId', () => () => String(i++));
 
 describe('insert', () => {
   beforeEach(() => {

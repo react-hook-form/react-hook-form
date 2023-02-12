@@ -1,4 +1,4 @@
-import remove from '../../utils/remove';
+import remove from '../../core/utils/remove';
 
 describe('remove', () => {
   it('should remove item accordingly', () => {

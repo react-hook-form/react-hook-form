@@ -1,4 +1,4 @@
-import skipValidation from '../../logic/skipValidation';
+import skipValidation from '../../core/logic/skipValidation';
 
 describe('should skip validation', () => {
   it('when is onChange mode and blur event', () => {

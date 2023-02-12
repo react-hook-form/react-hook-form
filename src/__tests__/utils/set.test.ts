@@ -1,4 +1,4 @@
-import set from '../../utils/set';
+import set from '../../core/utils/set';
 
 describe('set', () => {
   it('should set the correct values', () => {

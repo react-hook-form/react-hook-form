@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { FieldError, FieldErrors, GlobalError, Merge } from '../types';
+import { FieldError, FieldErrors, GlobalError, Merge } from '../core';
 
 import { _ } from './__fixtures__';
 

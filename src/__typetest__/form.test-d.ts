@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { FieldError } from '../types';
+import { FieldError } from '../core';
 import { useForm } from '../useForm';
 
 /** {@link UseFormHandleSubmit} */ {

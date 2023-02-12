@@ -1,4 +1,4 @@
-import prepend from '../../utils/prepend';
+import prepend from '../../core/utils/prepend';
 
 describe('prepend', () => {
   it('should prepend value to an array', () => {

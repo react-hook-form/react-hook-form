@@ -8,8 +8,8 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
+import { VALIDATION_MODE } from '../../core/constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 

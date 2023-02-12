@@ -1,4 +1,4 @@
-import getValueAndMessage from '../../logic/getValueAndMessage';
+import getValueAndMessage from '../../core/logic/getValueAndMessage';
 
 describe('getValueAndMessage', () => {
   it('should return message and value correctly', () => {

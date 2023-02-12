@@ -1,4 +1,4 @@
-import isMessage from '../../utils/isMessage';
+import isMessage from '../../core/utils/isMessage';
 
 describe('isBoolean', () => {
   it('should return true when value is a Message', () => {

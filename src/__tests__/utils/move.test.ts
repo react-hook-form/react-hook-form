@@ -1,4 +1,4 @@
-import move from '../../utils/move';
+import move from '../../core/utils/move';
 
 describe('move', () => {
   it('should be able to move element of array', () => {

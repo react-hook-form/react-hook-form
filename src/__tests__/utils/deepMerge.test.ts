@@ -1,4 +1,4 @@
-import { deepMerge } from '../../utils/deepMerge';
+import { deepMerge } from '../../core/utils/deepMerge';
 
 describe('deepMerge', () => {
   it('should deep merge object correctly', () => {

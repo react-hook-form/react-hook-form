@@ -1,29 +1,10 @@
 import React from 'react';
 
-import focusFieldBy from './logic/focusFieldBy';
-import generateId from './logic/generateId';
-import getFocusFieldName from './logic/getFocusFieldName';
-import getValidationModes from './logic/getValidationModes';
-import isWatched from './logic/isWatched';
-import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
-import validateField from './logic/validateField';
-import appendAt from './utils/append';
-import cloneObject from './utils/cloneObject';
-import convertToArrayPayload from './utils/convertToArrayPayload';
-import fillEmptyArray from './utils/fillEmptyArray';
-import get from './utils/get';
-import insertAt from './utils/insert';
-import isEmptyObject from './utils/isEmptyObject';
-import moveArrayAt from './utils/move';
-import prependAt from './utils/prepend';
-import removeArrayAt from './utils/remove';
-import set from './utils/set';
-import swapArrayAt from './utils/swap';
-import unset from './utils/unset';
-import updateAt from './utils/update';
-import { VALIDATION_MODE } from './constants';
 import {
+  appendAt,
+  cloneObject,
   Control,
+  convertToArrayPayload,
   Field,
   FieldArray,
   FieldArrayMethodProps,
@@ -32,11 +13,30 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  fillEmptyArray,
+  focusFieldBy,
+  generateId,
+  get,
+  getFocusFieldName,
+  getValidationModes,
+  insertAt,
   InternalFieldName,
+  isEmptyObject,
+  isWatched,
+  moveArrayAt,
+  prependAt,
   RegisterOptions,
+  removeArrayAt,
+  set,
+  swapArrayAt,
+  unset,
+  updateAt,
+  updateFieldArrayRootError,
   UseFieldArrayProps,
   UseFieldArrayReturn,
-} from './types';
+  validateField,
+  VALIDATION_MODE,
+} from './core';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 

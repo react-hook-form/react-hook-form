@@ -16,7 +16,7 @@ interface DefaultValues {
 
 let i = 0;
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../core/logic/generateId', () => () => String(i++));
 
 describe('replace', () => {
   beforeEach(() => {

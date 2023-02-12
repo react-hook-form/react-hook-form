@@ -1,4 +1,4 @@
-import generateId from '../../logic/generateId';
+import generateId from '../../core/logic/generateId';
 
 describe('generateId', () => {
   it('should generate a unique id', () => {

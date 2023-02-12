@@ -13,7 +13,7 @@ import {
   UseFieldArrayReturn,
   UseFormRegister,
   UseFormReturn,
-} from '../types';
+} from '../core';
 import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';

@@ -2,12 +2,11 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control } from '../types';
+import { Control, deepEqual } from '../core';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
-import deepEqual from '../utils/deepEqual';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {

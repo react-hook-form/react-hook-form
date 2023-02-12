@@ -1,14 +1,14 @@
-import getFieldValue from '../../logic/getFieldValue';
-import { Field } from '../../types';
+import getFieldValue from '../../core/logic/getFieldValue';
+import { Field } from '../../core/types';
 
-jest.mock('../../logic/getRadioValue', () => ({
+jest.mock('../../core/logic/getRadioValue', () => ({
   __esModule: true,
   default: () => ({
     value: 2,
   }),
 }));
 
-jest.mock('../../logic/getCheckboxValue', () => ({
+jest.mock('../../core/logic/getCheckboxValue', () => ({
   __esModule: true,
   default: () => ({
     value: 'testValue',

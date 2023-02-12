@@ -1,4 +1,4 @@
-import fillEmptyArray from '../../utils/fillEmptyArray';
+import fillEmptyArray from '../../core/utils/fillEmptyArray';
 
 describe('fillEmptyArray', () => {
   it('should return an array of undefined or empty array when value is an array', () => {

@@ -1,4 +1,4 @@
-import isRadioOrCheckbox from '../../utils/isRadioOrCheckbox';
+import isRadioOrCheckbox from '../../core/utils/isRadioOrCheckbox';
 
 describe('isRadioOrCheckbox', () => {
   it('should return true when type is either radio or checkbox', () => {

@@ -1,4 +1,4 @@
-import stringToPath from '../../utils/stringToPath';
+import stringToPath from '../../core/utils/stringToPath';
 
 describe('stringToPath', () => {
   it('should convert string to path', () => {

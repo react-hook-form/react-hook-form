@@ -3,11 +3,11 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { Control, FieldValues } from '../../types';
+import { Control, FieldValues } from '../../core/types';
+import isFunction from '../../core/utils/isFunction';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
-import isFunction from '../../utils/isFunction';
 
 describe('watch', () => {
   it('should return undefined when input gets unregister', async () => {

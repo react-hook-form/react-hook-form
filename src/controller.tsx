@@ -1,4 +1,4 @@
-import { ControllerProps, FieldPath, FieldValues } from './types';
+import { ControllerProps, FieldPath, FieldValues } from './core/types';
 import { useController } from './useController';
 
 /**

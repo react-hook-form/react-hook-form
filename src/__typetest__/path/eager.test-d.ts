@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import { ArrayPath, FieldPathValues, Path, PathValue } from '../../types';
+import { ArrayPath, FieldPathValues, Path, PathValue } from '../../core/types';
 import { _, Depth3Type } from '../__fixtures__';
 
 /** {@link Path} */ {

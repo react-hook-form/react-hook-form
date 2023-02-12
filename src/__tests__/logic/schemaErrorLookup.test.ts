@@ -1,4 +1,4 @@
-import schemaErrorLookup from '../../logic/schemaErrorLookup';
+import schemaErrorLookup from '../../core/logic/schemaErrorLookup';
 
 describe('errorsLookup', () => {
   it('should be able to look up the error', () => {

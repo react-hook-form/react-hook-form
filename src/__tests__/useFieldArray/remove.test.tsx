@@ -8,9 +8,9 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control, DeepMap, FieldError } from '../../types';
+import { VALIDATION_MODE } from '../../core/constants';
+import { Control, DeepMap, FieldError } from '../../core/types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
@@ -18,7 +18,7 @@ jest.useFakeTimers();
 
 let i = 0;
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../core/logic/generateId', () => () => String(i++));
 
 describe('remove', () => {
   beforeEach(() => {

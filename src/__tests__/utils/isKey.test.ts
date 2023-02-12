@@ -1,4 +1,4 @@
-import isKey from '../../utils/isKey';
+import isKey from '../../core/utils/isKey';
 
 describe('isKey', () => {
   it('should return true when it is not a deep key', () => {

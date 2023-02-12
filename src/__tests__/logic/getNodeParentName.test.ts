@@ -1,4 +1,4 @@
-import getNodeParentName from '../../logic/getNodeParentName';
+import getNodeParentName from '../../core/logic/getNodeParentName';
 
 describe('getNodeParentName', () => {
   it('should return parent name when name is field array', () => {

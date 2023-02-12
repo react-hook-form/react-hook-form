@@ -1,4 +1,4 @@
-import isWatched from '../../logic/isWatched';
+import isWatched from '../../core/logic/isWatched';
 
 describe('isWatched', () => {
   it('should return watched fields', () => {

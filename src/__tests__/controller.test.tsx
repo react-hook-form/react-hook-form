@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues } from '../types';
+import { ControllerRenderProps, FieldValues } from '../core';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';

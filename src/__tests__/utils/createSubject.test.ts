@@ -1,4 +1,4 @@
-import createSubject from '../../utils/createSubject';
+import createSubject from '../../core/utils/createSubject';
 
 describe('createSubject', () => {
   it('should subscribe to all the correct observer', () => {

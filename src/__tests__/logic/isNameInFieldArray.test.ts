@@ -1,4 +1,4 @@
-import isNameInFieldArray from '../../logic/isNameInFieldArray';
+import isNameInFieldArray from '../../core/logic/isNameInFieldArray';
 
 describe('isNameInFieldArray', () => {
   it('should find match array field', () => {

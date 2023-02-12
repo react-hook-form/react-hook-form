@@ -1,4 +1,4 @@
-import getFieldValueAs from '../../logic/getFieldValueAs';
+import getFieldValueAs from '../../core/logic/getFieldValueAs';
 
 describe('getFieldValueAs', () => {
   it('should return undefined when value is undefined', () => {

@@ -1,4 +1,4 @@
-import isObject from '../../utils/isObject';
+import isObject from '../../core/utils/isObject';
 
 describe('isObject', () => {
   it('should return true when value is an object', () => {

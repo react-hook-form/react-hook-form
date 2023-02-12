@@ -1,4 +1,4 @@
-import shouldSubscribeByName from '../../logic/shouldSubscribeByName';
+import shouldSubscribeByName from '../../core/logic/shouldSubscribeByName';
 
 describe('shouldSubscribeByName', () => {
   it('should return correct response for subscription name coverage', () => {

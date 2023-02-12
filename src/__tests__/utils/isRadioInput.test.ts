@@ -1,4 +1,4 @@
-import isRadioInput from '../../utils/isRadioInput';
+import isRadioInput from '../../core/utils/isRadioInput';
 
 describe('isRadioInput', () => {
   it('should return true when type is radio', () => {

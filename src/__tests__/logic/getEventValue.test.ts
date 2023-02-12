@@ -1,4 +1,4 @@
-import getEventValue from '../../logic/getEventValue';
+import getEventValue from '../../core/logic/getEventValue';
 
 test('getEventValue should return correct value', () => {
   expect(

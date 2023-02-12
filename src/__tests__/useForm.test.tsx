@@ -9,14 +9,14 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../constants';
 import {
   Control,
+  isFunction,
   RegisterOptions,
   UseFormRegister,
   UseFormReturn,
-} from '../types';
-import isFunction from '../utils/isFunction';
+  VALIDATION_MODE,
+} from '../core';
 import { sleep } from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import { deepEqual } from '../core';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
-import deepEqual from '../utils/deepEqual';
 
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {

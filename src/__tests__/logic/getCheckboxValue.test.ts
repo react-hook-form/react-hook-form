@@ -1,4 +1,4 @@
-import getCheckboxValue from '../../logic/getCheckboxValue';
+import getCheckboxValue from '../../core/logic/getCheckboxValue';
 
 describe('getCheckboxValue', () => {
   it('should return default value if not valid or empty options', () => {

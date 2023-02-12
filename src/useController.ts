@@ -1,19 +1,19 @@
 import React from 'react';
 
-import getEventValue from './logic/getEventValue';
-import isNameInFieldArray from './logic/isNameInFieldArray';
-import get from './utils/get';
-import { EVENTS } from './constants';
+import isNameInFieldArray from './core/logic/isNameInFieldArray';
 import {
   ControllerFieldState,
+  EVENTS,
   Field,
   FieldPath,
   FieldPathValue,
   FieldValues,
+  get,
+  getEventValue,
   InternalFieldName,
   UseControllerProps,
   UseControllerReturn,
-} from './types';
+} from './core';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';

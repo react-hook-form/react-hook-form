@@ -1,4 +1,4 @@
-import cloneObject from '../../utils/cloneObject';
+import cloneObject from '../../core/utils/cloneObject';
 
 describe('clone', () => {
   it('should clone object and not mutate the original object', () => {

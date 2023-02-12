@@ -1,18 +1,18 @@
 import React from 'react';
 
-import generateWatchOutput from './logic/generateWatchOutput';
-import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import cloneObject from './utils/cloneObject';
 import {
+  cloneObject,
   Control,
   DeepPartialSkipArrayKey,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
   FieldValues,
+  generateWatchOutput,
   InternalFieldName,
+  shouldSubscribeByName,
   UseWatchProps,
-} from './types';
+} from './core';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 

@@ -1,4 +1,4 @@
-import isFunction from '../../utils/isFunction';
+import isFunction from '../../core/utils/isFunction';
 
 describe('isFunction', () => {
   it('should return true when value is a function', () => {

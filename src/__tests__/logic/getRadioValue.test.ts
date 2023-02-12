@@ -1,4 +1,4 @@
-import getRadioValue from '../../logic/getRadioValue';
+import getRadioValue from '../../core/logic/getRadioValue';
 
 describe('getRadioValue', () => {
   it('should return default value if not valid or empty options', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Subject } from './utils/createSubject';
+import { Subject } from './core';
 
 type Props<T> = {
   disabled?: boolean;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { Control } from '../../types';
+import { Control } from '../../core/types';
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 

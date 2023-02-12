@@ -1,4 +1,4 @@
-import isCheckBoxInput from '../../utils/isCheckBoxInput';
+import isCheckBoxInput from '../../core/utils/isCheckBoxInput';
 
 describe('isCheckBoxInput', () => {
   it('should return true when type is checkbox', () => {

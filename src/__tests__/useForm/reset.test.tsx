@@ -14,7 +14,7 @@ import {
   UseFormRegister,
   UseFormReset,
   UseFormReturn,
-} from '../../types';
+} from '../../core/types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';

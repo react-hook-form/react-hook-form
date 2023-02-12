@@ -1,4 +1,4 @@
-import isRadioInput from '../../utils/isSelectInput';
+import isRadioInput from '../../core/utils/isSelectInput';
 
 describe('isSelectInput', () => {
   it('should return true when type is select-one', () => {

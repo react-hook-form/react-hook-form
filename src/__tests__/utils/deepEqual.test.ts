@@ -1,4 +1,4 @@
-import deepEqual from '../../utils/deepEqual';
+import deepEqual from '../../core/utils/deepEqual';
 
 describe('deepEqual', () => {
   it('should return false when two sets not match', () => {

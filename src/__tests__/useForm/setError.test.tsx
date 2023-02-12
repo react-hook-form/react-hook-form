@@ -2,7 +2,12 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { DeepMap, ErrorOption, FieldError, GlobalError } from '../../types';
+import {
+  DeepMap,
+  ErrorOption,
+  FieldError,
+  GlobalError,
+} from '../../core/types';
 import { useForm } from '../../useForm';
 
 describe('setError', () => {

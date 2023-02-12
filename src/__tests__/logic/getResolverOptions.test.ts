@@ -1,5 +1,5 @@
 import { InternalFieldName } from '../..';
-import getResolverOptions from '../../logic/getResolverOptions';
+import getResolverOptions from '../../core/logic/getResolverOptions';
 
 describe('getFielfs', () => {
   it('should return fields from `fieldsNames` and `fieldsRef`', () => {

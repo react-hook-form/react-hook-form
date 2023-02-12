@@ -1,4 +1,4 @@
-import isHTMLElement from '../../utils/isHTMLElement';
+import isHTMLElement from '../../core/utils/isHTMLElement';
 
 describe('isHTMLElement', () => {
   it('should return true when value is HTMLElement', () => {

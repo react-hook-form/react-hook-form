@@ -1,4 +1,4 @@
-import insert from '../../utils/insert';
+import insert from '../../core/utils/insert';
 
 describe('insert', () => {
   it('should insert value at specific index in array', () => {

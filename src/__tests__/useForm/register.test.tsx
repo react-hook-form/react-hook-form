@@ -8,13 +8,13 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { UseFormRegister } from '../../types';
+import { VALIDATION_MODE } from '../../core/constants';
+import { UseFormRegister } from '../../core/types';
+import isFunction from '../../core/utils/isFunction';
+import isString from '../../core/utils/isString';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
-import isFunction from '../../utils/isFunction';
-import isString from '../../utils/isString';
 
 describe('register', () => {
   it('should support register passed to ref', async () => {

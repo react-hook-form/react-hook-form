@@ -1,4 +1,4 @@
-import appendErrors from '../../logic/appendErrors';
+import appendErrors from '../../core/logic/appendErrors';
 
 describe('appendErrors', () => {
   it('should return empty object when validateAllFieldCriteria is false', () => {

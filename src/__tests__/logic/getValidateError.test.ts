@@ -1,4 +1,4 @@
-import getValidateError from '../../logic/getValidateError';
+import getValidateError from '../../core/logic/getValidateError';
 
 describe('getValidateError', () => {
   it('should return field error in correct format', () => {

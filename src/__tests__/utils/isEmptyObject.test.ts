@@ -1,4 +1,4 @@
-import isEmptyObject from '../../utils/isEmptyObject';
+import isEmptyObject from '../../core/utils/isEmptyObject';
 
 describe('isEmptyObject', () => {
   it('should return true when value is an empty object', () => {
