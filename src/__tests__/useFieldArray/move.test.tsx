@@ -6,15 +6,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('move', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it.each(['isDirty', 'dirtyFields'])(
     'should move dirtyFields into pointed position when formState.%s is defined',
     () => {

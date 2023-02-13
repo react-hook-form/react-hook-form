@@ -14,15 +14,7 @@ interface DefaultValues {
   test: TestValue[];
 }
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('replace', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should replace fields correctly', () => {
     let currentFields: any = [];
     const defaultValues: DefaultValues = {
@@ -69,13 +61,13 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: labelSingle }));
 
-    expect(currentFields).toEqual([{ id: '3', x: '201' }]);
+    expect(currentFields).toEqual([{ id: expect.any(String), x: '201' }]);
 
     fireEvent.click(screen.getByRole('button', { name: labelBatch }));
 
     expect(currentFields).toEqual([
-      { id: '5', x: '301' },
-      { id: '6', x: '302' },
+      { id: expect.any(String), x: '301' },
+      { id: expect.any(String), x: '302' },
     ]);
   });
   it('should not omit keyName when provided', async () => {

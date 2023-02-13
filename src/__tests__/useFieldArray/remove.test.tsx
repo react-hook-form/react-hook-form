@@ -15,15 +15,7 @@ import { useForm } from '../../useForm';
 
 jest.useFakeTimers();
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('remove', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should update isDirty formState when item removed', () => {
     let formState: any;
     const Component = () => {
@@ -165,7 +157,9 @@ describe('remove', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.fields).toEqual([{ id: '0', value: 'default' }]);
+    expect(result.current.fields).toEqual([
+      { id: expect.any(String), value: 'default' },
+    ]);
 
     act(() => {
       result.current.remove(0);

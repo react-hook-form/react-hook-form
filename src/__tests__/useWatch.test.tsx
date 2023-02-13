@@ -20,15 +20,7 @@ import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
-let i = 0;
-
-jest.mock('../logic/generateId', () => () => String(i++));
-
 describe('useWatch', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should return default value in useForm', () => {
     let method;
     let watched;
@@ -1016,7 +1008,17 @@ describe('useWatch', () => {
         screen.queryByText('Value 2: ShouldBeTHere'),
       ).not.toBeInTheDocument();
 
-      expect(watchData).toMatchSnapshot();
+      expect(watchData).toEqual([
+        [
+          { prop: 'test', id: expect.any(String) },
+          { prop: 'test1', id: expect.any(String) },
+        ],
+        [{ prop: 'test' }, { prop: 'test1' }],
+        [{ prop: 'test' }, { prop: 'test1' }],
+        [{ prop: 'test' }, { prop: 'ShouldBeTHere' }, { prop: 'test1' }],
+        [{ prop: 'test' }, { prop: 'ShouldBeTHere' }, { prop: 'test1' }],
+        [{ prop: 'ShouldBeTHere' }, { prop: 'test1' }],
+      ]);
     });
   });
 

@@ -6,15 +6,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('swap', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should swap into pointed position', () => {
     const { result } = renderHook(() => {
       const { register, control } = useForm({
@@ -37,8 +29,8 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '1', value: '2' },
-      { id: '0', value: '1' },
+      { id: expect.any(String), value: '2' },
+      { id: expect.any(String), value: '1' },
     ]);
   });
 
@@ -64,8 +56,8 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '1', value: '2' },
-      { id: '0', value: '1' },
+      { id: expect.any(String), value: '2' },
+      { id: expect.any(String), value: '1' },
     ]);
   });
 

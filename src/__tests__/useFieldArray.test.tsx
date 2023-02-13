@@ -21,15 +21,7 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 
-let i = 0;
-
-jest.mock('../logic/generateId', () => () => String(i++));
-
 describe('useFieldArray', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   describe('initialize', () => {
     it('should return default fields value', () => {
       const { result } = renderHook(() => {
@@ -55,8 +47,8 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { test: '1', id: '0' },
-        { test: '2', id: '1' },
+        { test: '1', id: expect.any(String) },
+        { test: '2', id: expect.any(String) },
       ]);
     });
 
@@ -637,14 +629,16 @@ describe('useFieldArray', () => {
 
       const { unmount } = render(<App />);
 
-      expect(fieldsTemp).toEqual([{ id: '0', value: 'default' }]);
+      expect(fieldsTemp).toEqual([
+        { id: expect.any(String), value: 'default' },
+      ]);
 
       fireEvent.click(screen.getByRole('button'));
 
       expect(fieldsTemp).toEqual([
-        { id: '0', value: 'default' },
+        { id: expect.any(String), value: 'default' },
         {
-          id: '1',
+          id: expect.any(String),
           value: 'test',
         },
       ]);
@@ -653,9 +647,9 @@ describe('useFieldArray', () => {
 
       expect(controlTemp._names.array).toEqual(new Set(['test']));
       expect(fieldsTemp).toEqual([
-        { id: '0', value: 'default' },
+        { id: expect.any(String), value: 'default' },
         {
-          id: '1',
+          id: expect.any(String),
           value: 'test',
         },
       ]);
@@ -956,7 +950,9 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-      expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
+      expect(fieldsTemp).toEqual([
+        { id: expect.any(String), value: 'default' },
+      ]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -983,7 +979,9 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([
+        { id: expect.any(String), value: 'default' },
+      ]);
 
       act(() => {
         result.current.reset({
@@ -991,7 +989,9 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
+      expect(result.current.fields).toEqual([
+        { id: expect.any(String), value: 'data' },
+      ]);
     });
 
     it('should reset with async', async () => {

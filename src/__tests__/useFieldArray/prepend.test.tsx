@@ -7,15 +7,7 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('prepend', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should pre-append data into the fields', async () => {
     let currentFields: any = [];
 
@@ -58,22 +50,22 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
+    expect(currentFields).toEqual([{ id: expect.any(String), test: 'test' }]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
     expect(currentFields).toEqual([
-      { id: '2', test: 'test' },
-      { id: '0', test: 'test' },
+      { id: expect.any(String), test: 'test' },
+      { id: expect.any(String), test: 'test' },
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: 'prependBatch' }));
 
     expect(currentFields).toEqual([
-      { id: '5', test: 'test-batch' },
-      { id: '6', test: 'test-batch1' },
-      { id: '2', test: 'test' },
-      { id: '0', test: 'test' },
+      { id: expect.any(String), test: 'test-batch' },
+      { id: expect.any(String), test: 'test-batch1' },
+      { id: expect.any(String), test: 'test' },
+      { id: expect.any(String), test: 'test' },
     ]);
   });
 

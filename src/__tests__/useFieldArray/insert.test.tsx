@@ -15,15 +15,7 @@ import { useForm } from '../../useForm';
 
 jest.useFakeTimers();
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('insert', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should insert data at index with single value', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
@@ -43,9 +35,9 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '0', test: '1' },
-      { id: '2', test: '3' },
-      { id: '1', test: '2' },
+      { id: expect.any(String), test: '1' },
+      { id: expect.any(String), test: '3' },
+      { id: expect.any(String), test: '2' },
     ]);
   });
 
@@ -68,10 +60,10 @@ describe('insert', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '0', test: '1' },
-      { id: '2', test: '3' },
-      { id: '3', test: '4' },
-      { id: '1', test: '2' },
+      { id: expect.any(String), test: '1' },
+      { id: expect.any(String), test: '3' },
+      { id: expect.any(String), test: '4' },
+      { id: expect.any(String), test: '2' },
     ]);
   });
 

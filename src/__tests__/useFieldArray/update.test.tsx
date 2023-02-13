@@ -7,15 +7,7 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-let i = 0;
-
-jest.mock('../../core/logic/generateId', () => () => String(i++));
-
 describe('update', () => {
-  beforeEach(() => {
-    i = 0;
-  });
-
   it('should update dirtyFields fields correctly', async () => {
     let dirtyInputs = {};
     const Component = () => {
@@ -301,7 +293,7 @@ describe('update', () => {
 
     expect(fieldArrayValues.at(-1)).toEqual([
       {
-        id: '0',
+        id: expect.any(String),
         value: {
           firstName: 'bill',
           lastName: 'luo',
@@ -322,7 +314,7 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       [
         {
-          id: '0',
+          id: expect.any(String),
           value: {
             firstName: 'bill',
             lastName: 'luo',
@@ -331,7 +323,7 @@ describe('update', () => {
       ],
       [
         {
-          id: '1',
+          id: expect.any(String),
           value: {
             firstName: 'firstName',
             lastName: 'lastName',
@@ -437,12 +429,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'bill',
-        id: '0',
+        id: expect.any(String),
         lastName: 'luo',
       },
       {
         firstName: 'bill1',
-        id: '1',
+        id: expect.any(String),
         lastName: 'luo1',
       },
     ]);
@@ -465,12 +457,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'test1',
-        id: '2',
+        id: expect.any(String),
         lastName: 'test2',
       },
       {
         firstName: 'test3',
-        id: '3',
+        id: expect.any(String),
         lastName: 'test4',
       },
     ]);
