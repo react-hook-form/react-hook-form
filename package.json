@@ -145,6 +145,6 @@
   },
   "packageManager": "pnpm@7.18.0",
   "dependencies": {
-    "@hookform/core": "0.0.2-next.2"
+    "@hookform/core": "0.0.2"
   }
 }

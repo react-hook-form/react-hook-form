@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@hookform/core': 0.0.2-next.2
+  '@hookform/core': 0.0.2
   '@microsoft/api-extractor': ^7.33.7
   '@rollup/plugin-commonjs': ^22.0.2
   '@rollup/plugin-node-resolve': ^14.1.0
@@ -45,7 +45,7 @@ specifiers:
   typescript: ^4.9.4
 
 dependencies:
-  '@hookform/core': 0.0.2-next.2
+  '@hookform/core': 0.0.2
 
 devDependencies:
   '@microsoft/api-extractor': 7.33.7
@@ -500,8 +500,8 @@ packages:
       - supports-color
     dev: true
 
-  /@hookform/core/0.0.2-next.2:
-    resolution: {integrity: sha512-tXQBXoPoEu3aOIYt+dU48PUHT6f9PR5Lul96ndvERrSvbvR6qkIaZY6WjvqMGuRO2SkeBbYdCBRpnGZ+A4V49A==}
+  /@hookform/core/0.0.2:
+    resolution: {integrity: sha512-MZlFb5J1tA0a1mdTNYehJ4BdVY0ny0cwiyyKg+JHfSWUTdPUwiDDMg4RAt+khRlBWCzfVrvorjbeGgGRSQdkeQ==}
     dev: false
 
   /@humanwhocodes/config-array/0.11.8:
