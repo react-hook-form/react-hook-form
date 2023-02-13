@@ -19,7 +19,7 @@ import { useSubscribe } from './useSubscribe';
  * @remarks
  * [API](https://react-hook-form.com/api/useformstate) • [Demo](https://codesandbox.io/s/useformstate-75xly)
  *
- * @param props - include options on specify fields to subscribe. {@link UseFormStateReturn}
+ * @param props - include options on specify fields to subscribe.
  *
  * @example
  * ```tsx

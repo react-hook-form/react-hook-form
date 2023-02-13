@@ -22,7 +22,7 @@ import { useSubscribe } from './useSubscribe';
  *
  * @param props - form configuration and validation parameters.
  *
- * @returns methods - individual functions to manage the form state. {@link UseFormReturn}
+ * @returns methods - individual functions to manage the form state.
  *
  * @example
  * ```tsx
