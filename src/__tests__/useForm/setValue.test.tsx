@@ -1,15 +1,12 @@
 import React from 'react';
+import { Control, get, isFunction, VALIDATION_MODE } from '@hookform/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { VALIDATION_MODE } from '../../core/constants';
-import { Control } from '../../core/types';
-import get from '../../core/utils/get';
-import isFunction from '../../core/utils/isFunction';
-import { sleep } from '../../core/utils/sleep';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { sleep } from '../../utils/sleep';
 
 jest.useFakeTimers();
 

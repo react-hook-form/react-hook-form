@@ -1,4 +1,5 @@
-import { ControllerProps, FieldPath, FieldValues } from './core/types';
+import { ControllerProps, FieldPath, FieldValues } from '@hookform/core';
+
 import { useController } from './useController';
 
 /**

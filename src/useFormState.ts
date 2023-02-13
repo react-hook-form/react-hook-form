@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   FieldValues,
   FormState,
@@ -9,7 +8,8 @@ import {
   shouldSubscribeByName,
   UseFormStateProps,
   UseFormStateReturn,
-} from './core';
+} from '@hookform/core';
+
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 

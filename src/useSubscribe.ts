@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { Subject } from './core';
+import { Subject } from '@hookform/core';
 
 type Props<T> = {
   disabled?: boolean;

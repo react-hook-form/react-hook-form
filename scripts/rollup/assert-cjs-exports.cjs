@@ -19,4 +19,10 @@ const expected = JSON.parse(
   ),
 );
 
-assert.deepStrictEqual(Object.keys(exported), expected);
+const methods = Object.keys(exported);
+
+assert.equal(expected.length, Object.keys(exported).length);
+
+expected.forEach((name) => {
+  assert(!!methods.includes(name));
+});

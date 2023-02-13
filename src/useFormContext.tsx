@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { FieldValues, FormProviderProps, UseFormReturn } from './core';
+import { FieldValues, FormProviderProps, UseFormReturn } from '@hookform/core';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 

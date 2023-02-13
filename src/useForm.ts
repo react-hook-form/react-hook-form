@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   createFormControl,
   deepEqual,
@@ -11,7 +10,8 @@ import {
   shouldRenderFormState,
   UseFormProps,
   UseFormReturn,
-} from './core';
+} from '@hookform/core';
+
 import { useSubscribe } from './useSubscribe';
 
 /**

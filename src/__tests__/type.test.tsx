@@ -1,6 +1,4 @@
 import React from 'react';
-
-import { Controller } from '../controller';
 import {
   FieldErrors,
   FieldPath,
@@ -8,7 +6,9 @@ import {
   Path,
   PathValue,
   UseFormRegister,
-} from '../core';
+} from '@hookform/core';
+
+import { Controller } from '../controller';
 import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';

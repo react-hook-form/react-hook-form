@@ -1,5 +1,11 @@
 import React from 'react';
 import {
+  Control,
+  UseFieldArrayReturn,
+  UseFormRegister,
+  UseFormReturn,
+} from '@hookform/core';
+import {
   fireEvent,
   render,
   screen,
@@ -8,12 +14,6 @@ import {
 } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
-import {
-  Control,
-  UseFieldArrayReturn,
-  UseFormRegister,
-  UseFormReturn,
-} from '../core';
 import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';

@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@hookform/core': 0.0.2-next.2
   '@microsoft/api-extractor': ^7.33.7
   '@rollup/plugin-commonjs': ^22.0.2
   '@rollup/plugin-node-resolve': ^14.1.0
@@ -42,6 +43,9 @@ specifiers:
   rollup-plugin-typescript2: ^0.34.1
   tsd: ^0.25.0
   typescript: ^4.9.4
+
+dependencies:
+  '@hookform/core': 0.0.2-next.2
 
 devDependencies:
   '@microsoft/api-extractor': 7.33.7
@@ -495,6 +499,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@hookform/core/0.0.2-next.2:
+    resolution: {integrity: sha512-tXQBXoPoEu3aOIYt+dU48PUHT6f9PR5Lul96ndvERrSvbvR6qkIaZY6WjvqMGuRO2SkeBbYdCBRpnGZ+A4V49A==}
+    dev: false
 
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
@@ -2316,6 +2324,7 @@ packages:
   /commander/9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
+    requiresBuild: true
     dev: true
     optional: true
 

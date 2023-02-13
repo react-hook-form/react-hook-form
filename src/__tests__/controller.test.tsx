@@ -1,4 +1,5 @@
 import React from 'react';
+import { ControllerRenderProps, FieldValues } from '@hookform/core';
 import {
   fireEvent,
   render,
@@ -8,7 +9,6 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues } from '../core';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';

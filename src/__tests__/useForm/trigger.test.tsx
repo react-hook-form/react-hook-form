@@ -1,9 +1,8 @@
 import React from 'react';
+import { Control, FieldPath, VALIDATION_MODE } from '@hookform/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../core/constants';
-import { Control, FieldPath } from '../../core/types';
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';

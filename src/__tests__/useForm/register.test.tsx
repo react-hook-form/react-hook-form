@@ -1,4 +1,5 @@
 import React from 'react';
+import { isFunction, UseFormRegister, VALIDATION_MODE } from '@hookform/core';
 import {
   fireEvent,
   render,
@@ -9,10 +10,6 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { VALIDATION_MODE } from '../../core/constants';
-import { UseFormRegister } from '../../core/types';
-import isFunction from '../../core/utils/isFunction';
-import isString from '../../core/utils/isString';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 
@@ -1106,7 +1103,7 @@ describe('register', () => {
             <input
               {...register('test', {
                 validate: (data) => {
-                  return !isString(data);
+                  return !(typeof data === 'string');
                 },
               })}
             />

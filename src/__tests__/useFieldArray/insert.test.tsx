@@ -1,4 +1,5 @@
 import React from 'react';
+import { Control, FieldPath, VALIDATION_MODE } from '@hookform/core';
 import {
   act as actComponent,
   fireEvent,
@@ -8,8 +9,6 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../core/constants';
-import { Control, FieldPath } from '../../core/types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';

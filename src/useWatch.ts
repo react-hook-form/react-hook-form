@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   cloneObject,
   Control,
@@ -12,7 +11,8 @@ import {
   InternalFieldName,
   shouldSubscribeByName,
   UseWatchProps,
-} from './core';
+} from '@hookform/core';
+
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 

@@ -1,10 +1,9 @@
 import React from 'react';
+import { Control, FieldValues, isFunction } from '@hookform/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { Control, FieldValues } from '../../core/types';
-import isFunction from '../../core/utils/isFunction';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';

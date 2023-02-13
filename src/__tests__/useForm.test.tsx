@@ -1,5 +1,13 @@
 import React from 'react';
 import {
+  Control,
+  isFunction,
+  RegisterOptions,
+  UseFormRegister,
+  UseFormReturn,
+  VALIDATION_MODE,
+} from '@hookform/core';
+import {
   act as actComponent,
   fireEvent,
   render,
@@ -9,14 +17,6 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import {
-  Control,
-  isFunction,
-  RegisterOptions,
-  UseFormRegister,
-  UseFormReturn,
-  VALIDATION_MODE,
-} from '../core';
 import { sleep } from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
 

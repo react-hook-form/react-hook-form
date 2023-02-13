@@ -1,5 +1,12 @@
 import React from 'react';
 import {
+  Control,
+  FieldValues,
+  SubmitHandler,
+  UseFormRegister,
+  UseFormReturn,
+} from '@hookform/core';
+import {
   act as actComponent,
   fireEvent,
   render,
@@ -9,13 +16,6 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../controller';
-import {
-  Control,
-  FieldValues,
-  SubmitHandler,
-  UseFormRegister,
-  UseFormReturn,
-} from '../core';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';

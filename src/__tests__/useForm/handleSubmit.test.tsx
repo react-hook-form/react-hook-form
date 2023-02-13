@@ -1,9 +1,8 @@
 import React from 'react';
+import { isFunction, VALIDATION_MODE } from '@hookform/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../../core/constants';
-import isFunction from '../../core/utils/isFunction';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 

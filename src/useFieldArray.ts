@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   appendAt,
   cloneObject,
@@ -36,7 +35,8 @@ import {
   UseFieldArrayReturn,
   validateField,
   VALIDATION_MODE,
-} from './core';
+} from '@hookform/core';
+
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
 

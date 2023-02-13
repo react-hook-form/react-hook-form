@@ -1,6 +1,4 @@
 import React from 'react';
-
-import isNameInFieldArray from './core/logic/isNameInFieldArray';
 import {
   ControllerFieldState,
   EVENTS,
@@ -11,9 +9,11 @@ import {
   get,
   getEventValue,
   InternalFieldName,
+  isNameInFieldArray,
   UseControllerProps,
   UseControllerReturn,
-} from './core';
+} from '@hookform/core';
+
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';

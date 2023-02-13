@@ -1,8 +1,8 @@
 import React from 'react';
+import { Control, deepEqual } from '@hookform/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, deepEqual } from '../core';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
