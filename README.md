@@ -1,5 +1,5 @@
 <a href="https://www.beekai.com" alt="BEEKAI Next-Gen Form Builder">
-  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/beekai-form-builder.png" />
+  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/beekai-form-builder.png" alt="BEEKAI Form Builder" />
 </a>
 
 <div align="center">
