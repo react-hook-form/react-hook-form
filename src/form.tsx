@@ -17,7 +17,7 @@ export type FormProps<
 }> &
   Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
   (
-    | {
+    | Partial<{
         onSuccess: ({ response }: { response: Response }) => void;
         onError: ({
           response,
@@ -34,8 +34,8 @@ export type FormProps<
         headers: Record<string, string>;
         validateStatus: (status: number) => boolean;
         fetcher: undefined;
-      }
-    | {
+      }>
+    | Partial<{
         onSuccess: undefined;
         onError: undefined;
         validateStatus: undefined;
@@ -48,7 +48,7 @@ export type FormProps<
             event?: React.BaseSyntheticEvent;
           },
         ) => Promise<Response | undefined>;
-      }
+      }>
   );
 
 const POST_REQUEST = 'post';
