@@ -117,8 +117,8 @@ export function Form<
           );
         }
 
-        try {
-          if (!fetcher) {
+        if (!fetcher) {
+          try {
             const response = await fetch(action, {
               method,
               headers: {
@@ -145,16 +145,16 @@ export function Form<
             } else {
               onSuccess && onSuccess({ response });
             }
-          } else {
-            await fetcher(action, {
-              method,
-              values,
-              event,
-            });
+          } catch (error: unknown) {
+            serverError = true;
+            onError && onError({ error });
           }
-        } catch (error: unknown) {
-          serverError = true;
-          onError && onError({ error });
+        } else {
+          await fetcher(action, {
+            method,
+            values,
+            event,
+          });
         }
       }
     })(event);
