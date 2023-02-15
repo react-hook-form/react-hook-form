@@ -47,7 +47,7 @@ export type FormProps<
             method: string;
             event?: React.BaseSyntheticEvent;
           },
-        ) => Promise<Response | undefined>;
+        ) => Promise<void> | void;
       }>
   );
 

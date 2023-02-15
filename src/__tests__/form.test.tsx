@@ -125,12 +125,7 @@ describe('Form', () => {
       } = useForm();
 
       return (
-        <Form
-          action={'/error'}
-          onSubmit={onSubmit}
-          control={control}
-          onSuccess={onSuccess}
-        >
+        <Form action={'/error'} onSubmit={onSubmit} control={control}>
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
@@ -231,6 +226,38 @@ describe('Form', () => {
 
     await waitFor(() => {
       screen.getByText('submitSuccessful');
+    });
+  });
+
+  it('should support fetcher prop with external request', async () => {
+    const fetcher = jest.fn();
+    const App = () => {
+      const {
+        control,
+        formState: { isSubmitSuccessful },
+      } = useForm();
+
+      return (
+        <Form
+          action={'/get'}
+          method={'get'}
+          control={control}
+          fetcher={fetcher}
+        >
+          <button>Submit</button>
+          <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      screen.getByText('submitSuccessful');
+
+      expect(fetcher).toBeCalled();
     });
   });
 });
