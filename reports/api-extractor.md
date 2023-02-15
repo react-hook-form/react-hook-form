@@ -251,8 +251,9 @@ export type FormProps<T extends FieldValues, U extends FieldValues | undefined =
         submit: (e?: React_3.FormEvent) => void;
     }) => React_3.ReactNode | React_3.ReactNode[];
     onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
+}> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
     onSuccess: ({ response }: {
-        response?: Response;
+        response: Response;
     }) => void;
     onError: ({ response, error, }: {
         response: Response;
@@ -263,11 +264,18 @@ export type FormProps<T extends FieldValues, U extends FieldValues | undefined =
     }) => void;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
+    fetcher: undefined;
+}> | Partial<{
+    onSuccess: undefined;
+    onError: undefined;
+    validateStatus: undefined;
+    headers: undefined;
     fetcher: (action: string, payload: {
         values?: T;
         method: string;
-    }) => Promise<Response | undefined>;
-}> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'>;
+        event?: React_3.BaseSyntheticEvent;
+    }) => Promise<void> | void;
+}>);
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
