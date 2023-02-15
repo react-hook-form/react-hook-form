@@ -89,8 +89,10 @@ describe('Form', () => {
           control={control}
           onError={onError}
           onSuccess={async ({ response }) => {
-            const data: { message: string } = await response.json();
-            setMessage(data.message);
+            if (response) {
+              const data: { message: string } = await response.json();
+              setMessage(data.message);
+            }
           }}
         >
           <button>Submit</button>

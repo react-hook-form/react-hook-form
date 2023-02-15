@@ -32,7 +32,7 @@ export type FormProps<
   fetcher: (
     action: string,
     payload: {
-      data?: T;
+      values?: T;
       method: string;
     },
   ) => Promise<Response | undefined>;
@@ -89,8 +89,8 @@ export function Form<
   const submit = async (e?: React.BaseSyntheticEvent) => {
     let serverError = false;
 
-    await control.handleSubmit(async (data) => {
-      onSubmit && onSubmit(data);
+    await control.handleSubmit(async (values) => {
+      onSubmit && onSubmit(values);
 
       if (action) {
         const formData = new FormData();
@@ -101,7 +101,7 @@ export function Form<
             headers['Content-Type'].includes('json');
         } else {
           control._names.mount.forEach((name) =>
-            formData.append(name, get(data, name)),
+            formData.append(name, get(values, name)),
           );
         }
 
@@ -109,7 +109,7 @@ export function Form<
           const response = fetcher
             ? await fetcher(action, {
                 method,
-                data,
+                values,
               })
             : await fetch(action, {
                 method,
@@ -120,7 +120,7 @@ export function Form<
                 ...(isPostRequest
                   ? {
                       body: shouldStringifySubmissionData
-                        ? JSON.stringify(data)
+                        ? JSON.stringify(values)
                         : formData,
                     }
                   : {}),
@@ -135,7 +135,7 @@ export function Form<
             serverError = true;
             onError && onError({ response });
           } else {
-            onSuccess && onSuccess({ response });
+            onSuccess && onSuccess(fetcher ? {} : { response });
           }
         } catch (error: unknown) {
           serverError = true;

@@ -252,7 +252,7 @@ export type FormProps<T extends FieldValues, U extends FieldValues | undefined =
     }) => React_3.ReactNode | React_3.ReactNode[];
     onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
     onSuccess: ({ response }: {
-        response: Response;
+        response?: Response;
     }) => void;
     onError: ({ response, error, }: {
         response: Response;
@@ -263,6 +263,10 @@ export type FormProps<T extends FieldValues, U extends FieldValues | undefined =
     }) => void;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
+    fetcher: (action: string, payload: {
+        values?: T;
+        method: string;
+    }) => Promise<Response | undefined>;
 }> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'>;
 
 // @public
