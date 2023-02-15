@@ -29,7 +29,7 @@ export type FormProps<
       }) => void;
   headers: Record<string, string>;
   validateStatus: (status: number) => boolean;
-  mutation: (
+  fetcher: (
     action: string,
     payload: {
       values?: T;
@@ -81,7 +81,7 @@ export function Form<
     render,
     onSuccess,
     validateStatus,
-    mutation,
+    fetcher,
     ...rest
   } = props;
   const isPostRequest = method === POST_REQUEST;
@@ -106,8 +106,8 @@ export function Form<
         }
 
         try {
-          const response = mutation
-            ? await mutation(action, {
+          const response = fetcher
+            ? await fetcher(action, {
                 method,
                 values,
               })
@@ -135,7 +135,7 @@ export function Form<
             serverError = true;
             onError && onError({ response });
           } else {
-            onSuccess && onSuccess(mutation ? {} : { response });
+            onSuccess && onSuccess(fetcher ? {} : { response });
           }
         } catch (error: unknown) {
           serverError = true;
