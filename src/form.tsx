@@ -14,30 +14,42 @@ export type FormProps<
     submit: (e?: React.FormEvent) => void;
   }) => React.ReactNode | React.ReactNode[];
   onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
-  onSuccess: ({ response }: { response?: Response }) => void;
-  onError: ({
-    response,
-    error,
-  }:
+}> &
+  Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
+  (
     | {
-        response: Response;
-        error?: undefined;
+        onSuccess: ({ response }: { response: Response }) => void;
+        onError: ({
+          response,
+          error,
+        }:
+          | {
+              response: Response;
+              error?: undefined;
+            }
+          | {
+              response?: undefined;
+              error: unknown;
+            }) => void;
+        headers: Record<string, string>;
+        validateStatus: (status: number) => boolean;
+        fetcher: undefined;
       }
     | {
-        response?: undefined;
-        error: unknown;
-      }) => void;
-  headers: Record<string, string>;
-  validateStatus: (status: number) => boolean;
-  fetcher: (
-    action: string,
-    payload: {
-      values?: T;
-      method: string;
-    },
-  ) => Promise<Response | undefined>;
-}> &
-  Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'>;
+        onSuccess: undefined;
+        onError: undefined;
+        validateStatus: undefined;
+        headers: undefined;
+        fetcher: (
+          action: string,
+          payload: {
+            values?: T;
+            method: string;
+            event?: React.BaseSyntheticEvent;
+          },
+        ) => Promise<Response | undefined>;
+      }
+  );
 
 const POST_REQUEST = 'post';
 
@@ -86,7 +98,7 @@ export function Form<
   } = props;
   const isPostRequest = method === POST_REQUEST;
 
-  const submit = async (e?: React.BaseSyntheticEvent) => {
+  const submit = async (event?: React.BaseSyntheticEvent) => {
     let serverError = false;
 
     await control.handleSubmit(async (values) => {
@@ -106,43 +118,46 @@ export function Form<
         }
 
         try {
-          const response = fetcher
-            ? await fetcher(action, {
-                method,
-                values,
-              })
-            : await fetch(action, {
-                method,
-                headers: {
-                  ...headers,
-                  ...(encType ? { 'Content-Type': encType } : {}),
-                },
-                ...(isPostRequest
-                  ? {
-                      body: shouldStringifySubmissionData
-                        ? JSON.stringify(values)
-                        : formData,
-                    }
-                  : {}),
-              });
+          if (!fetcher) {
+            const response = await fetch(action, {
+              method,
+              headers: {
+                ...headers,
+                ...(encType ? { 'Content-Type': encType } : {}),
+              },
+              ...(isPostRequest
+                ? {
+                    body: shouldStringifySubmissionData
+                      ? JSON.stringify(values)
+                      : formData,
+                  }
+                : {}),
+            });
 
-          if (
-            response &&
-            (validateStatus
-              ? !validateStatus(response.status)
-              : response.status < 200 || response.status >= 300)
-          ) {
-            serverError = true;
-            onError && onError({ response });
+            if (
+              response &&
+              (validateStatus
+                ? !validateStatus(response.status)
+                : response.status < 200 || response.status >= 300)
+            ) {
+              serverError = true;
+              onError && onError({ response });
+            } else {
+              onSuccess && onSuccess({ response });
+            }
           } else {
-            onSuccess && onSuccess(fetcher ? {} : { response });
+            await fetcher(action, {
+              method,
+              values,
+              event,
+            });
           }
         } catch (error: unknown) {
           serverError = true;
           onError && onError({ error });
         }
       }
-    })(e);
+    })(event);
 
     serverError &&
       props.control &&
