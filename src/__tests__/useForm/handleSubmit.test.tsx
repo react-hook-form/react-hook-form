@@ -524,4 +524,28 @@ describe('handleSubmit', () => {
 
     await waitFor(() => expect(onSubmit).toBeCalled());
   });
+
+  it('should set isSubmitting back to false if onValid throws an error', async () => {
+    const { result } = renderHook(() =>
+      useForm<{
+        test: string;
+      }>(),
+    );
+
+    const callback = () => {
+      throw new Error('test');
+    };
+
+    result.current.formState;
+
+    await act(async () => {
+      await result.current.handleSubmit(callback)({
+        preventDefault: () => {},
+        persist: () => {},
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.isSubmitting).toEqual(false);
+    expect(result.current.control._formState.isSubmitSuccessful).toEqual(false);
+  });
 });

@@ -1047,7 +1047,15 @@ export function createFormControl<
         _subjects.state.next({
           errors: {},
         });
-        await onValid(fieldValues as TFieldValues, e);
+        try {
+          await onValid(fieldValues as TFieldValues, e);
+        } catch (error) {
+          _subjects.state.next({
+            isSubmitting: false,
+            isSubmitSuccessful: false,
+          });
+          return;
+        }
       } else {
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
