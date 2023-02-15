@@ -14,7 +14,7 @@ export type FormProps<
     submit: (e?: React.FormEvent) => void;
   }) => React.ReactNode | React.ReactNode[];
   onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
-  onSuccess: ({ response }: { response: Response }) => void;
+  onSuccess: ({ response }: { response?: Response }) => void;
   onError: ({
     response,
     error,
@@ -29,6 +29,13 @@ export type FormProps<
       }) => void;
   headers: Record<string, string>;
   validateStatus: (status: number) => boolean;
+  fetcher: (
+    action: string,
+    payload: {
+      data?: T;
+      method: string;
+    },
+  ) => Promise<Response | undefined>;
 }> &
   Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'>;
 
@@ -74,6 +81,7 @@ export function Form<
     render,
     onSuccess,
     validateStatus,
+    fetcher,
     ...rest
   } = props;
   const isPostRequest = method === POST_REQUEST;
@@ -98,25 +106,31 @@ export function Form<
         }
 
         try {
-          const response = await fetch(action, {
-            method,
-            headers: {
-              ...headers,
-              ...(encType ? { 'Content-Type': encType } : {}),
-            },
-            ...(isPostRequest
-              ? {
-                  body: shouldStringifySubmissionData
-                    ? JSON.stringify(data)
-                    : formData,
-                }
-              : {}),
-          });
+          const response = fetcher
+            ? await fetcher(action, {
+                method,
+                data,
+              })
+            : await fetch(action, {
+                method,
+                headers: {
+                  ...headers,
+                  ...(encType ? { 'Content-Type': encType } : {}),
+                },
+                ...(isPostRequest
+                  ? {
+                      body: shouldStringifySubmissionData
+                        ? JSON.stringify(data)
+                        : formData,
+                    }
+                  : {}),
+              });
 
           if (
-            validateStatus
+            response &&
+            (validateStatus
               ? !validateStatus(response.status)
-              : response.status < 200 || response.status >= 300
+              : response.status < 200 || response.status >= 300)
           ) {
             serverError = true;
             onError && onError({ response });
