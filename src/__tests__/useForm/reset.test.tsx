@@ -693,7 +693,7 @@ describe('reset', () => {
         expect(updatedDirtyFields).toEqual({
           firstName: true,
         });
-        expect(updatedDirty).toBeTruthy();
+        expect(updatedDirty).toBeFalsy();
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
@@ -847,7 +847,7 @@ describe('reset', () => {
         expect(updatedDirtyFields).toEqual({
           firstName: true,
         });
-        expect(updatedDirty).toBeTruthy();
+        expect(updatedDirty).toBeFalsy();
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
