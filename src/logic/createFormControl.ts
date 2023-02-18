@@ -1176,22 +1176,20 @@ export function createFormControl<
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
-      isDirty:
-        keepStateOptions.keepDirty || keepStateOptions.keepDirtyValues
-          ? _formState.isDirty
-          : !!(
-              keepStateOptions.keepDefaultValues &&
-              !deepEqual(formValues, _defaultValues)
-            ),
+      isDirty: keepStateOptions.keepDirty
+        ? _formState.isDirty
+        : !!(
+            keepStateOptions.keepDefaultValues &&
+            !deepEqual(formValues, _defaultValues)
+          ),
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields:
-        keepStateOptions.keepDirty || keepStateOptions.keepDirtyValues
-          ? _formState.dirtyFields
-          : keepStateOptions.keepDefaultValues && formValues
-          ? getDirtyFields(_defaultValues, formValues)
-          : {},
+      dirtyFields: keepStateOptions.keepDirtyValues
+        ? _formState.dirtyFields
+        : keepStateOptions.keepDefaultValues && formValues
+        ? getDirtyFields(_defaultValues, formValues)
+        : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
