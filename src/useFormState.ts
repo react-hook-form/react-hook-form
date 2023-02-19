@@ -11,6 +11,7 @@ import {
   UseFormStateReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -86,7 +87,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     subject: control._subjects.state,
   });
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     _mounted.current = true;
     const isDirty = control._proxyFormState.isDirty && control._getDirty();
 

@@ -38,6 +38,7 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -306,7 +307,7 @@ export function useFieldArray<
     );
   };
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     control._stateFlags.action = false;
 
     isWatched(name, control._names) && control._subjects.state.next({});
@@ -372,7 +373,7 @@ export function useFieldArray<
     control._updateValid();
   }, [fields, name, control]);
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     !get(control._formValues, name) && control._updateFieldArray(name);
 
     return () => {

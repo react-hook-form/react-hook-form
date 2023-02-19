@@ -12,6 +12,7 @@ import {
   UseFormProps,
   UseFormReturn,
 } from './types';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -99,7 +100,7 @@ export function useForm<
     },
   });
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!control._stateFlags.mount) {
       control._updateValid();
       control._stateFlags.mount = true;
@@ -113,13 +114,13 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (props.values && !deepEqual(props.values, control._defaultValues)) {
       control._reset(props.values, control._options.resetOptions);
     }
   }, [props.values, control]);
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     formState.submitCount && control._focusError();
   }, [control, formState.submitCount]);
 

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Subject } from './utils/createSubject';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 
 type Props<T> = {
   disabled?: boolean;
@@ -12,7 +13,7 @@ export function useSubscribe<T>(props: Props<T>) {
   const _props = React.useRef(props);
   _props.current = props;
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const subscription =
       !props.disabled &&
       _props.current.subject.subscribe({

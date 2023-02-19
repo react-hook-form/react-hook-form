@@ -16,6 +16,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 import { useWatch } from './useWatch';
 
 /**
@@ -73,7 +74,7 @@ export function useController<
     }),
   );
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 

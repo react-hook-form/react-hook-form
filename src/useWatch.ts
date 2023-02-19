@@ -14,6 +14,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 import { useSubscribe } from './useSubscribe';
 
 /**
@@ -188,7 +189,7 @@ export function useWatch<TFieldValues extends FieldValues>(
     ),
   );
 
-  React.useEffect(() => control._removeUnmounted());
+  useIsomorphicLayoutEffect(() => control._removeUnmounted());
 
   return value;
 }
