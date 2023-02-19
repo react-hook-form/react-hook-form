@@ -1,6 +1,6 @@
 describe('watch form validation', () => {
   it('should watch all inputs', () => {
-    cy.visit('http://localhost:3000/watch');
+    cy.visit('/watch');
 
     cy.get('#watchAll').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({}),

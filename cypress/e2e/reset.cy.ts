@@ -1,6 +1,6 @@
 describe('form reset', () => {
   it('should be able to re-populate the form while reset', () => {
-    cy.visit('http://localhost:3000/reset');
+    cy.visit('/reset');
 
     cy.get('input[name="firstName"]').type('0 wrong');
     cy.get('input[name="array.1"]').type('1 wrong');

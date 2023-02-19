@@ -1,6 +1,6 @@
 describe('useWatch', () => {
   it('should only trigger render when interact with input 1', () => {
-    cy.visit('http://localhost:3000/useWatch');
+    cy.visit('/useWatch');
     cy.get('input[name="test"]').type('t');
 
     cy.get('#parentCounter').contains('1');
@@ -18,7 +18,7 @@ describe('useWatch', () => {
   });
 
   it('should only trigger render when interact with input 2', () => {
-    cy.visit('http://localhost:3000/useWatch');
+    cy.visit('/useWatch');
     cy.get('input[name="test1"]').type('h');
 
     cy.get('#parentCounter').contains('1');
@@ -36,7 +36,7 @@ describe('useWatch', () => {
   });
 
   it('should only trigger render when interact with input 3', () => {
-    cy.visit('http://localhost:3000/useWatch');
+    cy.visit('/useWatch');
     cy.get('input[name="test2"]').type('e');
 
     cy.get('#parentCounter').contains('1');

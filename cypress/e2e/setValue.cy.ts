@@ -1,6 +1,6 @@
 describe('form setValue', () => {
   it('should set input value, trigger validation and clear all errors', () => {
-    cy.visit('http://localhost:3000/setValue');
+    cy.visit('/setValue');
 
     cy.get('input[name="firstName"]').should('have.value', 'wrong');
     cy.get('input[name="age"]').should('have.value', '2');

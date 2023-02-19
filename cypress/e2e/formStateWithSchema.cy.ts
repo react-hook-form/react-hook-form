@@ -1,6 +1,6 @@
 describe('form state with schema validation', () => {
   it('should return correct form state with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/formStateWithSchema/onSubmit');
+    cy.visit('/formStateWithSchema/onSubmit');
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -95,7 +95,7 @@ describe('form state with schema validation', () => {
   });
 
   it('should return correct form state with onChange mode', () => {
-    cy.visit('http://localhost:3000/formState/onChange');
+    cy.visit('/formState/onChange');
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -189,7 +189,7 @@ describe('form state with schema validation', () => {
   });
 
   it('should return correct form state with onBlur mode', () => {
-    cy.visit('http://localhost:3000/formState/onBlur');
+    cy.visit('/formState/onBlur');
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -283,7 +283,7 @@ describe('form state with schema validation', () => {
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/formState/onSubmit');
+    cy.visit('/formState/onSubmit');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
     cy.get('input[name="lastName"]').type('test');
@@ -460,7 +460,7 @@ describe('form state with schema validation', () => {
   });
 
   it('should reset dirty value when inputs reset back to default with onBlur mode', () => {
-    cy.visit('http://localhost:3000/formState/onBlur');
+    cy.visit('/formState/onBlur');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
     cy.get('input[name="lastName"]').type('test');
@@ -499,7 +499,7 @@ describe('form state with schema validation', () => {
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
-    cy.visit('http://localhost:3000/formState/onChange');
+    cy.visit('/formState/onChange');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
     cy.get('input[name="lastName"]').type('test');

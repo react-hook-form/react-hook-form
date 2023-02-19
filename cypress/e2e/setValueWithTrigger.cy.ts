@@ -1,6 +1,6 @@
 describe('form setValue with trigger', () => {
   it('should set input value and trigger validation', () => {
-    cy.visit('http://localhost:3000/setValueWithTrigger');
+    cy.visit('/setValueWithTrigger');
 
     cy.get('input[name="firstName"]').type('a');
     cy.get('input[name="firstName"] + p').contains('minLength 10');

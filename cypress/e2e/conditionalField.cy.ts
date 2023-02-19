@@ -1,6 +1,6 @@
 describe('ConditionalField', () => {
   it('should reflect correct form state and data collection', () => {
-    cy.visit('http://localhost:3000/conditionalField');
+    cy.visit('/conditionalField');
     cy.get('#state').should(($state) => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirty: [],

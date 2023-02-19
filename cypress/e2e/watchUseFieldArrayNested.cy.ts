@@ -1,6 +1,6 @@
 describe('watchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', () => {
-    cy.visit('http://localhost:3000/watchUseFieldArrayNested');
+    cy.visit('/watchUseFieldArrayNested');
 
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal([

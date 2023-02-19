@@ -1,6 +1,6 @@
 describe('customSchemaValidation form validation', () => {
   it('should validate the form with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/customSchemaValidation/onSubmit');
+    cy.visit('/customSchemaValidation/onSubmit');
     cy.get('button').click();
 
     cy.focused().should('have.attr', 'name', 'firstName');
@@ -45,7 +45,7 @@ describe('customSchemaValidation form validation', () => {
   });
 
   it('should validate the form with onBlur mode', () => {
-    cy.visit('http://localhost:3000/customSchemaValidation/onBlur');
+    cy.visit('/customSchemaValidation/onBlur');
 
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
@@ -94,7 +94,7 @@ describe('customSchemaValidation form validation', () => {
   });
 
   it('should validate the form with onChange mode', () => {
-    cy.visit('http://localhost:3000/customSchemaValidation/onChange');
+    cy.visit('/customSchemaValidation/onChange');
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="lastName"]').focus();

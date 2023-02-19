@@ -1,6 +1,6 @@
 describe('basic form validation', () => {
   it('should validate the form and reset the form', () => {
-    cy.visit('http://localhost:3000/basic/onSubmit');
+    cy.visit('/basic/onSubmit');
     cy.get('button#submit').click();
 
     cy.focused().should('have.attr', 'name', 'nestItem.nest1');
@@ -103,7 +103,7 @@ describe('basic form validation', () => {
   });
 
   it('should validate the form with onTouched mode', () => {
-    cy.visit('http://localhost:3000/basic/onTouched');
+    cy.visit('/basic/onTouched');
     cy.get('input[name="nestItem.nest1"]').focus();
     cy.get('input[name="nestItem.nest1"]').type('test');
     cy.get('input[name="nestItem.nest1"]').clear();
@@ -142,7 +142,7 @@ describe('basic form validation', () => {
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
-    cy.visit('http://localhost:3000/basic/onBlur');
+    cy.visit('/basic/onBlur');
 
     cy.get('input[name="nestItem.nest1"]').focus();
     cy.get('input[name="nestItem.nest1"]').blur();
@@ -221,7 +221,7 @@ describe('basic form validation', () => {
   });
 
   it('should validate the form with onChange mode and reset the form', () => {
-    cy.visit('http://localhost:3000/basic/onChange');
+    cy.visit('/basic/onChange');
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="lastName"]').type('luo123456');

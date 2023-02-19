@@ -1,6 +1,6 @@
 describe('delayError', () => {
   it('should delay from errors appear', () => {
-    cy.visit('http://localhost:3000/delayError');
+    cy.visit('/delayError');
 
     const firstInput = () => cy.get('input[name="first"]');
     const firstInputError = () => cy.get('input[name="first"] + p');

@@ -1,6 +1,6 @@
 describe('re-validate mode', () => {
   it('should re-validate the form only onSubmit with mode onSubmit and reValidateMode onSubmit', () => {
-    cy.visit('http://localhost:3000/re-validate-mode/onSubmit/onSubmit');
+    cy.visit('/re-validate-mode/onSubmit/onSubmit');
 
     cy.get('button#submit').click();
 
@@ -20,7 +20,7 @@ describe('re-validate mode', () => {
   });
 
   it('should re-validate the form only onBlur with mode onSubmit and reValidateMode onBlur', () => {
-    cy.visit('http://localhost:3000/re-validate-mode/onSubmit/onBlur');
+    cy.visit('/re-validate-mode/onSubmit/onBlur');
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
 
@@ -45,7 +45,7 @@ describe('re-validate mode', () => {
   });
 
   it('should re-validate the form only onSubmit with mode onBlur and reValidateMode onSubmit', () => {
-    cy.visit('http://localhost:3000/re-validate-mode/onBlur/onSubmit');
+    cy.visit('/re-validate-mode/onBlur/onSubmit');
 
     cy.get('button#submit').click();
 
@@ -69,7 +69,7 @@ describe('re-validate mode', () => {
   });
 
   it('should re-validate the form only onSubmit with mode onChange and reValidateMode onSubmit', () => {
-    cy.visit('http://localhost:3000/re-validate-mode/onChange/onSubmit');
+    cy.visit('/re-validate-mode/onChange/onSubmit');
 
     cy.get('button#submit').click();
 
@@ -91,7 +91,7 @@ describe('re-validate mode', () => {
   });
 
   it('should re-validate the form onBlur only with mode onBlur and reValidateMode onBlur', () => {
-    cy.visit('http://localhost:3000/re-validate-mode/onBlur/onBlur');
+    cy.visit('/re-validate-mode/onBlur/onBlur');
 
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
@@ -112,7 +112,7 @@ describe('re-validate mode', () => {
   });
 
   it('should re-validate the form onChange with mode onBlur and reValidateMode onChange', () => {
-    cy.visit('http://localhost:3000/re-validate-mode/onBlur/onChange');
+    cy.visit('/re-validate-mode/onBlur/onChange');
 
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();

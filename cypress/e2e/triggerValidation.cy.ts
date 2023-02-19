@@ -1,6 +1,6 @@
 describe('form trigger', () => {
   it('should trigger input validation', () => {
-    cy.visit('http://localhost:3000/trigger-validation');
+    cy.visit('/trigger-validation');
 
     cy.get('#testError').should('be.empty');
     cy.get('#test1Error').should('be.empty');

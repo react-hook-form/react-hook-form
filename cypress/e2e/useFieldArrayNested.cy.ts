@@ -1,6 +1,6 @@
 describe('useFieldArrayNested', () => {
   it('should work correctly with nested field array', () => {
-    cy.visit('http://localhost:3000/useFieldArrayNested');
+    cy.visit('/useFieldArrayNested');
 
     cy.get(`#nest-append-0`).click();
     cy.get(`#nest-prepend-0`).click();

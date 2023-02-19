@@ -1,6 +1,6 @@
 describe('manual register form validation', () => {
   it('should validate the form', () => {
-    cy.visit('http://localhost:3000/manual-register-form');
+    cy.visit('/manual-register-form');
     cy.get('#submit').click();
 
     cy.get('input[name="firstName"] + p').contains('firstName error');

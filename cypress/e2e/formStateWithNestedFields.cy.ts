@@ -1,6 +1,6 @@
 describe('form state with nested fields', () => {
   it('should return correct form state with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/formStateWithNestedFields/onSubmit');
+    cy.visit('/formStateWithNestedFields/onSubmit');
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -96,7 +96,7 @@ describe('form state with nested fields', () => {
   });
 
   it('should return correct form state with onChange mode', () => {
-    cy.visit('http://localhost:3000/formStateWithNestedFields/onChange');
+    cy.visit('/formStateWithNestedFields/onChange');
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -190,7 +190,7 @@ describe('form state with nested fields', () => {
   });
 
   it('should return correct form state with onBlur mode', () => {
-    cy.visit('http://localhost:3000/formStateWithNestedFields/onBlur');
+    cy.visit('/formStateWithNestedFields/onBlur');
 
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -284,7 +284,7 @@ describe('form state with nested fields', () => {
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/formStateWithNestedFields/onSubmit');
+    cy.visit('/formStateWithNestedFields/onSubmit');
     cy.get('input[name="left.test1"]').type('test');
     cy.get('input[name="left.test1"]').blur();
     cy.get('input[name="left.test2"]').type('test');
@@ -323,7 +323,7 @@ describe('form state with nested fields', () => {
   });
 
   it('should reset dirty value when inputs reset back to default with onBlur mode', () => {
-    cy.visit('http://localhost:3000/formStateWithNestedFields/onBlur');
+    cy.visit('/formStateWithNestedFields/onBlur');
     cy.get('input[name="left.test1"]').type('test');
     cy.get('input[name="left.test1"]').blur();
     cy.get('input[name="left.test2"]').type('test');
@@ -363,7 +363,7 @@ describe('form state with nested fields', () => {
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
-    cy.visit('http://localhost:3000/formStateWithNestedFields/onChange');
+    cy.visit('/formStateWithNestedFields/onChange');
     cy.get('input[name="left.test1"]').type('test');
     cy.get('input[name="left.test1"]').blur();
     cy.get('input[name="left.test2"]').type('test');

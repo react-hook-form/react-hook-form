@@ -1,6 +1,6 @@
 describe('isValid', () => {
   it('should showing valid correctly with build in validation', () => {
-    cy.visit('http://localhost:3000/isValid/build-in/defaultValue');
+    cy.visit('/isValid/build-in/defaultValue');
     cy.get('#isValid').contains('false');
 
     cy.get('input[name="firstName"]').type('test');
@@ -15,7 +15,7 @@ describe('isValid', () => {
   });
 
   it('should showing valid correctly with build in validation and default values supplied', () => {
-    cy.visit('http://localhost:3000/isValid/build-in/defaultValues');
+    cy.visit('/isValid/build-in/defaultValues');
     cy.get('#isValid').contains('true');
 
     cy.get('input[name="firstName"]').clear();
@@ -26,7 +26,7 @@ describe('isValid', () => {
   });
 
   it('should showing valid correctly with schema validation', () => {
-    cy.visit('http://localhost:3000/isValid/schema/defaultValue');
+    cy.visit('/isValid/schema/defaultValue');
     cy.get('#isValid').contains('false');
 
     cy.get('input[name="firstName"]').type('test');
@@ -43,7 +43,7 @@ describe('isValid', () => {
   });
 
   it('should showing valid correctly with schema validation and default value supplied', () => {
-    cy.visit('http://localhost:3000/isValid/schema/defaultValues');
+    cy.visit('/isValid/schema/defaultValues');
     cy.get('#isValid').contains('true');
 
     cy.get('input[name="firstName"]').clear();

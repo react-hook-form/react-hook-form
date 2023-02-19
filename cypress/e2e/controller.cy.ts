@@ -1,6 +1,6 @@
 describe('controller basic form validation', () => {
   it('should validate the form and reset the form', () => {
-    cy.visit('http://localhost:3000/controller/onSubmit');
+    cy.visit('/controller/onSubmit');
     cy.get('#submit').click();
 
     cy.get('#TextField').contains('TextField Error');
@@ -24,7 +24,7 @@ describe('controller basic form validation', () => {
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
-    cy.visit('http://localhost:3000/controller/onBlur');
+    cy.visit('/controller/onBlur');
 
     cy.get('p').should('have.length', 0);
     cy.get('#input-checkbox input').focus();
@@ -55,7 +55,7 @@ describe('controller basic form validation', () => {
   });
 
   it('should validate the form with onChange mode and reset the form', () => {
-    cy.visit('http://localhost:3000/controller/onChange');
+    cy.visit('/controller/onChange');
 
     cy.get('#input-checkbox input').click();
     cy.get('#input-checkbox input').click();

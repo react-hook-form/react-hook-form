@@ -1,6 +1,6 @@
 describe('useFieldArray', () => {
   it('should behaviour correctly without defaultValues', () => {
-    cy.visit('http://localhost:3000/useFieldArray/normal');
+    cy.visit('/useFieldArray/normal');
 
     cy.get('#append').click();
     cy.get('ul > li').its('length').should('equal', 1);
@@ -127,7 +127,7 @@ describe('useFieldArray', () => {
   });
 
   it('should behaviour correctly with defaultValue', () => {
-    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.visit('/useFieldArray/default');
 
     cy.get('ul > li').its('length').should('equal', 3);
 
@@ -281,7 +281,7 @@ describe('useFieldArray', () => {
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', () => {
-    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+    cy.visit('/useFieldArray/defaultAndWithoutFocus');
 
     cy.get('ul > li').its('length').should('equal', 3);
 
@@ -455,7 +455,7 @@ describe('useFieldArray', () => {
   });
 
   it('should display the correct dirty value with default value', () => {
-    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.visit('/useFieldArray/default');
     cy.get('#dirty').contains('no');
     cy.get('#update').click();
     cy.get('#dirtyFields').should(($state) =>
@@ -504,7 +504,7 @@ describe('useFieldArray', () => {
   });
 
   it('should display the correct dirty value without default value', () => {
-    cy.visit('http://localhost:3000/useFieldArray/normal');
+    cy.visit('/useFieldArray/normal');
     cy.get('#dirty').contains('no');
     cy.get('#append').click();
     cy.get('#dirty').contains('yes');
@@ -549,7 +549,7 @@ describe('useFieldArray', () => {
   });
 
   it('should display the correct dirty value with default value', () => {
-    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.visit('/useFieldArray/default');
     cy.get('#dirty').contains('no');
     cy.get('#field0').focus();
     cy.get('#field0').blur();
@@ -574,7 +574,7 @@ describe('useFieldArray', () => {
   });
 
   it('should display the correct dirty value with async default value', () => {
-    cy.visit('http://localhost:3000/useFieldArray/asyncReset');
+    cy.visit('/useFieldArray/asyncReset');
     cy.get('#dirty').contains('no');
     cy.get('#field0').focus();
     cy.get('#field0').blur();
@@ -599,7 +599,7 @@ describe('useFieldArray', () => {
   });
 
   it('should display correct error with the inputs', () => {
-    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.visit('/useFieldArray/default');
     cy.get('#prepend').click();
     cy.get('#field1').clear();
     cy.get('#field2').clear();
@@ -622,7 +622,7 @@ describe('useFieldArray', () => {
   });
 
   it('should return correct touched values', () => {
-    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.visit('/useFieldArray/default');
     cy.get('#field0').type('1');
     cy.get('#field1').type('1');
     cy.get('#field2').type('1');
@@ -655,7 +655,7 @@ describe('useFieldArray', () => {
   });
 
   it('should return correct touched values without autoFocus', () => {
-    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+    cy.visit('/useFieldArray/defaultAndWithoutFocus');
     cy.get('#field0').type('1');
     cy.get('#field1').type('1');
     cy.get('#field2').type('1');
@@ -688,7 +688,7 @@ describe('useFieldArray', () => {
   });
 
   it('should return correct isValid formState', () => {
-    cy.visit('http://localhost:3000/useFieldArray/formState');
+    cy.visit('/useFieldArray/formState');
     cy.get('#isValid').get('#isValid').contains('yes');
     cy.get('#append').click();
     cy.get('#append').click();

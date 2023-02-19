@@ -1,6 +1,6 @@
 describe('watchDefaultValues', () => {
   it('should return default value with watch', () => {
-    cy.visit('http://localhost:3000/watch-default-values');
+    cy.visit('/watch-default-values');
 
     cy.get('#watchAll').should(
       'have.text',

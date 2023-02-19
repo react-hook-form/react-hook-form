@@ -10,7 +10,7 @@ function getIframe() {
 
 describe('Cross-Frame rendering', () => {
   it('should work correctly when rendering inside frames', () => {
-    cy.visit('http://localhost:3000/crossFrameForm');
+    cy.visit('/crossFrameForm');
     getIframe().find('input[type="text"]').type('test');
     getIframe().find('input[type="radio"][value="a"]').click();
     getIframe().find('input[type="radio"][value="b"]').click();

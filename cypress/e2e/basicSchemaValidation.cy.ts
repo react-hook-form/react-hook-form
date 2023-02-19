@@ -1,6 +1,6 @@
 describe('basicSchemaValidation form validation', () => {
   it('should validate the form with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/basic-schema-validation/onSubmit');
+    cy.visit('/basic-schema-validation/onSubmit');
     cy.get('button').click();
 
     cy.focused().should('have.attr', 'name', 'firstName');
@@ -46,7 +46,7 @@ describe('basicSchemaValidation form validation', () => {
   });
 
   it('should validate the form with onBlur mode', () => {
-    cy.visit('http://localhost:3000/basic-schema-validation/onBlur');
+    cy.visit('/basic-schema-validation/onBlur');
 
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
@@ -96,7 +96,7 @@ describe('basicSchemaValidation form validation', () => {
   });
 
   it('should validate the form with onChange mode', () => {
-    cy.visit('http://localhost:3000/basic-schema-validation/onChange');
+    cy.visit('/basic-schema-validation/onChange');
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="lastName"]').focus();

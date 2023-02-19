@@ -1,6 +1,6 @@
 describe('defaultValues', () => {
   it('should populate defaultValue for inputs', () => {
-    cy.visit('http://localhost:3000/default-values');
+    cy.visit('/default-values');
 
     cy.get('input[name="test"]').should('have.value', 'test');
     cy.get('input[name="test1.firstName"]').should('have.value', 'firstName');
