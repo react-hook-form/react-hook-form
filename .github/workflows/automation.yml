@@ -17,5 +17,5 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           start: pnpm start
-          wait-on: 'http://127.0.0.1:3000'
+          wait-on: 'http://ip6-localhost:3000'
           wait-on-timeout: 120
