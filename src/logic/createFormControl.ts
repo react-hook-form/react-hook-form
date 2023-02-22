@@ -95,45 +95,43 @@ export function createFormControl<
   flushRootRender: () => void,
 ): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
   let _options = {
-    ...defaultOptions,
-    ...props,
-  };
+      ...defaultOptions,
+      ...props,
+    },
+    _formState: FormState<TFieldValues> = {
+      submitCount: 0,
+      isDirty: false,
+      isLoading: true,
+      isValidating: false,
+      isSubmitted: false,
+      isSubmitting: false,
+      isSubmitSuccessful: false,
+      isValid: false,
+      touchedFields: {},
+      dirtyFields: {},
+      errors: {},
+    },
+    _fields = {},
+    _defaultValues =
+      isObject(_options.defaultValues) || isObject(_options.values)
+        ? cloneObject(_options.defaultValues || _options.values) || {}
+        : {},
+    _formValues = _options.shouldUnregister ? {} : cloneObject(_defaultValues),
+    _stateFlags = {
+      action: false,
+      mount: false,
+      watch: false,
+    },
+    _names: Names = {
+      mount: new Set(),
+      unMount: new Set(),
+      array: new Set(),
+      watch: new Set(),
+    },
+    delayErrorCallback: DelayCallback | null,
+    timer = 0;
   const shouldCaptureDirtyFields =
     props.resetOptions && props.resetOptions.keepDirtyValues;
-  let _formState: FormState<TFieldValues> = {
-    submitCount: 0,
-    isDirty: false,
-    isLoading: true,
-    isValidating: false,
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    touchedFields: {},
-    dirtyFields: {},
-    errors: {},
-  };
-  let _fields = {};
-  let _defaultValues =
-    isObject(_options.defaultValues) || isObject(_options.values)
-      ? cloneObject(_options.defaultValues || _options.values) || {}
-      : {};
-  let _formValues = _options.shouldUnregister
-    ? {}
-    : cloneObject(_defaultValues);
-  let _stateFlags = {
-    action: false,
-    mount: false,
-    watch: false,
-  };
-  let _names: Names = {
-    mount: new Set(),
-    unMount: new Set(),
-    array: new Set(),
-    watch: new Set(),
-  };
-  let delayErrorCallback: DelayCallback | null;
-  let timer = 0;
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
