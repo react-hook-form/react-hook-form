@@ -5,13 +5,16 @@ on: [pull_request]
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16]
     steps:
       - uses: actions/checkout@v2
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: latest
+          version: ${{ matrix.node-version }}
 
       - name: Cypress run
         uses: cypress-io/github-action@v4
