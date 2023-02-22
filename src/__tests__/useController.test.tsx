@@ -439,7 +439,7 @@ describe('useController', () => {
 
     await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
     expect(reportValidity).toBeCalledTimes(3);
-    expect(focus).toBeCalledTimes(1);
+    expect(focus).toBeCalledTimes(2);
   });
 
   it('should update with inline defaultValue', async () => {

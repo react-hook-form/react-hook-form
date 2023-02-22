@@ -119,10 +119,6 @@ export function useForm<
     }
   }, [props.values, control]);
 
-  React.useEffect(() => {
-    formState.submitCount && control._focusError();
-  }, [control, formState.submitCount]);
-
   _formControl.current.formState = getProxyFormState(formState, control);
 
   return _formControl.current;
