@@ -125,6 +125,7 @@ export function createFormControl<
     action: false,
     mount: false,
     watch: false,
+    focus: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -1052,6 +1053,7 @@ export function createFormControl<
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
         }
+        _stateFlags.focus = true;
         _focusError();
       }
 
