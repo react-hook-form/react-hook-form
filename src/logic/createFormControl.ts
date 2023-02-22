@@ -98,8 +98,6 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  const shouldCaptureDirtyFields =
-    props.resetOptions && props.resetOptions.keepDirtyValues;
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
@@ -135,6 +133,8 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
+  const shouldCaptureDirtyFields =
+    props.resetOptions && props.resetOptions.keepDirtyValues;
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
