@@ -46,6 +46,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         mount: boolean;
         action: boolean;
         watch: boolean;
+        focus: boolean;
     };
     _reset: UseFormReset<TFieldValues>;
     _options: UseFormProps<TFieldValues, TContext>;
