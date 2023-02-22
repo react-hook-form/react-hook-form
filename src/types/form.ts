@@ -599,8 +599,13 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (
-  onValid: SubmitHandler<TFieldValues>,
+export type UseFormHandleSubmit<
+  TFieldValues extends FieldValues,
+  TTransformedValues extends FieldValues | undefined = undefined,
+> = (
+  onValid: TTransformedValues extends FieldValues
+    ? SubmitHandler<TTransformedValues>
+    : SubmitHandler<TFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
@@ -782,6 +787,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues | undefined = undefined,
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
@@ -793,7 +799,7 @@ export type UseFormReturn<
   formState: FormState<TFieldValues>;
   resetField: UseFormResetField<TFieldValues>;
   reset: UseFormReset<TFieldValues>;
-  handleSubmit: UseFormHandleSubmit<TFieldValues>;
+  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
   unregister: UseFormUnregister<TFieldValues>;
   control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;

@@ -5,15 +5,17 @@ import { Control, FieldValues, SubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
 export type FormProps<
-  T extends FieldValues,
-  U extends FieldValues | undefined = undefined,
+  TFieldValues extends FieldValues,
+  TTransformedValues extends FieldValues | undefined = undefined,
 > = Partial<{
-  control: Control<T>;
+  control: Control<TFieldValues>;
   children?: React.ReactNode | React.ReactNode[];
   render?: (props: {
     submit: (e?: React.FormEvent) => void;
   }) => React.ReactNode | React.ReactNode[];
-  onSubmit: U extends FieldValues ? SubmitHandler<U> : SubmitHandler<T>;
+  onSubmit: TTransformedValues extends FieldValues
+    ? SubmitHandler<TTransformedValues>
+    : SubmitHandler<TFieldValues>;
 }> &
   Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
   (
@@ -43,7 +45,7 @@ export type FormProps<
         fetcher: (
           action: string,
           payload: {
-            values?: T;
+            values?: TFieldValues;
             method: string;
             event?: React.BaseSyntheticEvent;
           },
