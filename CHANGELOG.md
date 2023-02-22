@@ -1,5 +1,31 @@
 # Changelog
 
+## [7.43.0] - 2023-01-30
+
+## Added
+
+- support global error type
+
+```tsx
+const onSubmit = async () => {
+  setError('root.serverError', {
+    type: response.statusCode,
+  });
+};
+const onClick = () => {
+  setError('root.random', {
+    type: 'random',
+  });
+};
+
+return (
+  <>
+    {errors.root.serverError.type === 400 && <p>server response message</p>}
+    <p>{errors.root?.random?.message}</p>
+  </>
+);
+```
+
 ## [7.42.0] - 2023-01-13
 
 ## Added

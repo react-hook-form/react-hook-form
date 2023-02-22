@@ -99,8 +99,6 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  const shouldCaptureDirtyFields =
-    props.resetOptions && props.resetOptions.keepDirtyValues;
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
@@ -135,6 +133,8 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
+  const shouldCaptureDirtyFields =
+    props.resetOptions && props.resetOptions.keepDirtyValues;
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -157,7 +157,7 @@ export function createFormControl<
     <T extends Function>(callback: T) =>
     (wait: number) => {
       clearTimeout(timer);
-      timer = window.setTimeout(callback, wait);
+      timer = setTimeout(callback, wait);
     };
 
   const _updateValid = async (shouldUpdateValid?: boolean) => {
@@ -1054,6 +1054,7 @@ export function createFormControl<
           await onInvalid({ ..._formState.errors }, e);
         }
         _focusError();
+        setTimeout(_focusError);
       }
 
       _subjects.state.next({
@@ -1256,7 +1257,6 @@ export function createFormControl<
       handleSubmit,
       setError,
       _executeSchema,
-      _focusError,
       _getWatch,
       _getDirty,
       _updateValid,
