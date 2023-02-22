@@ -123,7 +123,6 @@ export function createFormControl<
     action: false,
     mount: false,
     watch: false,
-    focus: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -157,7 +156,7 @@ export function createFormControl<
     <T extends Function>(callback: T) =>
     (wait: number) => {
       clearTimeout(timer);
-      timer = window.setTimeout(callback, wait);
+      timer = setTimeout(callback, wait);
     };
 
   const _updateValid = async (shouldUpdateValid?: boolean) => {
@@ -1053,8 +1052,8 @@ export function createFormControl<
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
         }
-        _stateFlags.focus = true;
         _focusError();
+        setTimeout(_focusError);
       }
 
       _subjects.state.next({
@@ -1249,7 +1248,6 @@ export function createFormControl<
       unregister,
       getFieldState,
       _executeSchema,
-      _focusError,
       _getWatch,
       _getDirty,
       _updateValid,
