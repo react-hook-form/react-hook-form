@@ -157,7 +157,7 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   useSubscribe({
     disabled,
-    subject: control._subjects.watch,
+    subject: control._subjects.values,
     next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
       if (
         shouldSubscribeByName(
