@@ -107,7 +107,7 @@ export function useForm<
 
     if (control._stateFlags.watch) {
       control._stateFlags.watch = false;
-      control._subjects.state.next({});
+      control._subjects.state.next({ ...control._formState });
     }
 
     control._removeUnmounted();

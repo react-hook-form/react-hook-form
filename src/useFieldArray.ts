@@ -32,6 +32,7 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  FormState,
   InternalFieldName,
   RegisterOptions,
   UseFieldArrayProps,
@@ -309,7 +310,10 @@ export function useFieldArray<
   React.useEffect(() => {
     control._stateFlags.action = false;
 
-    isWatched(name, control._names) && control._subjects.state.next({});
+    isWatched(name, control._names) &&
+      control._subjects.state.next({
+        ...control._formState,
+      } as FormState<TFieldValues>);
 
     if (
       _actioned.current &&
@@ -356,7 +360,7 @@ export function useFieldArray<
       }
     }
 
-    control._subjects.watch.next({
+    control._subjects.values.next({
       name,
       values: control._formValues,
     });
