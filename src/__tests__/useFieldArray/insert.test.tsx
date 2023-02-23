@@ -107,7 +107,7 @@ describe('insert', () => {
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
-          {},
+          { value: false },
           { value1: true, value: true },
           { value: true, value1: true },
         ],
@@ -149,7 +149,7 @@ describe('insert', () => {
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
-          {},
+          { value: false },
           { value1: true, value: true, value2: true },
           { value2: true, value: true, value1: true },
           { value: true, value1: true, value2: true },
