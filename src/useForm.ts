@@ -100,6 +100,12 @@ export function useForm<
   });
 
   React.useEffect(() => {
+    if (props.values && !deepEqual(props.values, control._defaultValues)) {
+      control._reset(props.values, control._options.resetOptions);
+    }
+  }, [props.values, control]);
+
+  React.useEffect(() => {
     if (!control._stateFlags.mount) {
       control._updateValid();
       control._stateFlags.mount = true;
@@ -112,12 +118,6 @@ export function useForm<
 
     control._removeUnmounted();
   });
-
-  React.useEffect(() => {
-    if (props.values && !deepEqual(props.values, control._defaultValues)) {
-      control._reset(props.values, control._options.resetOptions);
-    }
-  }, [props.values, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
