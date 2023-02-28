@@ -34,8 +34,6 @@ describe('useFieldArrayNested', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         test: [
           {
-            firstName: false,
-            lastName: false,
             keyValue: [
               { name: true },
               { name: true },
