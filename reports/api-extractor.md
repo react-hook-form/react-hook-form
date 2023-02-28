@@ -478,7 +478,7 @@ export type SetValueConfig = Partial<{
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
     values: Subject<{
         name?: InternalFieldName;
-        type?: string | EventType;
+        type?: EventType;
         values: FieldValues;
     }>;
     array: Subject<{
