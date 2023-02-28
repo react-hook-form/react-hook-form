@@ -697,7 +697,7 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
   values: Subject<{
     name?: InternalFieldName;
-    type?: string | EventType;
+    type?: EventType;
     values: FieldValues;
   }>;
   array: Subject<{
