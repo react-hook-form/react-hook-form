@@ -61,12 +61,12 @@ export type CriteriaMode = 'firstError' | 'all';
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: TFieldValues,
   event?: React.BaseSyntheticEvent,
-) => any | Promise<any>;
+) => unknown | Promise<unknown>;
 
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
-) => any | Promise<any>;
+) => unknown | Promise<unknown>;
 
 export type SetValueConfig = Partial<{
   shouldValidate: boolean;
@@ -628,7 +628,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
     keepDirty: boolean;
     keepTouched: boolean;
     keepError: boolean;
-    defaultValue: any;
+    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
   }>,
 ) => void;
 

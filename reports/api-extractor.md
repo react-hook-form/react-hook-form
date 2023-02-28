@@ -278,7 +278,7 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
-export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
+export const get: <T>(obj: T, path?: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
@@ -489,10 +489,10 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
+export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export type SubmitHandler<TFieldValues extends FieldValues> = (data: TFieldValues, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
+export type SubmitHandler<TFieldValues extends FieldValues> = (data: TFieldValues, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
@@ -646,7 +646,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
     keepDirty: boolean;
     keepTouched: boolean;
     keepError: boolean;
-    defaultValue: any;
+    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
 }>) => void;
 
 // @public (undocumented)
