@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { createFormControl } from '../logic/createFormControl';
 import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
@@ -106,7 +105,6 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
-  control: ReturnType<typeof createFormControl>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
