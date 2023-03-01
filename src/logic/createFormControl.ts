@@ -119,7 +119,7 @@ export function createFormControl<
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
-  let _stateFlags = {
+  let _state = {
     action: false,
     mount: false,
     watch: false,
@@ -132,8 +132,6 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  const shouldCaptureDirtyFields =
-    props.resetOptions && props.resetOptions.keepDirtyValues;
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -147,6 +145,8 @@ export function createFormControl<
     array: createSubject(),
     state: createSubject(),
   };
+  const shouldCaptureDirtyFields =
+    props.resetOptions && props.resetOptions.keepDirtyValues;
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
@@ -188,7 +188,7 @@ export function createFormControl<
     shouldUpdateFieldsAndState = true,
   ) => {
     if (args && method) {
-      _stateFlags.action = true;
+      _state.action = true;
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
@@ -268,7 +268,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _stateFlags.mount && _updateValid();
+      _state.mount && _updateValid();
     }
   };
 
@@ -379,7 +379,7 @@ export function createFormControl<
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
-    await _options.resolver!(
+    _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
@@ -491,7 +491,7 @@ export function createFormControl<
       names,
       _names,
       {
-        ...(_stateFlags.mount
+        ...(_state.mount
           ? _formValues
           : isUndefined(defaultValue)
           ? _defaultValues
@@ -508,7 +508,7 @@ export function createFormControl<
   ): Partial<TFieldArrayValues>[] =>
     compact(
       get(
-        _stateFlags.mount ? _formValues : _defaultValues,
+        _state.mount ? _formValues : _defaultValues,
         name,
         props.shouldUnregister ? get(_defaultValues, name, []) : [],
       ),
@@ -649,7 +649,7 @@ export function createFormControl<
       name,
       values: { ..._formValues },
     });
-    !_stateFlags.mount && flushRootRender();
+    !_state.mount && flushRootRender();
   };
 
   const onChange: ChangeHandler = async (event) => {
@@ -819,7 +819,7 @@ export function createFormControl<
   ) => {
     const values = {
       ..._defaultValues,
-      ...(_stateFlags.mount ? _formValues : {}),
+      ...(_state.mount ? _formValues : {}),
     };
 
     return isUndefined(fieldNames)
@@ -1011,7 +1011,7 @@ export function createFormControl<
           }
 
           (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+            !(isNameInFieldArray(_names.array, name) && _state.action) &&
             _names.unMount.add(name);
         }
       },
@@ -1171,12 +1171,11 @@ export function createFormControl<
       focus: '',
     };
 
-    !_stateFlags.mount && flushRootRender();
+    !_state.mount && flushRootRender();
 
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _state.mount = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
 
-    _stateFlags.watch = !!props.shouldUnregister;
+    _state.watch = !!props.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
@@ -1269,11 +1268,11 @@ export function createFormControl<
       get _formValues() {
         return _formValues;
       },
-      get _stateFlags() {
-        return _stateFlags;
+      get _state() {
+        return _state;
       },
-      set _stateFlags(value) {
-        _stateFlags = value;
+      set _state(value) {
+        _state = value;
       },
       get _defaultValues() {
         return _defaultValues;
