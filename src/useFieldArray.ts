@@ -362,7 +362,7 @@ export function useFieldArray<
 
     control._subjects.values.next({
       name,
-      values: control._formValues,
+      values: { ...control._formValues },
     });
 
     control._names.focus &&

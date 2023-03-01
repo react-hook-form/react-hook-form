@@ -1154,11 +1154,11 @@ export function createFormControl<
         : cloneUpdatedValues;
 
       _subjects.array.next({
-        values,
+        values: { ...values },
       });
 
       _subjects.values.next({
-        values,
+        values: { ...values },
       });
     }
 

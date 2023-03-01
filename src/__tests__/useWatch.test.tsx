@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -298,7 +299,7 @@ describe('useWatch', () => {
     expect(screen.getByText('test')).toBeVisible();
   });
 
-  it('should return root object subscription', () => {
+  it('should return root object subscription', async () => {
     function App() {
       const { register, control } = useForm({
         defaultValues: { field: { firstName: 'value' } },
@@ -317,25 +318,29 @@ describe('useWatch', () => {
 
     render(<App />);
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: '123',
-      },
+    act(() => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '123',
+        },
+      });
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '234',
+        },
+      });
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '345',
+        },
+      });
     });
 
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: '234',
-      },
+    await waitFor(() => {
+      expect(screen.getByText('123')).toBeVisible();
     });
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: '345',
-      },
-    });
-
-    expect(screen.getByText('345')).toBeVisible();
   });
 
   describe('when disabled prop is used', () => {
