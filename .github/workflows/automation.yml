@@ -11,7 +11,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 17
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
