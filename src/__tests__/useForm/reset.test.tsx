@@ -1102,7 +1102,7 @@ describe('reset', () => {
     const App = () => {
       const { control, reset } = useForm();
 
-      mounted.push(control._stateFlags.mount);
+      mounted.push(control._state.mount);
 
       React.useEffect(() => {
         reset({});
@@ -1127,7 +1127,7 @@ describe('reset', () => {
         formState: { isValid },
       } = useForm();
 
-      mounted.push(control._stateFlags.mount);
+      mounted.push(control._state.mount);
       tempControl = control;
 
       React.useEffect(() => {
@@ -1147,7 +1147,7 @@ describe('reset', () => {
 
     expect(mounted).toEqual([false, false]);
 
-    expect(tempControl._stateFlags.mount).toBeTruthy();
+    expect(tempControl._state.mount).toBeTruthy();
   });
 
   it('should reset values but keep defaultValues', async () => {

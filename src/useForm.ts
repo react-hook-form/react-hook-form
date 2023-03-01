@@ -106,13 +106,13 @@ export function useForm<
   }, [props.values, control]);
 
   React.useEffect(() => {
-    if (!control._stateFlags.mount) {
+    if (!control._state.mount) {
       control._updateValid();
-      control._stateFlags.mount = true;
+      control._state.mount = true;
     }
 
-    if (control._stateFlags.watch) {
-      control._stateFlags.watch = false;
+    if (control._state.watch) {
+      control._state.watch = false;
       control._subjects.state.next({ ...control._formState });
     }
 

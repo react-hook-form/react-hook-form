@@ -308,7 +308,7 @@ export function useFieldArray<
   };
 
   React.useEffect(() => {
-    control._stateFlags.action = false;
+    control._state.action = false;
 
     isWatched(name, control._names) &&
       control._subjects.state.next({

@@ -90,7 +90,7 @@ export function useController<
 
       (
         isArrayField
-          ? _shouldUnregisterField && !control._stateFlags.action
+          ? _shouldUnregisterField && !control._state.action
           : _shouldUnregisterField
       )
         ? control.unregister(name)
