@@ -777,4 +777,45 @@ describe('useFormState', () => {
       expect(screen.queryByText('Required')).not.toBeInTheDocument(),
     );
   });
+
+  it('should return the latest values with async values', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function Input({ control }: { control: Control<FormValues> }) {
+      const { isValid } = useFormState({ control });
+
+      return <p>{isValid}</p>;
+    }
+
+    function Form({ values }: { values: any }) {
+      const { getValues, control } = useForm<FormValues>({
+        defaultValues: {
+          firstName: '',
+        },
+        values,
+        resetOptions: {
+          keepDefaultValues: true,
+        },
+      });
+
+      return (
+        <>
+          <p>{getValues().firstName}</p>
+          <Input control={control} />
+        </>
+      );
+    }
+
+    function App() {
+      return <Form values={{ firstName: 'test' }} />;
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('test');
+    });
+  });
 });

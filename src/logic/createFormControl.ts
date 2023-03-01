@@ -144,7 +144,7 @@ export function createFormControl<
     errors: false,
   };
   const _subjects: Subjects<TFieldValues> = {
-    watch: createSubject(),
+    values: createSubject(),
     array: createSubject(),
     state: createSubject(),
   };
@@ -568,8 +568,9 @@ export function createFormControl<
           fieldReference.ref.value = fieldValue;
 
           if (!fieldReference.ref.type) {
-            _subjects.watch.next({
+            _subjects.values.next({
               name,
+              values: { ..._formValues },
             });
           }
         }
@@ -625,7 +626,7 @@ export function createFormControl<
     if (isFieldArray) {
       _subjects.array.next({
         name,
-        values: _formValues,
+        values: { ..._formValues },
       });
 
       if (
@@ -644,9 +645,10 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    isWatched(name, _names) && _subjects.state.next({});
-    _subjects.watch.next({
+    isWatched(name, _names) && _subjects.state.next({ ..._formState });
+    _subjects.values.next({
       name,
+      values: { ..._formValues },
     });
     !_stateFlags.mount && flushRootRender();
   };
@@ -697,9 +699,10 @@ export function createFormControl<
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
       !isBlurEvent &&
-        _subjects.watch.next({
+        _subjects.values.next({
           name,
           type: event.type,
+          values: { ..._formValues },
         });
 
       if (shouldSkipValidation) {
@@ -711,7 +714,7 @@ export function createFormControl<
         );
       }
 
-      !isBlurEvent && watched && _subjects.state.next({});
+      !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
       _updateIsValidating(true);
 
@@ -873,7 +876,7 @@ export function createFormControl<
     defaultValue?: DeepPartial<TFieldValues>,
   ) =>
     isFunction(name)
-      ? _subjects.watch.subscribe({
+      ? _subjects.values.subscribe({
           next: (payload) =>
             name(
               _getWatch(undefined, defaultValue),
@@ -910,7 +913,9 @@ export function createFormControl<
       }
     }
 
-    _subjects.watch.next({});
+    _subjects.values.next({
+      values: { ..._formValues },
+    });
 
     _subjects.state.next({
       ..._formState,
@@ -1159,7 +1164,7 @@ export function createFormControl<
         values,
       });
 
-      _subjects.watch.next({
+      _subjects.values.next({
         values,
       });
     }

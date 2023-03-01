@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { createFormControl } from '../logic/createFormControl';
 import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
@@ -60,12 +61,12 @@ export type CriteriaMode = 'firstError' | 'all';
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: TFieldValues,
   event?: React.BaseSyntheticEvent,
-) => any | Promise<any>;
+) => unknown | Promise<unknown>;
 
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
-) => any | Promise<any>;
+) => unknown | Promise<unknown>;
 
 export type SetValueConfig = Partial<{
   shouldValidate: boolean;
@@ -105,6 +106,7 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  control: ReturnType<typeof createFormControl>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -632,7 +634,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
     keepDirty: boolean;
     keepTouched: boolean;
     keepError: boolean;
-    defaultValue: unknown;
+    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
   }>,
 ) => void;
 
@@ -699,10 +701,10 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<
 >;
 
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
-  watch: Subject<{
+  values: Subject<{
     name?: InternalFieldName;
     type?: EventType;
-    values?: FieldValues;
+    values: FieldValues;
   }>;
   array: Subject<{
     name?: InternalFieldName;
