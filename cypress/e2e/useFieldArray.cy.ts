@@ -460,7 +460,7 @@ describe('useFieldArray', () => {
     cy.get('#update').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }, {}, {}],
+        data: [{ name: true }, { name: false }, { name: false }],
       }),
     );
     cy.get('#dirty').contains('yes');
@@ -472,7 +472,7 @@ describe('useFieldArray', () => {
     cy.get('#delete2').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }, { name: true }, {}, { name: true }],
+        data: [{ name: true }, { name: true }, { name: false }, { name: true }],
       }),
     );
     cy.get('#delete2').click();
