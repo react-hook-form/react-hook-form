@@ -98,6 +98,7 @@ export function Form<
     fetcher,
     ...rest
   } = props;
+
   const submit = async (event?: React.BaseSyntheticEvent) => {
     let serverError = false;
 
@@ -105,24 +106,24 @@ export function Form<
       onSubmit && onSubmit(values);
 
       if (action) {
-        if (fetcher) {
-          await fetcher(action, {
-            method,
-            values,
-            event,
-          });
-        } else {
-          const formData = new FormData();
-          const shouldStringifySubmissionData =
-            headers && headers['Content-Type'].includes('json');
+        try {
+          if (fetcher) {
+            await fetcher(action, {
+              method,
+              values,
+              event,
+            });
+          } else {
+            const formData = new FormData();
+            const shouldStringifySubmissionData =
+              headers && headers['Content-Type'].includes('json');
 
-          if (!shouldStringifySubmissionData) {
-            control._names.mount.forEach((name) =>
-              formData.append(name, get(values, name)),
-            );
-          }
+            if (!shouldStringifySubmissionData) {
+              control._names.mount.forEach((name) =>
+                formData.append(name, get(values, name)),
+              );
+            }
 
-          try {
             const response = await fetch(action, {
               method,
               headers: {
@@ -145,10 +146,10 @@ export function Form<
             } else {
               onSuccess && onSuccess({ response });
             }
-          } catch (error: unknown) {
-            serverError = true;
-            onError && onError({ error });
           }
+        } catch (error: unknown) {
+          serverError = true;
+          onError && onError({ error });
         }
       }
     })(event);
