@@ -259,18 +259,23 @@ describe('handleSubmit', () => {
       const [error, setError] = React.useState('');
       const { register, handleSubmit } = useForm();
 
-      const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
-
       return (
         <form>
           <input {...register('test')} />
           <p>{error}</p>
           <button
             type={'button'}
-            onClick={() =>
-              handleSubmit(rejectPromiseFn)().catch((err) =>
-                setError(err.message),
-              )
+            onClick={(e) =>
+              handleSubmit(
+                () => {
+                  throw new Error('test');
+                },
+                (_, __, error) => {
+                  if (error) {
+                    setError(errorMsg);
+                  }
+                },
+              )(e)
             }
           >
             Submit
