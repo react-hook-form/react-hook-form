@@ -16,6 +16,7 @@ export type FormProps<
   onSubmit: TTransformedValues extends FieldValues
     ? SubmitHandler<TTransformedValues>
     : SubmitHandler<TFieldValues>;
+  method: Exclude<string, 'get' | 'GET'>;
 }> &
   Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
   (
@@ -98,8 +99,6 @@ export function Form<
     fetcher,
     ...rest
   } = props;
-  const isPostRequest = method === POST_REQUEST;
-
   const submit = async (event?: React.BaseSyntheticEvent) => {
     let serverError = false;
 
@@ -107,19 +106,23 @@ export function Form<
       onSubmit && onSubmit(values);
 
       if (action) {
-        const formData = new FormData();
-        let shouldStringifySubmissionData = false;
-
-        if (headers) {
-          shouldStringifySubmissionData =
-            headers['Content-Type'].includes('json');
+        if (fetcher) {
+          await fetcher(action, {
+            method,
+            values,
+            event,
+          });
         } else {
-          control._names.mount.forEach((name) =>
-            formData.append(name, get(values, name)),
-          );
-        }
+          const formData = new FormData();
+          const shouldStringifySubmissionData =
+            headers && headers['Content-Type'].includes('json');
 
-        if (!fetcher) {
+          if (!shouldStringifySubmissionData) {
+            control._names.mount.forEach((name) =>
+              formData.append(name, get(values, name)),
+            );
+          }
+
           try {
             const response = await fetch(action, {
               method,
@@ -127,13 +130,9 @@ export function Form<
                 ...headers,
                 ...(encType ? { 'Content-Type': encType } : {}),
               },
-              ...(isPostRequest
-                ? {
-                    body: shouldStringifySubmissionData
-                      ? JSON.stringify(values)
-                      : formData,
-                  }
-                : {}),
+              body: shouldStringifySubmissionData
+                ? JSON.stringify(values)
+                : formData,
             });
 
             if (
@@ -151,12 +150,6 @@ export function Form<
             serverError = true;
             onError && onError({ error });
           }
-        } else {
-          await fetcher(action, {
-            method,
-            values,
-            event,
-          });
         }
       }
     })(event);
