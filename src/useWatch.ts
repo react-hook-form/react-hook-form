@@ -2,6 +2,7 @@ import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
+import cloneObject from './utils/cloneObject';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -166,12 +167,14 @@ export function useWatch<TFieldValues extends FieldValues>(
         )
       ) {
         updateValue(
-          generateWatchOutput(
-            _name.current as InternalFieldName | InternalFieldName[],
-            control._names,
-            formState.values || control._formValues,
-            false,
-            defaultValue,
+          cloneObject(
+            generateWatchOutput(
+              _name.current as InternalFieldName | InternalFieldName[],
+              control._names,
+              formState.values || control._formValues,
+              false,
+              defaultValue,
+            ),
           ),
         );
       }
