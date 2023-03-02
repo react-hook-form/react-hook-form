@@ -42,7 +42,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _subjects: Subjects<TFieldValues>;
     _removeUnmounted: Noop;
     _names: Names;
-    _stateFlags: {
+    _state: {
         mount: boolean;
         action: boolean;
         watch: boolean;
@@ -250,6 +250,7 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
         submit: (e?: React_3.FormEvent) => void;
     }) => React_3.ReactNode | React_3.ReactNode[];
     onSubmit: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>;
+    method: Exclude<string, 'get' | 'GET'>;
 }> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
     onSuccess: ({ response }: {
         response: Response;
