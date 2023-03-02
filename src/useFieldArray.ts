@@ -308,7 +308,7 @@ export function useFieldArray<
   };
 
   React.useEffect(() => {
-    control._stateFlags.action = false;
+    control._state.action = false;
 
     isWatched(name, control._names) &&
       control._subjects.state.next({
@@ -362,7 +362,7 @@ export function useFieldArray<
 
     control._subjects.values.next({
       name,
-      values: control._formValues,
+      values: { ...control._formValues },
     });
 
     control._names.focus &&
