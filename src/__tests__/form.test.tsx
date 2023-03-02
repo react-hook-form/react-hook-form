@@ -23,7 +23,7 @@ const server = setupServer(
   rest.post('/status', (_, res: ResponseComposition, ctx: RestContext) => {
     return res(ctx.status(201));
   }),
-  rest.get('/get', (_, res: ResponseComposition, ctx: RestContext) => {
+  rest.post('/get', (_, res: ResponseComposition, ctx: RestContext) => {
     return res(ctx.status(200));
   }),
 );
@@ -179,7 +179,7 @@ describe('Form', () => {
       } = useForm();
 
       return (
-        <Form action={'/get'} method={'get'} control={control}>
+        <Form action={'/get'} control={control}>
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>

@@ -16,7 +16,6 @@ export type FormProps<
   onSubmit: TTransformedValues extends FieldValues
     ? SubmitHandler<TTransformedValues>
     : SubmitHandler<TFieldValues>;
-  method: Exclude<string, 'get' | 'GET'>;
 }> &
   Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
   (
