@@ -250,7 +250,6 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
         submit: (e?: React_3.FormEvent) => void;
     }) => React_3.ReactNode | React_3.ReactNode[];
     onSubmit: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>;
-    method: Exclude<string, 'get' | 'GET'>;
 }> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
     onSuccess: ({ response }: {
         response: Response;
