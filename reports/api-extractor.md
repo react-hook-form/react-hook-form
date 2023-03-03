@@ -273,6 +273,8 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
         values?: TFieldValues;
         method: string;
         event?: React_3.BaseSyntheticEvent;
+        formData: FormData;
+        formDataJson: string;
     }) => Promise<void> | void;
 }>);
 

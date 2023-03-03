@@ -48,6 +48,8 @@ export type FormProps<
             values?: TFieldValues;
             method: string;
             event?: React.BaseSyntheticEvent;
+            formData: FormData;
+            formDataJson: string;
           },
         ) => Promise<void> | void;
       }>
@@ -103,6 +105,13 @@ export function Form<
     let serverError = false;
 
     await control.handleSubmit(async (values) => {
+      const formData = new FormData();
+      const formDataJson = JSON.stringify(values);
+
+      control._names.mount.forEach((name) =>
+        formData.append(name, get(values, name)),
+      );
+
       onSubmit && onSubmit(values);
 
       if (action) {
@@ -112,17 +121,12 @@ export function Form<
               method,
               values,
               event,
+              formData,
+              formDataJson,
             });
           } else {
-            const formData = new FormData();
             const shouldStringifySubmissionData =
               headers && headers['Content-Type'].includes('json');
-
-            if (!shouldStringifySubmissionData) {
-              control._names.mount.forEach((name) =>
-                formData.append(name, get(values, name)),
-              );
-            }
 
             const response = await fetch(action, {
               method,
@@ -130,9 +134,7 @@ export function Form<
                 ...headers,
                 ...(encType ? { 'Content-Type': encType } : {}),
               },
-              body: shouldStringifySubmissionData
-                ? JSON.stringify(values)
-                : formData,
+              body: shouldStringifySubmissionData ? formDataJson : formData,
             });
 
             if (
