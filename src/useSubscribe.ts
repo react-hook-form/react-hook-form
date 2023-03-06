@@ -15,6 +15,7 @@ export function useSubscribe<T>(props: Props<T>) {
   React.useEffect(() => {
     const subscription =
       !props.disabled &&
+      _props.current.subject &&
       _props.current.subject.subscribe({
         next: _props.current.next,
       });

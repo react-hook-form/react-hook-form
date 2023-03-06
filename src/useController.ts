@@ -2,6 +2,7 @@ import React from 'react';
 
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import { EVENTS } from './constants';
 import {
@@ -17,6 +18,7 @@ import {
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
+import { set } from './utils';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
@@ -74,6 +76,9 @@ export function useController<
   );
 
   React.useEffect(() => {
+    const _shouldUnregisterField =
+      control._options.shouldUnregister || shouldUnregister;
+
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 
@@ -84,10 +89,15 @@ export function useController<
 
     updateMounted(name, true);
 
-    return () => {
-      const _shouldUnregisterField =
-        control._options.shouldUnregister || shouldUnregister;
+    if (_shouldUnregisterField) {
+      set(
+        control._defaultValues,
+        name,
+        cloneObject(get(control._options.defaultValues, name)),
+      );
+    }
 
+    return () => {
       (
         isArrayField
           ? _shouldUnregisterField && !control._state.action
