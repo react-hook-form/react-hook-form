@@ -238,7 +238,7 @@ export type UseFieldArrayUpdate<
  * ```tsx
  * <button
  *   type="button"
- *   onClick={() => update([{ name: "data" }, { name: "data" }])}
+ *   onClick={() => replace([{ name: "data" }, { name: "data" }])}
  * >
  *   Replace
  * </button>
