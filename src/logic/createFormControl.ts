@@ -429,7 +429,7 @@ export function createFormControl<
             field,
             _formValues,
             shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation,
+            _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
             isFieldArrayRoot,
           );
 
