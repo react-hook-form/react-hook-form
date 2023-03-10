@@ -655,6 +655,7 @@ export function createFormControl<
   const onChange: ChangeHandler = async (event) => {
     const target = event.target;
     let name = target.name;
+    let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const getCurrentFieldValue = () =>
       target.type ? getFieldValue(field._f) : getEventValue(event);
@@ -744,18 +745,26 @@ export function createFormControl<
           )
         )[name];
 
-        if (error) {
-          isValid = false;
-        } else if (_proxyFormState.isValid) {
-          isValid = await executeBuiltInValidation(_fields, true);
+        isFieldValueUpdated = fieldValue === get(_formValues, name, fieldValue);
+
+        if (isFieldValueUpdated) {
+          if (error) {
+            isValid = false;
+          } else if (_proxyFormState.isValid) {
+            isValid = await executeBuiltInValidation(_fields, true);
+          }
         }
       }
 
-      field._f.deps &&
-        trigger(
-          field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-        );
-      shouldRenderByError(name, isValid, error, fieldState);
+      if (isFieldValueUpdated) {
+        field._f.deps &&
+          trigger(
+            field._f.deps as
+              | FieldPath<TFieldValues>
+              | FieldPath<TFieldValues>[],
+          );
+        shouldRenderByError(name, isValid, error, fieldState);
+      }
     }
   };
 
