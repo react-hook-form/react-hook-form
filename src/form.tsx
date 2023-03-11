@@ -106,7 +106,11 @@ export function Form<
 
     await control.handleSubmit(async (values) => {
       const formData = new FormData();
-      const formDataJson = JSON.stringify(values);
+      let formDataJson = '';
+
+      try {
+        formDataJson = JSON.stringify(values);
+      } catch {}
 
       control._names.mount.forEach((name) =>
         formData.append(name, get(values, name)),
