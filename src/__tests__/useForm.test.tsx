@@ -1907,6 +1907,14 @@ describe('useForm', () => {
     });
   });
 
+  it('should not update isLoading when literal defaultValues are provided', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: 'default' } }),
+    );
+
+    expect(result.current.formState.isLoading).toBe(false);
+  });
+
   it('should update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 
