@@ -19,6 +19,7 @@ import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 import { set } from './utils';
+import isUndefined from './utils/isUndefined';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
@@ -90,11 +91,11 @@ export function useController<
     updateMounted(name, true);
 
     if (_shouldUnregisterField) {
-      set(
-        control._defaultValues,
-        name,
-        cloneObject(get(control._options.defaultValues, name)),
-      );
+      const value = cloneObject(get(control._options.defaultValues, name));
+      set(control._defaultValues, name, value);
+      if (isUndefined(get(control._formValues, name))) {
+        set(control._formValues, name, value);
+      }
     }
 
     return () => {
