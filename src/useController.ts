@@ -4,6 +4,7 @@ import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
+import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
   ControllerFieldState,
@@ -90,11 +91,11 @@ export function useController<
     updateMounted(name, true);
 
     if (_shouldUnregisterField) {
-      set(
-        control._defaultValues,
-        name,
-        cloneObject(get(control._options.defaultValues, name)),
-      );
+      const value = cloneObject(get(control._options.defaultValues, name));
+      set(control._defaultValues, name, value);
+      if (isUndefined(get(control._formValues, name))) {
+        set(control._formValues, name, value);
+      }
     }
 
     return () => {
