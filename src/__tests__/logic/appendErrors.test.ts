@@ -60,5 +60,27 @@ describe('appendErrors', () => {
         undefined: true,
       },
     });
+
+    errors.test.types = {
+      ...errors.test.types,
+      undefined: true,
+    };
+    expect(
+      appendErrors('test', true, errors, 'invalid_string', [
+        'uppercase',
+        'lowercase',
+        'number',
+      ]),
+    ).toEqual({
+      message: 'test',
+      type: 'required',
+      types: {
+        required: 'test',
+        min: 'test',
+        max: 'test',
+        undefined: true,
+        invalid_string: ['uppercase', 'lowercase', 'number'],
+      },
+    });
   });
 });
