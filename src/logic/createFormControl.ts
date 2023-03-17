@@ -906,19 +906,17 @@ export function createFormControl<
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
 
-      if (get(_fields, fieldName)) {
-        if (!options.keepValue) {
-          unset(_fields, fieldName);
-          unset(_formValues, fieldName);
-        }
-
-        !options.keepError && unset(_formState.errors, fieldName);
-        !options.keepDirty && unset(_formState.dirtyFields, fieldName);
-        !options.keepTouched && unset(_formState.touchedFields, fieldName);
-        !_options.shouldUnregister &&
-          !options.keepDefaultValue &&
-          unset(_defaultValues, fieldName);
+      if (!options.keepValue) {
+        unset(_fields, fieldName);
+        unset(_formValues, fieldName);
       }
+
+      !options.keepError && unset(_formState.errors, fieldName);
+      !options.keepDirty && unset(_formState.dirtyFields, fieldName);
+      !options.keepTouched && unset(_formState.touchedFields, fieldName);
+      !_options.shouldUnregister &&
+        !options.keepDefaultValue &&
+        unset(_defaultValues, fieldName);
     }
 
     _subjects.values.next({
