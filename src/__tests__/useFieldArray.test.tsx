@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -3830,6 +3830,56 @@ describe('useFieldArray', () => {
         expect(rootRenderCount).toEqual(1);
         expect(observerRenderCount).toEqual(2);
       });
+    });
+
+    it('should unmount field array and remove its reference with shouldUnregister: true', () => {
+      type FormValues = {
+        type: string;
+        array: {
+          data: string;
+        }[];
+      };
+
+      let array: { data: string }[] = [];
+
+      function FieldArray({ control }: { control: Control<FormValues> }) {
+        useFieldArray({
+          name: 'array' as const,
+          control,
+          shouldUnregister: true,
+        });
+        return null;
+      }
+
+      function App() {
+        const methods = useForm({
+          defaultValues: {
+            type: 'NO_CART',
+            array: [],
+          },
+          shouldUnregister: true,
+        });
+        const [toggle, setToggle] = useState(false);
+        const { control, watch } = methods;
+        array = watch('array');
+
+        return (
+          <>
+            <button onClick={() => setToggle(!toggle)} />
+            <form>{toggle && <FieldArray control={control} />}</form>
+          </>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(array).toEqual([]);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(array).toBeUndefined();
     });
 
     it('should not trigger reRender on components that do not subscribe to useFieldArray fieldState', async () => {
