@@ -98,12 +98,10 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  const shouldCaptureDirtyFields =
-    props.resetOptions && props.resetOptions.keepDirtyValues;
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
-    isLoading: true,
+    isLoading: isFunction(_options.defaultValues),
     isValidating: false,
     isSubmitted: false,
     isSubmitting: false,
@@ -121,7 +119,7 @@ export function createFormControl<
   let _formValues = _options.shouldUnregister
     ? {}
     : cloneObject(_defaultValues);
-  let _stateFlags = {
+  let _state = {
     action: false,
     mount: false,
     watch: false,
@@ -143,10 +141,12 @@ export function createFormControl<
     errors: false,
   };
   const _subjects: Subjects<TFieldValues> = {
-    watch: createSubject(),
+    values: createSubject(),
     array: createSubject(),
     state: createSubject(),
   };
+  const shouldCaptureDirtyFields =
+    props.resetOptions && props.resetOptions.keepDirtyValues;
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
@@ -156,7 +156,7 @@ export function createFormControl<
     <T extends Function>(callback: T) =>
     (wait: number) => {
       clearTimeout(timer);
-      timer = window.setTimeout(callback, wait);
+      timer = setTimeout(callback, wait);
     };
 
   const _updateValid = async (shouldUpdateValid?: boolean) => {
@@ -188,7 +188,7 @@ export function createFormControl<
     shouldUpdateFieldsAndState = true,
   ) => {
     if (args && method) {
-      _stateFlags.action = true;
+      _state.action = true;
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
@@ -268,7 +268,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _stateFlags.mount && _updateValid();
+      _state.mount && _updateValid();
     }
   };
 
@@ -379,7 +379,7 @@ export function createFormControl<
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
-    await _options.resolver!(
+    _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
@@ -428,7 +428,7 @@ export function createFormControl<
             field,
             _formValues,
             shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation,
+            _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
             isFieldArrayRoot,
           );
 
@@ -491,7 +491,7 @@ export function createFormControl<
       names,
       _names,
       {
-        ...(_stateFlags.mount
+        ...(_state.mount
           ? _formValues
           : isUndefined(defaultValue)
           ? _defaultValues
@@ -508,7 +508,7 @@ export function createFormControl<
   ): Partial<TFieldArrayValues>[] =>
     compact(
       get(
-        _stateFlags.mount ? _formValues : _defaultValues,
+        _state.mount ? _formValues : _defaultValues,
         name,
         props.shouldUnregister ? get(_defaultValues, name, []) : [],
       ),
@@ -567,8 +567,9 @@ export function createFormControl<
           fieldReference.ref.value = fieldValue;
 
           if (!fieldReference.ref.type) {
-            _subjects.watch.next({
+            _subjects.values.next({
               name,
+              values: { ..._formValues },
             });
           }
         }
@@ -624,7 +625,7 @@ export function createFormControl<
     if (isFieldArray) {
       _subjects.array.next({
         name,
-        values: _formValues,
+        values: { ..._formValues },
       });
 
       if (
@@ -643,16 +644,18 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    isWatched(name, _names) && _subjects.state.next({});
-    _subjects.watch.next({
+    isWatched(name, _names) && _subjects.state.next({ ..._formState });
+    _subjects.values.next({
       name,
+      values: { ..._formValues },
     });
-    !_stateFlags.mount && flushRootRender();
+    !_state.mount && flushRootRender();
   };
 
   const onChange: ChangeHandler = async (event) => {
     const target = event.target;
     let name = target.name;
+    let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const getCurrentFieldValue = () =>
       target.type ? getFieldValue(field._f) : getEventValue(event);
@@ -696,9 +699,10 @@ export function createFormControl<
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
       !isBlurEvent &&
-        _subjects.watch.next({
+        _subjects.values.next({
           name,
           type: event.type,
+          values: { ..._formValues },
         });
 
       if (shouldSkipValidation) {
@@ -710,7 +714,7 @@ export function createFormControl<
         );
       }
 
-      !isBlurEvent && watched && _subjects.state.next({});
+      !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
       _updateIsValidating(true);
 
@@ -741,18 +745,26 @@ export function createFormControl<
           )
         )[name];
 
-        if (error) {
-          isValid = false;
-        } else if (_proxyFormState.isValid) {
-          isValid = await executeBuiltInValidation(_fields, true);
+        isFieldValueUpdated = fieldValue === get(_formValues, name, fieldValue);
+
+        if (isFieldValueUpdated) {
+          if (error) {
+            isValid = false;
+          } else if (_proxyFormState.isValid) {
+            isValid = await executeBuiltInValidation(_fields, true);
+          }
         }
       }
 
-      field._f.deps &&
-        trigger(
-          field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-        );
-      shouldRenderByError(name, isValid, error, fieldState);
+      if (isFieldValueUpdated) {
+        field._f.deps &&
+          trigger(
+            field._f.deps as
+              | FieldPath<TFieldValues>
+              | FieldPath<TFieldValues>[],
+          );
+        shouldRenderByError(name, isValid, error, fieldState);
+      }
     }
   };
 
@@ -816,7 +828,7 @@ export function createFormControl<
   ) => {
     const values = {
       ..._defaultValues,
-      ...(_stateFlags.mount ? _formValues : {}),
+      ...(_state.mount ? _formValues : {}),
     };
 
     return isUndefined(fieldNames)
@@ -872,7 +884,7 @@ export function createFormControl<
     defaultValue?: DeepPartial<TFieldValues>,
   ) =>
     isFunction(name)
-      ? _subjects.watch.subscribe({
+      ? _subjects.values.subscribe({
           next: (payload) =>
             name(
               _getWatch(undefined, defaultValue),
@@ -909,7 +921,9 @@ export function createFormControl<
       }
     }
 
-    _subjects.watch.next({});
+    _subjects.values.next({
+      values: { ..._formValues },
+    });
 
     _subjects.state.next({
       ..._formState,
@@ -1006,7 +1020,7 @@ export function createFormControl<
           }
 
           (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _stateFlags.action) &&
+            !(isNameInFieldArray(_names.array, name) && _state.action) &&
             _names.unMount.add(name);
         }
       },
@@ -1053,6 +1067,7 @@ export function createFormControl<
           await onInvalid({ ..._formState.errors }, e);
         }
         _focusError();
+        setTimeout(_focusError);
       }
 
       _subjects.state.next({
@@ -1148,11 +1163,11 @@ export function createFormControl<
         : cloneUpdatedValues;
 
       _subjects.array.next({
-        values,
+        values: { ...values },
       });
 
-      _subjects.watch.next({
-        values,
+      _subjects.values.next({
+        values: { ...values },
       });
     }
 
@@ -1165,33 +1180,30 @@ export function createFormControl<
       focus: '',
     };
 
-    !_stateFlags.mount && flushRootRender();
+    !_state.mount && flushRootRender();
 
-    _stateFlags.mount =
-      !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _state.mount = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
 
-    _stateFlags.watch = !!props.shouldUnregister;
+    _state.watch = !!props.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
-      isDirty:
-        keepStateOptions.keepDirty || keepStateOptions.keepDirtyValues
-          ? _formState.isDirty
-          : !!(
-              keepStateOptions.keepDefaultValues &&
-              !deepEqual(formValues, _defaultValues)
-            ),
+      isDirty: keepStateOptions.keepDirty
+        ? _formState.isDirty
+        : !!(
+            keepStateOptions.keepDefaultValues &&
+            !deepEqual(formValues, _defaultValues)
+          ),
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields:
-        keepStateOptions.keepDirty || keepStateOptions.keepDirtyValues
-          ? _formState.dirtyFields
-          : keepStateOptions.keepDefaultValues && formValues
-          ? getDirtyFields(_defaultValues, formValues)
-          : {},
+      dirtyFields: keepStateOptions.keepDirtyValues
+        ? _formState.dirtyFields
+        : keepStateOptions.keepDefaultValues && formValues
+        ? getDirtyFields(_defaultValues, formValues)
+        : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
@@ -1249,7 +1261,6 @@ export function createFormControl<
       unregister,
       getFieldState,
       _executeSchema,
-      _focusError,
       _getWatch,
       _getDirty,
       _updateValid,
@@ -1266,11 +1277,11 @@ export function createFormControl<
       get _formValues() {
         return _formValues;
       },
-      get _stateFlags() {
-        return _stateFlags;
+      get _state() {
+        return _state;
       },
-      set _stateFlags(value) {
-        _stateFlags = value;
+      set _state(value) {
+        _state = value;
       },
       get _defaultValues() {
         return _defaultValues;

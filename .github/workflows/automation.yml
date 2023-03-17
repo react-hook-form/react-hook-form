@@ -8,6 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -17,5 +20,5 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           start: pnpm start
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://ip6-localhost:3000'
           wait-on-timeout: 120

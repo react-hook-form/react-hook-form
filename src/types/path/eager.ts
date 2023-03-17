@@ -34,7 +34,7 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
 
 /**
  * Helper type for recursively constructing paths through a type.
- * This obsucres the internal type param TraversedTypes from exported contract.
+ * This obscures the internal type param TraversedTypes from exported contract.
  *
  * See {@link Path}
  */
@@ -95,7 +95,7 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
 
 /**
  * Helper type for recursively constructing paths through a type.
- * This obsucres the internal type param TraversedTypes from exported contract.
+ * This obscures the internal type param TraversedTypes from exported contract.
  *
  * See {@link ArrayPath}
  */

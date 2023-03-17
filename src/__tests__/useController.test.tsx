@@ -439,7 +439,7 @@ describe('useController', () => {
 
     await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
     expect(reportValidity).toBeCalledTimes(3);
-    expect(focus).toBeCalledTimes(1);
+    expect(focus).toBeCalledTimes(2);
   });
 
   it('should update with inline defaultValue', async () => {
@@ -710,5 +710,57 @@ describe('useController', () => {
     await waitFor(() => {
       screen.getByText('not');
     });
+  });
+
+  it('should restore defaultValues with react strict mode double useEffect', () => {
+    function Form() {
+      return (
+        <Controller
+          name="lastName"
+          shouldUnregister={true}
+          render={({ field }) => <input {...field} />}
+        />
+      );
+    }
+
+    function App() {
+      const methods = useForm({
+        defaultValues: {
+          lastName: 'luo',
+        },
+      });
+      const {
+        formState: { dirtyFields },
+      } = methods;
+
+      return (
+        <React.StrictMode>
+          <FormProvider {...methods}>
+            <form>
+              <Form />
+              {dirtyFields.lastName ? 'dirty' : 'pristine'}
+            </form>
+          </FormProvider>
+        </React.StrictMode>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'luo1',
+      },
+    });
+
+    screen.getByText('dirty');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'luo',
+      },
+    });
+
+    screen.getByText('pristine');
   });
 });

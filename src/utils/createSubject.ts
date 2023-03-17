@@ -19,7 +19,7 @@ export default function createSubject<T>(): Subject<T> {
 
   const next = (value: T) => {
     for (const observer of _observers) {
-      observer.next(value);
+      observer.next && observer.next(value);
     }
   };
 

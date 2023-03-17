@@ -33,7 +33,6 @@ describe('get', () => {
       bill: 'test',
     };
     expect(get(test, '')).toEqual(undefined);
-    // @ts-expect-error
     expect(get(test, undefined)).toEqual(undefined);
     // @ts-expect-error
     expect(get(test, null)).toEqual(undefined);

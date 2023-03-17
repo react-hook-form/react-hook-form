@@ -55,7 +55,7 @@ export function useForm<
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    isLoading: true,
+    isLoading: isFunction(props.defaultValues),
     isSubmitted: false,
     isSubmitting: false,
     isSubmitSuccessful: false,
@@ -100,28 +100,24 @@ export function useForm<
   });
 
   React.useEffect(() => {
-    if (!control._stateFlags.mount) {
-      control._updateValid();
-      control._stateFlags.mount = true;
-    }
-
-    if (control._stateFlags.watch) {
-      control._stateFlags.watch = false;
-      control._subjects.state.next({});
-    }
-
-    control._removeUnmounted();
-  });
-
-  React.useEffect(() => {
     if (props.values && !deepEqual(props.values, control._defaultValues)) {
       control._reset(props.values, control._options.resetOptions);
     }
   }, [props.values, control]);
 
   React.useEffect(() => {
-    formState.submitCount && control._focusError();
-  }, [control, formState.submitCount]);
+    if (!control._state.mount) {
+      control._updateValid();
+      control._state.mount = true;
+    }
+
+    if (control._state.watch) {
+      control._state.watch = false;
+      control._subjects.state.next({ ...control._formState });
+    }
+
+    control._removeUnmounted();
+  });
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

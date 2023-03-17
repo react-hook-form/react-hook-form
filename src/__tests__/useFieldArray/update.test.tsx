@@ -62,7 +62,7 @@ describe('update', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
 
     expect(dirtyInputs).toEqual({
-      test: [{ value: true }, {}, {}],
+      test: [{ value: true }, { value: false }, { value: false }],
     });
   });
 

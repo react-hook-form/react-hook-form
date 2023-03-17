@@ -199,7 +199,7 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              resetField('test', { defaultValue: null });
+              resetField('test', { defaultValue: '' });
             }}
           >
             reset

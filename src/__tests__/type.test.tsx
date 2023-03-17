@@ -382,6 +382,79 @@ test('should infer async default values', () => {
   App;
 });
 
+test('should work for root error type', () => {
+  const App = () => {
+    const {
+      setError,
+      formState: { errors },
+    } = useForm();
+
+    setError('root', {
+      type: 'data',
+      message: 'test',
+    });
+    setError('root.nested', {
+      type: 'data',
+      message: 'test',
+    });
+
+    React.useEffect(() => {
+      setError('root.test', {
+        type: 'root.test',
+      });
+      setError('root', {
+        type: 'root',
+      });
+    }, [setError]);
+
+    return (
+      <form>
+        <p>{errors.root?.test?.message}</p>
+        <p>{errors.root?.message}</p>
+      </form>
+    );
+  };
+
+  App;
+});
+
+it('should worked for error with type or message keyword', () => {
+  type FormInputs = {
+    object: { id: string; type: string; message: string };
+  };
+
+  const App = () => {
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<FormInputs>({
+      defaultValues: {
+        object: {
+          type: 'test',
+          id: 'test',
+        },
+      },
+    });
+
+    const onSubmit = (data: FormInputs) => {
+      alert(JSON.stringify(data));
+    };
+
+    return (
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <label>Id</label>
+        <input type="number" {...register('object.type', { min: 1 })} />
+        <input type="number" {...register('object.id', { min: 1 })} />
+        <p>{errors?.object?.id?.message}</p>
+        <input type="submit" />
+      </form>
+    );
+  };
+
+  App;
+});
+
 test('should provide correct type for validate function with useFieldArray', () => {
   const App = () => {
     const { control } = useForm<{

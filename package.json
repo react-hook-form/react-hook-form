@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.42.1",
+  "version": "7.43.6",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -96,7 +96,6 @@
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
     "jest-preview": "^0.3.1",
-    "jest-watch-typeahead": "^2.2.1",
     "lint-staged": "^13.1.0",
     "prettier": "^2.8.2",
     "react": "^18.2.0",

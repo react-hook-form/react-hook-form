@@ -66,41 +66,23 @@ function App() {
 
 Thanks go to these kind and lovely sponsors!
 
-<a
-    target = _blank
-    href = 'https://wantedlyinc.com'
-/>
-<img
-        width = 94
-        src = 'https://images.opencollective.com/wantedly/d94e44e/logo/256.png'
-    />
+<a target="_blank" href='https://wantedlyinc.com'>
+    <img width="94" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
 </a>
-<a
-    target = _blank
-    href = 'https://graphcms.com'
-/>
-<img
-        width = 94
-        src = 'https://avatars.githubusercontent.com/u/31031438'
-    />
+<a target="_blank" href='https://toss.im'>
+    <img width="94" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
 </a>
-<a
-    target = _blank
-    href = 'https://kanamekey.com'
-/>
-<img
-        width = 94
-        src = 'https://images.opencollective.com/kaname/d15fd98/logo/256.png'
-    />
+<a target="_blank" href="https://graphcms.com">
+    <img width="94" src="https://avatars.githubusercontent.com/u/31031438" />
 </a>
-<a
-    target = _blank
-    href = 'https://formcarry.com/'
-/>
-<img
-        width = 94
-        src = 'https://images.opencollective.com/formcarry/a40a4ea/logo/256.png'
-    />
+<a target="_blank" href="https://www.beekai.com/">
+    <img width="94" src="https://www.beekai.com/marketing/logo/logo.svg" />
+</a>
+<a target="_blank" href="https://kanamekey.com">
+    <img width="94" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
+</a>
+<a target="_blank" href="https://formcarry.com/">
+    <img width="94" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
 </a>
 
 ### Backers
