@@ -745,7 +745,9 @@ export function createFormControl<
           )
         )[name];
 
-        isFieldValueUpdated = fieldValue === get(_formValues, name, fieldValue);
+        isFieldValueUpdated =
+          isNaN(fieldValue) ||
+          fieldValue === get(_formValues, name, fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
