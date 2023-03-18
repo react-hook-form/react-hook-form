@@ -875,4 +875,40 @@ describe('formState', () => {
       });
     });
   });
+
+  it('should return updated value with NaN data type', async () => {
+    function App() {
+      const { register, formState } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          value: '',
+        },
+      });
+
+      return (
+        <form>
+          {formState.errors.value && <p>error</p>}
+          <input
+            {...register('value', {
+              min: 0,
+              valueAsNumber: true,
+              validate: (value) => !Number.isNaN(value),
+            })}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '2a',
+      },
+    });
+
+    await waitFor(() => {
+      screen.getByText('error');
+    });
+  });
 });
