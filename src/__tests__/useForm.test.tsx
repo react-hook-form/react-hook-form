@@ -1915,6 +1915,46 @@ describe('useForm', () => {
     expect(result.current.formState.isLoading).toBe(false);
   });
 
+  it('should update dirty field state by collect defaultValue with input', () => {
+    function App() {
+      const {
+        register,
+        handleSubmit,
+        formState: { isDirty },
+      } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input
+            {...register('exampleRequired', { required: true })}
+            defaultValue="bill"
+          />
+          {isDirty ? 'dirty' : 'pristine'}
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    screen.getByText('pristine');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill1',
+      },
+    });
+
+    screen.getByText('dirty');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill',
+      },
+    });
+
+    screen.getByText('pristine');
+  });
+
   it('should update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 

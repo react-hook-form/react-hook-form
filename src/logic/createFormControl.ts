@@ -257,16 +257,27 @@ export function createFormControl<
         name,
         isUndefined(value) ? get(_defaultValues, name) : value,
       );
+      const hasNoDefaultValue = isUndefined(defaultValue);
+      const checkedDefaultValue =
+        ref && (ref as HTMLInputElement).defaultChecked;
 
-      isUndefined(defaultValue) ||
-      (ref && (ref as HTMLInputElement).defaultChecked) ||
-      shouldSkipSetValueAs
+      isUndefined(defaultValue) || checkedDefaultValue || shouldSkipSetValueAs
         ? set(
             _formValues,
             name,
             shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
           )
         : setFieldValue(name, defaultValue);
+
+      if (hasNoDefaultValue && ref) {
+        set(
+          _defaultValues,
+          name,
+          checkedDefaultValue
+            ? (ref as HTMLInputElement).defaultChecked
+            : (ref as HTMLInputElement).defaultValue,
+        );
+      }
 
       _state.mount && _updateValid();
     }

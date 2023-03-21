@@ -249,9 +249,12 @@ describe('useFormState', () => {
       },
     });
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
-    expect(test1Count).toEqual(2);
+    await waitFor(() => {
+      expect(count).toEqual(1);
+      expect(count).toEqual(1);
+      expect(testCount).toEqual(2);
+      expect(test1Count).toEqual(2);
+    });
   });
 
   it('should render correct submit state', async () => {
