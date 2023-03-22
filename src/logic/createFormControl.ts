@@ -491,10 +491,11 @@ export function createFormControl<
       names,
       _names,
       {
+        ..._defaultValues,
         ...(_state.mount
           ? _formValues
           : isUndefined(defaultValue)
-          ? _defaultValues
+          ? {}
           : isString(names)
           ? { [names]: defaultValue }
           : defaultValue),
