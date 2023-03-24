@@ -8,7 +8,6 @@
 
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
-import * as React_3 from 'react';
 import { ReactElement } from 'react';
 
 // @public (undocumented)
@@ -64,14 +63,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         errors: FieldErrors;
     }>;
     register: UseFormRegister<TFieldValues>;
-    handleSubmit: UseFormHandleSubmit<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
-    setError: UseFormSetError<TFieldValues>;
 };
 
 // @public
-export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends Path<TFieldValues> = Path<TFieldValues>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
+export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
 
 // @public (undocumented)
 export type ControllerFieldState = {
@@ -238,45 +235,6 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 
 // @public (undocumented)
 export type FieldValues = Record<string, any>;
-
-// @public
-export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): JSX.Element;
-
-// @public (undocumented)
-export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Partial<{
-    control: Control<TFieldValues>;
-    children?: React_3.ReactNode | React_3.ReactNode[];
-    render?: (props: {
-        submit: (e?: React_3.FormEvent) => void;
-    }) => React_3.ReactNode | React_3.ReactNode[];
-    onSubmit: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>;
-}> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
-    onSuccess: ({ response }: {
-        response: Response;
-    }) => void;
-    onError: ({ response, error, }: {
-        response: Response;
-        error?: undefined;
-    } | {
-        response?: undefined;
-        error: unknown;
-    }) => void;
-    headers: Record<string, string>;
-    validateStatus: (status: number) => boolean;
-    fetcher: undefined;
-}> | Partial<{
-    onSuccess: undefined;
-    onError: undefined;
-    validateStatus: undefined;
-    headers: undefined;
-    fetcher: (action: string, payload: {
-        values?: TFieldValues;
-        method: string;
-        event?: React_3.BaseSyntheticEvent;
-        formData: FormData;
-        formDataJson: string;
-    }) => Promise<void> | void;
-}>);
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
@@ -617,13 +575,13 @@ export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 // @public
-export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
 
 // @public
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, any, undefined>;
+export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
@@ -641,7 +599,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = (onValid: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
@@ -655,7 +613,6 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldFocusError: boolean;
     shouldUnregister: boolean;
     shouldUseNativeValidation: boolean;
-    progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
 }>;
@@ -692,7 +649,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 }>) => void;
 
 // @public (undocumented)
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined> = {
+export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -703,7 +660,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     formState: FormState<TFieldValues>;
     resetField: UseFormResetField<TFieldValues>;
     reset: UseFormReset<TFieldValues>;
-    handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
+    handleSubmit: UseFormHandleSubmit<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
     control: Control<TFieldValues, TContext>;
     register: UseFormRegister<TFieldValues>;
@@ -795,7 +752,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
-export type ValidateResult = Message | boolean | undefined;
+export type ValidateResult = Message | Message[] | boolean | undefined;
 
 // @public (undocumented)
 export type ValidationMode = {
@@ -830,7 +787,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:420:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:419:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

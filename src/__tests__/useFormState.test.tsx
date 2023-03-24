@@ -741,7 +741,7 @@ describe('useFormState', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(await screen.queryByText('dirty')).toBeNull();
     expect(await screen.findByText('valid')).toBeVisible();
   });
 

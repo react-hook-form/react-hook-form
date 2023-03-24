@@ -102,7 +102,7 @@ export function createFormControl<
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
-    isLoading: true,
+    isLoading: isFunction(_options.defaultValues),
     isValidating: false,
     isSubmitted: false,
     isSubmitting: false,
@@ -746,7 +746,9 @@ export function createFormControl<
           )
         )[name];
 
-        isFieldValueUpdated = fieldValue === get(_formValues, name, fieldValue);
+        isFieldValueUpdated =
+          isNaN(fieldValue) ||
+          fieldValue === get(_formValues, name, fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
@@ -907,19 +909,17 @@ export function createFormControl<
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
 
-      if (get(_fields, fieldName)) {
-        if (!options.keepValue) {
-          unset(_fields, fieldName);
-          unset(_formValues, fieldName);
-        }
-
-        !options.keepError && unset(_formState.errors, fieldName);
-        !options.keepDirty && unset(_formState.dirtyFields, fieldName);
-        !options.keepTouched && unset(_formState.touchedFields, fieldName);
-        !_options.shouldUnregister &&
-          !options.keepDefaultValue &&
-          unset(_defaultValues, fieldName);
+      if (!options.keepValue) {
+        unset(_fields, fieldName);
+        unset(_formValues, fieldName);
       }
+
+      !options.keepError && unset(_formState.errors, fieldName);
+      !options.keepDirty && unset(_formState.dirtyFields, fieldName);
+      !options.keepTouched && unset(_formState.touchedFields, fieldName);
+      !_options.shouldUnregister &&
+        !options.keepDefaultValue &&
+        unset(_defaultValues, fieldName);
     }
 
     _subjects.values.next({
