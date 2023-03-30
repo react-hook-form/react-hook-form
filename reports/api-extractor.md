@@ -49,6 +49,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _reset: UseFormReset<TFieldValues>;
     _options: UseFormProps<TFieldValues, TContext>;
     _getDirty: GetIsDirty;
+    _resetDefaultValues: Noop;
     _formState: FormState<TFieldValues>;
     _updateValid: (shouldUpdateValid?: boolean) => void;
     _updateFormState: (formState: Partial<FormState<TFieldValues>>) => void;
