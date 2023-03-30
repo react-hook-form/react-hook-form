@@ -1246,16 +1246,14 @@ export function createFormControl<
     };
   };
 
-  const _resetDefaultValues = () => {
-    if (isFunction(_options.defaultValues)) {
-      _options.defaultValues().then((values) => {
-        reset(values, _options.resetOptions);
-        _subjects.state.next({
-          isLoading: false,
-        });
+  const _resetDefaultValues = () =>
+    isFunction(_options.defaultValues) &&
+    _options.defaultValues().then((values) => {
+      reset(values, _options.resetOptions);
+      _subjects.state.next({
+        isLoading: false,
       });
-    }
-  };
+    });
 
   return {
     control: {
