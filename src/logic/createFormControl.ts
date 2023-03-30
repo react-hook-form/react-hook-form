@@ -1246,14 +1246,16 @@ export function createFormControl<
     };
   };
 
-  if (isFunction(_options.defaultValues)) {
-    _options.defaultValues().then((values) => {
-      reset(values, _options.resetOptions);
-      _subjects.state.next({
-        isLoading: false,
+  const _resetDefaultValues = () => {
+    if (isFunction(_options.defaultValues)) {
+      _options.defaultValues().then((values) => {
+        reset(values, _options.resetOptions);
+        _subjects.state.next({
+          isLoading: false,
+        });
       });
-    });
-  }
+    }
+  };
 
   return {
     control: {
@@ -1268,6 +1270,7 @@ export function createFormControl<
       _updateFieldArray,
       _getFieldArray,
       _reset,
+      _resetDefaultValues,
       _updateFormState,
       _subjects,
       _proxyFormState,
