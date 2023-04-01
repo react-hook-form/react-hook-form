@@ -326,7 +326,12 @@ export function useFieldArray<
           const existingError = get(control._formState.errors, name);
 
           if (
-            existingError ? !error && existingError.type : error && error.type
+            existingError
+              ? (!error && existingError.type) ||
+                (error &&
+                  (existingError.type !== error.type ||
+                    existingError.message !== error.message))
+              : error && error.type
           ) {
             error
               ? set(control._formState.errors, name, error)
