@@ -323,12 +323,23 @@ export function useFieldArray<
       if (control._options.resolver) {
         control._executeSchema([name]).then((result) => {
           const error = get(result.errors, name);
-          error
-            ? set(control._formState.errors, name, error)
-            : unset(control._formState.errors, name);
-          control._subjects.state.next({
-            errors: control._formState.errors as FieldErrors<TFieldValues>,
-          });
+          const existingError = get(control._formState.errors, name);
+
+          if (
+            existingError
+              ? (!error && existingError.type) ||
+                (error &&
+                  (existingError.type !== error.type ||
+                    existingError.message !== error.message))
+              : error && error.type
+          ) {
+            error
+              ? set(control._formState.errors, name, error)
+              : unset(control._formState.errors, name);
+            control._subjects.state.next({
+              errors: control._formState.errors as FieldErrors<TFieldValues>,
+            });
+          }
         });
       } else {
         const field: Field = get(control._fields, name);
