@@ -16,6 +16,7 @@ import {
   InternalFieldName,
   Names,
   Path,
+  PathValue,
   Ref,
   SetFieldValue,
   SetValueConfig,
@@ -961,7 +962,7 @@ export function createFormControl<
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
-      ...(_options.shouldUseNativeValidation
+      ...(_options.shouldUseNativeValidation || _options.progressive
         ? {
             required: !!options.required,
             min: getRuleValue(options.min),
@@ -1084,7 +1085,13 @@ export function createFormControl<
       if (isUndefined(options.defaultValue)) {
         setValue(name, get(_defaultValues, name));
       } else {
-        setValue(name, options.defaultValue);
+        setValue(
+          name,
+          options.defaultValue as PathValue<
+            TFieldValues,
+            FieldPath<TFieldValues>
+          >,
+        );
         set(_defaultValues, name, options.defaultValue);
       }
 
@@ -1260,6 +1267,8 @@ export function createFormControl<
       register,
       unregister,
       getFieldState,
+      handleSubmit,
+      setError,
       _executeSchema,
       _getWatch,
       _getDirty,

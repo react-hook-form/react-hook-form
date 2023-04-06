@@ -76,4 +76,32 @@ describe('useForm with SSR', () => {
       '<div><input required="" min="2" max="2" minLength="2" maxLength="2" name="test"/></div>',
     );
   });
+
+  it('should support progress enhancement for form', () => {
+    const App = () => {
+      const { register } = useForm<{
+        test: string;
+      }>({
+        progressive: true,
+      });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              required: true,
+              min: 2,
+              max: 2,
+              maxLength: 2,
+              minLength: 2,
+            })}
+          />
+        </div>
+      );
+    };
+
+    expect(renderToString(<App />)).toEqual(
+      '<div><input required="" min="2" max="2" minLength="2" maxLength="2" name="test"/></div>',
+    );
+  });
 });

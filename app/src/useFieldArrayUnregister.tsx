@@ -63,10 +63,7 @@ const UseFieldArrayUnregister: React.FC = () => {
       control,
       name: 'data',
     });
-  const [data, setData] = React.useState([]);
-  const onSubmit = (data: any) => {
-    setData(data);
-  };
+  const [data, setData] = React.useState<FormInputs>();
   const updateFieldArray = () => {
     setValue('data', [...getValues().data, { name: 'test', conditional: '' }]);
   };
@@ -74,7 +71,11 @@ const UseFieldArrayUnregister: React.FC = () => {
   renderCount++;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit((data) => {
+        setData(data);
+      })}
+    >
       <ul>
         {fields.map((data, index) => (
           <li key={data.id}>
@@ -120,7 +121,9 @@ const UseFieldArrayUnregister: React.FC = () => {
       <button
         id="append"
         type="button"
-        onClick={() => append({ name: renderCount.toString() })}
+        onClick={() =>
+          append({ name: renderCount.toString(), conditional: '' })
+        }
       >
         append
       </button>
@@ -128,7 +131,9 @@ const UseFieldArrayUnregister: React.FC = () => {
       <button
         id="prepend"
         type="button"
-        onClick={() => prepend({ name: renderCount.toString() })}
+        onClick={() =>
+          prepend({ name: renderCount.toString(), conditional: '' })
+        }
       >
         prepend
       </button>
@@ -144,7 +149,9 @@ const UseFieldArrayUnregister: React.FC = () => {
       <button
         id="insert"
         type="button"
-        onClick={() => insert(1, { name: renderCount.toString() })}
+        onClick={() =>
+          insert(1, { name: renderCount.toString(), conditional: '' })
+        }
       >
         insert
       </button>

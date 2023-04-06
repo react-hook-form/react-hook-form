@@ -37,7 +37,7 @@ import { useSubscribe } from './useSubscribe';
  *       <input defaultValue="test" {...register("example")} />
  *       <input {...register("exampleRequired", { required: true })} />
  *       {errors.exampleRequired && <span>This field is required</span>}
- *       <input type="submit" />
+ *       <button>Submit</button>
  *     </form>
  *   );
  * }
@@ -46,11 +46,12 @@ import { useSubscribe } from './useSubscribe';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues | undefined = undefined,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
-): UseFormReturn<TFieldValues, TContext> {
+): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
-    UseFormReturn<TFieldValues, TContext> | undefined
+    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
