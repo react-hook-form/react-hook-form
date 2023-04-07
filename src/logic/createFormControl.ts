@@ -1167,7 +1167,7 @@ export function createFormControl<
         ? keepStateOptions.keepDefaultValues
           ? cloneObject(_defaultValues)
           : {}
-        : cloneUpdatedValues;
+        : cloneObject(values);
 
       _subjects.array.next({
         values: { ...values },
