@@ -827,17 +827,13 @@ describe('useWatch', () => {
 
       render(<Component />);
 
+      expect(inputValues).toEqual(['Type', 'Number', 'Totals']);
+
+      inputValues.length = 0; // clear array
+
       fireEvent.click(screen.getAllByRole('button')[1]);
 
-      expect(inputValues).toEqual([
-        'Type',
-        'Number',
-        'Totals',
-        'Type',
-        'Totals',
-        'Type',
-        'Totals',
-      ]);
+      expect(inputValues).toEqual(['Type', 'Totals']);
     });
 
     it('should return shallow merged watch values', () => {
