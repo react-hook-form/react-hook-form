@@ -777,6 +777,7 @@ describe('useWatch', () => {
             <input
               {...register(`labels.${itemIndex}.displayName` as const)}
               defaultValue={actualValue}
+              role="input"
             />
             <button type="button" onClick={() => remove(itemIndex)}>
               Remove
@@ -827,13 +828,30 @@ describe('useWatch', () => {
 
       render(<Component />);
 
+      // remove element by `remove`
       expect(inputValues).toEqual(['Type', 'Number', 'Totals']);
-
       inputValues.length = 0; // clear array
-
-      fireEvent.click(screen.getAllByRole('button')[1]);
-
+      const secondButton = screen.getAllByRole('button')[1];
+      fireEvent.click(secondButton);
       expect(inputValues).toEqual(['Type', 'Totals']);
+
+      // change second element value
+      const secondInputElement = screen.getAllByRole('input')[1];
+      expect(secondInputElement).toHaveValue('Totals');
+      inputValues.length = 0; // clear array
+      fireEvent.change(secondInputElement, {
+        target: { value: 'Number' },
+      });
+      expect(secondInputElement).toHaveValue('Number');
+      expect(inputValues).toEqual(['Number']);
+
+      // change second element value with the same value
+      inputValues.length = 0; // clear array
+      fireEvent.change(secondInputElement, {
+        target: { value: 'Number' },
+      });
+      expect(secondInputElement).toHaveValue('Number');
+      expect(inputValues).toEqual([]);
     });
 
     it('should return shallow merged watch values', () => {
