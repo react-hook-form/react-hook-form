@@ -18,6 +18,7 @@ import {
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useWatch } from '../../useWatch';
 
 jest.useFakeTimers();
 
@@ -1458,5 +1459,52 @@ describe('reset', () => {
       expect(screen.getByText('Bill1')).toBeVisible();
       expect(screen.getByText('Luo1')).toBeVisible();
     });
+  });
+
+  it('should return defaultValues in useWatch and watch when using calling reset with empty object', async () => {
+    const defaultValues = {
+      something: 'anything',
+    };
+
+    function App() {
+      const { control, reset, register, watch } = useForm({
+        defaultValues,
+      });
+      const watchValue = watch('something');
+      const useWatchValue = useWatch({
+        control,
+        name: 'something',
+      });
+
+      return (
+        <form>
+          <input {...register('something')} />
+          <button
+            type="button"
+            onClick={() => {
+              reset({});
+            }}
+          >
+            reset
+          </button>
+          <p>watch: {watchValue}</p>
+          <p>useWatch: {useWatchValue}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '1' },
+    });
+
+    expect(screen.getByText('watch: 1')).toBeVisible();
+    expect(screen.getByText('useWatch: 1')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByText('watch: anything')).toBeVisible();
+    expect(screen.getByText('useWatch: anything')).toBeVisible();
   });
 });
