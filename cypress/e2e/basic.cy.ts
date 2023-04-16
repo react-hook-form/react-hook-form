@@ -1,5 +1,5 @@
 describe('basic form validation', () => {
-  it.only('should validate the form and reset the form', () => {
+  it('should validate the form and reset the form', () => {
     cy.visit('http://localhost:3000/basic/onSubmit');
     cy.get('button#submit').click();
 
