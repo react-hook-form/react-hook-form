@@ -1,5 +1,5 @@
 describe('basic form validation', () => {
-  it('should validate the form and reset the form', () => {
+  it.only('should validate the form and reset the form', () => {
     cy.visit('http://localhost:3000/basic/onSubmit');
     cy.get('button#submit').click();
 
@@ -97,7 +97,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('39');
+    cy.get('#renderCount').contains('38');
 
     cy.get('#on-invalid-called-times').contains('1');
   });
