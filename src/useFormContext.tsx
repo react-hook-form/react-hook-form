@@ -36,8 +36,12 @@ const HookFormContext = React.createContext<UseFormReturn | null>(null);
  */
 export const useFormContext = <
   TFieldValues extends FieldValues,
+  TransformedValues extends FieldValues | undefined = undefined,
 >(): UseFormReturn<TFieldValues> =>
-  React.useContext(HookFormContext) as UseFormReturn<TFieldValues>;
+  React.useContext(HookFormContext) as UseFormReturn<
+    TFieldValues,
+    TransformedValues
+  >;
 
 /**
  * A provider component that propagates the `useForm` methods to all children components via [React Context](https://reactjs.org/docs/context.html) API. To be used with {@link useFormContext}.
