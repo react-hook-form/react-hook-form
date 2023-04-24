@@ -114,4 +114,23 @@ describe('clone', () => {
       other: 'string',
     });
   });
+
+  describe('in presence of Array polyfills', () => {
+    beforeAll(() => {
+      // @ts-expect-error
+      Array.prototype.somePolyfill = () => 123;
+    });
+
+    it('should skip polyfills while cloning', () => {
+      const data = [1];
+      const copy = cloneObject(data);
+
+      expect(Object.hasOwn(copy, 'somePolyfill')).toBe(false);
+    });
+
+    afterAll(() => {
+      // @ts-expect-error
+      delete Array.prototype.somePolyfill;
+    });
+  });
 });

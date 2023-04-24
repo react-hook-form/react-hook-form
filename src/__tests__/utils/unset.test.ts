@@ -311,4 +311,25 @@ describe('unset', () => {
       expect(test.test.root).toBeDefined();
     });
   });
+
+  describe('in presence of Array polyfills', () => {
+    beforeAll(() => {
+      // @ts-expect-error
+      Array.prototype.somePolyfill = () => 123;
+    });
+
+    it('should delete empty arrays', () => {
+      const data = {
+        prop: [],
+      };
+      unset(data, 'prop.0');
+
+      expect(data.prop).toBeUndefined();
+    });
+
+    afterAll(() => {
+      // @ts-expect-error
+      delete Array.prototype.somePolyfill;
+    });
+  });
 });
