@@ -72,9 +72,7 @@ describe('useForm with SSR', () => {
       );
     };
 
-    expect(renderToString(<App />)).toEqual(
-      '<div><input name="test"/></div>',
-    );
+    expect(renderToString(<App />)).toEqual('<div><input name="test"/></div>');
   });
 
   it('should support progress enhancement for form', () => {
