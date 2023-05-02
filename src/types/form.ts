@@ -86,7 +86,7 @@ export type DelayCallback = (wait: number) => void;
 
 type AsyncDefaultValues<TFieldValues> = (
   payload?: unknown,
-) => Promise<TFieldValues>;
+) => Promise<DefaultValues<TFieldValues>>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
