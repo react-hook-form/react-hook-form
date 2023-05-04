@@ -280,12 +280,12 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
 }>);
 
 // @public
-export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
+export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => JSX.Element;
 
 // @public (undocumented)
-export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
+export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined> = {
     children: React_2.ReactNode | React_2.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = {
