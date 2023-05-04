@@ -833,6 +833,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues | undefined = undefined,
 > = {
   children: React.ReactNode | React.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
