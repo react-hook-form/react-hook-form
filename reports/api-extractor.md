@@ -85,10 +85,11 @@ export type ControllerFieldState = {
 
 // @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    render: ({ field, fieldState, formState, }: {
+    render: ({ field, fieldState, formState, resetField, }: {
         field: ControllerRenderProps<TFieldValues, TName>;
         fieldState: ControllerFieldState;
         formState: UseFormStateReturn<TFieldValues>;
+        resetField: (options?: ResetOptions<TFieldValues, TName>) => void;
     }) => React_2.ReactElement;
 } & UseControllerProps<TFieldValues, TName>;
 
