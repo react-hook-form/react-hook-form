@@ -84,9 +84,11 @@ export type ControllerProps<
     field,
     fieldState,
     formState,
+    resetField,
   }: {
     field: ControllerRenderProps<TFieldValues, TName>;
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
+    resetField: (options?: ResetOptions<TFieldValues, TName>) => void;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues, TName>;
