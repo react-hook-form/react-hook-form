@@ -1269,6 +1269,7 @@ export function createFormControl<
       getFieldState,
       handleSubmit,
       setError,
+      resetField,
       _executeSchema,
       _getWatch,
       _getDirty,

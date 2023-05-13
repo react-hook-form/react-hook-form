@@ -677,6 +677,40 @@ describe('useController', () => {
     expect(focus).toBeCalled();
   });
 
+  it('should reset the field to default value', async () => {
+    const App = () => {
+      const { control } = useForm();
+      const { field, resetField } = useController({
+        control,
+        name: 'test',
+        defaultValue: 'default',
+      });
+
+      return (
+        <div>
+          <input {...field} />
+          <button
+            onClick={() => {
+              resetField({ defaultValue: 'new default' });
+            }}
+          >
+            X
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: {
+        value: 'changed',
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+  });
+
   it('should update isValid correctly with strict mode', async () => {
     const App = () => {
       const form = useForm({

@@ -149,6 +149,12 @@ export function useController<
         }
       },
     },
+    resetField: React.useCallback(
+      (options = {}) => {
+        control.resetField(name, options);
+      },
+      [control, name],
+    ),
     formState,
     fieldState: Object.defineProperties(
       {},

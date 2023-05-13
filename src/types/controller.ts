@@ -9,6 +9,7 @@ import {
   FieldValues,
   Noop,
   RefCallBack,
+  ResetOptions,
   UseFormStateReturn,
 } from './';
 
@@ -51,6 +52,7 @@ export type UseControllerReturn<
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
   fieldState: ControllerFieldState;
+  resetField: (options?: ResetOptions<TFieldValues, TName>) => void;
 };
 
 /**

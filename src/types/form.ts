@@ -628,13 +628,18 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: Partial<{
-    keepDirty: boolean;
-    keepTouched: boolean;
-    keepError: boolean;
-    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
-  }>,
+  options?: ResetOptions<TFieldValues, TFieldName>,
 ) => void;
+
+export type ResetOptions<
+  TFieldValues extends FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Partial<{
+  keepDirty: boolean;
+  keepTouched: boolean;
+  keepError: boolean;
+  defaultValue: FieldPathValue<TFieldValues, TFieldName>;
+}>;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
 
@@ -774,6 +779,7 @@ export type Control<
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
+  resetField: UseFormResetField<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
