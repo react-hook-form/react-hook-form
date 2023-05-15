@@ -88,6 +88,10 @@ Thanks go to these kind and lovely sponsors!
     <img width="94" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
 </a>
 
+<a target="_blank" href="https://fabform.io/">
+    <img width="94" src="https://fabform.io/img/256.png" />
+</a>
+
 ### Backers
 
 Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
