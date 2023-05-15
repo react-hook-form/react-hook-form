@@ -74,7 +74,7 @@ const POST_REQUEST = 'post';
  *       <input {...register("name")} />
  *       <p>{errors?.root?.server && 'Server error'}</p>
  *       <button>Submit</button>
- *     </form>
+ *     </Form>
  *   );
  * }
  * ```
