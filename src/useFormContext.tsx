@@ -73,12 +73,16 @@ export const useFormContext = <
  * }
  * ```
  */
-export const FormProvider = <TFieldValues extends FieldValues, TContext = any>(
-  props: FormProviderProps<TFieldValues, TContext>,
+export const FormProvider = <
+  TFieldValues extends FieldValues,
+  TContext = any,
+  TTransformedValues extends FieldValues | undefined = undefined,
+>(
+  props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
 ) => {
   const { children, ...data } = props;
   return (
-    <HookFormContext.Provider value={data as UseFormReturn}>
+    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
       {children}
     </HookFormContext.Provider>
   );
