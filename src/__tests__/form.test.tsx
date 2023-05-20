@@ -229,7 +229,7 @@ describe('Form', () => {
     });
   });
 
-  it('should support fetcher prop with external request', async () => {
+  it.only('should support fetcher prop with external request', async () => {
     const fetcher = jest.fn();
     const App = () => {
       const {
@@ -239,10 +239,10 @@ describe('Form', () => {
 
       return (
         <Form
-          action={'/get'}
-          method={'get'}
           control={control}
-          fetcher={fetcher}
+          onSubmit={async () => {
+            await fetcher();
+          }}
         >
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>

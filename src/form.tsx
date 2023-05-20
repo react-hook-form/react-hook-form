@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import get from './utils/get';
-import { Control, FieldValues, SubmitHandler } from './types';
+import { Control, FieldValues, FormSubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
 export type FormProps<
@@ -14,8 +14,8 @@ export type FormProps<
     submit: (e?: React.FormEvent) => void;
   }) => React.ReactNode | React.ReactNode[];
   onSubmit: TTransformedValues extends FieldValues
-    ? SubmitHandler<TTransformedValues>
-    : SubmitHandler<TFieldValues>;
+    ? FormSubmitHandler<TTransformedValues>
+    : FormSubmitHandler<TFieldValues>;
 }> &
   Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
   (
@@ -35,25 +35,16 @@ export type FormProps<
             }) => void;
         headers: Record<string, string>;
         validateStatus: (status: number) => boolean;
-        fetcher: undefined;
       }>
     | Partial<{
         onSuccess: undefined;
         onError: undefined;
         validateStatus: undefined;
         headers: undefined;
-        fetcher: (
-          action: string,
-          payload: {
-            values?: TFieldValues;
-            method: string;
-            event?: React.BaseSyntheticEvent;
-            formData: FormData;
-            formDataJson: string;
-          },
-        ) => Promise<void> | void;
       }>
-  );
+  ) & {
+    method?: 'post' | 'put' | 'delete';
+  };
 
 const POST_REQUEST = 'post';
 
@@ -97,61 +88,59 @@ export function Form<
     render,
     onSuccess,
     validateStatus,
-    fetcher,
     ...rest
   } = props;
 
   const submit = async (event?: React.BaseSyntheticEvent) => {
     let serverError = false;
 
-    await control.handleSubmit(async (values) => {
+    await control.handleSubmit(async (data) => {
       const formData = new FormData();
       let formDataJson = '';
 
       try {
-        formDataJson = JSON.stringify(values);
+        formDataJson = JSON.stringify(data);
       } catch {}
 
-      control._names.mount.forEach((name) =>
-        formData.append(name, get(values, name)),
-      );
+      for (const name of control._names.mount) {
+        formData.append(name, get(data, name));
+      }
 
-      onSubmit && onSubmit(values);
+      if (onSubmit) {
+        onSubmit({
+          data,
+          event,
+          action,
+          method,
+          formData,
+          formDataJson,
+        });
+      }
 
       if (action) {
         try {
-          if (fetcher) {
-            await fetcher(action, {
-              method,
-              values,
-              event,
-              formData,
-              formDataJson,
-            });
+          const shouldStringifySubmissionData =
+            headers && headers['Content-Type'].includes('json');
+
+          const response = await fetch(action, {
+            method,
+            headers: {
+              ...headers,
+              ...(encType ? { 'Content-Type': encType } : {}),
+            },
+            body: shouldStringifySubmissionData ? formDataJson : formData,
+          });
+
+          if (
+            response &&
+            (validateStatus
+              ? !validateStatus(response.status)
+              : response.status < 200 || response.status >= 300)
+          ) {
+            serverError = true;
+            onError && onError({ response });
           } else {
-            const shouldStringifySubmissionData =
-              headers && headers['Content-Type'].includes('json');
-
-            const response = await fetch(action, {
-              method,
-              headers: {
-                ...headers,
-                ...(encType ? { 'Content-Type': encType } : {}),
-              },
-              body: shouldStringifySubmissionData ? formDataJson : formData,
-            });
-
-            if (
-              response &&
-              (validateStatus
-                ? !validateStatus(response.status)
-                : response.status < 200 || response.status >= 300)
-            ) {
-              serverError = true;
-              onError && onError({ response });
-            } else {
-              onSuccess && onSuccess({ response });
-            }
+            onSuccess && onSuccess({ response });
           }
         } catch (error: unknown) {
           serverError = true;

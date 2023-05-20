@@ -250,7 +250,7 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
     render?: (props: {
         submit: (e?: React_3.FormEvent) => void;
     }) => React_3.ReactNode | React_3.ReactNode[];
-    onSubmit: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>;
+    onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
 }> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
     onSuccess: ({ response }: {
         response: Response;
@@ -264,20 +264,14 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
     }) => void;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
-    fetcher: undefined;
 }> | Partial<{
     onSuccess: undefined;
     onError: undefined;
     validateStatus: undefined;
     headers: undefined;
-    fetcher: (action: string, payload: {
-        values?: TFieldValues;
-        method: string;
-        event?: React_3.BaseSyntheticEvent;
-        formData: FormData;
-        formDataJson: string;
-    }) => Promise<void> | void;
-}>);
+}>) & {
+    method?: 'post' | 'put' | 'delete';
+};
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => JSX.Element;
@@ -319,6 +313,16 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Partial<FormState<TFieldValues>> & {
     name?: InternalFieldName;
 }>;
+
+// @public (undocumented)
+export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
+    data: TFieldValues;
+    event?: React_2.BaseSyntheticEvent;
+    formData: FormData;
+    formDataJson: string;
+    action?: string;
+    method?: 'post' | 'put' | 'delete';
+}) => unknown | Promise<unknown>;
 
 // @public (undocumented)
 export const get: <T>(obj: T, path?: string, defaultValue?: unknown) => any;
@@ -830,8 +834,8 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:420:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:106:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:429:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
