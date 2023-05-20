@@ -44,7 +44,7 @@ export type FormProps<
         validateStatus: undefined;
         headers: undefined;
         action: (payload: {
-          values?: TFieldValues;
+          data?: TFieldValues;
           method: string;
           event?: React.BaseSyntheticEvent;
           formData: FormData;
@@ -101,26 +101,26 @@ export function Form<
   const submit = async (event?: React.BaseSyntheticEvent) => {
     let serverError = false;
 
-    await control.handleSubmit(async (values) => {
+    await control.handleSubmit(async (data) => {
       const formData = new FormData();
       let formDataJson = '';
 
       try {
-        formDataJson = JSON.stringify(values);
+        formDataJson = JSON.stringify(data);
       } catch {}
 
       control._names.mount.forEach((name) =>
-        formData.append(name, get(values, name)),
+        formData.append(name, get(data, name)),
       );
 
-      onSubmit && onSubmit(values);
+      onSubmit && onSubmit(data);
 
       if (action) {
         try {
           if (isFunction(action)) {
             await action({
+              data,
               method,
-              values,
               event,
               formData,
               formDataJson,
