@@ -102,11 +102,11 @@ export function Form<
         formDataJson = JSON.stringify(data);
       } catch {}
 
-      control._names.mount.forEach((name) =>
-        formData.append(name, get(data, name)),
-      );
+      for (const name of control._names.mount) {
+        formData.append(name, get(data, name));
+      }
 
-      onSubmit &&
+      if (onSubmit) {
         onSubmit({
           data,
           event,
@@ -115,6 +115,7 @@ export function Form<
           formData,
           formDataJson,
         });
+      }
 
       if (action) {
         try {

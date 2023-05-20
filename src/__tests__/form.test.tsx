@@ -239,7 +239,6 @@ describe('Form', () => {
 
       return (
         <Form
-          action={'/get'}
           control={control}
           onSubmit={async () => {
             await fetcher();
