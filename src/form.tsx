@@ -42,7 +42,9 @@ export type FormProps<
         validateStatus: undefined;
         headers: undefined;
       }>
-  );
+  ) & {
+    method?: 'post' | 'put' | 'delete';
+  };
 
 const POST_REQUEST = 'post';
 
