@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import get from './utils/get';
+import isFunction from './utils/isFunction';
 import { Control, FieldValues, SubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -35,23 +36,20 @@ export type FormProps<
             }) => void;
         headers: Record<string, string>;
         validateStatus: (status: number) => boolean;
-        fetcher: undefined;
+        action: string;
       }>
     | Partial<{
         onSuccess: undefined;
         onError: undefined;
         validateStatus: undefined;
         headers: undefined;
-        fetcher: (
-          action: string,
-          payload: {
-            values?: TFieldValues;
-            method: string;
-            event?: React.BaseSyntheticEvent;
-            formData: FormData;
-            formDataJson: string;
-          },
-        ) => Promise<void> | void;
+        action: (payload: {
+          values?: TFieldValues;
+          method: string;
+          event?: React.BaseSyntheticEvent;
+          formData: FormData;
+          formDataJson: string;
+        }) => Promise<void> | void;
       }>
   );
 
@@ -97,7 +95,6 @@ export function Form<
     render,
     onSuccess,
     validateStatus,
-    fetcher,
     ...rest
   } = props;
 
@@ -120,8 +117,8 @@ export function Form<
 
       if (action) {
         try {
-          if (fetcher) {
-            await fetcher(action, {
+          if (isFunction(action)) {
+            await action({
               method,
               values,
               event,
