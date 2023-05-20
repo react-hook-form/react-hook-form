@@ -204,7 +204,7 @@ export default async <T extends FieldValues>(
     }
   }
 
-  if (pattern && isString(inputValue)) {
+  if (pattern && !isEmpty && isString(inputValue)) {
     const { value: patternValue, message } = getValueAndMessage(pattern);
 
     if (isRegex(patternValue) && !inputValue.match(patternValue)) {

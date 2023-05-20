@@ -1839,7 +1839,6 @@ describe('validateField', () => {
         types: {
           required: true,
           validate: true,
-          pattern: true,
         },
       },
     });
@@ -1998,7 +1997,6 @@ describe('validateField', () => {
         type: 'required',
         types: {
           required: 'test',
-          pattern: 'pattern',
           test: true,
           test1: 'Luo',
           test2: 'Bill',
