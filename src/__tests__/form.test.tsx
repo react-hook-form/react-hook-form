@@ -229,7 +229,7 @@ describe('Form', () => {
     });
   });
 
-  it.only('should support fetcher prop with external request', async () => {
+  it('should support fetcher prop with external request', async () => {
     const fetcher = jest.fn();
     const App = () => {
       const {
