@@ -110,6 +110,8 @@ export function Form<
         onSubmit({
           data,
           event,
+          action,
+          method,
           formData,
           formDataJson,
         });
