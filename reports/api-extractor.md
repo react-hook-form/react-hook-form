@@ -244,17 +244,10 @@ export type FieldValues = Record<string, any>;
 export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): JSX.Element;
 
 // @public (undocumented)
-export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Partial<{
+export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & Partial<{
     control: Control<TFieldValues>;
-    children?: React_3.ReactNode | React_3.ReactNode[];
-    render?: (props: {
-        submit: (e?: React_3.FormEvent) => void;
-    }) => React_3.ReactNode | React_3.ReactNode[];
-    onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
-}> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
-    onSuccess: ({ response }: {
-        response: Response;
-    }) => void;
+    headers: Record<string, string>;
+    validateStatus: (status: number) => boolean;
     onError: ({ response, error, }: {
         response: Response;
         error?: undefined;
@@ -262,16 +255,16 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
         response?: undefined;
         error: unknown;
     }) => void;
-    headers: Record<string, string>;
-    validateStatus: (status: number) => boolean;
-}> | Partial<{
-    onSuccess: undefined;
-    onError: undefined;
-    validateStatus: undefined;
-    headers: undefined;
-}>) & {
-    method?: 'post' | 'put' | 'delete';
-};
+    onSuccess: ({ response }: {
+        response: Response;
+    }) => void;
+    onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
+    method: 'post' | 'put' | 'delete';
+    children: React_3.ReactNode | React_3.ReactNode[];
+    render: (props: {
+        submit: (e?: React_3.FormEvent) => void;
+    }) => React_3.ReactNode | React_3.ReactNode[];
+}>;
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => JSX.Element;
