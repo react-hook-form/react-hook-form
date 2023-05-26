@@ -7,44 +7,33 @@ import { useFormContext } from './useFormContext';
 export type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = Partial<{
-  control: Control<TFieldValues>;
-  children?: React.ReactNode | React.ReactNode[];
-  render?: (props: {
-    submit: (e?: React.FormEvent) => void;
-  }) => React.ReactNode | React.ReactNode[];
-  onSubmit: TTransformedValues extends FieldValues
-    ? FormSubmitHandler<TTransformedValues>
-    : FormSubmitHandler<TFieldValues>;
-}> &
-  Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
-  (
-    | Partial<{
-        onSuccess: ({ response }: { response: Response }) => void;
-        onError: ({
-          response,
-          error,
-        }:
-          | {
-              response: Response;
-              error?: undefined;
-            }
-          | {
-              response?: undefined;
-              error: unknown;
-            }) => void;
-        headers: Record<string, string>;
-        validateStatus: (status: number) => boolean;
-      }>
-    | Partial<{
-        onSuccess: undefined;
-        onError: undefined;
-        validateStatus: undefined;
-        headers: undefined;
-      }>
-  ) & {
-    method?: 'post' | 'put' | 'delete';
-  };
+> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
+  Partial<{
+    control: Control<TFieldValues>;
+    headers: Record<string, string>;
+    validateStatus: (status: number) => boolean;
+    onError: ({
+      response,
+      error,
+    }:
+      | {
+          response: Response;
+          error?: undefined;
+        }
+      | {
+          response?: undefined;
+          error: unknown;
+        }) => void;
+    onSuccess: ({ response }: { response: Response }) => void;
+    onSubmit: TTransformedValues extends FieldValues
+      ? FormSubmitHandler<TTransformedValues>
+      : FormSubmitHandler<TFieldValues>;
+    method: 'post' | 'put' | 'delete';
+    children: React.ReactNode | React.ReactNode[];
+    render: (props: {
+      submit: (e?: React.FormEvent) => void;
+    }) => React.ReactNode | React.ReactNode[];
+  }>;
 
 const POST_REQUEST = 'post';
 
