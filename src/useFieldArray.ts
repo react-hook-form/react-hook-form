@@ -187,7 +187,7 @@ export function useFieldArray<
     });
   };
 
-  const remove = (index?: number | number[]) => {
+  const remove = (index: number | number[]) => {
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
