@@ -121,13 +121,15 @@ describe('Form', () => {
     const App = () => {
       const {
         control,
-        formState: { isSubmitSuccessful },
+        formState: { isSubmitSuccessful, errors },
       } = useForm();
 
       return (
         <Form action={'/error'} onSubmit={onSubmit} control={control}>
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
+          {errors.root?.server && 'This is a server error'}
+          <p>{errors.root?.server?.type}</p>
         </Form>
       );
     };
@@ -139,6 +141,8 @@ describe('Form', () => {
     await waitFor(() => {
       expect(onSubmit).toBeCalled();
       expect(onSuccess).not.toBeCalled();
+      screen.getByText('This is a server error');
+      screen.getByText('500');
       screen.getByText('submitFailed');
     });
   });
