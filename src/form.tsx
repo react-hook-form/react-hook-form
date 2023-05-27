@@ -87,6 +87,7 @@ export function Form<
 
   const submit = async (event?: React.BaseSyntheticEvent) => {
     let hasError = false;
+    let type = '';
 
     await control.handleSubmit(async (data) => {
       const formData = new FormData();
@@ -134,6 +135,7 @@ export function Form<
           ) {
             hasError = true;
             onError && onError({ response });
+            type = String(response.status);
           } else {
             onSuccess && onSuccess({ response });
           }
@@ -144,11 +146,14 @@ export function Form<
       }
     })(event);
 
-    hasError &&
-      props.control &&
+    if (hasError && props.control) {
       props.control._subjects.state.next({
         isSubmitSuccessful: false,
       });
+      props.control.setError('root.server', {
+        type,
+      });
+    }
   };
 
   React.useEffect(() => {
