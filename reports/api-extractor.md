@@ -264,6 +264,7 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
     render: (props: {
         submit: (e?: React_3.FormEvent) => void;
     }) => React_3.ReactNode | React_3.ReactNode[];
+    encType: 'application/x-www-form-urlencoded' | 'multipart/form-data' | 'text/plain' | 'application/json';
 }>;
 
 // @public
@@ -313,7 +314,6 @@ export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
     event?: React_2.BaseSyntheticEvent;
     formData: FormData;
     formDataJson: string;
-    action?: string;
     method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
 
@@ -827,8 +827,8 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:106:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:429:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:105:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:428:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -33,6 +33,11 @@ export type FormProps<
     render: (props: {
       submit: (e?: React.FormEvent) => void;
     }) => React.ReactNode | React.ReactNode[];
+    encType:
+      | 'application/x-www-form-urlencoded'
+      | 'multipart/form-data'
+      | 'text/plain'
+      | 'application/json';
   }>;
 
 const POST_REQUEST = 'post';
@@ -81,7 +86,8 @@ export function Form<
   } = props;
 
   const submit = async (event?: React.BaseSyntheticEvent) => {
-    let serverError = false;
+    let hasError = false;
+    let type = '';
 
     await control.handleSubmit(async (data) => {
       const formData = new FormData();
@@ -99,7 +105,6 @@ export function Form<
         onSubmit({
           data,
           event,
-          action,
           method,
           formData,
           formDataJson,
@@ -108,8 +113,10 @@ export function Form<
 
       if (action) {
         try {
-          const shouldStringifySubmissionData =
-            headers && headers['Content-Type'].includes('json');
+          const shouldStringifySubmissionData = [
+            headers && headers['Content-Type'],
+            encType,
+          ].includes('json');
 
           const response = await fetch(action, {
             method,
@@ -126,23 +133,27 @@ export function Form<
               ? !validateStatus(response.status)
               : response.status < 200 || response.status >= 300)
           ) {
-            serverError = true;
+            hasError = true;
             onError && onError({ response });
+            type = String(response.status);
           } else {
             onSuccess && onSuccess({ response });
           }
         } catch (error: unknown) {
-          serverError = true;
+          hasError = true;
           onError && onError({ error });
         }
       }
     })(event);
 
-    serverError &&
-      props.control &&
+    if (hasError && props.control) {
       props.control._subjects.state.next({
         isSubmitSuccessful: false,
       });
+      props.control.setError('root.server', {
+        type,
+      });
+    }
   };
 
   React.useEffect(() => {
