@@ -116,7 +116,7 @@ export function Form<
           const shouldStringifySubmissionData = [
             headers && headers['Content-Type'],
             encType,
-          ].includes('json');
+          ].some((value) => value && value.includes('json'));
 
           const response = await fetch(action, {
             method,

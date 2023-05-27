@@ -26,6 +26,13 @@ const server = setupServer(
   rest.post('/get', (_, res: ResponseComposition, ctx: RestContext) => {
     return res(ctx.status(200));
   }),
+  rest.post('/json', (req, res: ResponseComposition, ctx: RestContext) => {
+    if (req.headers.get('content-type') === 'application/json') {
+      return res(ctx.status(200));
+    }
+
+    return res(ctx.status(500));
+  }),
 );
 
 describe('Form', () => {
@@ -262,6 +269,36 @@ describe('Form', () => {
       screen.getByText('submitSuccessful');
 
       expect(fetcher).toBeCalled();
+    });
+  });
+
+  it('should include application/json header with encType supplied', async () => {
+    const onSuccess = jest.fn();
+    const App = () => {
+      const {
+        control,
+        formState: { isSubmitSuccessful },
+      } = useForm();
+
+      return (
+        <Form
+          action={'/json'}
+          control={control}
+          encType="application/json"
+          onSuccess={onSuccess}
+        >
+          <button>Submit</button>
+          <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSuccess).toBeCalled();
     });
   });
 });
