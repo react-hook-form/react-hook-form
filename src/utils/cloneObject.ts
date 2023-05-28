@@ -20,7 +20,7 @@ export default function cloneObject<T>(data: T): T {
       copy = data;
     } else {
       for (const key in data) {
-        if (Object.hasOwn(data, key)) {
+        if (data.hasOwnProperty(key)) {
           copy[key] = cloneObject(data[key]);
         }
       }
