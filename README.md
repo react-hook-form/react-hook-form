@@ -90,6 +90,12 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href="https://fabform.io">
     <img width="94" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
 </a>
+<a target="_blank" href="https://www.mirakl.com/">
+    <img width="94" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
+</a>
+<a target="_blank" href="https://www.casinoreviews.net/">
+    <img width="94" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
+</a>
 
 ### Backers
 

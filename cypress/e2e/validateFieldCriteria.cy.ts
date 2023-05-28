@@ -33,7 +33,7 @@ describe('validate field criteria', () => {
     cy.get('select[name="selectNumber"] + p').contains('selectNumber required');
     cy.get('select[name="selectNumber"]').select('12');
 
-    cy.get('input[name="pattern"] + p + p').contains('pattern required');
+    cy.get('input[name="pattern"] + p').contains('pattern required');
     cy.get('input[name="pattern"]').type('t');
     cy.get('input[name="pattern"] + p').contains('pattern pattern');
     cy.get('input[name="pattern"] + p + p').contains('pattern minLength');

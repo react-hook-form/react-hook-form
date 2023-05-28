@@ -245,17 +245,10 @@ export type FieldValues = Record<string, any>;
 export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): JSX.Element;
 
 // @public (undocumented)
-export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Partial<{
+export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & Partial<{
     control: Control<TFieldValues>;
-    children?: React_3.ReactNode | React_3.ReactNode[];
-    render?: (props: {
-        submit: (e?: React_3.FormEvent) => void;
-    }) => React_3.ReactNode | React_3.ReactNode[];
-    onSubmit: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>;
-}> & Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & (Partial<{
-    onSuccess: ({ response }: {
-        response: Response;
-    }) => void;
+    headers: Record<string, string>;
+    validateStatus: (status: number) => boolean;
     onError: ({ response, error, }: {
         response: Response;
         error?: undefined;
@@ -263,22 +256,17 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
         response?: undefined;
         error: unknown;
     }) => void;
-    headers: Record<string, string>;
-    validateStatus: (status: number) => boolean;
-    fetcher: undefined;
-}> | Partial<{
-    onSuccess: undefined;
-    onError: undefined;
-    validateStatus: undefined;
-    headers: undefined;
-    fetcher: (action: string, payload: {
-        values?: TFieldValues;
-        method: string;
-        event?: React_3.BaseSyntheticEvent;
-        formData: FormData;
-        formDataJson: string;
-    }) => Promise<void> | void;
-}>);
+    onSuccess: ({ response }: {
+        response: Response;
+    }) => void;
+    onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
+    method: 'post' | 'put' | 'delete';
+    children: React_3.ReactNode | React_3.ReactNode[];
+    render: (props: {
+        submit: (e?: React_3.FormEvent) => void;
+    }) => React_3.ReactNode | React_3.ReactNode[];
+    encType: 'application/x-www-form-urlencoded' | 'multipart/form-data' | 'text/plain' | 'application/json';
+}>;
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => JSX.Element;
@@ -320,6 +308,15 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Partial<FormState<TFieldValues>> & {
     name?: InternalFieldName;
 }>;
+
+// @public (undocumented)
+export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
+    data: TFieldValues;
+    event?: React_2.BaseSyntheticEvent;
+    formData: FormData;
+    formDataJson: string;
+    method?: 'post' | 'put' | 'delete';
+}) => unknown | Promise<unknown>;
 
 // @public (undocumented)
 export const get: <T>(obj: T, path?: string, defaultValue?: unknown) => any;
@@ -831,8 +828,8 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:420:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:105:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:428:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
