@@ -43,7 +43,7 @@ export const useFormContext = <
   TFieldValues extends FieldValues,
   // TODO: add missing a TContext type. We provide TransformedValues type as TContext to UseFormReturn, which is not correct.
   TransformedValues extends FieldValues | undefined = undefined,
->(): UseFormReturn<TFieldValues> =>
+>(): UseFormReturn<TFieldValues> & FieldArrayContextReturn<TFieldValues> =>
   // TODO: we can probably get rid of the "as" cast here by providing a correct Context type to createContext
   React.useContext(HookFormContext) as UseFormReturn<
     TFieldValues,
