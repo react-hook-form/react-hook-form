@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { useController } from '../useController';
+import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useFormState } from '../useFormState';
@@ -228,5 +229,46 @@ describe('FormProvider', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => screen.getByText('This is required'));
+  });
+
+  it('should work correctly with field array', () => {
+    type FormValues = {
+      test: { name: string }[];
+    };
+
+    const Test = () => {
+      const context = useFormContext<FormValues>();
+
+      return (
+        <>
+          {context?.fieldArrays?.test.fields.map((field) => (
+            <input key={field.id} />
+          ))}
+        </>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm();
+      const testField = useFieldArray({
+        control: methods.control,
+        name: 'test',
+      });
+
+      return (
+        <FormProvider
+          {...methods}
+          fieldArrays={{
+            test: testField,
+          }}
+        >
+          <form>
+            <Test />
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
   });
 });
