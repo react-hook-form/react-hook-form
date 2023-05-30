@@ -50,7 +50,7 @@
 - [만들게된 동기](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [비디오 튜토리얼](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [시작하기](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/docs)
 - [예제](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [데모](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
