@@ -4,7 +4,7 @@ import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
-import { FieldArray } from './fieldArray';
+import { FieldArray, UseFieldArrayReturn } from './fieldArray';
 import {
   FieldRefs,
   FieldValue,
@@ -838,10 +838,21 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   exact?: boolean;
 };
 
+export type FieldArrayContextProps<TFieldValues extends FieldValues> = {
+  fieldArrays?: Record<
+    FieldArrayPath<TFieldValues>,
+    UseFieldArrayReturn<TFieldValues>
+  >;
+};
+
+export type FieldArrayContextReturn<TFieldValues extends FieldValues> =
+  Required<FieldArrayContextProps<TFieldValues>>;
+
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined,
 > = {
   children: React.ReactNode | React.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues> &
+  FieldArrayContextProps<TFieldValues>;

@@ -1,6 +1,11 @@
 import React from 'react';
 
-import { FieldValues, FormProviderProps, UseFormReturn } from './types';
+import {
+  FieldArrayContextReturn,
+  FieldValues,
+  FormProviderProps,
+  UseFormReturn,
+} from './types';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 
@@ -36,12 +41,15 @@ const HookFormContext = React.createContext<UseFormReturn | null>(null);
  */
 export const useFormContext = <
   TFieldValues extends FieldValues,
+  // TODO: add missing a TContext type. We provide TransformedValues type as TContext to UseFormReturn, which is not correct.
   TransformedValues extends FieldValues | undefined = undefined,
 >(): UseFormReturn<TFieldValues> =>
+  // TODO: we can probably get rid of the "as" cast here by providing a correct Context type to createContext
   React.useContext(HookFormContext) as UseFormReturn<
     TFieldValues,
     TransformedValues
-  >;
+  > &
+    FieldArrayContextReturn<TFieldValues>;
 
 /**
  * A provider component that propagates the `useForm` methods to all children components via [React Context](https://reactjs.org/docs/context.html) API. To be used with {@link useFormContext}.
@@ -82,7 +90,11 @@ export const FormProvider = <
 ) => {
   const { children, ...data } = props;
   return (
-    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
+    <HookFormContext.Provider
+      value={
+        data as unknown as UseFormReturn & FieldArrayContextReturn<TFieldValues>
+      }
+    >
       {children}
     </HookFormContext.Provider>
   );
