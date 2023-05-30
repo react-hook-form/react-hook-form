@@ -50,7 +50,7 @@
 - [Мотивация](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Видеоурок](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [Начать](https://react-hook-form.com/get-started)
-- [АПИ](https://react-hook-form.com/api)
+- [АПИ](https://react-hook-form.com/docs)
 - [Примеры](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Демонстрация](https://react-hook-form.com)
 - [Конструктор форм](https://react-hook-form.com/form-builder)

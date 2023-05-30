@@ -1721,7 +1721,7 @@ errors.yourDetails.firstName;
 
 - `validationSchemaOption`: hardly anyone want to use validation with abort early, or change the config.
 
-- native validation: hardly anyone used this feature. https://react-hook-form.com/api/#Browserbuiltinvalidation
+- native validation: hardly anyone used this feature. https://react-hook-form.com/docs/#Browserbuiltinvalidation
 
 ## [3.0.0] - 2019-04-21
 

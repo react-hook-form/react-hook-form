@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://react-hook-form.com/get-started">Get started</a> | 
-  <a href="https://react-hook-form.com/api">API</a> |
+  <a href="https://react-hook-form.com/docs">API</a> |
   <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
   <a href="https://react-hook-form.com/faqs">FAQs</a> |
   <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">Examples</a>
