@@ -786,7 +786,7 @@ describe('setValue', () => {
   });
 
   describe('with touched', () => {
-    it('should update touched with shouldTouched config', () => {
+    it('should update touched with shouldTouched option', () => {
       const App = () => {
         const {
           setValue,
