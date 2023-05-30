@@ -171,6 +171,14 @@ export type Field = {
 // @public (undocumented)
 export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<infer U> | null | undefined ? U : never;
 
+// @public (undocumented)
+export type FieldArrayContextProps<TFieldValues extends FieldValues> = {
+    fieldArrays?: Record<FieldArrayPath<TFieldValues>, UseFieldArrayReturn<TFieldValues>>;
+};
+
+// @public (undocumented)
+export type FieldArrayContextReturn<TFieldValues extends FieldValues> = Required<FieldArrayContextProps<TFieldValues>>;
+
 // @public
 export type FieldArrayMethodProps = {
     shouldFocus?: boolean;
@@ -273,7 +281,7 @@ export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TT
 // @public (undocumented)
 export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined> = {
     children: React_2.ReactNode | React_2.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues> & FieldArrayContextProps<TFieldValues>;
 
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = {
@@ -621,7 +629,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues, TContext
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues>;
+export const useFormContext: <TFieldValues extends FieldValues, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues> & Required<FieldArrayContextProps<TFieldValues>>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
