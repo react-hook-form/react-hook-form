@@ -1,59 +1,44 @@
 import * as React from 'react';
 
 import get from './utils/get';
-import { Control, FieldValues, SubmitHandler } from './types';
+import { Control, FieldValues, FormSubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
 export type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = Partial<{
-  control: Control<TFieldValues>;
-  children?: React.ReactNode | React.ReactNode[];
-  render?: (props: {
-    submit: (e?: React.FormEvent) => void;
-  }) => React.ReactNode | React.ReactNode[];
-  onSubmit: TTransformedValues extends FieldValues
-    ? SubmitHandler<TTransformedValues>
-    : SubmitHandler<TFieldValues>;
-}> &
-  Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
-  (
-    | Partial<{
-        onSuccess: ({ response }: { response: Response }) => void;
-        onError: ({
-          response,
-          error,
-        }:
-          | {
-              response: Response;
-              error?: undefined;
-            }
-          | {
-              response?: undefined;
-              error: unknown;
-            }) => void;
-        headers: Record<string, string>;
-        validateStatus: (status: number) => boolean;
-        fetcher: undefined;
-      }>
-    | Partial<{
-        onSuccess: undefined;
-        onError: undefined;
-        validateStatus: undefined;
-        headers: undefined;
-        fetcher: (
-          action: string,
-          payload: {
-            values?: TFieldValues;
-            method: string;
-            event?: React.BaseSyntheticEvent;
-            formData: FormData;
-            formDataJson: string;
-          },
-        ) => Promise<void> | void;
-      }>
-  );
+> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
+  Partial<{
+    control: Control<TFieldValues>;
+    headers: Record<string, string>;
+    validateStatus: (status: number) => boolean;
+    onError: ({
+      response,
+      error,
+    }:
+      | {
+          response: Response;
+          error?: undefined;
+        }
+      | {
+          response?: undefined;
+          error: unknown;
+        }) => void;
+    onSuccess: ({ response }: { response: Response }) => void;
+    onSubmit: TTransformedValues extends FieldValues
+      ? FormSubmitHandler<TTransformedValues>
+      : FormSubmitHandler<TFieldValues>;
+    method: 'post' | 'put' | 'delete';
+    children: React.ReactNode | React.ReactNode[];
+    render: (props: {
+      submit: (e?: React.FormEvent) => void;
+    }) => React.ReactNode | React.ReactNode[];
+    encType:
+      | 'application/x-www-form-urlencoded'
+      | 'multipart/form-data'
+      | 'text/plain'
+      | 'application/json';
+  }>;
 
 const POST_REQUEST = 'post';
 
@@ -74,7 +59,7 @@ const POST_REQUEST = 'post';
  *       <input {...register("name")} />
  *       <p>{errors?.root?.server && 'Server error'}</p>
  *       <button>Submit</button>
- *     </form>
+ *     </Form>
  *   );
  * }
  * ```
@@ -97,74 +82,78 @@ export function Form<
     render,
     onSuccess,
     validateStatus,
-    fetcher,
     ...rest
   } = props;
 
   const submit = async (event?: React.BaseSyntheticEvent) => {
-    let serverError = false;
+    let hasError = false;
+    let type = '';
 
-    await control.handleSubmit(async (values) => {
+    await control.handleSubmit(async (data) => {
       const formData = new FormData();
       let formDataJson = '';
 
       try {
-        formDataJson = JSON.stringify(values);
+        formDataJson = JSON.stringify(data);
       } catch {}
 
-      control._names.mount.forEach((name) =>
-        formData.append(name, get(values, name)),
-      );
+      for (const name of control._names.mount) {
+        formData.append(name, get(data, name));
+      }
 
-      onSubmit && onSubmit(values);
+      if (onSubmit) {
+        onSubmit({
+          data,
+          event,
+          method,
+          formData,
+          formDataJson,
+        });
+      }
 
       if (action) {
         try {
-          if (fetcher) {
-            await fetcher(action, {
-              method,
-              values,
-              event,
-              formData,
-              formDataJson,
-            });
+          const shouldStringifySubmissionData = [
+            headers && headers['Content-Type'],
+            encType,
+          ].some((value) => value && value.includes('json'));
+
+          const response = await fetch(action, {
+            method,
+            headers: {
+              ...headers,
+              ...(encType ? { 'Content-Type': encType } : {}),
+            },
+            body: shouldStringifySubmissionData ? formDataJson : formData,
+          });
+
+          if (
+            response &&
+            (validateStatus
+              ? !validateStatus(response.status)
+              : response.status < 200 || response.status >= 300)
+          ) {
+            hasError = true;
+            onError && onError({ response });
+            type = String(response.status);
           } else {
-            const shouldStringifySubmissionData =
-              headers && headers['Content-Type'].includes('json');
-
-            const response = await fetch(action, {
-              method,
-              headers: {
-                ...headers,
-                ...(encType ? { 'Content-Type': encType } : {}),
-              },
-              body: shouldStringifySubmissionData ? formDataJson : formData,
-            });
-
-            if (
-              response &&
-              (validateStatus
-                ? !validateStatus(response.status)
-                : response.status < 200 || response.status >= 300)
-            ) {
-              serverError = true;
-              onError && onError({ response });
-            } else {
-              onSuccess && onSuccess({ response });
-            }
+            onSuccess && onSuccess({ response });
           }
         } catch (error: unknown) {
-          serverError = true;
+          hasError = true;
           onError && onError({ error });
         }
       }
     })(event);
 
-    serverError &&
-      props.control &&
+    if (hasError && props.control) {
       props.control._subjects.state.next({
         isSubmitSuccessful: false,
       });
+      props.control.setError('root.server', {
+        type,
+      });
+    }
   };
 
   React.useEffect(() => {

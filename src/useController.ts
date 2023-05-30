@@ -76,6 +76,8 @@ export function useController<
     }),
   );
 
+  _registerProps.current = control.register(name, props.rules);
+
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
