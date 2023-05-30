@@ -21,7 +21,7 @@ import { useSubscribe } from './useSubscribe';
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -50,7 +50,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -80,7 +80,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -113,7 +113,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @example
  * ```tsx
@@ -129,7 +129,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @example
  * ```tsx

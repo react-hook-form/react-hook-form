@@ -17,7 +17,7 @@ https://user-images.githubusercontent.com/10513364/152621466-59a41c65-52b4-4518-
 
 <p align="center">
   <a href="https://react-hook-form.com/get-started">Get started</a> | 
-  <a href="https://react-hook-form.com/api">API</a> |
+  <a href="https://react-hook-form.com/docs">API</a> |
   <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">Examples</a> |
   <a href="https://react-hook-form.com">Demo</a> |
   <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
