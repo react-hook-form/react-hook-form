@@ -22,7 +22,9 @@ export function createRollupConfig(options, callback) {
       exports: 'named',
     },
     plugins: [
-      external(),
+      external({
+        packageJsonPath: '../../package.json',
+      }),
       typescript({
         tsconfig: options.tsconfig,
         clean: true,
