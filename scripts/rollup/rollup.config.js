@@ -8,12 +8,14 @@ const options = [
     name,
     format: 'cjs',
     input: pkg.source,
+    external: ['react', 'react-dom'],
   },
-  { name, format: 'esm', input: pkg.source },
+  { name, format: 'esm', input: pkg.source, external: ['react', 'react-dom'] },
   {
     name,
     format: 'umd',
     input: pkg.source,
+    external: ['react', 'react-dom'],
   },
 ];
 
