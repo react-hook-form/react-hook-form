@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import get from './utils/get';
 import { Control, FieldValues, FormSubmitHandler } from './types';
