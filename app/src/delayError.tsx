@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import * as React from 'react';
+import React from 'react';
 
 export function DelayError() {
   const {

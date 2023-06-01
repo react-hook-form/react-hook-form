@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Control } from '../../src/types';
 
