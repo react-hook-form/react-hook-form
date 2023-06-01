@@ -239,32 +239,10 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 // @public (undocumented)
 export type FieldValues = Record<string, any>;
 
+// Warning: (ae-forgotten-export) The symbol "FormProps" needs to be exported by the entry point index.d.ts
+//
 // @public
 export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): JSX.Element;
-
-// @public (undocumented)
-export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_2.FormHTMLAttributes<HTMLFormElement>, 'onError'> & Partial<{
-    control: Control<TFieldValues>;
-    headers: Record<string, string>;
-    validateStatus: (status: number) => boolean;
-    onError: ({ response, error, }: {
-        response: Response;
-        error?: undefined;
-    } | {
-        response?: undefined;
-        error: unknown;
-    }) => void;
-    onSuccess: ({ response }: {
-        response: Response;
-    }) => void;
-    onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
-    method: 'post' | 'put' | 'delete';
-    children: React_2.ReactNode | React_2.ReactNode[];
-    render: (props: {
-        submit: (e?: React_2.FormEvent) => void;
-    }) => React_2.ReactNode | React_2.ReactNode[];
-    encType: 'application/x-www-form-urlencoded' | 'multipart/form-data' | 'text/plain' | 'application/json';
-}>;
 
 // @public
 export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => JSX.Element;
