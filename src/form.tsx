@@ -1,44 +1,8 @@
 import React from 'react';
 
 import get from './utils/get';
-import { Control, FieldValues, FormSubmitHandler } from './types';
+import { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
-
-export type FormProps<
-  TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues | undefined = undefined,
-> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
-  Partial<{
-    control: Control<TFieldValues>;
-    headers: Record<string, string>;
-    validateStatus: (status: number) => boolean;
-    onError: ({
-      response,
-      error,
-    }:
-      | {
-          response: Response;
-          error?: undefined;
-        }
-      | {
-          response?: undefined;
-          error: unknown;
-        }) => void;
-    onSuccess: ({ response }: { response: Response }) => void;
-    onSubmit: TTransformedValues extends FieldValues
-      ? FormSubmitHandler<TTransformedValues>
-      : FormSubmitHandler<TFieldValues>;
-    method: 'post' | 'put' | 'delete';
-    children: React.ReactNode | React.ReactNode[];
-    render: (props: {
-      submit: (e?: React.FormEvent) => void;
-    }) => React.ReactNode | React.ReactNode[];
-    encType:
-      | 'application/x-www-form-urlencoded'
-      | 'multipart/form-data'
-      | 'text/plain'
-      | 'application/json';
-  }>;
 
 const POST_REQUEST = 'post';
 
@@ -64,7 +28,7 @@ const POST_REQUEST = 'post';
  * }
  * ```
  */
-export function Form<
+function Form<
   T extends FieldValues,
   U extends FieldValues | undefined = undefined,
 >(props: FormProps<T, U>) {
@@ -179,3 +143,5 @@ export function Form<
     </form>
   );
 }
+
+export { Form };
