@@ -4,7 +4,7 @@ import get from './utils/get';
 import { Control, FieldValues, FormSubmitHandler } from './types';
 import { useFormContext } from './useFormContext';
 
-export type FormProps<
+type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
@@ -64,7 +64,7 @@ const POST_REQUEST = 'post';
  * }
  * ```
  */
-export function Form<
+function Form<
   T extends FieldValues,
   U extends FieldValues | undefined = undefined,
 >(props: FormProps<T, U>) {
@@ -179,3 +179,5 @@ export function Form<
     </form>
   );
 }
+
+export { Form };
