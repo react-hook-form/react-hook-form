@@ -3,6 +3,7 @@ import React from 'react';
 import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import cloneObject from './utils/cloneObject';
+import deepEqual from './utils/deepEqual';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -187,6 +188,28 @@ export function useWatch<TFieldValues extends FieldValues>(
       defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
     ),
   );
+
+  const _value = React.useRef(value);
+  _value.current = value;
+
+  const _defaultValue = React.useRef(defaultValue);
+  _defaultValue.current = defaultValue;
+
+  const _prevName = React.useRef(name);
+
+  React.useEffect(() => {
+    if (deepEqual(_prevName.current, name)) {
+      return;
+    }
+    _prevName.current = name;
+    const newValue = control._getWatch(
+      name as InternalFieldName,
+      _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
+    );
+    if (newValue !== _value.current) {
+      updateValue(newValue);
+    }
+  }, [control, name]);
 
   React.useEffect(() => control._removeUnmounted());
 

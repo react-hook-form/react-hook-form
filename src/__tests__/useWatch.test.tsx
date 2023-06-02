@@ -338,6 +338,46 @@ describe('useWatch', () => {
     expect(screen.getByText('345')).toBeVisible();
   });
 
+  it('should update on name change', () => {
+    const App = () => {
+      const [activeField, setActiveField] = React.useState('test1');
+      const { control, register } = useForm();
+      const value = useWatch({
+        name: activeField,
+        control,
+        defaultValue: 'default',
+      });
+
+      return (
+        <div>
+          <input {...register('test2')} />
+          <p>{value}</p>
+          <button
+            onClick={() => {
+              setActiveField('test2');
+            }}
+          >
+            Switch
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '1234',
+      },
+    });
+
+    expect(screen.queryByText('1234')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByText('1234')).toBeVisible();
+  });
+
   describe('when disabled prop is used', () => {
     it('should be able to disabled subscription and started with true', async () => {
       type FormValues = {
