@@ -9,7 +9,6 @@
 import { ChangeEvent } from 'react';
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
-import * as React_3 from 'react';
 import { ReactElement } from 'react';
 
 // @public (undocumented)
@@ -245,7 +244,7 @@ export type FieldValues = Record<string, any>;
 export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): JSX.Element;
 
 // @public (undocumented)
-export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_3.FormHTMLAttributes<HTMLFormElement>, 'onError'> & Partial<{
+export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_2.FormHTMLAttributes<HTMLFormElement>, 'onError'> & Partial<{
     control: Control<TFieldValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
@@ -261,10 +260,10 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
     }) => void;
     onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
     method: 'post' | 'put' | 'delete';
-    children: React_3.ReactNode | React_3.ReactNode[];
+    children: React_2.ReactNode | React_2.ReactNode[];
     render: (props: {
-        submit: (e?: React_3.FormEvent) => void;
-    }) => React_3.ReactNode | React_3.ReactNode[];
+        submit: (e?: React_2.FormEvent) => void;
+    }) => React_2.ReactNode | React_2.ReactNode[];
     encType: 'application/x-www-form-urlencoded' | 'multipart/form-data' | 'text/plain' | 'application/json';
 }>;
 

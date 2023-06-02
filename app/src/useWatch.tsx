@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useForm, Control, useWatch, Controller } from 'react-hook-form';
 import { useRef } from 'react';
 
