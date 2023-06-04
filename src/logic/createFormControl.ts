@@ -1,4 +1,4 @@
-import { EVENTS, FORM_DEFAULT_STATE, VALIDATION_MODE } from '../constants';
+import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
   ChangeHandler,
@@ -100,8 +100,18 @@ export function createFormControl<
     ...props,
   };
   let _formState: FormState<TFieldValues> = {
-    ...FORM_DEFAULT_STATE,
+    submitCount: 0,
+    isDirty: false,
     isLoading: isFunction(_options.defaultValues),
+    isValidating: false,
+    isSubmitted: false,
+    isSubmitting: false,
+    isSubmitSuccessful: false,
+    isValid: false,
+    touchedFields: {},
+    dirtyFields: {},
+    errors: {},
+    disabled: false,
   };
   let _fields: FieldRefs = {};
   let _defaultValues =

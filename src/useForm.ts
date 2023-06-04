@@ -5,7 +5,6 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import { FORM_DEFAULT_STATE } from './constants';
 import {
   FieldValues,
   FormState,
@@ -55,8 +54,18 @@ export function useForm<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
-    ...FORM_DEFAULT_STATE,
+    isDirty: false,
+    isValidating: false,
     isLoading: isFunction(props.defaultValues),
+    isSubmitted: false,
+    isSubmitting: false,
+    isSubmitSuccessful: false,
+    isValid: false,
+    submitCount: 0,
+    dirtyFields: {},
+    touchedFields: {},
+    errors: {},
+    disabled: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
