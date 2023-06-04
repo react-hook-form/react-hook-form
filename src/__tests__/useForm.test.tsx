@@ -1999,10 +1999,10 @@ describe('useForm', () => {
     await waitFor(() => {
       expect(
         (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
-      ).toBeFalsy();
+      ).toBeTruthy();
       expect(
         (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
-      ).toBeFalsy();
+      ).toBeTruthy();
     });
   });
 
