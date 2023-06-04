@@ -300,6 +300,7 @@ describe('useController', () => {
       const { field } = useController({
         control,
         name: 'test',
+        defaultValue: '',
       });
 
       return (
@@ -314,15 +315,15 @@ describe('useController', () => {
           </button>
         </div>
       );
-
-      render(<App />);
-
-      fireEvent.click(screen.getByRole('button'));
-
-      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        'data',
-      );
     };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'data',
+    );
   });
 
   it('should be able to setValue after reset', async () => {
