@@ -1,10 +1,9 @@
-import focusFieldBy from '../../logic/focusFieldBy';
-import get from '../../utils/get';
+import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
 
 describe('focusFieldBy', () => {
   it('should focus on the first error it encounter', () => {
     const focus = jest.fn();
-    focusFieldBy(
+    iterateFieldsByAction(
       {
         test: {
           _f: {
@@ -16,16 +15,10 @@ describe('focusFieldBy', () => {
           },
         },
       },
-      (key) =>
-        get(
-          {
-            test: {
-              message: 'test',
-              type: 'required',
-            },
-          },
-          String(key),
-        ),
+      (ref) => {
+        ref.focus && ref.focus();
+        return 1;
+      },
     );
 
     expect(focus).toBeCalled();
@@ -33,7 +26,7 @@ describe('focusFieldBy', () => {
 
   it('should focus on first option when options input error encounters', () => {
     const focus = jest.fn();
-    focusFieldBy(
+    iterateFieldsByAction(
       {
         test: {
           _f: {
@@ -42,24 +35,17 @@ describe('focusFieldBy', () => {
               name: 'test',
             },
             refs: [
-              // @ts-expect-error
               {
                 focus,
-              },
+              } as unknown as HTMLInputElement,
             ],
           },
         },
       },
-      (key) =>
-        get(
-          {
-            test: {
-              message: 'test',
-              type: 'required',
-            },
-          },
-          String(key),
-        ),
+      (ref) => {
+        ref.focus && ref.focus();
+        return 1;
+      },
     );
 
     expect(focus).toBeCalled();
@@ -67,20 +53,14 @@ describe('focusFieldBy', () => {
 
   it('should not call focus when field is undefined', () => {
     expect(() => {
-      focusFieldBy(
+      iterateFieldsByAction(
         {
           test: undefined,
         },
-        (key) =>
-          get(
-            {
-              test: {
-                message: 'test',
-                type: 'required',
-              },
-            },
-            String(key),
-          ),
+        (ref) => {
+          ref.focus && ref.focus();
+          return 1;
+        },
       );
     }).not.toThrow();
   });

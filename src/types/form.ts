@@ -101,6 +101,7 @@ export type UseFormProps<
   TContext = any,
 > = Partial<{
   mode: Mode;
+  disabled: boolean;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
@@ -139,6 +140,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
+  disabled: boolean;
   submitCount: number;
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
@@ -779,6 +781,7 @@ export type Control<
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
+  _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;

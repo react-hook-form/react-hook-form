@@ -115,6 +115,7 @@ export function useController<
     field: {
       name,
       value,
+      disabled: formState.disabled,
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({

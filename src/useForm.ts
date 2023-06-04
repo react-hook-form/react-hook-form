@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import { FORM_DEFAULT_STATE } from './constants';
 import {
   FieldValues,
   FormState,
@@ -54,17 +55,8 @@ export function useForm<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
-    isDirty: false,
-    isValidating: false,
+    ...FORM_DEFAULT_STATE,
     isLoading: isFunction(props.defaultValues),
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    submitCount: 0,
-    dirtyFields: {},
-    touchedFields: {},
-    errors: {},
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
@@ -121,6 +113,11 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(
+    () => control._disableForm(props.disabled),
+    [control, props.disabled],
+  );
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
