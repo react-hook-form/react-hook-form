@@ -6,6 +6,7 @@
 
 /// <reference types="react" />
 
+import { ChangeEvent } from 'react';
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -92,7 +93,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    onChange: (...event: any[]) => void;
+    onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
     onBlur: Noop;
     value: FieldPathValue<TFieldValues, TName>;
     name: TName;
