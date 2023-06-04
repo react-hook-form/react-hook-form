@@ -8,23 +8,24 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
-function Input<TFieldValues extends FieldValues>({
+function Input({
   onChange,
   onBlur,
   placeholder,
-}: Pick<ControllerRenderProps<TFieldValues>, 'onChange' | 'onBlur'> & {
+}: {
+  onChange: (newValue: string) => void;
+  onBlur: () => void;
   placeholder?: string;
 }) {
   return (
     <input
       placeholder={placeholder}
-      onChange={() => onChange(1)}
+      onChange={(event) => onChange(event.target.value)}
       onBlur={() => onBlur()}
     />
   );
@@ -378,7 +379,7 @@ describe('Controller', () => {
     expect(onChange).toBeCalled();
   });
 
-  it('should invoke custom onChange method', () => {
+  it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
     const Component = () => {
       const { control } = useForm();
