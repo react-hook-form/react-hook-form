@@ -146,7 +146,7 @@ describe('useController', () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
-          test: string;
+          test: boolean;
         }>();
 
         watchResult.push(watch());
@@ -154,7 +154,6 @@ describe('useController', () => {
         const { field } = useController({
           name: 'test',
           control,
-          defaultValue: '',
         });
 
         return (
@@ -183,7 +182,7 @@ describe('useController', () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
-          test: string;
+          test: string | boolean;
         }>();
 
         watchResult.push(watch());
@@ -301,6 +300,7 @@ describe('useController', () => {
       const { field } = useController({
         control,
         name: 'test',
+        defaultValue: '',
       });
 
       return (
@@ -315,15 +315,15 @@ describe('useController', () => {
           </button>
         </div>
       );
-
-      render(<App />);
-
-      fireEvent.click(screen.getByRole('button'));
-
-      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        'data',
-      );
     };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'data',
+    );
   });
 
   it('should be able to setValue after reset', async () => {
