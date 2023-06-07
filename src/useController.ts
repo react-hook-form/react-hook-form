@@ -111,10 +111,13 @@ export function useController<
     };
   }, [name, control, isArrayField, shouldUnregister]);
 
+  const defaultValue = formState.defaultValues ? formState.defaultValues[name] : undefined;
+
   return {
     field: {
       name,
       value,
+      defaultValue,
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({
