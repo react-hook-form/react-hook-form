@@ -114,10 +114,10 @@ export function useController<
   const defaultValue = formState.defaultValues ? formState.defaultValues[name] : undefined;
 
   return {
+    defaultValue,
     field: {
       name,
       value,
-      defaultValue,
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({

@@ -3,7 +3,6 @@ import React, { ChangeEvent } from 'react';
 import { RegisterOptions } from './validator';
 import {
   Control,
-  DeepPartial,
   FieldError,
   FieldPath,
   FieldPathValue,
@@ -27,7 +26,6 @@ export type ControllerRenderProps<
   onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
   onBlur: Noop;
   value: FieldPathValue<TFieldValues, TName>;
-  defaultValue: Readonly<DeepPartial<TFieldValues>>[TName] | undefined;
   name: TName;
   ref: RefCallBack;
 };
@@ -50,6 +48,7 @@ export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
+  defaultValue?: FieldPathValue<TFieldValues, TName>;
   field: ControllerRenderProps<TFieldValues, TName>;
   formState: UseFormStateReturn<TFieldValues>;
   fieldState: ControllerFieldState;
