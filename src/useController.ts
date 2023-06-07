@@ -111,7 +111,9 @@ export function useController<
     };
   }, [name, control, isArrayField, shouldUnregister]);
 
-  const defaultValue = formState.defaultValues ? formState.defaultValues[name] : undefined;
+  const defaultValue = formState.defaultValues
+    ? formState.defaultValues[name]
+    : undefined;
 
   return {
     defaultValue,
