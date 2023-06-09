@@ -99,6 +99,7 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
+
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
@@ -315,8 +316,10 @@ export function createFormControl<
 
     if (isBlurEvent) {
       if (_formState.focused === name) {
-        _formState.focused = '';
+        set(_formState, 'focused', '');
+        output.focused = '';
         shouldUpdateField = true;
+        shouldRender = true;
       }
       const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
@@ -331,7 +334,10 @@ export function createFormControl<
     }
 
     if (isFocusEvent) {
-      _formState.focused = name;
+      output.focused = name;
+      set(_formState, 'focused', name);
+      shouldUpdateField = true;
+      shouldRender = true;
     }
 
     shouldUpdateField && shouldRender && _subjects.state.next(output);
