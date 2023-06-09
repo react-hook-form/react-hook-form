@@ -690,6 +690,7 @@ export function createFormControl<
         event.type === EVENTS.FOCUS || event.type === EVENTS.FOCUS_IN;
 
       const shouldSkipValidation =
+        isFocusEvent ||
         (!hasValidation(field._f) &&
           !_options.resolver &&
           !get(_formState.errors, name) &&
@@ -708,7 +709,7 @@ export function createFormControl<
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
         delayErrorCallback && delayErrorCallback(0);
-      } else if (field._f.onChange) {
+      } else if (!isFocusEvent && field._f.onChange) {
         field._f.onChange(event);
       }
 
