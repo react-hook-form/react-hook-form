@@ -727,6 +727,7 @@ export function createFormControl<
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
       !isBlurEvent &&
+        !isFocusEvent &&
         _subjects.values.next({
           name,
           type: event.type,
@@ -742,7 +743,10 @@ export function createFormControl<
         );
       }
 
-      !isBlurEvent && watched && _subjects.state.next({ ..._formState });
+      !isBlurEvent &&
+        !isFocusEvent &&
+        watched &&
+        _subjects.state.next({ ..._formState });
 
       _updateIsValidating(true);
 
