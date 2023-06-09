@@ -76,6 +76,7 @@ export const Controller: <TFieldValues extends FieldValues = FieldValues, TName 
 
 // @public (undocumented)
 export type ControllerFieldState = {
+    isFocused: boolean;
     invalid: boolean;
     isTouched: boolean;
     isDirty: boolean;

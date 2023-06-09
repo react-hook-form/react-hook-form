@@ -166,6 +166,10 @@ export function useController<
     fieldState: Object.defineProperties(
       {},
       {
+        isFocused: {
+          enumerable: true,
+          get: () => formState.focused === name,
+        },
         invalid: {
           enumerable: true,
           get: () => !!get(formState.errors, name),
