@@ -708,9 +708,6 @@ export function createFormControl<
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
         delayErrorCallback && delayErrorCallback(0);
-      } else if (isFocusEvent) {
-        field._f.onFocus && field._f.onFocus(event);
-        delayErrorCallback && delayErrorCallback(0);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
