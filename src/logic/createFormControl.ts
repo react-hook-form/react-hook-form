@@ -316,6 +316,8 @@ export function createFormControl<
 
     if (isBlurEvent) {
       if (_formState.focused === name) {
+        // blurs are special, if they happen because a different form in the field is getting focused
+        // we don't want to update twice and we also don't want to update "late"
         set(_formState, 'focused', '');
         output.focused = '';
         shouldUpdateField = true;
