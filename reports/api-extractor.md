@@ -95,6 +95,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
     onBlur: Noop;
+    onFocus: Noop;
     value: FieldPathValue<TFieldValues, TName>;
     name: TName;
     ref: RefCallBack;
@@ -289,6 +290,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
+    focused: string;
 };
 
 // @public (undocumented)
@@ -450,6 +452,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     shouldUnregister?: boolean;
     onChange?: (event: any) => void;
     onBlur?: (event: any) => void;
+    onFocus?: (event: any) => void;
     disabled: boolean;
     deps: InternalFieldName | InternalFieldName[];
 }> & ({
@@ -625,6 +628,7 @@ export const useFormContext: <TFieldValues extends FieldValues, TransformedValue
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
+    isFocused: boolean;
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
@@ -665,6 +669,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <TFieldName exte
 export type UseFormRegisterReturn<TFieldName extends InternalFieldName = InternalFieldName> = {
     onChange: ChangeHandler;
     onBlur: ChangeHandler;
+    onFocus: ChangeHandler;
     ref: RefCallBack;
     name: TFieldName;
     min?: string | number;
@@ -828,7 +833,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:105:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:428:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
