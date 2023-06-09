@@ -54,6 +54,7 @@ export function useForm<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
+    focused: '',
     isDirty: false,
     isValidating: false,
     isLoading: isFunction(props.defaultValues),

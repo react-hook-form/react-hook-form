@@ -108,6 +108,7 @@ export function createFormControl<
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
+    focused: '',
     touchedFields: {},
     dirtyFields: {},
     errors: {},
@@ -279,6 +280,7 @@ export function createFormControl<
     isBlurEvent?: boolean,
     shouldDirty?: boolean,
     shouldRender?: boolean,
+    isFocusEvent?: boolean,
   ): Partial<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
@@ -312,6 +314,10 @@ export function createFormControl<
     }
 
     if (isBlurEvent) {
+      if (_formState.focused === name) {
+        _formState.focused = '';
+        shouldUpdateField = true;
+      }
       const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
       if (!isPreviousFieldTouched) {
@@ -322,6 +328,10 @@ export function createFormControl<
           (_proxyFormState.touchedFields &&
             isPreviousFieldTouched !== isBlurEvent);
       }
+    }
+
+    if (isFocusEvent) {
+      _formState.focused = name;
     }
 
     shouldUpdateField && shouldRender && _subjects.state.next(output);
@@ -667,6 +677,10 @@ export function createFormControl<
       const fieldValue = getCurrentFieldValue();
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+
+      const isFocusEvent =
+        event.type === EVENTS.FOCUS || event.type === EVENTS.FOCUS_IN;
+
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !_options.resolver &&
@@ -686,6 +700,9 @@ export function createFormControl<
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
         delayErrorCallback && delayErrorCallback(0);
+      } else if (isFocusEvent) {
+        field._f.onFocus && field._f.onFocus(event);
+        delayErrorCallback && delayErrorCallback(0);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
@@ -695,6 +712,8 @@ export function createFormControl<
         fieldValue,
         isBlurEvent,
         false,
+        false,
+        isFocusEvent,
       );
 
       const shouldRender = !isEmptyObject(fieldState) || watched;
@@ -845,6 +864,7 @@ export function createFormControl<
     name,
     formState,
   ) => ({
+    isFocused: (formState || _formState).focused === name,
     invalid: !!get((formState || _formState).errors, name),
     isDirty: !!get((formState || _formState).dirtyFields, name),
     isTouched: !!get((formState || _formState).touchedFields, name),
@@ -974,6 +994,7 @@ export function createFormControl<
         : {}),
       name,
       onChange,
+      onFocus: onChange,
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {

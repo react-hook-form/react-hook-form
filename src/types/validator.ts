@@ -42,6 +42,7 @@ export type RegisterOptions<
   shouldUnregister?: boolean;
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;
+  onFocus?: (event: any) => void;
   disabled: boolean;
   deps: InternalFieldName | InternalFieldName[];
 }> &

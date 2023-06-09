@@ -25,6 +25,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
   onBlur: Noop;
+  onFocus: Noop;
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;
   ref: RefCallBack;

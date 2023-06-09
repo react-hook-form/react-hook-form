@@ -1,6 +1,8 @@
 import { ValidationMode } from './types';
 
 export const EVENTS = {
+  FOCUS: 'focus',
+  FOCUS_IN: 'focusin',
   BLUR: 'blur',
   FOCUS_OUT: 'focusout',
   CHANGE: 'change',

@@ -126,6 +126,17 @@ export function useController<
           }),
         [name],
       ),
+      onFocus: React.useCallback(
+        () =>
+          _registerProps.current.onFocus({
+            target: {
+              value: get(control._formValues, name),
+              name: name as InternalFieldName,
+            },
+            type: EVENTS.FOCUS,
+          }),
+        [name, control],
+      ),
       onBlur: React.useCallback(
         () =>
           _registerProps.current.onBlur({

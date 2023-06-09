@@ -144,6 +144,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
+  focused: string;
 };
 
 export type KeepStateOptions = Partial<{
@@ -168,6 +169,7 @@ export type UseFormRegisterReturn<
 > = {
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
+  onFocus: ChangeHandler;
   ref: RefCallBack;
   name: TFieldName;
   min?: string | number;
@@ -343,6 +345,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
+  isFocused: boolean;
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
