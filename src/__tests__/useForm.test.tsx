@@ -1974,7 +1974,7 @@ describe('useForm', () => {
     screen.getByText('isValidating: false');
   });
 
-  it('should update form values when values updates even it is same values', async () => {
+  it('should update form values when values updates even with the same values', async () => {
     type FormValues = {
       firstName: string;
     };
