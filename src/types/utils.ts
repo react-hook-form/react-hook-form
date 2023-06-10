@@ -1,4 +1,4 @@
-import { NestedValue } from './form';
+import { unknown } from './form';
 
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
@@ -96,14 +96,14 @@ export type IsEqual<T1, T2> = T1 extends T2
 
 export type DeepMap<T, TValue> = IsAny<T> extends true
   ? any
-  : T extends BrowserNativeObject | NestedValue
+  : T extends BrowserNativeObject | unknown
   ? TValue
   : T extends object
   ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
   : TValue;
 
 export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], NestedValue | Date | FileList>,
+  Exclude<T[keyof T], unknown | Date | FileList>,
   any[] | object
 > extends never
   ? true
