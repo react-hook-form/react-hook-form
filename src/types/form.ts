@@ -849,7 +849,7 @@ export type FormProviderProps<
 export type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
+> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
     control: Control<TFieldValues>;
     headers: Record<string, string>;

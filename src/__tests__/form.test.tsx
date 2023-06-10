@@ -92,7 +92,12 @@ describe('Form', () => {
       return (
         <Form
           action={'/success'}
-          onSubmit={onSubmit}
+          onSubmit={({ data, formData, formDataJson }) => {
+            data;
+            formData;
+            formDataJson;
+            onSubmit();
+          }}
           control={control}
           onError={onError}
           onSuccess={async ({ response }) => {
