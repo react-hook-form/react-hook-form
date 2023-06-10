@@ -80,9 +80,13 @@ export const FormProvider = <
 >(
   props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
 ) => {
-  const { children, ...data } = props;
+  const { children, ...rest } = props;
+  const restPropsRef = React.useRef(rest);
+
   return (
-    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
+    <HookFormContext.Provider
+      value={restPropsRef.current as unknown as UseFormReturn}
+    >
       {children}
     </HookFormContext.Provider>
   );
