@@ -296,7 +296,6 @@ describe('Form', () => {
           encType={'application/json'}
           action={'/json'}
           control={control}
-          encType="application/json"
           onSuccess={onSuccess}
         >
           <button>Submit</button>
