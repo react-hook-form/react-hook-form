@@ -91,8 +91,14 @@ describe('Form', () => {
 
       return (
         <Form
+          encType={'application/json'}
           action={'/success'}
-          onSubmit={onSubmit}
+          onSubmit={({ data, formData, formDataJson }) => {
+            data;
+            formData;
+            formDataJson;
+            onSubmit();
+          }}
           control={control}
           onError={onError}
           onSuccess={async ({ response }) => {
@@ -132,7 +138,12 @@ describe('Form', () => {
       } = useForm();
 
       return (
-        <Form action={'/error'} onSubmit={onSubmit} control={control}>
+        <Form
+          encType={'application/json'}
+          action={'/error'}
+          onSubmit={onSubmit}
+          control={control}
+        >
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
           {errors.root?.server && 'This is a server error'}
@@ -163,6 +174,7 @@ describe('Form', () => {
 
       return (
         <Form
+          encType={'application/json'}
           action={'/status'}
           control={control}
           validateStatus={(status) => status === 200}
@@ -190,7 +202,7 @@ describe('Form', () => {
       } = useForm();
 
       return (
-        <Form action={'/get'} control={control}>
+        <Form encType={'application/json'} action={'/get'} control={control}>
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
@@ -215,7 +227,6 @@ describe('Form', () => {
 
       return (
         <Form
-          action={'/success'}
           control={control}
           render={({ submit }) => {
             return (
@@ -282,9 +293,9 @@ describe('Form', () => {
 
       return (
         <Form
+          encType={'application/json'}
           action={'/json'}
           control={control}
-          encType="application/json"
           onSuccess={onSuccess}
         >
           <button>Submit</button>
