@@ -621,7 +621,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues, TContext
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues>;
+export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues, TContext, TransformedValues>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
