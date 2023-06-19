@@ -96,6 +96,9 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href="https://www.casinoreviews.net/">
     <img width="94" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
 </a>
+<a target="_blank" href="https://fiberplane.com/">
+    <img width="94" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
+</a>
 
 ### Backers
 

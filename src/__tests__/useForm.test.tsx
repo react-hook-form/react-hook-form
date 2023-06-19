@@ -1973,4 +1973,69 @@ describe('useForm', () => {
 
     screen.getByText('isValidating: false');
   });
+
+  it('should update form values when values updates even with the same values', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const [firstName, setFirstName] = React.useState('C');
+      const values = React.useMemo(() => ({ firstName }), [firstName]);
+
+      const {
+        register,
+        formState: { isDirty },
+        watch,
+      } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'C',
+        },
+        values,
+        resetOptions: { keepDefaultValues: true },
+      });
+      const formValues = watch();
+
+      return (
+        <form>
+          <button type="button" onClick={() => setFirstName('A')}>
+            1
+          </button>
+          <button type="button" onClick={() => setFirstName('B')}>
+            2
+          </button>
+          <button type="button" onClick={() => setFirstName('C')}>
+            3
+          </button>
+          <input {...register('firstName')} placeholder="First Name" />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{formValues.firstName}</p>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: '1' }));
+
+    await waitFor(() => {
+      screen.getByText('A');
+      screen.getByText('dirty');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '2' }));
+
+    await waitFor(() => {
+      screen.getByText('B');
+      screen.getByText('dirty');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '3' }));
+
+    await waitFor(() => {
+      screen.getByText('C');
+      screen.getByText('pristine');
+    });
+  });
 });

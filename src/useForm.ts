@@ -101,7 +101,11 @@ export function useForm<
   });
 
   React.useEffect(() => {
-    if (props.values && !deepEqual(props.values, control._defaultValues)) {
+    if (
+      props.values &&
+      (!deepEqual(props.values, control._defaultValues) ||
+        !deepEqual(props.values, control._formValues))
+    ) {
       control._reset(props.values, control._options.resetOptions);
     } else {
       control._resetDefaultValues();
