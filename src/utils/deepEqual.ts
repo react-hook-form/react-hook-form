@@ -1,4 +1,5 @@
 import isObject from '../utils/isObject';
+
 import areSetsEqual from './areSetsEqual';
 import isDateObject from './isDateObject';
 import isPrimitive from './isPrimitive';
