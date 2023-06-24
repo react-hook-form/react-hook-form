@@ -98,6 +98,7 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
     value: FieldPathValue<TFieldValues, TName>;
     name: TName;
     ref: RefCallBack;
+    trigger: () => Promise<boolean>;
 };
 
 // @public (undocumented)
