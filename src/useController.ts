@@ -150,6 +150,7 @@ export function useController<
           };
         }
       },
+      trigger: () => methods.trigger(name),
     },
     formState,
     fieldState: Object.defineProperties(

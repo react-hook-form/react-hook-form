@@ -28,6 +28,7 @@ export type ControllerRenderProps<
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;
   ref: RefCallBack;
+  trigger: () => Promise<boolean>;
 };
 
 export type UseControllerProps<
