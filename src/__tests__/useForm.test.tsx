@@ -1165,8 +1165,8 @@ describe('useForm', () => {
 
         expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
           criteriaMode: undefined,
-          fields,
-          names: ['test.sub', 'test1'],
+          fields: { test: fields.test },
+          names: ['test.sub'],
         });
 
         await act(async () => {
