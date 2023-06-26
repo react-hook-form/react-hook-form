@@ -979,6 +979,10 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
+    if (!isUndefined(options.value)) {
+      set(_formValues, name, options.value);
+    }
+
     field
       ? disabledIsDefined &&
         set(
