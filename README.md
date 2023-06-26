@@ -81,9 +81,6 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href="https://kanamekey.com">
     <img width="94" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
 </a>
-<a target="_blank" href="https://formcarry.com/">
-    <img width="94" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
-</a>
 <a target="_blank" href="https://www.thinkmill.com.au/">
     <img width="94" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
 </a>
@@ -98,6 +95,27 @@ Thanks go to these kind and lovely sponsors!
 </a>
 <a target="_blank" href="https://fiberplane.com/">
     <img width="94" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
+</a>
+
+#### Past sponsors
+
+<a href="https://www.leniolabs.com/" target="_blank">
+  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="48" height="48" />
+</a>
+<a target="_blank" href="https://underbelly.is">
+    <img width="48" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
+</a>
+<a target="_blank" href="https://feathery.io">
+    <img width="48" src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" />
+</a>
+<a target="_blank" href="https://getform.io">
+    <img width="48" src="https://images.opencollective.com/getformio2/3c978c8/avatar/256.png" />
+</a>
+<a href="https://marmelab.com/" target="_blank">
+  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="48" height="48" />
+</a>
+<a target="_blank" href="https://formcarry.com/">
+    <img width="48" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
 </a>
 
 ### Backers
