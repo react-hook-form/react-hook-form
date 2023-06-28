@@ -146,7 +146,7 @@ describe('useController', () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
-          test: boolean;
+          test: string;
         }>();
 
         watchResult.push(watch());
@@ -154,6 +154,7 @@ describe('useController', () => {
         const { field } = useController({
           name: 'test',
           control,
+          defaultValue: '',
         });
 
         return (
@@ -182,7 +183,7 @@ describe('useController', () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
-          test: string | boolean;
+          test: string;
         }>();
 
         watchResult.push(watch());

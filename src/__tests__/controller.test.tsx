@@ -8,24 +8,23 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
+import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
-function Input({
+function Input<TFieldValues extends FieldValues>({
   onChange,
   onBlur,
   placeholder,
-}: {
-  onChange: (newValue: string) => void;
-  onBlur: () => void;
+}: Pick<ControllerRenderProps<TFieldValues>, 'onChange' | 'onBlur'> & {
   placeholder?: string;
 }) {
   return (
     <input
       placeholder={placeholder}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={() => onChange(1)}
       onBlur={() => onBlur()}
     />
   );
