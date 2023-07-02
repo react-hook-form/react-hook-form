@@ -11,7 +11,7 @@
 + onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
 ```
 
-- include missingg geneirc for useFormContext
+- Include missing generic for `useFormContext`
 
 ```diff
 - export const useFormContext: <TFieldValues extends FieldValues, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues>;
