@@ -377,7 +377,7 @@ describe('useForm', () => {
               data = d;
             })}
           >
-            sumbit
+            submit
           </button>
         );
       };
