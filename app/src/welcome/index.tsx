@@ -54,7 +54,7 @@ const items: Item[] = [
   {
     title: 'DefaultValues',
     description: 'Should populate defaultValue for inputs',
-    slugs: ['/default-values'],
+    slugs: ['/default-values', '/default-values-async'],
   },
   {
     title: 'FormState',
