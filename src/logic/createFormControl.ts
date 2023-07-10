@@ -110,6 +110,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
+    validatingFields: {},
     errors: {},
   };
   let _fields = {};
@@ -136,6 +137,7 @@ export function createFormControl<
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
+    validatingFields: false,
     touchedFields: false,
     isValidating: false,
     isValid: false,
@@ -174,11 +176,33 @@ export function createFormControl<
     }
   };
 
-  const _updateIsValidating = (value: boolean) =>
+  const _updateIsValidating = () => {
+    const isAnyFieldValidating = Object.values(
+      _formState.validatingFields,
+    ).some((val) => val);
     _proxyFormState.isValidating &&
+      _subjects.state.next({
+        isValidating: isAnyFieldValidating,
+      });
+  };
+
+  const _updateValidatingFields = (isValidating: boolean, name: string) => {
+    let currentRunningValidationsForField: number = get(
+      _formState.validatingFields,
+      name,
+    );
+    if (currentRunningValidationsForField === undefined) {
+      currentRunningValidationsForField = 0;
+    }
+    const newRunningValidationsForField = isValidating
+      ? currentRunningValidationsForField + 1
+      : currentRunningValidationsForField - 1;
+    set(_formState.validatingFields, name, newRunningValidationsForField);
     _subjects.state.next({
-      isValidating: value,
+      validatingFields: _formState.validatingFields,
     });
+    _updateIsValidating();
+  };
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
     name,
@@ -376,7 +400,8 @@ export function createFormControl<
       _subjects.state.next(updatedFormState);
     }
 
-    _updateIsValidating(false);
+    Object.keys(_formState.validatingFields).some((key) => key === name) &&
+      _updateValidatingFields(false, name);
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
@@ -717,7 +742,7 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
-      _updateIsValidating(true);
+      _updateValidatingFields(true, name);
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
@@ -776,7 +801,9 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    _updateIsValidating(true);
+    fieldNames.forEach((name) => {
+      _updateValidatingFields(true, name);
+    });
 
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
@@ -848,6 +875,7 @@ export function createFormControl<
     invalid: !!get((formState || _formState).errors, name),
     isDirty: !!get((formState || _formState).dirtyFields, name),
     isTouched: !!get((formState || _formState).touchedFields, name),
+    isValidating: !!get((formState || _formState).validatingFields, name),
     error: get((formState || _formState).errors, name),
   });
 
@@ -917,6 +945,8 @@ export function createFormControl<
       !options.keepError && unset(_formState.errors, fieldName);
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
+      !options.keepIsValidating &&
+        unset(_formState.validatingFields, fieldName);
       !_options.shouldUnregister &&
         !options.keepDefaultValue &&
         unset(_defaultValues, fieldName);

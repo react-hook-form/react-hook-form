@@ -1659,19 +1659,25 @@ describe('useForm', () => {
     expect(tempControl._subjects.state.observers.length).toBeFalsy();
   });
 
-  it('should update isValidating to true when other validation still running', async () => {
+  it('should update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
-    function App() {
+    let formState: any;
+    let getFieldState: any;
+    const App = () => {
       const [stateValidation, setStateValidation] = React.useState(false);
       const {
         register,
-        formState: { isValidating },
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
       } = useForm({ mode: 'all' });
+      formState = tmpFormState;
+      getFieldState = tmpGetFieldState;
+
+      formState.isValidating;
 
       return (
         <div>
-          <p>isValidating: {String(isValidating)}</p>
           <p>stateValidation: {String(stateValidation)}</p>
           <form>
             <input
@@ -1697,7 +1703,7 @@ describe('useForm', () => {
           </form>
         </div>
       );
-    }
+    };
 
     render(<App />);
 
@@ -1708,15 +1714,236 @@ describe('useForm', () => {
       target: { value: 'test' },
     });
 
-    screen.getByText('isValidating: true');
+    expect(formState.isValidating).toBe(true);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: 1,
+      firstName: 1,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+    expect(getFieldState('firstName').isValidating).toBe(true);
     screen.getByText('stateValidation: true');
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(formState.isValidating).toBe(true);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: 1,
+      firstName: 0,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+    expect(getFieldState('firstName').isValidating).toBe(false);
+    screen.getByText('stateValidation: true');
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(4000);
+    });
+
+    expect(formState.isValidating).toBe(false);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: 0,
+      firstName: 0,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(false);
+    expect(getFieldState('firstName').isValidating).toBe(false);
+    screen.getByText('stateValidation: false');
+  });
+
+  it('should correctly handle multiple async validation triggers', async () => {
+    jest.useFakeTimers();
+
+    let formState: any;
+    let getFieldState: any;
+    const App = () => {
+      const [stateValidation, setStateValidation] = React.useState(false);
+      const {
+        register,
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
+      } = useForm({ mode: 'onChange' });
+      formState = tmpFormState;
+      getFieldState = tmpGetFieldState;
+
+      formState.validatingFields;
+
+      return (
+        <div>
+          <p>stateValidation: {String(stateValidation)}</p>
+          <form>
+            <input
+              {...register('lastName', {
+                required: true,
+                validate: () => {
+                  setStateValidation(true);
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      setStateValidation(false);
+                      resolve(true);
+                    }, 2000);
+                  });
+                },
+              })}
+              placeholder="async"
+            />
+          </form>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(formState.validatingFields).toStrictEqual({});
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(formState.validatingFields).toStrictEqual({ lastName: 1 });
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test1' },
+    });
+
+    expect(formState.validatingFields).toStrictEqual({ lastName: 2 });
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(1500);
+    });
+
+    expect(formState.validatingFields).toStrictEqual({ lastName: 1 });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(1500);
+    });
+
+    expect(formState.validatingFields).toStrictEqual({ lastName: 0 });
+    expect(getFieldState('lastName').isValidating).toBe(false);
+  });
+
+  it('should update isValidating to true when using with resolver', async () => {
+    jest.useFakeTimers();
+
+    let getFieldState: any;
+    let formState: any;
+    const App = () => {
+      const {
+        register,
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
+      } = useForm<{
+        firstName: string;
+        lastName: string;
+      }>({
+        mode: 'all',
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+        resolver: async () => {
+          await sleep(2000);
+
+          return {
+            errors: {},
+            values: {},
+          };
+        },
+      });
+      getFieldState = tmpGetFieldState;
+      formState = tmpFormState;
+
+      formState.isValidating;
+
+      return (
+        <div>
+          <input {...register('lastName')} placeholder="async" />
+          <input {...register('firstName')} placeholder="required" />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test2' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test3' },
+    });
+
+    expect(formState.isValidating).toBe(true);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: 2,
+      firstName: 2,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+    expect(getFieldState('firstName').isValidating).toBe(true);
 
     await actComponent(async () => {
       jest.runAllTimers();
     });
 
-    screen.getByText('isValidating: false');
-    screen.getByText('stateValidation: false');
+    expect(formState.isValidating).toBe(false);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: 0,
+      firstName: 0,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(false);
+    expect(getFieldState('firstName').isValidating).toBe(false);
+  });
+
+  it('should remove field from validatingFields on unregister', async () => {
+    jest.useFakeTimers();
+    let unregister: any;
+    let formState: any;
+    const App = () => {
+      const {
+        register,
+        unregister: tmpUnregister,
+        formState: tmpFormState,
+      } = useForm({ mode: 'all' });
+      unregister = tmpUnregister;
+      formState = tmpFormState;
+
+      formState.validatingFields;
+
+      return (
+        <div>
+          <form>
+            <input
+              {...register('firstName', {
+                required: true,
+              })}
+              placeholder="firstName"
+            />
+          </form>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: { value: 'test' },
+    });
+
+    expect(formState.validatingFields).toEqual({ firstName: 1 });
+    await actComponent(async () => {
+      unregister('firstName');
+      jest.runAllTimers();
+    });
+    expect(formState.validatingFields).toEqual({});
   });
 
   it('should update defaultValues async', async () => {
@@ -1913,65 +2140,6 @@ describe('useForm', () => {
     );
 
     expect(result.current.formState.isLoading).toBe(false);
-  });
-
-  it('should update isValidating to true when using with resolver', async () => {
-    jest.useFakeTimers();
-
-    function App() {
-      const {
-        register,
-        formState: { isValidating },
-      } = useForm<{
-        firstName: string;
-        lastName: string;
-      }>({
-        mode: 'all',
-        defaultValues: {
-          lastName: '',
-          firstName: '',
-        },
-        resolver: async () => {
-          await sleep(2000);
-
-          return {
-            errors: {},
-            values: {},
-          };
-        },
-      });
-
-      return (
-        <div>
-          <p>isValidating: {String(isValidating)}</p>
-          <input {...register('lastName')} placeholder="async" />
-          <input {...register('firstName')} placeholder="required" />
-        </div>
-      );
-    }
-
-    render(<App />);
-
-    fireEvent.change(screen.getByPlaceholderText('async'), {
-      target: { value: 'test' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('async'), {
-      target: { value: 'test1' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('required'), {
-      target: { value: 'test2' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('required'), {
-      target: { value: 'test3' },
-    });
-
-    screen.getByText('isValidating: true');
-
-    await actComponent(async () => {
-      jest.runAllTimers();
-    });
-
-    screen.getByText('isValidating: false');
   });
 
   it('should update form values when values updates even with the same values', async () => {

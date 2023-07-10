@@ -167,6 +167,10 @@ export function useController<
           enumerable: true,
           get: () => !!get(formState.touchedFields, name),
         },
+        isValidating: {
+          enumerable: true,
+          get: () => !!get(formState.validatingFields, name),
+        },
         error: {
           enumerable: true,
           get: () => get(formState.errors, name),

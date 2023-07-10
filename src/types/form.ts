@@ -120,6 +120,9 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   boolean
 >;
 
+export type FieldNamesMarkedWithCount<TFieldValues extends FieldValues> =
+  DeepMap<DeepPartial<TFieldValues>, number>;
+
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   isValidating: boolean;
@@ -143,6 +146,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+  validatingFields: Partial<Readonly<FieldNamesMarkedWithCount<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
 };
 
@@ -154,6 +158,7 @@ export type KeepStateOptions = Partial<{
   keepDefaultValues: boolean;
   keepIsSubmitted: boolean;
   keepTouched: boolean;
+  keepIsValidating: boolean;
   keepIsValid: boolean;
   keepSubmitCount: boolean;
 }>;
@@ -346,6 +351,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
+  isValidating: boolean;
   error?: FieldError;
 };
 
