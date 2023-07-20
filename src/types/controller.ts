@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 
 import { RegisterOptions } from './validator';
 import {
@@ -23,7 +23,7 @@ export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
+  onChange: (...event: any[]) => void;
   onBlur: Noop;
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;

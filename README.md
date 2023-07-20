@@ -96,6 +96,9 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href="https://fiberplane.com/">
     <img width="94" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
 </a>
+<a target="_blank" href="https://kwork.studio/">
+    <img width="94" src="https://images.opencollective.com/knowledge-work/f91b72d/logo/256.png" />
+</a>
 
 #### Past sponsors
 
