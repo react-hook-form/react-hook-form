@@ -489,6 +489,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | readonly FieldPath<TFieldValues>[]
     | `root.${string}`
     | 'root',
+  options?: {
+    shouldValidate?: boolean;
+  },
 ) => void;
 
 /**
