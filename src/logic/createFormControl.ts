@@ -858,18 +858,16 @@ export function createFormControl<
     if (!Object.keys(_formState.errors).length) {
       return;
     }
-    if (typeof name === 'undefined') {
-      name = 'root';
-    }
     name &&
       convertToArrayPayload(name).forEach((inputName) => {
         unset(_formState.errors, inputName);
-        options.shouldValidate && trigger(inputName as Path<TFieldValues>);
       });
 
     _subjects.state.next({
-      errors: _formState.errors,
+      errors: name ? _formState.errors : {},
     });
+
+    options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
