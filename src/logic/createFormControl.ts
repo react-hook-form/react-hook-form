@@ -858,10 +858,11 @@ export function createFormControl<
     if (!Object.keys(_formState.errors).length) {
       return;
     }
+
     name &&
-      convertToArrayPayload(name).forEach((inputName) => {
-        unset(_formState.errors, inputName);
-      });
+      convertToArrayPayload(name).forEach((inputName) =>
+        unset(_formState.errors, inputName),
+      );
 
     _subjects.state.next({
       errors: name ? _formState.errors : {},
