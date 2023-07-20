@@ -277,4 +277,76 @@ describe('clearErrors', () => {
 
     render(<App />);
   });
+
+  it('should update isValid to true with options for clearErrors', async () => {
+    const App = () => {
+      const {
+        register,
+        formState: { isValid },
+        setError,
+        clearErrors,
+      } = useForm();
+      return (
+        <div>
+          <input
+            {...register('name', { required: 'Required' })}
+            placeholder="Name"
+            role="input"
+          />
+          <button
+            onClick={() => {
+              setError('root.test', { type: 'test', message: 'test' });
+            }}
+          >
+            setError
+          </button>
+
+          <button
+            onClick={() => {
+              clearErrors('root.test', {
+                shouldValidate: true,
+              });
+            }}
+          >
+            clearError
+          </button>
+          {isValid ? 'yes' : 'no'}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(await screen.findByText('no')).toBeVisible();
+
+    const inputElement = screen.getByRole('input');
+
+    fireEvent.input(inputElement, {
+      target: {
+        value: 'test text',
+      },
+    });
+
+    expect(await screen.findByText('yes')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'setError' }));
+
+    expect(await screen.findByText('no')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'clearError' }));
+
+    expect(await screen.findByText('yes')).toBeVisible();
+
+    fireEvent.input(inputElement, {
+      target: {
+        value: '',
+      },
+    });
+
+    expect(await screen.findByText('no')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'clearError' }));
+
+    expect(await screen.findByText('no')).toBeVisible();
+  });
 });
