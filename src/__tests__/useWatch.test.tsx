@@ -552,6 +552,99 @@ describe('useWatch', () => {
       expect(childCount).toBe(1);
     });
 
+    it('should partial re-render with array name and exact option', async () => {
+      type FormInputs = {
+        child: string;
+        childSecond: string;
+        parent: string;
+      };
+
+      let childCount = 0;
+      let childSecondCount = 0;
+      const Child = ({
+        register,
+        control,
+      }: Pick<UseFormReturn<FormInputs>, 'register' | 'control'>) => {
+        useWatch({ name: ['childSecond'], control });
+        childCount++;
+        return <input {...register('child')} />;
+      };
+
+      const ChildSecond = ({
+        register,
+        control,
+      }: Pick<UseFormReturn<FormInputs>, 'register' | 'control'>) => {
+        useWatch({ name: ['childSecond'], control, exact: true });
+        childSecondCount++;
+        return <input {...register('childSecond')} />;
+      };
+
+      let parentCount = 0;
+      const Parent = () => {
+        const {
+          register,
+          handleSubmit,
+          control,
+          formState: { errors },
+        } = useForm<FormInputs>();
+        parentCount++;
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <>
+              <input {...register('parent')} />
+              <Child register={register} control={control} />
+              <ChildSecond register={register} control={control} />
+              {errors.parent}
+              <button>submit</button>
+            </>
+          </form>
+        );
+      };
+
+      render(<Parent />);
+
+      const childInput = screen.getAllByRole('textbox')[1];
+      const childSecondInput = screen.getAllByRole('textbox')[2];
+
+      fireEvent.input(childInput, {
+        target: { value: 'test' },
+      });
+
+      expect(parentCount).toBe(1);
+      expect(childCount).toBe(2);
+      expect(childSecondCount).toBe(1);
+
+      parentCount = 0;
+      childCount = 0;
+      childSecondCount = 0;
+
+      fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+
+      await waitFor(() => expect(parentCount).toBe(1));
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(1);
+
+      parentCount = 0;
+      childCount = 0;
+      childSecondCount = 0;
+
+      fireEvent.input(childInput, { target: { value: 'test1' } });
+
+      expect(parentCount).toBe(0);
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(0);
+
+      parentCount = 0;
+      childCount = 0;
+      childSecondCount = 0;
+
+      fireEvent.input(childSecondInput, { target: { value: 'test2' } });
+
+      expect(parentCount).toBe(0);
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(1);
+    });
+
     it('should only subscribe change at useWatch level instead of useForm', () => {
       type FormValues = {
         test: string;
