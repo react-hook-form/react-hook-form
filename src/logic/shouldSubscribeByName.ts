@@ -13,6 +13,8 @@ export default <T extends string | string[] | undefined>(
       convertToArrayPayload(name).some(
         (currentName) =>
           currentName &&
-          (currentName.startsWith(signalName) ||
-            signalName.startsWith(currentName)),
+          ((!exact &&
+            (currentName.startsWith(signalName) ||
+              signalName.startsWith(currentName))) ||
+            (exact && currentName === signalName)),
       );
