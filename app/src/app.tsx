@@ -11,6 +11,7 @@ import SetValue from './setValue';
 import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
+import DefaultValuesAsync from './defaultValuesAsync';
 import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
@@ -93,6 +94,7 @@ const App: React.FC = () => {
         />
         <Route path="/isValid/:mode/:defaultValues" element={<IsValid />} />
         <Route path="/default-values" element={<DefaultValues />} />
+        <Route path="/default-values-async" element={<DefaultValuesAsync />} />
         <Route path="/trigger-validation" element={<TriggerValidation />} />
         <Route path="/watch-default-values" element={<WatchDefaultValues />} />
         <Route path="/watch-field-array/:mode" element={<WatchFieldArray />} />

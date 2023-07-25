@@ -136,8 +136,10 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
+// Warning: (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
+export type DefaultValues<TFieldValues> = TFieldValues extends AsyncDefaultValues<TFieldValues> ? DeepPartial<Awaited<TFieldValues>> : DeepPartial<TFieldValues>;
 
 // @public (undocumented)
 export type DelayCallback = (wait: number) => void;
@@ -826,8 +828,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:105:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:428:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
