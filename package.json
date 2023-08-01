@@ -144,5 +144,8 @@
   "engines": {
     "node": ">=12.22.0"
   },
-  "packageManager": "pnpm@7.18.0"
+  "packageManager": "pnpm@7.18.0",
+  "dependencies": {
+    "@replayio/cypress": "^1.0.5"
+  }
 }
