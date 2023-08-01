@@ -20,5 +20,14 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           start: pnpm start
+          browser: replay-chromium
           wait-on: 'http://ip6-localhost:3000'
           wait-on-timeout: 120
+        env:
+          RECORD_REPLAY_DISABLE_ASSERTS: 1
+      - name: Upload replays
+        if: ${{ always() }}
+        uses: replayio/action-upload@v0.4.7
+        with:
+          api-key: rwk_GKBZEmNqZ0Ep8hCzL8DtNRGGLFFpkkOYPOeWLmhLyQB
+          public: true
