@@ -1450,4 +1450,44 @@ describe('Controller', () => {
       'test',
     );
   });
+
+  it('should re-render on change with single value array', async () => {
+    function App() {
+      const { control, handleSubmit } = useForm<{ numbers: number[] }>();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Controller
+            control={control}
+            name="numbers"
+            rules={{
+              required: 'required',
+              validate: () => {
+                return 'custom';
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <>
+                <button type="button" onClick={() => field.onChange([1])}>
+                  [1]
+                </button>
+                <p data-testid="error">{fieldState.error?.message}</p>
+              </>
+            )}
+          />
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    expect(await screen.findByText('required')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: '[1]' }));
+
+    expect(await screen.findByText('custom')).toBeVisible();
+  });
 });
