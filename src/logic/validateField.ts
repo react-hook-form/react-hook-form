@@ -69,7 +69,7 @@ export default async <T extends FieldValues>(
     ((valueAsNumber || isFileInput(ref)) &&
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
-    (isHTMLElement(ref) && ref.value === '') ||
+    (isHTMLElement(ref) && ref.value === '' && inputValue === '') ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
