@@ -53,6 +53,7 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >();
+  const _values = React.useRef<typeof props.values>();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
@@ -101,8 +102,9 @@ export function useForm<
   });
 
   React.useEffect(() => {
-    if (props.values && !deepEqual(props.values, control._defaultValues)) {
+    if (props.values && !deepEqual(props.values, _values.current)) {
       control._reset(props.values, control._options.resetOptions);
+      _values.current = props.values;
     } else {
       control._resetDefaultValues();
     }

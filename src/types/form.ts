@@ -41,7 +41,10 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
+export type DefaultValues<TFieldValues> =
+  TFieldValues extends AsyncDefaultValues<TFieldValues>
+    ? DeepPartial<Awaited<TFieldValues>>
+    : DeepPartial<TFieldValues>;
 
 export type InternalNameSet = Set<InternalFieldName>;
 
@@ -849,7 +852,7 @@ export type FormProviderProps<
 export type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError'> &
+> = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
     control: Control<TFieldValues>;
     headers: Record<string, string>;

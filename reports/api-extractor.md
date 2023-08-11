@@ -6,7 +6,6 @@
 
 /// <reference types="react" />
 
-import { ChangeEvent } from 'react';
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -93,7 +92,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
+    onChange: (...event: any[]) => void;
     onBlur: Noop;
     value: FieldPathValue<TFieldValues, TName>;
     name: TName;
@@ -137,8 +136,10 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
+// Warning: (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
+export type DefaultValues<TFieldValues> = TFieldValues extends AsyncDefaultValues<TFieldValues> ? DeepPartial<Awaited<TFieldValues>> : DeepPartial<TFieldValues>;
 
 // @public (undocumented)
 export type DelayCallback = (wait: number) => void;
@@ -241,10 +242,10 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 export type FieldValues = Record<string, any>;
 
 // @public
-export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): JSX.Element;
+export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): React_2.JSX.Element;
 
 // @public (undocumented)
-export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_2.FormHTMLAttributes<HTMLFormElement>, 'onError'> & Partial<{
+export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_2.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> & Partial<{
     control: Control<TFieldValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
@@ -268,7 +269,7 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues exten
 }>;
 
 // @public
-export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => JSX.Element;
+export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined> = {
@@ -622,7 +623,7 @@ export function useForm<TFieldValues extends FieldValues = FieldValues, TContext
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues>;
+export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues, TContext, TransformedValues>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
@@ -828,8 +829,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:105:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:428:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
