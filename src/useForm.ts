@@ -112,7 +112,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (!control._state.mount) {
-      control._updateValid();
+      control._updateValidErrors();
       control._state.mount = true;
     }
 

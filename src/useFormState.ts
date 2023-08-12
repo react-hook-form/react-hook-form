@@ -88,7 +88,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   React.useEffect(() => {
     _mounted.current = true;
-    _localProxyFormState.current.isValid && control._updateValid(true);
+    _localProxyFormState.current.isValid && control._updateValidErrors(true);
 
     return () => {
       _mounted.current = false;

@@ -378,7 +378,7 @@ export function useFieldArray<
 
     control._names.focus = '';
 
-    control._updateValid();
+    control._updateValidErrors();
     _actioned.current = false;
   }, [fields, name, control]);
 

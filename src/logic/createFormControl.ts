@@ -160,16 +160,28 @@ export function createFormControl<
       timer = setTimeout(callback, wait);
     };
 
-  const _updateValid = async (shouldUpdateValid?: boolean) => {
+  const _updateValidErrors = async (shouldUpdateValid?: boolean) => {
     if (_proxyFormState.isValid || shouldUpdateValid) {
-      const isValid = _options.resolver
-        ? isEmptyObject((await _executeSchema()).errors)
+      const errors = _options.resolver && (await _executeSchema()).errors;
+
+      let nextState: Partial<FormState<TFieldValues>> | undefined;
+
+      if (errors && !deepEqual(errors, _formState.errors)) {
+        nextState ||= {};
+        nextState.errors = errors;
+      }
+
+      const isValid = errors
+        ? isEmptyObject(errors)
         : await executeBuiltInValidation(_fields, true);
 
       if (isValid !== _formState.isValid) {
-        _subjects.state.next({
-          isValid,
-        });
+        nextState ||= {};
+        nextState.isValid = isValid;
+      }
+
+      if (nextState) {
+        _subjects.state.next(nextState);
       }
     }
   };
@@ -244,7 +256,7 @@ export function createFormControl<
     });
   };
 
-  const updateValidAndValue = (
+  const updateValidValueAndErrors = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
     value?: unknown,
@@ -269,7 +281,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && _updateValid();
+      _state.mount && _updateValidErrors();
     }
   };
 
@@ -707,7 +719,7 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        _proxyFormState.isValid && _updateValid();
+        _proxyFormState.isValid && _updateValidErrors();
 
         return (
           shouldRender &&
@@ -798,7 +810,7 @@ export function createFormControl<
           }),
         )
       ).every(Boolean);
-      !(!validationResult && !_formState.isValid) && _updateValid();
+      !(!validationResult && !_formState.isValid) && _updateValidErrors();
     } else {
       validationResult = isValid = await executeBuiltInValidation(_fields);
     }
@@ -931,7 +943,7 @@ export function createFormControl<
       ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
 
-    !options.keepIsValid && _updateValid();
+    !options.keepIsValid && _updateValidErrors();
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
@@ -958,7 +970,7 @@ export function createFormControl<
             ? undefined
             : get(_formValues, name, getFieldValue(field._f)),
         )
-      : updateValidAndValue(name, true, options.value);
+      : updateValidValueAndErrors(name, true, options.value);
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
@@ -1012,7 +1024,7 @@ export function createFormControl<
             },
           });
 
-          updateValidAndValue(name, false, undefined, fieldRef);
+          updateValidValueAndErrors(name, false, undefined, fieldRef);
         } else {
           field = get(_fields, name, {});
 
@@ -1108,7 +1120,7 @@ export function createFormControl<
 
       if (!options.keepError) {
         unset(_formState.errors, name);
-        _proxyFormState.isValid && _updateValid();
+        _proxyFormState.isValid && _updateValidErrors();
       }
 
       _subjects.state.next({ ..._formState });
@@ -1272,7 +1284,7 @@ export function createFormControl<
       _executeSchema,
       _getWatch,
       _getDirty,
-      _updateValid,
+      _updateValidErrors,
       _removeUnmounted,
       _updateFieldArray,
       _getFieldArray,

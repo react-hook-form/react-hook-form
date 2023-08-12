@@ -181,6 +181,42 @@ describe('register', () => {
     expect(screen.getByRole('alert').textContent).toBe('false');
   });
 
+  it('should populate errors if defaultValues are passed with a resolver', async () => {
+    const message = 'error in test';
+
+    const Component = () => {
+      const { register, formState } = useForm<{ test: string }>({
+        defaultValues: {
+          test: 'invalid',
+        },
+        resolver: async (data) => {
+          return {
+            values: data,
+            errors: {
+              test: {
+                type: 'test',
+              },
+            },
+          };
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <span role="alert">{`${formState.isValid}`}</span>
+          <p>{formState.errors.test && message}</p>
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    await waitFor(() =>
+      expect(screen.queryByText(message)).toBeInTheDocument(),
+    );
+  });
+
   it('should be set default value when item is remounted again', async () => {
     const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
