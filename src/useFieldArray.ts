@@ -45,7 +45,7 @@ import { useSubscribe } from './useSubscribe';
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
  *
  * @param props - useFieldArray props
  *
@@ -379,6 +379,7 @@ export function useFieldArray<
     control._names.focus = '';
 
     control._updateValid();
+    _actioned.current = false;
   }, [fields, name, control]);
 
   React.useEffect(() => {

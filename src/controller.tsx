@@ -5,7 +5,7 @@ import { useController } from './useController';
  * Component based on `useController` hook to work with controlled component.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usecontroller/controller) • [Demo](https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw) • [Video](https://www.youtube.com/watch?v=N2UNk_UCVyA)
+ * [API](https://react-hook-form.com/docs/usecontroller/controller) • [Demo](https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw) • [Video](https://www.youtube.com/watch?v=N2UNk_UCVyA)
  *
  * @param props - the path name to the form field value, and validation rules.
  *

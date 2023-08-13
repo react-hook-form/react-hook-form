@@ -21,7 +21,7 @@
 
 <p align="center">
   <a href="https://react-hook-form.com/get-started">开始</a> | 
-  <a href="https://react-hook-form.com/api">API</a> |
+  <a href="https://react-hook-form.com/docs">API</a> |
   <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples">示例</a> |
   <a href="https://react-hook-form.com">Demo</a> |
   <a href="https://react-hook-form.com/form-builder">表单生成器</a> |

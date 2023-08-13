@@ -1,5 +1,5 @@
 import { useForm, Form } from 'react-hook-form';
-import * as React from 'react';
+import React from 'react';
 
 export default function FormComponent() {
   const methods = useForm<{

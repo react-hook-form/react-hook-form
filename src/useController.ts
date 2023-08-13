@@ -25,7 +25,7 @@ import { set } from './utils';
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usecontroller) • [Demo](https://codesandbox.io/s/usecontroller-0o8px)
+ * [API](https://react-hook-form.com/docs/usecontroller) • [Demo](https://codesandbox.io/s/usecontroller-0o8px)
  *
  * @param props - the path name to the form field value, and validation rules.
  *

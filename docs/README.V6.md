@@ -45,7 +45,7 @@ English | <a href="./README.zh-TW.md">繁中</a> | <a href="./README.zh-CN.md">�
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [Get started](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/docs)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)

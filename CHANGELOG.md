@@ -1,5 +1,64 @@
 # Changelog
 
+## [7.45.0] - 2023-06-20
+
+## Changed
+
+- Controller with type check on `onChange`
+
+```diff
+- onChange: (...event: any[]) => void;
++ onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
+```
+
+- Include missing generic for `useFormContext`
+
+```diff
+- export const useFormContext: <TFieldValues extends FieldValues, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues>;
++ export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues, TContext, TransformedValues>;
+```
+
+## [7.44.0] - 2023-06-14
+
+## Added
+
+- New `<Form />` component
+
+```tsx
+// Send post request with formData
+<Form
+  action="/api"
+  control={control}
+  onSuccess={() => {
+    alert("Great");
+  }}
+/>
+
+// Send post request with json form data
+<Form action="/api" encType="application/json" headers={{ accessToken: 'test' }}>
+  {errors.root?.server.type === 500 && 'Error message'}
+  {errors.root?.server.type === 400 && 'Error message'}
+</Form>
+
+// Send post request with formData with fetch
+<Form
+  onSubmit={async ({ formData, data, formDataJson, event }) => {
+    await fetch("api", {
+      method: "post",
+      body: formData,
+    });
+  }}
+/>
+```
+
+- support `TransformedValues` with `useFormContext`
+
+`useFormContext<FormValue, TransformedValues>()`
+
+- added `TTransformedValues` to `FormProvider`
+
+FormProviderProps<TFieldValues, TContext, TTransformedValues>
+
 ## [7.43.0] - 2023-01-30
 
 ## Added
@@ -1721,7 +1780,7 @@ errors.yourDetails.firstName;
 
 - `validationSchemaOption`: hardly anyone want to use validation with abort early, or change the config.
 
-- native validation: hardly anyone used this feature. https://react-hook-form.com/api/#Browserbuiltinvalidation
+- native validation: hardly anyone used this feature. https://react-hook-form.com/docs/#Browserbuiltinvalidation
 
 ## [3.0.0] - 2019-04-21
 
