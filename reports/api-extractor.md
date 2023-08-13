@@ -6,7 +6,6 @@
 
 /// <reference types="react" />
 
-import { ChangeEvent } from 'react';
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -66,7 +65,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     }>;
     register: UseFormRegister<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues>;
-    _disableForm: (disabled?: boolean) => void;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
@@ -94,10 +92,9 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    onChange: (event: ChangeEvent | FieldPathValue<TFieldValues, TName>) => void;
+    onChange: (...event: any[]) => void;
     onBlur: Noop;
     value: FieldPathValue<TFieldValues, TName>;
-    disabled: boolean;
     name: TName;
     ref: RefCallBack;
 };
@@ -139,8 +136,10 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
+// Warning: (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
+export type DefaultValues<TFieldValues> = TFieldValues extends AsyncDefaultValues<TFieldValues> ? DeepPartial<Awaited<TFieldValues>> : DeepPartial<TFieldValues>;
 
 // @public (undocumented)
 export type DelayCallback = (wait: number) => void;
@@ -286,7 +285,6 @@ export type FormState<TFieldValues extends FieldValues> = {
     isSubmitting: boolean;
     isValidating: boolean;
     isValid: boolean;
-    disabled: boolean;
     submitCount: number;
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
@@ -647,7 +645,6 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedVa
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
     mode: Mode;
-    disabled: boolean;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
     values: TFieldValues;
@@ -831,8 +828,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:106:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:430:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

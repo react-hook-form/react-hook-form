@@ -66,7 +66,7 @@ function Form<
       }
 
       if (onSubmit) {
-        onSubmit({
+        await onSubmit({
           data,
           event,
           method,

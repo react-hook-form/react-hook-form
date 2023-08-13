@@ -8,24 +8,23 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
+import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
 
-function Input({
+function Input<TFieldValues extends FieldValues>({
   onChange,
   onBlur,
   placeholder,
-}: {
-  onChange: (newValue: string) => void;
-  onBlur: () => void;
+}: Pick<ControllerRenderProps<TFieldValues>, 'onChange' | 'onBlur'> & {
   placeholder?: string;
 }) {
   return (
     <input
       placeholder={placeholder}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={() => onChange(1)}
       onBlur={() => onBlur()}
     />
   );
@@ -1450,5 +1449,45 @@ describe('Controller', () => {
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       'test',
     );
+  });
+
+  it('should re-render on change with single value array', async () => {
+    function App() {
+      const { control, handleSubmit } = useForm<{ numbers: number[] }>();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Controller
+            control={control}
+            name="numbers"
+            rules={{
+              required: 'required',
+              validate: () => {
+                return 'custom';
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <>
+                <button type="button" onClick={() => field.onChange([1])}>
+                  [1]
+                </button>
+                <p data-testid="error">{fieldState.error?.message}</p>
+              </>
+            )}
+          />
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    expect(await screen.findByText('required')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: '[1]' }));
+
+    expect(await screen.findByText('custom')).toBeVisible();
   });
 });
