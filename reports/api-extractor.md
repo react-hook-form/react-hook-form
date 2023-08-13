@@ -65,6 +65,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     }>;
     register: UseFormRegister<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues>;
+    _disableForm: (disabled?: boolean) => void;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
@@ -95,6 +96,7 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
     onChange: (...event: any[]) => void;
     onBlur: Noop;
     value: FieldPathValue<TFieldValues, TName>;
+    disabled: boolean;
     name: TName;
     ref: RefCallBack;
 };
@@ -285,6 +287,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     isSubmitting: boolean;
     isValidating: boolean;
     isValid: boolean;
+    disabled: boolean;
     submitCount: number;
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
@@ -645,6 +648,7 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedVa
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
     mode: Mode;
+    disabled: boolean;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
     values: TFieldValues;
@@ -828,7 +832,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:433:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
