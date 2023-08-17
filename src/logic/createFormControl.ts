@@ -392,7 +392,7 @@ export function createFormControl<
     );
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
-    const { errors } = await _executeSchema();
+    const { errors } = await _executeSchema(names);
 
     if (names) {
       for (const name of names) {
