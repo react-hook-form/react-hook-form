@@ -949,16 +949,17 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    field
-      ? disabledIsDefined &&
-        set(
-          _formValues,
-          name,
-          options.disabled
-            ? undefined
-            : get(_formValues, name, getFieldValue(field._f)),
-        )
-      : updateValidAndValue(name, true, options.value);
+    if (field) {
+      if (disabledIsDefined) {
+        const value = options.disabled
+          ? undefined
+          : get(_formValues, name, getFieldValue(field._f));
+        set(_formValues, name, value);
+        updateTouchAndDirty(name, value, false, false, true);
+      }
+    } else {
+      updateValidAndValue(name, true, options.value);
+    }
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
