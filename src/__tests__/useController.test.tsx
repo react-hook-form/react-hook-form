@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
@@ -767,7 +767,7 @@ describe('useController', () => {
 
   it('should disable form input with disabled prop', async () => {
     const App = () => {
-      const [disabled, setDisabled] = useState(false);
+      const [disabled, setDisabled] = React.useState(false);
       const { control, watch } = useForm({
         defaultValues: {
           test: 'test',
