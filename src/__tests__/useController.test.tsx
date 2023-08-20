@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
@@ -763,5 +763,52 @@ describe('useController', () => {
     });
 
     screen.getByText('pristine');
+  });
+
+  it('should disable form input with disabled prop', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { control, watch } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const {
+        field: { disabled: disabledProps },
+      } = useController({
+        control,
+        name: 'test',
+        disabled,
+      });
+
+      const input = watch('test');
+
+      return (
+        <form>
+          <p>{input}</p>
+          <button
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+            type={'button'}
+          >
+            toggle
+          </button>
+          <p>{disabledProps ? 'disable' : 'notDisabled'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    screen.getByText('test');
+    screen.getByText('notDisabled');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => {
+      screen.getByText('');
+      screen.getByText('disable');
+    });
   });
 });

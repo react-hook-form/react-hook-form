@@ -2,6 +2,7 @@ import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
   ChangeHandler,
+  Control,
   DeepPartial,
   DelayCallback,
   EventType,
@@ -934,6 +935,25 @@ export function createFormControl<
     !options.keepIsValid && _updateValid();
   };
 
+  const _updateDisabledField: Control<TFieldValues>['_updateDisabledField'] = ({
+    disabled,
+    name,
+    field,
+    fields,
+  }) => {
+    if (isBoolean(disabled)) {
+      const value = disabled
+        ? undefined
+        : get(
+            _formValues,
+            name,
+            getFieldValue(field ? field._f : get(fields, name)._f),
+          );
+      set(_formValues, name, value);
+      updateTouchAndDirty(name, value, false, false, true);
+    }
+  };
+
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined = isBoolean(options.disabled);
@@ -950,13 +970,11 @@ export function createFormControl<
     _names.mount.add(name);
 
     if (field) {
-      if (disabledIsDefined) {
-        const value = options.disabled
-          ? undefined
-          : get(_formValues, name, getFieldValue(field._f));
-        set(_formValues, name, value);
-        updateTouchAndDirty(name, value, false, false, true);
-      }
+      _updateDisabledField({
+        field,
+        disabled: options.disabled,
+        name,
+      });
     } else {
       updateValidAndValue(name, true, options.value);
     }
@@ -1276,6 +1294,7 @@ export function createFormControl<
       _updateValid,
       _removeUnmounted,
       _updateFieldArray,
+      _updateDisabledField,
       _getFieldArray,
       _reset,
       _resetDefaultValues,
