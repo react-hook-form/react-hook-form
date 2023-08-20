@@ -81,12 +81,6 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href="https://kanamekey.com">
     <img width="94" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
 </a>
-<a target="_blank" href="https://www.thinkmill.com.au/">
-    <img width="94" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
-</a>
-<a target="_blank" href="https://fabform.io">
-    <img width="94" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
-</a>
 <a target="_blank" href="https://www.mirakl.com/">
     <img width="94" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
 </a>
@@ -119,6 +113,12 @@ Thanks go to these kind and lovely sponsors!
 </a>
 <a target="_blank" href="https://formcarry.com/">
     <img width="48" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
+</a>
+<a target="_blank" href="https://fabform.io">
+    <img width="48" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
+</a>
+<a target="_blank" href="https://www.thinkmill.com.au/">
+    <img width="48" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
 </a>
 
 ### Backers
