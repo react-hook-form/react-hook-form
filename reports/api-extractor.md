@@ -60,6 +60,16 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _getWatch: WatchInternal<TFieldValues>;
     _updateFieldArray: BatchFieldArrayUpdate;
     _getFieldArray: <TFieldArrayValues>(name: InternalFieldName) => Partial<TFieldArrayValues>[];
+    _updateDisabledField: (props: {
+        disabled?: boolean;
+        name: FieldName<any>;
+    } & ({
+        field?: Field;
+        fields?: undefined;
+    } | {
+        field?: undefined;
+        fields?: FieldRefs;
+    })) => void;
     _executeSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
@@ -95,6 +105,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
     onBlur: Noop;
+    disabled?: boolean;
     value: FieldPathValue<TFieldValues, TName>;
     name: TName;
     ref: RefCallBack;
@@ -561,6 +572,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     shouldUnregister?: boolean;
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues>;
+    disabled?: boolean;
 };
 
 // @public (undocumented)
@@ -835,7 +847,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:437:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:439:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
