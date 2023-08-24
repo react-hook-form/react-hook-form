@@ -7,8 +7,7 @@ export default <T extends string | string[] | undefined>(
 ) =>
   exact && signalName
     ? name === signalName ||
-      (typeof name !== 'string' &&
-        Array.isArray(name) &&
+      (Array.isArray(name) &&
         name.some(
           (currentName) => currentName && exact && currentName === signalName,
         ))
