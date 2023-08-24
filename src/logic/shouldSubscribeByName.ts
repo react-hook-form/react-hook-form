@@ -6,7 +6,11 @@ export default <T extends string | string[] | undefined>(
   exact?: boolean,
 ) =>
   exact && signalName
-    ? name === signalName
+    ? name === signalName ||
+      (Array.isArray(name) &&
+        name.some(
+          (currentName) => currentName && exact && currentName === signalName,
+        ))
     : !name ||
       !signalName ||
       name === signalName ||
