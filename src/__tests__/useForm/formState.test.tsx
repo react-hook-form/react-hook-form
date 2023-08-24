@@ -667,6 +667,38 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
+  it('should recompute isDirty after toggling disabled', async () => {
+    let isDirty: null | boolean = null;
+
+    const App = () => {
+      const defaultValues = { name: 'initial', disableName: false };
+      const { formState, register, watch } = useForm({ defaultValues });
+
+      isDirty = formState.isDirty;
+
+      const disableName = watch('disableName', defaultValues.disableName);
+
+      return (
+        <form>
+          <input type="text" {...register('name', { disabled: disableName })} />
+          <input type="checkbox" {...register('disableName')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const checkbox = screen.getByRole('checkbox');
+
+    fireEvent.click(checkbox);
+
+    expect(isDirty).toBe(true);
+
+    fireEvent.click(checkbox);
+
+    expect(isDirty).toBe(false);
+  });
+
   describe('when delay config is set', () => {
     const message = 'required.';
 
