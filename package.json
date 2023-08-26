@@ -69,7 +69,6 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@replayio/cypress": "^1.0.5",
     "@microsoft/api-extractor": "^7.35.2",
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^14.1.0",
