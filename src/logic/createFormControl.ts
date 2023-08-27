@@ -1077,17 +1077,28 @@ export function createFormControl<
 
       unset(_formState.errors, 'root');
 
-      if (isEmptyObject(_formState.errors)) {
-        _subjects.state.next({
-          errors: {},
-        });
-        await onValid(fieldValues as TFieldValues, e);
-      } else {
-        if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
+      try {
+        if (isEmptyObject(_formState.errors)) {
+          _subjects.state.next({
+            errors: {},
+          });
+          await onValid(fieldValues as TFieldValues, e);
+        } else {
+          if (onInvalid) {
+            await onInvalid({ ..._formState.errors }, e);
+          }
+          _focusError();
+          setTimeout(_focusError);
         }
-        _focusError();
-        setTimeout(_focusError);
+      } catch {
+        _subjects.state.next({
+          isSubmitted: true,
+          isSubmitting: false,
+          isSubmitSuccessful: false,
+          submitCount: _formState.submitCount + 1,
+          errors: _formState.errors,
+        });
+        return;
       }
 
       _subjects.state.next({
