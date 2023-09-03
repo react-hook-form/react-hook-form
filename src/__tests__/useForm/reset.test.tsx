@@ -1508,3 +1508,35 @@ describe('reset', () => {
     expect(screen.getByText('useWatch: anything')).toBeVisible();
   });
 });
+
+it('should not mutate data outside of library', () => {
+  const defaultValues = {
+    test: 'ok',
+  };
+
+  const App = () => {
+    const { register, reset, resetField } = useForm();
+
+    return (
+      <form>
+        <input {...register('test')} />
+        <button type="button" onClick={() => reset(defaultValues)}>
+          reset
+        </button>
+        <button
+          type="button"
+          onClick={() => resetField('test', { defaultValue: 'error' })}
+        >
+          resetField
+        </button>
+      </form>
+    );
+  };
+
+  render(<App />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+  fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
+
+  expect(defaultValues.test).toBe('ok');
+});

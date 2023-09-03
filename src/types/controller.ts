@@ -26,7 +26,7 @@ export type ControllerRenderProps<
   onChange: (...event: any[]) => void;
   onBlur: Noop;
   value: FieldPathValue<TFieldValues, TName>;
-  disabled: boolean;
+  disabled?: boolean;
   name: TName;
   ref: RefCallBack;
 };
@@ -43,6 +43,7 @@ export type UseControllerProps<
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 };
 
 export type UseControllerReturn<
