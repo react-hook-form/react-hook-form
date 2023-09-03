@@ -102,6 +102,11 @@ export function useForm<
     },
   });
 
+  React.useEffect(
+    () => control._disableForm(props.disabled),
+    [control, props.disabled],
+  );
+
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
       control._reset(props.values, control._options.resetOptions);
@@ -124,11 +129,6 @@ export function useForm<
 
     control._removeUnmounted();
   });
-
-  React.useEffect(
-    () => control._disableForm(props.disabled),
-    [control, props.disabled],
-  );
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
