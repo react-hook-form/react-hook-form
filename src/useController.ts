@@ -167,6 +167,10 @@ export function useController<
           enumerable: true,
           get: () => !!get(formState.errors, name),
         },
+        disabled: {
+          enumerable: true,
+          get: () => disabled,
+        },
         isDirty: {
           enumerable: true,
           get: () => !!get(formState.dirtyFields, name),
