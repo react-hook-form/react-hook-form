@@ -17,7 +17,6 @@ export type ControllerFieldState = {
   isTouched: boolean;
   isDirty: boolean;
   error?: FieldError;
-  disabled?: boolean;
 };
 
 export type ControllerRenderProps<
@@ -26,6 +25,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
+  disabled?: boolean;
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;
   ref: RefCallBack;

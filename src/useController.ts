@@ -123,6 +123,7 @@ export function useController<
     field: {
       name,
       value,
+      disabled,
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({
@@ -166,10 +167,6 @@ export function useController<
         invalid: {
           enumerable: true,
           get: () => !!get(formState.errors, name),
-        },
-        disabled: {
-          enumerable: true,
-          get: () => disabled,
         },
         isDirty: {
           enumerable: true,
