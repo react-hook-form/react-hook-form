@@ -123,6 +123,7 @@ export function useController<
     field: {
       name,
       value,
+      disabled,
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({
