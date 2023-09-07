@@ -719,7 +719,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is dirty.</p>}
+              {fieldState.isDirty && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -736,8 +736,7 @@ describe('Controller', () => {
 
     const input = screen.getByRole('textbox');
 
-    fireEvent.focus(input);
-    fireEvent.blur(input);
+    fireEvent.change(input, { target: { value: 'dirty' } });
 
     expect(await screen.findByText('Input is dirty.')).toBeVisible();
   });
