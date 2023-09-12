@@ -620,7 +620,7 @@ export type UseFormHandleSubmit<
     ? SubmitHandler<TTransformedValues>
     : SubmitHandler<TFieldValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
-) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+) => (e?: React.BaseSyntheticEvent) => void;
 
 /**
  * Reset a field state and reference.
