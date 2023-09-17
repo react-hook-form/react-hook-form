@@ -4,6 +4,7 @@ import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
+import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
@@ -123,7 +124,9 @@ export function useController<
     field: {
       name,
       value,
-      disabled: formState.disabled,
+      ...(isBoolean(disabled) || isBoolean(formState.disabled)
+        ? { disabled: formState.disabled || disabled }
+        : {}),
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({
