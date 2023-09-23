@@ -378,7 +378,7 @@ describe('Controller', () => {
     expect(onChange).toBeCalled();
   });
 
-  it('should invoke custom onChange method', () => {
+  it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
     const Component = () => {
       const { control } = useForm();
@@ -719,7 +719,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is dirty.</p>}
+              {fieldState.isDirty && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -736,8 +736,7 @@ describe('Controller', () => {
 
     const input = screen.getByRole('textbox');
 
-    fireEvent.focus(input);
-    fireEvent.blur(input);
+    fireEvent.change(input, { target: { value: 'dirty' } });
 
     expect(await screen.findByText('Input is dirty.')).toBeVisible();
   });
@@ -1029,10 +1028,7 @@ describe('Controller', () => {
       const { control } = useForm({
         mode: 'onChange',
         defaultValues: {
-          test: {
-            firstName: '',
-            lastName: '',
-          },
+          test: '',
         },
       });
 
@@ -1044,7 +1040,7 @@ describe('Controller', () => {
               rules={{ required: true }}
               control={control}
               render={({ field }) => (
-                <input value={field.value as any} onChange={field.onChange} />
+                <input value={field.value} onChange={field.onChange} />
               )}
             />
           )}
@@ -1236,7 +1232,7 @@ describe('Controller', () => {
 
   it('should not cause type error with any', () => {
     function App() {
-      const { control } = useForm<any>({
+      const { control } = useForm({
         defaultValues: {
           firstName: '',
           deepNested: { test: '' },
@@ -1428,5 +1424,124 @@ describe('Controller', () => {
     expect(getValueFn).toBeCalledWith({
       show: false,
     });
+  });
+
+  it('should set up defaultValues for controlled component with values prop', () => {
+    function App() {
+      const { control } = useForm({
+        values: {
+          firstName: 'test',
+        },
+      });
+
+      return (
+        <Controller
+          render={({ field }) => <input {...field} />}
+          control={control}
+          name="firstName"
+        />
+      );
+    }
+
+    render(<App />);
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'test',
+    );
+  });
+
+  it('should re-render on change with single value array', async () => {
+    function App() {
+      const { control, handleSubmit } = useForm<{ numbers: number[] }>();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Controller
+            control={control}
+            name="numbers"
+            rules={{
+              required: 'required',
+              validate: () => {
+                return 'custom';
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <>
+                <button type="button" onClick={() => field.onChange([1])}>
+                  [1]
+                </button>
+                <p data-testid="error">{fieldState.error?.message}</p>
+              </>
+            )}
+          />
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    expect(await screen.findByText('required')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: '[1]' }));
+
+    expect(await screen.findByText('custom')).toBeVisible();
+  });
+
+  it('should not require type coercion', async () => {
+    function App() {
+      class NonCoercible {
+        x: string;
+
+        constructor(x: string) {
+          this.x = x;
+        }
+
+        [Symbol.toPrimitive]() {
+          throw new TypeError();
+        }
+      }
+
+      const { control } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          value: new NonCoercible('a'),
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            name="value"
+            rules={{
+              validate: (field) => {
+                return field.x.length > 0;
+              },
+            }}
+            render={({ field }) => (
+              <input
+                value={field.value.x}
+                onChange={(e) =>
+                  field.onChange(new NonCoercible(e.target.value))
+                }
+              />
+            )}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'b',
+      },
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('b');
   });
 });

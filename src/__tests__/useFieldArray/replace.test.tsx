@@ -87,7 +87,7 @@ describe('replace', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>({
         defaultValues: {
           test: [
@@ -142,7 +142,7 @@ describe('replace', () => {
     let k = 0;
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>();
 
       const { fields, append, replace } = useFieldArray({

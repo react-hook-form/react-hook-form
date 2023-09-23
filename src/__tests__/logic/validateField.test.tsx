@@ -7,10 +7,10 @@ jest.mock('../../logic/getCheckboxValue');
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '2',
     }));
-    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
       value: false,
       isValid: false,
     }));
@@ -25,12 +25,39 @@ describe('validateField', () => {
             required: true,
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
       test: {
         ref: { type: 'text', value: '', name: 'test' },
+        message: '',
+        type: 'required',
+      },
+    });
+
+    const input = document.createElement('input');
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: input,
+            required: true,
+            valueAsNumber: true,
+          },
+        },
+        // @ts-expect-error
+        NaN,
+        false,
+      ),
+    ).toEqual({
+      test: {
+        ref: input,
         message: '',
         type: 'required',
       },
@@ -46,7 +73,9 @@ describe('validateField', () => {
             required: 'required',
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -68,7 +97,9 @@ describe('validateField', () => {
             required: 'required',
           },
         },
-        2,
+        {
+          test: 2,
+        },
         false,
       ),
     ).toEqual({});
@@ -83,7 +114,9 @@ describe('validateField', () => {
             required: 'required',
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -107,7 +140,9 @@ describe('validateField', () => {
             },
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -131,7 +166,9 @@ describe('validateField', () => {
             },
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -155,7 +192,9 @@ describe('validateField', () => {
             },
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({});
@@ -170,7 +209,9 @@ describe('validateField', () => {
             required: true,
           },
         },
-        false,
+        {
+          test: false,
+        },
         false,
       ),
     ).toEqual({
@@ -191,7 +232,9 @@ describe('validateField', () => {
             required: 'test',
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -212,7 +255,9 @@ describe('validateField', () => {
             required: 'test',
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -233,7 +278,9 @@ describe('validateField', () => {
             required: 'test',
           },
         },
-        false,
+        {
+          test: false,
+        },
         false,
       ),
     ).toEqual({
@@ -255,12 +302,14 @@ describe('validateField', () => {
             value: '0',
           },
         },
-        '0',
+        {
+          test: '0',
+        },
         false,
       ),
     ).toEqual({});
 
-    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
@@ -275,7 +324,9 @@ describe('validateField', () => {
             required: 'test',
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({});
@@ -292,7 +343,9 @@ describe('validateField', () => {
             value: NaN,
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -317,7 +370,9 @@ describe('validateField', () => {
             value: {},
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -346,7 +401,9 @@ describe('validateField', () => {
             max: 0,
           },
         },
-        10,
+        {
+          test: 10,
+        },
         false,
       ),
     ).toEqual({
@@ -372,7 +429,9 @@ describe('validateField', () => {
             },
           },
         },
-        10,
+        {
+          test: 10,
+        },
         false,
       ),
     ).toEqual({
@@ -398,7 +457,9 @@ describe('validateField', () => {
             value: 10,
           },
         },
-        10,
+        {
+          test: 10,
+        },
         false,
       ),
     ).toEqual({
@@ -421,7 +482,9 @@ describe('validateField', () => {
             max: 8,
           },
         },
-        8,
+        {
+          test: 8,
+        },
         false,
       ),
     ).toEqual({});
@@ -437,7 +500,9 @@ describe('validateField', () => {
             max: 8,
           },
         },
-        10,
+        {
+          test: 10,
+        },
         true,
       ),
     ).toEqual({
@@ -462,7 +527,9 @@ describe('validateField', () => {
             required: true,
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
       ),
     ).toEqual({
@@ -488,7 +555,9 @@ describe('validateField', () => {
             required: true,
           },
         },
-        undefined,
+        {
+          test: undefined,
+        },
         false,
       ),
     ).toEqual({
@@ -519,7 +588,9 @@ describe('validateField', () => {
             required: true,
           },
         },
-        null,
+        {
+          test: null,
+        },
         false,
       ),
     ).toEqual({
@@ -541,7 +612,9 @@ describe('validateField', () => {
             value: 'ok',
           },
         },
-        'ok',
+        {
+          test: 'ok',
+        },
         false,
       ),
     ).toEqual({});
@@ -561,7 +634,9 @@ describe('validateField', () => {
             max: '2019-1-12',
           },
         },
-        '2019-2-13',
+        {
+          test: '2019-2-13',
+        },
         false,
       ),
     ).toEqual({
@@ -593,7 +668,9 @@ describe('validateField', () => {
             },
           },
         },
-        '2022-W18',
+        {
+          test: '2022-W18',
+        },
         false,
       ),
     ).toEqual({
@@ -625,7 +702,9 @@ describe('validateField', () => {
             },
           },
         },
-        '14:00',
+        {
+          test: '14:00',
+        },
         false,
       ),
     ).toEqual({
@@ -653,7 +732,9 @@ describe('validateField', () => {
             min: 0,
           },
         },
-        -1,
+        {
+          test: -1,
+        },
         false,
       ),
     ).toEqual({
@@ -679,7 +760,9 @@ describe('validateField', () => {
             },
           },
         },
-        -1,
+        {
+          test: -1,
+        },
         false,
       ),
     ).toEqual({
@@ -705,7 +788,9 @@ describe('validateField', () => {
             },
           },
         },
-        -1,
+        {
+          test: -1,
+        },
         false,
       ),
     ).toEqual({
@@ -728,7 +813,9 @@ describe('validateField', () => {
             min: 12,
           },
         },
-        10,
+        {
+          test: 10,
+        },
         false,
       ),
     ).toEqual({
@@ -755,7 +842,9 @@ describe('validateField', () => {
             min: '2019-3-12',
           },
         },
-        '2019-2-12',
+        {
+          test: '2019-2-12',
+        },
         false,
       ),
     ).toEqual({
@@ -788,7 +877,9 @@ describe('validateField', () => {
             },
           },
         },
-        '2019-2-12',
+        {
+          test: '2019-2-12',
+        },
         false,
       ),
     ).toEqual({
@@ -821,7 +912,9 @@ describe('validateField', () => {
             },
           },
         },
-        '2019-2-12',
+        {
+          test: '2019-2-12',
+        },
         false,
       ),
     ).toEqual({
@@ -854,7 +947,9 @@ describe('validateField', () => {
             },
           },
         },
-        '2022-W15',
+        {
+          test: '2022-W15',
+        },
         false,
       ),
     ).toEqual({
@@ -886,7 +981,9 @@ describe('validateField', () => {
             },
           },
         },
-        '12:00',
+        {
+          test: '12:00',
+        },
         false,
       ),
     ).toEqual({
@@ -914,7 +1011,9 @@ describe('validateField', () => {
             min: '4',
           },
         },
-        '1',
+        {
+          test: '1',
+        },
         false,
       ),
     ).toEqual({
@@ -937,7 +1036,9 @@ describe('validateField', () => {
             max: '2',
           },
         },
-        '4',
+        {
+          test: '4',
+        },
         false,
       ),
     ).toEqual({
@@ -964,7 +1065,9 @@ describe('validateField', () => {
             max: '2019-1-12',
           },
         },
-        '2019-2-12',
+        {
+          test: '2019-2-12',
+        },
         false,
       ),
     ).toEqual({
@@ -996,7 +1099,9 @@ describe('validateField', () => {
             maxLength: 12,
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1028,7 +1133,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1060,7 +1167,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1091,7 +1200,9 @@ describe('validateField', () => {
             minLength: 200,
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1123,7 +1234,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1155,7 +1268,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1189,7 +1304,9 @@ describe('validateField', () => {
             pattern: emailRegex,
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1221,7 +1338,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1253,7 +1372,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1282,7 +1403,9 @@ describe('validateField', () => {
             pattern: emailRegex,
           },
         },
-        'test@test.com',
+        {
+          test: 'test@test.com',
+        },
         false,
       ),
     ).toEqual({});
@@ -1302,7 +1425,9 @@ describe('validateField', () => {
             pattern: emailRegex,
           },
         },
-        null,
+        {
+          test: null,
+        },
         false,
       ),
     ).toEqual({});
@@ -1324,7 +1449,9 @@ describe('validateField', () => {
             validate: (value) => value.toString().length > 3,
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({});
@@ -1344,7 +1471,9 @@ describe('validateField', () => {
             validate: (value) => value.toString().length < 3,
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1376,7 +1505,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1390,7 +1521,7 @@ describe('validateField', () => {
       },
     });
 
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => {
+    (getRadioValue as jest.Mock).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',
@@ -1414,7 +1545,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input!',
+        {
+          test: 'This is a long text input!',
+        },
         false,
       ),
     ).toEqual({
@@ -1446,7 +1579,9 @@ describe('validateField', () => {
             refs: [{ type: 'data' } as HTMLInputElement],
           },
         },
-        'This is a long text input!',
+        {
+          test: 'This is a long text input!',
+        },
         false,
       ),
     ).toEqual({
@@ -1478,7 +1613,9 @@ describe('validateField', () => {
             ],
           },
         },
-        'This is a long text input!',
+        {
+          test: 'This is a long text input!',
+        },
         false,
       ),
     ).toEqual({});
@@ -1506,7 +1643,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1541,7 +1680,9 @@ describe('validateField', () => {
             },
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1571,7 +1712,9 @@ describe('validateField', () => {
             validate: (value) => value.toString().length < 3 || 'bill',
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1599,7 +1742,9 @@ describe('validateField', () => {
             validate: (value) => value.toString().length < 3 || 'bill',
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({
@@ -1629,7 +1774,9 @@ describe('validateField', () => {
             validate: () => undefined,
           },
         },
-        'This is a long text input',
+        {
+          test: 'This is a long text input',
+        },
         false,
       ),
     ).toEqual({});
@@ -1658,7 +1805,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation errors', async () => {
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
 
@@ -1676,7 +1823,9 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
-        '',
+        {
+          test: '',
+        },
         true,
       ),
     ).toEqual({
@@ -1708,7 +1857,9 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
-        '123',
+        {
+          test: '123',
+        },
         true,
       ),
     ).toEqual({
@@ -1731,7 +1882,7 @@ describe('validateField', () => {
   it('should handle pattern with g flag', async () => {
     const reusedRe = /a/g;
 
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
     expect(
@@ -1748,7 +1899,9 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
-        'a',
+        {
+          test: 'a',
+        },
         true,
       ),
     ).toEqual({
@@ -1780,7 +1933,9 @@ describe('validateField', () => {
             validate: (value) => value === 'test',
           },
         },
-        'a',
+        {
+          test: 'a',
+        },
         true,
       ),
     ).toEqual({
@@ -1800,7 +1955,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation error messages', async () => {
-    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
+    (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
     expect(
@@ -1827,7 +1982,9 @@ describe('validateField', () => {
             },
           },
         },
-        '',
+        {
+          test: '',
+        },
         true,
       ),
     ).toEqual({
@@ -1871,7 +2028,9 @@ describe('validateField', () => {
             },
           },
         },
-        'bil',
+        {
+          test: 'bil',
+        },
         true,
       ),
     ).toEqual({
@@ -1916,7 +2075,9 @@ describe('validateField', () => {
             },
           },
         },
-        'bil',
+        {
+          test: 'bil',
+        },
         true,
       ),
     ).toEqual({
@@ -1958,7 +2119,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
         true,
       );
@@ -1986,7 +2149,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        '',
+        {
+          test: '',
+        },
         false,
         true,
       );
@@ -2014,7 +2179,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        'test',
+        {
+          test: 'test',
+        },
         false,
         true,
       );
@@ -2038,7 +2205,9 @@ describe('validateField', () => {
               disabled: true,
             },
           },
-          '',
+          {
+            test: '',
+          },
           false,
         ),
       ).toEqual({});
@@ -2060,7 +2229,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        undefined,
+        {
+          test: undefined,
+        },
         false,
         false,
         true,
@@ -2120,7 +2291,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        null,
+        {
+          test: null,
+        },
         false,
         false,
         true,
@@ -2150,7 +2323,9 @@ describe('validateField', () => {
             mount: true,
           },
         },
-        [{}],
+        {
+          test: [{}],
+        },
         false,
         false,
         true,

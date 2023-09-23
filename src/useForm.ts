@@ -5,14 +5,20 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import {
+  FieldValues,
+  FormState,
+  InternalFieldName,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 import { useSubscribe } from './useSubscribe';
 
 /**
  * Custom hook to manage the entire form.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
+ * [API](https://react-hook-form.com/docs/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
  *
  * @param props - form configuration and validation parameters.
  *
@@ -31,7 +37,7 @@ import { useSubscribe } from './useSubscribe';
  *       <input defaultValue="test" {...register("example")} />
  *       <input {...register("exampleRequired", { required: true })} />
  *       {errors.exampleRequired && <span>This field is required</span>}
- *       <input type="submit" />
+ *       <button>Submit</button>
  *     </form>
  *   );
  * }
@@ -40,16 +46,18 @@ import { useSubscribe } from './useSubscribe';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues | undefined = undefined,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
-): UseFormReturn<TFieldValues, TContext> {
+): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
-    UseFormReturn<TFieldValues, TContext> | undefined
+    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >();
+  const _values = React.useRef<typeof props.values>();
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    isLoading: true,
+    isLoading: isFunction(props.defaultValues),
     isSubmitted: false,
     isSubmitting: false,
     isSubmitSuccessful: false,
@@ -77,41 +85,44 @@ export function useForm<
 
   useSubscribe({
     subject: control._subjects.state,
-    next: (value: FieldValues) => {
-      if (shouldRenderFormState(value, control._proxyFormState, true)) {
-        control._formState = {
-          ...control._formState,
-          ...value,
-        };
-
+    next: (
+      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
+    ) => {
+      if (
+        shouldRenderFormState(
+          value,
+          control._proxyFormState,
+          control._updateFormState,
+          true,
+        )
+      ) {
         updateFormState({ ...control._formState });
       }
     },
   });
 
   React.useEffect(() => {
-    if (!control._stateFlags.mount) {
-      control._proxyFormState.isValid && control._updateValid();
-      control._stateFlags.mount = true;
-    }
-
-    if (control._stateFlags.watch) {
-      control._stateFlags.watch = false;
-      control._subjects.state.next({});
-    }
-
-    control._removeUnmounted();
-  });
-
-  React.useEffect(() => {
-    if (props.values && !deepEqual(props.values, control._defaultValues)) {
+    if (props.values && !deepEqual(props.values, _values.current)) {
       control._reset(props.values, control._options.resetOptions);
+      _values.current = props.values;
+    } else {
+      control._resetDefaultValues();
     }
   }, [props.values, control]);
 
   React.useEffect(() => {
-    formState.submitCount && control._focusError();
-  }, [control, formState.submitCount]);
+    if (!control._state.mount) {
+      control._updateValid();
+      control._state.mount = true;
+    }
+
+    if (control._state.watch) {
+      control._state.watch = false;
+      control._subjects.state.next({ ...control._formState });
+    }
+
+    control._removeUnmounted();
+  });
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

@@ -16,11 +16,13 @@ export default function cloneObject<T>(data: T): T {
   ) {
     copy = isArray ? [] : {};
 
-    if (!Array.isArray(data) && !isPlainObject(data)) {
+    if (!isArray && !isPlainObject(data)) {
       copy = data;
     } else {
       for (const key in data) {
-        copy[key] = cloneObject(data[key]);
+        if (data.hasOwnProperty(key)) {
+          copy[key] = cloneObject(data[key]);
+        }
       }
     }
   } else {

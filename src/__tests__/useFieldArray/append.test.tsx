@@ -71,12 +71,17 @@ describe('append', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(dirtyInputs).toEqual({
-      test: [{ value: true }, {}, {}, { value: true }],
+      test: [
+        { value: true },
+        { value: false },
+        { value: false },
+        { value: true },
+      ],
     });
   });
 
   it('should append data into the fields', () => {
-    let currentFields: any = [];
+    let currentFields: unknown[] = [];
     const Component = () => {
       const { register, control } = useForm<{
         test: { test: string }[];
@@ -191,7 +196,7 @@ describe('append', () => {
   );
 
   it('should trigger reRender when user is watching the all field array', () => {
-    const watched: any[] = [];
+    const watched: unknown[] = [];
     const Component = () => {
       const { register, watch, control } = useForm<{
         test: { value: string }[];
@@ -474,7 +479,7 @@ describe('append', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>({
         defaultValues: {
           test: [{ id: '1234', test: 'data' }],
@@ -530,7 +535,7 @@ describe('append', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>();
 
       const { fields, append } = useFieldArray({

@@ -37,7 +37,7 @@
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) sin ninguna dependencia
 - Sigue el estándar HTML para la validación
 - Compatible con React Native
-- Supports [Yup](https://github.com/jquense/yup) validación basada en esquemas
+- Soporta [Yup](https://github.com/jquense/yup) validación basada en esquemas
 - Admite la validación del navegador nativo
 - Cree formularios rápidamente con el [form builder](https://react-hook-form.com/form-builder)
 
@@ -50,7 +50,7 @@
 - [Motivación](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [Empezar](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/docs)
 - [Ejemplos](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
 - [Generador de formularios](https://react-hook-form.com/form-builder)

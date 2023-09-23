@@ -32,6 +32,7 @@ import {
   FieldErrors,
   FieldPath,
   FieldValues,
+  FormState,
   InternalFieldName,
   RegisterOptions,
   UseFieldArrayProps,
@@ -44,7 +45,7 @@ import { useSubscribe } from './useSubscribe';
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
  *
  * @param props - useFieldArray props
  *
@@ -104,7 +105,7 @@ export function useFieldArray<
   control._names.array.add(name);
 
   props.rules &&
-    (control as Control).register(
+    (control as Control<TFieldValues>).register(
       name as FieldPath<TFieldValues>,
       props.rules as RegisterOptions<TFieldValues>,
     );
@@ -307,9 +308,12 @@ export function useFieldArray<
   };
 
   React.useEffect(() => {
-    control._stateFlags.action = false;
+    control._state.action = false;
 
-    isWatched(name, control._names) && control._subjects.state.next({});
+    isWatched(name, control._names) &&
+      control._subjects.state.next({
+        ...control._formState,
+      } as FormState<TFieldValues>);
 
     if (
       _actioned.current &&
@@ -322,7 +326,12 @@ export function useFieldArray<
           const existingError = get(control._formState.errors, name);
 
           if (
-            existingError ? !error && existingError.type : error && error.type
+            existingError
+              ? (!error && existingError.type) ||
+                (error &&
+                  (existingError.type !== error.type ||
+                    existingError.message !== error.message))
+              : error && error.type
           ) {
             error
               ? set(control._formState.errors, name, error)
@@ -337,7 +346,7 @@ export function useFieldArray<
         if (field && field._f) {
           validateField(
             field,
-            get(control._formValues, name),
+            control._formValues,
             control._options.criteriaMode === VALIDATION_MODE.all,
             control._options.shouldUseNativeValidation,
             true,
@@ -356,9 +365,9 @@ export function useFieldArray<
       }
     }
 
-    control._subjects.watch.next({
+    control._subjects.values.next({
       name,
-      values: control._formValues,
+      values: { ...control._formValues },
     });
 
     control._names.focus &&
@@ -369,7 +378,8 @@ export function useFieldArray<
 
     control._names.focus = '';
 
-    control._proxyFormState.isValid && control._updateValid();
+    control._updateValid();
+    _actioned.current = false;
   }, [fields, name, control]);
 
   React.useEffect(() => {

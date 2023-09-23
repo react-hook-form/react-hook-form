@@ -2,15 +2,18 @@ import { INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
   FieldError,
+  FieldValues,
   InternalFieldErrors,
   Message,
   NativeFieldValue,
 } from '../types';
+import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
+import isHTMLElement from '../utils/isHTMLElement';
 import isMessage from '../utils/isMessage';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
@@ -25,9 +28,9 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
-export default async <T extends NativeFieldValue>(
+export default async <T extends FieldValues>(
   field: Field,
-  inputValue: T,
+  formValues: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
   isFieldArray?: boolean,
@@ -47,6 +50,7 @@ export default async <T extends NativeFieldValue>(
     mount,
     disabled,
   } = field._f;
+  const inputValue: NativeFieldValue = get(formValues, name);
   if (!mount || disabled) {
     return {};
   }
@@ -65,6 +69,7 @@ export default async <T extends NativeFieldValue>(
     ((valueAsNumber || isFileInput(ref)) &&
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
+    (isHTMLElement(ref) && ref.value === '') ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
@@ -181,10 +186,10 @@ export default async <T extends NativeFieldValue>(
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =
       !isNullOrUndefined(maxLengthOutput.value) &&
-      inputValue.length > maxLengthOutput.value;
+      inputValue.length > +maxLengthOutput.value;
     const exceedMin =
       !isNullOrUndefined(minLengthOutput.value) &&
-      inputValue.length < minLengthOutput.value;
+      inputValue.length < +minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
@@ -218,7 +223,7 @@ export default async <T extends NativeFieldValue>(
 
   if (validate) {
     if (isFunction(validate)) {
-      const result = await validate(inputValue);
+      const result = await validate(inputValue, formValues);
       const validateError = getValidateError(result, inputRef);
 
       if (validateError) {
@@ -243,7 +248,7 @@ export default async <T extends NativeFieldValue>(
         }
 
         const validateError = getValidateError(
-          await validate[key](inputValue),
+          await validate[key](inputValue, formValues),
           inputRef,
           key,
         );

@@ -5,6 +5,7 @@ import shouldRenderFormState from './logic/shouldRenderFormState';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import {
   FieldValues,
+  FormState,
   InternalFieldName,
   UseFormStateProps,
   UseFormStateReturn,
@@ -16,7 +17,7 @@ import { useSubscribe } from './useSubscribe';
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/useformstate) • [Demo](https://codesandbox.io/s/useformstate-75xly)
+ * [API](https://react-hook-form.com/docs/useformstate) • [Demo](https://codesandbox.io/s/useformstate-75xly)
  *
  * @param props - include options on specify fields to subscribe. {@link UseFormStateReturn}
  *
@@ -64,14 +65,20 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   useSubscribe({
     disabled,
-    next: (value: { name?: InternalFieldName }) =>
+    next: (
+      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
+    ) =>
       _mounted.current &&
       shouldSubscribeByName(
         _name.current as InternalFieldName,
         value.name,
         exact,
       ) &&
-      shouldRenderFormState(value, _localProxyFormState.current) &&
+      shouldRenderFormState(
+        value,
+        _localProxyFormState.current,
+        control._updateFormState,
+      ) &&
       updateFormState({
         ...control._formState,
         ...value,
@@ -81,14 +88,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   React.useEffect(() => {
     _mounted.current = true;
-    const isDirty = control._proxyFormState.isDirty && control._getDirty();
-
-    if (isDirty !== control._formState.isDirty) {
-      control._subjects.state.next({
-        isDirty,
-      });
-    }
-    control._updateValid();
+    _localProxyFormState.current.isValid && control._updateValid(true);
 
     return () => {
       _mounted.current = false;

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AutoUnregister from './autoUnregister';
 import Basic from './basic';
@@ -11,6 +11,7 @@ import SetValue from './setValue';
 import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
+import DefaultValuesAsync from './defaultValuesAsync';
 import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
@@ -38,6 +39,7 @@ import { UseFormState } from './useFormState';
 import SetValueAsyncStrictMode from './setValueStrictMode';
 import { DelayError } from './delayError';
 import './style.css';
+import FormComponent from './form';
 
 const App: React.FC = () => {
   return (
@@ -92,6 +94,7 @@ const App: React.FC = () => {
         />
         <Route path="/isValid/:mode/:defaultValues" element={<IsValid />} />
         <Route path="/default-values" element={<DefaultValues />} />
+        <Route path="/default-values-async" element={<DefaultValuesAsync />} />
         <Route path="/trigger-validation" element={<TriggerValidation />} />
         <Route path="/watch-default-values" element={<WatchDefaultValues />} />
         <Route path="/watch-field-array/:mode" element={<WatchFieldArray />} />
@@ -113,6 +116,7 @@ const App: React.FC = () => {
         />
         <Route path="/test" element={<Test />} />
         <Route path="/" element={<Welcome />} />
+        <Route path="/form" element={<FormComponent />} />
       </Routes>
     </BrowserRouter>
   );

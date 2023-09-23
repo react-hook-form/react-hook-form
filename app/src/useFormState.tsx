@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useFormState, useForm, Control } from 'react-hook-form';
 
 let renderCounter = 0;

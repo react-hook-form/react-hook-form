@@ -13,8 +13,11 @@ export type UseFieldArrayProps<
   control?: Control<TFieldValues>;
   rules?: {
     validate?:
-      | Validate<FieldArray<TFieldValues, TFieldArrayName>[]>
-      | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[]>>;
+      | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
+      | Record<
+          string,
+          Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
+        >;
   } & Pick<
     RegisterOptions<TFieldValues>,
     'maxLength' | 'minLength' | 'required'
@@ -54,7 +57,7 @@ export type FieldArrayMethodProps = {
  * Swap field array by supplying from and to index
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param indexA - from index
  * @param indexB - to index
@@ -70,7 +73,7 @@ export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
  * Move field array by supplying from and to index
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param indexA - from index
  * @param indexB - to index
@@ -86,7 +89,7 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
  * Prepend field/fields to the start of the fields and optionally focus. The input value will be registered during this action.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param value - prepend items or items
  * @param options - focus options
@@ -117,7 +120,7 @@ export type UseFieldArrayPrepend<
  * Append field/fields to the end of your fields and focus. The input value will be registered during this action.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param value - append items or items.
  * @param options - focus options
@@ -148,7 +151,7 @@ export type UseFieldArrayAppend<
  * Remove field/fields at particular position.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param index - index to remove at, or remove all when no index provided.
  *
@@ -169,7 +172,7 @@ export type UseFieldArrayRemove = (index?: number | number[]) => void;
  * Insert field/fields at particular position and focus.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param index - insert position
  * @param value - insert field or fields
@@ -202,7 +205,7 @@ export type UseFieldArrayInsert<
  * Update field/fields at particular position.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param index - insert position
  * @param value - insert field or fields
@@ -227,7 +230,7 @@ export type UseFieldArrayUpdate<
  * Replace the entire field array values.
  *
  * @remarks
- * [API](https://react-hook-form.com/api/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
+ * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
  * @param value - the entire field values.
  *
@@ -235,7 +238,7 @@ export type UseFieldArrayUpdate<
  * ```tsx
  * <button
  *   type="button"
- *   onClick={() => update([{ name: "data" }, { name: "data" }])}
+ *   onClick={() => replace([{ name: "data" }, { name: "data" }])}
  * >
  *   Replace
  * </button>

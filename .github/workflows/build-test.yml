@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Do we want to run with multiple versions of node?
         node-version: [16]
 
     steps:
@@ -33,7 +32,6 @@ jobs:
           pnpm lint
           pnpm type
 
-        # What is --ci?
       - name: Test
         run: |
           pnpm run test --ci

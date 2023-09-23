@@ -3,7 +3,6 @@ import React from 'react';
 import generateWatchOutput from './logic/generateWatchOutput';
 import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import cloneObject from './utils/cloneObject';
-import isUndefined from './utils/isUndefined';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -22,7 +21,7 @@ import { useSubscribe } from './useSubscribe';
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -51,7 +50,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -81,7 +80,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -114,7 +113,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @example
  * ```tsx
@@ -130,7 +129,7 @@ export function useWatch<
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/api/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
  * @example
  * ```tsx
@@ -158,7 +157,7 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   useSubscribe({
     disabled,
-    subject: control._subjects.watch,
+    subject: control._subjects.values,
     next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
       if (
         shouldSubscribeByName(
@@ -167,20 +166,22 @@ export function useWatch<TFieldValues extends FieldValues>(
           exact,
         )
       ) {
-        const fieldValues = generateWatchOutput(
-          _name.current as InternalFieldName | InternalFieldName[],
-          control._names,
-          formState.values || control._formValues,
-        );
-
         updateValue(
-          isUndefined(fieldValues) ? defaultValue : cloneObject(fieldValues),
+          cloneObject(
+            generateWatchOutput(
+              _name.current as InternalFieldName | InternalFieldName[],
+              control._names,
+              formState.values || control._formValues,
+              false,
+              defaultValue,
+            ),
+          ),
         );
       }
     },
   });
 
-  const [value, updateValue] = React.useState<unknown>(
+  const [value, updateValue] = React.useState(
     control._getWatch(
       name as InternalFieldName,
       defaultValue as DeepPartialSkipArrayKey<TFieldValues>,

@@ -1,29 +1,26 @@
 import React from 'react';
-import { NestedValue, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+
+const sleep = <T,>(data: T, ms: number) =>
+  new Promise<T>((res) => setTimeout(() => res(data), ms));
 
 function DefaultValues() {
-  const { register } = useForm<{
-    test: string;
-    test1: {
-      firstName: string;
-      lastName: string[];
-      deep: {
-        nest: string;
-      };
-    };
-    checkbox: NestedValue<string[]>;
-  }>({
-    defaultValues: {
-      test: 'test',
-      checkbox: ['1', '2'],
-      test1: {
-        firstName: 'firstName',
-        lastName: ['lastName0', 'lastName1'],
-        deep: {
-          nest: 'nest',
+  const { register } = useForm({
+    defaultValues: async () =>
+      sleep(
+        {
+          test: 'test',
+          checkbox: ['1', '2'],
+          test1: {
+            firstName: 'firstName',
+            lastName: ['lastName0', 'lastName1'],
+            deep: {
+              nest: 'nest',
+            },
+          },
         },
-      },
-    },
+        10,
+      ),
   });
   const [show, setShow] = React.useState(true);
 

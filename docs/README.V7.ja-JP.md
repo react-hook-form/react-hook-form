@@ -37,7 +37,7 @@ Version 7 | [Version 6(日本語)](/docs/README.ja-JP.md)
 ## リンク集
 
 - [Get started](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/docs)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)

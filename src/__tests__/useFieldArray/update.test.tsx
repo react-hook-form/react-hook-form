@@ -62,7 +62,7 @@ describe('update', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
 
     expect(dirtyInputs).toEqual({
-      test: [{ value: true }, {}, {}],
+      test: [{ value: true }, { value: false }, { value: false }],
     });
   });
 
@@ -538,7 +538,7 @@ describe('update', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>({
         defaultValues: {
           test: [{ id: '1234', test: 'data' }],
@@ -592,7 +592,7 @@ describe('update', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>();
 
       const { fields, update } = useFieldArray({

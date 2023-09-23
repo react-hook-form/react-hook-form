@@ -301,6 +301,7 @@ describe('useController', () => {
       const { field } = useController({
         control,
         name: 'test',
+        defaultValue: '',
       });
 
       return (
@@ -315,15 +316,15 @@ describe('useController', () => {
           </button>
         </div>
       );
-
-      render(<App />);
-
-      fireEvent.click(screen.getByRole('button'));
-
-      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-        'data',
-      );
     };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+      'data',
+    );
   });
 
   it('should be able to setValue after reset', async () => {
@@ -439,7 +440,7 @@ describe('useController', () => {
 
     await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
     expect(reportValidity).toBeCalledTimes(3);
-    expect(focus).toBeCalledTimes(1);
+    expect(focus).toBeCalledTimes(2);
   });
 
   it('should update with inline defaultValue', async () => {
@@ -675,5 +676,139 @@ describe('useController', () => {
 
     expect(select).toBeCalled();
     expect(focus).toBeCalled();
+  });
+
+  it('should update isValid correctly with strict mode', async () => {
+    const App = () => {
+      const form = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          name: '',
+        },
+      });
+      const { isValid } = form.formState;
+
+      return (
+        <React.StrictMode>
+          <FormProvider {...form}>
+            <Controller
+              render={({ field }) => (
+                <input value={field.value} onChange={field.onChange} />
+              )}
+              name="name"
+              rules={{
+                required: true,
+              }}
+            />
+            <p>{isValid ? 'valid' : 'not'}</p>
+          </FormProvider>
+        </React.StrictMode>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('not');
+    });
+  });
+
+  it('should restore defaultValues with react strict mode double useEffect', () => {
+    function Form() {
+      return (
+        <Controller
+          name="lastName"
+          shouldUnregister={true}
+          render={({ field }) => <input {...field} />}
+        />
+      );
+    }
+
+    function App() {
+      const methods = useForm({
+        defaultValues: {
+          lastName: 'luo',
+        },
+      });
+      const {
+        formState: { dirtyFields },
+      } = methods;
+
+      return (
+        <React.StrictMode>
+          <FormProvider {...methods}>
+            <form>
+              <Form />
+              {dirtyFields.lastName ? 'dirty' : 'pristine'}
+            </form>
+          </FormProvider>
+        </React.StrictMode>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'luo1',
+      },
+    });
+
+    screen.getByText('dirty');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'luo',
+      },
+    });
+
+    screen.getByText('pristine');
+  });
+
+  it('should disable form input with disabled prop', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = React.useState(false);
+      const { control, watch } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const {
+        field: { disabled: disabledProps },
+      } = useController({
+        control,
+        name: 'test',
+        disabled,
+      });
+
+      const input = watch('test');
+
+      return (
+        <form>
+          <p>{input}</p>
+          <button
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+            type={'button'}
+          >
+            toggle
+          </button>
+          <p>{disabledProps ? 'disable' : 'notDisabled'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    screen.getByText('test');
+    screen.getByText('notDisabled');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => {
+      screen.getByText('');
+      screen.getByText('disable');
+    });
   });
 });

@@ -54,7 +54,7 @@ const items: Item[] = [
   {
     title: 'DefaultValues',
     description: 'Should populate defaultValue for inputs',
-    slugs: ['/default-values'],
+    slugs: ['/default-values', '/default-values-async'],
   },
   {
     title: 'FormState',
@@ -217,6 +217,11 @@ const items: Item[] = [
     title: 'WatchUseFieldArrayNested',
     description: 'should watch the correct nested field array',
     slugs: ['/watchUseFieldArrayNested'],
+  },
+  {
+    title: 'Form',
+    description: 'should validate form and submit the request',
+    slugs: ['/form'],
   },
 ];
 

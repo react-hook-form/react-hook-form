@@ -1,5 +1,6 @@
 [
   "Controller",
+  "Form",
   "FormProvider",
   "appendErrors",
   "get",

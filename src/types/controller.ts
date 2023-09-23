@@ -13,12 +13,6 @@ import {
 } from './';
 
 export type ControllerFieldState = {
-  /**
-   * @deprecated check `fieldState.error` instead
-   * ```jsx
-   * {fieldState.error && <p>{fieldState.error.message}</p>}
-   * ```
-   */
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
@@ -31,6 +25,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
+  disabled?: boolean;
   value: FieldPathValue<TFieldValues, TName>;
   name: TName;
   ref: RefCallBack;
@@ -48,6 +43,7 @@ export type UseControllerProps<
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
+  disabled?: boolean;
 };
 
 export type UseControllerReturn<

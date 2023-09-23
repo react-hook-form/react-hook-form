@@ -3,7 +3,7 @@
     "source.fixAll.eslint": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "jest.jestCommandLine": "yarn test",
+  "jest.jestCommandLine": "pnpm test --",
   "jest.autoRun": {
     "watch": false,
     "onSave": "test-file",

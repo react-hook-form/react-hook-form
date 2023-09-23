@@ -13,17 +13,10 @@ import { ReactElement } from 'react';
 // @public (undocumented)
 export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: boolean, errors: InternalFieldErrors, type: string, message: ValidateResult) => {};
 
-// Warning: (ae-forgotten-export) The symbol "IsTuple" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "TupleKeys" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "ArrayPathImpl" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ArrayPathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type ArrayPath<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
-    [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
-}[TupleKeys<T>] : ArrayPathImpl<ArrayKey, V> : {
-    [K in keyof T]-?: ArrayPathImpl<K & string, T[K]>;
-}[keyof T];
+export type ArrayPath<T> = T extends any ? ArrayPathInternal<T> : never;
 
 // @public (undocumented)
 export type BatchFieldArrayUpdate = <T extends Function, TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>>(name: InternalFieldName, updatedFieldArrayValues?: Partial<FieldArray<TFieldValues, TFieldArrayName>>[], method?: T, args?: Partial<{
@@ -47,9 +40,8 @@ export type ChangeHandler = (event: {
 export type Control<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
     _subjects: Subjects<TFieldValues>;
     _removeUnmounted: Noop;
-    _focusError: Noop;
     _names: Names;
-    _stateFlags: {
+    _state: {
         mount: boolean;
         action: boolean;
         watch: boolean;
@@ -57,8 +49,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _reset: UseFormReset<TFieldValues>;
     _options: UseFormProps<TFieldValues, TContext>;
     _getDirty: GetIsDirty;
+    _resetDefaultValues: Noop;
     _formState: FormState<TFieldValues>;
-    _updateValid: Noop;
+    _updateValid: (shouldUpdateValid?: boolean) => void;
+    _updateFormState: (formState: Partial<FormState<TFieldValues>>) => void;
     _fields: FieldRefs;
     _formValues: FieldValues;
     _proxyFormState: ReadFormState;
@@ -66,16 +60,28 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _getWatch: WatchInternal<TFieldValues>;
     _updateFieldArray: BatchFieldArrayUpdate;
     _getFieldArray: <TFieldArrayValues>(name: InternalFieldName) => Partial<TFieldArrayValues>[];
+    _updateDisabledField: (props: {
+        disabled?: boolean;
+        name: FieldName<any>;
+    } & ({
+        field?: Field;
+        fields?: undefined;
+    } | {
+        field?: undefined;
+        fields?: FieldRefs;
+    })) => void;
     _executeSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
     register: UseFormRegister<TFieldValues>;
+    handleSubmit: UseFormHandleSubmit<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
+    setError: UseFormSetError<TFieldValues>;
 };
 
 // @public
-export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends Path<UnPackAsyncDefaultValues<TFieldValues>> = Path<UnPackAsyncDefaultValues<TFieldValues>>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
+export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: ControllerProps<TFieldValues, TName>) => ReactElement<any, string | JSXElementConstructor<any>>;
 
 // @public (undocumented)
 export type ControllerFieldState = {
@@ -98,6 +104,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
     onBlur: Noop;
+    disabled?: boolean;
     value: FieldPathValue<TFieldValues, TName>;
     name: TName;
     ref: RefCallBack;
@@ -140,8 +147,10 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
+// Warning: (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DefaultValues<TFieldValues> = DeepPartial<TFieldValues>;
+export type DefaultValues<TFieldValues> = TFieldValues extends AsyncDefaultValues<TFieldValues> ? DeepPartial<Awaited<TFieldValues>> : DeepPartial<TFieldValues>;
 
 // @public (undocumented)
 export type DelayCallback = (wait: number) => void;
@@ -182,10 +191,10 @@ export type FieldArrayMethodProps = {
 };
 
 // @public
-export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<UnPackAsyncDefaultValues<TFieldValues>>;
+export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
 
 // @public
-export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<UnPackAsyncDefaultValues<TFieldValues>, TFieldArrayPath>;
+export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
 
 // @public
 export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
@@ -203,11 +212,13 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<UnPackAsyncDefaultValues<T>>>>;
+export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>> & {
+    root?: Record<string, GlobalError> & GlobalError;
+};
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
+    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : K extends 'root' | `root.${string}` ? GlobalError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
 };
 
 // @public (undocumented)
@@ -217,7 +228,7 @@ export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<TFieldVal
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<DeepPartial<TFieldValues>, boolean>;
 
 // @public
-export type FieldPath<TFieldValues extends FieldValues> = Path<UnPackAsyncDefaultValues<TFieldValues>>;
+export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
 // @public
 export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
@@ -225,7 +236,7 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
 }[FieldPath<TFieldValues>];
 
 // @public
-export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<UnPackAsyncDefaultValues<TFieldValues>, TFieldPath>;
+export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;
 
 // @public
 export type FieldPathValues<TFieldValues extends FieldValues, TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]> = {} & {
@@ -242,12 +253,39 @@ export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[Internal
 export type FieldValues = Record<string, any>;
 
 // @public
-export const FormProvider: <TFieldValues extends FieldValues, TContext = any>(props: FormProviderProps<TFieldValues, TContext>) => JSX.Element;
+export function Form<T extends FieldValues, U extends FieldValues | undefined = undefined>(props: FormProps<T, U>): React_2.JSX.Element;
 
 // @public (undocumented)
-export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
+export type FormProps<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = Omit<React_2.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> & Partial<{
+    control: Control<TFieldValues>;
+    headers: Record<string, string>;
+    validateStatus: (status: number) => boolean;
+    onError: ({ response, error, }: {
+        response: Response;
+        error?: undefined;
+    } | {
+        response?: undefined;
+        error: unknown;
+    }) => void;
+    onSuccess: ({ response }: {
+        response: Response;
+    }) => void;
+    onSubmit: TTransformedValues extends FieldValues ? FormSubmitHandler<TTransformedValues> : FormSubmitHandler<TFieldValues>;
+    method: 'post' | 'put' | 'delete';
     children: React_2.ReactNode | React_2.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext>;
+    render: (props: {
+        submit: (e?: React_2.FormEvent) => void;
+    }) => React_2.ReactNode | React_2.ReactNode[];
+    encType: 'application/x-www-form-urlencoded' | 'multipart/form-data' | 'text/plain' | 'application/json';
+}>;
+
+// @public
+export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined> = {
+    children: React_2.ReactNode | React_2.ReactNode[];
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = {
@@ -259,9 +297,9 @@ export type FormState<TFieldValues extends FieldValues> = {
     isValidating: boolean;
     isValid: boolean;
     submitCount: number;
-    defaultValues?: UnPackAsyncDefaultValues<TFieldValues> | undefined | Readonly<DeepPartial<TFieldValues>>;
-    dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<UnPackAsyncDefaultValues<TFieldValues>>>>;
-    touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<UnPackAsyncDefaultValues<TFieldValues>>>>;
+    defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
+    dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+    touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -283,10 +321,25 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
-export const get: <T>(obj: T, path: string, defaultValue?: unknown) => any;
+export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
+    data: TFieldValues;
+    event?: React_2.BaseSyntheticEvent;
+    formData: FormData;
+    formDataJson: string;
+    method?: 'post' | 'put' | 'delete';
+}) => unknown | Promise<unknown>;
+
+// @public (undocumented)
+export const get: <T>(obj: T, path?: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
+
+// @public (undocumented)
+export type GlobalError = Partial<{
+    type: string | number;
+    message: string;
+}>;
 
 // @public (undocumented)
 export type InternalFieldErrors = Partial<Record<InternalFieldName, FieldError>>;
@@ -299,6 +352,9 @@ export type InternalNameSet = Set<InternalFieldName>;
 
 // @public
 export type IsAny<T> = 0 extends 1 & T ? true : false;
+
+// @public
+export type IsEqual<T1, T2> = T1 extends T2 ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2 ? true : false : false;
 
 // @public (undocumented)
 export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedValue | Date | FileList_2>, any[] | object> extends never ? true : false;
@@ -367,18 +423,16 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 // @public (undocumented)
 export type Noop = () => void;
 
-// Warning: (ae-forgotten-export) The symbol "PathImpl" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Path<T> = T extends ReadonlyArray<infer V> ? IsTuple<T> extends true ? {
-    [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
-}[TupleKeys<T>] : PathImpl<ArrayKey, V> : {
-    [K in keyof T]-?: PathImpl<K & string, T[K]>;
-}[keyof T];
+export type Path<T> = T extends any ? PathInternal<T> : never;
 
 // @public
 export type PathString = string;
 
+// Warning: (ae-forgotten-export) The symbol "ArrayKey" needs to be exported by the entry point index.d.ts
+//
 // @public
 export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any ? P extends `${infer K}.${infer R}` ? K extends keyof T ? R extends Path<T[K]> ? PathValue<T[K], R> : never : K extends `${ArrayKey}` ? T extends ReadonlyArray<infer V> ? PathValue<V, R & Path<V>> : never : never : P extends keyof T ? T[P] : P extends `${ArrayKey}` ? T extends ReadonlyArray<infer V> ? V : never : never : never;
 
@@ -403,10 +457,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     max: ValidationRule<number | string>;
     maxLength: ValidationRule<number>;
     minLength: ValidationRule<number>;
-    pattern: ValidationRule<RegExp>;
-    validate: Validate<FieldPathValue<TFieldValues, TFieldName>> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>>>;
-    valueAsNumber: boolean;
-    valueAsDate: boolean;
+    validate: Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues> | Record<string, Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>>;
     value: FieldPathValue<TFieldValues, TFieldName>;
     setValueAs: (value: any) => any;
     shouldUnregister?: boolean;
@@ -414,7 +465,19 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     onBlur?: (event: any) => void;
     disabled: boolean;
     deps: InternalFieldName | InternalFieldName[];
-}>;
+}> & ({
+    pattern?: ValidationRule<RegExp>;
+    valueAsNumber?: false;
+    valueAsDate?: false;
+} | {
+    pattern?: undefined;
+    valueAsNumber?: false;
+    valueAsDate?: true;
+} | {
+    pattern?: undefined;
+    valueAsNumber?: true;
+    valueAsDate?: false;
+});
 
 // @public (undocumented)
 export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = any> = (values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
@@ -466,10 +529,10 @@ export type SetValueConfig = Partial<{
 
 // @public (undocumented)
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
-    watch: Subject<{
+    values: Subject<{
         name?: InternalFieldName;
         type?: EventType;
-        values?: FieldValues;
+        values: FieldValues;
     }>;
     array: Subject<{
         name?: InternalFieldName;
@@ -479,18 +542,15 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
+export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export type SubmitHandler<TFieldValues extends FieldValues> = (data: TFieldValues, event?: React_2.BaseSyntheticEvent) => any | Promise<any>;
+export type SubmitHandler<TFieldValues extends FieldValues> = (data: TFieldValues, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
     shouldFocus: boolean;
 }>;
-
-// @public (undocumented)
-export type UnPackAsyncDefaultValues<TFieldValues> = TFieldValues extends () => Promise<infer U> ? U : TFieldValues;
 
 // @public @deprecated (undocumented)
 export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File | Blob ? T : T extends object ? {
@@ -507,6 +567,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     shouldUnregister?: boolean;
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues>;
+    disabled?: boolean;
 };
 
 // @public (undocumented)
@@ -537,7 +598,7 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
     keyName?: TKeyName;
     control?: Control<TFieldValues>;
     rules?: {
-        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[]> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[]>>;
+        validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>>;
     } & Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'required'>;
     shouldUnregister?: boolean;
 };
@@ -568,13 +629,13 @@ export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 // @public
-export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext>;
+export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined>(props?: UseFormProps<TFieldValues, TContext>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]) => void;
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues>() => UseFormReturn<TFieldValues, any>;
+export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TransformedValues extends FieldValues | undefined = undefined>() => UseFormReturn<TFieldValues, TContext, TransformedValues>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
@@ -592,10 +653,10 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFormHandleSubmit<TFieldValues extends FieldValues> = (onValid: SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = (onValid: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
-export type UseFormProps<TFieldValues extends UnPackAsyncDefaultValues<FieldValues> = UnPackAsyncDefaultValues<FieldValues>, TContext = any> = Partial<{
+export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
     mode: Mode;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
@@ -606,6 +667,7 @@ export type UseFormProps<TFieldValues extends UnPackAsyncDefaultValues<FieldValu
     shouldFocusError: boolean;
     shouldUnregister: boolean;
     shouldUseNativeValidation: boolean;
+    progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
 }>;
@@ -638,11 +700,11 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
     keepDirty: boolean;
     keepTouched: boolean;
     keepError: boolean;
-    defaultValue: any;
+    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
 }>) => void;
 
 // @public (undocumented)
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any> = {
+export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues extends FieldValues | undefined = undefined> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -653,7 +715,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     formState: FormState<TFieldValues>;
     resetField: UseFormResetField<TFieldValues>;
     reset: UseFormReset<TFieldValues>;
-    handleSubmit: UseFormHandleSubmit<TFieldValues>;
+    handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
     unregister: UseFormUnregister<TFieldValues>;
     control: Control<TFieldValues, TContext>;
     register: UseFormRegister<TFieldValues>;
@@ -661,7 +723,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 };
 
 // @public
-export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues>, error: ErrorOption, options?: {
+export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root', error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
@@ -742,10 +804,10 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type Validate<TFieldValue> = (value: TFieldValue) => ValidateResult | Promise<ValidateResult>;
+export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
-export type ValidateResult = Message | boolean | undefined;
+export type ValidateResult = Message | Message[] | boolean | undefined;
 
 // @public (undocumented)
 export type ValidationMode = {
@@ -779,8 +841,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:97:3 - (ae-forgotten-export) The symbol "AsyncDefaultValues" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:433:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:434:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

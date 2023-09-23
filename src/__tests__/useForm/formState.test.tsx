@@ -323,7 +323,7 @@ describe('formState', () => {
     });
   });
 
-  it('should set isSubmitSuccessful to false when there is a promise reject', async () => {
+  it('should not update form state when there is a promise reject', async () => {
     const rejectPromiseFn = jest
       .fn()
       .mockRejectedValue(new Error('this is an error'));
@@ -358,7 +358,6 @@ describe('formState', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(await screen.findByText('isSubmitted')).toBeVisible();
     expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
   });
 
@@ -668,6 +667,38 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
+  it('should recompute isDirty after toggling disabled', async () => {
+    let isDirty: null | boolean = null;
+
+    const App = () => {
+      const defaultValues = { name: 'initial', disableName: false };
+      const { formState, register, watch } = useForm({ defaultValues });
+
+      isDirty = formState.isDirty;
+
+      const disableName = watch('disableName', defaultValues.disableName);
+
+      return (
+        <form>
+          <input type="text" {...register('name', { disabled: disableName })} />
+          <input type="checkbox" {...register('disableName')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const checkbox = screen.getByRole('checkbox');
+
+    fireEvent.click(checkbox);
+
+    expect(isDirty).toBe(true);
+
+    fireEvent.click(checkbox);
+
+    expect(isDirty).toBe(false);
+  });
+
   describe('when delay config is set', () => {
     const message = 'required.';
 
@@ -874,6 +905,42 @@ describe('formState', () => {
 
         expect(await screen.findByText(message)).toBeVisible();
       });
+    });
+  });
+
+  it('should return updated value with NaN data type', async () => {
+    function App() {
+      const { register, formState } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          value: '',
+        },
+      });
+
+      return (
+        <form>
+          {formState.errors.value && <p>error</p>}
+          <input
+            {...register('value', {
+              min: 0,
+              valueAsNumber: true,
+              validate: (value) => !Number.isNaN(value),
+            })}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '2a',
+      },
+    });
+
+    await waitFor(() => {
+      screen.getByText('error');
     });
   });
 });

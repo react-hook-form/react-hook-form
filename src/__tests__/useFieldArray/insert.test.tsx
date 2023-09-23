@@ -107,7 +107,7 @@ describe('insert', () => {
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
-          {},
+          { value: false },
           { value1: true, value: true },
           { value: true, value1: true },
         ],
@@ -149,7 +149,7 @@ describe('insert', () => {
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.dirtyFields).toEqual({
         test: [
-          {},
+          { value: false },
           { value1: true, value: true, value2: true },
           { value2: true, value: true, value1: true },
           { value: true, value1: true, value2: true },
@@ -729,7 +729,7 @@ describe('insert', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>({
         defaultValues: {
           test: [{ id: '1234', test: 'data' }],
@@ -785,7 +785,7 @@ describe('insert', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>();
 
       const { fields, insert } = useFieldArray({

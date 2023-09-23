@@ -262,4 +262,19 @@ describe('clearErrors', () => {
 
     expect(await screen.findByText('no')).toBeVisible();
   });
+
+  it('should be able to clear root error', () => {
+    const App = () => {
+      const { clearErrors } = useForm();
+
+      React.useEffect(() => {
+        clearErrors('root');
+        clearErrors('root.other');
+      }, [clearErrors]);
+
+      return null;
+    };
+
+    render(<App />);
+  });
 });

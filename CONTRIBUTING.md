@@ -12,30 +12,43 @@ Here is a quick guide to doing code contributions to the library.
 
 3. Install packages by running:
 
-   > pnpm install
+   ```shellscript
+   pnpm install
+   ```
 
 4. If you've added a code that should be tested, ensure the test suite still passes.
 
-   > pnpm test && pnpm tsd
+   ```shellscript
+   pnpm test && pnpm tsd
+   ```
 
 5. Try to write some unit tests to cover as much of your code as possible.
 
 6. Ensure your code lints without errors.
 
-   > pnpm lint
+   ```shellscript
+   pnpm lint
+   ```
 
 7. Ensure the automation suite passes by running two following commands in parallel:
 
-   > pnpm start
-   > pnpm cypress
+   ```shellscript
+   pnpm start
+   # In another terminal, while 'start' runs:
+   pnpm e2e
+   ```
 
 8. Ensure build passes.
 
-   > pnpm build
+   ```shellscript
+   pnpm build
+   ```
 
 9. Ensure exports are documented. (requires build)
 
-   > pnpm api-extractor
+   ```shellscript
+   pnpm api-extractor
+   ```
 
 10. Push your branch: `git push -u origin your-meaningful-branch-name`
 
@@ -68,11 +81,15 @@ it('should render correctly', () => {
 
 2. Open Jest Preview Dashboard
 
-   > pnpm jest-preview
+   ```shellscript
+   pnpm jest-preview
+   ```
 
 3. Run the tests
 
-   > pnpm test:watch
+   ```shellscript
+   pnpm test:watch
+   ```
 
 The browser will reloads automatically when `debug()` is executed.
 

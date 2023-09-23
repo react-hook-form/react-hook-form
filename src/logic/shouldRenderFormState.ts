@@ -1,12 +1,20 @@
 import { VALIDATION_MODE } from '../constants';
-import { ReadFormState } from '../types';
+import {
+  Control,
+  FieldValues,
+  FormState,
+  InternalFieldName,
+  ReadFormState,
+} from '../types';
 import isEmptyObject from '../utils/isEmptyObject';
 
-export default <T extends Record<string, any>, K extends ReadFormState>(
-  formStateData: T,
+export default <T extends FieldValues, K extends ReadFormState>(
+  formStateData: Partial<FormState<T>> & { name?: InternalFieldName },
   _proxyFormState: K,
+  updateFormState: Control<T>['_updateFormState'],
   isRoot?: boolean,
 ) => {
+  updateFormState(formStateData);
   const { name, ...formState } = formStateData;
 
   return (

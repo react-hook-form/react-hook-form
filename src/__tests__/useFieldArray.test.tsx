@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -550,6 +550,167 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(screen.queryByText('minLength')).not.toBeInTheDocument(),
       );
+    });
+
+    it('should update error when array is changed', async () => {
+      const App = () => {
+        const {
+          register,
+          control,
+          formState: { errors },
+        } = useForm<{
+          test: { value: string }[];
+        }>({
+          mode: 'onChange',
+          resolver: (data) => {
+            const errors: { test?: any } = {};
+            if (data.test.length > 4) {
+              errors.test = { type: 'toobig', message: 'WAY too many items' };
+            } else if (data.test.length > 3) {
+              errors.test = { type: 'toobig', message: 'Too many items' };
+            }
+            for (const [index, item] of data.test.entries()) {
+              if (item.value === '') {
+                errors.test = errors.test || [];
+                errors.test[index] = {
+                  value: { type: 'required', message: 'Required' },
+                };
+              }
+            }
+
+            return {
+              values: data,
+              errors,
+            };
+          },
+          defaultValues: {
+            test: [{ value: '0' }, { value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {errors.test?.type && <p>Array error: {errors.test.message}</p>}
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+                <button type="button" onClick={() => remove(i)}>
+                  remove
+                </button>
+                {errors.test?.[i]?.value && (
+                  <span>
+                    Item {i} error: {errors.test?.[i]?.value?.message}
+                  </span>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                append({
+                  value: fields.length.toString(),
+                })
+              }
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() =>
+        expect(screen.queryByText('Array error:')).not.toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText('Array error: Too many items'),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText('Array error: WAY too many items'),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText('Array error: Too many items'),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
+
+      await waitFor(() =>
+        expect(screen.queryByText('Array error:')).not.toBeInTheDocument(),
+      );
+
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: { value: '' },
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText('Item 0 error: Required'),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Array error: Too many items'),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText('Item 0 error: Required'),
+        ).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Array error: WAY too many items'),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText('Item 0 error: Required'),
+        ).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[4]);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Array error: Too many items'),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText('Item 0 error: Required'),
+        ).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[3]);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Array error: Too many items'),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('Item 0 error: Required'),
+        ).toBeInTheDocument();
+      });
     });
   });
 
@@ -1126,7 +1287,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }, {}, {}],
+            test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1188,7 +1349,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }, {}, {}],
+            test: [{ name: true }, { name: false }, { name: false }],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1203,7 +1364,17 @@ describe('useFieldArray', () => {
         });
 
         expect(formState.dirtyFields).toEqual({
-          test: [{}, {}, {}],
+          test: [
+            {
+              name: false,
+            },
+            {
+              name: false,
+            },
+            {
+              name: false,
+            },
+          ],
         });
         expect(formState.isDirty).toBeFalsy();
       },
@@ -3820,6 +3991,56 @@ describe('useFieldArray', () => {
         expect(rootRenderCount).toEqual(1);
         expect(observerRenderCount).toEqual(2);
       });
+    });
+
+    it('should unmount field array and remove its reference with shouldUnregister: true', () => {
+      type FormValues = {
+        type: string;
+        array: {
+          data: string;
+        }[];
+      };
+
+      let array: { data: string }[] = [];
+
+      function FieldArray({ control }: { control: Control<FormValues> }) {
+        useFieldArray({
+          name: 'array' as const,
+          control,
+          shouldUnregister: true,
+        });
+        return null;
+      }
+
+      function App() {
+        const methods = useForm({
+          defaultValues: {
+            type: 'NO_CART',
+            array: [],
+          },
+          shouldUnregister: true,
+        });
+        const [toggle, setToggle] = useState(false);
+        const { control, watch } = methods;
+        array = watch('array');
+
+        return (
+          <>
+            <button onClick={() => setToggle(!toggle)} />
+            <form>{toggle && <FieldArray control={control} />}</form>
+          </>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(array).toEqual([]);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(array).toBeUndefined();
     });
 
     it('should not trigger reRender on components that do not subscribe to useFieldArray fieldState', async () => {

@@ -18,6 +18,7 @@ import {
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useWatch } from '../../useWatch';
 
 jest.useFakeTimers();
 
@@ -694,7 +695,7 @@ describe('reset', () => {
         expect(updatedDirtyFields).toEqual({
           firstName: true,
         });
-        expect(updatedDirty).toBeTruthy();
+        expect(updatedDirty).toBeFalsy();
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
@@ -848,7 +849,7 @@ describe('reset', () => {
         expect(updatedDirtyFields).toEqual({
           firstName: true,
         });
-        expect(updatedDirty).toBeTruthy();
+        expect(updatedDirty).toBeFalsy();
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
@@ -1103,7 +1104,7 @@ describe('reset', () => {
     const App = () => {
       const { control, reset } = useForm();
 
-      mounted.push(control._stateFlags.mount);
+      mounted.push(control._state.mount);
 
       React.useEffect(() => {
         reset({});
@@ -1128,7 +1129,7 @@ describe('reset', () => {
         formState: { isValid },
       } = useForm();
 
-      mounted.push(control._stateFlags.mount);
+      mounted.push(control._state.mount);
       tempControl = control;
 
       React.useEffect(() => {
@@ -1148,7 +1149,7 @@ describe('reset', () => {
 
     expect(mounted).toEqual([false, false]);
 
-    expect(tempControl._stateFlags.mount).toBeTruthy();
+    expect(tempControl._state.mount).toBeTruthy();
   });
 
   it('should reset values but keep defaultValues', async () => {
@@ -1474,4 +1475,83 @@ describe('reset', () => {
       expect(screen.getByText('Luo1')).toBeVisible();
     });
   });
+
+  it('should return defaultValues in useWatch and watch when using calling reset with empty object', async () => {
+    const defaultValues = {
+      something: 'anything',
+    };
+
+    function App() {
+      const { control, reset, register, watch } = useForm({
+        defaultValues,
+      });
+      const watchValue = watch('something');
+      const useWatchValue = useWatch({
+        control,
+        name: 'something',
+      });
+
+      return (
+        <form>
+          <input {...register('something')} />
+          <button
+            type="button"
+            onClick={() => {
+              reset({});
+            }}
+          >
+            reset
+          </button>
+          <p>watch: {watchValue}</p>
+          <p>useWatch: {useWatchValue}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '1' },
+    });
+
+    expect(screen.getByText('watch: 1')).toBeVisible();
+    expect(screen.getByText('useWatch: 1')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByText('watch: anything')).toBeVisible();
+    expect(screen.getByText('useWatch: anything')).toBeVisible();
+  });
+});
+
+it('should not mutate data outside of library', () => {
+  const defaultValues = {
+    test: 'ok',
+  };
+
+  const App = () => {
+    const { register, reset, resetField } = useForm();
+
+    return (
+      <form>
+        <input {...register('test')} />
+        <button type="button" onClick={() => reset(defaultValues)}>
+          reset
+        </button>
+        <button
+          type="button"
+          onClick={() => resetField('test', { defaultValue: 'error' })}
+        >
+          resetField
+        </button>
+      </form>
+    );
+  };
+
+  render(<App />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+  fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
+
+  expect(defaultValues.test).toBe('ok');
 });

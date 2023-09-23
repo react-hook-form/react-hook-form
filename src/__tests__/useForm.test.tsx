@@ -377,7 +377,7 @@ describe('useForm', () => {
               data = d;
             })}
           >
-            sumbit
+            submit
           </button>
         );
       };
@@ -751,9 +751,11 @@ describe('useForm', () => {
 
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
-            value: ' ',
+            value: 'test',
           },
         });
+
+        await waitFor(() => screen.getByText('valid'));
 
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
@@ -1163,8 +1165,8 @@ describe('useForm', () => {
 
         expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
           criteriaMode: undefined,
-          fields,
-          names: ['test.sub', 'test1'],
+          fields: { test: fields.test },
+          names: ['test.sub'],
         });
 
         await act(async () => {
@@ -1722,7 +1724,9 @@ describe('useForm', () => {
       const {
         register,
         formState: { isLoading },
-      } = useForm({
+      } = useForm<{
+        test: string;
+      }>({
         defaultValues: async () => {
           await sleep(100);
 
@@ -1759,7 +1763,9 @@ describe('useForm', () => {
 
   it('should update async default values for controlled components', async () => {
     const App = () => {
-      const { control } = useForm({
+      const { control } = useForm<{
+        test: string;
+      }>({
         defaultValues: async () => {
           await sleep(100);
 
@@ -1901,6 +1907,14 @@ describe('useForm', () => {
     });
   });
 
+  it('should not update isLoading when literal defaultValues are provided', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: 'default' } }),
+    );
+
+    expect(result.current.formState.isLoading).toBe(false);
+  });
+
   it('should update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 
@@ -1908,7 +1922,10 @@ describe('useForm', () => {
       const {
         register,
         formState: { isValidating },
-      } = useForm({
+      } = useForm<{
+        firstName: string;
+        lastName: string;
+      }>({
         mode: 'all',
         defaultValues: {
           lastName: '',
@@ -1955,5 +1972,70 @@ describe('useForm', () => {
     });
 
     screen.getByText('isValidating: false');
+  });
+
+  it('should update form values when values updates even with the same values', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const [firstName, setFirstName] = React.useState('C');
+      const values = React.useMemo(() => ({ firstName }), [firstName]);
+
+      const {
+        register,
+        formState: { isDirty },
+        watch,
+      } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'C',
+        },
+        values,
+        resetOptions: { keepDefaultValues: true },
+      });
+      const formValues = watch();
+
+      return (
+        <form>
+          <button type="button" onClick={() => setFirstName('A')}>
+            1
+          </button>
+          <button type="button" onClick={() => setFirstName('B')}>
+            2
+          </button>
+          <button type="button" onClick={() => setFirstName('C')}>
+            3
+          </button>
+          <input {...register('firstName')} placeholder="First Name" />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{formValues.firstName}</p>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: '1' }));
+
+    await waitFor(() => {
+      screen.getByText('A');
+      screen.getByText('dirty');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '2' }));
+
+    await waitFor(() => {
+      screen.getByText('B');
+      screen.getByText('dirty');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '3' }));
+
+    await waitFor(() => {
+      screen.getByText('C');
+      screen.getByText('pristine');
+    });
   });
 });

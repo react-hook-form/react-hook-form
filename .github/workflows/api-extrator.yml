@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Do we want to run with multiple versions of node?
         node-version: [16]
 
     steps:

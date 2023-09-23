@@ -742,7 +742,7 @@ describe('remove', () => {
 
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [{}, { value: true }] },
+      test: { data: [{ value: false }, { value: true }] },
     });
 
     act(() => {
@@ -751,7 +751,7 @@ describe('remove', () => {
 
     expect(result.current.formState.isDirty).toBeFalsy();
     expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [{}] },
+      test: { data: [{ value: false }] },
     });
   });
 
@@ -1111,7 +1111,7 @@ describe('remove', () => {
     };
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>({
         defaultValues: {
           test: [
@@ -1166,7 +1166,7 @@ describe('remove', () => {
     let k = 0;
 
     const App = () => {
-      const [data, setData] = React.useState<unknown>([]);
+      const [data, setData] = React.useState<FormValues>();
       const { control, register, handleSubmit } = useForm<FormValues>();
 
       const { fields, append, remove } = useFieldArray({
