@@ -120,6 +120,9 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href="https://fiberplane.com/">
     <img width="48" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
 </a>
+<a target="_blank" href="https://www.jetbrains.com/">
+    <img width="48" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" />
+</a>
 
 ### Backers
 
