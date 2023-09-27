@@ -188,17 +188,7 @@ export function createFormControl<
   };
 
   const _updateValidatingFields = (isValidating: boolean, name: string) => {
-    let currentRunningValidationsForField: number = get(
-      _formState.validatingFields,
-      name,
-    );
-    if (currentRunningValidationsForField === undefined) {
-      currentRunningValidationsForField = 0;
-    }
-    const newRunningValidationsForField = isValidating
-      ? currentRunningValidationsForField + 1
-      : currentRunningValidationsForField - 1;
-    set(_formState.validatingFields, name, newRunningValidationsForField);
+    set(_formState.validatingFields, name, isValidating);
     _subjects.state.next({
       validatingFields: _formState.validatingFields,
     });

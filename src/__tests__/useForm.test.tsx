@@ -1716,8 +1716,8 @@ describe('useForm', () => {
 
     expect(formState.isValidating).toBe(true);
     expect(formState.validatingFields).toStrictEqual({
-      lastName: 1,
-      firstName: 1,
+      lastName: true,
+      firstName: true,
     });
     expect(getFieldState('lastName').isValidating).toBe(true);
     expect(getFieldState('firstName').isValidating).toBe(true);
@@ -1729,8 +1729,8 @@ describe('useForm', () => {
 
     expect(formState.isValidating).toBe(true);
     expect(formState.validatingFields).toStrictEqual({
-      lastName: 1,
-      firstName: 0,
+      lastName: true,
+      firstName: false,
     });
     expect(getFieldState('lastName').isValidating).toBe(true);
     expect(getFieldState('firstName').isValidating).toBe(false);
@@ -1742,8 +1742,8 @@ describe('useForm', () => {
 
     expect(formState.isValidating).toBe(false);
     expect(formState.validatingFields).toStrictEqual({
-      lastName: 0,
-      firstName: 0,
+      lastName: false,
+      firstName: false,
     });
     expect(getFieldState('lastName').isValidating).toBe(false);
     expect(getFieldState('firstName').isValidating).toBe(false);
@@ -1803,26 +1803,26 @@ describe('useForm', () => {
       jest.advanceTimersByTime(1000);
     });
 
-    expect(formState.validatingFields).toStrictEqual({ lastName: 1 });
+    expect(formState.validatingFields).toStrictEqual({ lastName: true });
 
     fireEvent.change(screen.getByPlaceholderText('async'), {
       target: { value: 'test1' },
     });
 
-    expect(formState.validatingFields).toStrictEqual({ lastName: 2 });
+    expect(formState.validatingFields).toStrictEqual({ lastName: true });
 
     await actComponent(async () => {
       jest.advanceTimersByTime(1500);
     });
 
-    expect(formState.validatingFields).toStrictEqual({ lastName: 1 });
+    expect(formState.validatingFields).toStrictEqual({ lastName: true });
     expect(getFieldState('lastName').isValidating).toBe(true);
 
     await actComponent(async () => {
       jest.advanceTimersByTime(1500);
     });
 
-    expect(formState.validatingFields).toStrictEqual({ lastName: 0 });
+    expect(formState.validatingFields).toStrictEqual({ lastName: false });
     expect(getFieldState('lastName').isValidating).toBe(false);
   });
 
@@ -1884,8 +1884,8 @@ describe('useForm', () => {
 
     expect(formState.isValidating).toBe(true);
     expect(formState.validatingFields).toStrictEqual({
-      lastName: 2,
-      firstName: 2,
+      lastName: true,
+      firstName: true,
     });
     expect(getFieldState('lastName').isValidating).toBe(true);
     expect(getFieldState('firstName').isValidating).toBe(true);
@@ -1896,8 +1896,8 @@ describe('useForm', () => {
 
     expect(formState.isValidating).toBe(false);
     expect(formState.validatingFields).toStrictEqual({
-      lastName: 0,
-      firstName: 0,
+      lastName: false,
+      firstName: false,
     });
     expect(getFieldState('lastName').isValidating).toBe(false);
     expect(getFieldState('firstName').isValidating).toBe(false);
@@ -1938,7 +1938,7 @@ describe('useForm', () => {
       target: { value: 'test' },
     });
 
-    expect(formState.validatingFields).toEqual({ firstName: 1 });
+    expect(formState.validatingFields).toEqual({ firstName: true });
     await actComponent(async () => {
       unregister('firstName');
       jest.runAllTimers();

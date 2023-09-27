@@ -305,14 +305,14 @@ describe('Controller', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(validatingFields).toEqual({ test: 1 });
+    expect(validatingFields).toEqual({ test: true });
     expect(screen.getByText('isValidating: true')).toBeVisible();
 
     await actComponent(async () => {
       jest.advanceTimersByTime(1100);
     });
 
-    expect(validatingFields).toEqual({ test: 0 });
+    expect(validatingFields).toEqual({ test: false });
     expect(screen.getByText('isValidating: false')).toBeVisible();
   });
 

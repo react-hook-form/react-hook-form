@@ -228,9 +228,6 @@ export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<TFieldVal
 // @public (undocumented)
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<DeepPartial<TFieldValues>, boolean>;
 
-// @public (undocumented)
-export type FieldNamesMarkedWithCount<TFieldValues extends FieldValues> = DeepMap<DeepPartial<TFieldValues>, number>;
-
 // @public
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 
@@ -304,7 +301,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-    validatingFields: Partial<Readonly<FieldNamesMarkedWithCount<TFieldValues>>>;
+    validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -848,7 +845,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:440:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:437:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
