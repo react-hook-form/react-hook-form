@@ -773,7 +773,7 @@ export function createFormControl<
         )[name];
 
         isFieldValueUpdated =
-          isNaN(fieldValue) ||
+          Number.isNaN(fieldValue) ||
           fieldValue === get(_formValues, name, fieldValue);
 
         if (isFieldValueUpdated) {
@@ -1168,7 +1168,7 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
-    const updatedValues = formValues || _defaultValues;
+    const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const values =
       formValues && !isEmptyObject(formValues)
@@ -1264,8 +1264,10 @@ export function createFormControl<
         ? _formState.touchedFields
         : {},
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
+      isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
+        ? _formState.isSubmitSuccessful
+        : false,
       isSubmitting: false,
-      isSubmitSuccessful: false,
     });
   };
 
