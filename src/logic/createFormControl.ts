@@ -662,6 +662,11 @@ export function createFormControl<
     const field: Field = get(_fields, name);
     const getCurrentFieldValue = () =>
       target.type ? getFieldValue(field._f) : getEventValue(event);
+    const _updateIsFieldValueUpdated = (fieldValue: any): void => {
+      isFieldValueUpdated =
+        Number.isNaN(fieldValue) ||
+        fieldValue === get(_formValues, name, fieldValue);
+    };
 
     if (field) {
       let error;
@@ -723,21 +728,26 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
-        const previousErrorLookupResult = schemaErrorLookup(
-          _formState.errors,
-          _fields,
-          name,
-        );
-        const errorLookupResult = schemaErrorLookup(
-          errors,
-          _fields,
-          previousErrorLookupResult.name || name,
-        );
 
-        error = errorLookupResult.error;
-        name = errorLookupResult.name;
+        _updateIsFieldValueUpdated(fieldValue);
 
-        isValid = isEmptyObject(errors);
+        if (isFieldValueUpdated) {
+          const previousErrorLookupResult = schemaErrorLookup(
+            _formState.errors,
+            _fields,
+            name,
+          );
+          const errorLookupResult = schemaErrorLookup(
+            errors,
+            _fields,
+            previousErrorLookupResult.name || name,
+          );
+
+          error = errorLookupResult.error;
+          name = errorLookupResult.name;
+
+          isValid = isEmptyObject(errors);
+        }
       } else {
         error = (
           await validateField(
@@ -748,9 +758,7 @@ export function createFormControl<
           )
         )[name];
 
-        isFieldValueUpdated =
-          Number.isNaN(fieldValue) ||
-          fieldValue === get(_formValues, name, fieldValue);
+        _updateIsFieldValueUpdated(fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
