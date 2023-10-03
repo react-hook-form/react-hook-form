@@ -359,6 +359,7 @@ describe('reset', () => {
                   keepErrors: true,
                   keepDirty: true,
                   keepIsSubmitted: true,
+                  keepIsSubmitSuccessful: true,
                   keepTouched: true,
                   keepSubmitCount: true,
                 },
@@ -1399,13 +1400,20 @@ describe('reset', () => {
     ).toEqual('3');
   });
 
-  it('should keep isSubmitted value when keepIsSubmitted is true', async () => {
+  it('should keep isSubmitted and isSubmitSuccessful value when flags are set', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     expect(result.current.formState.isSubmitted).toBeFalsy();
+    expect(result.current.formState.isSubmitSuccessful).toBeFalsy();
 
-    await act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+    await act(() =>
+      result.current.reset(undefined, {
+        keepIsSubmitted: true,
+        keepIsSubmitSuccessful: true,
+      }),
+    );
     expect(result.current.formState.isSubmitted).toBeFalsy();
+    expect(result.current.formState.isSubmitSuccessful).toBeFalsy();
 
     result.current.register('test');
     result.current.setValue('test', 'data');
@@ -1422,10 +1430,17 @@ describe('reset', () => {
     });
 
     expect(result.current.formState.isSubmitted).toBeTruthy();
+    expect(result.current.formState.isSubmitSuccessful).toBeTruthy();
 
-    act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+    act(() =>
+      result.current.reset(undefined, {
+        keepIsSubmitted: true,
+        keepIsSubmitSuccessful: true,
+      }),
+    );
 
     expect(result.current.formState.isSubmitted).toBeTruthy();
+    expect(result.current.formState.isSubmitSuccessful).toBeTruthy();
   });
 
   it('should keep track on updated defaultValues', async () => {
@@ -1507,4 +1522,36 @@ describe('reset', () => {
     expect(screen.getByText('watch: anything')).toBeVisible();
     expect(screen.getByText('useWatch: anything')).toBeVisible();
   });
+});
+
+it('should not mutate data outside of library', () => {
+  const defaultValues = {
+    test: 'ok',
+  };
+
+  const App = () => {
+    const { register, reset, resetField } = useForm();
+
+    return (
+      <form>
+        <input {...register('test')} />
+        <button type="button" onClick={() => reset(defaultValues)}>
+          reset
+        </button>
+        <button
+          type="button"
+          onClick={() => resetField('test', { defaultValue: 'error' })}
+        >
+          resetField
+        </button>
+      </form>
+    );
+  };
+
+  render(<App />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+  fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
+
+  expect(defaultValues.test).toBe('ok');
 });

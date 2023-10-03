@@ -2,6 +2,7 @@ import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
   ChangeHandler,
+  Control,
   DeepPartial,
   DelayCallback,
   EventType,
@@ -392,7 +393,7 @@ export function createFormControl<
     );
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
-    const { errors } = await _executeSchema();
+    const { errors } = await _executeSchema(names);
 
     if (names) {
       for (const name of names) {
@@ -747,7 +748,7 @@ export function createFormControl<
         )[name];
 
         isFieldValueUpdated =
-          isNaN(fieldValue) ||
+          Number.isNaN(fieldValue) ||
           fieldValue === get(_formValues, name, fieldValue);
 
         if (isFieldValueUpdated) {
@@ -934,6 +935,25 @@ export function createFormControl<
     !options.keepIsValid && _updateValid();
   };
 
+  const _updateDisabledField: Control<TFieldValues>['_updateDisabledField'] = ({
+    disabled,
+    name,
+    field,
+    fields,
+  }) => {
+    if (isBoolean(disabled)) {
+      const value = disabled
+        ? undefined
+        : get(
+            _formValues,
+            name,
+            getFieldValue(field ? field._f : get(fields, name)._f),
+          );
+      set(_formValues, name, value);
+      updateTouchAndDirty(name, value, false, false, true);
+    }
+  };
+
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined = isBoolean(options.disabled);
@@ -949,16 +969,15 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    field
-      ? disabledIsDefined &&
-        set(
-          _formValues,
-          name,
-          options.disabled
-            ? undefined
-            : get(_formValues, name, getFieldValue(field._f)),
-        )
-      : updateValidAndValue(name, true, options.value);
+    if (field) {
+      _updateDisabledField({
+        field,
+        disabled: options.disabled,
+        name,
+      });
+    } else {
+      updateValidAndValue(name, true, options.value);
+    }
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
@@ -1119,7 +1138,7 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
-    const updatedValues = formValues || _defaultValues;
+    const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const values =
       formValues && !isEmptyObject(formValues)
@@ -1215,8 +1234,10 @@ export function createFormControl<
         ? _formState.touchedFields
         : {},
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
+      isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
+        ? _formState.isSubmitSuccessful
+        : false,
       isSubmitting: false,
-      isSubmitSuccessful: false,
     });
   };
 
@@ -1275,6 +1296,7 @@ export function createFormControl<
       _updateValid,
       _removeUnmounted,
       _updateFieldArray,
+      _updateDisabledField,
       _getFieldArray,
       _reset,
       _resetDefaultValues,

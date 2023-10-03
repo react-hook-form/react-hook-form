@@ -4,6 +4,7 @@ import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
+import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
 import {
@@ -52,7 +53,7 @@ export function useController<
   props: UseControllerProps<TFieldValues, TName>,
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const { name, control = methods.control, shouldUnregister } = props;
+  const { name, disabled, control = methods.control, shouldUnregister } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
     control,
@@ -110,8 +111,18 @@ export function useController<
         : updateMounted(name, false);
     };
   }, [name, control, isArrayField, shouldUnregister]);
+  
+  React.useEffect(() => {
+    if (get(control._fields, name)) {
+      control._updateDisabledField({
+        disabled,
+        fields: control._fields,
+        name,
+      });
+    }
+  }, [disabled, name, control]);
 
-  const defaultValue = formState.defaultValues
+ const defaultValue = formState.defaultValues
     ? formState.defaultValues[name]
     : undefined;
 
@@ -120,6 +131,7 @@ export function useController<
     field: {
       name,
       value,
+      ...(isBoolean(disabled) ? { disabled } : {}),
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({

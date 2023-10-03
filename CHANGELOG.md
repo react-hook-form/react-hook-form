@@ -1,5 +1,45 @@
 # Changelog
 
+## [7.47.0] - 2023-10-02
+
+## Added
+
+- `reset` api with `keepIsSubmitSuccessful` option, keep successfully submitted form state.
+
+```tsx
+<Form
+  onSubmit={() => {
+    reset(formValues, {
+      keepIsSubmitSuccessful: true,
+    });
+  }}
+/>
+```
+
+## [7.46.0] - 2023-09-03
+
+## Added
+
+- Controller `disabled` prop
+
+```jsx
+const [disabled, setDisabled] = useState(false);
+useController({
+  disabled,
+});
+```
+
+- Trigger passed names to construct resolver options
+- Add `exact` option for array name in `useWatch`
+
+## Changed
+
+- Update `isDirty` when setting `disabled` in `register`
+
+## Fixed
+
+- Prevent `reset` argument mutation
+
 ## [7.45.0] - 2023-06-20
 
 ## Changed

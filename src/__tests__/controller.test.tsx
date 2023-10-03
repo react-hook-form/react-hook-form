@@ -719,7 +719,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is dirty.</p>}
+              {fieldState.isDirty && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -736,8 +736,7 @@ describe('Controller', () => {
 
     const input = screen.getByRole('textbox');
 
-    fireEvent.focus(input);
-    fireEvent.blur(input);
+    fireEvent.change(input, { target: { value: 'dirty' } });
 
     expect(await screen.findByText('Input is dirty.')).toBeVisible();
   });
@@ -1489,5 +1488,60 @@ describe('Controller', () => {
     fireEvent.click(screen.getByRole('button', { name: '[1]' }));
 
     expect(await screen.findByText('custom')).toBeVisible();
+  });
+
+  it('should not require type coercion', async () => {
+    function App() {
+      class NonCoercible {
+        x: string;
+
+        constructor(x: string) {
+          this.x = x;
+        }
+
+        [Symbol.toPrimitive]() {
+          throw new TypeError();
+        }
+      }
+
+      const { control } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          value: new NonCoercible('a'),
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            name="value"
+            rules={{
+              validate: (field) => {
+                return field.x.length > 0;
+              },
+            }}
+            render={({ field }) => (
+              <input
+                value={field.value.x}
+                onChange={(e) =>
+                  field.onChange(new NonCoercible(e.target.value))
+                }
+              />
+            )}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'b',
+      },
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('b');
   });
 });
