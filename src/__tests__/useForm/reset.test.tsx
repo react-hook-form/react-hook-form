@@ -359,6 +359,7 @@ describe('reset', () => {
                   keepErrors: true,
                   keepDirty: true,
                   keepIsSubmitted: true,
+                  keepIsSubmitSuccessful: true,
                   keepTouched: true,
                   keepSubmitCount: true,
                 },
@@ -1399,13 +1400,20 @@ describe('reset', () => {
     ).toEqual('3');
   });
 
-  it('should keep isSubmitted value when keepIsSubmitted is true', async () => {
+  it('should keep isSubmitted and isSubmitSuccessful value when flags are set', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     expect(result.current.formState.isSubmitted).toBeFalsy();
+    expect(result.current.formState.isSubmitSuccessful).toBeFalsy();
 
-    await act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+    await act(() =>
+      result.current.reset(undefined, {
+        keepIsSubmitted: true,
+        keepIsSubmitSuccessful: true,
+      }),
+    );
     expect(result.current.formState.isSubmitted).toBeFalsy();
+    expect(result.current.formState.isSubmitSuccessful).toBeFalsy();
 
     result.current.register('test');
     result.current.setValue('test', 'data');
@@ -1422,10 +1430,17 @@ describe('reset', () => {
     });
 
     expect(result.current.formState.isSubmitted).toBeTruthy();
+    expect(result.current.formState.isSubmitSuccessful).toBeTruthy();
 
-    act(() => result.current.reset(undefined, { keepIsSubmitted: true }));
+    act(() =>
+      result.current.reset(undefined, {
+        keepIsSubmitted: true,
+        keepIsSubmitSuccessful: true,
+      }),
+    );
 
     expect(result.current.formState.isSubmitted).toBeTruthy();
+    expect(result.current.formState.isSubmitSuccessful).toBeTruthy();
   });
 
   it('should keep track on updated defaultValues', async () => {

@@ -113,11 +113,13 @@ export function useController<
   }, [name, control, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
-    control._updateDisabledField({
-      disabled,
-      fields: control._fields,
-      name,
-    });
+    if (get(control._fields, name)) {
+      control._updateDisabledField({
+        disabled,
+        fields: control._fields,
+        name,
+      });
+    }
   }, [disabled, name, control]);
 
   return {

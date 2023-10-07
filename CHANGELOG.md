@@ -1,5 +1,21 @@
 # Changelog
 
+## [7.47.0] - 2023-10-02
+
+## Added
+
+- `reset` api with `keepIsSubmitSuccessful` option, keep successfully submitted form state.
+
+```tsx
+<Form
+  onSubmit={() => {
+    reset(formValues, {
+      keepIsSubmitSuccessful: true,
+    });
+  }}
+/>
+```
+
 ## [7.46.0] - 2023-09-03
 
 ## Added

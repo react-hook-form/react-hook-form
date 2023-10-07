@@ -1253,8 +1253,10 @@ export function createFormControl<
         ? _formState.touchedFields
         : {},
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
+      isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
+        ? _formState.isSubmitSuccessful
+        : false,
       isSubmitting: false,
-      isSubmitSuccessful: false,
     });
   };
 
