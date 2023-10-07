@@ -65,7 +65,6 @@ import live from '../utils/live';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
-import focusFieldBy from './focusFieldBy';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
@@ -77,6 +76,7 @@ import getValidationModes from './getValidationModes';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
+import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
@@ -112,8 +112,9 @@ export function createFormControl<
     touchedFields: {},
     dirtyFields: {},
     errors: {},
+    disabled: false,
   };
-  let _fields = {};
+  let _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
       ? cloneObject(_options.defaultValues || _options.values) || {}
@@ -772,6 +773,14 @@ export function createFormControl<
     }
   };
 
+  const _focusInput = (ref: Ref, key: string) => {
+    if (get(_formState.errors, key) && ref.focus) {
+      ref.focus();
+      return 1;
+    }
+    return;
+  };
+
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
     let isValid;
     let validationResult;
@@ -816,9 +825,9 @@ export function createFormControl<
 
     options.shouldFocus &&
       !validationResult &&
-      focusFieldBy(
+      iterateFieldsByAction(
         _fields,
-        (key) => key && get(_formState.errors, key),
+        _focusInput,
         name ? fieldNames : _names.mount,
       );
 
@@ -1049,11 +1058,21 @@ export function createFormControl<
 
   const _focusError = () =>
     _options.shouldFocusError &&
-    focusFieldBy(
-      _fields,
-      (key) => key && get(_formState.errors, key),
-      _names.mount,
-    );
+    iterateFieldsByAction(_fields, _focusInput, _names.mount);
+
+  const _disableForm = (disabled?: boolean) => {
+    if (isBoolean(props.disabled)) {
+      _subjects.state.next({ disabled: props.disabled });
+      iterateFieldsByAction(
+        _fields,
+        (ref) => {
+          ref.disabled = disabled;
+        },
+        0,
+        false,
+      );
+    }
+  };
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
@@ -1301,6 +1320,7 @@ export function createFormControl<
       _reset,
       _resetDefaultValues,
       _updateFormState,
+      _disableForm,
       _subjects,
       _proxyFormState,
       get _fields() {

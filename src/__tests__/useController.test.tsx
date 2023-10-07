@@ -765,6 +765,35 @@ describe('useController', () => {
     screen.getByText('pristine');
   });
 
+  it('should disable the controller input', async () => {
+    function Form() {
+      const { field } = useController({
+        name: 'lastName',
+      });
+      return <p>{field.disabled ? 'disabled' : ''}</p>;
+    }
+
+    function App() {
+      const methods = useForm({
+        disabled: true,
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            <Form />
+          </form>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('disabled');
+    });
+  });
+
   it('should disable form input with disabled prop', async () => {
     const App = () => {
       const [disabled, setDisabled] = React.useState(false);

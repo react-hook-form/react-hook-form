@@ -789,7 +789,7 @@ describe('useFormState', () => {
       return <p>{isValid}</p>;
     }
 
-    function Form({ values }: { values: any }) {
+    function Form({ values }: { values: FormValues }) {
       const { getValues, control } = useForm<FormValues>({
         defaultValues: {
           firstName: '',
@@ -816,6 +816,30 @@ describe('useFormState', () => {
 
     await waitFor(() => {
       screen.getByText('test');
+    });
+  });
+
+  it('should update form state with disabled state', async () => {
+    function Form({ control }: { control: Control }) {
+      const { disabled } = useFormState({
+        control,
+      });
+
+      return <p>{disabled ? 'disabled' : ''}</p>;
+    }
+
+    function App() {
+      const { control } = useForm({
+        disabled: true,
+      });
+
+      return <Form control={control} />;
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('disabled');
     });
   });
 });

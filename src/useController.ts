@@ -126,7 +126,9 @@ export function useController<
     field: {
       name,
       value,
-      ...(isBoolean(disabled) ? { disabled } : {}),
+      ...(isBoolean(disabled) || isBoolean(formState.disabled)
+        ? { disabled: formState.disabled || disabled }
+        : {}),
       onChange: React.useCallback(
         (event) =>
           _registerProps.current.onChange({

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -19,6 +19,8 @@ import {
 import isFunction from '../utils/isFunction';
 import { sleep } from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
+
+jest.useFakeTimers();
 
 describe('useForm', () => {
   describe('when component unMount', () => {
@@ -2036,6 +2038,113 @@ describe('useForm', () => {
     await waitFor(() => {
       screen.getByText('C');
       screen.getByText('pristine');
+    });
+  });
+
+  it('should disable the entire form inputs', async () => {
+    function App() {
+      const { register } = useForm({
+        disabled: true,
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="firstName" />
+          <input {...register('lastName')} placeholder="lastName" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
+  });
+
+  it('should be able to disable the entire form', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { register, handleSubmit } = useForm({
+        disabled,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit(async () => {
+            setDisabled(true);
+            await sleep(100);
+            setDisabled(false);
+          })}
+        >
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(
+      (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('range') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('select') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeFalsy();
     });
   });
 });

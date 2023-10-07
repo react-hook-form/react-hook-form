@@ -66,6 +66,7 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     errors: {},
+    disabled: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
@@ -100,6 +101,11 @@ export function useForm<
       }
     },
   });
+
+  React.useEffect(
+    () => control._disableForm(props.disabled),
+    [control, props.disabled],
+  );
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
