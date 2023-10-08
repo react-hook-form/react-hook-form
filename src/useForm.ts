@@ -119,7 +119,7 @@ export function useForm<
         }
       } catch {}
     }
-  }, [control]);
+  }, [control, props.defaultValues]);
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
