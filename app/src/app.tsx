@@ -40,12 +40,14 @@ import SetValueAsyncStrictMode from './setValueStrictMode';
 import { DelayError } from './delayError';
 import './style.css';
 import FormComponent from './form';
+import { QueryString } from './queryString';
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/basic/:mode" element={<Basic />} />
+        <Route path="/basic/queryString" element={<QueryString />} />
         <Route
           path="/validate-field-criteria"
           element={<ValidateFieldCriteria />}

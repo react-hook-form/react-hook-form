@@ -52,4 +52,7 @@ export const slug: object = {
   display: 'block',
   marginBottom: '.25rem',
   textDecoration: 'none',
+  maxWidth: 400,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 };

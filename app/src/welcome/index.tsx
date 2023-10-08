@@ -17,7 +17,26 @@ const items: Item[] = [
   {
     title: 'Basic',
     description: 'Should validate the form in different modes',
-    slugs: ['/basic/onSubmit', '/basic/onBlur', '/basic/onChange'],
+    slugs: [
+      '/basic/onSubmit',
+      '/basic/onBlur',
+      '/basic/onChange',
+      `/basic/queryString?default-values=${encodeURIComponent(
+        JSON.stringify({
+          firstName: 'bill',
+          lastName: 'luo',
+          nestItem: {
+            nest1: 'ntest1',
+          },
+          arrayItem: [{ test1: 'test1' }],
+          radio: '1',
+          multiple: 'optionA',
+          checkboxArray: ['1', '2', '3'],
+          selectNumber: '1',
+          minDate: '2023-10-23',
+        }),
+      )}`,
+    ],
   },
   {
     title: 'BasicSchemaValidation',
