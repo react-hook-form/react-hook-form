@@ -1012,4 +1012,24 @@ describe('useController', () => {
       }),
     );
   });
+
+  it("should throw a meaningful error if the control prop isn't passed", async () => {
+    const Component = () => {
+      useController({
+        name: 'test',
+        defaultValue: '',
+      });
+
+      return null;
+    };
+
+    // Don't log the thrown error to the console
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+
+    expect(() => render(<Component />)).toThrow(
+      'useController: missing `control`. Pass `control` as a prop or provide it via FormProvider.',
+    );
+
+    spy.mockRestore();
+  });
 });
