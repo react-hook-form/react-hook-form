@@ -1,6 +1,7 @@
 import React from 'react';
 
 import getEventValue from './logic/getEventValue';
+import getFieldIsActive from './logic/getFieldIsActive';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
@@ -19,10 +20,9 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
+import { useSubscribe } from './useSubscribe';
 import { useWatch } from './useWatch';
 import { set } from './utils';
-import getFieldIsActive from './logic/getFieldIsActive';
-import { useSubscribe } from './useSubscribe';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.

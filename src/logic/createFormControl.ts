@@ -68,6 +68,7 @@ import unset from '../utils/unset';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
+import getFieldIsActive from './getFieldIsActive';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -82,7 +83,6 @@ import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
-import getFieldIsActive from './getFieldIsActive';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,

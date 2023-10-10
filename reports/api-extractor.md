@@ -90,6 +90,7 @@ export type ControllerFieldState = {
     invalid: boolean;
     isTouched: boolean;
     isDirty: boolean;
+    isActive: boolean;
     error?: FieldError;
 };
 
@@ -106,6 +107,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
     onBlur: Noop;
+    onFocus: Noop;
     value: FieldPathValue<TFieldValues, TName>;
     disabled?: boolean;
     name: TName;
@@ -299,6 +301,8 @@ export type FormState<TFieldValues extends FieldValues> = {
     isValidating: boolean;
     isValid: boolean;
     disabled: boolean;
+    isActive: boolean;
+    focusField?: FieldPath<TFieldValues>;
     submitCount: number;
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
@@ -656,6 +660,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
+    isActive: boolean;
     error?: FieldError;
 };
 
@@ -693,6 +698,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <TFieldName exte
 // @public (undocumented)
 export type UseFormRegisterReturn<TFieldName extends InternalFieldName = InternalFieldName> = {
     onChange: ChangeHandler;
+    onFocus: ChangeHandler;
     onBlur: ChangeHandler;
     ref: RefCallBack;
     name: TFieldName;
@@ -852,7 +858,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:435:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
