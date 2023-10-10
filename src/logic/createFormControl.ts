@@ -82,6 +82,7 @@ import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
+import getFieldIsActive from './getFieldIsActive';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
@@ -113,6 +114,8 @@ export function createFormControl<
     dirtyFields: {},
     errors: {},
     disabled: false,
+    isActive: false,
+    focusField: undefined,
   };
   let _fields: FieldRefs = {};
   let _defaultValues =
@@ -135,6 +138,7 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
+  let _focusTimeout: ReturnType<typeof setTimeout> | undefined;
   const _proxyFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -142,6 +146,8 @@ export function createFormControl<
     isValidating: false,
     isValid: false,
     errors: false,
+    isActive: false,
+    focusField: false,
   };
   const _subjects: Subjects<TFieldValues> = {
     values: createSubject(),
@@ -273,6 +279,14 @@ export function createFormControl<
 
       _state.mount && _updateValid();
     }
+  };
+
+  const updateActiveField = (name?: InternalFieldName) => {
+    if (name === _formState.focusField) {
+      return;
+    }
+
+    _subjects.state.next({ focusField: name as any });
   };
 
   const updateTouchAndDirty = (
@@ -655,6 +669,20 @@ export function createFormControl<
     !_state.mount && flushRootRender();
   };
 
+  const onFocus: ChangeHandler = async (event) => {
+    const target = event.target;
+    const name = target.name;
+    const field: Field = get(_fields, name);
+
+    if (!field) {
+      return;
+    }
+
+    clearTimeout(_focusTimeout);
+
+    updateActiveField(name);
+  };
+
   const onChange: ChangeHandler = async (event) => {
     const target = event.target;
     let name = target.name;
@@ -687,6 +715,12 @@ export function createFormControl<
           validationModeBeforeSubmit,
         );
       const watched = isWatched(name, _names, isBlurEvent);
+
+      if (isBlurEvent) {
+        _focusTimeout = setTimeout(() => {
+          updateActiveField();
+        });
+      }
 
       set(_formValues, name, fieldValue);
 
@@ -866,6 +900,10 @@ export function createFormControl<
     invalid: !!get((formState || _formState).errors, name),
     isDirty: !!get((formState || _formState).dirtyFields, name),
     isTouched: !!get((formState || _formState).touchedFields, name),
+    isActive: getFieldIsActive(
+      get(formState || _formState, 'focusField'),
+      name,
+    ),
     error: get((formState || _formState).errors, name),
   });
 
@@ -1010,6 +1048,7 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
+      onFocus,
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
           register(name, options);

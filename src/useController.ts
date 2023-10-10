@@ -21,6 +21,8 @@ import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 import { set } from './utils';
+import getFieldIsActive from './logic/getFieldIsActive';
+import { useSubscribe } from './useSubscribe';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
@@ -68,6 +70,28 @@ export function useController<
   const formState = useFormState({
     control,
     name,
+  });
+  const [isActive, updateIsActive] = React.useState(false);
+  const lastActiveField = React.useRef<FieldPath<TFieldValues> | undefined>();
+  useSubscribe({
+    subject: control._subjects.state,
+    next(state) {
+      if (!('focusField' in state)) {
+        return;
+      }
+
+      const focusField: FieldPath<TFieldValues> = get(state, 'focusField');
+      if (focusField === lastActiveField.current) {
+        return;
+      }
+
+      const lastIsActive = getFieldIsActive(lastActiveField.current, name);
+      const newIsActive = getFieldIsActive(focusField, name);
+      if (lastIsActive || newIsActive) {
+        updateIsActive(newIsActive);
+      }
+      lastActiveField.current = focusField;
+    },
   });
 
   const _registerProps = React.useRef(
@@ -152,6 +176,16 @@ export function useController<
           }),
         [name, control],
       ),
+      onFocus: React.useCallback(
+        () =>
+          _registerProps.current.onFocus({
+            target: {
+              name: name as InternalFieldName,
+            },
+            type: EVENTS.FOCUS,
+          }),
+        [name],
+      ),
       ref: (elm) => {
         const field = get(control._fields, name);
 
@@ -181,6 +215,10 @@ export function useController<
         isTouched: {
           enumerable: true,
           get: () => !!get(formState.touchedFields, name),
+        },
+        isActive: {
+          enumerable: true,
+          get: () => isActive,
         },
         error: {
           enumerable: true,

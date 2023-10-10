@@ -2,6 +2,7 @@ export const EVENTS = {
   BLUR: 'blur',
   FOCUS_OUT: 'focusout',
   CHANGE: 'change',
+  FOCUS: 'focus',
 } as const;
 
 export const VALIDATION_MODE = {

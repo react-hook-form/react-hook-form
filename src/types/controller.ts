@@ -16,6 +16,7 @@ export type ControllerFieldState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
+  isActive: boolean;
   error?: FieldError;
 };
 
@@ -25,6 +26,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
+  onFocus: Noop;
   value: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
   name: TName;

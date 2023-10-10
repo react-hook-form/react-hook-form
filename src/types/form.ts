@@ -141,6 +141,8 @@ export type FormState<TFieldValues extends FieldValues> = {
   isValidating: boolean;
   isValid: boolean;
   disabled: boolean;
+  isActive: boolean;
+  focusField?: FieldPath<TFieldValues>;
   submitCount: number;
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
@@ -170,6 +172,7 @@ export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,
 > = {
   onChange: ChangeHandler;
+  onFocus: ChangeHandler;
   onBlur: ChangeHandler;
   ref: RefCallBack;
   name: TFieldName;
@@ -349,6 +352,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
+  isActive: boolean;
   error?: FieldError;
 };
 

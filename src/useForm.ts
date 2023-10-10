@@ -62,6 +62,7 @@ export function useForm<
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: false,
+    isActive: false,
     submitCount: 0,
     dirtyFields: {},
     touchedFields: {},
