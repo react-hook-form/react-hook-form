@@ -53,7 +53,19 @@ export function useController<
   props: UseControllerProps<TFieldValues, TName>,
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const { name, disabled, control = methods.control, shouldUnregister } = props;
+  const {
+    name,
+    disabled,
+    control = methods?.control,
+    shouldUnregister,
+  } = props;
+
+  if (!control) {
+    throw new Error(
+      'useController: missing `control`. Pass `control` as a prop or provide it via FormProvider.',
+    );
+  }
+
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
     control,
