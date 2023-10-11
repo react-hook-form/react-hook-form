@@ -147,7 +147,6 @@ export function createFormControl<
     isValid: false,
     errors: false,
     isActive: false,
-    focusField: false,
   };
   const _subjects: Subjects<TFieldValues> = {
     values: createSubject(),
