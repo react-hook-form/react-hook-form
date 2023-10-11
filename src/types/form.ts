@@ -141,7 +141,6 @@ export type FormState<TFieldValues extends FieldValues> = {
   isValidating: boolean;
   isValid: boolean;
   disabled: boolean;
-  isActive: boolean;
   focusField?: FieldPath<TFieldValues>;
   submitCount: number;
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;

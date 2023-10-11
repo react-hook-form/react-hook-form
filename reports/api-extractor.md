@@ -301,7 +301,6 @@ export type FormState<TFieldValues extends FieldValues> = {
     isValidating: boolean;
     isValid: boolean;
     disabled: boolean;
-    isActive: boolean;
     focusField?: FieldPath<TFieldValues>;
     submitCount: number;
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
@@ -858,7 +857,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:435:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:434:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
