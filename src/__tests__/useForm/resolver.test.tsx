@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
+import { sleep } from '../../utils/sleep';
 
 describe('resolver', () => {
   it('should update context within the resolver', async () => {
@@ -143,5 +144,73 @@ describe('resolver', () => {
     expect(test.mock.calls[0][2]).toEqual(
       expect.objectContaining({ shouldUseNativeValidation: true }),
     );
+  });
+
+  it('should avoid the problem of race condition', async () => {
+    jest.useFakeTimers();
+
+    const test = jest.fn();
+    let errorsObject = {};
+
+    const resolver = async (a: any, b: any, c: any) => {
+      test(a, b, c);
+
+      if (a.test !== 'OK') {
+        await sleep(100);
+        return {
+          errors: {
+            test: {
+              type: 'test',
+              value: { message: 'wrong', type: 'test' },
+            },
+          },
+          values: {},
+        };
+      }
+
+      return {
+        errors: {},
+        values: { test: a.test },
+      };
+    };
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm({
+        resolver,
+        mode: 'onChange',
+      });
+      errorsObject = errors;
+
+      return (
+        <form>
+          <input type="text" {...register('test')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const inputElm = screen.getByRole('textbox');
+
+    fireEvent.change(inputElm, {
+      target: {
+        value: 'O',
+      },
+    });
+
+    fireEvent.change(inputElm, {
+      target: {
+        value: 'OK',
+      },
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(200);
+    });
+
+    expect(errorsObject).toEqual({});
   });
 });
