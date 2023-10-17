@@ -1103,6 +1103,10 @@ export function createFormControl<
         if (onValid) {
           await onValid(fieldValues as TFieldValues, e);
         }
+        if (props.progressive && e) {
+          e.target.submit();
+          return;
+        }
       } else {
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
