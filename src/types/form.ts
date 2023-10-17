@@ -119,6 +119,7 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  actionFormState: any;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
