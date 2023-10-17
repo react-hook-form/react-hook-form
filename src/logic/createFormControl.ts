@@ -1100,7 +1100,9 @@ export function createFormControl<
         _subjects.state.next({
           errors: {},
         });
-        await onValid(fieldValues as TFieldValues, e);
+        if (onValid) {
+          await onValid(fieldValues as TFieldValues, e);
+        }
       } else {
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
