@@ -21,15 +21,28 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.esm.mjs",
       "require": "./dist/index.cjs.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.cjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "server": [
+        "types/server/index.d.ts"
+      ]
     }
   },
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "pnpm clean",
-    "build": "pnpm build:modern",
+    "build": "pnpm build:modern && pnpm build:server",
     "build:watch": "pnpm build:modern -w",
     "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
+    "build:server": "esbuild src/server/index.ts --bundle --format=cjs --out-extension:.js=.cjs --outbase=src --outdir=dist && esbuild src/server/index.ts --bundle --format=esm  --out-extension:.js=.mjs --outbase=src --outdir=dist",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
@@ -86,6 +99,7 @@
     "@typescript-eslint/parser": "^5.59.9",
     "bundlewatch": "^0.3.3",
     "cypress": "^10.11.0",
+    "esbuild": "^0.19.5",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-cypress": "^2.13.3",
