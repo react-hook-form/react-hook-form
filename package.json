@@ -22,6 +22,16 @@
       "import": "./dist/index.esm.mjs",
       "require": "./dist/index.cjs.js"
     },
+    "./logic": {
+      "types": "./dist/logic/index.d.ts",
+      "import": "./dist/logic/index.mjs",
+      "require": "./dist/logic/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.cjs"
+    },
     "./server": {
       "types": "./dist/server/index.d.ts",
       "import": "./dist/server/index.mjs",
@@ -30,19 +40,27 @@
   },
   "typesVersions": {
     "*": {
+      "logic": [
+        "dist/logic/index.d.ts"
+      ],
+      "utils": [
+        "dist/utils/index.d.ts"
+      ],
       "server": [
-        "types/server/index.d.ts"
+        "dist/server/index.d.ts"
       ]
     }
   },
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "pnpm clean",
-    "build": "pnpm build:modern && pnpm build:server",
+    "build": "pnpm build:modern && pnpm build:logic && pnpm build:utils && pnpm build:server",
     "build:watch": "pnpm build:modern -w",
     "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:server": "esbuild src/server/index.ts --bundle --format=cjs --out-extension:.js=.cjs --outbase=src --outdir=dist && esbuild src/server/index.ts --bundle --format=esm  --out-extension:.js=.mjs --outbase=src --outdir=dist",
+    "build:logic": "esbuild src/logic/index.ts --bundle --format=cjs --out-extension:.js=.cjs --outbase=src --outdir=dist && esbuild src/logic/index.ts --bundle --format=esm  --out-extension:.js=.mjs --outbase=src --outdir=dist",
+    "build:utils": "esbuild src/utils/index.ts --bundle --format=cjs --out-extension:.js=.cjs --outbase=src --outdir=dist && esbuild src/utils/index.ts --bundle --format=esm  --out-extension:.js=.mjs --outbase=src --outdir=dist",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
