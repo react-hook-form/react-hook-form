@@ -24,6 +24,8 @@ export function LoginForm() {
       password: '',
     }
   });
+  console.log('formState', formState)
+
   const {
     register,
     handleSubmit,
@@ -34,7 +36,7 @@ export function LoginForm() {
   }>({
     resolver: zodResolver(schema),
     defaultValues: formState.values,
-    defaultErrors: formState.errors,
+    errors: formState.errors,
     progressive: true,
   });
 

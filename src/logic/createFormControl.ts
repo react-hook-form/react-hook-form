@@ -8,6 +8,7 @@ import {
   EventType,
   Field,
   FieldError,
+  FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -45,6 +46,7 @@ import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
+import { deepMerge } from '../utils/deepMerge';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -111,7 +113,10 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
-    errors: isObject(_options.defaultErrors) ? _options.defaultErrors : {},
+    errors:
+      isObject(_options.errors) || isObject(_options.defaultErrors)
+        ? _options.errors || _options.defaultErrors || {}
+        : {},
     disabled: false,
   };
   let _fields: FieldRefs = {};
@@ -241,6 +246,13 @@ export function createFormControl<
 
   const updateErrors = (name: InternalFieldName, error: FieldError) => {
     set(_formState.errors, name, error);
+    _subjects.state.next({
+      errors: _formState.errors,
+    });
+  };
+
+  const _setErrors = (errors: FieldErrors<TFieldValues>) => {
+    deepMerge(_formState.errors, errors);
     _subjects.state.next({
       errors: _formState.errors,
     });
@@ -1325,6 +1337,7 @@ export function createFormControl<
       _disableForm,
       _subjects,
       _proxyFormState,
+      _setErrors,
       get _fields() {
         return _fields;
       },

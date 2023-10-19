@@ -66,7 +66,10 @@ export function useForm<
     submitCount: 0,
     dirtyFields: {},
     touchedFields: {},
-    errors: isObject(props.defaultErrors) ? props.defaultErrors : {},
+    errors:
+      isObject(props.errors) || isObject(props.defaultErrors)
+        ? props.errors || props.defaultErrors || {}
+        : {},
     disabled: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
@@ -116,6 +119,12 @@ export function useForm<
       control._resetDefaultValues();
     }
   }, [props.values, control]);
+
+  React.useEffect(() => {
+    if (props.errors) {
+      control._setErrors(props.errors);
+    }
+  }, [props.errors, control]);
 
   React.useEffect(() => {
     if (!control._state.mount) {
