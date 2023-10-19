@@ -14,7 +14,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   console.log('pending', pending);
 
-  return <input type="submit" aria-disabled={pending} />;
+  return <input type="submit" disabled={pending} />;
 }
 
 export function LoginForm() {
