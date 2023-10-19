@@ -11,8 +11,8 @@ import {
 import set from '../utils/set';
 
 class ServerActionsValidator<TFieldValues extends FieldValues> {
-  private values: FieldValues | FormData;
-  private options: { resolver: Resolver<FieldValues> };
+  private values: TFieldValues;
+  private options: { resolver: Resolver<TFieldValues> };
   private rules: DeepMap<
     DeepPartial<TFieldValues>,
     RegisterOptions<TFieldValues>
@@ -21,7 +21,7 @@ class ServerActionsValidator<TFieldValues extends FieldValues> {
 
   constructor(
     values: TFieldValues | FormData,
-    options: { resolver: Resolver<FieldValues> },
+    options: { resolver: Resolver<TFieldValues> },
   ) {
     this.values =
       values instanceof FormData ? this.formDataToValues(values) : values;
@@ -64,12 +64,12 @@ class ServerActionsValidator<TFieldValues extends FieldValues> {
     return this;
   }
 
-  public getErrorsResponse(): {
-    $RHF: true;
+  public getResult(): {
+    values: TFieldValues;
     errors: FieldErrors<TFieldValues>;
   } {
     return {
-      $RHF: true,
+      values: this.values,
       errors: this.errors,
     };
   }
@@ -81,5 +81,5 @@ class ServerActionsValidator<TFieldValues extends FieldValues> {
 
 export const createServerActionsValidator = <TFieldValues extends FieldValues>(
   values: TFieldValues | FormData,
-  options: { resolver: Resolver<FieldValues> },
+  options: { resolver: Resolver<TFieldValues> },
 ) => new ServerActionsValidator(values, options);

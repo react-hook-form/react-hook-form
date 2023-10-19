@@ -111,7 +111,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
-    errors: {},
+    errors: isObject(_options.defaultErrors) ? _options.defaultErrors : {},
     disabled: false,
   };
   let _fields: FieldRefs = {};
