@@ -110,6 +110,7 @@ export type UseFormProps<
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
+  defaultErrors: FieldErrors<TFieldValues>;
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
@@ -119,7 +120,6 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
-  actionFormState: any;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<

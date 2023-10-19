@@ -1,6 +1,5 @@
 import { VALIDATION_MODE } from '../constants';
 import { Control, FieldValues, FormState, ReadFormState } from '../types';
-import isEmptyObject from '../utils/isEmptyObject';
 
 export default <TFieldValues extends FieldValues, TContext = any>(
   formState: FormState<TFieldValues>,
@@ -22,14 +21,6 @@ export default <TFieldValues extends FieldValues, TContext = any>(
         }
 
         localProxyFormState && (localProxyFormState[_key] = true);
-
-        if (
-          _key === 'errors' &&
-          isEmptyObject(formState[_key]) &&
-          control._options.actionFormState?.$RHF === true
-        ) {
-          return control._options.actionFormState.errors;
-        }
 
         return formState[_key];
       },
