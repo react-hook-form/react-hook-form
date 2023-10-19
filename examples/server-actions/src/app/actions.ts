@@ -19,35 +19,35 @@ export async function login(prevState: any, formData: FormData) {
   await validator.validate();
 
   if (!validator.isValid()) {
-    return validator.getErrorsResponse();
+    return validator.getResult();
   }
 
-  if (Math.random() < 0.2) {
+  if (Math.random() < 0.5) {
     validator.setError('root.serverError', {
       type: '409',
       message: 'Username already exists. Please choose a different username.',
     });
-    return validator.getErrorsResponse();
+    return validator.getResult();
   }
 
-  if (Math.random() < 0.2) {
+  if (Math.random() < 0.5) {
     count++;
     if (count > maxCount) {
       validator.setError('root.serverError', {
         type: '401',
         message: 'Too many login attempts.',
       });
-      return validator.getErrorsResponse();
+      return validator.getResult();
     }
 
     validator.setError('root.serverError', {
       type: '401',
       message: 'Invalid username or password.',
     });
-    return validator.getErrorsResponse();
+    return validator.getResult();
   }
 
-  if (Math.random() < 0.2) {
+  if (Math.random() < 0.5) {
     validator.setError('root.serverError', {
       type: '500',
       message: 'Internal server error. Please try again later.',

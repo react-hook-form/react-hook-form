@@ -18,7 +18,12 @@ function SubmitButton() {
 }
 
 export function LoginForm() {
-  const [actionFormState, action] = useFormState(login, null);
+  const [formState, action] = useFormState(login, {
+    values: {
+      username: '',
+      password: '',
+    }
+  });
   const {
     register,
     handleSubmit,
@@ -28,12 +33,9 @@ export function LoginForm() {
     password: string;
   }>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      username: '',
-      password: '',
-    },
+    defaultValues: formState.values,
+    defaultErrors: formState.errors,
     progressive: true,
-    actionFormState: actionFormState,
   });
 
   console.log('errors', errors);
