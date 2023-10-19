@@ -5,7 +5,7 @@ import {
   experimental_useFormStatus as useFormStatus,
 } from 'react-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '../../node_modules/@hookform/resolvers/zod';
+import { zodResolverSync } from '../../node_modules/@hookform/resolvers/zod';
 
 import { login } from '@/app/actions';
 import { schema } from '@/app/schema';
@@ -32,7 +32,7 @@ export function LoginForm() {
     username: string;
     password: string;
   }>({
-    resolver: zodResolver(schema),
+    resolver: zodResolverSync(schema),
     defaultValues: formState.values,
     defaultErrors: formState.errors,
     progressive: true,

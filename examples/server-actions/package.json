@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@hookform/resolvers": "https://pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz",
+    "@hookform/resolvers": "https://pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz",
     "next": "13.5.5",
     "react": "^18",
     "react-dom": "^18",
