@@ -1,17 +1,16 @@
 'use server';
 
+import { setTimeout } from 'timers/promises';
 import { createServerActionsValidator } from 'react-hook-form/server';
 import { zodResolver } from '../../node_modules/@hookform/resolvers/zod';
 
 import { schema } from '@/app/schema';
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 let count = 0;
 const maxCount = 1;
 
 export async function login(prevState: any, formData: FormData) {
-  await delay(1000);
+  await setTimeout(1000);
 
   const validator = createServerActionsValidator(formData, {
     resolver: zodResolver(schema),
