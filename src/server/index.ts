@@ -1,1 +1,1 @@
-export * from './createServerActionsValidator';
+export * from './createActionValidator';
