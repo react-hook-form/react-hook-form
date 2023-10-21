@@ -13,16 +13,13 @@
     "next": "13.5.5",
     "react": "^18",
     "react-dom": "^18",
-    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/24d23694/react-hook-form/_pkg.tgz",
+    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "18.2.11",
-    "autoprefixer": "^10",
-    "postcss": "^8",
-    "tailwindcss": "^3",
     "typescript": "^5"
   }
 }
