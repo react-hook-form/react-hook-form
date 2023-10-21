@@ -955,17 +955,15 @@ export function createFormControl<
   const _updateDisabledField: Control<TFieldValues>['_updateDisabledField'] = ({
     disabled,
     name,
-    field,
     fields,
   }) => {
     if (isBoolean(disabled)) {
+      const field = get(fields, name);
       const value = disabled
         ? undefined
-        : get(
-            _formValues,
-            name,
-            getFieldValue(field ? field._f : get(fields, name)._f),
-          );
+        : field && field._f
+        ? field._f.value
+        : undefined;
       set(_formValues, name, value);
       updateTouchAndDirty(name, value, false, false, true);
     }
@@ -988,7 +986,7 @@ export function createFormControl<
 
     if (field) {
       _updateDisabledField({
-        field,
+        fields: _fields,
         disabled: options.disabled,
         name,
       });
