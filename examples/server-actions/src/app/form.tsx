@@ -22,9 +22,9 @@ export function LoginForm() {
     values: {
       username: '',
       password: '',
-    }
+    },
   });
-  console.log('formState', formState)
+  console.log('formState', formState);
 
   const {
     register,
@@ -43,7 +43,7 @@ export function LoginForm() {
   console.log('errors', errors);
 
   return (
-    <form action={action} onSubmit={handleSubmit(() => {})}>
+    <form action={action} onSubmit={handleSubmit()}>
       <label>Username</label>
       <input {...register('username')} placeholder="Username" />
       {errors.username && <p>{errors.username.message}</p>}
