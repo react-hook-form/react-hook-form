@@ -18,7 +18,7 @@
     "isbot": "^3.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz",
+    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/1c4ec79a/react-hook-form/_pkg.tgz",
     "zod": "^3.22.4"
   },
   "devDependencies": {
