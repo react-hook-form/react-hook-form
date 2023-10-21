@@ -63,13 +63,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _updateDisabledField: (props: {
         disabled?: boolean;
         name: FieldName<any>;
-    } & ({
-        field?: Field;
-        fields?: undefined;
-    } | {
-        field?: undefined;
         fields?: FieldRefs;
-    })) => void;
+    }) => void;
     _executeSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
@@ -844,7 +839,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:436:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:435:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
