@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@hookform/resolvers': https://pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz
+  '@hookform/resolvers': https://pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz
   '@remix-run/css-bundle': ^2.1.0
   '@remix-run/dev': ^2.1.0
   '@remix-run/eslint-config': ^2.1.0
@@ -14,12 +14,12 @@ specifiers:
   isbot: ^3.6.8
   react: ^18.2.0
   react-dom: ^18.2.0
-  react-hook-form: https://pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz
+  react-hook-form: https://pkg.csb.dev/react-hook-form/react-hook-form/commit/dd4759b0/react-hook-form/_pkg.tgz
   typescript: ^5.1.6
   zod: ^3.22.4
 
 dependencies:
-  '@hookform/resolvers': '@pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz_react-hook-form@7.47.0'
+  '@hookform/resolvers': '@pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz_react-hook-form@7.47.0'
   '@remix-run/css-bundle': 2.1.0
   '@remix-run/node': 2.1.0_typescript@5.2.2
   '@remix-run/react': 2.1.0_vegmnuvoswdxuttpuhvewcem44
@@ -27,7 +27,7 @@ dependencies:
   isbot: 3.7.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
-  react-hook-form: '@pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz_react@18.2.0'
+  react-hook-form: '@pkg.csb.dev/react-hook-form/react-hook-form/commit/dd4759b0/react-hook-form/_pkg.tgz_react@18.2.0'
   zod: 3.22.4
 
 devDependencies:
@@ -6251,9 +6251,9 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: true
 
-  '@pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz_react@18.2.0':
-    resolution: {tarball: https://pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz}
-    id: '@pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz'
+  '@pkg.csb.dev/react-hook-form/react-hook-form/commit/dd4759b0/react-hook-form/_pkg.tgz_react@18.2.0':
+    resolution: {tarball: https://pkg.csb.dev/react-hook-form/react-hook-form/commit/dd4759b0/react-hook-form/_pkg.tgz}
+    id: '@pkg.csb.dev/react-hook-form/react-hook-form/commit/dd4759b0/react-hook-form/_pkg.tgz'
     name: react-hook-form
     version: 7.47.0
     engines: {node: '>=12.22.0'}
@@ -6263,13 +6263,13 @@ packages:
       react: 18.2.0
     dev: false
 
-  '@pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz_react-hook-form@7.47.0':
-    resolution: {tarball: https://pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz}
-    id: '@pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz'
+  '@pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz_react-hook-form@7.47.0':
+    resolution: {tarball: https://pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz}
+    id: '@pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz'
     name: '@hookform/resolvers'
     version: 2.9.1
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: '@pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz_react@18.2.0'
+      react-hook-form: '@pkg.csb.dev/react-hook-form/react-hook-form/commit/dd4759b0/react-hook-form/_pkg.tgz_react@18.2.0'
     dev: false

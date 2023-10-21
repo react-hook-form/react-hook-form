@@ -4,7 +4,7 @@ import { Form, useActionData } from '@remix-run/react';
 import { setTimeout } from 'timers/promises';
 import { createServerActionsValidator } from 'react-hook-form/server';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '../../node_modules/@hookform/resolvers/zod';
+import { zodResolverSync } from '../../node_modules/@hookform/resolvers/zod';
 import { z } from 'zod';
 
 export const meta: MetaFunction = () => {
@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
   await setTimeout(1000);
 
   const validator = createServerActionsValidator(formData, {
-    resolver: zodResolver(schema),
+    resolver: zodResolverSync(schema),
   });
 
   await validator.validate();
@@ -84,7 +84,7 @@ export default function Index() {
     username: string;
     password: string;
   }>({
-    resolver: zodResolver(schema),
+    resolver: zodResolverSync(schema),
     defaultValues: actionData?.values || {
       username: '',
       password: '',
