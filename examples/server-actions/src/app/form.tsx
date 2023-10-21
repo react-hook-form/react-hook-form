@@ -14,7 +14,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   console.log('pending', pending);
 
-  return <input type="submit" aria-disabled={pending} />;
+  return <input type="submit" disabled={pending} />;
 }
 
 export function LoginForm() {
@@ -24,6 +24,8 @@ export function LoginForm() {
       password: '',
     }
   });
+  console.log('formState', formState)
+
   const {
     register,
     handleSubmit,
@@ -34,7 +36,7 @@ export function LoginForm() {
   }>({
     resolver: zodResolver(schema),
     defaultValues: formState.values,
-    defaultErrors: formState.errors,
+    errors: formState.errors,
     progressive: true,
   });
 

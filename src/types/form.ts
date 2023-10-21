@@ -111,6 +111,7 @@ export type UseFormProps<
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
   defaultErrors: FieldErrors<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
@@ -783,6 +784,7 @@ export type Control<
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
+  _setErrors: (errors: FieldErrors<TFieldValues>) => void;
   _updateDisabledField: (
     props: {
       disabled?: boolean;
