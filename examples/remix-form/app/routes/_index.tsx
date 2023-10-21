@@ -2,7 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, useActionData } from '@remix-run/react';
 import { setTimeout } from 'timers/promises';
-import { createServerActionsValidator } from 'react-hook-form/server';
+import { createActionValidator } from 'react-hook-form/server';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '../../node_modules/@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -27,7 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   await setTimeout(1000);
 
-  const validator = createServerActionsValidator(formData, {
+  const validator = createActionValidator(formData, {
     resolver: zodResolver(schema),
   });
 

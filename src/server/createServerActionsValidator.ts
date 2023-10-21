@@ -10,7 +10,7 @@ import {
 } from '../types';
 import set from '../utils/set';
 
-class ServerActionsValidator<TFieldValues extends FieldValues> {
+class ActionValidator<TFieldValues extends FieldValues> {
   private values: TFieldValues;
   private options: { resolver: Resolver<TFieldValues> };
   private rules: DeepMap<
@@ -79,7 +79,7 @@ class ServerActionsValidator<TFieldValues extends FieldValues> {
   }
 }
 
-export const createServerActionsValidator = <TFieldValues extends FieldValues>(
+export const createActionValidator = <TFieldValues extends FieldValues>(
   values: TFieldValues | FormData,
   options: { resolver: Resolver<TFieldValues> },
-) => new ServerActionsValidator(values, options);
+) => new ActionValidator(values, options);
