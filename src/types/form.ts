@@ -6,6 +6,7 @@ import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
 import {
+  Field,
   FieldName,
   FieldRefs,
   FieldValue,
@@ -781,11 +782,22 @@ export type Control<
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
-  _updateDisabledField: (props: {
-    disabled?: boolean;
-    name: FieldName<any>;
-    fields?: FieldRefs;
-  }) => void;
+  _updateDisabledField: (
+    props: {
+      disabled?: boolean;
+      name: FieldName<any>;
+      value?: unknown;
+    } & (
+      | {
+          field?: Field;
+          fields?: undefined;
+        }
+      | {
+          field?: undefined;
+          fields?: FieldRefs;
+        }
+    ),
+  ) => void;
   _executeSchema: (
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
