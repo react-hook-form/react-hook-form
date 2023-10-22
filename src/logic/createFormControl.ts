@@ -957,17 +957,16 @@ export function createFormControl<
     name,
     field,
     fields,
+    value,
   }) => {
     if (isBoolean(disabled)) {
-      const value = disabled
+      const inputValue = disabled
         ? undefined
-        : get(
-            _formValues,
-            name,
-            getFieldValue(field ? field._f : get(fields, name)._f),
-          );
-      set(_formValues, name, value);
-      updateTouchAndDirty(name, value, false, false, true);
+        : isUndefined(value)
+        ? getFieldValue(field ? field._f : get(fields, name)._f)
+        : value;
+      set(_formValues, name, inputValue);
+      updateTouchAndDirty(name, inputValue, false, false, true);
     }
   };
 

@@ -786,6 +786,7 @@ export type Control<
     props: {
       disabled?: boolean;
       name: FieldName<any>;
+      value?: unknown;
     } & (
       | {
           field?: Field;

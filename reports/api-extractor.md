@@ -63,6 +63,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _updateDisabledField: (props: {
         disabled?: boolean;
         name: FieldName<any>;
+        value?: unknown;
     } & ({
         field?: Field;
         fields?: undefined;

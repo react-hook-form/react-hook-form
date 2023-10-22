@@ -118,6 +118,7 @@ export function useController<
         disabled,
         fields: control._fields,
         name,
+        value: get(control._fields, name)._f.value,
       });
     }
   }, [disabled, name, control]);
