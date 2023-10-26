@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
@@ -50,13 +51,7 @@ export type DefaultValues<TFieldValues> =
 
 export type InternalNameSet = Set<InternalFieldName>;
 
-export type ValidationMode = {
-  onBlur: 'onBlur';
-  onChange: 'onChange';
-  onSubmit: 'onSubmit';
-  onTouched: 'onTouched';
-  all: 'all';
-};
+export type ValidationMode = typeof VALIDATION_MODE;
 
 export type Mode = keyof ValidationMode;
 

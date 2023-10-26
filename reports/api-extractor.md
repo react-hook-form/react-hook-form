@@ -341,8 +341,13 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, 
 // @public (undocumented)
 export type GlobalError = Partial<{
     type: string | number;
-    message: string;
+    message: Message;
 }>;
+
+// Warning: (ae-forgotten-export) The symbol "INPUT_VALIDATION_RULES" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type InputValidationRules = typeof INPUT_VALIDATION_RULES;
 
 // @public (undocumented)
 export type InternalFieldErrors = Partial<Record<InternalFieldName, FieldError>>;
@@ -385,12 +390,18 @@ export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
 });
 
 // @public (undocumented)
+export type MaxType = InputValidationRules['max'] | InputValidationRules['maxLength'];
+
+// @public (undocumented)
 export type Merge<A, B> = {
     [K in keyof A | keyof B]?: K extends keyof A & keyof B ? [A[K], B[K]] extends [object, object] ? Merge<A[K], B[K]> : A[K] | B[K] : K extends keyof A ? A[K] : K extends keyof B ? B[K] : never;
 };
 
 // @public (undocumented)
 export type Message = string;
+
+// @public (undocumented)
+export type MinType = InputValidationRules['min'] | InputValidationRules['minLength'];
 
 // @public (undocumented)
 export type Mode = keyof ValidationMode;
@@ -813,14 +824,10 @@ export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues
 // @public (undocumented)
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
+// Warning: (ae-forgotten-export) The symbol "VALIDATION_MODE" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type ValidationMode = {
-    onBlur: 'onBlur';
-    onChange: 'onChange';
-    onSubmit: 'onSubmit';
-    onTouched: 'onTouched';
-    all: 'all';
-};
+export type ValidationMode = typeof VALIDATION_MODE;
 
 // @public (undocumented)
 export type ValidationRule<TValidationValue extends ValidationValue = ValidationValue> = TValidationValue | ValidationValueMessage<TValidationValue>;
@@ -845,7 +852,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:436:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:431:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
