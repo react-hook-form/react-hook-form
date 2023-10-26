@@ -42,7 +42,7 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
 
 export type GlobalError = Partial<{
   type: string | number;
-  message: string;
+  message: Message;
 }>;
 
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
