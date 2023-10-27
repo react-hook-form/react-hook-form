@@ -150,7 +150,7 @@ export function useController<
             },
             type: EVENTS.BLUR,
           }),
-        [name, control],
+        [name, control._formValues],
       ),
       ref: (elm) => {
         const field = get(control._fields, name);

@@ -413,7 +413,7 @@ export function useFieldArray<
           ...field,
           [keyName]: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName],
+      [fields.length, keyName],
     ),
   };
 }
