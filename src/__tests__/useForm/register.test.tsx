@@ -15,6 +15,7 @@ import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
+import { debug } from "jest-preview";
 
 describe('register', () => {
   it('should support register passed to ref', async () => {
@@ -1965,5 +1966,57 @@ describe('register', () => {
     expect(test).toBeCalledWith({
       test: 'test',
     });
+  });
+
+  test('formState.isDirty change', () => {
+    debug();
+    const test = jest.fn();
+
+    const App = () => {
+      const [count, setCount] = React.useState(0);
+      const { register, formState } = useForm({
+        defaultValues: {
+          foo: 'not dirty',
+          bar: 'not dirty',
+        },
+      });
+
+      test(formState.isDirty);
+
+      return (
+        <form>
+          <button
+            data-testid="rerender-btn"
+            onClick={() => setCount((prev) => prev + 1)}
+          >
+            {count}
+          </button>
+          <input type="text" {...register('foo', { disabled: true })} />
+          <input data-testid="input" type="text" {...register('bar')} />
+          {formState.isDirty ? 'dirty' : 'clean'}
+        </form>
+      );
+    };
+
+    render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+    );
+
+    fireEvent.click(screen.getByTestId('rerender-btn'));
+
+    fireEvent.change(screen.getByTestId('input'), {
+      target: { value: 'should dirty' },
+    });
+
+    expect(test.mock.calls.length).toBe(5);
+
+    fireEvent.change(screen.getByTestId('input'), {
+      target: { value: 'not dirty' },
+    });
+
+    expect(test.mock.calls.length).toBe(6);
+    expect(test.mock.lastCall).toEqual([false]);
   });
 });
