@@ -108,6 +108,20 @@ export function useForm<
   );
 
   React.useEffect(() => {
+    if (!props.defaultValues) {
+      try {
+        const defaultValues = new URLSearchParams(window.location.search).get(
+          'default-values',
+        );
+
+        if (defaultValues) {
+          control._reset(JSON.parse(defaultValues));
+        }
+      } catch {}
+    }
+  }, [control, props.defaultValues]);
+
+  React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
       control._reset(props.values, control._options.resetOptions);
       _values.current = props.values;
