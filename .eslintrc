@@ -50,7 +50,8 @@
         ]
       }
     ],
-    "simple-import-sort/exports": "error"
+    "simple-import-sort/exports": "error",
+    "prettier/prettier":0
   },
   "overrides": [
     {

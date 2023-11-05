@@ -824,7 +824,7 @@ export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = {
+> = { 
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -873,6 +873,13 @@ export type FormProviderProps<
 > = {
   children: React.ReactNode | React.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+
+export type SmartFormProps<T extends FieldValues> = UseFormProps<T> & {
+  onSubmit: SubmitHandler<T>;
+  children:
+    | ((useFormMethods: Omit<UseFormReturn<T>, 'handleSubmit'>) => React.ReactNode)
+    | React.ReactNode;
+};
 
 export type FormProps<
   TFieldValues extends FieldValues,

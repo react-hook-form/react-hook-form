@@ -542,6 +542,12 @@ export type SetValueConfig = Partial<{
 }>;
 
 // @public (undocumented)
+export type SmartFormProps<T extends FieldValues> = UseFormProps<T> & {
+    onSubmit: SubmitHandler<T>;
+    children: ((useFormMethods: Omit<UseFormReturn<T>, 'handleSubmit'>) => React_2.ReactNode) | React_2.ReactNode;
+};
+
+// @public (undocumented)
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
     values: Subject<{
         name?: InternalFieldName;
