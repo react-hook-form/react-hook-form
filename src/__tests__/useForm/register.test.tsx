@@ -15,7 +15,6 @@ import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
-import { debug } from "jest-preview";
 
 describe('register', () => {
   it('should support register passed to ref', async () => {
@@ -1968,8 +1967,7 @@ describe('register', () => {
     });
   });
 
-  test('formState.isDirty change', () => {
-    debug();
+  it('should expect formState.isDirty to change on form mount', () => {
     const test = jest.fn();
 
     const App = () => {
