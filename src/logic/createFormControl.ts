@@ -1068,8 +1068,8 @@ export function createFormControl<
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
   const _disableForm = (disabled?: boolean) => {
-    if (isBoolean(props.disabled)) {
-      _subjects.state.next({ disabled: props.disabled });
+    if (isBoolean(disabled)) {
+      _subjects.state.next({ disabled });
       iterateFieldsByAction(
         _fields,
         (ref) => {
