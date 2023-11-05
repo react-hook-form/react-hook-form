@@ -1,15 +1,7 @@
 import { VALIDATION_MODE } from '../constants';
-import { Mode } from '../types';
+import { Mode, ValidationModeFlags } from '../types';
 
-export default (
-  mode?: Mode,
-): {
-  isOnSubmit: boolean;
-  isOnBlur: boolean;
-  isOnChange: boolean;
-  isOnAll: boolean;
-  isOnTouch: boolean;
-} => ({
+export default (mode?: Mode): ValidationModeFlags => ({
   isOnSubmit: !mode || mode === VALIDATION_MODE.onSubmit,
   isOnBlur: mode === VALIDATION_MODE.onBlur,
   isOnChange: mode === VALIDATION_MODE.onChange,
