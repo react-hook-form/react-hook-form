@@ -55,6 +55,14 @@ export type ValidationMode = typeof VALIDATION_MODE;
 
 export type Mode = keyof ValidationMode;
 
+export type ValidationModeFlags = {
+  isOnSubmit: boolean;
+  isOnBlur: boolean;
+  isOnChange: boolean;
+  isOnAll: boolean;
+  isOnTouch: boolean;
+};
+
 export type CriteriaMode = 'firstError' | 'all';
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (

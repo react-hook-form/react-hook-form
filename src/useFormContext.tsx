@@ -51,7 +51,7 @@ export const useFormContext = <
  * @remarks
  * [API](https://react-hook-form.com/docs/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
  *
- * @param props - all useFrom methods
+ * @param props - all useForm methods
  *
  * @example
  * ```tsx
