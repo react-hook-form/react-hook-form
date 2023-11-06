@@ -2,6 +2,7 @@ import isEmptyObject from './isEmptyObject';
 import isKey from './isKey';
 import isObject from './isObject';
 import isUndefined from './isUndefined';
+import omit from './omit';
 import stringToPath from './stringToPath';
 
 function baseGet(object: any, updatePath: (string | number)[]) {
@@ -30,20 +31,17 @@ export default function unset(object: any, path: string | (string | number)[]) {
     : isKey(path)
     ? [path]
     : stringToPath(path);
-
-  const childObject = paths.length === 1 ? object : baseGet(object, paths);
-
+    
   const index = paths.length - 1;
   const key = paths[index];
-
-  if (childObject) {
-    delete childObject[key];
-  }
+  
+  const sourceObject = paths.length === 1 ? object : baseGet(object, paths);
+  const unsetObject = omit(sourceObject, String(key));
 
   if (
     index !== 0 &&
-    ((isObject(childObject) && isEmptyObject(childObject)) ||
-      (Array.isArray(childObject) && isEmptyArray(childObject)))
+    ((isObject(unsetObject) && isEmptyObject(unsetObject)) ||
+      (Array.isArray(unsetObject) && isEmptyArray(unsetObject)))
   ) {
     unset(object, paths.slice(0, -1));
   }

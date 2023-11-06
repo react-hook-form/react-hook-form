@@ -1,4 +1,4 @@
-export default <Key extends string, T extends Record<Key, any>>(
+export default <Key extends string| number| symbol, T extends Record<Key, any>>(
   source: T,
   key: Key,
 ): Omit<T, Key> => {
@@ -7,3 +7,4 @@ export default <Key extends string, T extends Record<Key, any>>(
 
   return copy;
 };
+
