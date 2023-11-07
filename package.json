@@ -142,7 +142,7 @@
     "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
-    "node": ">=12.22.0"
-  },
-  "packageManager": "pnpm@7.18.0"
+    "node": "20",
+    "pnpm": "8"
+  }
 }
