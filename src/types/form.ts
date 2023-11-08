@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
@@ -50,15 +51,17 @@ export type DefaultValues<TFieldValues> =
 
 export type InternalNameSet = Set<InternalFieldName>;
 
-export type ValidationMode = {
-  onBlur: 'onBlur';
-  onChange: 'onChange';
-  onSubmit: 'onSubmit';
-  onTouched: 'onTouched';
-  all: 'all';
-};
+export type ValidationMode = typeof VALIDATION_MODE;
 
 export type Mode = keyof ValidationMode;
+
+export type ValidationModeFlags = {
+  isOnSubmit: boolean;
+  isOnBlur: boolean;
+  isOnChange: boolean;
+  isOnAll: boolean;
+  isOnTouch: boolean;
+};
 
 export type CriteriaMode = 'firstError' | 'all';
 
@@ -789,6 +792,7 @@ export type Control<
     props: {
       disabled?: boolean;
       name: FieldName<any>;
+      value?: unknown;
     } & (
       | {
           field?: Field;

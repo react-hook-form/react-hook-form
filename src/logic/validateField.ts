@@ -4,7 +4,9 @@ import {
   FieldError,
   FieldValues,
   InternalFieldErrors,
+  MaxType,
   Message,
+  MinType,
   NativeFieldValue,
 } from '../types';
 import get from '../utils/get';
@@ -82,8 +84,8 @@ export default async <T extends FieldValues>(
     exceedMax: boolean,
     maxLengthMessage: Message,
     minLengthMessage: Message,
-    maxType = INPUT_VALIDATION_RULES.maxLength,
-    minType = INPUT_VALIDATION_RULES.minLength,
+    maxType: MaxType = INPUT_VALIDATION_RULES.maxLength,
+    minType: MinType = INPUT_VALIDATION_RULES.minLength,
   ) => {
     const message = exceedMax ? maxLengthMessage : minLengthMessage;
     error[name] = {

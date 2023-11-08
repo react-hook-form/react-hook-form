@@ -674,6 +674,11 @@ export function createFormControl<
     const field: Field = get(_fields, name);
     const getCurrentFieldValue = () =>
       target.type ? getFieldValue(field._f) : getEventValue(event);
+    const _updateIsFieldValueUpdated = (fieldValue: any): void => {
+      isFieldValueUpdated =
+        Number.isNaN(fieldValue) ||
+        fieldValue === get(_formValues, name, fieldValue);
+    };
 
     if (field) {
       let error;
@@ -735,21 +740,26 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
-        const previousErrorLookupResult = schemaErrorLookup(
-          _formState.errors,
-          _fields,
-          name,
-        );
-        const errorLookupResult = schemaErrorLookup(
-          errors,
-          _fields,
-          previousErrorLookupResult.name || name,
-        );
 
-        error = errorLookupResult.error;
-        name = errorLookupResult.name;
+        _updateIsFieldValueUpdated(fieldValue);
 
-        isValid = isEmptyObject(errors);
+        if (isFieldValueUpdated) {
+          const previousErrorLookupResult = schemaErrorLookup(
+            _formState.errors,
+            _fields,
+            name,
+          );
+          const errorLookupResult = schemaErrorLookup(
+            errors,
+            _fields,
+            previousErrorLookupResult.name || name,
+          );
+
+          error = errorLookupResult.error;
+          name = errorLookupResult.name;
+
+          isValid = isEmptyObject(errors);
+        }
       } else {
         error = (
           await validateField(
@@ -760,9 +770,7 @@ export function createFormControl<
           )
         )[name];
 
-        isFieldValueUpdated =
-          Number.isNaN(fieldValue) ||
-          fieldValue === get(_formValues, name, fieldValue);
+        _updateIsFieldValueUpdated(fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
@@ -961,17 +969,16 @@ export function createFormControl<
     name,
     field,
     fields,
+    value,
   }) => {
     if (isBoolean(disabled)) {
-      const value = disabled
+      const inputValue = disabled
         ? undefined
-        : get(
-            _formValues,
-            name,
-            getFieldValue(field ? field._f : get(fields, name)._f),
-          );
-      set(_formValues, name, value);
-      updateTouchAndDirty(name, value, false, false, true);
+        : isUndefined(value)
+        ? getFieldValue(field ? field._f : get(fields, name)._f)
+        : value;
+      set(_formValues, name, inputValue);
+      updateTouchAndDirty(name, inputValue, false, false, true);
     }
   };
 
@@ -1073,8 +1080,8 @@ export function createFormControl<
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
   const _disableForm = (disabled?: boolean) => {
-    if (isBoolean(props.disabled)) {
-      _subjects.state.next({ disabled: props.disabled });
+    if (isBoolean(disabled)) {
+      _subjects.state.next({ disabled });
       iterateFieldsByAction(
         _fields,
         (ref) => {

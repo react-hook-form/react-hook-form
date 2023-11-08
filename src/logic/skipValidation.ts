@@ -1,3 +1,5 @@
+import { ValidationModeFlags } from '../types';
+
 export default (
   isBlurEvent: boolean,
   isTouched: boolean,
@@ -6,13 +8,7 @@ export default (
     isOnBlur: boolean;
     isOnChange: boolean;
   },
-  mode: Partial<{
-    isOnSubmit: boolean;
-    isOnBlur: boolean;
-    isOnChange: boolean;
-    isOnTouch: boolean;
-    isOnAll: boolean;
-  }>,
+  mode: Partial<ValidationModeFlags>,
 ) => {
   if (mode.isOnAll) {
     return false;
