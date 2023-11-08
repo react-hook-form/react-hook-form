@@ -2071,6 +2071,67 @@ describe('useForm', () => {
     });
   });
 
+  it('should disable the entire form', () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { register, control } = useForm({
+        disabled,
+      });
+
+      return (
+        <form>
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+
+          <Controller
+            control={control}
+            render={({ field }) => {
+              return (
+                <input disabled={field.disabled} data-testid={'controller'} />
+              );
+            }}
+            name="test"
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+          >
+            Submit
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('checkbox')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('radio')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('range')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('select')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('textarea')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('controller')).toHaveAttribute('disabled');
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(screen.getByTestId('checkbox')).not.toBeDisabled();
+    expect(screen.getByTestId('radio')).not.toBeDisabled();
+    expect(screen.getByTestId('range')).not.toBeDisabled();
+    expect(screen.getByTestId('select')).not.toBeDisabled();
+    expect(screen.getByTestId('textarea')).not.toBeDisabled();
+    expect(screen.getByTestId('controller')).not.toBeDisabled();
+  });
+
   it('should be able to disable the entire form', async () => {
     const App = () => {
       const [disabled, setDisabled] = useState(false);
