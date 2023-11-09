@@ -10,7 +10,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@hookform/resolvers": "https://pkg.csb.dev/react-hook-form/resolvers/commit/88dc51ee/@hookform/resolvers/_pkg.tgz",
+    "@hookform/resolvers": "https://pkg.csb.dev/react-hook-form/resolvers/commit/2d6d392c/@hookform/resolvers/_pkg.tgz",
     "@remix-run/css-bundle": "^2.1.0",
     "@remix-run/node": "^2.1.0",
     "@remix-run/react": "^2.1.0",
@@ -18,7 +18,7 @@
     "isbot": "^3.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/49802e47/react-hook-form/_pkg.tgz",
+    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/2c4b3693/react-hook-form/_pkg.tgz",
     "zod": "^3.22.4"
   },
   "devDependencies": {
