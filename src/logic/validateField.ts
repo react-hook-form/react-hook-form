@@ -73,9 +73,9 @@ export default async <T extends FieldValues>(
     ((valueAsNumber || isFileInput(ref)) &&
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
-    (isHTMLElement(ref) && !isMultiSelect && ref.value === '') ||
+    (!isMultiSelect && isHTMLElement(ref) && ref.value === '') ||
     inputValue === '' ||
-    (Array.isArray(inputValue) && !inputValue.length);
+    (isMultiSelect && !inputValue.length);
 
   const appendErrorsCurry = appendErrors.bind(
     null,
