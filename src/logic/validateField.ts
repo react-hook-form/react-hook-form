@@ -68,14 +68,16 @@ export default async <T extends FieldValues>(
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isInputValueEmpty =
-    inputValue === '' || (Array.isArray(inputValue) && !inputValue.length);
+    isUndefined(inputValue) ||
+    inputValue === null ||
+    inputValue === '' ||
+    (Array.isArray(inputValue) && !inputValue.length);
 
   const isEmpty =
     ((valueAsNumber || isFileInput(ref)) &&
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
-    isInputValueEmpty ||
-    (isInputValueEmpty && isHTMLElement(ref) && ref.value === '');
+    isInputValueEmpty;
 
   const appendErrorsCurry = appendErrors.bind(
     null,
