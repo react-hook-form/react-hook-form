@@ -1,12 +1,22 @@
 import getCheckboxValue from '../../logic/getCheckboxValue';
 import getRadioValue from '../../logic/getRadioValue';
 import validateField from '../../logic/validateField';
+import * as isHTMLElement from '../../utils/isHTMLElement';
 
 jest.mock('../../logic/getRadioValue');
 jest.mock('../../logic/getCheckboxValue');
 
+jest.mock('../../utils/isHTMLElement', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '2',
     }));
@@ -389,6 +399,10 @@ describe('validateField', () => {
   });
 
   it('should return max error', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -720,6 +734,10 @@ describe('validateField', () => {
   });
 
   it('should return min error', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -999,6 +1017,10 @@ describe('validateField', () => {
   });
 
   it('should return min and max error for custom input', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1084,6 +1106,10 @@ describe('validateField', () => {
   });
 
   it('should return max length error ', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1185,6 +1211,10 @@ describe('validateField', () => {
   });
 
   it('should return min length error ', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1286,6 +1316,10 @@ describe('validateField', () => {
   });
 
   it('should return pattern error when not matching', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     const emailRegex =
       /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
@@ -1434,6 +1468,10 @@ describe('validateField', () => {
   });
 
   it('should validate for custom validation', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1622,6 +1660,10 @@ describe('validateField', () => {
   });
 
   it('should return error message when it is defined', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1698,6 +1740,10 @@ describe('validateField', () => {
   });
 
   it('should return result or empty string when validate has error', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1760,6 +1806,10 @@ describe('validateField', () => {
   });
 
   it('if undefined returned from validate, no error is reported', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1783,6 +1833,14 @@ describe('validateField', () => {
   });
 
   it('should do nothing when validate is not an object nor function', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -1805,6 +1863,10 @@ describe('validateField', () => {
   });
 
   it('should return all validation errors', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
@@ -1880,6 +1942,10 @@ describe('validateField', () => {
   });
 
   it('should handle pattern with g flag', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     const reusedRe = /a/g;
 
     (getRadioValue as jest.Mock).mockImplementation(() => ({
@@ -1955,6 +2021,10 @@ describe('validateField', () => {
   });
 
   it('should return all validation error messages', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
     }));
@@ -2100,6 +2170,10 @@ describe('validateField', () => {
   });
 
   describe('with Browser native validation', () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     it('should invoke setCustomValidity for invalid input', () => {
       const setCustomValidity = jest.fn();
       const reportValidity = jest.fn();
@@ -2215,6 +2289,10 @@ describe('validateField', () => {
   });
 
   it('should validate field array with required attribute', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return false;
+    });
+
     expect(
       await validateField(
         {
@@ -2329,6 +2407,35 @@ describe('validateField', () => {
         false,
         false,
         true,
+      ),
+    ).toEqual({});
+  });
+
+  /**
+   * In a custom built multislect, the value is an array of objects. But the referenced element does not necessarily have a value attribute.
+   */
+  it('should not detect isEmpty when handling a custom built multi select', async () => {
+    jest.spyOn(isHTMLElement, 'default').mockImplementation(() => {
+      return true;
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: { value: '', name: 'test' },
+            required: true,
+          },
+        },
+        {
+          test: [
+            { label: 'Blackberry', value: 'blackberry' },
+            { label: 'Banana', value: 'banana' },
+          ],
+        },
+        false,
       ),
     ).toEqual({});
   });
