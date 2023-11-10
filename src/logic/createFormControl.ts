@@ -20,6 +20,7 @@ import {
   Path,
   PathValue,
   Ref,
+  ResolverResult,
   SetFieldValue,
   SetValueConfig,
   Subjects,
@@ -404,6 +405,18 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
+
+  const _executeSchemaSync = (name?: InternalFieldName[]) =>
+    _options.resolver!(
+      _formValues as TFieldValues,
+      _options.context,
+      getResolverOptions(
+        name || _names.mount,
+        _fields,
+        _options.criteriaMode,
+        _options.shouldUseNativeValidation,
+      ),
+    ) as ResolverResult<TFieldValues>;
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const { errors } = await _executeSchema(names);
@@ -1139,6 +1152,53 @@ export function createFormControl<
       });
     };
 
+  const handleSubmitSync: UseFormHandleSubmit<TFieldValues> =
+    (onValid, onInvalid) => async (e) => {
+      let fieldValues = cloneObject(_formValues);
+
+      _subjects.state.next({
+        isSubmitting: true,
+      });
+
+      if (_options.resolver) {
+        const { errors, values } = _executeSchemaSync();
+        _formState.errors = errors;
+        fieldValues = values;
+      } else {
+        // TODO
+        // executeBuiltInValidationSync(_fields);
+      }
+
+      unset(_formState.errors, 'root');
+
+      if (isEmptyObject(_formState.errors)) {
+        _subjects.state.next({
+          errors: {},
+        });
+        if (onValid) {
+          await onValid(fieldValues as TFieldValues, e);
+        }
+      } else {
+        if (e) {
+          e.preventDefault && e.preventDefault();
+          e.persist && e.persist();
+        }
+        if (onInvalid) {
+          await onInvalid({ ..._formState.errors }, e);
+        }
+        _focusError();
+        setTimeout(_focusError);
+      }
+
+      _subjects.state.next({
+        isSubmitted: true,
+        isSubmitting: false,
+        isSubmitSuccessful: isEmptyObject(_formState.errors),
+        submitCount: _formState.submitCount + 1,
+        errors: _formState.errors,
+      });
+    };
+
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
       if (isUndefined(options.defaultValue)) {
@@ -1384,7 +1444,7 @@ export function createFormControl<
     },
     trigger,
     register,
-    handleSubmit,
+    handleSubmit: props.progressive ? handleSubmitSync : handleSubmit,
     watch,
     setValue,
     getValues,

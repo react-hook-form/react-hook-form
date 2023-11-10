@@ -9,11 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@hookform/resolvers": "https://pkg.csb.dev/react-hook-form/resolvers/commit/bcc797e8/@hookform/resolvers/_pkg.tgz",
+    "@hookform/resolvers": "https://pkg.csb.dev/react-hook-form/resolvers/commit/2d6d392c/@hookform/resolvers/_pkg.tgz",
     "next": "13.5.5",
     "react": "^18",
     "react-dom": "^18",
-    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/a827066d/react-hook-form/_pkg.tgz",
+    "react-hook-form": "https://pkg.csb.dev/react-hook-form/react-hook-form/commit/2c4b3693/react-hook-form/_pkg.tgz",
     "zod": "^3.22.4"
   },
   "devDependencies": {
