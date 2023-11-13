@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import isObject from './utils/isObject';
 import {
   FieldValues,
   FormState,
@@ -65,7 +66,7 @@ export function useForm<
     submitCount: 0,
     dirtyFields: {},
     touchedFields: {},
-    errors: {},
+    errors: isObject(props.errors) ? props.errors || {} : {},
     disabled: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
@@ -126,6 +127,12 @@ export function useForm<
       control._resetDefaultValues();
     }
   }, [props.values, control]);
+
+  React.useEffect(() => {
+    if (props.errors) {
+      control._setErrors(props.errors);
+    }
+  }, [props.errors, control]);
 
   React.useEffect(() => {
     if (!control._state.mount) {
