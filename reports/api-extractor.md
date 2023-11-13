@@ -668,7 +668,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = (onValid?: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = (onValid: TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : SubmitHandler<TFieldValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
@@ -677,7 +677,6 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
     values: TFieldValues;
-    defaultErrors: FieldErrors<TFieldValues>;
     errors: FieldErrors<TFieldValues>;
     resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
     resolver: Resolver<TFieldValues, TContext>;
@@ -864,7 +863,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:441:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:440:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
