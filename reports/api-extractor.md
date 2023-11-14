@@ -60,6 +60,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _getWatch: WatchInternal<TFieldValues>;
     _updateFieldArray: BatchFieldArrayUpdate;
     _getFieldArray: <TFieldArrayValues>(name: InternalFieldName) => Partial<TFieldArrayValues>[];
+    _setErrors: (errors: FieldErrors<TFieldValues>) => void;
     _updateDisabledField: (props: {
         disabled?: boolean;
         name: FieldName<any>;
@@ -676,6 +677,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
     values: TFieldValues;
+    errors: FieldErrors<TFieldValues>;
     resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
     resolver: Resolver<TFieldValues, TContext>;
     context: TContext;
@@ -861,7 +863,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:439:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:440:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

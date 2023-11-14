@@ -8,6 +8,7 @@ import {
   EventType,
   Field,
   FieldError,
+  FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -111,7 +112,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
-    errors: {},
+    errors: _options.errors || {},
     disabled: false,
   };
   let _fields: FieldRefs = {};
@@ -243,6 +244,14 @@ export function createFormControl<
     set(_formState.errors, name, error);
     _subjects.state.next({
       errors: _formState.errors,
+    });
+  };
+
+  const _setErrors = (errors: FieldErrors<TFieldValues>) => {
+    _formState.errors = errors;
+    _subjects.state.next({
+      errors: _formState.errors,
+      isValid: false,
     });
   };
 
@@ -1330,6 +1339,7 @@ export function createFormControl<
       _disableForm,
       _subjects,
       _proxyFormState,
+      _setErrors,
       get _fields() {
         return _fields;
       },
