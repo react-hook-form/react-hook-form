@@ -112,7 +112,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
-    errors: isObject(_options.errors) ? _options.errors || {} : {},
+    errors: _options.errors || {},
     disabled: false,
   };
   let _fields: FieldRefs = {};
