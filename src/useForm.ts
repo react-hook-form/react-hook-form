@@ -5,7 +5,6 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import isObject from './utils/isObject';
 import {
   FieldValues,
   FormState,
@@ -66,10 +65,7 @@ export function useForm<
     submitCount: 0,
     dirtyFields: {},
     touchedFields: {},
-    errors:
-      isObject(props.errors) || isObject(props.defaultErrors)
-        ? props.errors || props.defaultErrors || {}
-        : {},
+    errors: props.errors || props.defaultErrors || {},
     disabled: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined

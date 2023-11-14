@@ -47,7 +47,6 @@ import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
-import { deepMerge } from '../utils/deepMerge';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -114,10 +113,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
-    errors:
-      isObject(_options.errors) || isObject(_options.defaultErrors)
-        ? _options.errors || _options.defaultErrors || {}
-        : {},
+    errors: _options.errors || _options.defaultErrors || {},
     disabled: false,
   };
   let _fields: FieldRefs = {};
@@ -253,9 +249,10 @@ export function createFormControl<
   };
 
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
-    deepMerge(_formState.errors, errors);
+    _formState.errors = errors;
     _subjects.state.next({
       errors: _formState.errors,
+      isValid: false,
     });
   };
 
