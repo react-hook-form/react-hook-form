@@ -5,7 +5,6 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import isObject from './utils/isObject';
 import {
   FieldValues,
   FormState,
