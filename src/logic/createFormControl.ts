@@ -994,7 +994,7 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    if (field) {
+    if (field && field._f.disabled !== options.disabled) {
       _updateDisabledField({
         field,
         disabled: options.disabled,
