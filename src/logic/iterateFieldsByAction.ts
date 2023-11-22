@@ -14,7 +14,7 @@ const iterateFieldsByAction = (
     if (field) {
       const { _f, ...currentField } = field;
 
-      if (_f) {
+      if (_f && action(_f.ref, _f.name)) {
         if (_f.refs && _f.refs[0] && action(_f.refs[0], key) && !abortEarly) {
           break;
         } else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) {
