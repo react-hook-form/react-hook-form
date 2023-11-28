@@ -40,6 +40,7 @@ import SetValueAsyncStrictMode from './setValueStrictMode';
 import { DelayError } from './delayError';
 import './style.css';
 import FormComponent from './form';
+import DisabledFields from "./disabledFields";
 
 const App: React.FC = () => {
   return (
@@ -117,6 +118,7 @@ const App: React.FC = () => {
         <Route path="/test" element={<Test />} />
         <Route path="/" element={<Welcome />} />
         <Route path="/form" element={<FormComponent />} />
+        <Route path="/disabled" element={<DisabledFields />} />
       </Routes>
     </BrowserRouter>
   );

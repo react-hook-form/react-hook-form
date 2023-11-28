@@ -1081,8 +1081,11 @@ export function createFormControl<
       _subjects.state.next({ disabled });
       iterateFieldsByAction(
         _fields,
-        (ref) => {
-          ref.disabled = disabled;
+        (ref, name) => {
+          const currentField = get(_fields, name);
+          if (currentField) {
+            ref.disabled = currentField._f.disabled || disabled;
+          }
         },
         0,
         false,
