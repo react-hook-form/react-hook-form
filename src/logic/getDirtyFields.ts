@@ -5,7 +5,7 @@ import isPrimitive from '../utils/isPrimitive';
 import isUndefined from '../utils/isUndefined';
 import objectHasFunction from '../utils/objectHasFunction';
 
-function markFieldsDirty<U>(data: U, fields: Record<string, any> = {}) {
+function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
   const isParentNodeArray = Array.isArray(data);
 
   if (isObject(data) || isParentNodeArray) {
@@ -28,7 +28,10 @@ function markFieldsDirty<U>(data: U, fields: Record<string, any> = {}) {
 function getDirtyFieldsFromDefaultValues<T>(
   data: T,
   formValues: T,
-  dirtyFieldsFromValues: any,
+  dirtyFieldsFromValues: Record<
+    Extract<keyof T, string>,
+    ReturnType<typeof markFieldsDirty> | boolean
+  >,
 ) {
   const isParentNodeArray = Array.isArray(data);
 
