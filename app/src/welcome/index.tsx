@@ -210,18 +210,23 @@ const items: Item[] = [
   },
   {
     title: 'WatchUseFieldArray',
-    description: 'should behaviour correctly when watching the field array',
+    description: 'Should behave correctly when watching the field array',
     slugs: ['/watch-field-array/normal', '/watch-field-array/default'],
   },
   {
     title: 'WatchUseFieldArrayNested',
-    description: 'should watch the correct nested field array',
+    description: 'Should watch the correct nested field array',
     slugs: ['/watchUseFieldArrayNested'],
   },
   {
     title: 'Form',
-    description: 'should validate form and submit the request',
+    description: 'Should validate form and submit the request',
     slugs: ['/form'],
+  },
+  {
+    title: 'Disabled',
+    description: 'Should behave correctly when disabling form or fields',
+    slugs: ['/disabled'],
   },
 ];
 
