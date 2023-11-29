@@ -1084,11 +1084,7 @@ export function createFormControl<
         (ref, name) => {
           let requiredDisabledState = disabled;
           const currentField = get(_fields, name);
-          if (
-            currentField &&
-            isObject(currentField._f) &&
-            isBoolean(currentField._f.disabled)
-          ) {
+          if (currentField && isBoolean(currentField._f.disabled)) {
             requiredDisabledState ||= currentField._f.disabled;
           }
 
