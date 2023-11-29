@@ -623,9 +623,11 @@ export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
 > = (
-  onValid: TTransformedValues extends FieldValues
+  onValid: TTransformedValues extends undefined
+    ? SubmitHandler<TFieldValues>
+    : TTransformedValues extends FieldValues
     ? SubmitHandler<TTransformedValues>
-    : SubmitHandler<TFieldValues>,
+    : never,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
