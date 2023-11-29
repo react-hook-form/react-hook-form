@@ -2182,6 +2182,42 @@ describe('useForm', () => {
     expect(screen.getByTestId('controller')).not.toBeDisabled();
   });
 
+  it('should disable form inputs separately from its form', async () => {
+    function App() {
+      const { register } = useForm({
+        disabled: false,
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <input
+            {...register('firstName', { disabled: true })}
+            placeholder="firstName"
+          />
+          <input
+            {...register('lastName', { disabled: false })}
+            placeholder="lastName"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+    });
+  });
+
   it('should be able to disable the entire form', async () => {
     const App = () => {
       const [disabled, setDisabled] = useState(false);
