@@ -334,7 +334,7 @@ export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
 }) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export const get: <T>(obj: T, path?: string, defaultValue?: unknown) => any;
+export const get: <T>(object: T, path?: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
@@ -525,7 +525,7 @@ export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export function set(object: FieldValues, path: string, value?: unknown): FieldValues;
+export const set: (object: FieldValues, path: string, value?: unknown) => FieldValues;
 
 // @public (undocumented)
 export type SetFieldValue<TFieldValues extends FieldValues> = FieldValue<TFieldValues>;
