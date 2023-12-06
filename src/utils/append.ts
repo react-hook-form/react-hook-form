@@ -1,5 +1,6 @@
 import convertToArrayPayload from './convertToArrayPayload';
 
-export default function append<T>(data: T[], value: T | T[]): T[] {
-  return [...data, ...convertToArrayPayload(value)];
-}
+export default <T>(data: T[], value: T | T[]): T[] => [
+  ...data,
+  ...convertToArrayPayload(value),
+];
