@@ -2,7 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
-import { sleep } from '../../utils/sleep';
+import sleep from '../../utils/sleep';
 
 describe('resolver', () => {
   it('should update context within the resolver', async () => {
