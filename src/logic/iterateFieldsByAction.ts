@@ -19,6 +19,8 @@ const iterateFieldsByAction = (
           break;
         } else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) {
           break;
+        } else {
+          iterateFieldsByAction(currentField, action);
         }
       } else if (isObject(currentField)) {
         iterateFieldsByAction(currentField, action);
