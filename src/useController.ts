@@ -74,6 +74,7 @@ export function useController<
     control.register(name, {
       ...props.rules,
       value,
+      disabled: props.disabled,
     }),
   );
 
