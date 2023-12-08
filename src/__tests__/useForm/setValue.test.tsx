@@ -9,7 +9,7 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
-import { sleep } from '../../utils/sleep';
+import sleep from '../../utils/sleep';
 
 jest.useFakeTimers();
 
