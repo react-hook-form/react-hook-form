@@ -840,4 +840,39 @@ describe('useController', () => {
       screen.getByText('disable');
     });
   });
+
+  it('should pass validation with disabled to set to true', () => {
+    const callback = jest.fn();
+
+    const App = () => {
+      const { handleSubmit, control } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const { field } = useController({
+        control,
+        rules: {
+          required: true,
+        },
+        name: 'test',
+        disabled: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(callback)}>
+          <input {...field} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => {
+      expect(callback).toBeCalled();
+    });
+  });
 });
