@@ -18,7 +18,7 @@ import {
   UseFormReturn,
 } from '../types';
 import isFunction from '../utils/isFunction';
-import { sleep } from '../utils/sleep';
+import sleep from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
 
 jest.useFakeTimers();
