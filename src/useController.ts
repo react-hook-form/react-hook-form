@@ -74,11 +74,9 @@ export function useController<
     control.register(name, {
       ...props.rules,
       value,
-      disabled: props.disabled,
+      ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }),
   );
-
-  _registerProps.current = control.register(name, props.rules);
 
   React.useEffect(() => {
     const _shouldUnregisterField =
