@@ -11,10 +11,7 @@
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "sideEffects": false,
-  "files": [
-    "dist",
-    "dist/__tests__"
-  ],
+  "files": ["dist", "dist/__tests__"],
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -126,13 +123,8 @@
     "react": "^16.8.0 || ^17 || ^18"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "pnpm lint:fix",
-      "pnpm prettier:fix"
-    ],
-    "*.{md,json,yml}": [
-      "prettier --write"
-    ]
+    "*.{js,ts,tsx}": ["pnpm lint:fix", "pnpm prettier:fix"],
+    "*.{md,json,yml}": ["prettier --write"]
   },
   "husky": {
     "hooks": {
@@ -144,7 +136,7 @@
     "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
-    "node": ">=18",
+    "node": ">=16",
     "pnpm": "8"
   }
 }
