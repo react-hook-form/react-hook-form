@@ -2298,14 +2298,18 @@ describe('useForm', () => {
   it('should allow to submit a form with disabled form fields', async () => {
     function App() {
       const { register, getFieldState, formState, handleSubmit } = useForm();
-      
+
       return (
         <form onSubmit={handleSubmit(() => {})}>
           <input
             {...register('firstName', { disabled: true, required: true })}
             placeholder="firstName"
           />
-          <p>{getFieldState('firstName', formState).error ? "has error": "no error"}</p>
+          <p>
+            {getFieldState('firstName', formState).error
+              ? 'has error'
+              : 'no error'}
+          </p>
           <input type="submit" value="Submit" />
         </form>
       );
@@ -2314,7 +2318,7 @@ describe('useForm', () => {
     render(<App />);
 
     await act(() => {
-      fireEvent.click(screen.getByRole('button'))
+      fireEvent.click(screen.getByRole('button'));
     });
 
     await waitFor(() => {
@@ -2322,7 +2326,7 @@ describe('useForm', () => {
         (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
       ).toBeTruthy();
       expect(
-        (screen.getByText('no error') as HTMLInputElement),
+        screen.getByText('no error') as HTMLInputElement,
       ).toBeInTheDocument();
     });
   });
