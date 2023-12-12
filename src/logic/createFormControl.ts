@@ -298,6 +298,7 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
+    const disabledField = get(_fields, name) && get(_fields, name)._f.disabled;
 
     if (!isBlurEvent || shouldDirty) {
       if (_proxyFormState.isDirty) {
@@ -306,13 +307,11 @@ export function createFormControl<
         shouldUpdateField = isPreviousDirty !== output.isDirty;
       }
 
-      const isCurrentFieldPristine = deepEqual(
-        get(_defaultValues, name),
-        fieldValue,
-      );
+      const isCurrentFieldPristine =
+        disabledField || deepEqual(get(_defaultValues, name), fieldValue);
 
-      isPreviousDirty = get(_formState.dirtyFields, name);
-      isCurrentFieldPristine
+      isPreviousDirty = !disabledField && get(_formState.dirtyFields, name);
+      isCurrentFieldPristine || disabledField
         ? unset(_formState.dirtyFields, name)
         : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
