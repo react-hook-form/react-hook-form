@@ -298,7 +298,7 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
-    const disabledField = get(_fields, name)._f.disabled;
+    const disabledField = get(_fields, name) && get(_fields, name)._f.disabled;
 
     if (!isBlurEvent || shouldDirty) {
       if (_proxyFormState.isDirty) {
