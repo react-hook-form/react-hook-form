@@ -1,95 +1,194 @@
-import * as React from 'react';
-import { useFormContext } from './useFormContext';
-import isUndefined from './utils/isUndefined';
-import isString from './utils/isString';
-import generateId from './logic/generateId';
-import get from './utils/get';
-import isArray from './utils/isArray';
-import {
-  UseWatchOptions,
-  FieldValues,
-  UnpackNestedValue,
-  Control,
-} from './types/form';
-import { LiteralToPrimitive, DeepPartial } from './types/utils';
+import React from 'react';
 
-export function useWatch<TWatchFieldValues extends FieldValues>(props: {
-  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-  control?: Control;
-}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-export function useWatch<TWatchFieldValue extends any>(props: {
-  name: string;
-  control?: Control;
-}): undefined | UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
-export function useWatch<TWatchFieldValue extends any>(props: {
-  name: string;
-  defaultValue: UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
-  control?: Control;
-}): UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
-export function useWatch<TWatchFieldValues extends FieldValues>(props: {
-  name: string[];
-  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-  control?: Control;
-}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-export function useWatch<TWatchFieldValues>({
-  control,
-  name,
-  defaultValue,
-}: UseWatchOptions): TWatchFieldValues {
+import generateWatchOutput from './logic/generateWatchOutput';
+import shouldSubscribeByName from './logic/shouldSubscribeByName';
+import cloneObject from './utils/cloneObject';
+import {
+  Control,
+  DeepPartialSkipArrayKey,
+  FieldPath,
+  FieldPathValue,
+  FieldPathValues,
+  FieldValues,
+  InternalFieldName,
+  UseWatchProps,
+} from './types';
+import { useFormContext } from './useFormContext';
+import { useSubscribe } from './useSubscribe';
+
+/**
+ * Subscribe to the entire form values change and re-render at the hook level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   defaultValue: {
+ *     name: "data"
+ *   },
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+>(props: {
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): DeepPartialSkipArrayKey<TFieldValues>;
+/**
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   name: "fieldA",
+ *   defaultValue: "default value",
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(props: {
+  name: TFieldName;
+  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): FieldPathValue<TFieldValues, TFieldName>;
+/**
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   name: ["fieldA", "fieldB"],
+ *   defaultValue: {
+ *     fieldA: "data",
+ *     fieldB: "data"
+ *   },
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+>(props: {
+  name: readonly [...TFieldNames];
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): FieldPathValues<TFieldValues, TFieldNames>;
+/**
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @example
+ * ```tsx
+ * // can skip passing down the control into useWatch if the form is wrapped with the FormProvider
+ * const values = useWatch()
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+>(): DeepPartialSkipArrayKey<TFieldValues>;
+/**
+ * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   name: "fieldName"
+ *   control,
+ * })
+ * ```
+ */
+export function useWatch<TFieldValues extends FieldValues>(
+  props?: UseWatchProps<TFieldValues>,
+) {
   const methods = useFormContext();
   const {
-    watchFieldsHookRef,
-    watchFieldsHookRenderRef,
-    watchInternal,
-    defaultValuesRef,
-  } = control || methods.control;
-  const [value, setValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? isString(name)
-        ? get(defaultValuesRef.current, name)
-        : isArray(name)
-        ? name.reduce(
-            (previous, inputName) => ({
-              ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName),
-            }),
-            {},
-          )
-        : defaultValuesRef.current
-      : defaultValue,
+    control = methods.control,
+    name,
+    defaultValue,
+    disabled,
+    exact,
+  } = props || {};
+  const _name = React.useRef(name);
+
+  _name.current = name;
+
+  useSubscribe({
+    disabled,
+    subject: control._subjects.values,
+    next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
+      if (
+        shouldSubscribeByName(
+          _name.current as InternalFieldName,
+          formState.name,
+          exact,
+        )
+      ) {
+        updateValue(
+          cloneObject(
+            generateWatchOutput(
+              _name.current as InternalFieldName | InternalFieldName[],
+              control._names,
+              formState.values || control._formValues,
+              false,
+              defaultValue,
+            ),
+          ),
+        );
+      }
+    },
+  });
+
+  const [value, updateValue] = React.useState(
+    control._getWatch(
+      name as InternalFieldName,
+      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
+    ),
   );
-  const idRef = React.useRef<string>();
-  const defaultValueRef = React.useRef(defaultValue);
-  const nameRef = React.useRef(name);
 
-  const updateWatchValue = React.useCallback(
-    () =>
-      setValue(
-        watchInternal(nameRef.current, defaultValueRef.current, idRef.current),
-      ),
-    [setValue, watchInternal, defaultValueRef, nameRef, idRef],
-  );
+  React.useEffect(() => control._removeUnmounted());
 
-  React.useEffect(() => {
-    const id = (idRef.current = generateId());
-    const watchFieldsHookRender = watchFieldsHookRenderRef.current;
-    const watchFieldsHook = watchFieldsHookRef.current;
-    watchFieldsHook[id] = new Set();
-    watchFieldsHookRender[id] = updateWatchValue;
-    watchInternal(nameRef.current, defaultValueRef.current, id);
-
-    return () => {
-      delete watchFieldsHook[id];
-      delete watchFieldsHookRender[id];
-    };
-  }, [
-    nameRef,
-    updateWatchValue,
-    watchFieldsHookRenderRef,
-    watchFieldsHookRef,
-    watchInternal,
-    defaultValueRef,
-  ]);
-
-  return (isUndefined(value) ? defaultValue : value) as TWatchFieldValues;
+  return value;
 }

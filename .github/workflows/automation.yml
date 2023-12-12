@@ -4,12 +4,17 @@ on: [pull_request]
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
       - name: Cypress run
-        uses: cypress-io/github-action@v1
+        uses: cypress-io/github-action@v4
         with:
-          start: npm run start:app
-          wait-on: 'http://localhost:3000'
+          start: pnpm start
+          wait-on: 'http://ip6-localhost:3000'
           wait-on-timeout: 120

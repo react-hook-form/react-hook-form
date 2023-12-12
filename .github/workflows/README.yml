@@ -1,0 +1,37 @@
+name : README
+
+on:
+    pull_request:
+        types : [ opened , synchronize ]
+        paths:
+            -   docs/Helpers.yaml
+            -   docs/Sponsors.yaml
+            -   docs/Template.md
+
+jobs:
+    Update-README:
+        runs-on : ubuntu-latest
+        steps:
+            
+            -   uses : denoland/setup-deno@v1
+                with:
+                    deno-version : 1.23.4
+                    
+            -   uses : actions/checkout@v3
+                with:
+                    repository: ${{ github.event.pull_request.head.repo.full_name }}
+                    ref: ${{ github.event.pull_request.head.ref }}
+                
+            -   name : Run README updater
+                run : 'deno run 
+                    --allow-read 
+                    --allow-write 
+                    --importmap=scripts/README/Imports.json 
+                    scripts/README/Updater.js'
+                    
+            -   name : Commit generated README
+                uses : EndBug/add-and-commit@v9
+                with:
+                    default_author : github_actor
+                    message : 'Regenerated README'
+                    add: 'README.md'

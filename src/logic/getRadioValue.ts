@@ -1,24 +1,21 @@
-import isArray from '../utils/isArray';
-import { RadioOrCheckboxOption } from '../types/form';
-
 type RadioFieldResult = {
   isValid: boolean;
-  value: number | string;
+  value: number | string | null;
 };
 
 const defaultReturn: RadioFieldResult = {
   isValid: false,
-  value: '',
+  value: null,
 };
 
-export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>
-  isArray(options)
+export default (options?: HTMLInputElement[]): RadioFieldResult =>
+  Array.isArray(options)
     ? options.reduce(
         (previous, option): RadioFieldResult =>
-          option && option.ref.checked
+          option && option.checked && !option.disabled
             ? {
                 isValid: true,
-                value: option.ref.value,
+                value: option.value,
               }
             : previous,
         defaultReturn,

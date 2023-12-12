@@ -1,10 +1,6 @@
-import isArray from './isArray';
+import convertToArrayPayload from './convertToArrayPayload';
 
-export default function prepend<T>(data: T[]): (T | undefined)[];
-export default function prepend<T>(data: T[], value: T | T[]): T[];
-export default function prepend<T>(
-  data: T[],
-  value?: T | T[],
-): (T | undefined)[] {
-  return [...(isArray(value) ? value : [value || undefined]), ...data];
-}
+export default <T>(data: T[], value: T | T[]): T[] => [
+  ...convertToArrayPayload(value),
+  ...convertToArrayPayload(data),
+];

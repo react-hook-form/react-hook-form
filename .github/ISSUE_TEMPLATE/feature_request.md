@@ -2,9 +2,8 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ''
+labels: 'feature request, waiting-up-vote'
 assignees: ''
-
 ---
 
 **Is your feature request related to a problem? Please describe.**

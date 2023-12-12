@@ -1,10 +1,10 @@
-import isObject from './isObject';
-import isArray from './isArray';
-import isKey from './isKey';
-import stringToPath from './stringToPath';
-import { FieldValues } from '../types/form';
+import { FieldValues } from '../types';
 
-export default function set(object: FieldValues, path: string, value: any) {
+import isKey from './isKey';
+import isObject from './isObject';
+import stringToPath from './stringToPath';
+
+export default (object: FieldValues, path: string, value?: unknown) => {
   let index = -1;
   const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
@@ -12,12 +12,12 @@ export default function set(object: FieldValues, path: string, value: any) {
 
   while (++index < length) {
     const key = tempPath[index];
-    let newValue: string | object = value;
+    let newValue = value;
 
     if (index !== lastIndex) {
       const objValue = object[key];
       newValue =
-        isObject(objValue) || isArray(objValue)
+        isObject(objValue) || Array.isArray(objValue)
           ? objValue
           : !isNaN(+tempPath[index + 1])
           ? []
@@ -27,4 +27,4 @@ export default function set(object: FieldValues, path: string, value: any) {
     object = object[key];
   }
   return object;
-}
+};

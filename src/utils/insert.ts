@@ -1,4 +1,4 @@
-import isArray from './isArray';
+import convertToArrayPayload from './convertToArrayPayload';
 
 export default function insert<T>(data: T[], index: number): (T | undefined)[];
 export default function insert<T>(
@@ -13,7 +13,7 @@ export default function insert<T>(
 ): (T | undefined)[] {
   return [
     ...data.slice(0, index),
-    ...(isArray(value) ? value : [value || undefined]),
+    ...convertToArrayPayload(value),
     ...data.slice(index),
   ];
 }
