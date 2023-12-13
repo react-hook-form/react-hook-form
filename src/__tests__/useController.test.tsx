@@ -873,6 +873,37 @@ describe('useController', () => {
     });
   });
 
+  it('should not disable form input field with disabled=false', async () => {
+    const App = () => {
+      const { control } = useForm();
+      const {
+        field,
+        fieldState: { invalid, isTouched, isDirty },
+      } = useController({
+        name: 'test',
+        control,
+        disabled: false,
+        rules: { required: true },
+      });
+
+      return (
+        <form>
+          <input {...field} />
+          <button>submit</button>
+          {invalid && <p>invalid</p>}
+          {isTouched && <p>isTouched</p>}
+          {isDirty && <p>isDirty</p>}
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox')).not.toBeDisabled();
+    });
+  });
+
   it('should pass validation with disabled to set to true', () => {
     const callback = jest.fn();
 
