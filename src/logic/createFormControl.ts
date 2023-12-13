@@ -975,7 +975,6 @@ export function createFormControl<
         : isUndefined(value)
         ? getFieldValue(field ? field._f : get(fields, name)._f)
         : value;
-      console.log('disabled', disabled, field);
       set(_formValues, name, inputValue);
       updateTouchAndDirty(name, inputValue, false, false, true);
     }
