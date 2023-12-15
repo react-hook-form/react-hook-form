@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.48.2",
+  "version": "7.49.2",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -19,6 +19,7 @@
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
+      "react-server": "./dist/react-server.esm.mjs",
       "import": "./dist/index.esm.mjs",
       "require": "./dist/index.cjs.js"
     }
@@ -49,7 +50,8 @@
     "postversion": "git push && git push origin v$npm_package_version",
     "prepublishOnly": "pnpm install && pnpm lint:fix && pnpm type && pnpm test && pnpm build",
     "bundlewatch": "pnpm build:modern && bundlewatch",
-    "start": "pnpm build:esm && pnpm --dir ./app install && pnpm --dir ./app run dev"
+    "start": "pnpm build:esm && pnpm --dir ./app install && pnpm --dir ./app run dev",
+    "csb:install": "npm i -g pnpm@8 && pnpm i"
   },
   "keywords": [
     "react",
@@ -142,7 +144,7 @@
     "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
-    "node": ">=12.22.0"
-  },
-  "packageManager": "pnpm@7.18.0"
+    "node": ">=18",
+    "pnpm": "8"
+  }
 }

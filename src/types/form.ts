@@ -113,6 +113,7 @@ export type UseFormProps<
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
+  errors: FieldErrors<TFieldValues>;
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
@@ -622,9 +623,11 @@ export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
 > = (
-  onValid: TTransformedValues extends FieldValues
+  onValid: TTransformedValues extends undefined
+    ? SubmitHandler<TFieldValues>
+    : TTransformedValues extends FieldValues
     ? SubmitHandler<TTransformedValues>
-    : SubmitHandler<TFieldValues>,
+    : never,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
@@ -785,6 +788,7 @@ export type Control<
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
+  _setErrors: (errors: FieldErrors<TFieldValues>) => void;
   _updateDisabledField: (
     props: {
       disabled?: boolean;

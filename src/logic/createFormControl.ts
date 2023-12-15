@@ -8,6 +8,7 @@ import {
   EventType,
   Field,
   FieldError,
+  FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -111,7 +112,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
-    errors: {},
+    errors: _options.errors || {},
     disabled: false,
   };
   let _fields: FieldRefs = {};
@@ -246,6 +247,14 @@ export function createFormControl<
     });
   };
 
+  const _setErrors = (errors: FieldErrors<TFieldValues>) => {
+    _formState.errors = errors;
+    _subjects.state.next({
+      errors: _formState.errors,
+      isValid: false,
+    });
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -289,6 +298,9 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
+    const disabledField = !!(
+      get(_fields, name) && get(_fields, name)._f.disabled
+    );
 
     if (!isBlurEvent || shouldDirty) {
       if (_proxyFormState.isDirty) {
@@ -297,13 +309,11 @@ export function createFormControl<
         shouldUpdateField = isPreviousDirty !== output.isDirty;
       }
 
-      const isCurrentFieldPristine = deepEqual(
-        get(_defaultValues, name),
-        fieldValue,
-      );
+      const isCurrentFieldPristine =
+        disabledField || deepEqual(get(_defaultValues, name), fieldValue);
 
-      isPreviousDirty = get(_formState.dirtyFields, name);
-      isCurrentFieldPristine
+      isPreviousDirty = !!(!disabledField && get(_formState.dirtyFields, name));
+      isCurrentFieldPristine || disabledField
         ? unset(_formState.dirtyFields, name)
         : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
@@ -990,6 +1000,7 @@ export function createFormControl<
         field,
         disabled: options.disabled,
         name,
+        value: options.value,
       });
     } else {
       updateValidAndValue(name, true, options.value);
@@ -1072,8 +1083,14 @@ export function createFormControl<
       _subjects.state.next({ disabled });
       iterateFieldsByAction(
         _fields,
-        (ref) => {
-          ref.disabled = disabled;
+        (ref, name) => {
+          let requiredDisabledState = disabled;
+          const currentField = get(_fields, name);
+          if (currentField && isBoolean(currentField._f.disabled)) {
+            requiredDisabledState ||= currentField._f.disabled;
+          }
+
+          ref.disabled = requiredDisabledState;
         },
         0,
         false,
@@ -1330,6 +1347,7 @@ export function createFormControl<
       _disableForm,
       _subjects,
       _proxyFormState,
+      _setErrors,
       get _fields() {
         return _fields;
       },
