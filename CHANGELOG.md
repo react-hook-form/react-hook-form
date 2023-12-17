@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.49.0] - 2023-12-10
+
+### Added
+
+- add reactive `errors` prop at `useForm`
+
+```tsx
+useForm({
+  errors, // Server errors
+});
+```
+
 ## [7.48.0] - 2023-11-05
 
 ### Added

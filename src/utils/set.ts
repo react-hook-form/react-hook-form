@@ -4,11 +4,7 @@ import isKey from './isKey';
 import isObject from './isObject';
 import stringToPath from './stringToPath';
 
-export default function set(
-  object: FieldValues,
-  path: string,
-  value?: unknown,
-) {
+export default (object: FieldValues, path: string, value?: unknown) => {
   let index = -1;
   const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
@@ -31,4 +27,4 @@ export default function set(
     object = object[key];
   }
   return object;
-}
+};
