@@ -8,7 +8,7 @@ export type FieldName<TFieldValues extends FieldValues> =
     ? Extract<keyof TFieldValues, string>
     : string;
 
-export type CustomElement<TFieldValues extends FieldValues> = {
+export type CustomElement<TFieldValues extends FieldValues> = HTMLElement & {
   name: FieldName<TFieldValues>;
   type?: string;
   value?: any;
