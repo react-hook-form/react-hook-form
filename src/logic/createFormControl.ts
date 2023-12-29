@@ -1153,7 +1153,7 @@ export function createFormControl<
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
       if (isUndefined(options.defaultValue)) {
-        setValue(name, get(_defaultValues, name));
+        setValue(name, cloneObject(get(_defaultValues, name)));
       } else {
         setValue(
           name,
@@ -1162,7 +1162,7 @@ export function createFormControl<
             FieldPath<TFieldValues>
           >,
         );
-        set(_defaultValues, name, options.defaultValue);
+        set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
       if (!options.keepTouched) {
@@ -1172,7 +1172,7 @@ export function createFormControl<
       if (!options.keepDirty) {
         unset(_formState.dirtyFields, name);
         _formState.isDirty = options.defaultValue
-          ? _getDirty(name, get(_defaultValues, name))
+          ? _getDirty(name, cloneObject(get(_defaultValues, name)))
           : _getDirty();
       }
 
