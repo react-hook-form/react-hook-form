@@ -1562,4 +1562,33 @@ describe('Controller', () => {
 
     expect(screen.getByRole('textbox')).toBeDisabled();
   });
+
+  it('should respect disabled state set on the Controller component', () => {
+    const Component = () => {
+      const { control } = useForm();
+
+      const [disabled, setDisabled] = React.useState(true);
+
+      return (
+        <>
+          <Controller
+            defaultValue=""
+            name="test"
+            disabled={disabled}
+            render={({ field }) => <input {...field} />}
+            control={control}
+          />
+          <button onClick={() => setDisabled(false)}>disable</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('textbox')).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByRole('textbox')).toBeEnabled();
+  });
 });
