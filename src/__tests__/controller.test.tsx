@@ -1545,7 +1545,7 @@ describe('Controller', () => {
     expect(screen.getByRole('textbox')).toHaveValue('b');
   });
 
-  it('should respect disabled state set on the input element', () => { 
+  it('should respect disabled state set on the input element', () => {
     const Component = () => {
       const { control } = useForm();
       return (
