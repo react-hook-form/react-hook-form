@@ -40,7 +40,7 @@ import SetValueAsyncStrictMode from './setValueStrictMode';
 import { DelayError } from './delayError';
 import './style.css';
 import FormComponent from './form';
-import DisabledFields from "./disabledFields";
+import DisabledFields from './disabledFields';
 
 const App: React.FC = () => {
   return (
