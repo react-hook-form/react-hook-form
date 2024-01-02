@@ -1544,4 +1544,22 @@ describe('Controller', () => {
 
     expect(screen.getByRole('textbox')).toHaveValue('b');
   });
+
+  it('should respect disabled state set on the input element', () => { 
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={({ field }) => <input disabled {...field} />}
+          control={control}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('textbox')).toBeDisabled();
+  });
 });
