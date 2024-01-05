@@ -110,7 +110,7 @@ export function useController<
         : updateMounted(name, false);
     };
   }, [name, control, isArrayField, shouldUnregister]);
-
+  
   React.useEffect(() => {
     if (get(control._fields, name)) {
       control._updateDisabledField({
@@ -122,7 +122,12 @@ export function useController<
     }
   }, [disabled, name, control]);
 
+ const defaultValue = formState.defaultValues
+    ? formState.defaultValues[name]
+    : undefined;
+
   return {
+    defaultValue,
     field: {
       name,
       value,
