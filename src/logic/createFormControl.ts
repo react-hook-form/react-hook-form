@@ -113,7 +113,7 @@ export function createFormControl<
     touchedFields: {},
     dirtyFields: {},
     errors: _options.errors || {},
-    disabled: false,
+    disabled: _options.disabled || false,
   };
   let _fields: FieldRefs = {};
   let _defaultValues =
