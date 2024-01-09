@@ -1232,7 +1232,9 @@ export function createFormControl<
         : cloneObject(values);
 
       _subjects.array.next({
-        values: { ...values },
+        values: keepStateOptions.keepValues
+          ? cloneUpdatedValues
+          : { ...values },
       });
 
       _subjects.values.next({
