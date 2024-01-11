@@ -1252,8 +1252,8 @@ export function createFormControl<
     _state.mount =
       !_proxyFormState.isValid ||
       !!keepStateOptions.keepIsValid ||
-      !keepStateOptions.keepValues ||
-      !keepStateOptions.keepDirtyValues;
+      !!keepStateOptions.keepValues ||
+      !!keepStateOptions.keepDirtyValues;
 
     _state.watch = !!props.shouldUnregister;
 
