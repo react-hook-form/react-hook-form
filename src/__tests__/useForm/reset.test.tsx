@@ -1523,28 +1523,25 @@ describe('reset', () => {
     expect(screen.getByText('useWatch: anything')).toBeVisible();
   });
 
-  it('should keep mounted value after reset with keep dirty values', () => {
-    const App = () => {
+  it('should keep mounted value after reset with keep dirty values', async () => {
+    function App() {
       const {
-        register,
-        reset,
         getValues,
+        reset,
+        register,
         formState: { isValid },
       } = useForm({
-        defaultValues: {
-          test: '12',
-        },
+        mode: 'onChange',
       });
 
       return (
         <form>
-          <p>{isValid ? 'valid' : 'notValid'}</p>
           <input
-            {...register('test', {
-              required: true,
-            })}
+            {...register('value', { required: true })}
+            defaultValue="Any default value!"
           />
           <p>{getValues().test}</p>
+          <p>isValid = {isValid ? 'true' : 'false'}</p>
           <button
             type="button"
             onClick={() => reset({ test: '34' }, { keepDirtyValues: true })}
@@ -1553,13 +1550,15 @@ describe('reset', () => {
           </button>
         </form>
       );
-    };
+    }
 
     render(<App />);
 
+    expect(await screen.findByText('isValid = true')).toBeVisible();
+
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
+    await waitFor(() => {
       screen.getByText('34');
     });
   });
