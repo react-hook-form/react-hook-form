@@ -174,6 +174,9 @@ export type ErrorOption = {
 export type EventType = 'focus' | 'blur' | 'change' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
 
 // @public (undocumented)
+export type ExtractObjects<T> = T extends infer U ? U extends object ? U : never : never;
+
+// @public (undocumented)
 export type Field = {
     _f: {
         ref: Ref;
