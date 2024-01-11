@@ -1523,7 +1523,7 @@ describe('reset', () => {
     expect(screen.getByText('useWatch: anything')).toBeVisible();
   });
 
-  it.only('should keep mounted value after reset with keep dirty values', () => {
+  it('should keep mounted value after reset with keep dirty values', () => {
     const App = () => {
       const {
         register,
