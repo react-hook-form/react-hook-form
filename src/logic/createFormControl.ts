@@ -1249,7 +1249,11 @@ export function createFormControl<
 
     !_state.mount && flushRootRender();
 
-    _state.mount = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _state.mount =
+      !_proxyFormState.isValid ||
+      !!keepStateOptions.keepIsValid ||
+      !keepStateOptions.keepValues ||
+      !keepStateOptions.keepDirtyValues;
 
     _state.watch = !!props.shouldUnregister;
 
