@@ -144,7 +144,7 @@
     "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
-    "node": ">=18",
+    "node": ">=12.22.0",
     "pnpm": "8"
   }
 }
