@@ -1522,36 +1522,76 @@ describe('reset', () => {
     expect(screen.getByText('watch: anything')).toBeVisible();
     expect(screen.getByText('useWatch: anything')).toBeVisible();
   });
-});
 
-it('should not mutate data outside of library', () => {
-  const defaultValues = {
-    test: 'ok',
-  };
+  it('should keep mounted value after reset with keep dirty values', async () => {
+    function App() {
+      const {
+        getValues,
+        reset,
+        register,
+        formState: { isValid },
+      } = useForm({
+        mode: 'onChange',
+      });
 
-  const App = () => {
-    const { register, reset, resetField } = useForm();
+      return (
+        <form>
+          <input
+            {...register('value', { required: true })}
+            defaultValue="Any default value!"
+          />
+          <p>{getValues().test}</p>
+          <p>isValid = {isValid ? 'true' : 'false'}</p>
+          <button
+            type="button"
+            onClick={() => reset({ test: '34' }, { keepDirtyValues: true })}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
 
-    return (
-      <form>
-        <input {...register('test')} />
-        <button type="button" onClick={() => reset(defaultValues)}>
-          reset
-        </button>
-        <button
-          type="button"
-          onClick={() => resetField('test', { defaultValue: 'error' })}
-        >
-          resetField
-        </button>
-      </form>
-    );
-  };
+    render(<App />);
 
-  render(<App />);
+    expect(await screen.findByText('isValid = true')).toBeVisible();
 
-  fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-  fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
+    fireEvent.click(screen.getByRole('button'));
 
-  expect(defaultValues.test).toBe('ok');
+    await waitFor(() => {
+      screen.getByText('34');
+    });
+  });
+
+  it('should not mutate data outside of library', () => {
+    const defaultValues = {
+      test: 'ok',
+    };
+
+    const App = () => {
+      const { register, reset, resetField } = useForm();
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <button type="button" onClick={() => reset(defaultValues)}>
+            reset
+          </button>
+          <button
+            type="button"
+            onClick={() => resetField('test', { defaultValue: 'error' })}
+          >
+            resetField
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
+
+    expect(defaultValues.test).toBe('ok');
+  });
 });

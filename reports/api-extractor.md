@@ -135,7 +135,7 @@ export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends Browser
 
 // @public (undocumented)
 export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue ? T : {
-    [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+    [K in keyof T]?: T[K] extends never ? T[K] : DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
