@@ -1428,5 +1428,5 @@ describe('setValue', () => {
 
     expect((screen.getByTestId('a') as HTMLInputElement).value).toEqual('');
     expect((screen.getByTestId('b') as HTMLInputElement).value).toEqual('');
-  })
+  });
 });
