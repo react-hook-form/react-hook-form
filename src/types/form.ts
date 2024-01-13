@@ -21,7 +21,7 @@ import {
   FieldPathValues,
 } from './path';
 import { Resolver } from './resolvers';
-import { DeepMap, DeepPartial, Noop } from './utils';
+import { DeepMap, DeepPartial, DeepPartialSkipArrayKey, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -43,6 +43,12 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   : T extends object
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
+
+export type PartialFormValues<TFieldValues extends FieldValues> =
+  DeepPartialSkipArrayKey<TFieldValues>;
+
+export type WatchedForm<TFieldValues extends FieldValues> =
+  PartialFormValues<TFieldValues>;
 
 export type DefaultValues<TFieldValues> =
   TFieldValues extends AsyncDefaultValues<TFieldValues>
@@ -375,7 +381,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * const formValues = watch();
    * ```
    */
-  (): TFieldValues;
+  (): WatchedForm<TFieldValues>;
   /**
    * Watch and subscribe to an array of fields used outside of render.
    *
