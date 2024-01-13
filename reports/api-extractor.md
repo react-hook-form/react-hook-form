@@ -438,6 +438,9 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 // @public (undocumented)
 export type Noop = () => void;
 
+// @public (undocumented)
+export type PartialFormValues<TFieldValues extends FieldValues> = DeepPartialSkipArrayKey<TFieldValues>;
+
 // Warning: (ae-forgotten-export) The symbol "PathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -776,7 +779,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldP
 
 // @public (undocumented)
 export type UseFormWatch<TFieldValues extends FieldValues> = {
-    (): TFieldValues;
+    (): WatchedForm<TFieldValues>;
     <TFieldNames extends readonly FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames], defaultValue?: DeepPartial<TFieldValues>): FieldPathValues<TFieldValues, TFieldNames>;
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, defaultValue?: FieldPathValue<TFieldValues, TFieldName>): FieldPathValue<TFieldValues, TFieldName>;
     (callback: WatchObserver<TFieldValues>, defaultValues?: DeepPartial<TFieldValues>): Subscription;
@@ -788,7 +791,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues>(props: 
     control?: Control<TFieldValues>;
     disabled?: boolean;
     exact?: boolean;
-}): DeepPartialSkipArrayKey<TFieldValues>;
+}): WatchedForm<TFieldValues>;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: {
@@ -853,6 +856,9 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public (undocumented)
+export type WatchedForm<TFieldValues extends FieldValues> = PartialFormValues<TFieldValues>;
+
+// @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
 
 // @public (undocumented)
@@ -863,7 +869,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:440:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:446:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
