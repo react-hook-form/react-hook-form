@@ -66,7 +66,7 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     errors: props.errors || {},
-    disabled: false,
+    disabled: props.disabled || false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,

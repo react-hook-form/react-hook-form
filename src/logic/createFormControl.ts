@@ -114,7 +114,7 @@ export function createFormControl<
     touchedFields: {},
     dirtyFields: {},
     errors: _options.errors || {},
-    disabled: false,
+    disabled: _options.disabled || false,
   };
   let _fields: FieldRefs = {};
   let _defaultValues =
@@ -150,8 +150,6 @@ export function createFormControl<
     array: createSubject(),
     state: createSubject(),
   };
-  const shouldCaptureDirtyFields =
-    props.resetOptions && props.resetOptions.keepDirtyValues;
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
@@ -1197,7 +1195,7 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (keepStateOptions.keepDirtyValues || shouldCaptureDirtyFields) {
+      if (keepStateOptions.keepDirtyValues) {
         for (const fieldName of _names.mount) {
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
@@ -1255,7 +1253,10 @@ export function createFormControl<
 
     !_state.mount && flushRootRender();
 
-    _state.mount = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _state.mount =
+      !_proxyFormState.isValid ||
+      !!keepStateOptions.keepIsValid ||
+      !!keepStateOptions.keepDirtyValues;
 
     _state.watch = !!props.shouldUnregister;
 
