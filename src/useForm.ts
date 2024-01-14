@@ -148,6 +148,13 @@ export function useForm<
     control._removeUnmounted();
   });
 
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.values.next({
+        values: control._getWatch(),
+      });
+  }, [props.shouldUnregister, control]);
+
   _formControl.current.formState = getProxyFormState(formState, control);
 
   return _formControl.current;
