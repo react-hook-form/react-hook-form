@@ -40,6 +40,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
+import skipValidation from './logic/skipValidation';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -343,7 +344,14 @@ export function useFieldArray<
         });
       } else {
         const field: Field = get(control._fields, name);
-        if (field && field._f) {
+        if (
+          field &&
+          field._f &&
+          !(
+            getValidationModes(control._options.reValidateMode).isOnSubmit &&
+            getValidationModes(control._options.mode).isOnSubmit
+          )
+        ) {
           validateField(
             field,
             control._formValues,
