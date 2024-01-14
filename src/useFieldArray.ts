@@ -40,7 +40,6 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
-import skipValidation from './logic/skipValidation';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
