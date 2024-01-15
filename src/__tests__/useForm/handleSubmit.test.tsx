@@ -253,11 +253,15 @@ describe('handleSubmit', () => {
     expect(callback).toBeCalled();
   });
 
-  it('should bubble the error up when an error occurs in the provided handleSubmit function', async () => {
+  it('should bubble the error up when an error occurs in the provided handleSubmit function by leaving formState flags in a consistent state', async () => {
     const errorMsg = 'this is an error';
     const App = () => {
       const [error, setError] = React.useState('');
-      const { register, handleSubmit } = useForm();
+      const {
+        register,
+        handleSubmit,
+        formState: { isSubmitting, isSubmitted, isSubmitSuccessful },
+      } = useForm();
 
       const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
 
@@ -265,6 +269,9 @@ describe('handleSubmit', () => {
         <form>
           <input {...register('test')} />
           <p>{error}</p>
+          <p>isSubmitting : {isSubmitting ? 'true' : 'false'}</p>
+          <p>isSubmitted : {isSubmitted ? 'true' : 'false'}</p>
+          <p>isSubmitSuccessful : {isSubmitSuccessful ? 'true' : 'false'}</p>
           <button
             type={'button'}
             onClick={() =>
@@ -280,10 +287,16 @@ describe('handleSubmit', () => {
     };
 
     render(<App />);
+    expect(await screen.findByText('isSubmitting : false')).toBeVisible();
+    expect(await screen.findByText('isSubmitted : false')).toBeVisible();
+    expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
     expect(await screen.findByText(errorMsg)).toBeVisible();
+    expect(await screen.findByText('isSubmitting : false')).toBeVisible();
+    expect(await screen.findByText('isSubmitted : true')).toBeVisible();
+    expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
   });
 
   describe('with validationSchema', () => {
