@@ -117,7 +117,7 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
 export type CriteriaMode = 'firstError' | 'all';
 
 // @public (undocumented)
-export type CustomElement<TFieldValues extends FieldValues> = {
+export type CustomElement<TFieldValues extends FieldValues> = Partial<HTMLElement> & {
     name: FieldName<TFieldValues>;
     type?: string;
     value?: any;
