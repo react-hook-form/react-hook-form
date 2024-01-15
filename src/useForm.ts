@@ -66,7 +66,7 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     errors: props.errors || {},
-    disabled: false,
+    disabled: props.disabled || false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
@@ -147,6 +147,13 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.values.next({
+        values: control._getWatch(),
+      });
+  }, [props.shouldUnregister, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

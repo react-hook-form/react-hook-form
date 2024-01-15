@@ -343,7 +343,14 @@ export function useFieldArray<
         });
       } else {
         const field: Field = get(control._fields, name);
-        if (field && field._f) {
+        if (
+          field &&
+          field._f &&
+          !(
+            getValidationModes(control._options.reValidateMode).isOnSubmit &&
+            getValidationModes(control._options.mode).isOnSubmit
+          )
+        ) {
           validateField(
             field,
             control._formValues,
