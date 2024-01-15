@@ -43,7 +43,9 @@ export type LiteralUnion<T extends U, U extends Primitive> =
 
 export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
   ? T
-  : { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
+  : {
+      [K in keyof T]?: T[K] extends never ? T[K] : DeepPartial<T[K]>;
+    };
 
 export type DeepPartialSkipArrayKey<T> = T extends
   | BrowserNativeObject
