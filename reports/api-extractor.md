@@ -135,7 +135,7 @@ export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends Browser
 
 // @public (undocumented)
 export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue ? T : {
-    [K in keyof T]?: T[K] extends never ? T[K] : DeepPartial<T[K]>;
+    [K in keyof T]?: ExtractObjects<T[K]> extends never ? T[K] : DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
@@ -172,6 +172,9 @@ export type ErrorOption = {
 
 // @public (undocumented)
 export type EventType = 'focus' | 'blur' | 'change' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
+
+// @public (undocumented)
+export type ExtractObjects<T> = T extends infer U ? U extends object ? U : never : never;
 
 // @public (undocumented)
 export type Field = {
