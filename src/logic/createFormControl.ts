@@ -1102,6 +1102,7 @@ export function createFormControl<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
+      let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
@@ -1126,7 +1127,11 @@ export function createFormControl<
         _subjects.state.next({
           errors: {},
         });
-        await onValid(fieldValues as TFieldValues, e);
+        try {
+          await onValid(fieldValues as TFieldValues, e);
+        } catch (error) {
+          onValidError = error;
+        }
       } else {
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
@@ -1138,10 +1143,13 @@ export function createFormControl<
       _subjects.state.next({
         isSubmitted: true,
         isSubmitting: false,
-        isSubmitSuccessful: isEmptyObject(_formState.errors),
+        isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,
         submitCount: _formState.submitCount + 1,
         errors: _formState.errors,
       });
+      if (onValidError) {
+        throw onValidError;
+      }
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
