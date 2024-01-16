@@ -1278,7 +1278,9 @@ export function createFormControl<
         ? _formState.isSubmitted
         : false,
       dirtyFields: keepStateOptions.keepDirtyValues
-        ? _formState.dirtyFields
+        ? keepStateOptions.keepDefaultValues && _formValues
+          ? getDirtyFields(_defaultValues, _formValues)
+          : _formState.dirtyFields
         : keepStateOptions.keepDefaultValues && formValues
         ? getDirtyFields(_defaultValues, formValues)
         : {},
