@@ -724,6 +724,82 @@ describe('reset', () => {
           }),
         );
       });
+
+      it('should treat previously-undirty fields as dirty when keepDefaultValues is set', async () => {
+        let updatedDirtyFields: Record<string, boolean> = {};
+        let updatedDirty = false;
+
+        function App() {
+          const {
+            reset,
+            register,
+            handleSubmit,
+            formState: { dirtyFields, isDirty },
+          } = useForm({ defaultValues: { firstName: '', lastName: '' } });
+
+          function resetKeepDefaults() {
+            reset(
+              {
+                firstName: 'bill',
+                lastName: 'luo',
+              },
+              {
+                keepDefaultValues: true,
+                keepDirtyValues: true,
+              },
+            );
+          }
+
+          updatedDirtyFields = dirtyFields;
+          updatedDirty = isDirty;
+
+          return (
+            <form
+              onSubmit={handleSubmit((data) => {
+                submittedValue = data;
+              })}
+            >
+              <input {...register('firstName')} placeholder="First Name" />
+              <input {...register('lastName')} placeholder="Last Name" />
+
+              <button
+                type="button"
+                onClick={() => {
+                  resetKeepDefaults();
+                }}
+              >
+                reset keep defaults
+              </button>
+              <button>submit</button>
+            </form>
+          );
+        }
+
+        render(<App />);
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'reset keep defaults' }),
+        );
+
+        await waitFor(() =>
+          expect(
+            (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
+              .value,
+          ).toEqual('luo'),
+        );
+
+        expect(
+          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
+        ).toEqual('bill');
+
+        // Both fields were updated, the defaults were kept, so both should be dirty
+        expect(updatedDirtyFields).toEqual({
+          firstName: true,
+          lastName: true,
+        });
+
+        expect(updatedDirty).toBeTruthy();
+      });
     });
 
     describe('with controlled components', () => {
