@@ -1,9 +1,13 @@
 import { VALIDATION_MODE } from '../constants';
 import { Control, FieldValues, FormState, ReadFormState } from '../types';
 
-export default <TFieldValues extends FieldValues, TContext = any>(
+export default <
+  TFieldValues extends FieldValues,
+  TContext = any,
+  TTransformedValues extends FieldValues = TFieldValues,
+>(
   formState: FormState<TFieldValues>,
-  control: Control<TFieldValues, TContext>,
+  control: Control<TFieldValues, TContext, TTransformedValues>,
   localProxyFormState?: ReadFormState,
   isRoot = true,
 ) => {
