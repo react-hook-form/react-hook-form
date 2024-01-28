@@ -1011,4 +1011,34 @@ describe('useController', () => {
       }),
     );
   });
+
+  it('should update and convert input field value to a number when valueAsNumber is true', async () => {
+    let fieldRef: unknown;
+    const App = () => {
+      const { control } = useForm();
+      const { field } = useController({
+        name: 'test',
+        control,
+        valueAsNumber: true,
+      });
+
+      fieldRef = field.value;
+
+      return (
+        <form>
+          <input {...field} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '123',
+      },
+    });
+    expect(fieldRef).toBe(123);
+    expect(typeof fieldRef).toBe('number');
+  });
 });

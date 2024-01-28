@@ -4,6 +4,7 @@ import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
+import getNumber from './utils/getNumber';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import { EVENTS } from './constants';
@@ -53,7 +54,13 @@ export function useController<
   props: UseControllerProps<TFieldValues, TName>,
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues>();
-  const { name, disabled, control = methods.control, shouldUnregister } = props;
+  const {
+    name,
+    disabled,
+    control = methods.control,
+    shouldUnregister,
+    valueAsNumber = false,
+  } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
     control,
@@ -133,12 +140,14 @@ export function useController<
         (event) =>
           _registerProps.current.onChange({
             target: {
-              value: getEventValue(event),
+              value: valueAsNumber
+                ? getNumber(getEventValue(event))
+                : getEventValue(event),
               name: name as InternalFieldName,
             },
             type: EVENTS.CHANGE,
           }),
-        [name],
+        [name, valueAsNumber],
       ),
       onBlur: React.useCallback(
         () =>

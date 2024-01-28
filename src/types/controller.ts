@@ -44,6 +44,7 @@ export type UseControllerProps<
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues>;
   disabled?: boolean;
+  valueAsNumber?: boolean;
 };
 
 export type UseControllerReturn<

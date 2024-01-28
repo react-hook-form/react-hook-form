@@ -589,6 +589,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues>;
     disabled?: boolean;
+    valueAsNumber?: boolean;
 };
 
 // @public (undocumented)
