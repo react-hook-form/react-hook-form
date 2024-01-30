@@ -65,11 +65,11 @@ export function useController<
     ),
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
-  const isFieldArray = isArrayField && !isUndefined(value);
-  console.log(isArrayField)
+  const unclearVariable = isArrayField && !isUndefined(value);
+  console.log(unclearVariable)
   const formState = useFormState({
     control,
-    name,
+    name
   });
 
   const _registerProps = React.useRef(
@@ -88,6 +88,8 @@ export function useController<
       const field: Field = get(control._fields, name);
 
       if (field) {
+        field._f.mount = value;
+      } else {
         field._f.mount = value;
       }
     };
