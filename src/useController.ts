@@ -65,6 +65,8 @@ export function useController<
     ),
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
+  const isFieldArray = isArrayField && !isUndefined(value);
+  console.log(isArrayField)
   const formState = useFormState({
     control,
     name,
@@ -147,15 +149,15 @@ export function useController<
               value: get(control._formValues, name),
               name: name as InternalFieldName,
             },
-            type: EVENTS.BLUR,
+            type: EVENTS.BLUR
           }),
         [name, control],
       ),
       ref: (elm) => {
-        const field = get(control._fields, name);
+        const a = get(control._fields, name);
 
-        if (field && elm) {
-          field._f.ref = {
+        if (a && elm) {
+          a._f.ref = {
             focus: () => elm.focus(),
             select: () => elm.select(),
             setCustomValidity: (message: string) =>
