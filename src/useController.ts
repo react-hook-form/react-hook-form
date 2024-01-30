@@ -65,6 +65,8 @@ export function useController<
     ),
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
+  const isFieldArray = isArrayField && !isUndefined(value);
+  console.log(isArrayField)
   const formState = useFormState({
     control,
     name,
@@ -79,7 +81,7 @@ export function useController<
   );
 
   React.useEffect(() => {
-    const _shouldUnregisterField =
+    const _bb =
       control._options.shouldUnregister || shouldUnregister;
 
     const updateMounted = (name: InternalFieldName, value: boolean) => {
@@ -92,7 +94,7 @@ export function useController<
 
     updateMounted(name, true);
 
-    if (_shouldUnregisterField) {
+    if (_bb) {
       const value = cloneObject(get(control._options.defaultValues, name));
       set(control._defaultValues, name, value);
       if (isUndefined(get(control._formValues, name))) {
@@ -103,8 +105,8 @@ export function useController<
     return () => {
       (
         isArrayField
-          ? _shouldUnregisterField && !control._state.action
-          : _shouldUnregisterField
+          ? _bb && !control._state.action
+          : _bb
       )
         ? control.unregister(name)
         : updateMounted(name, false);
@@ -147,15 +149,15 @@ export function useController<
               value: get(control._formValues, name),
               name: name as InternalFieldName,
             },
-            type: EVENTS.BLUR,
+            type: EVENTS.BLUR
           }),
         [name, control],
       ),
       ref: (elm) => {
-        const field = get(control._fields, name);
+        const a = get(control._fields, name);
 
-        if (field && elm) {
-          field._f.ref = {
+        if (a && elm) {
+          a._f.ref = {
             focus: () => elm.focus(),
             select: () => elm.select(),
             setCustomValidity: (message: string) =>
