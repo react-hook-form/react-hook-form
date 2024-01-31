@@ -7,6 +7,7 @@ import { FormProvider, useFormContext } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import deepEqual from '../utils/deepEqual';
+import noop from '../utils/noop';
 
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
@@ -101,7 +102,7 @@ describe('FormProvider', () => {
       return (
         <div>
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('firstName')} placeholder="First Name" />
               <input type="submit" />
             </form>
@@ -205,7 +206,7 @@ describe('FormProvider', () => {
       }>();
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('test', { required: 'This is required' })} />
           <p>{errors.test?.message}</p>
           <button>submit</button>

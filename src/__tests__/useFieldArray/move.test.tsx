@@ -5,6 +5,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 let i = 0;
 
@@ -67,7 +68,7 @@ describe('move', () => {
       errors = rest.formState.errors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
