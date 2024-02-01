@@ -19,7 +19,7 @@ export type ControllerFieldState = {
   error?: FieldError;
 };
 
-export type ControllerChangeEvent<T> =
+export type ControllerChangeEvent<T = any> =
   | T
   | { target: { value: T } }
   | { type: 'checkbox'; target: { checked: T } };
