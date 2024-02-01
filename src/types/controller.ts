@@ -19,11 +19,18 @@ export type ControllerFieldState = {
   error?: FieldError;
 };
 
+export type ControllerChangeEvent<T> =
+  | T
+  | { target: { value: T } }
+  | { type: 'checkbox'; target: { checked: T } };
+
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  onChange: (...event: any[]) => void;
+  onChange: (
+    event: ControllerChangeEvent<FieldPathValue<TFieldValues, TName>>,
+  ) => void;
   onBlur: Noop;
   value: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
