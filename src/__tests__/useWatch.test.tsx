@@ -19,6 +19,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
+import noop from '../utils/noop';
 
 let i = 0;
 
@@ -513,7 +514,7 @@ describe('useWatch', () => {
         } = useForm<FormInputs>();
         parentCount++;
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <>
               <input {...register('parent')} />
               <Child register={register} control={control} />
@@ -589,7 +590,7 @@ describe('useWatch', () => {
         } = useForm<FormInputs>();
         parentCount++;
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <>
               <input {...register('parent')} />
               <Child register={register} control={control} />

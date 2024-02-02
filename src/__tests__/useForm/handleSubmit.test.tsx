@@ -6,6 +6,7 @@ import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
+import noop from '../../utils/noop';
 
 describe('handleSubmit', () => {
   it('should invoke the callback when validation pass', async () => {
@@ -14,8 +15,8 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
     expect(callback).toBeCalled();
@@ -48,8 +49,8 @@ describe('handleSubmit', () => {
           },
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -76,8 +77,8 @@ describe('handleSubmit', () => {
           },
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -99,8 +100,8 @@ describe('handleSubmit', () => {
       await result.current.handleSubmit((data: any) => {
         data.deep.values = '12';
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -108,8 +109,8 @@ describe('handleSubmit', () => {
       await result.current.handleSubmit((data: any) => {
         expect(data.deep).toEqual({ values: '5' });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -123,8 +124,8 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
     expect(callback).not.toBeCalled();
@@ -145,8 +146,8 @@ describe('handleSubmit', () => {
     const callback = jest.fn();
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -170,8 +171,8 @@ describe('handleSubmit', () => {
     const callback = jest.fn();
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -200,8 +201,8 @@ describe('handleSubmit', () => {
           test: 'test',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent),
     );
   });
@@ -234,8 +235,8 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -245,8 +246,8 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -321,8 +322,8 @@ describe('handleSubmit', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
@@ -349,8 +350,8 @@ describe('handleSubmit', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
       expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
@@ -368,8 +369,8 @@ describe('handleSubmit', () => {
           onValidCallback,
           onInvalidCallback,
         )({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
       expect(onValidCallback).toBeCalledTimes(1);
@@ -391,8 +392,8 @@ describe('handleSubmit', () => {
           onValidCallback,
           onInvalidCallback,
         )({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -410,14 +411,11 @@ describe('handleSubmit', () => {
     result.current.register('test', { required: true });
 
     await act(async () => {
-      await result.current.handleSubmit(
-        () => {},
-        (errors) => {
-          Object.freeze(errors);
-        },
-      )({
-        preventDefault: () => {},
-        persist: () => {},
+      await result.current.handleSubmit(noop, (errors) => {
+        Object.freeze(errors);
+      })({
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 

@@ -21,6 +21,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
+import noop from '../utils/noop';
 
 let i = 0;
 
@@ -2859,7 +2860,7 @@ describe('useFieldArray', () => {
 
       return (
         <React.StrictMode>
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
@@ -3173,7 +3174,7 @@ describe('useFieldArray', () => {
   });
 
   it('should avoid omit keyName when defaultValues contains keyName attribute', () => {
-    let getValuesMethod: Function = () => {};
+    let getValuesMethod: Function = noop;
 
     const App = () => {
       const { control, getValues } = useForm({
@@ -3224,7 +3225,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <p>{errors.test?.root?.message}</p>
             <button>submit</button>
             <button
@@ -3284,7 +3285,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <p>{errors.test?.root?.message}</p>
             <button>submit</button>
             <button
@@ -3341,7 +3342,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <p>{errors.test?.root?.message}</p>
             <button>submit</button>
             <button
@@ -3396,7 +3397,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <p>{errors.test?.root?.message}</p>
             <button>submit</button>
             <button
@@ -3465,7 +3466,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
@@ -3564,7 +3565,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
@@ -3614,7 +3615,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
@@ -3715,7 +3716,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
@@ -3776,7 +3777,7 @@ describe('useFieldArray', () => {
         });
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {fields.map((field, index) => {
               return (
                 <div key={field.id}>
