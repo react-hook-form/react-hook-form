@@ -1,3 +1,4 @@
+import noop from '../../utils/noop';
 import objectHasFunction from '../../utils/objectHasFunction';
 
 describe('objectHasFunction', () => {
@@ -11,7 +12,7 @@ describe('objectHasFunction', () => {
 
     expect(
       objectHasFunction({
-        test: () => {},
+        test: noop,
       }),
     ).toBeTruthy();
   });

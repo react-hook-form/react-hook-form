@@ -7,6 +7,7 @@ import { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 let i = 0;
 
@@ -169,7 +170,7 @@ describe('prepend', () => {
       errors = tempErrors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
