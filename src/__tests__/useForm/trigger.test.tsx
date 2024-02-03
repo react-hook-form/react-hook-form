@@ -8,6 +8,7 @@ import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
+import noop from '../../utils/noop';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -870,7 +871,7 @@ describe('trigger', () => {
 
     function App() {
       const { handleSubmit, control, trigger } = useForm<FormValue>();
-      const onSubmit = () => {};
+      const onSubmit = noop;
 
       return (
         <div>

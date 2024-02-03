@@ -18,6 +18,7 @@ import {
   UseFormReturn,
 } from '../types';
 import isFunction from '../utils/isFunction';
+import noop from '../utils/noop';
 import sleep from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
 
@@ -61,9 +62,9 @@ describe('useForm', () => {
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.handleSubmit(() => {})({
-          preventDefault: () => {},
-          persist: () => {},
+        await result.current.handleSubmit(noop)({
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -85,9 +86,9 @@ describe('useForm', () => {
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.handleSubmit(() => {})({
-          preventDefault: () => {},
-          persist: () => {},
+        await result.current.handleSubmit(noop)({
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -176,7 +177,7 @@ describe('useForm', () => {
         }>();
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {show && <input {...register('firstName', { required: true })} />}
             {errors.firstName && <p>First name is required.</p>}
 
@@ -608,7 +609,7 @@ describe('useForm', () => {
       resolver,
       mode,
       rules = { required: 'required' },
-      onSubmit = () => {},
+      onSubmit = noop,
     }: {
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
@@ -916,7 +917,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch();
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test')} />
               <button>button</button>
             </form>
@@ -939,7 +940,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch('test');
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test')} />
               <button>button</button>
             </form>
@@ -962,7 +963,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch('test');
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test.0')} />
               <input {...register('test.1')} />
               <input {...register('test.2')} />
@@ -1470,7 +1471,7 @@ describe('useForm', () => {
         errorsObject = errors;
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {[1, 2, 3].map((value, index) => (
               <div key={`test.${index}`}>
                 <label
@@ -1559,7 +1560,7 @@ describe('useForm', () => {
         errorsObject = errors;
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <input type={'checkbox'} {...register(`checkbox.0.test`)} />
 
             <input {...register(`checkbox.1.test1`)} />

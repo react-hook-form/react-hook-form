@@ -2,6 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
 describe('resolver', () => {
@@ -130,7 +131,7 @@ describe('resolver', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('test')} />
           <button>Submit</button>
         </form>

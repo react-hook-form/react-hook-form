@@ -7,6 +7,7 @@ import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import isBoolean from '../utils/isBoolean';
+import noop from '../utils/noop';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -416,7 +417,7 @@ describe('useController', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Input control={control} />
           <input type="submit" />
         </form>
