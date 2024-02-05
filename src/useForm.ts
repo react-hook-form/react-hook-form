@@ -46,7 +46,7 @@ import { useSubscribe } from './useSubscribe';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
@@ -147,6 +147,13 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.values.next({
+        values: control._getWatch(),
+      });
+  }, [props.shouldUnregister, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

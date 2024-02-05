@@ -9,6 +9,7 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
+import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
 jest.useFakeTimers();
@@ -60,8 +61,8 @@ describe('setValue', () => {
           test: '1',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -88,8 +89,8 @@ describe('setValue', () => {
           test: fileList,
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -126,8 +127,8 @@ describe('setValue', () => {
           test: ['1'],
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -145,8 +146,8 @@ describe('setValue', () => {
           test: '1',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -169,8 +170,8 @@ describe('setValue', () => {
           test: ['1'],
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
