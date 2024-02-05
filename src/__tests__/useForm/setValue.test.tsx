@@ -1413,7 +1413,13 @@ describe('setValue', () => {
           <button
             type="button"
             onClick={() => {
-              setValue('item1.positions', [{ activities: [] }]);
+              setValue('item1.positions', [{ activities: [] }], {
+                shouldValidate: true,
+              });
+
+              setValue('item2.positions.0.activities', [], {
+                shouldValidate: true,
+              });
             }}
           >
             Reset
