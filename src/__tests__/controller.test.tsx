@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues, WatchedForm } from '../types';
+import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -983,7 +983,7 @@ describe('Controller', () => {
     type FormValue = {
       test: string;
     };
-    const watchedValue: WatchedForm<FormValue>[] = [];
+    const watchedValue: FormValue[] = [];
     const Component = () => {
       const { control, watch } = useForm<FormValue>({
         defaultValues: {
