@@ -1,10 +1,11 @@
 import isPlainObject from '../utils/isPlainObject';
+import noop from '../utils/noop';
 
 describe('isPlainObject', function () {
   it('should identify plan object or not', function () {
     function test() {
       return {
-        test: () => {},
+        test: noop,
       };
     }
 

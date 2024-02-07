@@ -27,7 +27,7 @@ import { useSubscribe } from './useSubscribe';
  *
  * @example
  * ```tsx
- * const { watch } = useForm();
+ * const { control } = useForm();
  * const values = useWatch({
  *   control,
  *   defaultValue: {
@@ -56,7 +56,7 @@ export function useWatch<
  *
  * @example
  * ```tsx
- * const { watch } = useForm();
+ * const { control } = useForm();
  * const values = useWatch({
  *   control,
  *   name: "fieldA",
@@ -86,7 +86,7 @@ export function useWatch<
  *
  * @example
  * ```tsx
- * const { watch } = useForm();
+ * const { control } = useForm();
  * const values = useWatch({
  *   control,
  *   name: ["fieldA", "fieldB"],
@@ -133,7 +133,7 @@ export function useWatch<
  *
  * @example
  * ```tsx
- * const { watch } = useForm();
+ * const { control } = useForm();
  * const values = useWatch({
  *   name: "fieldName"
  *   control,

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
 import { ErrorOption, FieldError, FieldErrors } from './errors';
@@ -50,15 +51,17 @@ export type DefaultValues<TFieldValues> =
 
 export type InternalNameSet = Set<InternalFieldName>;
 
-export type ValidationMode = {
-  onBlur: 'onBlur';
-  onChange: 'onChange';
-  onSubmit: 'onSubmit';
-  onTouched: 'onTouched';
-  all: 'all';
-};
+export type ValidationMode = typeof VALIDATION_MODE;
 
 export type Mode = keyof ValidationMode;
+
+export type ValidationModeFlags = {
+  isOnSubmit: boolean;
+  isOnBlur: boolean;
+  isOnChange: boolean;
+  isOnAll: boolean;
+  isOnTouch: boolean;
+};
 
 export type CriteriaMode = 'firstError' | 'all';
 
@@ -106,9 +109,11 @@ export type UseFormProps<
   TContext = any,
 > = Partial<{
   mode: Mode;
+  disabled: boolean;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
+  errors: FieldErrors<TFieldValues>;
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
@@ -144,6 +149,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
+  disabled: boolean;
   submitCount: number;
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
@@ -446,7 +452,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/trigger) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-triggervalidation-forked-xs7hl) • [Video](https://www.youtube.com/watch?v=-bcyJCDjksE)
  *
- * @param name - provide empty argument will trigger the entire form validation, an array of field names will validate an arrange of fields, and a single field name will only trigger that field's validation.
+ * @param name - provide empty argument will trigger the entire form validation, an array of field names will validate an array of fields, and a single field name will only trigger that field's validation.
  * @param options - should focus on the error field
  *
  * @returns validation result
@@ -618,11 +624,9 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = (
-  onValid: TTransformedValues extends FieldValues
-    ? SubmitHandler<TTransformedValues>
-    : SubmitHandler<TFieldValues>,
+  onValid: SubmitHandler<TTransformedValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
@@ -758,6 +762,7 @@ export type BatchFieldArrayUpdate = <
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: Noop;
@@ -783,10 +788,12 @@ export type Control<
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
+  _setErrors: (errors: FieldErrors<TFieldValues>) => void;
   _updateDisabledField: (
     props: {
       disabled?: boolean;
       name: FieldName<any>;
+      value?: unknown;
     } & (
       | {
           field?: Field;
@@ -802,7 +809,8 @@ export type Control<
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
-  handleSubmit: UseFormHandleSubmit<TFieldValues>;
+  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
+  _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
@@ -819,7 +827,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
@@ -833,7 +841,7 @@ export type UseFormReturn<
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
   unregister: UseFormUnregister<TFieldValues>;
-  control: Control<TFieldValues, TContext>;
+  control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
 };
@@ -865,7 +873,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   children: React.ReactNode | React.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;

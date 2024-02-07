@@ -13,6 +13,7 @@ import { Controller } from '../../controller';
 import { Control, DeepMap, FieldError } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 jest.useFakeTimers();
 
@@ -455,7 +456,7 @@ describe('remove', () => {
       errors = tempErrors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
@@ -772,7 +773,7 @@ describe('remove', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <ul>
             {fields.map((item, index) => {
               return (
@@ -831,7 +832,7 @@ describe('remove', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <ul>
             {fields.map((item, index) => {
               return (

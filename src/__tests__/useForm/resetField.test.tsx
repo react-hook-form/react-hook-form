@@ -408,5 +408,61 @@ describe('resetField', () => {
       expect(await screen.findByText('NotValid')).toBeVisible();
       expect(screen.getByText('error')).toBeVisible();
     });
+
+    it('should work with objects as defaultValue', async () => {
+      const App = () => {
+        const {
+          register,
+          resetField,
+          formState: { isDirty },
+        } = useForm({
+          defaultValues: {
+            nestedObjectTest: {
+              test: 'test',
+            },
+          },
+          mode: 'onChange',
+        });
+
+        return (
+          <form>
+            <input {...register('nestedObjectTest.test', { maxLength: 4 })} />
+            <p>{isDirty ? 'isDirty' : 'isNotDirty'}</p>
+            <button
+              type={'button'}
+              onClick={() => {
+                resetField('nestedObjectTest', {
+                  defaultValue: { test: 'test2' },
+                });
+              }}
+            >
+              reset
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(await screen.findByText('isNotDirty')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'abcd',
+        },
+      });
+
+      expect(await screen.findByText('isDirty')).toBeVisible();
+
+      fireEvent.click(screen.getByRole('button'));
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: '1234',
+        },
+      });
+
+      expect(await screen.findByText('isDirty')).toBeVisible();
+    });
   });
 });

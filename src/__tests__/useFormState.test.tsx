@@ -8,6 +8,7 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
+import noop from '../utils/noop';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -275,7 +276,7 @@ describe('useFormState', () => {
       count++;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Test control={control} />
           <button>Submit</button>
         </form>
@@ -755,7 +756,7 @@ describe('useFormState', () => {
       const { errors } = useFormState({ control });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('firstName', { required: 'Required' })} />
           <p>{errors.firstName?.message}</p>
           <button>Submit</button>
@@ -789,7 +790,7 @@ describe('useFormState', () => {
       return <p>{isValid}</p>;
     }
 
-    function Form({ values }: { values: any }) {
+    function Form({ values }: { values: FormValues }) {
       const { getValues, control } = useForm<FormValues>({
         defaultValues: {
           firstName: '',
@@ -816,6 +817,30 @@ describe('useFormState', () => {
 
     await waitFor(() => {
       screen.getByText('test');
+    });
+  });
+
+  it('should update form state with disabled state', async () => {
+    function Form({ control }: { control: Control }) {
+      const { disabled } = useFormState({
+        control,
+      });
+
+      return <p>{disabled ? 'disabled' : ''}</p>;
+    }
+
+    function App() {
+      const { control } = useForm({
+        disabled: true,
+      });
+
+      return <Form control={control} />;
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('disabled');
     });
   });
 });

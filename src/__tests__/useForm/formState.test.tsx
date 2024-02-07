@@ -12,6 +12,7 @@ import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 describe('formState', () => {
   describe('isValid', () => {
@@ -346,7 +347,7 @@ describe('formState', () => {
           </p>
           <button
             type={'button'}
-            onClick={() => handleSubmit(rejectPromiseFn)().catch(() => {})}
+            onClick={() => handleSubmit(rejectPromiseFn)().catch(noop)}
           >
             Submit
           </button>
@@ -374,7 +375,7 @@ describe('formState', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('test', { required: true })} />
           {errors.test && <p>error</p>}
 
@@ -564,7 +565,7 @@ describe('formState', () => {
       submittingState.push(isSubmitting);
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input
             {...register('value', { required: true })}
             defaultValue="Any default value!"
@@ -651,7 +652,7 @@ describe('formState', () => {
       dirtyFieldsState = dirtyFields;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input
             {...register('test', { setValueAs: (value) => value + '1' })}
           />

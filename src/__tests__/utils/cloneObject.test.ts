@@ -1,4 +1,5 @@
 import cloneObject from '../../utils/cloneObject';
+import noop from '../../utils/noop';
 
 describe('clone', () => {
   it('should clone object and not mutate the original object', () => {
@@ -83,18 +84,16 @@ describe('clone', () => {
   });
 
   it('should skip clone if a node is instance of function', () => {
-    function testFunction() {}
-
     const data = {
       test: {
-        testFunction,
+        testFunction: noop,
         test: 'inner-string',
         deep: {
-          testFunction,
+          testFunction: noop,
           test: 'deep-string',
         },
       },
-      testFunction,
+      testFunction: noop,
       other: 'string',
     };
 
@@ -105,12 +104,12 @@ describe('clone', () => {
       test: {
         test: 'inner-string',
         deep: {
-          testFunction,
+          testFunction: noop,
           test: 'deep-string',
         },
-        testFunction,
+        testFunction: noop,
       },
-      testFunction,
+      testFunction: noop,
       other: 'string',
     });
   });

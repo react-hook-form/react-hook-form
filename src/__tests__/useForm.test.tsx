@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   act as actComponent,
   fireEvent,
@@ -12,13 +12,17 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { VALIDATION_MODE } from '../constants';
 import {
   Control,
+  FieldErrors,
   RegisterOptions,
   UseFormRegister,
   UseFormReturn,
 } from '../types';
 import isFunction from '../utils/isFunction';
-import { sleep } from '../utils/sleep';
+import noop from '../utils/noop';
+import sleep from '../utils/sleep';
 import { Controller, useFieldArray, useForm } from '../';
+
+jest.useFakeTimers();
 
 describe('useForm', () => {
   describe('when component unMount', () => {
@@ -58,9 +62,9 @@ describe('useForm', () => {
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.handleSubmit(() => {})({
-          preventDefault: () => {},
-          persist: () => {},
+        await result.current.handleSubmit(noop)({
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -82,9 +86,9 @@ describe('useForm', () => {
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.handleSubmit(() => {})({
-          preventDefault: () => {},
-          persist: () => {},
+        await result.current.handleSubmit(noop)({
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -173,7 +177,7 @@ describe('useForm', () => {
         }>();
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {show && <input {...register('firstName', { required: true })} />}
             {errors.firstName && <p>First name is required.</p>}
 
@@ -549,6 +553,55 @@ describe('useForm', () => {
 
       await waitFor(() => expect(span.textContent).toBe('data'));
     });
+
+    it('should display the latest error message with errors prop', () => {
+      const Form = () => {
+        type FormValues = {
+          test1: string;
+          test2: string;
+        };
+        const [errorsState, setErrorsState] = React.useState<
+          FieldErrors<FormValues>
+        >({
+          test1: { type: 'test1', message: 'test1 error' },
+        });
+        const {
+          register,
+          formState: { errors },
+        } = useForm<FormValues>({
+          errors: errorsState,
+        });
+
+        return (
+          <div>
+            <input {...register('test1')} type="text" />
+            <span role="alert">{errors.test1 && errors.test1.message}</span>
+            <input {...register('test2')} type="text" />
+            <span role="alert">{errors.test2 && errors.test2.message}</span>
+            <button
+              onClick={() =>
+                setErrorsState((errors) => ({
+                  ...errors,
+                  test2: { type: 'test2', message: 'test2 error' },
+                }))
+              }
+            >
+              Set Errors
+            </button>
+          </div>
+        );
+      };
+
+      render(<Form />);
+
+      const alert1 = screen.getAllByRole('alert')[0];
+      expect(alert1.textContent).toBe('test1 error');
+
+      fireEvent.click(screen.getByRole('button'));
+
+      const alert2 = screen.getAllByRole('alert')[1];
+      expect(alert2.textContent).toBe('test2 error');
+    });
   });
 
   describe('handleChangeRef', () => {
@@ -556,7 +609,7 @@ describe('useForm', () => {
       resolver,
       mode,
       rules = { required: 'required' },
-      onSubmit = () => {},
+      onSubmit = noop,
     }: {
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
@@ -864,7 +917,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch();
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test')} />
               <button>button</button>
             </form>
@@ -887,7 +940,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch('test');
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test')} />
               <button>button</button>
             </form>
@@ -910,7 +963,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch('test');
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test.0')} />
               <input {...register('test.1')} />
               <input {...register('test.2')} />
@@ -1418,7 +1471,7 @@ describe('useForm', () => {
         errorsObject = errors;
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {[1, 2, 3].map((value, index) => (
               <div key={`test.${index}`}>
                 <label
@@ -1507,7 +1560,7 @@ describe('useForm', () => {
         errorsObject = errors;
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <input type={'checkbox'} {...register(`checkbox.0.test`)} />
 
             <input {...register(`checkbox.1.test1`)} />
@@ -2204,6 +2257,246 @@ describe('useForm', () => {
     await waitFor(() => {
       screen.getByText('C');
       screen.getByText('pristine');
+    });
+  });
+
+  it('should disable the entire form inputs', async () => {
+    function App() {
+      const { register } = useForm({
+        disabled: true,
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="firstName" />
+          <input {...register('lastName')} placeholder="lastName" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
+  });
+
+  it('should disable the entire form', () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { register, control } = useForm({
+        disabled,
+      });
+
+      return (
+        <form>
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+
+          <Controller
+            control={control}
+            render={({ field }) => {
+              return (
+                <input disabled={field.disabled} data-testid={'controller'} />
+              );
+            }}
+            name="test"
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+          >
+            Submit
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('checkbox')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('radio')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('range')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('select')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('textarea')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('controller')).toHaveAttribute('disabled');
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(screen.getByTestId('checkbox')).not.toBeDisabled();
+    expect(screen.getByTestId('radio')).not.toBeDisabled();
+    expect(screen.getByTestId('range')).not.toBeDisabled();
+    expect(screen.getByTestId('select')).not.toBeDisabled();
+    expect(screen.getByTestId('textarea')).not.toBeDisabled();
+    expect(screen.getByTestId('controller')).not.toBeDisabled();
+  });
+
+  it('should disable form inputs separately from its form', async () => {
+    function App() {
+      const { register } = useForm({
+        disabled: false,
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <input
+            {...register('firstName', { disabled: true })}
+            placeholder="firstName"
+          />
+          <input
+            {...register('lastName', { disabled: false })}
+            placeholder="lastName"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+    });
+  });
+
+  it('should be able to disable the entire form', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { register, handleSubmit } = useForm({
+        disabled,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit(async () => {
+            setDisabled(true);
+            await sleep(100);
+            setDisabled(false);
+          })}
+        >
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(
+      (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('range') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('select') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+    });
+  });
+
+  it('should allow to submit a form with disabled form fields', async () => {
+    function App() {
+      const { register, getFieldState, formState, handleSubmit } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input
+            {...register('firstName', { disabled: true, required: true })}
+            placeholder="firstName"
+          />
+          <p>
+            {getFieldState('firstName', formState).error
+              ? 'has error'
+              : 'no error'}
+          </p>
+          <input type="submit" value="Submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await act(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        screen.getByText('no error') as HTMLInputElement,
+      ).toBeInTheDocument();
     });
   });
 });

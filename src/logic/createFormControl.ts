@@ -8,6 +8,7 @@ import {
   EventType,
   Field,
   FieldError,
+  FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
   FieldRefs,
@@ -65,7 +66,6 @@ import live from '../utils/live';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
-import focusFieldBy from './focusFieldBy';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
@@ -77,6 +77,7 @@ import getValidationModes from './getValidationModes';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
+import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
@@ -92,10 +93,14 @@ const defaultOptions = {
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
   flushRootRender: () => void,
-): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
+): Omit<
+  UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  'formState'
+> {
   let _options = {
     ...defaultOptions,
     ...props,
@@ -112,12 +117,13 @@ export function createFormControl<
     touchedFields: {},
     dirtyFields: {},
     validatingFields: {},
-    errors: {},
+    errors: _options.errors || {},
+    disabled: _options.disabled || false,
   };
-  let _fields = {};
+  let _fields: FieldRefs = {};
   let _defaultValues =
-    isObject(_options.defaultValues) || isObject(_options.values)
-      ? cloneObject(_options.defaultValues || _options.values) || {}
+    isObject(_options.values) || isObject(_options.defaultValues)
+      ? cloneObject(_options.values || _options.defaultValues) || {}
       : {};
   let _formValues = _options.shouldUnregister
     ? {}
@@ -149,8 +155,6 @@ export function createFormControl<
     array: createSubject(),
     state: createSubject(),
   };
-  const shouldCaptureDirtyFields =
-    props.resetOptions && props.resetOptions.keepDirtyValues;
   const validationModeBeforeSubmit = getValidationModes(_options.mode);
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
@@ -259,6 +263,14 @@ export function createFormControl<
     });
   };
 
+  const _setErrors = (errors: FieldErrors<TFieldValues>) => {
+    _formState.errors = errors;
+    _subjects.state.next({
+      errors: _formState.errors,
+      isValid: false,
+    });
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -302,6 +314,9 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
+    const disabledField = !!(
+      get(_fields, name) && get(_fields, name)._f.disabled
+    );
 
     if (!isBlurEvent || shouldDirty) {
       if (_proxyFormState.isDirty) {
@@ -310,13 +325,11 @@ export function createFormControl<
         shouldUpdateField = isPreviousDirty !== output.isDirty;
       }
 
-      const isCurrentFieldPristine = deepEqual(
-        get(_defaultValues, name),
-        fieldValue,
-      );
+      const isCurrentFieldPristine =
+        disabledField || deepEqual(get(_defaultValues, name), fieldValue);
 
-      isPreviousDirty = get(_formState.dirtyFields, name);
-      isCurrentFieldPristine
+      isPreviousDirty = !!(!disabledField && get(_formState.dirtyFields, name));
+      isCurrentFieldPristine || disabledField
         ? unset(_formState.dirtyFields, name)
         : set(_formState.dirtyFields, name, true);
       output.dirtyFields = _formState.dirtyFields;
@@ -676,6 +689,11 @@ export function createFormControl<
     const field: Field = get(_fields, name);
     const getCurrentFieldValue = () =>
       target.type ? getFieldValue(field._f) : getEventValue(event);
+    const _updateIsFieldValueUpdated = (fieldValue: any): void => {
+      isFieldValueUpdated =
+        Number.isNaN(fieldValue) ||
+        fieldValue === get(_formValues, name, fieldValue);
+    };
 
     if (field) {
       let error;
@@ -737,21 +755,26 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
-        const previousErrorLookupResult = schemaErrorLookup(
-          _formState.errors,
-          _fields,
-          name,
-        );
-        const errorLookupResult = schemaErrorLookup(
-          errors,
-          _fields,
-          previousErrorLookupResult.name || name,
-        );
 
-        error = errorLookupResult.error;
-        name = errorLookupResult.name;
+        _updateIsFieldValueUpdated(fieldValue);
 
-        isValid = isEmptyObject(errors);
+        if (isFieldValueUpdated) {
+          const previousErrorLookupResult = schemaErrorLookup(
+            _formState.errors,
+            _fields,
+            name,
+          );
+          const errorLookupResult = schemaErrorLookup(
+            errors,
+            _fields,
+            previousErrorLookupResult.name || name,
+          );
+
+          error = errorLookupResult.error;
+          name = errorLookupResult.name;
+
+          isValid = isEmptyObject(errors);
+        }
       } else {
         error = (
           await validateField(
@@ -762,9 +785,7 @@ export function createFormControl<
           )
         )[name];
 
-        isFieldValueUpdated =
-          Number.isNaN(fieldValue) ||
-          fieldValue === get(_formValues, name, fieldValue);
+        _updateIsFieldValueUpdated(fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
@@ -785,6 +806,14 @@ export function createFormControl<
         shouldRenderByError(name, isValid, error, fieldState);
       }
     }
+  };
+
+  const _focusInput = (ref: Ref, key: string) => {
+    if (get(_formState.errors, key) && ref.focus) {
+      ref.focus();
+      return 1;
+    }
+    return;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
@@ -833,9 +862,9 @@ export function createFormControl<
 
     options.shouldFocus &&
       !validationResult &&
-      focusFieldBy(
+      iterateFieldsByAction(
         _fields,
-        (key) => key && get(_formState.errors, key),
+        _focusInput,
         name ? fieldNames : _names.mount,
       );
 
@@ -960,17 +989,16 @@ export function createFormControl<
     name,
     field,
     fields,
+    value,
   }) => {
     if (isBoolean(disabled)) {
-      const value = disabled
+      const inputValue = disabled
         ? undefined
-        : get(
-            _formValues,
-            name,
-            getFieldValue(field ? field._f : get(fields, name)._f),
-          );
-      set(_formValues, name, value);
-      updateTouchAndDirty(name, value, false, false, true);
+        : isUndefined(value)
+        ? getFieldValue(field ? field._f : get(fields, name)._f)
+        : value;
+      set(_formValues, name, inputValue);
+      updateTouchAndDirty(name, inputValue, false, false, true);
     }
   };
 
@@ -994,6 +1022,7 @@ export function createFormControl<
         field,
         disabled: options.disabled,
         name,
+        value: options.value,
       });
     } else {
       updateValidAndValue(name, true, options.value);
@@ -1069,14 +1098,31 @@ export function createFormControl<
 
   const _focusError = () =>
     _options.shouldFocusError &&
-    focusFieldBy(
-      _fields,
-      (key) => key && get(_formState.errors, key),
-      _names.mount,
-    );
+    iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
-  const handleSubmit: UseFormHandleSubmit<TFieldValues> =
+  const _disableForm = (disabled?: boolean) => {
+    if (isBoolean(disabled)) {
+      _subjects.state.next({ disabled });
+      iterateFieldsByAction(
+        _fields,
+        (ref, name) => {
+          let requiredDisabledState = disabled;
+          const currentField = get(_fields, name);
+          if (currentField && isBoolean(currentField._f.disabled)) {
+            requiredDisabledState ||= currentField._f.disabled;
+          }
+
+          ref.disabled = requiredDisabledState;
+        },
+        0,
+        false,
+      );
+    }
+  };
+
+  const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
+      let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
@@ -1101,7 +1147,11 @@ export function createFormControl<
         _subjects.state.next({
           errors: {},
         });
-        await onValid(fieldValues as TFieldValues, e);
+        try {
+          await onValid(fieldValues as TFieldValues & TTransformedValues, e);
+        } catch (error) {
+          onValidError = error;
+        }
       } else {
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
@@ -1113,16 +1163,19 @@ export function createFormControl<
       _subjects.state.next({
         isSubmitted: true,
         isSubmitting: false,
-        isSubmitSuccessful: isEmptyObject(_formState.errors),
+        isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,
         submitCount: _formState.submitCount + 1,
         errors: _formState.errors,
       });
+      if (onValidError) {
+        throw onValidError;
+      }
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
       if (isUndefined(options.defaultValue)) {
-        setValue(name, get(_defaultValues, name));
+        setValue(name, cloneObject(get(_defaultValues, name)));
       } else {
         setValue(
           name,
@@ -1131,7 +1184,7 @@ export function createFormControl<
             FieldPath<TFieldValues>
           >,
         );
-        set(_defaultValues, name, options.defaultValue);
+        set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
       if (!options.keepTouched) {
@@ -1141,7 +1194,7 @@ export function createFormControl<
       if (!options.keepDirty) {
         unset(_formState.dirtyFields, name);
         _formState.isDirty = options.defaultValue
-          ? _getDirty(name, get(_defaultValues, name))
+          ? _getDirty(name, cloneObject(get(_defaultValues, name)))
           : _getDirty();
       }
 
@@ -1170,7 +1223,7 @@ export function createFormControl<
     }
 
     if (!keepStateOptions.keepValues) {
-      if (keepStateOptions.keepDirtyValues || shouldCaptureDirtyFields) {
+      if (keepStateOptions.keepDirtyValues) {
         for (const fieldName of _names.mount) {
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
@@ -1228,7 +1281,10 @@ export function createFormControl<
 
     !_state.mount && flushRootRender();
 
-    _state.mount = !_proxyFormState.isValid || !!keepStateOptions.keepIsValid;
+    _state.mount =
+      !_proxyFormState.isValid ||
+      !!keepStateOptions.keepIsValid ||
+      !!keepStateOptions.keepDirtyValues;
 
     _state.watch = !!props.shouldUnregister;
 
@@ -1246,7 +1302,9 @@ export function createFormControl<
         ? _formState.isSubmitted
         : false,
       dirtyFields: keepStateOptions.keepDirtyValues
-        ? _formState.dirtyFields
+        ? keepStateOptions.keepDefaultValues && _formValues
+          ? getDirtyFields(_defaultValues, _formValues)
+          : _formState.dirtyFields
         : keepStateOptions.keepDefaultValues && formValues
         ? getDirtyFields(_defaultValues, formValues)
         : {},
@@ -1321,8 +1379,10 @@ export function createFormControl<
       _reset,
       _resetDefaultValues,
       _updateFormState,
+      _disableForm,
       _subjects,
       _proxyFormState,
+      _setErrors,
       get _fields() {
         return _fields;
       },

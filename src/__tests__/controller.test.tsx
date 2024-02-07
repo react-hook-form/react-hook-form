@@ -14,6 +14,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
+import noop from '../utils/noop';
 
 function Input<TFieldValues extends FieldValues>({
   onChange,
@@ -327,7 +328,7 @@ describe('Controller', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Controller
             defaultValue=""
             name="test"
@@ -895,7 +896,7 @@ describe('Controller', () => {
   });
 
   it('should retain default value or defaultValues at Controller', () => {
-    let getValuesMethod = () => {};
+    let getValuesMethod = noop;
     const Component = () => {
       const { control, getValues } = useForm<{
         test: number;
@@ -1175,7 +1176,7 @@ describe('Controller', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, index) => {
             return (
               <div key={field.id}>
@@ -1511,7 +1512,7 @@ describe('Controller', () => {
       const { control, handleSubmit } = useForm<{ numbers: number[] }>();
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Controller
             control={control}
             name="numbers"
@@ -1599,5 +1600,52 @@ describe('Controller', () => {
     });
 
     expect(screen.getByRole('textbox')).toHaveValue('b');
+  });
+
+  it('should respect disabled state set on the input element', () => {
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={({ field }) => <input disabled {...field} />}
+          control={control}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('textbox')).toBeDisabled();
+  });
+
+  it('should respect disabled state set on the Controller component', () => {
+    const Component = () => {
+      const { control } = useForm();
+
+      const [disabled, setDisabled] = React.useState(true);
+
+      return (
+        <>
+          <Controller
+            defaultValue=""
+            name="test"
+            disabled={disabled}
+            render={({ field }) => <input {...field} />}
+            control={control}
+          />
+          <button onClick={() => setDisabled(false)}>disable</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('textbox')).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByRole('textbox')).toBeEnabled();
   });
 });

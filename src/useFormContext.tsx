@@ -37,7 +37,7 @@ const HookFormContext = React.createContext<UseFormReturn | null>(null);
 export const useFormContext = <
   TFieldValues extends FieldValues,
   TContext = any,
-  TransformedValues extends FieldValues | undefined = undefined,
+  TransformedValues extends FieldValues = TFieldValues,
 >(): UseFormReturn<TFieldValues, TContext, TransformedValues> =>
   React.useContext(HookFormContext) as UseFormReturn<
     TFieldValues,
@@ -51,7 +51,7 @@ export const useFormContext = <
  * @remarks
  * [API](https://react-hook-form.com/docs/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
  *
- * @param props - all useFrom methods
+ * @param props - all useForm methods
  *
  * @example
  * ```tsx
@@ -78,7 +78,7 @@ export const useFormContext = <
 export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 >(
   props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
 ) => {

@@ -46,7 +46,7 @@ import { useSubscribe } from './useSubscribe';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
@@ -66,7 +66,8 @@ export function useForm<
     dirtyFields: {},
     touchedFields: {},
     validatingFields: {},
-    errors: {},
+    errors: props.errors || {},
+    disabled: props.disabled || false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
@@ -102,14 +103,37 @@ export function useForm<
     },
   });
 
+  React.useEffect(
+    () => control._disableForm(props.disabled),
+    [control, props.disabled],
+  );
+
+  React.useEffect(() => {
+    if (control._proxyFormState.isDirty) {
+      const isDirty = control._getDirty();
+      if (isDirty !== formState.isDirty) {
+        control._subjects.state.next({
+          isDirty,
+        });
+      }
+    }
+  }, [control, formState.isDirty]);
+
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
       control._reset(props.values, control._options.resetOptions);
       _values.current = props.values;
+      updateFormState((state) => ({ ...state }));
     } else {
       control._resetDefaultValues();
     }
   }, [props.values, control]);
+
+  React.useEffect(() => {
+    if (props.errors) {
+      control._setErrors(props.errors);
+    }
+  }, [props.errors, control]);
 
   React.useEffect(() => {
     if (!control._state.mount) {
@@ -124,6 +148,13 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.values.next({
+        values: control._getWatch(),
+      });
+  }, [props.shouldUnregister, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

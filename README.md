@@ -66,9 +66,6 @@ function App() {
 
 Thanks go to these kind and lovely sponsors!
 
-<a target="_blank" href='https://wantedlyinc.com'>
-    <img width="94" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
-</a>
 <a target="_blank" href='https://toss.im'>
     <img width="94" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
 </a>
@@ -80,9 +77,6 @@ Thanks go to these kind and lovely sponsors!
 </a>
 <a target="_blank" href="https://kanamekey.com">
     <img width="94" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
-</a>
-<a target="_blank" href="https://www.mirakl.com/">
-    <img width="94" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
 </a>
 <a target="_blank" href="https://www.casinoreviews.net/">
     <img width="94" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
@@ -122,6 +116,12 @@ Thanks go to these kind and lovely sponsors!
 </a>
 <a target="_blank" href="https://www.jetbrains.com/">
     <img width="48" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" />
+</a>
+<a target="_blank" href="https://www.mirakl.com/">
+    <img width="48" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
+</a>
+<a target="_blank" href='https://wantedlyinc.com'>
+    <img width="48" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
 </a>
 
 ### Backers

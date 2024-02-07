@@ -1,7 +1,7 @@
 import isObject from './isObject';
 import isPrimitive from './isPrimitive';
 
-export function deepMerge<
+export default function deepMerge<
   T extends Record<keyof T, any>,
   U extends Record<keyof U, any>,
 >(target: T, source: U): T & U {
