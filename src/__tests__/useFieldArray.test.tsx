@@ -15,7 +15,6 @@ import {
   SubmitHandler,
   UseFormRegister,
   UseFormReturn,
-  WatchedForm,
 } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
@@ -2696,7 +2695,7 @@ describe('useFieldArray', () => {
       }[];
     };
 
-    const watchedValues: WatchedForm<FormValues>[] = [];
+    const watchedValues: FormValues[] = [];
 
     const Child = ({
       control,

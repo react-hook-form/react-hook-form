@@ -10,7 +10,7 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { UseFormRegister, WatchedForm } from '../../types';
+import { UseFormRegister } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
@@ -479,7 +479,7 @@ describe('register', () => {
     type FormValue = {
       test: string;
     };
-    const watchedValue: WatchedForm<FormValue>[] = [];
+    const watchedValue: FormValue[] = [];
     const Component = () => {
       const { register, watch } = useForm<FormValue>({
         defaultValues: {
