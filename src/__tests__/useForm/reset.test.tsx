@@ -19,6 +19,7 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
+import noop from '../../utils/noop';
 
 jest.useFakeTimers();
 
@@ -36,8 +37,8 @@ describe('reset', () => {
           test: 'data',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -1133,7 +1134,7 @@ describe('reset', () => {
       const [show, setShow] = React.useState(true);
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('firstName')} placeholder="First Name" />
           {show && <input {...register('lastName')} placeholder="Last Name" />}
           <button
@@ -1305,7 +1306,7 @@ describe('reset', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('firstName')} />
           <Child reset={reset} />
         </form>
@@ -1500,8 +1501,8 @@ describe('reset', () => {
           test: 'data',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 

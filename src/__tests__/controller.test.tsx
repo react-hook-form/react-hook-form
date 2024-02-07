@@ -8,11 +8,12 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues, WatchedForm } from '../types';
+import { ControllerRenderProps, FieldValues } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
+import noop from '../utils/noop';
 
 function Input<TFieldValues extends FieldValues>({
   onChange,
@@ -271,7 +272,7 @@ describe('Controller', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Controller
             defaultValue=""
             name="test"
@@ -839,7 +840,7 @@ describe('Controller', () => {
   });
 
   it('should retain default value or defaultValues at Controller', () => {
-    let getValuesMethod = () => {};
+    let getValuesMethod = noop;
     const Component = () => {
       const { control, getValues } = useForm<{
         test: number;
@@ -982,7 +983,7 @@ describe('Controller', () => {
     type FormValue = {
       test: string;
     };
-    const watchedValue: WatchedForm<FormValue>[] = [];
+    const watchedValue: FormValue[] = [];
     const Component = () => {
       const { control, watch } = useForm<FormValue>({
         defaultValues: {
@@ -1119,7 +1120,7 @@ describe('Controller', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, index) => {
             return (
               <div key={field.id}>
@@ -1455,7 +1456,7 @@ describe('Controller', () => {
       const { control, handleSubmit } = useForm<{ numbers: number[] }>();
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Controller
             control={control}
             name="numbers"
