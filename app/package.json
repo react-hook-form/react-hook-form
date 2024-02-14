@@ -26,6 +26,6 @@
     "@types/yup": "^0.29.13",
     "@vitejs/plugin-react": "^2.2.0",
     "typescript": "^4.5.5",
-    "vite": "^3.2.4"
+    "vite": "^3.2.8"
   }
 }
