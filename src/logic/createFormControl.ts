@@ -765,6 +765,7 @@ export function createFormControl<
           isValid = isEmptyObject(errors);
         }
       } else {
+        _updateIsFieldValueUpdated(fieldValue);
         error = (
           await validateField(
             field,
@@ -773,8 +774,6 @@ export function createFormControl<
             _options.shouldUseNativeValidation,
           )
         )[name];
-
-        _updateIsFieldValueUpdated(fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
