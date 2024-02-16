@@ -93,14 +93,10 @@ const defaultOptions = {
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
   flushRootRender: () => void,
-): Omit<
-  UseFormReturn<TFieldValues, TContext, TTransformedValues>,
-  'formState'
-> {
+): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
   let _options = {
     ...defaultOptions,
     ...props,
@@ -776,6 +772,7 @@ export function createFormControl<
           isValid = isEmptyObject(errors);
         }
       } else {
+        _updateIsFieldValueUpdated(fieldValue);
         error = (
           await validateField(
             field,
@@ -784,8 +781,6 @@ export function createFormControl<
             _options.shouldUseNativeValidation,
           )
         )[name];
-
-        _updateIsFieldValueUpdated(fieldValue);
 
         if (isFieldValueUpdated) {
           if (error) {
@@ -1120,7 +1115,7 @@ export function createFormControl<
     }
   };
 
-  const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
+  const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
       let onValidError = undefined;
       if (e) {
@@ -1148,7 +1143,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TFieldValues & TTransformedValues, e);
+          await onValid(fieldValues as TFieldValues, e);
         } catch (error) {
           onValidError = error;
         }
