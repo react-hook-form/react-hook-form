@@ -267,8 +267,6 @@ export function createFormControl<
   ) => {
     const field: Field = get(_fields, name);
 
-    console.log('updateValidAndValue - name: ', name, ' - value: ', value);
-
     if (field) {
       const defaultValue = get(
         _formValues,
@@ -1011,7 +1009,6 @@ export function createFormControl<
     let field = get(_fields, name);
     const disabledIsDefined = isBoolean(options.disabled);
 
-    console.log('register - name: ', name);
     set(_fields, name, {
       ...(field || {}),
       _f: {
@@ -1023,11 +1020,7 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    console.log('register - options.value: ', options.value);
-    console.log('register - field: ', field);
-
     if (field) {
-      console.log('register - _updateDisabledField');
       _updateDisabledField({
         field,
         disabled: options.disabled,
@@ -1035,11 +1028,8 @@ export function createFormControl<
         value: options.value,
       });
     } else {
-      console.log('register - updateValidAndValue');
       updateValidAndValue(name, true, options.value);
     }
-
-    console.log('register - return');
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
