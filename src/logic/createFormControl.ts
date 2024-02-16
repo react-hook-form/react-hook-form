@@ -49,7 +49,9 @@ import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isDateInput from '../utils/isDateInput';
 import isDateObject from '../utils/isDateObject';
+import isDateTimeLocalInput from '../utils/isDateTimeLocalInput';
 import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
@@ -264,6 +266,8 @@ export function createFormControl<
     ref?: Ref,
   ) => {
     const field: Field = get(_fields, name);
+
+    console.log('updateValidAndValue - name: ', name, ' - value: ', value);
 
     if (field) {
       const defaultValue = get(
@@ -578,6 +582,28 @@ export function createFormControl<
           }
         } else if (isFileInput(fieldReference.ref)) {
           fieldReference.ref.value = '';
+        } else if (isDateObject(fieldValue)) {
+          if (isDateInput(fieldReference.ref)) {
+            const dateValue = fieldValue as Date;
+            fieldReference.ref.value = `${dateValue.getFullYear()}-${(
+              dateValue.getMonth() + 1
+            )
+              .toString()
+              .padStart(2, '0')}-${dateValue.getDate()}`;
+          } else if (isDateTimeLocalInput(fieldReference.ref)) {
+            const dateValue = fieldValue as Date;
+            fieldReference.ref.value = `${dateValue.getFullYear()}-${(
+              dateValue.getMonth() + 1
+            )
+              .toString()
+              .padStart(2, '0')}-${dateValue.getDate()}T${dateValue
+              .getHours()
+              .toString()
+              .padStart(2, '0')}:${dateValue
+              .getMinutes()
+              .toString()
+              .padStart(2, '0')}`;
+          }
         } else {
           fieldReference.ref.value = fieldValue;
 
@@ -985,6 +1011,7 @@ export function createFormControl<
     let field = get(_fields, name);
     const disabledIsDefined = isBoolean(options.disabled);
 
+    console.log('register - name: ', name);
     set(_fields, name, {
       ...(field || {}),
       _f: {
@@ -996,7 +1023,11 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
+    console.log('register - options.value: ', options.value);
+    console.log('register - field: ', field);
+
     if (field) {
+      console.log('register - _updateDisabledField');
       _updateDisabledField({
         field,
         disabled: options.disabled,
@@ -1004,8 +1035,11 @@ export function createFormControl<
         value: options.value,
       });
     } else {
+      console.log('register - updateValidAndValue');
       updateValidAndValue(name, true, options.value);
     }
+
+    console.log('register - return');
 
     return {
       ...(disabledIsDefined ? { disabled: options.disabled } : {}),
