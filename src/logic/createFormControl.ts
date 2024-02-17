@@ -1335,7 +1335,8 @@ export function createFormControl<
     });
 
   const subscribe: UseFromSubscribe<TFieldValues> = (payload) => {
-    payload.formState.values &&
+    payload.formState &&
+      payload.formState.values &&
       _subjects.values.subscribe({
         next: (formState: {
           name?: InternalFieldName;

@@ -24,26 +24,6 @@ import { Resolver } from './resolvers';
 import { DeepMap, DeepPartial, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
-declare const $NestedValue: unique symbol;
-
-/**
- * @deprecated to be removed in the next major version
- */
-export type NestedValue<TValue extends object = object> = {
-  [$NestedValue]: never;
-} & TValue;
-
-/**
- * @deprecated to be removed in the next major version
- */
-export type UnpackNestedValue<T> = T extends NestedValue<infer U>
-  ? U
-  : T extends Date | FileList | File | Blob
-  ? T
-  : T extends object
-  ? { [K in keyof T]: UnpackNestedValue<T[K]> }
-  : T;
-
 export type DefaultValues<TFieldValues> =
   TFieldValues extends AsyncDefaultValues<TFieldValues>
     ? DeepPartial<Awaited<TFieldValues>>
@@ -383,10 +363,12 @@ useEffect(() => {
  * ```
  */
 export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
-  name: string;
-  formState: Partial<FormState<TFieldValues>> & { values: boolean };
-  callback: (data: unknown) => void;
-  exact: boolean;
+  name?: string;
+  formState?: Partial<FieldNamesMarkedBoolean<TFieldValues>> & {
+    values: boolean;
+  };
+  callback: (data: FormState<TFieldValues> & { values: TFieldValues }) => void;
+  exact?: boolean;
 }) => void;
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
