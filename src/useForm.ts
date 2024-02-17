@@ -74,7 +74,7 @@ export function useForm<
 
   if (!_formControl.current) {
     _formControl.current = {
-      ...createFormControl(props),
+      ...(props.control ? props.control : createFormControl(props)),
       formState,
     };
   }
