@@ -1346,8 +1346,8 @@ export function createFormControl<
             shouldSubscribeByName(payload.name, formState.name, payload.exact)
           ) {
             payload.callback({
-              values: _formValues,
-              ...formState,
+              values: _formValues as TFieldValues,
+              ..._formState,
             });
           }
         },
@@ -1363,7 +1363,7 @@ export function createFormControl<
           shouldSubscribeByName(payload.name, formState.name, payload.exact)
         ) {
           payload.callback({
-            values: _formValues,
+            values: _formValues as TFieldValues,
             ..._formState,
             ...formState,
           });
