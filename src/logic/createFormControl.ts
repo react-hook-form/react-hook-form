@@ -95,7 +95,6 @@ export function createFormControl<
   TContext = any,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
-  flushRootRender: () => void,
 ): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
   let _options = {
     ...defaultOptions,
@@ -657,10 +656,9 @@ export function createFormControl<
 
     isWatched(name, _names) && _subjects.state.next({ ..._formState });
     _subjects.values.next({
-      name,
+      name: _state.mount ? name : undefined,
       values: { ..._formValues },
     });
-    !_state.mount && flushRootRender();
   };
 
   const onChange: ChangeHandler = async (event) => {
@@ -1253,8 +1251,6 @@ export function createFormControl<
       watchAll: false,
       focus: '',
     };
-
-    !_state.mount && flushRootRender();
 
     _state.mount =
       !_proxyFormState.isValid ||
