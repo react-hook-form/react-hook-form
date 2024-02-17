@@ -38,6 +38,7 @@ import {
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
+  UseFromSubscribe,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -79,6 +80,7 @@ import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
+import shouldSubscribeByName from './shouldSubscribeByName';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
@@ -1332,6 +1334,43 @@ export function createFormControl<
       });
     });
 
+  const subscribe: UseFromSubscribe<TFieldValues> = (payload) => {
+    payload.formState.values &&
+      _subjects.values.subscribe({
+        next: (formState: {
+          name?: InternalFieldName;
+          values?: FieldValues;
+        }) => {
+          if (
+            shouldSubscribeByName(payload.name, formState.name, payload.exact)
+          ) {
+            payload.callback({
+              values: _formValues,
+              ...formState,
+            });
+          }
+        },
+      });
+
+    _subjects.state.subscribe({
+      next: (
+        formState: Partial<FormState<TFieldValues>> & {
+          name?: InternalFieldName;
+        },
+      ) => {
+        if (
+          shouldSubscribeByName(payload.name, formState.name, payload.exact)
+        ) {
+          payload.callback({
+            values: _formValues,
+            ..._formState,
+            ...formState,
+          });
+        }
+      },
+    });
+  };
+
   return {
     control: {
       register,
@@ -1391,6 +1430,7 @@ export function createFormControl<
         };
       },
     },
+    subscribe,
     trigger,
     register,
     handleSubmit,

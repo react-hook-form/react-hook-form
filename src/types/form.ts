@@ -362,6 +362,33 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   error?: FieldError;
 };
 
+/**
+ * This method will allow you to subscribe to formState without component render
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/docs/useform/subscribe) • [Demo](https://codesandbox.io/s/subscribe)
+ *
+ * @param options - subscription options on which formState subscribe to
+ *
+ * @example
+ * ```tsx
+const { subscribe } = useForm()
+
+useEffect(() => {
+ subscribe({
+   formState: { isDirty: true },
+   callback: () => {}
+ })
+})
+ * ```
+ */
+export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
+  name: string;
+  formState: Partial<FormState<TFieldValues>> & { values: boolean };
+  callback: (data: unknown) => void;
+  exact: boolean;
+}) => void;
+
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   /**
    * Watch and subscribe to the entire form update/change based on onChange and re-render at the useForm.
@@ -809,9 +836,9 @@ export type Control<
   _executeSchema: (
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
+  _disableForm: (disabled?: boolean) => void;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
-  _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
@@ -845,6 +872,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
+  subscribe: UseFromSubscribe<TFieldValues>;
 };
 
 export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
