@@ -109,25 +109,27 @@ export function useFieldArray<
       props.rules as RegisterOptions<TFieldValues>,
     );
 
-  React.useEffect(() => {
-    return control._subjects.array.subscribe({
-      next: ({
-        values,
-        name: fieldArrayName,
-      }: {
-        values?: FieldValues;
-        name?: InternalFieldName;
-      }) => {
-        if (fieldArrayName === _name.current || !fieldArrayName) {
-          const fieldValues = get(values, _name.current);
-          if (Array.isArray(fieldValues)) {
-            setFields(fieldValues);
-            ids.current = fieldValues.map(generateId);
+  React.useEffect(
+    () =>
+      control._subjects.array.subscribe({
+        next: ({
+          values,
+          name: fieldArrayName,
+        }: {
+          values?: FieldValues;
+          name?: InternalFieldName;
+        }) => {
+          if (fieldArrayName === _name.current || !fieldArrayName) {
+            const fieldValues = get(values, _name.current);
+            if (Array.isArray(fieldValues)) {
+              setFields(fieldValues);
+              ids.current = fieldValues.map(generateId);
+            }
           }
-        }
-      },
-    }).unsubscribe;
-  }, [control]);
+        },
+      }).unsubscribe,
+    [control],
+  );
 
   const updateValues = React.useCallback(
     <

@@ -54,11 +54,14 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
+  const _name = React.useRef(name);
+
+  _name.current = name;
 
   React.useEffect(
     () =>
       control.subscribe({
-        name: name as InternalFieldName,
+        name: _name.current as InternalFieldName,
         formState: _localProxyFormState.current,
         exact,
         callback: (formState) => {
@@ -69,7 +72,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
             });
         },
       }),
-    [control, disabled, exact, name],
+    [control, disabled, exact],
   );
 
   React.useEffect(() => {
