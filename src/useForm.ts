@@ -2,10 +2,8 @@ import React from 'react';
 
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
-import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import omit from './utils/omit';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
 /**
@@ -78,16 +76,8 @@ export function useForm<
 
   React.useEffect(() => {
     const unsubscribe = control.subscribe({
-      formState: {
-        isDirty: true,
-      },
-      callback: (formState) =>
-        shouldRenderFormState(
-          omit(formState, 'values'),
-          control._proxyFormState,
-          control._updateFormState,
-          true,
-        ) && updateFormState({ ...control._formState }),
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
     });
 
     return () => unsubscribe();

@@ -120,7 +120,9 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isValid: boolean;
 };
 
-export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
+export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
+  values?: boolean;
+};
 
 export type FormState<TFieldValues extends FieldValues> = {
   isDirty: boolean;
@@ -364,9 +366,7 @@ useEffect(() => {
  */
 export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
   name?: string;
-  formState: Partial<FieldNamesMarkedBoolean<FormState<TFieldValues>>> & {
-    values?: boolean;
-  };
+  formState: ReadFormState;
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
   ) => void;

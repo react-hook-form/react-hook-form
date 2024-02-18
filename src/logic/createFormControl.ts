@@ -64,6 +64,7 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
+import omit from '../utils/omit';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -80,6 +81,7 @@ import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
+import shouldRenderFormState from './shouldRenderFormState';
 import shouldSubscribeByName from './shouldSubscribeByName';
 import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
@@ -1357,9 +1359,16 @@ export function createFormControl<
         next: (
           formState: Partial<FormState<TFieldValues>> & {
             name?: InternalFieldName;
+            values?: TFieldValues | undefined;
           },
         ) => {
           if (
+            shouldRenderFormState(
+              formState,
+              payload.formState,
+              _updateFormState,
+              true,
+            ) &&
             shouldSubscribeByName(payload.name, formState.name, payload.exact)
           ) {
             payload.callback({
