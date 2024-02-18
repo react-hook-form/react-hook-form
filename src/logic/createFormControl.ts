@@ -64,7 +64,6 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
-import omit from '../utils/omit';
 import set from '../utils/set';
 import unset from '../utils/unset';
 

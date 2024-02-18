@@ -1,17 +1,13 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
-import shouldRenderFormState from './logic/shouldRenderFormState';
-import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import {
   FieldValues,
-  FormState,
   InternalFieldName,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { useSubscribe } from './useSubscribe';
 
 /**
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
@@ -49,7 +45,6 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   const methods = useFormContext<TFieldValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
-  const _mounted = React.useRef(true);
   const _localProxyFormState = React.useRef({
     isDirty: false,
     isLoading: false,
@@ -59,40 +54,24 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
-  const _name = React.useRef(name);
-
-  _name.current = name;
-
-  useSubscribe({
-    disabled,
-    next: (
-      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
-    ) =>
-      _mounted.current &&
-      shouldSubscribeByName(
-        _name.current as InternalFieldName,
-        value.name,
-        exact,
-      ) &&
-      shouldRenderFormState(
-        value,
-        _localProxyFormState.current,
-        control._updateFormState,
-      ) &&
-      updateFormState({
-        ...control._formState,
-        ...value,
-      }),
-    subject: control._subjects.state,
-  });
 
   React.useEffect(() => {
-    _mounted.current = true;
-    _localProxyFormState.current.isValid && control._updateValid(true);
+    control.subscribe({
+      name: name as InternalFieldName,
+      formState: _localProxyFormState.current,
+      exact,
+      callback: (formState) => {
+        !disabled &&
+          updateFormState({
+            ...control._formState,
+            ...formState,
+          });
+      },
+    });
+  }, [control, disabled, exact, name]);
 
-    return () => {
-      _mounted.current = false;
-    };
+  React.useEffect(() => {
+    _localProxyFormState.current.isValid && control._updateValid(true);
   }, [control]);
 
   return getProxyFormState(
