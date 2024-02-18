@@ -1335,8 +1335,7 @@ export function createFormControl<
     });
 
   const subscribe: UseFromSubscribe<TFieldValues> = (payload) => {
-    payload.formState &&
-      payload.formState.values &&
+    payload.formState.values &&
       _subjects.values.subscribe({
         next: (formState: {
           name?: InternalFieldName;
@@ -1353,22 +1352,23 @@ export function createFormControl<
         },
       });
 
-    _subjects.state.subscribe({
-      next: (
-        formState: Partial<FormState<TFieldValues>> & {
-          name?: InternalFieldName;
+    payload.formState &&
+      _subjects.state.subscribe({
+        next: (
+          formState: Partial<FormState<TFieldValues>> & {
+            name?: InternalFieldName;
+          },
+        ) => {
+          if (
+            shouldSubscribeByName(payload.name, formState.name, payload.exact)
+          ) {
+            payload.callback({
+              values: _formValues as TFieldValues,
+              ...formState,
+            });
+          }
         },
-      ) => {
-        if (
-          shouldSubscribeByName(payload.name, formState.name, payload.exact)
-        ) {
-          payload.callback({
-            values: _formValues as TFieldValues,
-            ...formState,
-          });
-        }
-      },
-    });
+      });
 
     return () => {
       _subjects.values.unsubscribe();

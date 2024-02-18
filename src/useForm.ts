@@ -78,6 +78,9 @@ export function useForm<
 
   React.useEffect(() => {
     const unsubscribe = control.subscribe({
+      formState: {
+        isDirty: true,
+      },
       callback: (formState) =>
         shouldRenderFormState(
           omit(formState, 'values'),

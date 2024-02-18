@@ -364,8 +364,8 @@ useEffect(() => {
  */
 export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
   name?: string;
-  formState?: Partial<FieldNamesMarkedBoolean<TFieldValues>> & {
-    values: boolean;
+  formState: Partial<FieldNamesMarkedBoolean<FormState<TFieldValues>>> & {
+    values?: boolean;
   };
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
