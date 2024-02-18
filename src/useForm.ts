@@ -5,14 +5,8 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import {
-  FieldValues,
-  FormState,
-  InternalFieldName,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
-import { useSubscribe } from './useSubscribe';
+import omit from './utils/omit';
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
 /**
  * Custom hook to manage the entire form.
@@ -82,23 +76,19 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  useSubscribe({
-    subject: control._subjects.state,
-    next: (
-      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
-    ) => {
-      if (
+  React.useEffect(() => {
+    const unsubscribe = control.subscribe({
+      callback: (formState) =>
         shouldRenderFormState(
-          value,
+          omit(formState, 'values'),
           control._proxyFormState,
           control._updateFormState,
           true,
-        )
-      ) {
-        updateFormState({ ...control._formState });
-      }
-    },
-  });
+        ) && updateFormState({ ...control._formState }),
+    });
+
+    return () => unsubscribe();
+  }, [control]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),

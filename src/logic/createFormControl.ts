@@ -1364,12 +1364,16 @@ export function createFormControl<
         ) {
           payload.callback({
             values: _formValues as TFieldValues,
-            ..._formState,
             ...formState,
           });
         }
       },
     });
+
+    return () => {
+      _subjects.values.unsubscribe();
+      _subjects.state.unsubscribe();
+    };
   };
 
   return {
@@ -1379,6 +1383,7 @@ export function createFormControl<
       getFieldState,
       handleSubmit,
       setError,
+      subscribe,
       _executeSchema,
       _getWatch,
       _getDirty,

@@ -75,9 +75,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _executeSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
+    _disableForm: (disabled?: boolean) => void;
     register: UseFormRegister<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues>;
-    _disableForm: (disabled?: boolean) => void;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
@@ -117,7 +117,7 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
 export type CriteriaMode = 'firstError' | 'all';
 
 // @public (undocumented)
-export type CustomElement<TFieldValues extends FieldValues> = {
+export type CustomElement<TFieldValues extends FieldValues> = Partial<HTMLElement> & {
     name: FieldName<TFieldValues>;
     type?: string;
     value?: any;
@@ -129,17 +129,17 @@ export type CustomElement<TFieldValues extends FieldValues> = {
 };
 
 // @public (undocumented)
-export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends BrowserNativeObject | NestedValue ? TValue : T extends object ? {
+export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends BrowserNativeObject ? TValue : T extends object ? {
     [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue>;
 } : TValue;
 
 // @public (undocumented)
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue ? T : {
-    [K in keyof T]?: T[K] extends never ? T[K] : DeepPartial<T[K]>;
+export type DeepPartial<T> = T extends BrowserNativeObject ? T : {
+    [K in keyof T]?: ExtractObjects<T[K]> extends never ? T[K] : DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
+export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject ? T : T extends ReadonlyArray<any> ? {
     [K in keyof T]: DeepPartialSkipArrayKey<T[K]>;
 } : {
     [K in keyof T]?: DeepPartialSkipArrayKey<T[K]>;
@@ -172,6 +172,9 @@ export type ErrorOption = {
 
 // @public (undocumented)
 export type EventType = 'focus' | 'blur' | 'change' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
+
+// @public (undocumented)
+export type ExtractObjects<T> = T extends infer U ? U extends object ? U : never : never;
 
 // @public (undocumented)
 export type Field = {
@@ -366,7 +369,7 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
 export type IsEqual<T1, T2> = T1 extends T2 ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2 ? true : false : false;
 
 // @public (undocumented)
-export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedValue | Date | FileList_2>, any[] | object> extends never ? true : false;
+export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], Date | FileList_2>, any[] | object> extends never ? true : false;
 
 // @public
 export type IsNever<T> = [T] extends [never] ? true : false;
@@ -426,11 +429,6 @@ export type Names = {
 
 // @public (undocumented)
 export type NativeFieldValue = string | number | boolean | null | undefined | unknown[];
-
-// @public @deprecated (undocumented)
-export type NestedValue<TValue extends object = object> = {
-    [$NestedValue]: never;
-} & TValue;
 
 // @public (undocumented)
 export type NonUndefined<T> = T extends undefined ? never : T;
@@ -567,11 +565,6 @@ export type TriggerConfig = Partial<{
     shouldFocus: boolean;
 }>;
 
-// @public @deprecated (undocumented)
-export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File | Blob ? T : T extends object ? {
-    [K in keyof T]: UnpackNestedValue<T[K]>;
-} : T;
-
 // @public
 export function useController<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: UseControllerProps<TFieldValues, TName>): UseControllerReturn<TFieldValues, TName>;
 
@@ -687,6 +680,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
+    control?: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
 }>;
 
 // @public
@@ -737,6 +731,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     control: Control<TFieldValues, TContext>;
     register: UseFormRegister<TFieldValues>;
     setFocus: UseFormSetFocus<TFieldValues>;
+    subscribe: UseFromSubscribe<TFieldValues>;
 };
 
 // @public
@@ -781,6 +776,18 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, defaultValue?: FieldPathValue<TFieldValues, TFieldName>): FieldPathValue<TFieldValues, TFieldName>;
     (callback: WatchObserver<TFieldValues>, defaultValues?: DeepPartial<TFieldValues>): Subscription;
 };
+
+// @public
+export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
+    name?: string;
+    formState?: Partial<FieldNamesMarkedBoolean<TFieldValues>> & {
+        values: boolean;
+    };
+    callback: (data: Partial<FormState<TFieldValues>> & {
+        values: TFieldValues;
+    }) => void;
+    exact?: boolean;
+}) => () => void;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues>(props: {
@@ -863,7 +870,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:440:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:452:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

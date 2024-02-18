@@ -367,9 +367,11 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
   formState?: Partial<FieldNamesMarkedBoolean<TFieldValues>> & {
     values: boolean;
   };
-  callback: (data: FormState<TFieldValues> & { values: TFieldValues }) => void;
+  callback: (
+    data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
+  ) => void;
   exact?: boolean;
-}) => void;
+}) => () => void;
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   /**
@@ -824,6 +826,7 @@ export type Control<
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
+  subscribe: UseFromSubscribe<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
