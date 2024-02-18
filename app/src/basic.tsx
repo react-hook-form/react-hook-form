@@ -25,7 +25,7 @@ const Basic: React.FC = () => {
     pattern: string;
     radio: string;
     checkbox: string;
-    checkboxArray: NestedValue<string[]>;
+    checkboxArray: string[];
     multiple: string;
     validate: string;
     nestItem: {
