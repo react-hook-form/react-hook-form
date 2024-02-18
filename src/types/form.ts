@@ -730,15 +730,14 @@ export type GetIsDirty = <TName extends InternalFieldName, TData>(
 ) => boolean;
 
 export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<
-  Partial<FormState<TFieldValues>> & { name?: InternalFieldName }
+  Partial<FormState<TFieldValues>> & {
+    name?: InternalFieldName;
+    values?: TFieldValues;
+    type?: EventType;
+  }
 >;
 
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
-  values: Subject<{
-    name?: InternalFieldName;
-    type?: EventType;
-    values: FieldValues;
-  }>;
   array: Subject<{
     name?: InternalFieldName;
     values?: FieldValues;

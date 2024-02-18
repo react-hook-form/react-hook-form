@@ -64,7 +64,6 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
-import noop from '../utils/noop';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -124,8 +123,8 @@ export function createFormControl<
       ? cloneObject(_options.values || _options.defaultValues) || {}
       : {};
   let _formValues = _options.shouldUnregister
-    ? {}
-    : cloneObject(_defaultValues);
+    ? ({} as TFieldValues)
+    : (cloneObject(_defaultValues) as TFieldValues);
   let _state = {
     action: false,
     mount: false,
@@ -148,7 +147,6 @@ export function createFormControl<
     errors: false,
   };
   const _subjects: Subjects<TFieldValues> = {
-    values: createSubject(),
     array: createSubject(),
     state: createSubject(),
   };
@@ -581,7 +579,7 @@ export function createFormControl<
           fieldReference.ref.value = fieldValue;
 
           if (!fieldReference.ref.type) {
-            _subjects.values.next({
+            _subjects.state.next({
               name,
               values: { ..._formValues },
             });
@@ -659,7 +657,7 @@ export function createFormControl<
     }
 
     isWatched(name, _names) && _subjects.state.next({ ..._formState });
-    _subjects.values.next({
+    _subjects.state.next({
       name: _state.mount ? name : undefined,
       values: { ..._formValues },
     });
@@ -717,7 +715,7 @@ export function createFormControl<
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
       !isBlurEvent &&
-        _subjects.values.next({
+        _subjects.state.next({
           name,
           type: event.type,
           values: { ..._formValues },
@@ -914,7 +912,7 @@ export function createFormControl<
     defaultValue?: DeepPartial<TFieldValues>,
   ) =>
     isFunction(name)
-      ? _subjects.values.subscribe({
+      ? _subjects.state.subscribe({
           next: (payload) =>
             name(
               _getWatch(undefined, defaultValue),
@@ -930,6 +928,31 @@ export function createFormControl<
           defaultValue,
           true,
         );
+
+  const subscribe: UseFromSubscribe<TFieldValues> = (props) =>
+    _subjects.state.subscribe({
+      next: (
+        formState: Partial<FormState<TFieldValues>> & {
+          name?: InternalFieldName;
+          values?: TFieldValues | undefined;
+        },
+      ) => {
+        if (
+          shouldSubscribeByName(props.name, formState.name, props.exact) &&
+          shouldRenderFormState(
+            formState,
+            props.formState,
+            _updateFormState,
+            props.reRenderRoot,
+          )
+        ) {
+          props.callback({
+            values: _formValues as TFieldValues,
+            ...formState,
+          });
+        }
+      },
+    }).unsubscribe;
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
@@ -949,7 +972,7 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
-    _subjects.values.next({
+    _subjects.state.next({
       values: { ..._formValues },
     });
 
@@ -1113,7 +1136,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _executeSchema();
         _formState.errors = errors;
-        fieldValues = values;
+        fieldValues = values as TFieldValues;
       } else {
         await executeBuiltInValidation(_fields);
       }
@@ -1234,16 +1257,16 @@ export function createFormControl<
 
       _formValues = props.shouldUnregister
         ? keepStateOptions.keepDefaultValues
-          ? cloneObject(_defaultValues)
-          : {}
-        : cloneObject(values);
+          ? (cloneObject(_defaultValues) as TFieldValues)
+          : ({} as TFieldValues)
+        : (cloneObject(values) as TFieldValues);
 
       _subjects.array.next({
         values: { ...values },
       });
 
-      _subjects.values.next({
-        values: { ...values },
+      _subjects.state.next({
+        values: { ...values } as TFieldValues,
       });
     }
 
@@ -1335,55 +1358,6 @@ export function createFormControl<
         isLoading: false,
       });
     });
-
-  const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
-    const formValuesSubscription = props.formState.values
-      ? _subjects.values.subscribe({
-          next: (formState: {
-            name?: InternalFieldName;
-            values?: FieldValues;
-          }) => {
-            if (
-              shouldSubscribeByName(props.name, formState.name, props.exact)
-            ) {
-              props.callback({
-                values: _formValues as TFieldValues,
-                ..._formState,
-              });
-            }
-          },
-        })
-      : { unsubscribe: noop };
-
-    const formStateSubscription = _subjects.state.subscribe({
-      next: (
-        formState: Partial<FormState<TFieldValues>> & {
-          name?: InternalFieldName;
-          values?: TFieldValues | undefined;
-        },
-      ) => {
-        if (
-          shouldSubscribeByName(props.name, formState.name, props.exact) &&
-          shouldRenderFormState(
-            formState,
-            props.formState,
-            _updateFormState,
-            props.reRenderRoot,
-          )
-        ) {
-          props.callback({
-            values: _formValues as TFieldValues,
-            ...formState,
-          });
-        }
-      },
-    });
-
-    return () => {
-      formValuesSubscription.unsubscribe();
-      formStateSubscription.unsubscribe();
-    };
-  };
 
   return {
     control: {

@@ -132,7 +132,7 @@ export function useForm<
 
   React.useEffect(() => {
     props.shouldUnregister &&
-      control._subjects.values.next({
+      control._subjects.state.next({
         values: control._getWatch(),
       });
   }, [props.shouldUnregister, control]);

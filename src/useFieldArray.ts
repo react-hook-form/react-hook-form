@@ -374,9 +374,9 @@ export function useFieldArray<
       }
     }
 
-    control._subjects.values.next({
+    control._subjects.state.next({
       name,
-      values: { ...control._formValues },
+      values: { ...control._formValues } as TFieldValues,
     });
 
     control._names.focus &&

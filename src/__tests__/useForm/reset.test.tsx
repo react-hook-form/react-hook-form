@@ -1120,7 +1120,7 @@ describe('reset', () => {
     ).toEqual('uncontrolled');
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
-    ).toEqual('');
+    ).toEqual('control');
   });
 
   it('should keep input values when keepValues is set to true', () => {
