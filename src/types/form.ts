@@ -371,6 +371,7 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
   ) => void;
   exact?: boolean;
+  reRenderRoot?: boolean;
 }) => () => void;
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {

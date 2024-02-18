@@ -78,6 +78,7 @@ export function useForm<
     const unsubscribe = control.subscribe({
       formState: control._proxyFormState,
       callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
     });
 
     return () => unsubscribe();

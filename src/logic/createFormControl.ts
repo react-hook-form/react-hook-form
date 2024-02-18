@@ -1336,17 +1336,15 @@ export function createFormControl<
       });
     });
 
-  const subscribe: UseFromSubscribe<TFieldValues> = (payload) => {
-    payload.formState.values &&
+  const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
+    props.formState.values &&
       _subjects.values.subscribe({
         next: (formState: {
           name?: InternalFieldName;
           values?: FieldValues;
         }) => {
-          if (
-            shouldSubscribeByName(payload.name, formState.name, payload.exact)
-          ) {
-            payload.callback({
+          if (shouldSubscribeByName(props.name, formState.name, props.exact)) {
+            props.callback({
               values: _formValues as TFieldValues,
               ..._formState,
             });
@@ -1354,7 +1352,7 @@ export function createFormControl<
         },
       });
 
-    payload.formState &&
+    props.formState &&
       _subjects.state.subscribe({
         next: (
           formState: Partial<FormState<TFieldValues>> & {
@@ -1363,15 +1361,15 @@ export function createFormControl<
           },
         ) => {
           if (
+            shouldSubscribeByName(props.name, formState.name, props.exact) &&
             shouldRenderFormState(
               formState,
-              payload.formState,
+              props.formState,
               _updateFormState,
-              true,
-            ) &&
-            shouldSubscribeByName(payload.name, formState.name, payload.exact)
+              props.reRenderRoot,
+            )
           ) {
-            payload.callback({
+            props.callback({
               values: _formValues as TFieldValues,
               ...formState,
             });
