@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, NestedValue, ValidationMode } from 'react-hook-form';
+import { useForm, ValidationMode } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
@@ -33,6 +33,7 @@ const Basic: React.FC = () => {
     };
     arrayItem: { test1: string; test2: string }[];
   }>({
+    control,
     mode: mode as keyof ValidationMode,
   });
   const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0);
