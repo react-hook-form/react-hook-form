@@ -33,7 +33,6 @@ const Basic: React.FC = () => {
     };
     arrayItem: { test1: string; test2: string }[];
   }>({
-    control,
     mode: mode as keyof ValidationMode,
   });
   const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0);
