@@ -11,6 +11,7 @@ import {
   FieldPathValues,
   FieldValues,
   InternalFieldName,
+  ReadFormState,
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
@@ -180,6 +181,31 @@ export function useWatch<TFieldValues extends FieldValues>(
       }
     },
   });
+
+  React.useEffect(
+    () =>
+      control.subscribe({
+        name: _name.current as InternalFieldName,
+        formState: {
+          values: true,
+        } as ReadFormState,
+        exact,
+        callback: (formState) =>
+          !disabled &&
+          updateValue(
+            cloneObject(
+              generateWatchOutput(
+                _name.current as InternalFieldName | InternalFieldName[],
+                control._names,
+                formState.values || control._formValues,
+                false,
+                defaultValue,
+              ),
+            ),
+          ),
+      }),
+    [control, defaultValue, disabled, exact],
+  );
 
   const [value, updateValue] = React.useState(
     control._getWatch(

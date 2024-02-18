@@ -86,6 +86,7 @@ import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
+import noop from '../utils/noop';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
@@ -1336,20 +1337,23 @@ export function createFormControl<
     });
 
   const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
-    props.formState.values &&
-      _subjects.values.subscribe({
-        next: (formState: {
-          name?: InternalFieldName;
-          values?: FieldValues;
-        }) => {
-          if (shouldSubscribeByName(props.name, formState.name, props.exact)) {
-            props.callback({
-              values: _formValues as TFieldValues,
-              ..._formState,
-            });
-          }
-        },
-      });
+    const formValuesSubscription = props.formState.values
+      ? _subjects.values.subscribe({
+          next: (formState: {
+            name?: InternalFieldName;
+            values?: FieldValues;
+          }) => {
+            if (
+              shouldSubscribeByName(props.name, formState.name, props.exact)
+            ) {
+              props.callback({
+                values: _formValues as TFieldValues,
+                ..._formState,
+              });
+            }
+          },
+        })
+      : { unsubscribe: noop };
 
     const formStateSubscription = _subjects.state.subscribe({
       next: (
@@ -1376,7 +1380,7 @@ export function createFormControl<
     });
 
     return () => {
-      _subjects.values.unsubscribe();
+      formValuesSubscription.unsubscribe();
       formStateSubscription.unsubscribe();
     };
   };

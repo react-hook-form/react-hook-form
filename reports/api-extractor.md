@@ -81,6 +81,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
+    subscribe: UseFromSubscribe<TFieldValues>;
 };
 
 // @public
@@ -455,6 +456,8 @@ export type Primitive = null | undefined | string | number | boolean | symbol | 
 // @public (undocumented)
 export type ReadFormState = {
     [K in keyof FormStateProxy]: boolean | 'all';
+} & {
+    values?: boolean;
 };
 
 // @public (undocumented)
@@ -780,13 +783,12 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 // @public
 export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
     name?: string;
-    formState?: Partial<FieldNamesMarkedBoolean<TFieldValues>> & {
-        values: boolean;
-    };
+    formState: ReadFormState;
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
     }) => void;
     exact?: boolean;
+    reRenderRoot?: boolean;
 }) => () => void;
 
 // @public
@@ -870,7 +872,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:452:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:453:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

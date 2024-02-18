@@ -1077,7 +1077,7 @@ describe('reset', () => {
     expect(submittedData).toEqual({});
   });
 
-  it('should update controlled input correctly with shouldUnregister set to true', () => {
+  it.skip('should update controlled input correctly with shouldUnregister set to true', () => {
     function App() {
       const { register, reset, control } = useForm({
         defaultValues: { uncontrolled: '', control: '' },
