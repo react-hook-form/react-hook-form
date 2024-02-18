@@ -991,7 +991,7 @@ describe('useWatch', () => {
   });
 
   describe('fieldArray with shouldUnregister true', () => {
-    it.skip('should watch correct input update with single field array input', async () => {
+    it('should watch correct input update with single field array input', async () => {
       const watchData: unknown[] = [];
 
       type Unpacked<T> = T extends (infer U)[] ? U : T;

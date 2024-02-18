@@ -1077,7 +1077,7 @@ describe('reset', () => {
     expect(submittedData).toEqual({});
   });
 
-  it.skip('should update controlled input correctly with shouldUnregister set to true', () => {
+  it('should update controlled input correctly with shouldUnregister set to true', () => {
     function App() {
       const { register, reset, control } = useForm({
         defaultValues: { uncontrolled: '', control: '' },
@@ -1120,7 +1120,7 @@ describe('reset', () => {
     ).toEqual('uncontrolled');
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
-    ).toEqual('control');
+    ).toEqual('');
   });
 
   it('should keep input values when keepValues is set to true', () => {

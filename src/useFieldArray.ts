@@ -39,7 +39,6 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { useSubscribe } from './useSubscribe';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -110,24 +109,25 @@ export function useFieldArray<
       props.rules as RegisterOptions<TFieldValues>,
     );
 
-  useSubscribe({
-    next: ({
-      values,
-      name: fieldArrayName,
-    }: {
-      values?: FieldValues;
-      name?: InternalFieldName;
-    }) => {
-      if (fieldArrayName === _name.current || !fieldArrayName) {
-        const fieldValues = get(values, _name.current);
-        if (Array.isArray(fieldValues)) {
-          setFields(fieldValues);
-          ids.current = fieldValues.map(generateId);
+  React.useEffect(() => {
+    return control._subjects.array.subscribe({
+      next: ({
+        values,
+        name: fieldArrayName,
+      }: {
+        values?: FieldValues;
+        name?: InternalFieldName;
+      }) => {
+        if (fieldArrayName === _name.current || !fieldArrayName) {
+          const fieldValues = get(values, _name.current);
+          if (Array.isArray(fieldValues)) {
+            setFields(fieldValues);
+            ids.current = fieldValues.map(generateId);
+          }
         }
-      }
-    },
-    subject: control._subjects.array,
-  });
+      },
+    }).unsubscribe;
+  }, [control]);
 
   const updateValues = React.useCallback(
     <
