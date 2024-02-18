@@ -64,6 +64,7 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
+import noop from '../utils/noop';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -86,7 +87,6 @@ import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
-import noop from '../utils/noop';
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
