@@ -326,6 +326,8 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 // @public (undocumented)
 export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Partial<FormState<TFieldValues>> & {
     name?: InternalFieldName;
+    values?: TFieldValues;
+    type?: EventType;
 }>;
 
 // @public (undocumented)
@@ -545,11 +547,6 @@ export type SetValueConfig = Partial<{
 
 // @public (undocumented)
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
-    values: Subject<{
-        name?: InternalFieldName;
-        type?: EventType;
-        values: FieldValues;
-    }>;
     array: Subject<{
         name?: InternalFieldName;
         values?: FieldValues;
