@@ -55,20 +55,22 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     errors: false,
   });
 
-  React.useEffect(() => {
-    control.subscribe({
-      name: name as InternalFieldName,
-      formState: _localProxyFormState.current,
-      exact,
-      callback: (formState) => {
-        !disabled &&
-          updateFormState({
-            ...control._formState,
-            ...formState,
-          });
-      },
-    });
-  }, [control, disabled, exact, name]);
+  React.useEffect(
+    () =>
+      control.subscribe({
+        name: name as InternalFieldName,
+        formState: _localProxyFormState.current,
+        exact,
+        callback: (formState) => {
+          !disabled &&
+            updateFormState({
+              ...control._formState,
+              ...formState,
+            });
+        },
+      }),
+    [control, disabled, exact, name],
+  );
 
   React.useEffect(() => {
     _localProxyFormState.current.isValid && control._updateValid(true);

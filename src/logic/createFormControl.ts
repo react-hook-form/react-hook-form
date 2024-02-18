@@ -1351,34 +1351,33 @@ export function createFormControl<
         },
       });
 
-    props.formState &&
-      _subjects.state.subscribe({
-        next: (
-          formState: Partial<FormState<TFieldValues>> & {
-            name?: InternalFieldName;
-            values?: TFieldValues | undefined;
-          },
-        ) => {
-          if (
-            shouldSubscribeByName(props.name, formState.name, props.exact) &&
-            shouldRenderFormState(
-              formState,
-              props.formState,
-              _updateFormState,
-              props.reRenderRoot,
-            )
-          ) {
-            props.callback({
-              values: _formValues as TFieldValues,
-              ...formState,
-            });
-          }
+    const formStateSubscription = _subjects.state.subscribe({
+      next: (
+        formState: Partial<FormState<TFieldValues>> & {
+          name?: InternalFieldName;
+          values?: TFieldValues | undefined;
         },
-      });
+      ) => {
+        if (
+          shouldSubscribeByName(props.name, formState.name, props.exact) &&
+          shouldRenderFormState(
+            formState,
+            props.formState,
+            _updateFormState,
+            props.reRenderRoot,
+          )
+        ) {
+          props.callback({
+            values: _formValues as TFieldValues,
+            ...formState,
+          });
+        }
+      },
+    });
 
     return () => {
       _subjects.values.unsubscribe();
-      _subjects.state.unsubscribe();
+      formStateSubscription.unsubscribe();
     };
   };
 

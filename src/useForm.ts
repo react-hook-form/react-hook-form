@@ -74,15 +74,15 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useEffect(() => {
-    const unsubscribe = control.subscribe({
-      formState: control._proxyFormState,
-      callback: () => updateFormState({ ...control._formState }),
-      reRenderRoot: true,
-    });
-
-    return () => unsubscribe();
-  }, [control]);
+  React.useEffect(
+    () =>
+      control.subscribe({
+        formState: control._proxyFormState,
+        callback: () => updateFormState({ ...control._formState }),
+        reRenderRoot: true,
+      }),
+    [control],
+  );
 
   React.useEffect(
     () => control._disableForm(props.disabled),
