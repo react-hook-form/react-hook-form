@@ -13,9 +13,13 @@ import { VALIDATION_MODE } from '../constants';
 import {
   Control,
   FieldErrors,
+  FieldValues,
+  FormState,
   RegisterOptions,
+  UseFormGetFieldState,
   UseFormRegister,
   UseFormReturn,
+  UseFormUnregister,
 } from '../types';
 import isFunction from '../utils/isFunction';
 import noop from '../utils/noop';
@@ -1715,8 +1719,9 @@ describe('useForm', () => {
   it('should update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
-    let formState: any;
-    let getFieldState: any;
+    let formState: FormState<FieldValues> = {} as FormState<FieldValues>;
+    let getFieldState: UseFormGetFieldState<FieldValues> =
+      {} as UseFormGetFieldState<FieldValues>;
     const App = () => {
       const [stateValidation, setStateValidation] = React.useState(false);
       const {
@@ -1806,8 +1811,8 @@ describe('useForm', () => {
   it('should correctly handle multiple async validation triggers', async () => {
     jest.useFakeTimers();
 
-    let formState: any;
-    let getFieldState: any;
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
     const App = () => {
       const [stateValidation, setStateValidation] = React.useState(false);
       const {
@@ -1882,8 +1887,8 @@ describe('useForm', () => {
   it('should update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 
-    let getFieldState: any;
-    let formState: any;
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
     const App = () => {
       const {
         register,
@@ -1958,8 +1963,8 @@ describe('useForm', () => {
 
   it('should remove field from validatingFields on unregister', async () => {
     jest.useFakeTimers();
-    let unregister: any;
-    let formState: any;
+    let unregister: UseFormUnregister<FieldValues>;
+    let formState = {} as FormState<FieldValues>;
     const App = () => {
       const {
         register,

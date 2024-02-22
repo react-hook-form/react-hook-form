@@ -63,6 +63,7 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
+import objectHasTruthyValue from '../utils/objectHasTruthyValue';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -177,22 +178,14 @@ export function createFormControl<
     }
   };
 
-  const _updateIsValidating = () => {
-    const isAnyFieldValidating = Object.values(
-      _formState.validatingFields,
-    ).some((val) => val);
-    _proxyFormState.isValidating &&
+  const _updateIsValidating = (isValidating: boolean, names: string[]) => {
+    names.forEach((name) => {
+      set(_formState.validatingFields, name, isValidating);
       _subjects.state.next({
-        isValidating: isAnyFieldValidating,
+        validatingFields: _formState.validatingFields,
+        isValidating: objectHasTruthyValue(_formState.validatingFields),
       });
-  };
-
-  const _updateValidatingFields = (isValidating: boolean, name: string) => {
-    set(_formState.validatingFields, name, isValidating);
-    _subjects.state.next({
-      validatingFields: _formState.validatingFields,
     });
-    _updateIsValidating();
   };
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
@@ -400,8 +393,10 @@ export function createFormControl<
       _subjects.state.next(updatedFormState);
     }
 
-    Object.keys(_formState.validatingFields).some((key) => key === name) &&
-      _updateValidatingFields(false, name);
+    _updateIsValidating(
+      false,
+      Object.keys(_formState.validatingFields).filter((key) => key === name),
+    );
   };
 
   const _executeSchema = async (name?: InternalFieldName[]) =>
@@ -680,7 +675,7 @@ export function createFormControl<
 
   const onChange: ChangeHandler = async (event) => {
     const target = event.target;
-    let name = target.name;
+    let name = target.name as string;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const getCurrentFieldValue = () =>
@@ -747,7 +742,7 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
-      _updateValidatingFields(true, name);
+      _updateIsValidating(true, [name]);
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
@@ -816,9 +811,7 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    fieldNames.forEach((name) => {
-      _updateValidatingFields(true, name);
-    });
+    _updateIsValidating(true, fieldNames);
 
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
