@@ -1824,6 +1824,7 @@ describe('useForm', () => {
       getFieldState = tmpGetFieldState;
 
       formState.validatingFields;
+      formState.isDirty;
 
       return (
         <div>
@@ -1852,10 +1853,17 @@ describe('useForm', () => {
     render(<App />);
 
     expect(formState.validatingFields).toStrictEqual({});
+    expect(formState.isDirty).toStrictEqual(false);
+    expect(formState.dirtyFields).toStrictEqual({});
+    expect(getFieldState('lastName').isDirty).toStrictEqual(false);
 
     fireEvent.change(screen.getByPlaceholderText('async'), {
       target: { value: 'test' },
     });
+
+    expect(formState.isDirty).toStrictEqual(true);
+    expect(formState.dirtyFields).toStrictEqual({ lastName: true });
+    expect(getFieldState('lastName').isDirty).toStrictEqual(true);
 
     await actComponent(async () => {
       jest.advanceTimersByTime(1000);
