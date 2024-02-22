@@ -180,10 +180,11 @@ export function createFormControl<
   const _updateIsValidating = (isValidating: boolean, names: string[]) => {
     names.forEach((name) => {
       set(_formState.validatingFields, name, isValidating);
-      _subjects.state.next({
-        validatingFields: _formState.validatingFields,
-        isValidating: objectHasTruthyValue(_formState.validatingFields),
-      });
+    });
+    _formState.isValidating = objectHasTruthyValue(_formState.validatingFields);
+    _subjects.state.next({
+      validatingFields: _formState.validatingFields,
+      isValidating: _formState.isValidating,
     });
   };
 
