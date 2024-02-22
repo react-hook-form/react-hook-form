@@ -19,6 +19,7 @@ import {
   Names,
   Path,
   PathValue,
+  ReadFormState,
   Ref,
   SetFieldValue,
   SetValueConfig,
@@ -137,7 +138,7 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  const _proxyFormState = {
+  const _proxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
     validatingFields: false,
@@ -178,6 +179,9 @@ export function createFormControl<
   };
 
   const _updateIsValidating = (isValidating: boolean, names: string[]) => {
+    if (!(_proxyFormState.isValidating || _proxyFormState.validatingFields)) {
+      return;
+    }
     names.forEach((name) => {
       set(_formState.validatingFields, name, isValidating);
     });

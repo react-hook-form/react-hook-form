@@ -318,6 +318,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
     isValidating: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
+    validatingFields: FieldNamesMarkedBoolean<TFieldValues>;
     errors: boolean;
     isValid: boolean;
 };
@@ -870,7 +871,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:443:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:444:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
