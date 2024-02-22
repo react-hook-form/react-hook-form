@@ -69,6 +69,9 @@ Thanks go to these kind and lovely sponsors!
 <a target="_blank" href='https://toss.im'>
     <img width="94" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
 </a>
+<a target="_blank" href='https://principal.com/about-us'>
+    <img width="94" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
+</a>
 <a target="_blank" href="https://graphcms.com">
     <img width="94" src="https://avatars.githubusercontent.com/u/31031438" />
 </a>
