@@ -1719,9 +1719,8 @@ describe('useForm', () => {
   it('should update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
-    let formState: FormState<FieldValues> = {} as FormState<FieldValues>;
-    let getFieldState: UseFormGetFieldState<FieldValues> =
-      {} as UseFormGetFieldState<FieldValues>;
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
     const App = () => {
       const [stateValidation, setStateValidation] = React.useState(false);
       const {
