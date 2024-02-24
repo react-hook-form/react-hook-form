@@ -19,6 +19,7 @@ import {
   Names,
   Path,
   PathValue,
+  ReadFormState,
   Ref,
   SetFieldValue,
   SetValueConfig,
@@ -941,13 +942,14 @@ export function createFormControl<
           shouldSubscribeByName(props.name, formState.name, props.exact) &&
           shouldRenderFormState(
             formState,
-            props.formState,
+            (props.formState as ReadFormState) || _proxyFormState,
             _updateFormState,
             props.reRenderRoot,
           )
         ) {
           props.callback({
             values: _formValues as TFieldValues,
+            ..._formState,
             ...formState,
           });
         }

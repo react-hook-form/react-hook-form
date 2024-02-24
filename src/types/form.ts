@@ -366,7 +366,7 @@ useEffect(() => {
  */
 export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
   name?: string;
-  formState: ReadFormState;
+  formState?: Partial<ReadFormState>;
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
   ) => void;
