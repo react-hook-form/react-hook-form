@@ -1244,7 +1244,7 @@ export function createFormControl<
     }
 
     _names = {
-      mount: new Set(),
+      mount: keepStateOptions.keepDirtyValues ? _names.mount : new Set(),
       unMount: new Set(),
       array: new Set(),
       watch: new Set(),
