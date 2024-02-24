@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act as actComponent,
   fireEvent,
   render,
   screen,
@@ -8,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues } from '../types';
+import { ControllerRenderProps, FieldValues, ValidateResult } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -259,6 +260,61 @@ describe('Controller', () => {
     fireEvent.blur(screen.getByRole('textbox'));
 
     expect(touched).toEqual({ test: true });
+  });
+
+  it('should set field to formState validatingFields and render field isValidating state', async () => {
+    jest.useFakeTimers();
+
+    const getValidateMock: (timeout: number) => Promise<ValidateResult> = (
+      timeout: number,
+    ) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, timeout);
+      });
+    };
+
+    let validatingFields: any;
+    const Component = () => {
+      const { control, formState } = useForm({ mode: 'onBlur' });
+
+      validatingFields = formState.validatingFields;
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={({ field, fieldState }) => (
+            <>
+              <div>isValidating: {String(fieldState.isValidating)}</div>
+              <input {...field} />
+            </>
+          )}
+          control={control}
+          rules={{
+            validate: () => getValidateMock(1000),
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(validatingFields).toEqual({});
+    expect(screen.getByText('isValidating: false')).toBeVisible();
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    expect(validatingFields).toEqual({ test: true });
+    expect(screen.getByText('isValidating: true')).toBeVisible();
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(1100);
+    });
+
+    expect(validatingFields).toEqual({ test: false });
+    expect(screen.getByText('isValidating: false')).toBeVisible();
   });
 
   it('should call trigger method when re-validate mode is onBlur with blur event', async () => {
