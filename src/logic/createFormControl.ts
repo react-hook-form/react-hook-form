@@ -119,8 +119,8 @@ export function createFormControl<
   };
   let _fields: FieldRefs = {};
   let _defaultValues =
-    isObject(_options.values) || isObject(_options.defaultValues)
-      ? cloneObject(_options.values || _options.defaultValues) || {}
+    isObject(_options.defaultValues) || isObject(_options.values)
+      ? cloneObject(_options.defaultValues || _options.values) || {}
       : {};
   let _formValues = _options.shouldUnregister
     ? {}
@@ -1263,7 +1263,7 @@ export function createFormControl<
     }
 
     _names = {
-      mount: new Set(),
+      mount: keepStateOptions.keepDirtyValues ? _names.mount : new Set(),
       unMount: new Set(),
       array: new Set(),
       watch: new Set(),
