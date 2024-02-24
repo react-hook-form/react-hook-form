@@ -1205,10 +1205,9 @@ export function createFormControl<
   ) => {
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
-    const values =
-      formValues && !isEmptyObject(formValues)
-        ? cloneUpdatedValues
-        : _defaultValues;
+    const values = isEmptyObject(formValues)
+      ? _defaultValues
+      : cloneUpdatedValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1282,7 +1281,9 @@ export function createFormControl<
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
-      isDirty: keepStateOptions.keepDirty
+      isDirty: isEmptyObject(formValues)
+        ? false
+        : keepStateOptions.keepDirty
         ? _formState.isDirty
         : !!(
             keepStateOptions.keepDefaultValues &&
