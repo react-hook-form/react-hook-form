@@ -1,5 +1,3 @@
-import { waitFor } from '@testing-library/react';
-
 import { createFormControl } from '../../logic';
 
 describe('subscribe', () => {
