@@ -50,6 +50,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isLoading: false,
     dirtyFields: false,
     touchedFields: false,
+    validatingFields: false,
     isValidating: false,
     isValid: false,
     errors: false,

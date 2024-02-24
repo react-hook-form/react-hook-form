@@ -92,6 +92,7 @@ export type ControllerFieldState = {
     invalid: boolean;
     isTouched: boolean;
     isDirty: boolean;
+    isValidating: boolean;
     error?: FieldError;
 };
 
@@ -311,6 +312,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+    validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -320,6 +322,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
     isValidating: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
+    validatingFields: FieldNamesMarkedBoolean<TFieldValues>;
     errors: boolean;
     isValid: boolean;
 };
@@ -390,6 +393,7 @@ export type KeepStateOptions = Partial<{
     keepIsSubmitted: boolean;
     keepIsSubmitSuccessful: boolean;
     keepTouched: boolean;
+    keepIsValidating: boolean;
     keepIsValid: boolean;
     keepSubmitCount: boolean;
 }>;
@@ -653,6 +657,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
+    isValidating: boolean;
     error?: FieldError;
 };
 
@@ -783,7 +788,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 // @public
 export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
     name?: string;
-    formState: ReadFormState;
+    formState?: Partial<ReadFormState>;
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
     }) => void;
@@ -872,7 +877,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:453:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:457:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
