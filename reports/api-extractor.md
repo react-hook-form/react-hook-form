@@ -76,12 +76,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         errors: FieldErrors;
     }>;
     _disableForm: (disabled?: boolean) => void;
+    _subscribe: FromSubscribe<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues>;
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
-    subscribe: UseFromSubscribe<TFieldValues>;
 };
 
 // @public
@@ -344,6 +344,17 @@ export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
     formDataJson: string;
     method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
+
+// @public (undocumented)
+export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
+    name?: string;
+    formState?: Partial<ReadFormState>;
+    callback: (data: Partial<FormState<TFieldValues>> & {
+        values: TFieldValues;
+    }) => void;
+    exact?: boolean;
+    reRenderRoot?: boolean;
+}) => () => void;
 
 // @public (undocumented)
 export const get: <T>(object: T, path?: string, defaultValue?: unknown) => any;
@@ -793,7 +804,6 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
         values: TFieldValues;
     }) => void;
     exact?: boolean;
-    reRenderRoot?: boolean;
 }) => () => void;
 
 // @public
@@ -877,7 +887,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:457:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:456:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
