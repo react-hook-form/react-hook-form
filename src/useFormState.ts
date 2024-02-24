@@ -61,7 +61,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
 
   React.useEffect(
     () =>
-      control.subscribe({
+      control._subscribe({
         name: _name.current as InternalFieldName,
         formState: _localProxyFormState.current,
         exact,

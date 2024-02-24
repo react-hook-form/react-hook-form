@@ -77,7 +77,7 @@ export function useForm<
 
   React.useEffect(
     () =>
-      control.subscribe({
+      control._subscribe({
         formState: control._proxyFormState,
         callback: () => updateFormState({ ...control._formState }),
         reRenderRoot: true,

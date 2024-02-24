@@ -14,6 +14,7 @@ import {
   FieldRefs,
   FieldValues,
   FormState,
+  FromSubscribe,
   GetIsDirty,
   InternalFieldName,
   Names,
@@ -141,7 +142,7 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  const _proxyFormState: ReadFormState = {
+  let _proxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
     validatingFields: false,
@@ -946,7 +947,7 @@ export function createFormControl<
           true,
         );
 
-  const subscribe: UseFromSubscribe<TFieldValues> = (props) =>
+  const _subscribe: FromSubscribe<TFieldValues> = (props) =>
     _subjects.state.subscribe({
       next: (
         formState: Partial<FormState<TFieldValues>> & {
@@ -971,6 +972,15 @@ export function createFormControl<
         }
       },
     }).unsubscribe;
+
+  const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
+    _state.mount = true;
+    _proxyFormState = {
+      ..._proxyFormState,
+      ...props.formState,
+    };
+    return _subscribe(props);
+  };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
     for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
@@ -1386,7 +1396,7 @@ export function createFormControl<
       getFieldState,
       handleSubmit,
       setError,
-      subscribe,
+      _subscribe,
       _executeSchema,
       _getWatch,
       _getDirty,

@@ -156,7 +156,7 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   React.useEffect(
     () =>
-      control.subscribe({
+      control._subscribe({
         name: _name.current as InternalFieldName,
         formState: {
           values: true,

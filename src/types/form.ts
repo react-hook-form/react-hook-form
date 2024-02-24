@@ -375,7 +375,6 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
   ) => void;
   exact?: boolean;
-  reRenderRoot?: boolean;
 }) => () => void;
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
@@ -776,6 +775,16 @@ export type BatchFieldArrayUpdate = <
   shouldUpdateFieldsAndErrors?: boolean,
 ) => void;
 
+export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
+  name?: string;
+  formState?: Partial<ReadFormState>;
+  callback: (
+    data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
+  ) => void;
+  exact?: boolean;
+  reRenderRoot?: boolean
+}) => () => void;
+
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
@@ -825,12 +834,12 @@ export type Control<
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
   _disableForm: (disabled?: boolean) => void;
+  _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
-  subscribe: UseFromSubscribe<TFieldValues>;
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
