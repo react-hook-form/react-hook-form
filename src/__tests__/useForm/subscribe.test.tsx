@@ -1,14 +1,19 @@
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+
 import { createFormControl } from '../../logic';
+import { useForm } from '../../useForm';
 
 describe('subscribe', () => {
-  it('should subscribe to correct form state', () => {
+  it('should subscribe to correct form state and prevent form re-render', async () => {
     const callback = jest.fn();
 
-    const { subscribe, register, setValue } = createFormControl({
+    const control = createFormControl({
       defaultValues: {
         test: '',
       },
     });
+    const { subscribe, register, setValue } = control;
 
     subscribe({
       formState: {
@@ -38,6 +43,66 @@ describe('subscribe', () => {
       errors: {},
       disabled: false,
       name: 'test',
+    });
+
+    let renderCount = 0;
+
+    const App = () => {
+      useForm({
+        control,
+      });
+
+      renderCount++;
+
+      return <p>{renderCount === 1 ? 'yes' : 'no'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('yes');
+    });
+  });
+
+  it('should re-render by hook form state subscription', async () => {
+    const callback = jest.fn();
+
+    const control = createFormControl({
+      defaultValues: {
+        test: '',
+      },
+    });
+    const { subscribe, register, setValue } = control;
+
+    subscribe({
+      formState: {
+        values: true,
+      },
+      callback,
+    });
+
+    register('test');
+    setValue('test', 'data', { shouldDirty: true });
+
+    let renderCount = 0;
+
+    const App = () => {
+      const {
+        formState: { isDirty },
+      } = useForm({
+        control,
+      });
+
+      isDirty;
+      renderCount++;
+
+      return <p>{renderCount === 2 ? 'yes' : 'no'}</p>;
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('yes');
     });
   });
 
