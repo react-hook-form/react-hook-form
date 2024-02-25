@@ -51,17 +51,17 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _getDirty: GetIsDirty;
     _resetDefaultValues: Noop;
     _formState: FormState<TFieldValues>;
-    _updateValid: (shouldUpdateValid?: boolean) => void;
-    _updateFormState: (formState: Partial<FormState<TFieldValues>>) => void;
+    _setValid: (shouldUpdateValid?: boolean) => void;
+    _setFormState: (formState: Partial<FormState<TFieldValues>>) => void;
     _fields: FieldRefs;
     _formValues: FieldValues;
     _proxyFormState: ReadFormState;
     _defaultValues: Partial<DefaultValues<TFieldValues>>;
     _getWatch: WatchInternal<TFieldValues>;
-    _updateFieldArray: BatchFieldArrayUpdate;
+    _setFieldArray: BatchFieldArrayUpdate;
     _getFieldArray: <TFieldArrayValues>(name: InternalFieldName) => Partial<TFieldArrayValues>[];
     _setErrors: (errors: FieldErrors<TFieldValues>) => void;
-    _updateDisabledField: (props: {
+    _setDisabledField: (props: {
         disabled?: boolean;
         name: FieldName<any>;
         value?: unknown;
@@ -72,7 +72,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         field?: undefined;
         fields?: FieldRefs;
     })) => void;
-    _executeSchema: (names: InternalFieldName[]) => Promise<{
+    _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
     _disableForm: (disabled?: boolean) => void;

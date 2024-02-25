@@ -1466,9 +1466,6 @@ export function createFormControl<
       get _formState() {
         return _formState;
       },
-      set _formState(value) {
-        _formState = value;
-      },
       get _options() {
         return _options;
       },

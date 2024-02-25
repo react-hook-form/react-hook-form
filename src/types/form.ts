@@ -830,9 +830,7 @@ export type Control<
         }
     ),
   ) => void;
-  _runSchema: (
-    names: InternalFieldName[],
-  ) => Promise<{ errors: FieldErrors }>;
+  _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
