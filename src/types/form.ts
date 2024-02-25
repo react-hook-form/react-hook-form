@@ -803,7 +803,6 @@ export type Control<
   _resetDefaultValues: Noop;
   _formState: FormState<TFieldValues>;
   _setValid: (shouldUpdateValid?: boolean) => void;
-  _setFormState: (formState: Partial<FormState<TFieldValues>>) => void;
   _fields: FieldRefs;
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;

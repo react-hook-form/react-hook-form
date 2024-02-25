@@ -1,6 +1,5 @@
 import { VALIDATION_MODE } from '../constants';
 import {
-  Control,
   FieldValues,
   FormState,
   InternalFieldName,
@@ -14,7 +13,7 @@ export default <T extends FieldValues, K extends ReadFormState>(
     values?: T;
   },
   _proxyFormState: K,
-  updateFormState: Control<T>['_setFormState'],
+  updateFormState: (formState: Partial<FormState<T>>) => void,
   isRoot?: boolean,
 ) => {
   updateFormState(formStateData);

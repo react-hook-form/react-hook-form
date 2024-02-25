@@ -1433,7 +1433,6 @@ export function createFormControl<
       _setValid,
       _setFieldArray,
       _setDisabledField,
-      _setFormState,
       _setErrors,
       _getFieldArray,
       _reset,
