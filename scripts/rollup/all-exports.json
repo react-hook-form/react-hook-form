@@ -10,5 +10,6 @@
   "useForm",
   "useFormContext",
   "useFormState",
-  "useWatch"
+  "useWatch",
+  "createFormControl"
 ]
