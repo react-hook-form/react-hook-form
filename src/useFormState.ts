@@ -77,7 +77,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
   );
 
   React.useEffect(() => {
-    _localProxyFormState.current.isValid && control._updateValid(true);
+    _localProxyFormState.current.isValid && control._setValid(true);
   }, [control]);
 
   return getProxyFormState(

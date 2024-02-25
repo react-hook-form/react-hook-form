@@ -170,14 +170,14 @@ export function createFormControl<
       timer = setTimeout(callback, wait);
     };
 
-  const _updateValid = async (shouldUpdateValid?: boolean) => {
+  const _setValid = async (shouldUpdateValid?: boolean) => {
     if (
       _proxyFormState.isValid ||
       _proxySubscribeFormState.isValid ||
       shouldUpdateValid
     ) {
       const isValid = _options.resolver
-        ? isEmptyObject((await _executeSchema()).errors)
+        ? isEmptyObject((await _runSchema()).errors)
         : await executeBuiltInValidation(_fields, true);
 
       if (isValid !== _formState.isValid) {
@@ -209,7 +209,7 @@ export function createFormControl<
     });
   };
 
-  const _updateFieldArray: BatchFieldArrayUpdate = (
+  const _setFieldArray: BatchFieldArrayUpdate = (
     name,
     values = [],
     method,
@@ -307,7 +307,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && _updateValid();
+      _state.mount && _setValid();
     }
   };
 
@@ -423,7 +423,7 @@ export function createFormControl<
     );
   };
 
-  const _executeSchema = async (name?: InternalFieldName[]) =>
+  const _runSchema = async (name?: InternalFieldName[]) =>
     _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
@@ -436,7 +436,7 @@ export function createFormControl<
     );
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
-    const { errors } = await _executeSchema(names);
+    const { errors } = await _runSchema(names);
 
     if (names) {
       for (const name of names) {
@@ -759,7 +759,7 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         (_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
-          _updateValid();
+          _setValid();
 
         return (
           shouldRender &&
@@ -772,7 +772,7 @@ export function createFormControl<
       _updateIsValidating(true, [name]);
 
       if (_options.resolver) {
-        const { errors } = await _executeSchema([name]);
+        const { errors } = await _runSchema([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
 
@@ -864,7 +864,7 @@ export function createFormControl<
           }),
         )
       ).every(Boolean);
-      !(!validationResult && !_formState.isValid) && _updateValid();
+      !(!validationResult && !_formState.isValid) && _setValid();
     } else {
       validationResult = isValid = await executeBuiltInValidation(_fields);
     }
@@ -985,7 +985,7 @@ export function createFormControl<
           shouldRenderFormState(
             formState,
             (props.formState as ReadFormState) || _proxyFormState,
-            _updateFormState,
+            _setFormState,
             props.reRenderRoot,
           )
         ) {
@@ -1039,10 +1039,10 @@ export function createFormControl<
       ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
 
-    !options.keepIsValid && _updateValid();
+    !options.keepIsValid && _setValid();
   };
 
-  const _updateDisabledField: Control<TFieldValues>['_updateDisabledField'] = ({
+  const _setDisabledField: Control<TFieldValues>['_setDisabledField'] = ({
     disabled,
     name,
     field,
@@ -1076,7 +1076,7 @@ export function createFormControl<
     _names.mount.add(name);
 
     if (field) {
-      _updateDisabledField({
+      _setDisabledField({
         field,
         disabled: options.disabled,
         name,
@@ -1192,7 +1192,7 @@ export function createFormControl<
       });
 
       if (_options.resolver) {
-        const { errors, values } = await _executeSchema();
+        const { errors, values } = await _runSchema();
         _formState.errors = errors;
         fieldValues = values as TFieldValues;
       } else {
@@ -1258,7 +1258,7 @@ export function createFormControl<
 
       if (!options.keepError) {
         unset(_formState.errors, name);
-        _proxyFormState.isValid && _updateValid();
+        _proxyFormState.isValid && _setValid();
       }
 
       _subjects.state.next({ ..._formState });
@@ -1401,7 +1401,7 @@ export function createFormControl<
     }
   };
 
-  const _updateFormState = (
+  const _setFormState = (
     updatedFormState: Partial<FormState<TFieldValues>>,
   ) => {
     _formState = {
@@ -1427,21 +1427,21 @@ export function createFormControl<
       handleSubmit,
       setError,
       _subscribe,
-      _executeSchema,
+      _runSchema,
       _getWatch,
       _getDirty,
-      _updateValid,
-      _removeUnmounted,
-      _updateFieldArray,
-      _updateDisabledField,
+      _setValid,
+      _setFieldArray,
+      _setDisabledField,
+      _setFormState,
+      _setErrors,
       _getFieldArray,
       _reset,
       _resetDefaultValues,
-      _updateFormState,
+      _removeUnmounted,
       _disableForm,
       _subjects,
       _proxyFormState,
-      _setErrors,
       get _fields() {
         return _fields;
       },

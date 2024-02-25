@@ -119,7 +119,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (!control._state.mount) {
-      control._updateValid();
+      control._setValid();
       control._state.mount = true;
     }
 

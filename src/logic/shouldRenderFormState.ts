@@ -14,7 +14,7 @@ export default <T extends FieldValues, K extends ReadFormState>(
     values?: T;
   },
   _proxyFormState: K,
-  updateFormState: Control<T>['_updateFormState'],
+  updateFormState: Control<T>['_setFormState'],
   isRoot?: boolean,
 ) => {
   updateFormState(formStateData);
