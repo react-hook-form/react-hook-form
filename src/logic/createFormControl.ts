@@ -416,7 +416,7 @@ export function createFormControl<
     );
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
-    const { errors } = await _executeSchema(names);
+    const { errors, values } = await _executeSchema(names);
 
     if (names) {
       for (const name of names) {
@@ -427,6 +427,12 @@ export function createFormControl<
       }
     } else {
       _formState.errors = errors;
+    }
+
+    if(isEmptyObject(errors)) {
+      for(const [key, value] of Object.entries(values)) {
+        setValue(key as Path<TFieldValues>, value)
+      }
     }
 
     return errors;
