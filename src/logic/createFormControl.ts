@@ -429,9 +429,9 @@ export function createFormControl<
       _formState.errors = errors;
     }
 
-    if(isEmptyObject(errors)) {
-      for(const [key, value] of Object.entries(values)) {
-        setValue(key as Path<TFieldValues>, value)
+    if (isEmptyObject(errors)) {
+      for (const [key, value] of Object.entries(values)) {
+        setValue(key as Path<TFieldValues>, value);
       }
     }
 
