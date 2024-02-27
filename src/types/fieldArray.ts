@@ -169,26 +169,25 @@ export type UseFieldArrayAppend<
 export type UseFieldArrayRemove = (index?: number | number[]) => void;
 
 /**
- * Insert field/fields at particular position and focus.
+ * Remove item/items at particular position. (if none giving then remove all)
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
- * @param index - insert position
- * @param value - insert field or fields
- * @param options - focus options
+ * @param index/ indexes - indexes/index to remove (if no arg is giving remove all items)
  *
  * @example
  * ```tsx
- * <button type="button" onClick={() => insert(1, { name: "data" })}>Insert</button>
- * <button type="button" onClick={() => insert(1, { name: "data" }, { shouldFocus: false })}>Insert</button>
- * <button
- *   type="button"
- *   onClick={() => insert(1, [{ name: "data" }, { name: "data" }])}
- * >
- *   Insert
- * </button>
- * ```
+ *  * ```tsx
+   const form_array = useFieldArray({ control , name: 'array_field_name' })
+ * {form_array.fields.map((data, index) => <div key={data.id}>
+        <button type="button" onClick={() => {
+            remove(index)
+        }}>X</button>
+    </div>)}
+<button type="button" onClick={() => {
+            remove()
+        }}>remove all</button> * ```
  */
 export type UseFieldArrayInsert<
   TFieldValues extends FieldValues,
