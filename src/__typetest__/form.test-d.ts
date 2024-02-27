@@ -40,6 +40,7 @@ import { useForm } from '../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test'));
   }
@@ -56,6 +57,7 @@ import { useForm } from '../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test', formState));
   }
