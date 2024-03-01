@@ -300,14 +300,14 @@ describe('unset', () => {
         test: [{ firstName: 'test' }],
       };
 
-      //@ts-expect-error
+      // @ts-expect-error
       test.test.root = {
         test: 'message',
       };
 
       unset(test, 'test.0.firstName');
 
-      //@ts-expect-error
+      // @ts-expect-error
       expect(test.test.root).toBeDefined();
     });
   });
