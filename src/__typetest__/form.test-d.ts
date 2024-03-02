@@ -25,23 +25,6 @@ import { useForm } from '../useForm';
 
     handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
   }
-
-  /** it should infer the correct TTransformedValues from useForm generic */ {
-    /* eslint-disable react-hooks/rules-of-hooks */
-    const { handleSubmit } = useForm<
-      { test: string },
-      unknown,
-      { test: string } | { test1: number }
-    >();
-
-    handleSubmit((data) => {
-      // @ts-expect-error `data` should be union and thus should not be assignable to `{ test: string }`
-      expectType<{ test: string }>(data);
-      // @ts-expect-error `data` should be union and thus should not be assignable to `{ test1: number }`
-      expectType<{ test1: number }>(data);
-      expectType<{ test: string } | { test1: number }>(data);
-    });
-  }
 }
 
 /** {@link UseFormGetFieldState} */ {
@@ -57,6 +40,7 @@ import { useForm } from '../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test'));
   }
@@ -73,6 +57,7 @@ import { useForm } from '../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test', formState));
   }
