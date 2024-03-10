@@ -64,7 +64,6 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
-import objectHasTruthyValue from '../utils/objectHasTruthyValue';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -178,18 +177,19 @@ export function createFormControl<
     }
   };
 
-  const _updateIsValidating = (isValidating: boolean, names: string[]) => {
-    if (!(_proxyFormState.isValidating || _proxyFormState.validatingFields)) {
-      return;
+  const _updateIsValidating = (names: string[], isValidating?: boolean) => {
+    if (_proxyFormState.isValidating || _proxyFormState.validatingFields) {
+      names.forEach((name) =>
+        set(_formState.validatingFields, name, !!isValidating),
+      );
+      _formState.isValidating = Object.values(_formState.validatingFields).some(
+        (val) => val,
+      );
+      _subjects.state.next({
+        validatingFields: _formState.validatingFields,
+        isValidating: _formState.isValidating,
+      });
     }
-    names.forEach((name) => {
-      set(_formState.validatingFields, name, isValidating);
-    });
-    _formState.isValidating = objectHasTruthyValue(_formState.validatingFields);
-    _subjects.state.next({
-      validatingFields: _formState.validatingFields,
-      isValidating: _formState.isValidating,
-    });
   };
 
   const _updateFieldArray: BatchFieldArrayUpdate = (
@@ -398,7 +398,6 @@ export function createFormControl<
     }
 
     _updateIsValidating(
-      false,
       Object.keys(_formState.validatingFields).filter((key) => key === name),
     );
   };
@@ -749,7 +748,7 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
-      _updateIsValidating(true, [name]);
+      _updateIsValidating([name], true);
 
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
@@ -819,7 +818,7 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    _updateIsValidating(true, fieldNames);
+    _updateIsValidating(fieldNames, true);
 
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
@@ -853,8 +852,9 @@ export function createFormControl<
         : { name }),
       ...(_options.resolver || !name ? { isValid } : {}),
       errors: _formState.errors,
-      isValidating: false,
     });
+
+    _updateIsValidating(fieldNames);
 
     options.shouldFocus &&
       !validationResult &&
