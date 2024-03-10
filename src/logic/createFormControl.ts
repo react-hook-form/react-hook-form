@@ -180,7 +180,7 @@ export function createFormControl<
   const _updateIsValidating = (names: string[], isValidating?: boolean) => {
     if (_proxyFormState.isValidating || _proxyFormState.validatingFields) {
       names.forEach((name) =>
-        set(_formState.validatingFields, name, isValidating),
+        set(_formState.validatingFields, name, !!isValidating),
       );
       _formState.isValidating = Object.values(_formState.validatingFields).some(
         (val) => val,
