@@ -123,6 +123,7 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  id: string;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -848,6 +849,8 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
+  id: string;
+  submit: () => void;
 };
 
 export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{

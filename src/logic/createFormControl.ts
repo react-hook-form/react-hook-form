@@ -1353,6 +1353,19 @@ export function createFormControl<
       });
     });
 
+  const id = props.id || `form-${self.crypto.randomUUID()}`;
+
+  const submit = () => {
+    try {
+      document?.getElementById(id)?.dispatchEvent(
+        new Event('submit', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    } catch (_) {}
+  };
+
   return {
     control: {
       register,
@@ -1425,5 +1438,7 @@ export function createFormControl<
     setError,
     setFocus,
     getFieldState,
+    id,
+    submit,
   };
 }
