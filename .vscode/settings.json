@@ -2,6 +2,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "deno.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "jest.jestCommandLine": "pnpm test --",
   "jest.autoRun": {
