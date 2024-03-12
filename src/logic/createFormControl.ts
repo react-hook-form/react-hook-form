@@ -813,7 +813,9 @@ export function createFormControl<
     let isValid;
     let validationResult;
     // TODO: get all field names here somehow
-    const fieldNames = convertToArrayPayload(name ?? []) as InternalFieldName[];
+    const fieldNames = convertToArrayPayload(
+      name ?? Array.from(_names.mount),
+    ) as InternalFieldName[];
 
     _updateIsValidating(fieldNames, true);
 
