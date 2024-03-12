@@ -812,7 +812,6 @@ export function createFormControl<
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
     let isValid;
     let validationResult;
-    // TODO: get all field names here somehow
     const fieldNames = convertToArrayPayload(
       name ?? Array.from(_names.mount),
     ) as InternalFieldName[];
