@@ -2003,7 +2003,7 @@ describe('useForm', () => {
       jest.runAllTimers();
     });
     expect(formState.validatingFields).toEqual({
-      firstName: false
+      firstName: false,
     });
   });
 
