@@ -815,9 +815,7 @@ export function createFormControl<
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
     let isValid;
     let validationResult;
-    const fieldNames = convertToArrayPayload(
-      name ?? Array.from(_names.mount),
-    ) as InternalFieldName[];
+    const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
