@@ -701,12 +701,10 @@ export function createFormControl<
 
   const onChange: ChangeHandler = async (event) => {
     const target = event.target;
-    let name = target.name as string;
+    let name: string = target.name;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
-    const getCurrentFieldValue = () =>
-      target.type ? getFieldValue(field._f) : getEventValue(event);
-    const _updateIsFieldValueUpdated = (fieldValue: any): void => {
+    const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
       isFieldValueUpdated =
         Number.isNaN(fieldValue) ||
         fieldValue === get(_formValues, name, fieldValue);
@@ -715,7 +713,9 @@ export function createFormControl<
     if (field) {
       let error;
       let isValid;
-      const fieldValue = getCurrentFieldValue();
+      const fieldValue = target.type
+        ? getFieldValue(field._f)
+        : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
@@ -741,12 +741,7 @@ export function createFormControl<
         field._f.onChange(event);
       }
 
-      const fieldState = updateTouchAndDirty(
-        name,
-        fieldValue,
-        isBlurEvent,
-        false,
-      );
+      const fieldState = updateTouchAndDirty(name, fieldValue, isBlurEvent);
 
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
