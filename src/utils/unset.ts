@@ -15,9 +15,9 @@ function baseGet(object: any, updatePath: (string | number)[]) {
   return object;
 }
 
-function isEmptyArray(obj: unknown[]) {
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key) && !isUndefined(obj[key])) {
+function isEmptyArray(object: unknown[]) {
+  for (const key in object) {
+    if (object.hasOwnProperty(key) && !isUndefined(object[key])) {
       return false;
     }
   }

@@ -25,31 +25,31 @@ describe('set', () => {
     });
 
     const test4 = { foo: { bar: 'baz' } };
-    expect(set(test4, 'foo.obj.key', 'test')).toEqual('test');
+    expect(set(test4, 'foo.object.key', 'test')).toEqual('test');
     expect(test4).toEqual({
       foo: {
         bar: 'baz',
-        obj: { key: 'test' },
+        object: { key: 'test' },
       },
     });
 
     const test5 = { foo: 1 };
-    expect(set(test5, 'foo.obj.key', 3)).toEqual(3);
+    expect(set(test5, 'foo.object.key', 3)).toEqual(3);
     expect(test5).toEqual({
       foo: {
-        obj: {
+        object: {
           key: 3,
         },
       },
     });
 
     const test6 = {};
-    expect(set(test6, 'foo.arr[0].obj.key', 1)).toEqual(1);
+    expect(set(test6, 'foo.arr[0].object.key', 1)).toEqual(1);
     expect(test6).toEqual({
       foo: {
         arr: [
           {
-            obj: {
+            object: {
               key: 1,
             },
           },
