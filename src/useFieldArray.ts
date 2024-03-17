@@ -39,7 +39,6 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { useSubscribe } from './useSubscribe';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -110,24 +109,27 @@ export function useFieldArray<
       props.rules as RegisterOptions<TFieldValues>,
     );
 
-  useSubscribe({
-    next: ({
-      values,
-      name: fieldArrayName,
-    }: {
-      values?: FieldValues;
-      name?: InternalFieldName;
-    }) => {
-      if (fieldArrayName === _name.current || !fieldArrayName) {
-        const fieldValues = get(values, _name.current);
-        if (Array.isArray(fieldValues)) {
-          setFields(fieldValues);
-          ids.current = fieldValues.map(generateId);
-        }
-      }
-    },
-    subject: control._subjects.array,
-  });
+  React.useEffect(
+    () =>
+      control._subjects.array.subscribe({
+        next: ({
+          values,
+          name: fieldArrayName,
+        }: {
+          values?: FieldValues;
+          name?: InternalFieldName;
+        }) => {
+          if (fieldArrayName === _name.current || !fieldArrayName) {
+            const fieldValues = get(values, _name.current);
+            if (Array.isArray(fieldValues)) {
+              setFields(fieldValues);
+              ids.current = fieldValues.map(generateId);
+            }
+          }
+        },
+      }).unsubscribe,
+    [control],
+  );
 
   const updateValues = React.useCallback(
     <
@@ -138,7 +140,7 @@ export function useFieldArray<
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
-      control._updateFieldArray(name, updatedFieldArrayValues);
+      control._setFieldArray(name, updatedFieldArrayValues);
     },
     [control, name],
   );
@@ -162,7 +164,7 @@ export function useFieldArray<
     ids.current = appendAt(ids.current, appendValue.map(generateId));
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(name, updatedFieldArrayValues, appendAt, {
+    control._setFieldArray(name, updatedFieldArrayValues, appendAt, {
       argA: fillEmptyArray(value),
     });
   };
@@ -182,7 +184,7 @@ export function useFieldArray<
     ids.current = prependAt(ids.current, prependValue.map(generateId));
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(name, updatedFieldArrayValues, prependAt, {
+    control._setFieldArray(name, updatedFieldArrayValues, prependAt, {
       argA: fillEmptyArray(value),
     });
   };
@@ -194,7 +196,7 @@ export function useFieldArray<
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(name, updatedFieldArrayValues, removeArrayAt, {
+    control._setFieldArray(name, updatedFieldArrayValues, removeArrayAt, {
       argA: index,
     });
   };
@@ -216,7 +218,7 @@ export function useFieldArray<
     ids.current = insertAt(ids.current, index, insertValue.map(generateId));
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(name, updatedFieldArrayValues, insertAt, {
+    control._setFieldArray(name, updatedFieldArrayValues, insertAt, {
       argA: index,
       argB: fillEmptyArray(value),
     });
@@ -228,7 +230,7 @@ export function useFieldArray<
     swapArrayAt(ids.current, indexA, indexB);
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
+    control._setFieldArray(
       name,
       updatedFieldArrayValues,
       swapArrayAt,
@@ -246,7 +248,7 @@ export function useFieldArray<
     moveArrayAt(ids.current, from, to);
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
-    control._updateFieldArray(
+    control._setFieldArray(
       name,
       updatedFieldArrayValues,
       moveArrayAt,
@@ -275,7 +277,7 @@ export function useFieldArray<
     );
     updateValues(updatedFieldArrayValues);
     setFields([...updatedFieldArrayValues]);
-    control._updateFieldArray(
+    control._setFieldArray(
       name,
       updatedFieldArrayValues,
       updateAt,
@@ -297,7 +299,7 @@ export function useFieldArray<
     ids.current = updatedFieldArrayValues.map(generateId);
     updateValues([...updatedFieldArrayValues]);
     setFields([...updatedFieldArrayValues]);
-    control._updateFieldArray(
+    control._setFieldArray(
       name,
       [...updatedFieldArrayValues],
       <T>(data: T): T => data,
@@ -321,7 +323,7 @@ export function useFieldArray<
         control._formState.isSubmitted)
     ) {
       if (control._options.resolver) {
-        control._executeSchema([name]).then((result) => {
+        control._runSchema([name]).then((result) => {
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
 
@@ -372,9 +374,9 @@ export function useFieldArray<
       }
     }
 
-    control._subjects.values.next({
+    control._subjects.state.next({
       name,
-      values: { ...control._formValues },
+      values: { ...control._formValues } as TFieldValues,
     });
 
     control._names.focus &&
@@ -392,12 +394,12 @@ export function useFieldArray<
 
     control._names.focus = '';
 
-    control._updateValid();
+    control._setValid();
     _actioned.current = false;
   }, [fields, name, control]);
 
   React.useEffect(() => {
-    !get(control._formValues, name) && control._updateFieldArray(name);
+    !get(control._formValues, name) && control._setFieldArray(name);
 
     return () => {
       (control._options.shouldUnregister || shouldUnregister) &&

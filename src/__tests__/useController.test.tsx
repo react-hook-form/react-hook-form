@@ -109,7 +109,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([2, 5]);
+    expect(renderCounter).toEqual([3, 5]);
   });
 
   describe('checkbox', () => {
