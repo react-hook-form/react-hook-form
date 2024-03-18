@@ -130,7 +130,7 @@ export function useController<
         ? { disabled: formState.disabled || disabled }
         : {}),
       onChange: React.useCallback(
-        (event) =>
+        async (event) =>
           _registerProps.current.onChange({
             target: {
               value: getEventValue(event),
@@ -141,7 +141,7 @@ export function useController<
         [name],
       ),
       onBlur: React.useCallback(
-        () =>
+        async () =>
           _registerProps.current.onBlur({
             target: {
               value: get(control._formValues, name),
