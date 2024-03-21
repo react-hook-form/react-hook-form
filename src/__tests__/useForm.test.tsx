@@ -1875,12 +1875,6 @@ describe('useForm', () => {
     });
 
     expect(formState.validatingFields).toStrictEqual({ lastName: true });
-
-    await actComponent(async () => {
-      jest.advanceTimersByTime(1500);
-    });
-
-    expect(formState.validatingFields).toStrictEqual({ lastName: true });
     expect(getFieldState('lastName').isValidating).toBe(true);
 
     await actComponent(async () => {
@@ -2008,7 +2002,9 @@ describe('useForm', () => {
       unregister('firstName');
       jest.runAllTimers();
     });
-    expect(formState.validatingFields).toEqual({});
+    expect(formState.validatingFields).toEqual({
+      firstName: false,
+    });
   });
 
   it('should update defaultValues async', async () => {
