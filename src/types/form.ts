@@ -821,7 +821,7 @@ export type Control<
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: DeepPartial<TFieldValues>,
+  value: TFieldValues,
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
