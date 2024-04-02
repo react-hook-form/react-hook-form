@@ -179,16 +179,17 @@ export function createFormControl<
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (_proxyFormState.isValidating || _proxyFormState.validatingFields) {
-      (names || Array.from(_names.mount)).forEach(
-        (name) =>
-          name && set(_formState.validatingFields, name, !!isValidating),
-      );
-      _formState.isValidating = Object.values(_formState.validatingFields).some(
-        (val) => val,
-      );
+      (names || Array.from(_names.mount)).forEach((name) => {
+        if (name) {
+          isValidating
+            ? set(_formState.validatingFields, name, isValidating)
+            : unset(_formState.validatingFields, name);
+        }
+      });
+
       _subjects.state.next({
         validatingFields: _formState.validatingFields,
-        isValidating: _formState.isValidating,
+        isValidating: !isEmptyObject(_formState.validatingFields),
       });
     }
   };
