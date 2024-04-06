@@ -313,7 +313,7 @@ describe('Controller', () => {
       jest.advanceTimersByTime(1100);
     });
 
-    expect(validatingFields).toEqual({ test: false });
+    expect(validatingFields).toEqual({});
     expect(screen.getByText('isValidating: false')).toBeVisible();
   });
 
