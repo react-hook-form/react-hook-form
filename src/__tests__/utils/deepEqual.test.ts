@@ -95,4 +95,45 @@ describe('deepEqual', () => {
       deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),
     ).toBeTruthy();
   });
+
+  it('should compare set object', () => {
+    expect(deepEqual(new Set([1, 2]), new Set([2, 1]))).toBeTruthy();
+
+    expect(deepEqual(new Set([1, 2]), new Set([1, 1, 2]))).toBeTruthy();
+
+    expect(deepEqual(new Set([[1, 2]]), new Set([[1, 3, 2]]))).toBeFalsy();
+
+    expect(
+      deepEqual(
+        new Set([
+          { test: '123' },
+          {
+            test: [
+              1,
+              2,
+              {
+                test: '345',
+              },
+            ],
+          },
+          1,
+          2,
+        ]),
+        new Set([
+          {
+            test: [
+              1,
+              2,
+              {
+                test: '345',
+              },
+            ],
+          },
+          1,
+          2,
+          { test: '123' },
+        ]),
+      ),
+    ).toBeTruthy();
+  });
 });
