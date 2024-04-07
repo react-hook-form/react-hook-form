@@ -906,7 +906,7 @@ export type FormProps<
     onSubmit: TTransformedValues extends FieldValues
       ? FormSubmitHandler<TTransformedValues>
       : FormSubmitHandler<TFieldValues>;
-    method: 'post' | 'put' | 'delete';
+    method: 'post' | 'put' | 'delete' | 'POST' | 'PUT' | 'DELETE';
     children: React.ReactNode | React.ReactNode[];
     render: (props: {
       submit: (e?: React.FormEvent) => void;
