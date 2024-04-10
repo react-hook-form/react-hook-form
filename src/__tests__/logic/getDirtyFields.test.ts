@@ -341,4 +341,66 @@ describe('getDirtyFields', () => {
       ],
     });
   });
+
+  it('should work with set object', () => {
+    expect(
+      getDirtyFields(
+        {
+          test: {
+            test1: new Set(['test']),
+            test2: new Set(['test', 'test1']),
+          },
+          test2: {
+            test1: new Set([
+              {
+                test: new Set([
+                  'test',
+                  {
+                    test1: 'test1',
+                  },
+                ]),
+              },
+            ]),
+            test2: new Set([
+              {
+                test: 'test1',
+              },
+            ]),
+          },
+        },
+        {
+          test: {
+            test1: new Set(['test']),
+            test2: new Set(['test1', 'test']),
+          },
+          test2: {
+            test1: new Set([
+              {
+                test: new Set([
+                  'test',
+                  {
+                    test1: 'test1',
+                  },
+                ]),
+              },
+            ]),
+            test2: new Set([
+              {
+                test: 'test',
+              },
+            ]),
+          },
+        },
+      ),
+    ).toEqual({
+      test: {
+        test1: false,
+        test2: false,
+      },
+      test2: {
+        test1: false,
+        test2: true,
+      },
+    });
+  });
 });
