@@ -18,10 +18,9 @@ export default function deepEqual(object1: any, object2: any) {
       return false;
     }
 
-    const setArr1 = Array.from(object1);
     const setArr2 = Array.from(object2);
 
-    return setArr1.every((elem1): boolean =>
+    return Array.from(object1).every((elem1): boolean =>
       setArr2.some((elem2): boolean => deepEqual(elem1, elem2)),
     );
   }
@@ -45,8 +44,8 @@ export default function deepEqual(object1: any, object2: any) {
 
       if (
         (isDateObject(val1) && isDateObject(val2)) ||
-        (isObject(val1) && isObject(val2)) ||
         (isSetObject(val1) && isSetObject(val2)) ||
+        (isObject(val1) && isObject(val2)) ||
         (Array.isArray(val1) && Array.isArray(val2))
           ? !deepEqual(val1, val2)
           : val1 !== val2
