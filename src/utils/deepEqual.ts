@@ -18,10 +18,8 @@ export default function deepEqual(object1: any, object2: any) {
       return false;
     }
 
-    const setArr2 = Array.from(object2);
-
     return Array.from(object1).every((elem1): boolean =>
-      setArr2.some((elem2): boolean => deepEqual(elem1, elem2)),
+      Array.from(object2).some((elem2): boolean => deepEqual(elem1, elem2)),
     );
   }
 
