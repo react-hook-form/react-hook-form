@@ -684,6 +684,7 @@ export function createFormControl<
       return;
     }
 
+    _state.mount = true;
     const target = event.target;
     let name = target.name as string;
     let isFieldValueUpdated = true;
