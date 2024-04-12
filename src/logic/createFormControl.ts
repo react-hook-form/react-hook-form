@@ -680,6 +680,7 @@ export function createFormControl<
   };
 
   const onChange: ChangeHandler = async (event) => {
+    _state.mount = true;
     const target = event.target;
     let name = target.name as string;
     let isFieldValueUpdated = true;
