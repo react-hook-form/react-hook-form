@@ -874,8 +874,7 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = {
-      ..._defaultValues,
-      ...(_state.mount ? _formValues : {}),
+      ...(_state.mount ? _formValues : _defaultValues),
     };
 
     return isUndefined(fieldNames)
