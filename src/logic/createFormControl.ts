@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
@@ -1353,7 +1355,7 @@ export function createFormControl<
       });
     });
 
-  const id = props.id || `form-${self.crypto.randomUUID()}`;
+  const id = props.id || `form-${uuidv4()}`;
 
   const submit = () => {
     try {
