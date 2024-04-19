@@ -84,7 +84,6 @@
     "@types/react": "^18.2.58",
     "@types/react-dom": "^18.2.19",
     "@types/testing-library__jest-dom": "^5.14.9",
-    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "bundlewatch": "^0.3.3",
@@ -146,8 +145,5 @@
   },
   "engines": {
     "node": ">=12.22.0"
-  },
-  "dependencies": {
-    "uuid": "^9.0.1"
   }
 }
