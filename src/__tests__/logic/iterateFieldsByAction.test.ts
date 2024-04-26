@@ -103,6 +103,7 @@ describe('focusFieldBy', () => {
     iterateFieldsByAction(
       {
         test: {
+          // @ts-ignore
           name: {
             first: {
               _f: {
@@ -144,6 +145,7 @@ describe('focusFieldBy', () => {
     iterateFieldsByAction(
       {
         personal: {
+          // @ts-ignore
           name: {
             first: {
               _f: {
