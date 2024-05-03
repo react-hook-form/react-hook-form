@@ -177,17 +177,19 @@ export function createFormControl<
     }
   };
 
-  const _updateIsValidating = (names: string[], isValidating?: boolean) => {
+  const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (_proxyFormState.isValidating || _proxyFormState.validatingFields) {
-      names.forEach((name) =>
-        set(_formState.validatingFields, name, !!isValidating),
-      );
-      _formState.isValidating = Object.values(_formState.validatingFields).some(
-        (val) => val,
-      );
+      (names || Array.from(_names.mount)).forEach((name) => {
+        if (name) {
+          isValidating
+            ? set(_formState.validatingFields, name, isValidating)
+            : unset(_formState.validatingFields, name);
+        }
+      });
+
       _subjects.state.next({
         validatingFields: _formState.validatingFields,
-        isValidating: _formState.isValidating,
+        isValidating: !isEmptyObject(_formState.validatingFields),
       });
     }
   };
@@ -396,14 +398,11 @@ export function createFormControl<
 
       _subjects.state.next(updatedFormState);
     }
-
-    _updateIsValidating(
-      Object.keys(_formState.validatingFields).filter((key) => key === name),
-    );
   };
 
-  const _executeSchema = async (name?: InternalFieldName[]) =>
-    _options.resolver!(
+  const _executeSchema = async (name?: InternalFieldName[]) => {
+    _updateIsValidating(name, true);
+    const result = await _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
@@ -413,6 +412,9 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
+    _updateIsValidating(name);
+    return result;
+  };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const { errors } = await _executeSchema(names);
@@ -448,6 +450,7 @@ export function createFormControl<
 
         if (_f) {
           const isFieldArrayRoot = _names.array.has(_f.name);
+          _updateIsValidating([name], true);
           const fieldError = await validateField(
             field,
             _formValues,
@@ -455,6 +458,7 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
             isFieldArrayRoot,
           );
+          _updateIsValidating([name]);
 
           if (fieldError[_f.name]) {
             context.valid = false;
@@ -676,6 +680,7 @@ export function createFormControl<
   };
 
   const onChange: ChangeHandler = async (event) => {
+    _state.mount = true;
     const target = event.target;
     let name = target.name as string;
     let isFieldValueUpdated = true;
@@ -744,8 +749,6 @@ export function createFormControl<
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
-      _updateIsValidating([name], true);
-
       if (_options.resolver) {
         const { errors } = await _executeSchema([name]);
 
@@ -769,6 +772,7 @@ export function createFormControl<
           isValid = isEmptyObject(errors);
         }
       } else {
+        _updateIsValidating([name], true);
         error = (
           await validateField(
             field,
@@ -777,6 +781,7 @@ export function createFormControl<
             _options.shouldUseNativeValidation,
           )
         )[name];
+        _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
 
@@ -814,8 +819,6 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    _updateIsValidating(fieldNames, true);
-
     if (_options.resolver) {
       const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
@@ -850,8 +853,6 @@ export function createFormControl<
       errors: _formState.errors,
     });
 
-    _updateIsValidating(fieldNames);
-
     options.shouldFocus &&
       !validationResult &&
       iterateFieldsByAction(
@@ -869,8 +870,7 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = {
-      ..._defaultValues,
-      ...(_state.mount ? _formValues : {}),
+      ...(_state.mount ? _formValues : _defaultValues),
     };
 
     return isUndefined(fieldNames)
