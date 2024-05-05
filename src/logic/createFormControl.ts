@@ -701,6 +701,7 @@ export function createFormControl<
   };
 
   const onChange: ChangeHandler = async (event) => {
+    _state.mount = true;
     const target = event.target;
     let name: string = target.name;
     let isFieldValueUpdated = true;
@@ -890,8 +891,7 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>,
   ) => {
     const values = {
-      ..._defaultValues,
-      ...(_state.mount ? _formValues : {}),
+      ...(_state.mount ? _formValues : _defaultValues),
     };
 
     return isUndefined(fieldNames)
