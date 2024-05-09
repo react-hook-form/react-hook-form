@@ -1108,6 +1108,7 @@ export function createFormControl<
         },
         0,
         false,
+        true,
       );
     }
   };
