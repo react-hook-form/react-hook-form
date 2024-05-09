@@ -64,4 +64,70 @@ describe('focusFieldBy', () => {
       );
     }).not.toThrow();
   });
+
+  it('should call action on all refs when `runOnAllRefs` is true', () => {
+    const action = jest.fn(() => 1 as const);
+    iterateFieldsByAction(
+      {
+        test: {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'test',
+            },
+            refs: [
+              {
+                value: '1',
+              },
+              {
+                value: '2',
+              },
+              {
+                value: '3',
+              },
+            ] as unknown as HTMLInputElement[],
+          },
+        },
+      },
+      action,
+      0,
+      false,
+      true,
+    );
+    expect(action).toHaveBeenCalledTimes(3);
+  });
+
+  it('should call action on first ref only when `runOnAllRefs` is false', () => {
+    const action = jest.fn(() => 1 as const);
+    iterateFieldsByAction(
+      {
+        test: {
+          _f: {
+            name: 'test',
+            ref: {
+              name: 'test',
+            },
+            refs: [
+              {
+                value: '1',
+              },
+              {
+                value: '2',
+              },
+              {
+                value: '3',
+              },
+            ] as unknown as HTMLInputElement[],
+          },
+        },
+      },
+      action,
+      0,
+      false,
+      false,
+    );
+
+    expect(action).toHaveBeenCalledTimes(1);
+    expect(action).toHaveBeenCalledWith({ value: '1' }, 'test');
+  });
 });
