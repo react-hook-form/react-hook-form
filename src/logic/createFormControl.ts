@@ -275,11 +275,11 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      const defaultValue = get(
-        _formValues,
-        name,
-        isUndefined(value) ? get(_defaultValues, name) : value,
-      );
+      const fieldValue = get(_formValues, name);
+      const defaultValue =
+        isNullOrUndefined(fieldValue) || isNullOrUndefined(value)
+          ? get(_defaultValues, name)
+          : value;
 
       isUndefined(defaultValue) ||
       (ref && (ref as HTMLInputElement).defaultChecked) ||
