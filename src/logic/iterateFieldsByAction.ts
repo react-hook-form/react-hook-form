@@ -6,7 +6,7 @@ const iterateFieldsByAction = (
   fields: FieldRefs,
   action: (ref: Ref, name: string) => 1 | undefined | void,
   fieldsNames?: Set<InternalFieldName> | InternalFieldName[] | 0,
-  abortEarly?: boolean,
+  abortEarly: boolean = true,
   runOnAllRefs?: boolean,
 ) => {
   const iterationAdjustedAction = (refs: HTMLInputElement[], key: string) => {
@@ -26,10 +26,10 @@ const iterateFieldsByAction = (
           _f.refs &&
           _f.refs[0] &&
           iterationAdjustedAction(_f.refs, key) &&
-          !abortEarly
+          abortEarly
         ) {
           break;
-        } else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) {
+        } else if (_f.ref && action(_f.ref, _f.name) && abortEarly) {
           break;
         } else {
           iterateFieldsByAction(currentField, action);

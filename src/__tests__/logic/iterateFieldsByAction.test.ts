@@ -91,7 +91,7 @@ describe('focusFieldBy', () => {
       },
       action,
       0,
-      false,
+      true,
       true,
     );
     expect(action).toHaveBeenCalledTimes(3);
@@ -123,7 +123,7 @@ describe('focusFieldBy', () => {
       },
       action,
       0,
-      false,
+      true,
       false,
     );
 
