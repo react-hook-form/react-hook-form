@@ -3,7 +3,7 @@ import React from 'react';
 import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
-import { ErrorOption, FieldError, FieldErrors } from './errors';
+import { ErrorOption, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
 import {
@@ -362,7 +362,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   isDirty: boolean;
   isTouched: boolean;
   isValidating: boolean;
-  error?: FieldError;
+  error?: FieldErrors<TFieldValues>[TFieldName];
 };
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
