@@ -1,6 +1,6 @@
 import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
 
-describe('focusFieldBy', () => {
+describe('iterateFieldsByAction', () => {
   it('should focus on the first error it encounter', () => {
     const focus = jest.fn();
     iterateFieldsByAction(
@@ -65,7 +65,7 @@ describe('focusFieldBy', () => {
     }).not.toThrow();
   });
 
-  it('should call action on all refs when `runOnAllRefs` is true', () => {
+  it('should call action on all refs when `iterateRefs` is true', () => {
     const action = jest.fn(() => 1 as const);
     iterateFieldsByAction(
       {
@@ -97,7 +97,7 @@ describe('focusFieldBy', () => {
     expect(action).toHaveBeenCalledTimes(3);
   });
 
-  it('should call action on first ref only when `runOnAllRefs` is false', () => {
+  it('should call action on first ref only when `iterateRefs` is false', () => {
     const action = jest.fn(() => 1 as const);
     iterateFieldsByAction(
       {
