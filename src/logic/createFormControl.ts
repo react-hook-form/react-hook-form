@@ -1098,13 +1098,16 @@ export function createFormControl<
       iterateFieldsByAction(
         _fields,
         (ref, name) => {
-          let requiredDisabledState = disabled;
-          const currentField = get(_fields, name);
-          if (currentField && isBoolean(currentField._f.disabled)) {
-            requiredDisabledState ||= currentField._f.disabled;
-          }
+          const currentField: Field = get(_fields, name);
+          if (currentField) {
+            ref.disabled = currentField._f.disabled || disabled;
 
-          ref.disabled = requiredDisabledState;
+            if (Array.isArray(currentField._f.refs)) {
+              currentField._f.refs.forEach((inputRef) => {
+                inputRef.disabled = currentField._f.disabled || disabled;
+              });
+            }
+          }
         },
         0,
         false,
