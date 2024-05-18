@@ -983,7 +983,7 @@ export function createFormControl<
     fields,
     value,
   }) => {
-    if (isBoolean(disabled)) {
+    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
       const inputValue = disabled
         ? undefined
         : isUndefined(value)
