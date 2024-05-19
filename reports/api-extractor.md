@@ -867,6 +867,7 @@ export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | Inte
 export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
+    value?: unknown;
 }) => void;
 
 // Warnings were encountered during analysis:
