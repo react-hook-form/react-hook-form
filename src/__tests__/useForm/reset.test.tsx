@@ -9,16 +9,12 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import {
-  Control,
-  UseFormRegister,
-  UseFormReset,
-  UseFormReturn,
-} from '../../types';
+import { Control, UseFormRegister, UseFormReturn } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
+import noop from '../../utils/noop';
 
 jest.useFakeTimers();
 
@@ -36,8 +32,8 @@ describe('reset', () => {
           test: 'data',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -1133,7 +1129,7 @@ describe('reset', () => {
       const [show, setShow] = React.useState(true);
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('firstName')} placeholder="First Name" />
           {show && <input {...register('lastName')} placeholder="Last Name" />}
           <button
@@ -1276,47 +1272,6 @@ describe('reset', () => {
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('changed2');
-  });
-
-  it('should allow reset at child level before useForm mounted', () => {
-    type FormValues = {
-      firstName: string;
-    };
-
-    const NestChild = ({ reset }: { reset: UseFormReset<FormValues> }) => {
-      React.useEffect(() => {
-        reset({
-          firstName: 'test',
-        });
-      }, [reset]);
-
-      return null;
-    };
-
-    const Child = ({ reset }: { reset: UseFormReset<FormValues> }) => {
-      return <NestChild reset={reset} />;
-    };
-
-    function App() {
-      const { register, reset, handleSubmit } = useForm<FormValues>({
-        defaultValues: {
-          firstName: '',
-        },
-      });
-
-      return (
-        <form onSubmit={handleSubmit(() => {})}>
-          <input {...register('firstName')} />
-          <Child reset={reset} />
-        </form>
-      );
-    }
-
-    render(<App />);
-
-    expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
-      'test',
-    );
   });
 
   it('should reset field array async', () => {
@@ -1500,8 +1455,8 @@ describe('reset', () => {
           test: 'data',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 

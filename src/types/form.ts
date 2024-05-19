@@ -3,7 +3,7 @@ import React from 'react';
 import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
-import { ErrorOption, FieldError, FieldErrors } from './errors';
+import { ErrorOption, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
 import {
@@ -21,7 +21,7 @@ import {
   FieldPathValues,
 } from './path';
 import { Resolver } from './resolvers';
-import { DeepMap, DeepPartial, DeepPartialSkipArrayKey, Noop } from './utils';
+import { DeepMap, DeepPartial, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -43,12 +43,6 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   : T extends object
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
-
-export type PartialFormValues<TFieldValues extends FieldValues> =
-  DeepPartialSkipArrayKey<TFieldValues>;
-
-export type WatchedForm<TFieldValues extends FieldValues> =
-  PartialFormValues<TFieldValues>;
 
 export type DefaultValues<TFieldValues> =
   TFieldValues extends AsyncDefaultValues<TFieldValues>
@@ -141,6 +135,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
+  validatingFields: FieldNamesMarkedBoolean<TFieldValues>;
   errors: boolean;
   isValid: boolean;
 };
@@ -160,6 +155,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+  validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
 };
 
@@ -172,6 +168,7 @@ export type KeepStateOptions = Partial<{
   keepIsSubmitted: boolean;
   keepIsSubmitSuccessful: boolean;
   keepTouched: boolean;
+  keepIsValidating: boolean;
   keepIsValid: boolean;
   keepSubmitCount: boolean;
 }>;
@@ -364,7 +361,8 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
-  error?: FieldError;
+  isValidating: boolean;
+  error?: FieldErrors<TFieldValues>[TFieldName];
 };
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
@@ -381,7 +379,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * const formValues = watch();
    * ```
    */
-  (): WatchedForm<TFieldValues>;
+  (): TFieldValues;
   /**
    * Watch and subscribe to an array of fields used outside of render.
    *
@@ -627,9 +625,13 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues = TFieldValues,
+  TTransformedValues extends FieldValues | undefined = undefined,
 > = (
-  onValid: SubmitHandler<TTransformedValues>,
+  onValid: TTransformedValues extends undefined
+    ? SubmitHandler<TFieldValues>
+    : TTransformedValues extends FieldValues
+    ? SubmitHandler<TTransformedValues>
+    : never,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
@@ -765,7 +767,6 @@ export type BatchFieldArrayUpdate = <
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: Noop;
@@ -812,7 +813,7 @@ export type Control<
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
-  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
+  handleSubmit: UseFormHandleSubmit<TFieldValues>;
   _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -824,13 +825,14 @@ export type WatchObserver<TFieldValues extends FieldValues> = (
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
+    value?: unknown;
   },
 ) => void;
 
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues = TFieldValues,
+  TTransformedValues extends FieldValues | undefined = undefined,
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
@@ -844,7 +846,7 @@ export type UseFormReturn<
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
   unregister: UseFormUnregister<TFieldValues>;
-  control: Control<TFieldValues, TContext, TTransformedValues>;
+  control: Control<TFieldValues, TContext>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
 };
@@ -876,7 +878,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues = TFieldValues,
+  TTransformedValues extends FieldValues | undefined = undefined,
 > = {
   children: React.ReactNode | React.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;

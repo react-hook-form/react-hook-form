@@ -164,4 +164,91 @@ describe('setError', () => {
       screen.findByText('not found');
     });
   });
+
+  it('should allow sequential calls to set with child after ancestor', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ input: { first: string; last: string } }>(),
+    );
+    result.current.formState.errors;
+
+    act(() => {
+      result.current.setError('input', {
+        type: 'test',
+        message: 'Some error that depends on both fields',
+      });
+    });
+
+    expect(result.current.formState.errors).toEqual({
+      input: {
+        type: 'test',
+        message: 'Some error that depends on both fields',
+        ref: undefined,
+      },
+    });
+
+    act(() => {
+      result.current.setError('input.first', {
+        type: 'test',
+        message: 'Name must be capitalized',
+      });
+    });
+
+    expect(result.current.formState.errors).toEqual({
+      input: {
+        type: 'test',
+        message: 'Some error that depends on both fields',
+        ref: undefined,
+        first: {
+          type: 'test',
+          message: 'Name must be capitalized',
+          ref: undefined,
+        },
+      },
+    });
+  });
+
+  it('should allow sequential calls to set with ancestor after child', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ input: { first: string; last: string } }>(),
+    );
+
+    result.current.formState.errors;
+
+    act(() => {
+      result.current.setError('input.first', {
+        type: 'test',
+        message: 'Name must be capitalized',
+      });
+    });
+
+    expect(result.current.formState.errors).toEqual({
+      input: {
+        first: {
+          type: 'test',
+          message: 'Name must be capitalized',
+          ref: undefined,
+        },
+      },
+    });
+
+    act(() => {
+      result.current.setError('input', {
+        type: 'test',
+        message: 'Some error that depends on both fields',
+      });
+    });
+
+    expect(result.current.formState.errors).toEqual({
+      input: {
+        type: 'test',
+        message: 'Some error that depends on both fields',
+        ref: undefined,
+        first: {
+          type: 'test',
+          message: 'Name must be capitalized',
+          ref: undefined,
+        },
+      },
+    });
+  });
 });

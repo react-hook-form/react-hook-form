@@ -8,6 +8,7 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
 import isFunction from '../../utils/isFunction';
+import noop from '../../utils/noop';
 
 describe('watch', () => {
   it('should return undefined when input gets unregister', async () => {
@@ -287,7 +288,7 @@ describe('watch', () => {
       output.push(watch());
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((item, index) => {
             return (
               <div key={item.id}>

@@ -10,11 +10,12 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { UseFormRegister, WatchedForm } from '../../types';
+import { UseFormRegister } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
+import noop from '../../utils/noop';
 
 describe('register', () => {
   it('should support register passed to ref', async () => {
@@ -41,8 +42,8 @@ describe('register', () => {
           test: 'testData',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -478,7 +479,7 @@ describe('register', () => {
     type FormValue = {
       test: string;
     };
-    const watchedValue: WatchedForm<FormValue>[] = [];
+    const watchedValue: FormValue[] = [];
     const Component = () => {
       const { register, watch } = useForm<FormValue>({
         defaultValues: {
@@ -798,7 +799,7 @@ describe('register', () => {
         return (
           <>
             <FormProvider {...formMethods}>
-              <form onSubmit={handleSubmit(() => {})}>
+              <form onSubmit={handleSubmit(noop)}>
                 <Checkbox />
                 <button>Submit</button>
                 <p>{formState.errors.test?.message}</p>

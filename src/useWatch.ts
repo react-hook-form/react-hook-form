@@ -12,7 +12,6 @@ import {
   FieldValues,
   InternalFieldName,
   UseWatchProps,
-  WatchedForm,
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useSubscribe } from './useSubscribe';
@@ -45,7 +44,7 @@ export function useWatch<
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
-}): WatchedForm<TFieldValues>;
+}): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *

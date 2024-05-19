@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 describe('useFieldArray focus', () => {
   it('should not focus any element when shouldFocus is set to false', () => {
@@ -80,7 +81,7 @@ describe('useFieldArray focus', () => {
       const { fields, insert } = useFieldArray({ control, name: 'test' });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, index) => (
             <div key={field.id}>
               <input

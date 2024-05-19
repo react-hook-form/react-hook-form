@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.51.0] - 2024-3-2
+
+### Added
+
+- added 'validateFields' to formState
+
+```tsx
+const { formState: { validateFields } } = useForm();
+```
+
 ## [7.49.0] - 2023-12-10
 
 ### Added

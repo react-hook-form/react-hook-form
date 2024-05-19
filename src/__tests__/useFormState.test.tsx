@@ -8,6 +8,7 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
+import noop from '../utils/noop';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -275,7 +276,7 @@ describe('useFormState', () => {
       count++;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Test control={control} />
           <button>Submit</button>
         </form>
@@ -755,7 +756,7 @@ describe('useFormState', () => {
       const { errors } = useFormState({ control });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('firstName', { required: 'Required' })} />
           <p>{errors.firstName?.message}</p>
           <button>Submit</button>
