@@ -339,7 +339,7 @@ export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
     method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
 
-// @public (undocumented)
+// @public
 export const get: <T>(object: T, path?: string, defaultValue?: unknown) => any;
 
 // @public (undocumented)
@@ -531,7 +531,7 @@ export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
     errors: {};
 };
 
-// @public (undocumented)
+// @public
 export const set: (object: FieldValues, path: string, value?: unknown) => FieldValues;
 
 // @public (undocumented)

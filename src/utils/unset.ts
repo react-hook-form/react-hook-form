@@ -24,6 +24,14 @@ function isEmptyArray(obj: unknown[]) {
   return true;
 }
 
+/**
+ * Removes the property at `path` of `object`.
+ * @remarks `Path` could be string or 'a.b.c' or 'a[0].b.c'
+ * @example
+ * const obj = { a: { b: { c: 42 } } };
+ * unset(obj, 'a.b.c'); // Output: { a: { b: {} } }
+ * unset(obj, 'a.b');   // Output: { a: {} }
+ */
 export default function unset(object: any, path: string | (string | number)[]) {
   const paths = Array.isArray(path)
     ? path

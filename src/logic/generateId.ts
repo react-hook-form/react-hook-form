@@ -1,3 +1,7 @@
+/** 
+ Generates a unique identifier string in the UUID v4 format. 
+ NOT for serious cryptography.
+ */
 export default () => {
   const d =
     typeof performance === 'undefined' ? Date.now() : performance.now() * 1000;

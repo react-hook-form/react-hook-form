@@ -1,5 +1,8 @@
 import convertToArrayPayload from './convertToArrayPayload';
 
+/**
+ * Insert value or values into specific index,
+ */
 export default function insert<T>(data: T[], index: number): (T | undefined)[];
 export default function insert<T>(
   data: T[],

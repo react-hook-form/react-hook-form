@@ -1,7 +1,11 @@
 import isObject from './isObject';
 import isPlainObject from './isPlainObject';
 import isWeb from './isWeb';
-
+/**
+ * Deeply clones a given object,
+ * including handling special types like Date and Set.
+ * It also handles arrays and plain objects.
+ */
 export default function cloneObject<T>(data: T): T {
   let copy: any;
   const isArray = Array.isArray(data);

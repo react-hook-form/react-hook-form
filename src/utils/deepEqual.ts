@@ -2,7 +2,26 @@ import isObject from '../utils/isObject';
 
 import isDateObject from './isDateObject';
 import isPrimitive from './isPrimitive';
-
+/**
+ * Compares two values deeply to determine
+ * if they are equal. Handles primitives,
+ * dates, objects, and arrays.
+ *
+ * @example
+ * const obj1 = { a: 1, b: { c: 2 } };
+ * const obj2 = { a: 1, b: { c: 2 } };
+ * deepEqual(obj1, obj2)    // Output: true
+ *
+ * const obj3 = { a: 1, b: { c: 3 } };
+ * deepEqual(obj1, obj3)    // Output: false
+ *
+ * const date1 = new Date(2020, 1, 1);
+ * const date2 = new Date(2020, 1, 1);
+ * deepEqual(date1, date2) // Output: true
+ *
+ * @remarks This function compares complex
+ * structures including nested objects and arrays.
+ */
 export default function deepEqual(object1: any, object2: any) {
   if (isPrimitive(object1) || isPrimitive(object2)) {
     return object1 === object2;

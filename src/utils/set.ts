@@ -4,6 +4,16 @@ import isKey from './isKey';
 import isObject from './isObject';
 import stringToPath from './stringToPath';
 
+/**
+ * Sets the value at the specified path of the object.
+ * If a portion of the path does not exist, it is created.
+ * @example
+ * ```typescript
+ * const object = {};
+ * setValueAtPath(object, 'a.b.c', 42);
+ * Output: { a: { b: { c: 42 } } }
+ * ```
+ */
 export default (object: FieldValues, path: string, value?: unknown) => {
   let index = -1;
   const tempPath = isKey(path) ? [path] : stringToPath(path);

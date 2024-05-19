@@ -2,6 +2,34 @@ import { FieldRefs, InternalFieldName, Ref } from '../types';
 import { get } from '../utils';
 import isObject from '../utils/isObject';
 
+/**
+ * Iterates over field references and performs
+ * an action on each field. This function traverses
+ * through the field references, applying the given
+ * action to each field.
+ * @remarks The traversal can be limited to specific field names,
+ * and it can be aborted early based on the action's return value.
+ *
+ * @example
+ * const fields = {
+ *   field1: {
+ *     _f: {
+ *       ref: document.createElement('input'),
+ *       name: 'field1',
+ *     }},
+ *   field2: {
+ *     _f: {
+ *       refs: [document.createElement('input')],
+ *       name: 'field2',
+ *     }}};
+ *
+ * iterateFieldsByAction(fields, (ref, name) => {
+ *   console.log(name, ref);
+ * });
+ * Output:
+ *  field1 <input>
+ *  field2 <input>
+ */
 const iterateFieldsByAction = (
   fields: FieldRefs,
   action: (ref: Ref, name: string) => 1 | undefined | void,
