@@ -7,6 +7,7 @@ const iterateFieldsByAction = (
   action: (ref: Ref, name: string) => 1 | undefined | void,
   fieldsNames?: Set<InternalFieldName> | InternalFieldName[] | 0,
   abortEarly?: boolean,
+  iterateRefs?: boolean,
 ) => {
   for (const key of fieldsNames || Object.keys(fields)) {
     const field = get(fields, key);
@@ -15,7 +16,16 @@ const iterateFieldsByAction = (
       const { _f, ...currentField } = field;
 
       if (_f) {
-        if (_f.refs && _f.refs[0] && action(_f.refs[0], key) && !abortEarly) {
+        if (iterateRefs && _f.refs && !abortEarly) {
+          for (const ref of _f.refs) {
+            action(ref, key);
+          }
+        } else if (
+          _f.refs &&
+          _f.refs[0] &&
+          action(_f.refs[0], key) &&
+          !abortEarly
+        ) {
           break;
         } else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) {
           break;
