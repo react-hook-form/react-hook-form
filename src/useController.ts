@@ -6,6 +6,7 @@ import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import set from './utils/set';
 import { EVENTS } from './constants';
 import {
   ControllerFieldState,
@@ -20,7 +21,6 @@ import {
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
-import { set } from './utils';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
