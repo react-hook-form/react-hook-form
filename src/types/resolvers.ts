@@ -12,9 +12,10 @@ export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
   errors: FieldErrors<TFieldValues>;
 };
 
-export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
-  | ResolverSuccess<TFieldValues>
-  | ResolverError<TFieldValues>;
+export type ResolverResult<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues extends FieldValues = TFieldValues,
+> = ResolverSuccess<TTransformedValues> | ResolverError<TFieldValues>;
 
 export interface ResolverOptions<TFieldValues extends FieldValues> {
   criteriaMode?: CriteriaMode;
@@ -26,8 +27,11 @@ export interface ResolverOptions<TFieldValues extends FieldValues> {
 export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = (
   values: TFieldValues,
   context: TContext | undefined,
   options: ResolverOptions<TFieldValues>,
-) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
+) =>
+  | Promise<ResolverResult<TFieldValues, TTransformedValues>>
+  | ResolverResult<TFieldValues, TTransformedValues>;

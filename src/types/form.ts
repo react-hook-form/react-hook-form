@@ -107,6 +107,7 @@ type AsyncDefaultValues<TFieldValues> = (
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = Partial<{
   mode: Mode;
   disabled: boolean;
@@ -115,7 +116,7 @@ export type UseFormProps<
   values: TFieldValues;
   errors: FieldErrors<TFieldValues>;
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
-  resolver: Resolver<TFieldValues, TContext>;
+  resolver: Resolver<TFieldValues, TContext, TTransformedValues>;
   context: TContext;
   shouldFocusError: boolean;
   shouldUnregister: boolean;
@@ -774,7 +775,7 @@ export type Control<
     watch: boolean;
   };
   _reset: UseFormReset<TFieldValues>;
-  _options: UseFormProps<TFieldValues, TContext>;
+  _options: UseFormProps<TFieldValues, TContext, TTransformedValues>;
   _getDirty: GetIsDirty;
   _resetDefaultValues: Noop;
   _formState: FormState<TFieldValues>;

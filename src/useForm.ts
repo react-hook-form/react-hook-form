@@ -48,7 +48,7 @@ export function useForm<
   TContext = any,
   TTransformedValues extends FieldValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined

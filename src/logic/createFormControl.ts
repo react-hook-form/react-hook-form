@@ -96,7 +96,7 @@ export function createFormControl<
   TContext = any,
   TTransformedValues extends FieldValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): Omit<
   UseFormReturn<TFieldValues, TContext, TTransformedValues>,
   'formState'
