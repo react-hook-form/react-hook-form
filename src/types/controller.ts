@@ -35,6 +35,7 @@ export type ControllerRenderProps<
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   name: TName;
   rules?: Omit<
@@ -43,7 +44,7 @@ export type UseControllerProps<
   >;
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
 };
 
@@ -80,6 +81,7 @@ export type UseControllerReturn<
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   render: ({
     field,
@@ -90,4 +92,4 @@ export type ControllerProps<
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
-} & UseControllerProps<TFieldValues, TName>;
+} & UseControllerProps<TFieldValues, TName, TTransformedValues>;

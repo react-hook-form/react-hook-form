@@ -28,10 +28,9 @@ const POST_REQUEST = 'post';
  * }
  * ```
  */
-function Form<
-  T extends FieldValues,
-  U extends FieldValues | undefined = undefined,
->(props: FormProps<T, U>) {
+function Form<T extends FieldValues, U extends FieldValues = T>(
+  props: FormProps<T, U>,
+) {
   const methods = useFormContext<T>();
   const [mounted, setMounted] = React.useState(false);
   const {

@@ -848,8 +848,11 @@ export type UseFormReturn<
   setFocus: UseFormSetFocus<TFieldValues>;
 };
 
-export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
-  control?: Control<TFieldValues>;
+export type UseFormStateProps<
+  TFieldValues extends FieldValues,
+  TTransformedValues extends FieldValues = TFieldValues,
+> = Partial<{
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
@@ -861,14 +864,17 @@ export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
 
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+export type UseWatchProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues extends FieldValues = TFieldValues,
+> = {
   defaultValue?: unknown;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   exact?: boolean;
 };
 
@@ -882,10 +888,10 @@ export type FormProviderProps<
 
 export type FormProps<
   TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
-    control: Control<TFieldValues>;
+    control: Control<TFieldValues, any, TTransformedValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
     onError: ({
