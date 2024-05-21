@@ -1,28 +1,54 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, ValidationMode } from 'react-hook-form';
 import * as yup from 'yup';
-import { yupResolver } from 'react-hook-form-resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(),
-  lastName: yup.string().max(5).required(),
-  select: yup.string().required(),
-  radio: yup.string().required(),
-  checkbox: yup.string().required(),
-});
+const validationSchema = yup
+  .object()
+  .shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().max(5).required(),
+    select: yup.string().required(),
+    radio: yup.string().required(),
+    checkbox: yup.string().required(),
+  })
+  .required();
 
-const FormStateWithSchema: React.FC = (props: any) => {
-  const { register, handleSubmit, formState, reset } = useForm<{
+const FormStateWithSchema: React.FC = () => {
+  const { mode } = useParams();
+  const {
+    register,
+    handleSubmit,
+    formState: {
+      dirtyFields,
+      isSubmitted,
+      submitCount,
+      touchedFields,
+      isDirty,
+      isSubmitting,
+      isSubmitSuccessful,
+      isValid,
+    },
+    reset,
+  } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
-    radio: string;
-    checkbox: string;
+    radio: string | null;
+    checkbox: boolean;
   }>({
     resolver: yupResolver(validationSchema),
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      select: '',
+      checkbox: false,
+      radio: null,
+    },
   });
   const onSubmit = () => {};
 
@@ -30,29 +56,34 @@ const FormStateWithSchema: React.FC = (props: any) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="firstName" ref={register} placeholder="firstName" />
-      <input name="lastName" ref={register} placeholder="lastName" />
-      <select name="select" ref={register}>
+      <input {...register('firstName')} placeholder="firstName" />
+      <input {...register('lastName')} placeholder="lastName" />
+      <select {...register('select')}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       Radio1
-      <input type="radio" name="radio" ref={register} value="1" />
+      <input type="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" ref={register} value="2" />
+      <input type="radio" {...register('radio')} value="2" />
       Radio3
-      <input type="radio" name="radio" ref={register} value="3" />
-      <input type="checkbox" name="checkbox" ref={register} />
+      <input type="radio" {...register('radio')} value="3" />
+      <input type="checkbox" {...register('checkbox')} />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
       </button>
       <div id="state">
         {JSON.stringify({
-          ...formState,
-          touched: Object.keys(formState.touched),
-          dirtyFields: Object.keys(formState.dirtyFields),
+          isSubmitted,
+          submitCount,
+          isDirty,
+          isSubmitting,
+          isSubmitSuccessful,
+          isValid,
+          touched: Object.keys(touchedFields),
+          dirty: Object.keys(dirtyFields),
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>

@@ -1,47 +1,31 @@
 {
-  "name": "react-hook-form-automation-server",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@hapi/joi": "^17.1.0",
-    "@material-ui/core": "^4.8.0",
-    "@types/hapi__joi": "^16.0.9",
-    "@types/jest": "24.0.24",
-    "@types/node": "12.12.21",
-    "@types/react": "16.9.17",
-    "@types/react-dom": "16.9.4",
-    "@types/react-router-dom": "^5.1.3",
-    "@types/react-select": "^3.0.8",
-    "@types/yup": "^0.26.27",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-hook-form": "^3.27.0",
-    "react-hook-form-resolvers": "0.0.1-beta.1",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0",
-    "react-select": "^3.0.8",
-    "typescript": "3.7.4",
-    "yup": "^0.28.0"
-  },
+  "name": "react-hook-form",
+  "version": "0.0.0",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite --force",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "license": "MIT",
+  "dependencies": {
+    "@hookform/resolvers": "3.4.2",
+    "@material-ui/core": "^4.12.3",
+    "joi": "^17.5.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-hook-form": "file:..",
+    "react-router-dom": "^6.2.1",
+    "react-select": "^5.2.2",
+    "yup": "^0.32.8"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/react-select": "^5.0.1",
+    "@types/yup": "^0.29.13",
+    "@vitejs/plugin-react": "^2.2.0",
+    "typescript": "^4.5.5",
+    "vite": "^3.2.4"
   }
 }

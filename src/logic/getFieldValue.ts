@@ -1,46 +1,36 @@
-import * as React from 'react';
-import getRadioValue from './getRadioValue';
-import getMultipleSelectValue from './getMultipleSelectValue';
-import isRadioInput from '../utils/isRadioInput';
-import isFileInput from '../utils/isFileInput';
+import { Field } from '../types';
 import isCheckBox from '../utils/isCheckBoxInput';
+import isFileInput from '../utils/isFileInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
+import isRadioInput from '../utils/isRadioInput';
+import isUndefined from '../utils/isUndefined';
+
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
+import getFieldValueAs from './getFieldValueAs';
+import getRadioValue from './getRadioValue';
 
-export default function getFieldValue<TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  name: InternalFieldName<TFieldValues>,
-  unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
-) {
-  const field = fieldsRef.current[name]!;
+export default function getFieldValue(_f: Field['_f']) {
+  const ref = _f.ref;
 
-  if (field) {
-    const {
-      ref: { value },
-      ref,
-    } = field;
-
-    if (isFileInput(ref)) {
-      return ref.files;
-    }
-
-    if (isRadioInput(ref)) {
-      return getRadioValue(field.options).value;
-    }
-
-    if (isMultipleSelect(ref)) {
-      return getMultipleSelectValue(ref.options);
-    }
-
-    if (isCheckBox(ref)) {
-      return getCheckboxValue(field.options).value;
-    }
-
-    return value;
+  if (_f.refs ? _f.refs.every((ref) => ref.disabled) : ref.disabled) {
+    return;
   }
 
-  if (unmountFieldsStateRef) {
-    return unmountFieldsStateRef.current[name];
+  if (isFileInput(ref)) {
+    return ref.files;
   }
+
+  if (isRadioInput(ref)) {
+    return getRadioValue(_f.refs).value;
+  }
+
+  if (isMultipleSelect(ref)) {
+    return [...ref.selectedOptions].map(({ value }) => value);
+  }
+
+  if (isCheckBox(ref)) {
+    return getCheckboxValue(_f.refs).value;
+  }
+
+  return getFieldValueAs(isUndefined(ref.value) ? _f.ref.value : ref.value, _f);
 }

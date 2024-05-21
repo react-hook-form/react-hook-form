@@ -2,14 +2,15 @@
   "compilerOptions": {
     "sourceMap": true,
     "module": "es2015",
-    "target": "es2017",
+    "target": "es2018",
     "moduleResolution": "node",
     "outDir": "./dist",
     "jsx": "react",
     "skipLibCheck": true,
     "declaration": true,
+    "declarationMap": true,
     "noEmit": true,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
     "noUnusedLocals": true,
@@ -25,6 +26,8 @@
     "cypress",
     "src/*.test.ts",
     "src/*.test.tsx",
+    "src/*.test-d.ts",
+    "src/*.test-d.tsx",
     "src/__mocks__"
   ]
 }

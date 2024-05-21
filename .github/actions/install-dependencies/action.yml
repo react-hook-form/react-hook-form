@@ -1,0 +1,20 @@
+name: Install Dependencies
+description: This is a composite GitHub Action that sets up pnpm, node and installs the project's dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 8
+
+    - name: Setup Node version to 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: pnpm
+
+    - name: Install Dependencies
+      run: pnpm install --frozen-lockfile
+      shell: bash

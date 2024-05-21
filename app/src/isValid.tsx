@@ -1,29 +1,41 @@
-import * as React from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import { withRouter } from 'react-router';
 import * as yup from 'yup';
-import { yupResolver } from 'react-hook-form-resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(),
-  lastName: yup.string().max(5).required(),
-});
+const validationSchema = yup
+  .object()
+  .shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().max(5).required(),
+  })
+  .required();
 
-const IsValid: React.FC = (props: any) => {
-  const isBuildInValidation = props.match.params.mode === 'build-in';
+const IsValid: React.FC = () => {
+  const { mode, defaultValues } = useParams();
+  const isBuildInValidation = mode === 'build-in';
   const [show, setShow] = React.useState(true);
-  const { register, handleSubmit, formState } = useForm<{
+  const {
+    register,
+    handleSubmit,
+    unregister,
+    formState: { isValid },
+  } = useForm<{
     firstName: string;
     lastName: string;
+    hidden: string;
+    age: string;
+    location: string;
     select: string;
     radio: string;
     checkbox: string;
   }>({
     mode: 'onChange',
     ...(isBuildInValidation ? {} : { resolver: yupResolver(validationSchema) }),
-    ...(props.match.params.defaultValues === 'defaultValues'
+    ...(defaultValues === 'defaultValues'
       ? {
           defaultValues: {
             firstName: 'test',
@@ -33,43 +45,50 @@ const IsValid: React.FC = (props: any) => {
       : {}),
   });
 
+  React.useEffect(() => {
+    if (isBuildInValidation) {
+      if (show) {
+        unregister('hidden');
+      }
+    } else {
+      if (!show) {
+        unregister('firstName');
+      }
+    }
+  }, [show, isBuildInValidation, unregister]);
+
   renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
       {isBuildInValidation ? (
         <>
-          <input name="location" ref={register} placeholder="location" />
+          <input {...register('location')} placeholder="location" />
           <input
-            name="firstName"
-            ref={register({ required: true })}
+            {...register('firstName', { required: true })}
             placeholder="firstName"
           />
           <input
-            name="lastName"
-            ref={register({ required: true })}
+            {...register('lastName', { required: true })}
             placeholder="lastName"
           />
           {!show && (
             <input
-              name="hidden"
-              ref={register({ required: true })}
+              {...register('hidden', { required: true })}
               placeholder="hidden"
             />
           )}
-          <input name="age" ref={register} placeholder="age" />
+          <input {...register('age')} placeholder="age" />
         </>
       ) : (
         <>
-          <input name="location" ref={register} placeholder="location" />
-          {show && (
-            <input name="firstName" ref={register} placeholder="firstName" />
-          )}
-          <input name="lastName" ref={register} placeholder="lastName" />
-          <input name="age" ref={register} placeholder="age" />
+          <input {...register('location')} placeholder="location" />
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <input {...register('age')} placeholder="age" />
         </>
       )}
-      <div id="isValid">{JSON.stringify(formState.isValid)}</div>
+      <div id="isValid">{JSON.stringify(isValid)}</div>
       <div id="renderCount">{renderCounter}</div>
 
       <button
@@ -79,10 +98,10 @@ const IsValid: React.FC = (props: any) => {
           setShow(!show);
         }}
       >
-        Add
+        Toggle
       </button>
     </form>
   );
 };
 
-export default withRouter(IsValid);
+export default IsValid;

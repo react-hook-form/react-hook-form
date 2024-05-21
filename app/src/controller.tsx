@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, ValidationMode } from 'react-hook-form';
 import ReactSelect from 'react-select';
 import {
   TextField,
@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   Radio,
 } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
 
 let renderCount = 0;
 
@@ -18,7 +19,7 @@ const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
   { value: 'vanilla', label: 'Vanilla' },
-] as any;
+] as const;
 
 const defaultValues = {
   Native: '',
@@ -40,14 +41,25 @@ type Form = {
   RadioGroup: string;
 };
 
-export default function Field(props: any) {
+const PureReactSelect = React.memo(ReactSelect);
+
+export default function Field() {
+  const { mode } = useParams();
   const methods = useForm<Form>({
     defaultValues,
-    mode: props.match.params.mode,
+    mode: mode as keyof ValidationMode,
   });
-  const { handleSubmit, errors, reset, control } = methods;
+  const {
+    handleSubmit,
+    formState: { errors },
+    reset,
+    control,
+  } = methods;
 
+  const [, setRerender] = React.useState(0);
   renderCount++;
+
+  const rerender = () => setRerender(Math.random());
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -58,7 +70,7 @@ export default function Field(props: any) {
             name="Checkbox"
             control={control}
             rules={{ required: true }}
-            render={(props) => (
+            render={({ field: props }) => (
               <Checkbox
                 {...props}
                 onChange={(e) => props.onChange(e.target.checked)}
@@ -67,13 +79,13 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.Checkbox && <p id={'Checkbox'}>Checkbox Error</p>}
+        {errors.Checkbox && <p id="Checkbox">Checkbox Error</p>}
 
         <section id="input-radio-group">
           <label>Radio Group</label>
           <Controller
-            render={(props) => (
-              <RadioGroup aria-label="gender" name="gender1" {...props}>
+            render={({ field }) => (
+              <RadioGroup aria-label="gender" {...field} name="gender1">
                 <FormControlLabel
                   value="female"
                   control={<Radio />}
@@ -97,12 +109,12 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.RadioGroup && <p id={'RadioGroup'}>RadioGroup Error</p>}
+        {errors.RadioGroup && <p id="RadioGroup">RadioGroup Error</p>}
 
         <section id="input-textField">
           <label>MUI TextField</label>
           <Controller
-            as={<TextField />}
+            render={({ field }) => <TextField {...field} />}
             name="TextField"
             control={control}
             rules={{ required: true }}
@@ -114,8 +126,8 @@ export default function Field(props: any) {
         <section id="input-select">
           <label>MUI Select</label>
           <Controller
-            render={(props) => (
-              <Select {...props}>
+            render={({ field }) => (
+              <Select {...field}>
                 <MenuItem value={10}>Ten</MenuItem>
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
@@ -134,7 +146,7 @@ export default function Field(props: any) {
           <Controller
             name="switch"
             rules={{ required: true }}
-            render={(props) => (
+            render={({ field: props }) => (
               <Switch
                 {...props}
                 onChange={(e) => props.onChange(e.target.checked)}
@@ -149,8 +161,8 @@ export default function Field(props: any) {
         <section id="input-ReactSelect">
           <label>React Select</label>
           <Controller
-            render={(props) => (
-              <ReactSelect isClearable options={options} {...props} />
+            render={({ field }) => (
+              <PureReactSelect isClearable options={options} {...field} />
             )}
             name="ReactSelect"
             control={control}
@@ -162,6 +174,10 @@ export default function Field(props: any) {
       </div>
 
       <span id="renderCount">{renderCount}</span>
+
+      <button type="button" onClick={rerender}>
+        Rerender
+      </button>
 
       <button
         type="button"

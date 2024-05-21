@@ -1,42 +1,57 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "6.0.7",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "umd:main": "dist/index.umd.production.min.js",
-  "unpkg": "dist/index.umd.production.min.js",
-  "jsdelivr": "dist/index.umd.production.min.js",
-  "jsnext:main": "dist/index.esm.js",
+  "version": "7.51.4",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.mjs",
+  "umd:main": "dist/index.umd.js",
+  "unpkg": "dist/index.umd.js",
+  "jsdelivr": "dist/index.umd.js",
+  "jsnext:main": "dist/index.esm.mjs",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
-  "sideEffects": true,
+  "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "dist/__tests__"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "react-server": "./dist/react-server.esm.mjs",
+      "import": "./dist/index.esm.mjs",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "scripts": {
     "clean": "rimraf dist",
-    "prebuild": "npm run clean",
-    "build": "node rollup/writeCjsEntryFile.js && npm run build:modern && npm run build:ie11",
-    "build:modern": "rollup -c ./rollup/rollup.config.js",
-    "build:ie11": "rollup -c ./rollup/rollup.ie11.config.js",
+    "prebuild": "pnpm clean",
+    "build": "pnpm build:modern",
+    "build:watch": "pnpm build:modern -w",
+    "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
+    "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
+    "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
+    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
-    "lint:fix": "npm run lint -- --fix",
-    "lint:types": "tsc --noEmit",
-    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "test": "jest --runInBand",
-    "test:coverage": "jest --runInBand --coverage",
-    "test:watch": "npm run test:coverage -- --watchAll",
-    "test:web": "TEST_ENV=web jest --runInBand",
-    "test:server": "TEST_ENV=server jest --runInBand",
-    "test:native": "TEST_ENV=native jest --runInBand",
-    "cypress": "cypress run",
-    "cypress:open": "cypress open",
-    "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
-    "bundlesize": "npm run build:modern && bundlesize",
-    "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start",
-    "changeset": "changeset",
-    "release": "changeset publish"
+    "lint:fix": "pnpm lint --fix",
+    "type": "tsc --noEmit",
+    "jest-preview": "jest-preview",
+    "test": "jest --config ./scripts/jest/jest.config.js",
+    "test:coverage": "pnpm test -- --coverage",
+    "test:watch": "pnpm test -- --onlyChanged --watch",
+    "test:web": "TEST_ENV=web pnpm test",
+    "test:type": "tsd src/__typetest__",
+    "e2e": "cypress run",
+    "e2e:watch": "cypress open",
+    "api-extractor": "api-extractor run --local",
+    "api-extractor:build": "pnpm build:esm && pnpm api-extractor",
+    "api-extractor:ci": "node scripts/apiExtractor.js",
+    "postversion": "git push && git push origin v$npm_package_version",
+    "prepublishOnly": "pnpm install && pnpm lint:fix && pnpm type && pnpm test && pnpm build",
+    "bundlewatch": "pnpm build:modern && bundlewatch",
+    "start": "pnpm build:esm && pnpm --dir ./app install && pnpm --dir ./app run dev",
+    "csb:install": "npm i -g pnpm@8 && pnpm i"
   },
   "keywords": [
     "react",
@@ -48,79 +63,87 @@
     "typescript",
     "react-hooks"
   ],
-  "repository": "https://github.com/react-hook-form/react-hook-form.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/react-hook-form/react-hook-form"
+  },
   "homepage": "https://www.react-hook-form.com",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/plugin-transform-runtime": "^7.10.4",
-    "@babel/runtime-corejs3": "^7.10.4",
-    "@changesets/changelog-github": "^0.2.6",
-    "@changesets/cli": "^2.9.2",
-    "@rollup/plugin-babel": "^5.1.0",
-    "@rollup/plugin-commonjs": "^13.0.0",
-    "@rollup/plugin-node-resolve": "^8.4.0",
-    "@rollup/plugin-replace": "^2.3.3",
-    "@testing-library/jest-dom": "^5.11.0",
-    "@testing-library/react": "^10.4.6",
-    "@testing-library/react-hooks": "^3.3.0",
-    "@testing-library/react-native": "^5.0.3",
-    "@types/jest": "^26.0.4",
-    "@types/react": "^16.9.43",
-    "@types/react-dom": "^16.9.8",
-    "@types/react-native": "^0.62.16",
-    "@types/react-test-renderer": "^16.9.2",
-    "@typescript-eslint/eslint-plugin": "^3.6.1",
-    "@typescript-eslint/parser": "^3.6.1",
-    "babel-jest": "^26.1.0",
-    "bundlesize": "^0.18.0",
-    "core-js": "^3.6.5",
-    "coveralls": "^3.1.0",
-    "cypress": "4.10.0",
-    "eslint": "^7.4.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.3",
-    "eslint-plugin-react-hooks": "^4.0.8",
-    "husky": "^4.2.5",
-    "jest": "^26.1.0",
-    "lint-staged": "^10.2.11",
-    "metro-react-native-babel-preset": "^0.60.0",
-    "prettier": "^2.0.5",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-native": "^0.62.2",
-    "react-test-renderer": "^16.13.1",
+    "@microsoft/api-extractor": "^7.41.0",
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-node-resolve": "^14.1.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@swc/core": "^1.4.2",
+    "@swc/jest": "^0.2.36",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.58",
+    "@types/react-dom": "^18.2.19",
+    "@types/testing-library__jest-dom": "^5.14.9",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "bundlewatch": "^0.3.3",
+    "cypress": "^10.11.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-preview": "^0.3.1",
+    "lint-staged": "^13.3.0",
+    "msw": "^1.3.2",
+    "prettier": "^2.8.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-test-renderer": "^18.2.0",
     "rimraf": "^3.0.2",
-    "rollup": "^2.21.0",
-    "rollup-plugin-peer-deps-external": "^2.2.3",
-    "rollup-plugin-sourcemaps": "^0.6.2",
-    "rollup-plugin-terser": "^6.1.0",
-    "rollup-plugin-typescript2": "^0.27.1",
-    "ts-jest": "^26.1.2",
-    "typescript": "^3.9.6"
+    "rollup": "^2.79.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "tsd": "^0.27.0",
+    "typescript": "^5.3.3",
+    "whatwg-fetch": "^3.6.20"
   },
-  "bundlesize": [
-    {
-      "path": "./dist/index.cjs.production.min.js",
-      "maxSize": "9.5 kB"
-    }
-  ],
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "./dist/index.cjs.js",
+        "maxSize": "10.1 kB"
+      }
+    ]
+  },
   "peerDependencies": {
-    "react": "^16.8.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:types && lint-staged"
-    }
+    "react": "^16.8.0 || ^17 || ^18"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "npm run lint:fix"
+      "pnpm lint:fix",
+      "pnpm prettier:fix"
     ],
     "*.{md,json,yml}": [
       "prettier --write"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-hook-form"
+  },
+  "engines": {
+    "node": ">=12.22.0"
   }
 }

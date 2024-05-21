@@ -1,23 +1,16 @@
-import { ValidationMode } from './types/form';
-
 export const EVENTS = {
   BLUR: 'blur',
+  FOCUS_OUT: 'focusout',
   CHANGE: 'change',
-  INPUT: 'input',
-};
+} as const;
 
-export const VALIDATION_MODE: ValidationMode = {
+export const VALIDATION_MODE = {
   onBlur: 'onBlur',
   onChange: 'onChange',
   onSubmit: 'onSubmit',
+  onTouched: 'onTouched',
   all: 'all',
-};
-
-export const VALUE = 'value';
-
-export const SELECT = 'select';
-
-export const UNDEFINED = 'undefined';
+} as const;
 
 export const INPUT_VALIDATION_RULES = {
   max: 'max',
@@ -27,4 +20,4 @@ export const INPUT_VALIDATION_RULES = {
   pattern: 'pattern',
   required: 'required',
   validate: 'validate',
-};
+} as const;

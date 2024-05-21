@@ -1,27 +1,22 @@
 import {
+  InternalFieldErrors,
   InternalFieldName,
   ValidateResult,
-  FlatFieldErrors,
-} from '../types/form';
+} from '../types';
 
-export default <TFieldValues>(
-  name: InternalFieldName<TFieldValues>,
+export default (
+  name: InternalFieldName,
   validateAllFieldCriteria: boolean,
-  errors: FlatFieldErrors<TFieldValues>,
+  errors: InternalFieldErrors,
   type: string,
   message: ValidateResult,
-) => {
-  if (validateAllFieldCriteria) {
-    const error = errors[name];
-
-    return {
-      ...error,
-      types: {
-        ...(error && error.types ? error.types : {}),
-        [type]: message || true,
-      },
-    };
-  }
-
-  return {};
-};
+) =>
+  validateAllFieldCriteria
+    ? {
+        ...errors[name],
+        types: {
+          ...(errors[name] && errors[name]!.types ? errors[name]!.types : {}),
+          [type]: message || true,
+        },
+      }
+    : {};
