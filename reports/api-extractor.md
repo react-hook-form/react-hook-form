@@ -532,7 +532,7 @@ export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export const set: (object: FieldValues, path: string, value?: unknown) => FieldValues;
+export const set: (object: FieldValues, path: string, value?: unknown) => FieldValues | undefined;
 
 // @public (undocumented)
 export type SetFieldValue<TFieldValues extends FieldValues> = FieldValue<TFieldValues>;
@@ -870,6 +870,7 @@ export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | Inte
 export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
+    value?: unknown;
 }) => void;
 
 // Warnings were encountered during analysis:

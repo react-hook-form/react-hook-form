@@ -905,8 +905,13 @@ export function createFormControl<
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
+    const currentError = get(_formState.errors, name) || {};
+
+    // Don't override existing error messages elsewhere in the object tree.
+    const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
 
     set(_formState.errors, name, {
+      ...restOfErrorTree,
       ...error,
       ref,
     });
@@ -984,7 +989,7 @@ export function createFormControl<
     fields,
     value,
   }) => {
-    if (isBoolean(disabled)) {
+    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
       const inputValue = disabled
         ? undefined
         : isUndefined(value)
@@ -1099,13 +1104,16 @@ export function createFormControl<
       iterateFieldsByAction(
         _fields,
         (ref, name) => {
-          let requiredDisabledState = disabled;
-          const currentField = get(_fields, name);
-          if (currentField && isBoolean(currentField._f.disabled)) {
-            requiredDisabledState ||= currentField._f.disabled;
-          }
+          const currentField: Field = get(_fields, name);
+          if (currentField) {
+            ref.disabled = currentField._f.disabled || disabled;
 
-          ref.disabled = requiredDisabledState;
+            if (Array.isArray(currentField._f.refs)) {
+              currentField._f.refs.forEach((inputRef) => {
+                inputRef.disabled = currentField._f.disabled || disabled;
+              });
+            }
+          }
         },
         0,
         false,
