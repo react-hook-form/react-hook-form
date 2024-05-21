@@ -532,6 +532,9 @@ export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
+export const set: (object: FieldValues, path: string, value?: unknown) => FieldValues | undefined;
+
+// @public (undocumented)
 export type SetFieldValue<TFieldValues extends FieldValues> = FieldValue<TFieldValues>;
 
 // @public (undocumented)
