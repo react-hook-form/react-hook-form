@@ -23,6 +23,11 @@ export default function set(object: FieldValues, path: string, value: any) {
           ? []
           : {};
     }
+
+    if (key === '__proto__') {
+      return;
+    }
+
     object[key] = newValue;
     object = object[key];
   }
