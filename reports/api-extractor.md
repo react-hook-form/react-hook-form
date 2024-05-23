@@ -665,7 +665,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     isDirty: boolean;
     isTouched: boolean;
     isValidating: boolean;
-    error?: FieldErrors<TFieldValues>[TFieldName];
+    error?: FieldError;
 };
 
 // @public (undocumented)
