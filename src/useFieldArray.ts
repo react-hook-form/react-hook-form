@@ -82,8 +82,14 @@ export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
+  TTransformedValues extends FieldValues = TFieldValues,
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+  props: UseFieldArrayProps<
+    TFieldValues,
+    TFieldArrayName,
+    TKeyName,
+    TTransformedValues
+  >,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const methods = useFormContext();
   const {
