@@ -85,7 +85,7 @@ export function useController<
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 
-      if (field?._f) {
+      if (field && field._f) {
         field._f.mount = value;
       }
     };
