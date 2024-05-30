@@ -1636,6 +1636,70 @@ describe('useWatch', () => {
         '333',
       );
     });
+
+    it('should return field value, not resolver transformed value', async () => {
+      const Form = () => {
+        const { control, setValue } = useForm<
+          { test: string },
+          any,
+          { test: number }
+        >({
+          defaultValues: { test: '3' },
+          resolver: ({ test }) => ({
+            values: { test: parseInt(test, 10) },
+            errors: {},
+          }),
+        });
+        const { field } = useController({
+          control,
+          name: 'test',
+        });
+
+        React.useEffect(() => {
+          setValue('test', '9');
+        }, [setValue]);
+
+        return <>{field.value === '9' ? 'yes' : 'no'}</>;
+      };
+
+      render(<Form />);
+
+      await waitFor(() => {
+        screen.getByText('yes');
+      });
+    });
+
+    it('should return field value when resolver transformed value is a different shape', async () => {
+      const Form = () => {
+        const { control, setValue } = useForm<
+          { alpha: string; beta: string },
+          any,
+          { add: number }
+        >({
+          defaultValues: { alpha: '3', beta: '4' },
+          resolver: ({ alpha, beta }) => ({
+            values: { add: parseInt(alpha, 10) + parseInt(beta, 10) },
+            errors: {},
+          }),
+        });
+        const { field } = useController({
+          control,
+          name: 'alpha',
+        });
+
+        React.useEffect(() => {
+          setValue('alpha', '9');
+        }, [setValue]);
+
+        return <>{field.value === '9' ? 'yes' : 'no'}</>;
+      };
+
+      render(<Form />);
+
+      await waitFor(() => {
+        screen.getByText('yes');
+      });
+    });
   });
 
   describe('formContext', () => {
