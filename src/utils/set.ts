@@ -23,6 +23,11 @@ export default (object: FieldValues, path: string, value?: unknown) => {
           ? []
           : {};
     }
+
+    if (key === '__proto__') {
+      return;
+    }
+
     object[key] = newValue;
     object = object[key];
   }

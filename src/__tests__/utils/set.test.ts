@@ -57,4 +57,9 @@ describe('set', () => {
       },
     });
   });
+
+  it('should not populate prototype', () => {
+    set({}, '__proto__[test2]', '456');
+    expect(Object.prototype).toEqual({});
+  });
 });
