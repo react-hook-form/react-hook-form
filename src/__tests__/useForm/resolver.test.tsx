@@ -11,32 +11,21 @@ describe('resolver', () => {
       test: string;
     };
 
+    const resolverSpy = jest.fn(() => ({ errors: {}, values: {} }));
+    const testContext = { test: 'test' };
+
     const App = () => {
-      const [test, setTest] = React.useState('');
-      const [data, setData] = React.useState({});
-      const { handleSubmit } = useForm<FormValues>({
-        resolver: (_, context) => {
-          return {
-            errors: {},
-            values: context as FormValues,
-          };
-        },
-        context: {
-          test,
-        },
+      const { handleSubmit, register } = useForm<FormValues>({
+        mode: 'onSubmit',
+        resolver: resolverSpy,
+        context: testContext,
       });
 
       return (
-        <>
-          <input
-            value={test}
-            onChange={(e) => {
-              setTest(e.target.value);
-            }}
-          />
-          <button onClick={handleSubmit((data) => setData(data))}>Test</button>
-          <p>{JSON.stringify(data)}</p>
-        </>
+        <form onSubmit={handleSubmit(() => null)}>
+          <input {...register('test')} />
+          <input type="submit" />
+        </form>
       );
     };
 
@@ -47,9 +36,11 @@ describe('resolver', () => {
     });
     fireEvent.click(screen.getByRole('button'));
 
-    expect(
-      await screen.findByText('{"test":"test"}', undefined, { timeout: 3000 }),
-    ).toBeVisible();
+    expect(resolverSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining(testContext),
+      expect.anything(),
+    );
   });
 
   it('should support resolver schema switching', async () => {

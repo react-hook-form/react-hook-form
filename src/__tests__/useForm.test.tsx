@@ -1139,7 +1139,7 @@ describe('useForm', () => {
           {
             test: 'test',
           },
-          undefined,
+          expect.objectContaining({ validationEvent: 'change' }),
           {
             criteriaMode: undefined,
             fields: {
@@ -1164,7 +1164,7 @@ describe('useForm', () => {
           {
             test: 'test',
           },
-          undefined,
+          expect.objectContaining({ validationEvent: 'submit' }),
           {
             criteriaMode: undefined,
             fields: {
