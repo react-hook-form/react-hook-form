@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
-import { VALIDATION_MODE } from '../constants';
+import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   Control,
   FieldErrors,
@@ -1139,7 +1139,7 @@ describe('useForm', () => {
           {
             test: 'test',
           },
-          expect.objectContaining({ validationEvent: 'change' }),
+          expect.objectContaining({ validationEvent: EVENTS.CHANGE }),
           {
             criteriaMode: undefined,
             fields: {
@@ -1164,7 +1164,7 @@ describe('useForm', () => {
           {
             test: 'test',
           },
-          expect.objectContaining({ validationEvent: 'submit' }),
+          expect.objectContaining({ validationEvent: EVENTS.SUBMIT }),
           {
             criteriaMode: undefined,
             fields: {
