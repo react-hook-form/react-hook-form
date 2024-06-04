@@ -1,7 +1,7 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
 
 import { Message } from './errors';
-import { FieldValues, InternalFieldName } from './fields';
+import { FieldValues } from './fields';
 import { FieldPath, FieldPathValue } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
