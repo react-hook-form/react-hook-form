@@ -625,13 +625,9 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = (
-  onValid: TTransformedValues extends undefined
-    ? SubmitHandler<TFieldValues>
-    : TTransformedValues extends FieldValues
-    ? SubmitHandler<TTransformedValues>
-    : never,
+  onValid: SubmitHandler<TTransformedValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
