@@ -625,13 +625,9 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = (
-  onValid: TTransformedValues extends undefined
-    ? SubmitHandler<TFieldValues>
-    : TTransformedValues extends FieldValues
-    ? SubmitHandler<TTransformedValues>
-    : never,
+  onValid: SubmitHandler<TTransformedValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
@@ -767,6 +763,7 @@ export type BatchFieldArrayUpdate = <
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   _subjects: Subjects<TFieldValues>;
   _removeUnmounted: Noop;
@@ -813,7 +810,7 @@ export type Control<
     names: InternalFieldName[],
   ) => Promise<{ errors: FieldErrors }>;
   register: UseFormRegister<TFieldValues>;
-  handleSubmit: UseFormHandleSubmit<TFieldValues>;
+  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
   _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -832,7 +829,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
@@ -846,13 +843,16 @@ export type UseFormReturn<
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
   unregister: UseFormUnregister<TFieldValues>;
-  control: Control<TFieldValues, TContext>;
+  control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
 };
 
-export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
-  control?: Control<TFieldValues>;
+export type UseFormStateProps<
+  TFieldValues extends FieldValues,
+  TTransformedValues extends FieldValues = TFieldValues,
+> = Partial<{
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
@@ -864,31 +864,34 @@ export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
 
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+export type UseWatchProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues extends FieldValues = TFieldValues,
+> = {
   defaultValue?: unknown;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   exact?: boolean;
 };
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = {
   children: React.ReactNode | React.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 export type FormProps<
   TFieldValues extends FieldValues,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues extends FieldValues = TFieldValues,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
-    control: Control<TFieldValues>;
+    control: Control<TFieldValues, any, TTransformedValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
     onError: ({
@@ -904,9 +907,7 @@ export type FormProps<
           error: unknown;
         }) => void;
     onSuccess: ({ response }: { response: Response }) => void;
-    onSubmit: TTransformedValues extends FieldValues
-      ? FormSubmitHandler<TTransformedValues>
-      : FormSubmitHandler<TFieldValues>;
+    onSubmit: FormSubmitHandler<TTransformedValues>;
     method: 'post' | 'put' | 'delete';
     children: React.ReactNode | React.ReactNode[];
     render: (props: {

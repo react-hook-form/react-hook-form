@@ -82,10 +82,16 @@ export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
+  TTransformedValues extends FieldValues = TFieldValues,
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+  props: UseFieldArrayProps<
+    TFieldValues,
+    TFieldArrayName,
+    TKeyName,
+    TTransformedValues
+  >,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
-  const methods = useFormContext();
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const {
     control = methods.control,
     name,
@@ -105,7 +111,7 @@ export function useFieldArray<
   control._names.array.add(name);
 
   props.rules &&
-    (control as Control<TFieldValues>).register(
+    (control as Control<TFieldValues, any, TTransformedValues>).register(
       name as FieldPath<TFieldValues>,
       props.rules as RegisterOptions<TFieldValues>,
     );
