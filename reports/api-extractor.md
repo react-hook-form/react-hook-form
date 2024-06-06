@@ -225,7 +225,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValu
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : K extends 'root' | `root.${string}` ? GlobalError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
+    [K in keyof T]?: K extends 'root' | `root.${string}` ? GlobalError : NestedFieldError<T[K]>;
 };
 
 // @public (undocumented)
@@ -433,6 +433,9 @@ export type Names = {
 
 // @public (undocumented)
 export type NativeFieldValue = string | number | boolean | null | undefined | unknown[];
+
+// @public (undocumented)
+export type NestedFieldError<T> = T extends BrowserNativeObject | Blob ? FieldError : T extends object ? Merge<FieldError, FieldErrorsImpl<T>> : FieldError;
 
 // @public @deprecated (undocumented)
 export type NestedValue<TValue extends object = object> = {
@@ -665,7 +668,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     isDirty: boolean;
     isTouched: boolean;
     isValidating: boolean;
-    error?: PathValue<TFieldValues, TFieldName> extends object ? Merge<FieldError, FieldErrorsImpl<PathValue<TFieldValues, TFieldName>>> : FieldError;
+    error?: NestedFieldError<PathValue<TFieldValues, TFieldName>>;
 };
 
 // @public (undocumented)
@@ -871,7 +874,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:452:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:445:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
