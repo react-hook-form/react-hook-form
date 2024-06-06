@@ -486,7 +486,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     onChange?: (event: any) => void;
     onBlur?: (event: any) => void;
     disabled: boolean;
-    deps: InternalFieldName | InternalFieldName[];
+    deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
 }> & ({
     pattern?: ValidationRule<RegExp>;
     valueAsNumber?: false;
@@ -665,7 +665,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     isDirty: boolean;
     isTouched: boolean;
     isValidating: boolean;
-    error?: FieldErrors<TFieldValues>[TFieldName];
+    error?: FieldError;
 };
 
 // @public (undocumented)
@@ -867,7 +867,7 @@ export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | Inte
 export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
-    value?: unknown;
+    values?: unknown;
 }) => void;
 
 // Warnings were encountered during analysis:

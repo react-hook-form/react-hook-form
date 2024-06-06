@@ -118,12 +118,12 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "10.1 kB"
+        "maxSize": "10.2 kB"
       }
     ]
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17 || ^18"
+    "react": "^16.8.0 || ^17 || ^18 || ^19"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
