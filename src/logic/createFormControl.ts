@@ -888,9 +888,9 @@ export function createFormControl<
   ) => ({
     invalid: !!get((formState || _formState).errors, name),
     isDirty: !!get((formState || _formState).dirtyFields, name),
-    isTouched: !!get((formState || _formState).touchedFields, name),
-    isValidating: !!get((formState || _formState).validatingFields, name),
     error: get((formState || _formState).errors, name),
+    isValidating: !!get(_formState.validatingFields, name),
+    isTouched: !!get((formState || _formState).touchedFields, name),
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
