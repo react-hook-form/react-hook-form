@@ -310,7 +310,9 @@ export function createFormControl<
       name,
     };
     const disabledField = !!(
-      get(_fields, name) && get(_fields, name)._f.disabled
+      get(_fields, name) &&
+      get(_fields, name)._f &&
+      get(_fields, name)._f.disabled
     );
 
     if (!isBlurEvent || shouldDirty) {
