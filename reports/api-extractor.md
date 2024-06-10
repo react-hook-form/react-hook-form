@@ -486,7 +486,7 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     onChange?: (event: any) => void;
     onBlur?: (event: any) => void;
     disabled: boolean;
-    deps: InternalFieldName | InternalFieldName[];
+    deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
 }> & ({
     pattern?: ValidationRule<RegExp>;
     valueAsNumber?: false;
