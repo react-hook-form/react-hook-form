@@ -326,7 +326,9 @@ export function createFormControl<
       name,
     };
     const disabledField = !!(
-      get(_fields, name) && get(_fields, name)._f.disabled
+      get(_fields, name) &&
+      get(_fields, name)._f &&
+      get(_fields, name)._f.disabled
     );
 
     if (!isBlurEvent || shouldDirty) {
@@ -907,9 +909,9 @@ export function createFormControl<
   ) => ({
     invalid: !!get((formState || _formState).errors, name),
     isDirty: !!get((formState || _formState).dirtyFields, name),
-    isTouched: !!get((formState || _formState).touchedFields, name),
-    isValidating: !!get((formState || _formState).validatingFields, name),
     error: get((formState || _formState).errors, name),
+    isValidating: !!get(_formState.validatingFields, name),
+    isTouched: !!get((formState || _formState).touchedFields, name),
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
@@ -925,8 +927,13 @@ export function createFormControl<
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
+    const currentError = get(_formState.errors, name) || {};
+
+    // Don't override existing error messages elsewhere in the object tree.
+    const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
 
     set(_formState.errors, name, {
+      ...restOfErrorTree,
       ...error,
       ref,
     });
@@ -1042,7 +1049,7 @@ export function createFormControl<
     fields,
     value,
   }) => {
-    if (isBoolean(disabled)) {
+    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
       const inputValue = disabled
         ? undefined
         : isUndefined(value)
@@ -1157,13 +1164,16 @@ export function createFormControl<
       iterateFieldsByAction(
         _fields,
         (ref, name) => {
-          let requiredDisabledState = disabled;
-          const currentField = get(_fields, name);
-          if (currentField && isBoolean(currentField._f.disabled)) {
-            requiredDisabledState ||= currentField._f.disabled;
-          }
+          const currentField: Field = get(_fields, name);
+          if (currentField) {
+            ref.disabled = currentField._f.disabled || disabled;
 
-          ref.disabled = requiredDisabledState;
+            if (Array.isArray(currentField._f.refs)) {
+              currentField._f.refs.forEach((inputRef) => {
+                inputRef.disabled = currentField._f.disabled || disabled;
+              });
+            }
+          }
         },
         0,
         false,
@@ -1358,6 +1368,8 @@ export function createFormControl<
           : _formState.dirtyFields
         : keepStateOptions.keepDefaultValues && formValues
         ? getDirtyFields(_defaultValues, formValues)
+        : keepStateOptions.keepDirty
+        ? _formState.dirtyFields
         : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
