@@ -1003,7 +1003,8 @@ export function createFormControl<
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
-    const disabledIsDefined = isBoolean(options.disabled);
+    const disabled = options.disabled ?? _options.disabled;
+    const disabledIsDefined = isBoolean(disabled);
 
     set(_fields, name, {
       ...(field || {}),
@@ -1019,7 +1020,7 @@ export function createFormControl<
     if (field) {
       _updateDisabledField({
         field,
-        disabled: options.disabled,
+        disabled,
         name,
         value: options.value,
       });
@@ -1028,7 +1029,7 @@ export function createFormControl<
     }
 
     return {
-      ...(disabledIsDefined ? { disabled: options.disabled } : {}),
+      ...(disabledIsDefined ? { disabled } : {}),
       ...(_options.progressive
         ? {
             required: !!options.required,
@@ -1098,29 +1099,6 @@ export function createFormControl<
   const _focusError = () =>
     _options.shouldFocusError &&
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
-
-  const _disableForm = (disabled?: boolean) => {
-    if (isBoolean(disabled)) {
-      _subjects.state.next({ disabled });
-      iterateFieldsByAction(
-        _fields,
-        (ref, name) => {
-          const currentField: Field = get(_fields, name);
-          if (currentField) {
-            ref.disabled = currentField._f.disabled || disabled;
-
-            if (Array.isArray(currentField._f.refs)) {
-              currentField._f.refs.forEach((inputRef) => {
-                inputRef.disabled = currentField._f.disabled || disabled;
-              });
-            }
-          }
-        },
-        0,
-        false,
-      );
-    }
-  };
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
@@ -1383,7 +1361,6 @@ export function createFormControl<
       _reset,
       _resetDefaultValues,
       _updateFormState,
-      _disableForm,
       _subjects,
       _proxyFormState,
       _setErrors,
