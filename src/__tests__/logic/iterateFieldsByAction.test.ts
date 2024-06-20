@@ -1,6 +1,6 @@
 import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
 
-describe('focusFieldBy', () => {
+describe('iterateFieldsByAction', () => {
   it('should focus on the first error it encounter', () => {
     const focus = jest.fn();
     iterateFieldsByAction(
