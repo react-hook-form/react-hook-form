@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { flushSync } from 'react-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import { Controller } from '../controller';
 import { useController } from '../useController';
+import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
-
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
     const mockRegister = jest.fn();
@@ -229,5 +231,91 @@ describe('FormProvider', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => screen.getByText('This is required'));
+  });
+
+  it('should report errors correctly with useFieldArray Controller', async () => {
+    let arrayErrors: (string | undefined)[] = [];
+    const Form = () => {
+      const {
+        control,
+        formState: { errors },
+      } = useFormContext<{
+        testArray: { name: string }[];
+      }>();
+
+      const { append, fields } = useFieldArray({
+        control,
+        name: 'testArray',
+      });
+
+      arrayErrors = fields.map(
+        (_, index) => errors?.testArray?.[index]?.name?.message,
+      );
+      const onSubmit = jest.fn((e) => e.preventDefault());
+      const [selected, setSelected] = useState<number | undefined>();
+      return (
+        <form onSubmit={onSubmit}>
+          <p data-testid="error-value">{JSON.stringify(errors)}</p>
+          <p data-testid="error-filter-value">
+            {arrayErrors.filter(Boolean).length}
+          </p>
+          <button onClick={() => append({ name: 'test' })}>Increment</button>
+          <select
+            data-testid="select"
+            onChange={(e) => {
+              flushSync(() => setSelected(+e.target.value));
+            }}
+          >
+            {fields.map((field, index) => (
+              <option key={field.id} value={index}></option>
+            ))}
+          </select>
+          {selected !== undefined && (
+            <Controller
+              control={control}
+              name={`testArray.${selected}.name`}
+              shouldUnregister={false}
+              rules={{ required: { value: true, message: 'required' } }}
+              render={({ field }) => (
+                <input data-testid="error-input" onChange={field.onChange} />
+              )}
+            />
+          )}
+        </form>
+      );
+    };
+    const App = () => {
+      const methods = useForm({
+        defaultValues: { testArray: [] },
+        mode: 'all',
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <Form />
+        </FormProvider>
+      );
+    };
+    render(<App />);
+    const errorValue = screen.getByTestId('error-value');
+    const errorFilterValue = screen.getByTestId('error-filter-value');
+    const select = screen.getByTestId('select');
+    // const errorInput = screen.getByTestId('error-input');
+    const button = screen.getByText('Increment');
+
+    // Click button add Value
+    fireEvent.click(button);
+    fireEvent.click(button);
+    // Change second value to ''
+    fireEvent.change(select, { target: { value: 1 } });
+    const errorInput = screen.getByTestId('error-input');
+    fireEvent.change(errorInput, { target: { value: 'test' } });
+    fireEvent.change(errorInput, { target: { value: '' } });
+    await waitFor(() => {
+      expect(errorValue).toHaveTextContent(
+        '{"testArray":[null,{"name":{"type":"required","message":"required","ref":{"name":"testArray.1.name"}}}]}',
+      );
+      expect(errorFilterValue).toHaveTextContent('1');
+    });
   });
 });
