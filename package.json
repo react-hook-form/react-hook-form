@@ -111,7 +111,7 @@
     "rollup-plugin-sourcemaps": "^0.6.3",
     "rollup-plugin-typescript2": "^0.34.1",
     "tsd": "^0.27.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.5.2",
     "whatwg-fetch": "^3.6.20"
   },
   "bundlewatch": {
