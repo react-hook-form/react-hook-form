@@ -1358,7 +1358,7 @@ export function createFormControl<
 
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
-    _options.defaultValues().then((values) => {
+    _options.defaultValues().then((values: TFieldValues) => {
       reset(values, _options.resetOptions);
       _subjects.state.next({
         isLoading: false,
