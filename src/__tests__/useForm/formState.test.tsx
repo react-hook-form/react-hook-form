@@ -705,10 +705,7 @@ describe('formState', () => {
       return (
         <form>
           <TextInput control={control} />
-          <Output
-            getFieldState={getFieldState}
-            formState={formState}
-          />
+          <Output getFieldState={getFieldState} formState={formState} />
         </form>
       );
     }
