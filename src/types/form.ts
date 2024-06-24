@@ -3,7 +3,7 @@ import React from 'react';
 import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
-import { ErrorOption, FieldError, FieldErrors } from './errors';
+import { ErrorOption, FieldErrors, NestedFieldError } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
 import {
@@ -19,6 +19,7 @@ import {
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  PathValue,
 } from './path';
 import { Resolver } from './resolvers';
 import { DeepMap, DeepPartial, Noop } from './utils';
@@ -362,7 +363,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   isDirty: boolean;
   isTouched: boolean;
   isValidating: boolean;
-  error?: FieldError;
+  error?: NestedFieldError<PathValue<TFieldValues, TFieldName>>;
 };
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {

@@ -31,14 +31,16 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob
     };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
-    ? FieldError
-    : K extends 'root' | `root.${string}`
+  [K in keyof T]?: K extends 'root' | `root.${string}`
     ? GlobalError
-    : T[K] extends object
-    ? Merge<FieldError, FieldErrorsImpl<T[K]>>
-    : FieldError;
+    : NestedFieldError<T[K]>;
 };
+
+export type NestedFieldError<T> = T extends BrowserNativeObject | Blob
+  ? FieldError
+  : T extends object
+  ? Merge<FieldError, FieldErrorsImpl<T>>
+  : FieldError;
 
 export type GlobalError = Partial<{
   type: string | number;
