@@ -157,6 +157,8 @@ export function useController<
         if (field && elm) {
           field._f.ref = {
             focus: () => elm.focus(),
+            scrollIntoView: (arg?: boolean | Record<string, string>) =>
+              elm.scrollIntoView(arg),
             select: () => elm.select(),
             setCustomValidity: (message: string) =>
               elm.setCustomValidity(message),
