@@ -64,4 +64,145 @@ describe('iterateFieldsByAction', () => {
       );
     }).not.toThrow();
   });
+
+  it('should focus on the first error it encounter and not the second', () => {
+    const focus = jest.fn();
+    iterateFieldsByAction(
+      {
+        first: {
+          _f: {
+            name: 'first',
+            ref: {
+              name: 'first',
+              focus,
+            },
+          },
+        },
+        second: {
+          _f: {
+            name: 'second',
+            ref: {
+              name: 'second',
+              focus,
+            },
+          },
+        },
+      },
+      (ref) => {
+        // @ts-ignore
+        ref.focus && ref.focus(ref.name);
+        return 1;
+      },
+    );
+    expect(focus).toBeCalledWith('first');
+    expect(focus).not.toBeCalledWith('second');
+  });
+
+  it('should recursively drill into objects', () => {
+    const focus = jest.fn();
+    iterateFieldsByAction(
+      {
+        test: {
+          // @ts-ignore
+          name: {
+            first: {
+              _f: {
+                name: 'name.first',
+                ref: {
+                  name: 'first',
+                  focus,
+                },
+              },
+            },
+            last: {
+              _f: {
+                name: 'name.last',
+                ref: {
+                  name: 'last',
+                  focus,
+                },
+              },
+            },
+          },
+        },
+      },
+      (ref, key) => {
+        if (key === 'name.last') {
+          // @ts-ignore
+          ref.focus && ref.focus(ref.name);
+          return 1;
+        }
+        return;
+      },
+    );
+    expect(focus).not.toBeCalledWith('first');
+    expect(focus).toBeCalledWith('last');
+  });
+
+  it('should should recursively drill into objects and break out of all loops on first focus', () => {
+    const focus = jest.fn();
+    const notFocus = jest.fn();
+    iterateFieldsByAction(
+      {
+        personal: {
+          // @ts-ignore
+          name: {
+            first: {
+              _f: {
+                name: 'name.first',
+                ref: {
+                  name: 'first',
+                  focus: notFocus,
+                },
+              },
+            },
+            last: {
+              _f: {
+                name: 'name.last',
+                ref: {
+                  name: 'last',
+                  focus,
+                },
+              },
+            },
+          },
+          phone: {
+            _f: {
+              name: 'phone',
+              ref: {
+                name: 'phone',
+                focus: notFocus,
+              },
+            },
+          },
+          address: {
+            line1: {
+              _f: {
+                name: 'address.line1',
+                ref: {
+                  name: 'line1',
+                  focus: notFocus,
+                },
+              },
+            },
+          },
+        },
+      },
+      (ref, key) => {
+        // @ts-ignore
+        ref.focus && ref.focus(ref.name);
+        return key === 'name.last' ? 1 : undefined;
+      },
+    );
+    // 'focus' should be called on 'last' and never again
+    expect(focus).not.toBeCalledWith('first'); // not valid
+    expect(focus).toBeCalledWith('last'); // valid
+    expect(focus).not.toBeCalledWith('phone'); // stopped
+    expect(focus).not.toBeCalledWith('line1');
+    // 'notFocus' should be called on the first, then never again
+    expect(notFocus).toBeCalledWith('first'); // not valid
+    expect(notFocus).not.toBeCalledWith('last'); // valid
+    expect(notFocus).not.toBeCalledWith('phone'); // stopped
+    expect(notFocus).not.toBeCalledWith('line1');
+  });
 });
