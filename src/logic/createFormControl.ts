@@ -481,7 +481,7 @@ export function createFormControl<
               : unset(_formState.errors, _f.name));
         }
 
-        fieldValue &&
+        Object.keys(fieldValue).length &&
           (await executeBuiltInValidation(
             fieldValue,
             shouldOnlyCheckValid,
