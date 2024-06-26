@@ -765,7 +765,6 @@ export function createFormControl<
               _subjects.state.next({
                 errors: {},
               });
-
             } else {
               _focusError();
               setTimeout(_focusError);
