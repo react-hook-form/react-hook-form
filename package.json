@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.51.5",
+  "version": "7.52.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -111,7 +111,7 @@
     "rollup-plugin-sourcemaps": "^0.6.3",
     "rollup-plugin-typescript2": "^0.34.1",
     "tsd": "^0.27.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.5.2",
     "whatwg-fetch": "^3.6.20"
   },
   "bundlewatch": {
