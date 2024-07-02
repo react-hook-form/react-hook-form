@@ -481,7 +481,7 @@ export function createFormControl<
               : unset(_formState.errors, _f.name));
         }
 
-        fieldValue &&
+        !isEmptyObject(fieldValue) &&
           (await executeBuiltInValidation(
             fieldValue,
             shouldOnlyCheckValid,
