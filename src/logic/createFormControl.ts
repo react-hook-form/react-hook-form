@@ -991,11 +991,10 @@ export function createFormControl<
     value,
   }) => {
     if ((isBoolean(disabled) && _state.mount) || !!disabled) {
-      const inputValue = disabled
-        ? undefined
-        : isUndefined(value)
-        ? getFieldValue(field ? field._f : get(fields, name)._f)
-        : value;
+      const inputValue =
+        disabled && isUndefined(value)
+          ? getFieldValue(field ? field._f : get(fields, name)._f)
+          : value;
       set(_formValues, name, inputValue);
       updateTouchAndDirty(name, inputValue, false, false, true);
     }
