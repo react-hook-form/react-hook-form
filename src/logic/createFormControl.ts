@@ -524,10 +524,10 @@ export function createFormControl<
         ...(_state.mount
           ? _formValues
           : isUndefined(defaultValue)
-          ? _defaultValues
-          : isString(names)
-          ? { [names]: defaultValue }
-          : defaultValue),
+            ? _defaultValues
+            : isString(names)
+              ? { [names]: defaultValue }
+              : defaultValue),
       },
       isGlobal,
       defaultValue,
@@ -878,8 +878,8 @@ export function createFormControl<
     return isUndefined(fieldNames)
       ? values
       : isString(fieldNames)
-      ? get(values, fieldNames)
-      : fieldNames.map((name) => get(values, name));
+        ? get(values, fieldNames)
+        : fieldNames.map((name) => get(values, name));
   };
 
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
@@ -994,8 +994,8 @@ export function createFormControl<
       const inputValue = disabled
         ? undefined
         : isUndefined(value)
-        ? getFieldValue(field ? field._f : get(fields, name)._f)
-        : value;
+          ? getFieldValue(field ? field._f : get(fields, name)._f)
+          : value;
       set(_formValues, name, inputValue);
       updateTouchAndDirty(name, inputValue, false, false, true);
     }
@@ -1293,25 +1293,25 @@ export function createFormControl<
       isDirty: isEmptyResetValues
         ? false
         : keepStateOptions.keepDirty
-        ? _formState.isDirty
-        : !!(
-            keepStateOptions.keepDefaultValues &&
-            !deepEqual(formValues, _defaultValues)
-          ),
+          ? _formState.isDirty
+          : !!(
+              keepStateOptions.keepDefaultValues &&
+              !deepEqual(formValues, _defaultValues)
+            ),
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
       dirtyFields: isEmptyResetValues
         ? {}
         : keepStateOptions.keepDirtyValues
-        ? keepStateOptions.keepDefaultValues && _formValues
-          ? getDirtyFields(_defaultValues, _formValues)
-          : _formState.dirtyFields
-        : keepStateOptions.keepDefaultValues && formValues
-        ? getDirtyFields(_defaultValues, formValues)
-        : keepStateOptions.keepDirty
-        ? _formState.dirtyFields
-        : {},
+          ? keepStateOptions.keepDefaultValues && _formValues
+            ? getDirtyFields(_defaultValues, _formValues)
+            : _formState.dirtyFields
+          : keepStateOptions.keepDefaultValues && formValues
+            ? getDirtyFields(_defaultValues, formValues)
+            : keepStateOptions.keepDirty
+              ? _formState.dirtyFields
+              : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
