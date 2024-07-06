@@ -28,8 +28,8 @@ export default function unset(object: any, path: string | (string | number)[]) {
   const paths = Array.isArray(path)
     ? path
     : isKey(path)
-    ? [path]
-    : stringToPath(path);
+      ? [path]
+      : stringToPath(path);
 
   const childObject = paths.length === 1 ? object : baseGet(object, paths);
 

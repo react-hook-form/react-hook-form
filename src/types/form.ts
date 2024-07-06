@@ -36,13 +36,14 @@ export type NestedValue<TValue extends object = object> = {
 /**
  * @deprecated to be removed in the next major version
  */
-export type UnpackNestedValue<T> = T extends NestedValue<infer U>
-  ? U
-  : T extends Date | FileList | File | Blob
-  ? T
-  : T extends object
-  ? { [K in keyof T]: UnpackNestedValue<T[K]> }
-  : T;
+export type UnpackNestedValue<T> =
+  T extends NestedValue<infer U>
+    ? U
+    : T extends Date | FileList | File | Blob
+      ? T
+      : T extends object
+        ? { [K in keyof T]: UnpackNestedValue<T[K]> }
+        : T;
 
 export type DefaultValues<TFieldValues> =
   TFieldValues extends AsyncDefaultValues<TFieldValues>
@@ -630,8 +631,8 @@ export type UseFormHandleSubmit<
   onValid: TTransformedValues extends undefined
     ? SubmitHandler<TFieldValues>
     : TTransformedValues extends FieldValues
-    ? SubmitHandler<TTransformedValues>
-    : never,
+      ? SubmitHandler<TTransformedValues>
+      : never,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
@@ -749,7 +750,8 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends
+    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
   updatedFieldArrayValues?: Partial<
