@@ -80,7 +80,8 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends
+    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
