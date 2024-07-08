@@ -26,6 +26,7 @@
   },
   "scripts": {
     "clean": "rimraf dist",
+    "prepare": "husky",
     "prebuild": "pnpm clean",
     "build": "pnpm build:modern",
     "build:watch": "pnpm build:modern -w",
@@ -130,11 +131,6 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "funding": {
     "type": "opencollective",
