@@ -1,6 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
 
 import { Controller } from '../../controller';
 import { Control, FieldValues } from '../../types';

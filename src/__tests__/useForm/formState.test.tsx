@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -579,7 +579,7 @@ describe('formState', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
+    await act(async () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
@@ -837,7 +837,7 @@ describe('formState', () => {
 
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      actComponent(() => {
+      act(() => {
         jest.advanceTimersByTime(500);
       });
 
@@ -891,7 +891,7 @@ describe('formState', () => {
       });
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      await actComponent(async () => {
+      await act(async () => {
         jest.advanceTimersByTime(500);
       });
 
@@ -941,7 +941,7 @@ describe('formState', () => {
 
         expect(await screen.findByText('valid')).toBeVisible();
 
-        await actComponent(async () => {
+        await act(async () => {
           fireEvent.change(screen.getByRole('textbox'), {
             target: {
               value: '',
@@ -949,13 +949,13 @@ describe('formState', () => {
           });
         });
 
-        await actComponent(async () => {
+        await act(async () => {
           await waitFor(() => screen.getByText('inValid'));
         });
 
         expect(screen.queryByText(message)).toBeNull();
 
-        actComponent(() => {
+        act(() => {
           jest.advanceTimersByTime(500);
         });
 
