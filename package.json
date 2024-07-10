@@ -26,6 +26,7 @@
   },
   "scripts": {
     "clean": "rimraf dist",
+    "prepare": "husky",
     "prebuild": "pnpm clean",
     "build": "pnpm build:modern",
     "build:watch": "pnpm build:modern -w",
@@ -71,17 +72,17 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.41.0",
+    "@microsoft/api-extractor": "^7.47.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "@swc/core": "^1.4.2",
+    "@swc/core": "^1.6.13",
     "@swc/jest": "^0.2.36",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
-    "@types/react": "^18.2.58",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/testing-library__jest-dom": "^5.14.9",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
@@ -94,21 +95,21 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "husky": "^8.0.3",
+    "husky": "^9.0.11",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-preview": "^0.3.1",
-    "lint-staged": "^13.3.0",
+    "lint-staged": "^15.2.7",
     "msw": "^2.3.1",
     "prettier": "3.3.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-test-renderer": "^18.2.0",
-    "rimraf": "^3.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-test-renderer": "^18.3.1",
+    "rimraf": "^5.0.8",
     "rollup": "^4.18.0",
     "rollup-plugin-typescript2": "^0.36.0",
-    "tsd": "^0.27.0",
-    "typescript": "^5.5.2",
+    "tsd": "^0.31.1",
+    "typescript": "^5.5.3",
     "whatwg-fetch": "^3.6.20"
   },
   "bundlewatch": {
@@ -130,11 +131,6 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "funding": {
     "type": "opencollective",
