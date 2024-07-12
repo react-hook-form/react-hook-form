@@ -7,7 +7,7 @@ export const EVENTS = {
 export const VALIDATION_MODE = {
   onBlur: 'onBlur',
   onChange: 'onChange',
-  onSubmit: 'onSubmit',
+  onSubmit: 'onSbmit',
   onTouched: 'onTouched',
   all: 'all',
 } as const;
