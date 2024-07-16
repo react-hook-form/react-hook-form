@@ -109,7 +109,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([2, 5]);
+    expect(renderCounter).toEqual([2, 3]);
   });
 
   describe('checkbox', () => {
@@ -1011,5 +1011,97 @@ describe('useController', () => {
         test: undefined,
       }),
     );
+  });
+
+  it('should subscribe to exact form state update', () => {
+    type FormValues = {
+      test: string;
+      test_with_suffix: string;
+    };
+
+    const renderCounter: Record<keyof FormValues, number> = {
+      test: 0,
+      test_with_suffix: 0,
+    };
+
+    const ControlledInput = ({
+      name,
+      control,
+    }: {
+      name: keyof FormValues;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field,
+        fieldState: { error, isDirty },
+      } = useController({
+        name,
+        control,
+        rules: { required: 'is required' },
+      });
+
+      renderCounter[name]++;
+
+      return (
+        <div>
+          <input aria-label={name} {...field} />
+          {error && (
+            <p>
+              {name} {error.message}
+            </p>
+          )}
+          {isDirty && <p>{name} isDirty</p>}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control } = useForm<FormValues>({
+        mode: 'onBlur',
+        defaultValues: {
+          test: '1234',
+          test_with_suffix: '1234',
+        },
+      });
+      return (
+        <form>
+          <ControlledInput name="test" control={control} />
+          <ControlledInput name="test_with_suffix" control={control} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(renderCounter).toEqual({ test: 1, test_with_suffix: 1 });
+    expect(screen.queryByText('test is required')).toBeNull();
+    expect(screen.queryByText('test_with_suffix is required')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
+      target: {
+        value: '',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+
+    expect(screen.getByText('test isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 1 });
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'test_with_suffix' }),
+      {
+        target: {
+          value: '',
+        },
+      },
+    );
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+
+    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
   });
 });

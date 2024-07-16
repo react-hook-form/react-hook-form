@@ -68,6 +68,7 @@ export function useController<
   const formState = useFormState({
     control,
     name,
+    exact: true,
   });
 
   const _registerProps = React.useRef(
