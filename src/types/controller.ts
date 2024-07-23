@@ -59,7 +59,7 @@ export type UseControllerReturn<
 /**
  * Render function to provide the control for the field.
  *
- * @returns all the event handler, and relevant field and form state.
+ * @returns all the event handlers, and relevant field and form state.
  *
  * @example
  * ```tsx
