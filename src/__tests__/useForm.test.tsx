@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../constants';
 import {
@@ -1780,7 +1780,7 @@ describe('useForm', () => {
     expect(getFieldState('firstName').isValidating).toBe(true);
     screen.getByText('stateValidation: true');
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(1000);
     });
 
@@ -1792,7 +1792,7 @@ describe('useForm', () => {
     expect(getFieldState('firstName').isValidating).toBe(false);
     screen.getByText('stateValidation: true');
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(4000);
     });
 
@@ -1860,7 +1860,7 @@ describe('useForm', () => {
     expect(formState.dirtyFields).toStrictEqual({ lastName: true });
     expect(getFieldState('lastName').isDirty).toStrictEqual(true);
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(1000);
     });
 
@@ -1873,7 +1873,7 @@ describe('useForm', () => {
     expect(formState.validatingFields).toStrictEqual({ lastName: true });
     expect(getFieldState('lastName').isValidating).toBe(true);
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(1500);
     });
 
@@ -1945,7 +1945,7 @@ describe('useForm', () => {
     expect(getFieldState('lastName').isValidating).toBe(true);
     expect(getFieldState('firstName').isValidating).toBe(true);
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.runAllTimers();
     });
 
@@ -1991,7 +1991,7 @@ describe('useForm', () => {
     });
 
     expect(formState.validatingFields).toEqual({ firstName: true });
-    await actComponent(async () => {
+    await act(async () => {
       unregister('firstName');
       jest.runAllTimers();
     });

@@ -10,7 +10,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 let renderCount = 0;

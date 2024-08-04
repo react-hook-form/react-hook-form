@@ -22,6 +22,9 @@ const web = {
   },
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
   testEnvironment: 'jsdom',
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
 };
 
 const server = {

@@ -34,10 +34,10 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
   [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
     ? FieldError
     : K extends 'root' | `root.${string}`
-    ? GlobalError
-    : T[K] extends object
-    ? Merge<FieldError, FieldErrorsImpl<T[K]>>
-    : FieldError;
+      ? GlobalError
+      : T[K] extends object
+        ? Merge<FieldError, FieldErrorsImpl<T[K]>>
+        : FieldError;
 };
 
 export type GlobalError = Partial<{

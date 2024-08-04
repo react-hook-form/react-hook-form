@@ -1,6 +1,7 @@
 {
   "name": "react-hook-form",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite --force",
     "build": "tsc && vite build",
@@ -8,24 +9,24 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@hookform/resolvers": "3.4.2",
-    "@material-ui/core": "^4.12.3",
-    "joi": "^17.5.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "3.9.0",
+    "@mui/material": "^5.16.0",
+    "joi": "^17.13.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "file:..",
-    "react-router-dom": "^6.2.1",
-    "react-select": "^5.2.2",
-    "yup": "^0.32.8"
+    "react-router-dom": "^6.24.1",
+    "react-select": "^5.8.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.9",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/react-select": "^5.0.1",
-    "@types/yup": "^0.29.13",
-    "@vitejs/plugin-react": "^2.2.0",
-    "typescript": "^4.5.5",
-    "vite": "^3.2.4"
+    "@types/yup": "^0.29.14",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3"
   }
 }

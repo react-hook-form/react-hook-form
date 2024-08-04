@@ -26,11 +26,11 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
   | BrowserNativeObject
   ? `${K}`
   : // Check so that we don't recurse into the same type
-  // by ensuring that the types are mutually assignable
-  // mutually required to avoid false positives of subtypes
-  true extends AnyIsEqual<TraversedTypes, V>
-  ? `${K}`
-  : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
+    // by ensuring that the types are mutually assignable
+    // mutually required to avoid false positives of subtypes
+    true extends AnyIsEqual<TraversedTypes, V>
+    ? `${K}`
+    : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -38,15 +38,16 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
  *
  * See {@link Path}
  */
-type PathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
-      }[TupleKeys<T>]
-    : PathImpl<ArrayKey, V, TraversedTypes>
-  : {
-      [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
-    }[keyof T];
+type PathInternal<T, TraversedTypes = T> =
+  T extends ReadonlyArray<infer V>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
+        }[TupleKeys<T>]
+      : PathImpl<ArrayKey, V, TraversedTypes>
+    : {
+        [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
+      }[keyof T];
 
 /**
  * Type which eagerly collects all paths through a type
@@ -79,19 +80,19 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
     ? string
     : never
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive | BrowserNativeObject
-    ? IsAny<V> extends true
-      ? string
-      : never
-    : // Check so that we don't recurse into the same type
-    // by ensuring that the types are mutually assignable
-    // mutually required to avoid false positives of subtypes
-    true extends AnyIsEqual<TraversedTypes, V>
-    ? never
-    : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
-  : true extends AnyIsEqual<TraversedTypes, V>
-  ? never
-  : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
+    ? U extends Primitive | BrowserNativeObject
+      ? IsAny<V> extends true
+        ? string
+        : never
+      : // Check so that we don't recurse into the same type
+        // by ensuring that the types are mutually assignable
+        // mutually required to avoid false positives of subtypes
+        true extends AnyIsEqual<TraversedTypes, V>
+        ? never
+        : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
+    : true extends AnyIsEqual<TraversedTypes, V>
+      ? never
+      : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -99,15 +100,20 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
  *
  * See {@link ArrayPath}
  */
-type ArrayPathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
-      }[TupleKeys<T>]
-    : ArrayPathImpl<ArrayKey, V, TraversedTypes>
-  : {
-      [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
-    }[keyof T];
+type ArrayPathInternal<T, TraversedTypes = T> =
+  T extends ReadonlyArray<infer V>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKeys<T>]-?: ArrayPathImpl<
+            K & string,
+            T[K],
+            TraversedTypes
+          >;
+        }[TupleKeys<T>]
+      : ArrayPathImpl<ArrayKey, V, TraversedTypes>
+    : {
+        [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
+      }[keyof T];
 
 /**
  * Type which eagerly collects all paths through a type which point to an array
@@ -145,17 +151,17 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
         ? PathValue<T[K], R>
         : never
       : K extends `${ArrayKey}`
-      ? T extends ReadonlyArray<infer V>
-        ? PathValue<V, R & Path<V>>
+        ? T extends ReadonlyArray<infer V>
+          ? PathValue<V, R & Path<V>>
+          : never
         : never
-      : never
     : P extends keyof T
-    ? T[P]
-    : P extends `${ArrayKey}`
-    ? T extends ReadonlyArray<infer V>
-      ? V
-      : never
-    : never
+      ? T[P]
+      : P extends `${ArrayKey}`
+        ? T extends ReadonlyArray<infer V>
+          ? V
+          : never
+        : never
   : never;
 
 /**

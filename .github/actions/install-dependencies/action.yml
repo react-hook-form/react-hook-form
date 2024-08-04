@@ -5,9 +5,9 @@ runs:
   using: composite
   steps:
     - name: Install pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v4
       with:
-        version: 8
+        version: 9
 
     - name: Setup Node version to 20
       uses: actions/setup-node@v4

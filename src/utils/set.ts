@@ -20,8 +20,8 @@ export default (object: FieldValues, path: string, value?: unknown) => {
         isObject(objValue) || Array.isArray(objValue)
           ? objValue
           : !isNaN(+tempPath[index + 1])
-          ? []
-          : {};
+            ? []
+            : {};
     }
 
     if (key === '__proto__') {

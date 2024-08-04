@@ -13,7 +13,7 @@ jobs:
         uses: ./.github/actions/install-dependencies
 
       - name: Cypress run
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           start: pnpm start
           wait-on: 'http://ip6-localhost:3000'

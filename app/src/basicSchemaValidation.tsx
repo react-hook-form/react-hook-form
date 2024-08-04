@@ -24,13 +24,13 @@ const validationSchema = yup
       checkbox: yup.string().required(),
       exclusivelyRequiredOne: yup.string().when('exclusivelyRequiredTwo', {
         is: '',
-        then: yup.string().required(),
-        otherwise: yup.string().length(0),
+        then: () => yup.string().required(),
+        otherwise: () => yup.string().length(0),
       }),
       exclusivelyRequiredTwo: yup.string().when('exclusivelyRequiredOne', {
         is: '',
-        then: yup.string().required(),
-        otherwise: yup.string().length(0),
+        then: () => yup.string().required(),
+        otherwise: () => yup.string().length(0),
       }),
     },
     [['exclusivelyRequiredOne', 'exclusivelyRequiredTwo']],

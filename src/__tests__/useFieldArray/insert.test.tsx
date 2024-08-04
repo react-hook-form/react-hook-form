@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Control, FieldPath } from '../../types';
@@ -695,7 +695,7 @@ describe('insert', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      actComponent(() => {
+      act(() => {
         jest.advanceTimersByTime(1000);
       });
 
@@ -711,7 +711,7 @@ describe('insert', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      actComponent(() => {
+      act(() => {
         jest.advanceTimersByTime(1000);
       });
 

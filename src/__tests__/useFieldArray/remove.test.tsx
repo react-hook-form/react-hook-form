@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -1088,7 +1088,7 @@ describe('remove', () => {
 
     render(<App />);
 
-    actComponent(() => {
+    act(() => {
       jest.advanceTimersByTime(2000);
     });
 
