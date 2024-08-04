@@ -1,5 +1,3 @@
-import { NestedValue } from './form';
-
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
 React Native applications is no DOM available. The JavaScript runtime is ES6/ES2015 only.
@@ -47,7 +45,7 @@ export type ExtractObjects<T> = T extends infer U
     : never
   : never;
 
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
+export type DeepPartial<T> = T extends BrowserNativeObject
   ? T
   : {
       [K in keyof T]?: ExtractObjects<T[K]> extends never
@@ -55,9 +53,7 @@ export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
         : DeepPartial<T[K]>;
     };
 
-export type DeepPartialSkipArrayKey<T> = T extends
-  | BrowserNativeObject
-  | NestedValue
+export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject
   ? T
   : T extends ReadonlyArray<any>
     ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
