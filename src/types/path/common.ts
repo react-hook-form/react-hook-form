@@ -283,8 +283,8 @@ export type NumericKeys<T extends Traversable> = UnionToIntersection<
  * @typeParam T - object type
  * @example
  * ```
- * ObjectKeys<{foo: string, bar: string}, string> = 'foo' | 'bar'
- * ObjectKeys<{foo: string, bar: number}, string> = 'foo'
+ * ObjectKeys<{foo: string, bar: string}> = 'foo' | 'bar'
+ * ObjectKeys<{foo: string, bar: number} | { foo: string }> = 'foo'
  * ```
  */
 export type ObjectKeys<T extends Traversable> = Exclude<
