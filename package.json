@@ -116,7 +116,7 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "10.2 kB"
+        "maxSize": "10.3 kB"
       }
     ]
   },
@@ -138,5 +138,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@types/node": "^22.1.0"
   }
 }

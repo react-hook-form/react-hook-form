@@ -66,6 +66,7 @@ import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
 import unset from '../utils/unset';
+import uuid from '../utils/uuid';
 
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
@@ -1365,6 +1366,19 @@ export function createFormControl<
       });
     });
 
+  const id = props.id || `form-${uuid()}`;
+
+  const submit = () => {
+    try {
+      document?.getElementById(id)?.dispatchEvent(
+        new Event('submit', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    } catch (_) {}
+  };
+
   return {
     control: {
       register,
@@ -1437,5 +1451,7 @@ export function createFormControl<
     setError,
     setFocus,
     getFieldState,
+    id,
+    submit,
   };
 }
