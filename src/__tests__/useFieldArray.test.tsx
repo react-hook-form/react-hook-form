@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../controller';
 import {
@@ -66,10 +66,11 @@ describe('useFieldArray', () => {
         const methods = useForm();
         return <FormProvider {...methods}>{children}</FormProvider>;
       };
-      const { result } = renderHook(() => useFieldArray({ name: 'test' }), {
-        wrapper: Provider,
-      });
-      expect(result.error).toBeUndefined();
+      expect(() =>
+        renderHook(() => useFieldArray({ name: 'test' }), {
+          wrapper: Provider,
+        }),
+      ).not.toThrow();
     });
   });
 
@@ -1274,7 +1275,7 @@ describe('useFieldArray', () => {
 
         render(<Component />);
 
-        await actComponent(async () => {
+        await act(async () => {
           setValue(
             'test',
             [
@@ -1336,7 +1337,7 @@ describe('useFieldArray', () => {
 
         render(<Component />);
 
-        actComponent(() => {
+        act(() => {
           setValue(
             'test',
             [
@@ -1356,7 +1357,7 @@ describe('useFieldArray', () => {
           expect(formState.isDirty).toBeTruthy();
         }
 
-        actComponent(() => {
+        act(() => {
           setValue(
             'test',
             [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
@@ -3243,13 +3244,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Min length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
@@ -3303,13 +3304,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Min length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
@@ -3358,13 +3359,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Max length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove' }));
       });
 
@@ -3426,13 +3427,13 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
       screen.getByText('Max length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove' }));
       });
 
@@ -3508,7 +3509,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
       expect(screen.queryByAltText('This is required')).toBeNull();
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getAllByRole('textbox')[0], {
           target: {
             value: '1',
@@ -3516,7 +3517,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getAllByRole('textbox')[0], {
           target: {
             value: '',
@@ -3526,13 +3527,13 @@ describe('useFieldArray', () => {
 
       screen.getByText('This is required');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove' }));
       });
 
@@ -3585,7 +3586,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -3635,7 +3636,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -3749,11 +3750,11 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
@@ -3810,11 +3811,11 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(
           screen.getByRole('button', { name: 'Add nested array' }),
         );

@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ResponseComposition, rest, RestContext } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import { Form } from '../form';
@@ -10,28 +10,26 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 
 const server = setupServer(
-  rest.post('/success', (_, res: ResponseComposition, ctx: RestContext) => {
-    return res(
-      ctx.json({
-        message: 'ok',
-      }),
-    );
+  http.post('/success', () => {
+    return HttpResponse.json({ message: 'ok' });
   }),
-  rest.post('/error', (_, res: ResponseComposition, ctx: RestContext) => {
-    return res(ctx.status(500));
+  http.post('/error', () => {
+    return new Response(null, {
+      status: 500,
+    });
   }),
-  rest.post('/status', (_, res: ResponseComposition, ctx: RestContext) => {
-    return res(ctx.status(201));
+  http.post('/status', () => {
+    return new HttpResponse(null, { status: 201 });
   }),
-  rest.post('/get', (_, res: ResponseComposition, ctx: RestContext) => {
-    return res(ctx.status(200));
+  http.post('/get', () => {
+    return new HttpResponse(null, { status: 200 });
   }),
-  rest.post('/json', (req, res: ResponseComposition, ctx: RestContext) => {
-    if (req.headers.get('content-type') === 'application/json') {
-      return res(ctx.status(200));
+  http.post('/json', ({ request }) => {
+    if (request.headers.get('content-type') === 'application/json') {
+      return new HttpResponse(null, { status: 200 });
     }
 
-    return res(ctx.status(500));
+    return new HttpResponse(null, { status: 500 });
   }),
 );
 
