@@ -69,7 +69,7 @@ export function useController<
       get(control._defaultValues, name, props.defaultValue),
     ),
     exact: true,
-  }) as FieldPathValue<TFieldValues, TName>;
+  }) as FieldPathValue<TFieldValues, TFieldDepth, TName>;
   const formState = useFormState({
     control,
     name,

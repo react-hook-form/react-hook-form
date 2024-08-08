@@ -12,7 +12,7 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
  * ```
  */
 export type MaxDepth = 50; // Define a maximum recursion depth
-export type DefaultDepth = 10;
+export type DefaultDepth = 50;
 
 /**
  * Utility type to decrement the depth value.

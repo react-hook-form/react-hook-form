@@ -264,8 +264,14 @@ export type SetFocusOptions = Partial<{
  * <button onClick={() => setFocus("name", { shouldSelect: true })}>Focus</button>
  * ```
  */
-export type UseFormSetFocus<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+export type UseFormSetFocus<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+> = <
+  TFieldName extends FieldPath<TFieldValues, TFieldDepth> = FieldPath<
+    TFieldValues,
+    TFieldDepth
+  >,
 >(
   name: TFieldName,
   options?: SetFocusOptions,
@@ -485,11 +491,14 @@ export type UseFormWatch<
  *  </button>
  * ```
  */
-export type UseFormTrigger<TFieldValues extends FieldValues> = (
+export type UseFormTrigger<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+> = (
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[],
+    | FieldPath<TFieldValues, TFieldDepth>
+    | FieldPath<TFieldValues, TFieldDepth>[]
+    | readonly FieldPath<TFieldValues, TFieldDepth>[],
   options?: TriggerConfig,
 ) => Promise<boolean>;
 
@@ -509,11 +518,14 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
  * clearErrors("name2"); // clear a single field error
  * ```
  */
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (
+export type UseFormClearErrors<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+> = (
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
+    | FieldPath<TFieldValues, TFieldDepth>
+    | FieldPath<TFieldValues, TFieldDepth>[]
+    | readonly FieldPath<TFieldValues, TFieldDepth>[]
     | `root.${string}`
     | 'root',
 ) => void;
@@ -582,8 +594,11 @@ export type UseFormSetValue<
  * <button onClick={() => setError("name", { type: "max" }, { shouldFocus: true })} />
  * ```
  */
-export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
+export type UseFormSetError<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+> = (
+  name: FieldPath<TFieldValues, TFieldDepth> | `root.${string}` | 'root',
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -739,7 +754,9 @@ export type WatchInternal<
   TFieldValues,
   TFieldDepth extends number = DefaultDepth,
 > = (
-  fieldNames?: InternalFieldName | InternalFieldName[],
+  fieldNames?:
+    | InternalFieldName<TFieldValues, TFieldDepth>
+    | InternalFieldName<TFieldValues, TFieldDepth>[],
   defaultValue?: DeepPartial<TFieldValues>,
   isMounted?: boolean,
   isGlobal?: boolean,
@@ -854,7 +871,7 @@ export type Control<
   _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues, TFieldDepth>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
-  setError: UseFormSetError<TFieldValues>;
+  setError: UseFormSetError<TFieldValues, TFieldDepth>;
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
@@ -872,44 +889,50 @@ export type UseFormReturn<
   TTransformedValues extends FieldValues | undefined = undefined,
   TFieldDepth extends number = DefaultDepth,
 > = {
-  watch: UseFormWatch<TFieldValues>;
-  getValues: UseFormGetValues<TFieldValues>;
+  watch: UseFormWatch<TFieldValues, TFieldDepth>;
+  getValues: UseFormGetValues<TFieldValues, TFieldDepth>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
-  setError: UseFormSetError<TFieldValues>;
-  clearErrors: UseFormClearErrors<TFieldValues>;
+  setError: UseFormSetError<TFieldValues, TFieldDepth>;
+  clearErrors: UseFormClearErrors<TFieldValues, TFieldDepth>;
   setValue: UseFormSetValue<TFieldValues, TFieldDepth>;
-  trigger: UseFormTrigger<TFieldValues>;
+  trigger: UseFormTrigger<TFieldValues, TFieldDepth>;
   formState: FormState<TFieldValues>;
   resetField: UseFormResetField<TFieldValues, TFieldDepth>;
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
   unregister: UseFormUnregister<TFieldValues, TFieldDepth>;
   control: Control<TFieldValues, TFieldDepth, TContext>;
-  register: UseFormRegister<TFieldValues>;
-  setFocus: UseFormSetFocus<TFieldValues>;
+  register: UseFormRegister<TFieldValues, TFieldDepth>;
+  setFocus: UseFormSetFocus<TFieldValues, TFieldDepth>;
 };
 
-export type UseFormStateProps<TFieldValues extends FieldValues> = Partial<{
-  control?: Control<TFieldValues>;
+export type UseFormStateProps<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+> = Partial<{
+  control?: Control<TFieldValues, TFieldDepth>;
   disabled?: boolean;
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
+    | FieldPath<TFieldValues, TFieldDepth>
+    | FieldPath<TFieldValues, TFieldDepth>[]
+    | readonly FieldPath<TFieldValues, TFieldDepth>[];
   exact?: boolean;
 }>;
 
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
 
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+export type UseWatchProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldDepth extends number = DefaultDepth,
+> = {
   defaultValue?: unknown;
   disabled?: boolean;
   name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
+    | FieldPath<TFieldValues, TFieldDepth>
+    | FieldPath<TFieldValues, TFieldDepth>[]
+    | readonly FieldPath<TFieldValues, TFieldDepth>[];
+  control?: Control<TFieldValues, TFieldDepth>;
   exact?: boolean;
 };
 
@@ -917,16 +940,18 @@ export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined,
+  TFieldDepth extends number = DefaultDepth,
 > = {
   children: React.ReactNode | React.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues, TFieldDepth>;
 
 export type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
+  TFieldDepth extends number = DefaultDepth,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
-    control: Control<TFieldValues>;
+    control: Control<TFieldValues, TFieldDepth>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
     onError: ({

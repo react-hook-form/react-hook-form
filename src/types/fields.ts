@@ -1,7 +1,13 @@
+import { FieldPath } from './path';
 import { IsFlatObject, Noop } from './utils';
 import { RegisterOptions } from './validator';
 
-export type InternalFieldName = string;
+// export type InternalFieldName = string;
+
+export type InternalFieldName<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+> = FieldPath<TFieldValues, TFieldDepth>;
 
 export type FieldName<TFieldValues extends FieldValues> =
   IsFlatObject<TFieldValues> extends true
