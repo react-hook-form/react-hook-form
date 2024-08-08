@@ -77,7 +77,7 @@ export function useWatch<
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldDepth, TFieldName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, TFieldDepth>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldDepth, TFieldName>;
@@ -114,7 +114,7 @@ export function useWatch<
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, TFieldDepth>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldDepth, TFieldNames>;
@@ -150,9 +150,10 @@ export function useWatch<
  * })
  * ```
  */
-export function useWatch<TFieldValues extends FieldValues>(
-  props?: UseWatchProps<TFieldValues>,
-) {
+export function useWatch<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number,
+>(props?: UseWatchProps<TFieldValues, TFieldDepth>) {
   const methods = useFormContext();
   const {
     control = methods.control,

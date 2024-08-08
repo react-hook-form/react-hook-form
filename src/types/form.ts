@@ -3,7 +3,7 @@ import React from 'react';
 import { VALIDATION_MODE } from '../constants';
 import { Subject, Subscription } from '../utils/createSubject';
 
-import { DefaultDepth, MaxDepth } from './path/eager';
+import { DefaultDepth } from './path/eager';
 import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
@@ -369,9 +369,10 @@ export type UseFormGetValues<
  * getFieldState('name', formState)
  * ```
  */
-export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
-  TFieldName extends FieldPath<TFieldValues>,
->(
+export type UseFormGetFieldState<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number = DefaultDepth,
+> = <TFieldName extends FieldPath<TFieldValues, TFieldDepth>>(
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
@@ -462,7 +463,7 @@ export type UseFormWatch<
    * ```
    */
   (
-    callback: WatchObserver<TFieldValues>,
+    callback: WatchObserver<TFieldValues, TFieldDepth>,
     defaultValues?: DeepPartial<TFieldValues>,
   ): Subscription;
 };
@@ -625,7 +626,7 @@ export type UseFormSetError<
  */
 export type UseFormUnregister<
   TFieldValues extends FieldValues,
-  TFieldDepth extends number,
+  TFieldDepth extends number = DefaultDepth,
 > = (
   name?:
     | FieldPath<TFieldValues, TFieldDepth>
@@ -754,15 +755,13 @@ export type WatchInternal<
   TFieldValues,
   TFieldDepth extends number = DefaultDepth,
 > = (
-  fieldNames?:
-    | InternalFieldName<TFieldValues, TFieldDepth>
-    | InternalFieldName<TFieldValues, TFieldDepth>[],
+  fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: DeepPartial<TFieldValues>,
   isMounted?: boolean,
   isGlobal?: boolean,
 ) =>
-  | FieldPathValue<FieldValues, TFieldDepth, InternalFieldName>
-  | FieldPathValues<FieldValues, TFieldDepth, InternalFieldName[]>;
+  | FieldPathValue<FieldValues, TFieldDepth, any>
+  | FieldPathValues<FieldValues, TFieldDepth, any[]>;
 
 export type GetIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
@@ -841,7 +840,7 @@ export type Control<
   _formValues: FieldValues;
   _proxyFormState: ReadFormState;
   _defaultValues: Partial<DefaultValues<TFieldValues>>;
-  _getWatch: WatchInternal<TFieldValues>;
+  _getWatch: WatchInternal<TFieldValues, TFieldDepth>;
   _updateFieldArray: BatchFieldArrayUpdate;
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
@@ -870,14 +869,17 @@ export type Control<
   handleSubmit: UseFormHandleSubmit<TFieldValues>;
   _disableForm: (disabled?: boolean) => void;
   unregister: UseFormUnregister<TFieldValues, TFieldDepth>;
-  getFieldState: UseFormGetFieldState<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues, TFieldDepth>;
   setError: UseFormSetError<TFieldValues, TFieldDepth>;
 };
 
-export type WatchObserver<TFieldValues extends FieldValues> = (
+export type WatchObserver<
+  TFieldValues extends FieldValues,
+  TFieldDepth extends number = DefaultDepth,
+> = (
   value: DeepPartial<TFieldValues>,
   info: {
-    name?: FieldPath<TFieldValues>;
+    name?: FieldPath<TFieldValues, TFieldDepth>;
     type?: EventType;
     values?: unknown;
   },
@@ -891,7 +893,7 @@ export type UseFormReturn<
 > = {
   watch: UseFormWatch<TFieldValues, TFieldDepth>;
   getValues: UseFormGetValues<TFieldValues, TFieldDepth>;
-  getFieldState: UseFormGetFieldState<TFieldValues>;
+  getFieldState: UseFormGetFieldState<TFieldValues, TFieldDepth>;
   setError: UseFormSetError<TFieldValues, TFieldDepth>;
   clearErrors: UseFormClearErrors<TFieldValues, TFieldDepth>;
   setValue: UseFormSetValue<TFieldValues, TFieldDepth>;

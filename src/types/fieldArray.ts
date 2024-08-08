@@ -1,4 +1,4 @@
-import { DefaultDepth, MaxDepth } from './path/eager';
+import { DefaultDepth } from './path/eager';
 import { FieldValues } from './fields';
 import { Control } from './form';
 import { FieldArrayPath, FieldArrayPathValue } from './path';
@@ -15,7 +15,7 @@ export type UseFieldArrayProps<
 > = {
   name: TFieldArrayName;
   keyName?: TKeyName;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, TFieldDepth>;
   rules?: {
     validate?:
       | Validate<

@@ -52,7 +52,7 @@ export type UseControllerProps<
   >;
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TFieldDepth, TName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, TFieldDepth>;
   disabled?: boolean;
 };
 

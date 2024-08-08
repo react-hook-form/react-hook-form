@@ -1,6 +1,6 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
 
-import { DefaultDepth, MaxDepth } from './path/eager';
+import { DefaultDepth } from './path/eager';
 import { Message } from './errors';
 import { FieldValues } from './fields';
 import { FieldPath, FieldPathValue } from './path';
@@ -56,7 +56,9 @@ export type RegisterOptions<
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;
   disabled: boolean;
-  deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
+  deps:
+    | FieldPath<TFieldValues, TFieldDepth>
+    | FieldPath<TFieldValues, TFieldDepth>[];
 }> &
   (
     | {

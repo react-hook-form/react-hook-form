@@ -41,7 +41,7 @@ export const useFormContext = <
   TransformedValues extends FieldValues | undefined = undefined,
   TFieldDepth extends number = DefaultDepth,
 >(): UseFormReturn<TFieldValues, TContext, TransformedValues, TFieldDepth> =>
-  React.useContext(HookFormContext) as UseFormReturn<
+  React.useContext(HookFormContext) as unknown as UseFormReturn<
     TFieldValues,
     TContext,
     TransformedValues,
@@ -82,8 +82,14 @@ export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined,
+  TFieldDepth extends number = DefaultDepth,
 >(
-  props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
+  props: FormProviderProps<
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TFieldDepth
+  >,
 ) => {
   const { children, ...data } = props;
   return (

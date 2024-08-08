@@ -7,7 +7,7 @@ import isWatched from './logic/isWatched';
 import iterateFieldsByAction from './logic/iterateFieldsByAction';
 import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
-import { DefaultDepth, MaxDepth } from './types/path/eager';
+import { DefaultDepth } from './types/path/eager';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
@@ -416,7 +416,7 @@ export function useFieldArray<
 
     return () => {
       (control._options.shouldUnregister || shouldUnregister) &&
-        control.unregister(name as FieldPath<TFieldValues>);
+        control.unregister(name as FieldPath<TFieldValues, TFieldDepth>);
     };
   }, [name, control, keyName, shouldUnregister]);
 

@@ -57,7 +57,7 @@ export function useController<
 >(
   props: UseControllerProps<TFieldValues, TFieldDepth, TName>,
 ): UseControllerReturn<TFieldValues, TFieldDepth, TName> {
-  const methods = useFormContext<TFieldValues>();
+  const methods = useFormContext<TFieldValues, any, any, TFieldDepth>();
   const { name, disabled, control = methods.control, shouldUnregister } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({

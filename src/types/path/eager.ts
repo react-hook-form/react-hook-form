@@ -6,24 +6,15 @@ import { ArrayKey, IsTuple, TupleKeys } from './common';
 /**
  * The maximum recursion depth for type checking.
  * Adjust this value to control how deeply nested paths are evaluated.
- * @example
- * ```
- * type MaxDepth = 5; // Recursion will go up to 5 levels deep
- * ```
  */
-export type MaxDepth = 50; // Define a maximum recursion depth
-export type DefaultDepth = 50;
+export type MaxDepth = 50;
+export type DefaultDepth = 6;
 
 /**
  * Utility type to decrement the depth value.
  * This is used to limit the recursion in type checking.
- * @example
- * ```
- * type Depth4 = DecrementDepth<5>; // Depth4 is 4
- * type Depth3 = DecrementDepth<4>; // Depth3 is 3
- * ```
  */
-type DecrementDepth<D extends number> = D extends 50
+type DecrementDepth<D extends number> = D extends MaxDepth
   ? 49
   : D extends 49
     ? 48
@@ -301,8 +292,8 @@ export type FieldArrayPath<
  */
 export type PathValue<
   T,
-  D extends number,
-  P extends Path<T, D> | ArrayPath<T, D>,
+  D extends number = DefaultDepth,
+  P extends Path<T, D> | ArrayPath<T, D> = Path<T, D> | ArrayPath<T, D>,
 > = T extends any
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T

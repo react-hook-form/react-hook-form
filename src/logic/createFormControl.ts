@@ -42,6 +42,7 @@ import {
   WatchInternal,
   WatchObserver,
 } from '../types';
+import { DefaultDepth } from '../types/path/eager';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
@@ -93,10 +94,11 @@ const defaultOptions = {
 
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
+  TFieldDepth extends number = DefaultDepth,
   TContext = any,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
-): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
+): Omit<UseFormReturn<TFieldValues, TContext, any, TFieldDepth>, 'formState'> {
   let _options = {
     ...defaultOptions,
     ...props,
@@ -501,7 +503,7 @@ export function createFormControl<
         (field._f.refs
           ? field._f.refs.every((ref) => !live(ref))
           : !live(field._f.ref)) &&
-        unregister(name as FieldPath<TFieldValues>);
+        unregister(name as FieldPath<TFieldValues, TFieldDepth>);
     }
 
     _names.unMount = new Set();
@@ -615,7 +617,7 @@ export function createFormControl<
         true,
       );
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate && trigger(name as Path<TFieldValues, TFieldDepth>);
   };
 
   const setValues = <
@@ -641,7 +643,7 @@ export function createFormControl<
     }
   };
 
-  const setValue: UseFormSetValue<TFieldValues> = (
+  const setValue: UseFormSetValue<TFieldValues, TFieldDepth> = (
     name,
     value,
     options = {},
@@ -800,8 +802,8 @@ export function createFormControl<
         field._f.deps &&
           trigger(
             field._f.deps as
-              | FieldPath<TFieldValues>
-              | FieldPath<TFieldValues>[],
+              | FieldPath<TFieldValues, TFieldDepth>
+              | FieldPath<TFieldValues, TFieldDepth>[],
           );
         shouldRenderByError(name, isValid, error, fieldState);
       }
@@ -816,7 +818,10 @@ export function createFormControl<
     return;
   };
 
-  const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
+  const trigger: UseFormTrigger<TFieldValues, TFieldDepth> = async (
+    name,
+    options = {},
+  ) => {
     let isValid;
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
@@ -866,10 +871,10 @@ export function createFormControl<
     return validationResult;
   };
 
-  const getValues: UseFormGetValues<TFieldValues> = (
+  const getValues: UseFormGetValues<TFieldValues, TFieldDepth> = (
     fieldNames?:
       | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+      | ReadonlyArray<FieldPath<TFieldValues, TFieldDepth>>,
   ) => {
     const values = {
       ...(_state.mount ? _formValues : _defaultValues),
@@ -882,7 +887,7 @@ export function createFormControl<
         : fieldNames.map((name) => get(values, name));
   };
 
-  const getFieldState: UseFormGetFieldState<TFieldValues> = (
+  const getFieldState: UseFormGetFieldState<TFieldValues, TFieldDepth> = (
     name,
     formState,
   ) => ({
@@ -893,7 +898,7 @@ export function createFormControl<
     isTouched: !!get((formState || _formState).touchedFields, name),
   });
 
-  const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
+  const clearErrors: UseFormClearErrors<TFieldValues, TFieldDepth> = (name) => {
     name &&
       convertToArrayPayload(name).forEach((inputName) =>
         unset(_formState.errors, inputName),
@@ -904,7 +909,11 @@ export function createFormControl<
     });
   };
 
-  const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
+  const setError: UseFormSetError<TFieldValues, TFieldDepth> = (
+    name,
+    error,
+    options,
+  ) => {
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
 
@@ -926,11 +935,11 @@ export function createFormControl<
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
 
-  const watch: UseFormWatch<TFieldValues> = (
+  const watch: UseFormWatch<TFieldValues, TFieldDepth> = (
     name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
-      | WatchObserver<TFieldValues>,
+      | FieldPath<TFieldValues, TFieldDepth>
+      | ReadonlyArray<FieldPath<TFieldValues, TFieldDepth>>
+      | WatchObserver<TFieldValues, TFieldDepth>,
     defaultValue?: DeepPartial<TFieldValues>,
   ) =>
     isFunction(name)
@@ -939,7 +948,7 @@ export function createFormControl<
             name(
               _getWatch(undefined, defaultValue),
               payload as {
-                name?: FieldPath<TFieldValues>;
+                name?: FieldPath<TFieldValues, TFieldDepth>;
                 type?: EventType;
                 value?: unknown;
               },
@@ -951,7 +960,10 @@ export function createFormControl<
           true,
         );
 
-  const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
+  const unregister: UseFormUnregister<TFieldValues, TFieldDepth> = (
+    name,
+    options = {},
+  ) => {
     for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
@@ -983,13 +995,10 @@ export function createFormControl<
     !options.keepIsValid && _updateValid();
   };
 
-  const _updateDisabledField: Control<TFieldValues>['_updateDisabledField'] = ({
-    disabled,
-    name,
-    field,
-    fields,
-    value,
-  }) => {
+  const _updateDisabledField: Control<
+    TFieldValues,
+    TFieldDepth
+  >['_updateDisabledField'] = ({ disabled, name, field, fields, value }) => {
     if ((isBoolean(disabled) && _state.mount) || !!disabled) {
       const inputValue = disabled
         ? undefined
@@ -1001,7 +1010,10 @@ export function createFormControl<
     }
   };
 
-  const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
+  const register: UseFormRegister<TFieldValues, TFieldDepth> = (
+    name,
+    options = {},
+  ) => {
     let field = get(_fields, name);
     const disabledIsDefined = isBoolean(options.disabled);
 
@@ -1174,7 +1186,10 @@ export function createFormControl<
       }
     };
 
-  const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
+  const resetField: UseFormResetField<TFieldValues, TFieldDepth> = (
+    name,
+    options = {},
+  ) => {
     if (get(_fields, name)) {
       if (isUndefined(options.defaultValue)) {
         setValue(name, cloneObject(get(_defaultValues, name)));
@@ -1183,7 +1198,8 @@ export function createFormControl<
           name,
           options.defaultValue as PathValue<
             TFieldValues,
-            FieldPath<TFieldValues>
+            TFieldDepth,
+            FieldPath<TFieldValues, TFieldDepth>
           >,
         );
         set(_defaultValues, name, cloneObject(options.defaultValue));
@@ -1228,7 +1244,7 @@ export function createFormControl<
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
             : setValue(
-                fieldName as FieldPath<TFieldValues>,
+                fieldName as FieldPath<TFieldValues, TFieldDepth>,
                 get(values, fieldName),
               );
         }
@@ -1331,7 +1347,10 @@ export function createFormControl<
       keepStateOptions,
     );
 
-  const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
+  const setFocus: UseFormSetFocus<TFieldValues, TFieldDepth> = (
+    name,
+    options = {},
+  ) => {
     const field = get(_fields, name);
     const fieldReference = field && field._f;
 
