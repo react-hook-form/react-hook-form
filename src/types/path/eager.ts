@@ -4,6 +4,39 @@ import { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
 import { ArrayKey, IsTuple, TupleKeys } from './common';
 
 /**
+ * The maximum recursion depth for type checking.
+ * Adjust this value to control how deeply nested paths are evaluated.
+ * @example
+ * ```
+ * type MaxDepth = 5; // Recursion will go up to 5 levels deep
+ * ```
+ */
+type MaxDepth = 6; // Define a maximum recursion depth
+
+/**
+ * Utility type to decrement the depth value.
+ * This is used to limit the recursion in type checking.
+ * @example
+ * ```
+ * type Depth4 = DecrementDepth<5>; // Depth4 is 4
+ * type Depth3 = DecrementDepth<4>; // Depth3 is 3
+ * ```
+ */
+type DecrementDepth<D extends number> = D extends 6
+  ? 5
+  : D extends 5
+    ? 4
+    : D extends 4
+      ? 3
+      : D extends 3
+        ? 2
+        : D extends 2
+          ? 1
+          : D extends 1
+            ? 0
+            : never;
+
+/**
  * Helper function to break apart T1 and check if any are equal to T2
  *
  * See {@link IsEqual}
@@ -21,16 +54,23 @@ type AnyIsEqual<T1, T2> = T1 extends T2
  *
  * See {@link Path}
  */
-type PathImpl<K extends string | number, V, TraversedTypes> = V extends
-  | Primitive
-  | BrowserNativeObject
-  ? `${K}`
-  : // Check so that we don't recurse into the same type
-    // by ensuring that the types are mutually assignable
-    // mutually required to avoid false positives of subtypes
-    true extends AnyIsEqual<TraversedTypes, V>
+type PathImpl<
+  K extends string | number,
+  V,
+  TraversedTypes,
+  Depth extends number,
+> = Depth extends 0
+  ? never
+  : V extends Primitive | BrowserNativeObject
     ? `${K}`
-    : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
+    : // Check so that we don't recurse into the same type
+      // by ensuring that the types are mutually assignable
+      // mutually required to avoid false positives of subtypes
+      true extends AnyIsEqual<TraversedTypes, V>
+      ? `${K}`
+      :
+          | `${K}`
+          | `${K}.${PathInternal<V, TraversedTypes | V, DecrementDepth<Depth>>}`;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -38,15 +78,20 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
  *
  * See {@link Path}
  */
-type PathInternal<T, TraversedTypes = T> =
+type PathInternal<T, TraversedTypes, Depth extends number> =
   T extends ReadonlyArray<infer V>
     ? IsTuple<T> extends true
       ? {
-          [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
+          [K in TupleKeys<T>]-?: PathImpl<
+            K & string,
+            T[K],
+            TraversedTypes,
+            Depth
+          >;
         }[TupleKeys<T>]
-      : PathImpl<ArrayKey, V, TraversedTypes>
+      : PathImpl<ArrayKey, V, TraversedTypes, Depth>
     : {
-        [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
+        [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes, Depth>;
       }[keyof T];
 
 /**
@@ -59,7 +104,7 @@ type PathInternal<T, TraversedTypes = T> =
  */
 // We want to explode the union type and process each individually
 // so assignable types don't leak onto the stack from the base.
-export type Path<T> = T extends any ? PathInternal<T> : never;
+export type Path<T> = T extends any ? PathInternal<T, T, MaxDepth> : never;
 
 /**
  * See {@link Path}
@@ -73,26 +118,33 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
  *
  * See {@link ArrayPath}
  */
-type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
-  | Primitive
-  | BrowserNativeObject
-  ? IsAny<V> extends true
-    ? string
-    : never
-  : V extends ReadonlyArray<infer U>
-    ? U extends Primitive | BrowserNativeObject
-      ? IsAny<V> extends true
-        ? string
-        : never
-      : // Check so that we don't recurse into the same type
-        // by ensuring that the types are mutually assignable
-        // mutually required to avoid false positives of subtypes
-        true extends AnyIsEqual<TraversedTypes, V>
+type ArrayPathImpl<
+  K extends string | number,
+  V,
+  TraversedTypes,
+  Depth extends number,
+> = Depth extends 0
+  ? never
+  : V extends Primitive | BrowserNativeObject
+    ? IsAny<V> extends true
+      ? string
+      : never
+    : V extends ReadonlyArray<infer U>
+      ? U extends Primitive | BrowserNativeObject
+        ? IsAny<V> extends true
+          ? string
+          : never
+        : // Check so that we don't recurse into the same type
+          // by ensuring that the types are mutually assignable
+          // mutually required to avoid false positives of subtypes
+          true extends AnyIsEqual<TraversedTypes, V>
+          ? never
+          :
+              | `${K}`
+              | `${K}.${ArrayPathInternal<V, TraversedTypes | V, DecrementDepth<Depth>>}`
+      : true extends AnyIsEqual<TraversedTypes, V>
         ? never
-        : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
-    : true extends AnyIsEqual<TraversedTypes, V>
-      ? never
-      : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
+        : `${K}.${ArrayPathInternal<V, TraversedTypes | V, DecrementDepth<Depth>>}`;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -100,19 +152,25 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
  *
  * See {@link ArrayPath}
  */
-type ArrayPathInternal<T, TraversedTypes = T> =
+type ArrayPathInternal<T, TraversedTypes, Depth extends number> =
   T extends ReadonlyArray<infer V>
     ? IsTuple<T> extends true
       ? {
           [K in TupleKeys<T>]-?: ArrayPathImpl<
             K & string,
             T[K],
-            TraversedTypes
+            TraversedTypes,
+            Depth
           >;
         }[TupleKeys<T>]
-      : ArrayPathImpl<ArrayKey, V, TraversedTypes>
+      : ArrayPathImpl<ArrayKey, V, TraversedTypes, Depth>
     : {
-        [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
+        [K in keyof T]-?: ArrayPathImpl<
+          K & string,
+          T[K],
+          TraversedTypes,
+          Depth
+        >;
       }[keyof T];
 
 /**
@@ -126,8 +184,9 @@ type ArrayPathInternal<T, TraversedTypes = T> =
  */
 // We want to explode the union type and process each individually
 // so assignable types don't leak onto the stack from the base.
-export type ArrayPath<T> = T extends any ? ArrayPathInternal<T> : never;
-
+export type ArrayPath<T> = T extends any
+  ? ArrayPathInternal<T, T, MaxDepth>
+  : never;
 /**
  * See {@link ArrayPath}
  */
