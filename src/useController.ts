@@ -2,6 +2,7 @@ import React from 'react';
 
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import { DefaultDepth } from './types/path/eager';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
@@ -48,10 +49,14 @@ import { useWatch } from './useWatch';
  */
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TFieldDepth extends number = DefaultDepth,
+  TName extends FieldPath<TFieldValues, TFieldDepth> = FieldPath<
+    TFieldValues,
+    TFieldDepth
+  >,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
-): UseControllerReturn<TFieldValues, TName> {
+  props: UseControllerProps<TFieldValues, TFieldDepth, TName>,
+): UseControllerReturn<TFieldValues, TFieldDepth, TName> {
   const methods = useFormContext<TFieldValues>();
   const { name, disabled, control = methods.control, shouldUnregister } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);

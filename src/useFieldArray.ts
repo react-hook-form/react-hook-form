@@ -7,6 +7,7 @@ import isWatched from './logic/isWatched';
 import iterateFieldsByAction from './logic/iterateFieldsByAction';
 import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
+import { DefaultDepth, MaxDepth } from './types/path/eager';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
@@ -80,12 +81,20 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldDepth extends number = DefaultDepth,
+  TFieldArrayName extends FieldArrayPath<
+    TFieldValues,
+    TFieldDepth
+  > = FieldArrayPath<TFieldValues, TFieldDepth>,
   TKeyName extends string = 'id',
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
+  props: UseFieldArrayProps<
+    TFieldValues,
+    TFieldDepth,
+    TFieldArrayName,
+    TKeyName
+  >,
+): UseFieldArrayReturn<TFieldValues, TFieldDepth, TFieldArrayName, TKeyName> {
   const methods = useFormContext();
   const {
     control = methods.control,
@@ -107,8 +116,8 @@ export function useFieldArray<
 
   props.rules &&
     (control as Control<TFieldValues>).register(
-      name as FieldPath<TFieldValues>,
-      props.rules as RegisterOptions<TFieldValues>,
+      name as FieldPath<TFieldValues, TFieldDepth>,
+      props.rules as RegisterOptions<TFieldValues, TFieldDepth>,
     );
 
   useSubscribe({
@@ -133,7 +142,7 @@ export function useFieldArray<
   const updateValues = React.useCallback(
     <
       T extends Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+        FieldArrayWithId<TFieldValues, TFieldDepth, TFieldArrayName, TKeyName>
       >[],
     >(
       updatedFieldArrayValues: T,
@@ -146,8 +155,8 @@ export function useFieldArray<
 
   const append = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const appendValue = convertToArrayPayload(cloneObject(value));
@@ -170,8 +179,8 @@ export function useFieldArray<
 
   const prepend = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const prependValue = convertToArrayPayload(cloneObject(value));
@@ -190,7 +199,7 @@ export function useFieldArray<
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldDepth, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
@@ -203,8 +212,8 @@ export function useFieldArray<
   const insert = (
     index: number,
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
     const insertValue = convertToArrayPayload(cloneObject(value));
@@ -261,15 +270,20 @@ export function useFieldArray<
 
   const update = (
     index: number,
-    value: FieldArray<TFieldValues, TFieldArrayName>,
+    value: FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>,
   ) => {
     const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+        FieldArrayWithId<TFieldValues, TFieldDepth, TFieldArrayName, TKeyName>
       >(name),
       index,
-      updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
+      updateValue as FieldArrayWithId<
+        TFieldValues,
+        TFieldDepth,
+        TFieldArrayName,
+        TKeyName
+      >,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
@@ -291,8 +305,8 @@ export function useFieldArray<
 
   const replace = (
     value:
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
-      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldDepth, TFieldArrayName>>[],
   ) => {
     const updatedFieldArrayValues = convertToArrayPayload(cloneObject(value));
     ids.current = updatedFieldArrayValues.map(generateId);
@@ -420,7 +434,12 @@ export function useFieldArray<
         fields.map((field, index) => ({
           ...field,
           [keyName]: ids.current[index] || generateId(),
-        })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
+        })) as FieldArrayWithId<
+          TFieldValues,
+          TFieldDepth,
+          TFieldArrayName,
+          TKeyName
+        >[],
       [fields, keyName],
     ),
   };
