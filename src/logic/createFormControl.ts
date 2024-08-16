@@ -692,7 +692,7 @@ export function createFormControl<
     const _updateIsFieldValueUpdated = (fieldValue: any): void => {
       isFieldValueUpdated =
         Number.isNaN(fieldValue) ||
-        fieldValue === get(_formValues, name, fieldValue);
+        deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
 
     if (field) {
