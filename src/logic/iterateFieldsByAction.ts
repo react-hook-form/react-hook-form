@@ -16,17 +16,21 @@ const iterateFieldsByAction = (
 
       if (_f) {
         if (_f.refs && _f.refs[0] && action(_f.refs[0], key) && !abortEarly) {
-          break;
+          return true;
         } else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) {
-          break;
+          return true;
         } else {
-          iterateFieldsByAction(currentField, action);
+          if (iterateFieldsByAction(currentField, action)) {
+            break;
+          }
         }
       } else if (isObject(currentField)) {
-        iterateFieldsByAction(currentField, action);
+        if (iterateFieldsByAction(currentField, action)) {
+          break;
+        }
       }
     }
   }
+  return;
 };
-
 export default iterateFieldsByAction;
