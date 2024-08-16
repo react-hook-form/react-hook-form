@@ -448,13 +448,13 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const { _f, ...fieldValue } = field;
+        const { _f, ...fieldValue } = field as Field;
 
         if (_f) {
           const isFieldArrayRoot = _names.array.has(_f.name);
           _updateIsValidating([name], true);
           const fieldError = await validateField(
-            field,
+            field as Field,
             _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
