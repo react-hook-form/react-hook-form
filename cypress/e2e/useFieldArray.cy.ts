@@ -435,20 +435,21 @@ describe('useFieldArray', () => {
   });
 
   it('should replace fields with new values', () => {
+    cy.visit('http://localhost:3000/useFieldArray/normal');
     cy.get('#replace').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', '37. lorem');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '37. ipsum');
-    cy.get('ul > li').eq(2).find('input').should('have.value', '37. dolor');
-    cy.get('ul > li').eq(3).find('input').should('have.value', '37. sit amet');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '2. lorem');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '2. ipsum');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '2. dolor');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '2. sit amet');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '37. lorem' },
-          { name: '37. ipsum' },
-          { name: '37. dolor' },
-          { name: '37. sit amet' },
+          { name: '2. lorem' },
+          { name: '2. ipsum' },
+          { name: '2. dolor' },
+          { name: '2. sit amet' },
         ],
       }),
     );

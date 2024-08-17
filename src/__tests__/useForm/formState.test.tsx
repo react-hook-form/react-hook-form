@@ -1,15 +1,17 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
+import { Control, FormState, UseFormGetFieldState } from '../../types';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
@@ -577,7 +579,7 @@ describe('formState', () => {
 
     render(<App />);
 
-    await actComponent(async () => {
+    await act(async () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
@@ -666,6 +668,59 @@ describe('formState', () => {
     fireEvent.blur(screen.getByRole('textbox'));
 
     expect(dirtyFieldsState).toEqual({});
+  });
+
+  it('should update isDirty with getFieldState at child component', () => {
+    type FormValues = {
+      test?: string;
+    };
+
+    function Output({
+      getFieldState,
+      formState,
+    }: {
+      getFieldState: UseFormGetFieldState<FormValues>;
+      formState: FormState<FormValues>;
+    }) {
+      const { isDirty } = getFieldState('test', formState);
+
+      return <p>{isDirty.toString()}</p>;
+    }
+
+    const TextInput = ({ control }: { control: Control<FormValues> }) => {
+      const { field } = useController({
+        name: 'test',
+        control,
+      });
+
+      return <input {...field} type="text" />;
+    };
+
+    function App() {
+      const { formState, getFieldState, control } = useForm<FormValues>({
+        values: {},
+      });
+      formState.isDirty;
+
+      return (
+        <form>
+          <TextInput control={control} />
+          <Output getFieldState={getFieldState} formState={formState} />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '123456',
+      },
+    });
+
+    waitFor(() => {
+      screen.getByText('true');
+    });
   });
 
   it('should recompute isDirty after toggling disabled', async () => {
@@ -782,7 +837,7 @@ describe('formState', () => {
 
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      actComponent(() => {
+      act(() => {
         jest.advanceTimersByTime(500);
       });
 
@@ -836,7 +891,7 @@ describe('formState', () => {
       });
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      await actComponent(async () => {
+      await act(async () => {
         jest.advanceTimersByTime(500);
       });
 
@@ -886,7 +941,7 @@ describe('formState', () => {
 
         expect(await screen.findByText('valid')).toBeVisible();
 
-        await actComponent(async () => {
+        await act(async () => {
           fireEvent.change(screen.getByRole('textbox'), {
             target: {
               value: '',
@@ -894,13 +949,13 @@ describe('formState', () => {
           });
         });
 
-        await actComponent(async () => {
+        await act(async () => {
           await waitFor(() => screen.getByText('inValid'));
         });
 
         expect(screen.queryByText(message)).toBeNull();
 
-        actComponent(() => {
+        act(() => {
           jest.advanceTimersByTime(500);
         });
 

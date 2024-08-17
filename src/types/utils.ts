@@ -1,3 +1,5 @@
+import { NestedValue } from './form';
+
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
 React Native applications is no DOM available. The JavaScript runtime is ES6/ES2015 only.
@@ -45,7 +47,7 @@ export type ExtractObjects<T> = T extends infer U
     : never
   : never;
 
-export type DeepPartial<T> = T extends BrowserNativeObject
+export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
   ? T
   : {
       [K in keyof T]?: ExtractObjects<T[K]> extends never
@@ -53,11 +55,13 @@ export type DeepPartial<T> = T extends BrowserNativeObject
         : DeepPartial<T[K]>;
     };
 
-export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject
+export type DeepPartialSkipArrayKey<T> = T extends
+  | BrowserNativeObject
+  | NestedValue
   ? T
   : T extends ReadonlyArray<any>
-  ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
-  : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+    ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+    : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
 /**
  * Checks whether the type is any
@@ -100,20 +104,22 @@ export type IsEqual<T1, T2> = T1 extends T2
     : false
   : false;
 
-export type DeepMap<T, TValue> = IsAny<T> extends true
-  ? any
-  : T extends BrowserNativeObject
-  ? TValue
-  : T extends object
-  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
-  : TValue;
+export type DeepMap<T, TValue> =
+  IsAny<T> extends true
+    ? any
+    : T extends BrowserNativeObject | NestedValue
+      ? TValue
+      : T extends object
+        ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+        : TValue;
 
-export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], Date | FileList>,
-  any[] | object
-> extends never
-  ? true
-  : false;
+export type IsFlatObject<T extends object> =
+  Extract<
+    Exclude<T[keyof T], NestedValue | Date | FileList>,
+    any[] | object
+  > extends never
+    ? true
+    : false;
 
 export type Merge<A, B> = {
   [K in keyof A | keyof B]?: K extends keyof A & keyof B
@@ -121,8 +127,8 @@ export type Merge<A, B> = {
       ? Merge<A[K], B[K]>
       : A[K] | B[K]
     : K extends keyof A
-    ? A[K]
-    : K extends keyof B
-    ? B[K]
-    : never;
+      ? A[K]
+      : K extends keyof B
+        ? B[K]
+        : never;
 };

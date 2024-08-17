@@ -2,11 +2,11 @@ import React from 'react';
 import {
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   within,
 } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
 
 import {
   Control,
@@ -167,10 +167,11 @@ describe('useWatch', () => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
     };
-    const { result } = renderHook(() => useWatch({ name: 'test' }), {
-      wrapper: Provider,
-    });
-    expect(result.error).toBeUndefined();
+    expect(() =>
+      renderHook(() => useWatch({ name: 'test' }), {
+        wrapper: Provider,
+      }),
+    ).not.toThrow();
   });
 
   it('should remove input with shouldUnregister: true and deeply nested', async () => {

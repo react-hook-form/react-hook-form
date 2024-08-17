@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
 import { Control, UseFormRegister, UseFormReturn } from '../../types';
@@ -56,7 +56,7 @@ describe('reset', () => {
     };
     render(<App />);
 
-    actComponent(() =>
+    act(() =>
       methods.reset({
         test: 'test',
       }),
@@ -138,7 +138,7 @@ describe('reset', () => {
     };
     render(<App />);
 
-    actComponent(() => methods.reset());
+    act(() => methods.reset());
 
     expect(mockReset).not.toHaveBeenCalled();
   });
@@ -1337,7 +1337,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    actComponent(() => {
+    act(() => {
       jest.advanceTimersByTime(100);
     });
 
