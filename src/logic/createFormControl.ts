@@ -75,6 +75,7 @@ import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
+import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
@@ -452,7 +453,12 @@ export function createFormControl<
 
         if (_f) {
           const isFieldArrayRoot = _names.array.has(_f.name);
-          _updateIsValidating([name], true);
+          const isPromiseFunction = field._f && hasPromiseValidation(field._f);
+
+          if (isPromiseFunction && _proxyFormState.validatingFields) {
+            _updateIsValidating([name], true);
+          }
+
           const fieldError = await validateField(
             field,
             _formValues,
@@ -460,7 +466,10 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
             isFieldArrayRoot,
           );
-          _updateIsValidating([name]);
+
+          if (isPromiseFunction && _proxyFormState.validatingFields) {
+            _updateIsValidating([name]);
+          }
 
           if (fieldError[_f.name]) {
             context.valid = false;
