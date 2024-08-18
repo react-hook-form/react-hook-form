@@ -750,7 +750,15 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        _proxyFormState.isValid && _updateValid();
+        if (_proxyFormState.isValid) {
+          if (props.mode === 'onBlur') {
+            if (isBlurEvent) {
+              _updateValid();
+            }
+          } else {
+            _updateValid();
+          }
+        }
 
         return (
           shouldRender &&
