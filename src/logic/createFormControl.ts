@@ -1020,7 +1020,9 @@ export function createFormControl<
     if (field) {
       _updateDisabledField({
         field,
-        disabled: options.disabled || props.disabled,
+        disabled: isBoolean(options.disabled)
+          ? options.disabled
+          : props.disabled,
         name,
         value: options.value,
       });
