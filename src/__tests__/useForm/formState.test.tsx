@@ -999,4 +999,50 @@ describe('formState', () => {
       screen.getByText('error');
     });
   });
+
+  it('should only trigger validation on blur', async () => {
+    function App() {
+      const { register, formState } = useForm({
+        mode: 'onBlur',
+        defaultValues: {
+          value: '',
+        },
+      });
+
+      return (
+        <form>
+          {formState.errors.value && <p>error</p>}
+          <input
+            {...register('value', {
+              min: 0,
+              valueAsNumber: true,
+              validate: (value) => !Number.isNaN(value),
+            })}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '2a',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('error')).toBeNull();
+    });
+
+    fireEvent.blur(screen.getByRole('textbox'), {
+      target: {
+        value: '2a',
+      },
+    });
+
+    await waitFor(() => {
+      screen.getByText('error');
+    });
+  });
 });
