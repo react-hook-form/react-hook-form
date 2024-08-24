@@ -77,6 +77,7 @@ import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
+import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
@@ -470,7 +471,12 @@ export function createFormControl<
 
         if (_f) {
           const isFieldArrayRoot = _names.array.has(_f.name);
-          _updateIsValidating([name], true);
+          const isPromiseFunction = field._f && hasPromiseValidation(field._f);
+
+          if (isPromiseFunction && _proxyFormState.validatingFields) {
+            _updateIsValidating([name], true);
+          }
+
           const fieldError = await validateField(
             field,
             _formValues,
@@ -478,7 +484,10 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
             isFieldArrayRoot,
           );
-          _updateIsValidating([name]);
+
+          if (isPromiseFunction && _proxyFormState.validatingFields) {
+            _updateIsValidating([name]);
+          }
 
           if (fieldError[_f.name]) {
             context.valid = false;
@@ -757,8 +766,15 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        (_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
-          _setValid();
+        if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
+          if (props.mode === 'onBlur') {
+            if (isBlurEvent) {
+              _setValid();
+            }
+          } else {
+            _setValid();
+          }
+        }
 
         return (
           shouldRender &&
@@ -1062,7 +1078,8 @@ export function createFormControl<
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
-    const disabledIsDefined = isBoolean(options.disabled);
+    const disabledIsDefined =
+      isBoolean(options.disabled) || isBoolean(props.disabled);
 
     set(_fields, name, {
       ...(field || {}),
@@ -1078,7 +1095,9 @@ export function createFormControl<
     if (field) {
       _setDisabledField({
         field,
-        disabled: options.disabled,
+        disabled: isBoolean(options.disabled)
+          ? options.disabled
+          : props.disabled,
         name,
         value: options.value,
       });
@@ -1087,7 +1106,9 @@ export function createFormControl<
     }
 
     return {
-      ...(disabledIsDefined ? { disabled: options.disabled } : {}),
+      ...(disabledIsDefined
+        ? { disabled: options.disabled || props.disabled }
+        : {}),
       ...(_options.progressive
         ? {
             required: !!options.required,
