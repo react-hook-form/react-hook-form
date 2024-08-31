@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.53.0] - 2024-8-31
+
+### Added
+
+- add support for `onBlur` with formState `isValid`
+
+### Changed
+
+- `validateFields` will only trigger re-render for async validation
+
 ## [7.51.0] - 2024-3-2
 
 ### Added
