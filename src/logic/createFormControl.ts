@@ -1246,7 +1246,11 @@ export function createFormControl<
 
     if (!keepStateOptions.keepValues) {
       if (keepStateOptions.keepDirtyValues) {
-        for (const fieldName of _names.mount) {
+        const fieldsToCheck = new Set([
+          ..._names.mount,
+          ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
+        ]);
+        for (const fieldName of Array.from(fieldsToCheck)) {
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
             : setValue(

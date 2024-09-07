@@ -41,6 +41,7 @@ import { DelayError } from './delayError';
 import './style.css';
 import FormComponent from './form';
 import DisabledFields from './disabledFields';
+import ResetKeepDirty from './resetKeepDirty';
 
 const App: React.FC = () => {
   return (
@@ -74,6 +75,7 @@ const App: React.FC = () => {
           element={<UseFieldArrayUnregister />}
         />
         <Route path="/reset" element={<Reset />} />
+        <Route path="/resetKeepDirty" element={<ResetKeepDirty />} />
         <Route path="/setValue" element={<SetValue />} />
         <Route
           path="/setValueAsyncStrictMode"
