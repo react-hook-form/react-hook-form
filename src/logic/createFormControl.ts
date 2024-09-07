@@ -140,7 +140,7 @@ export function createFormControl<
   let timer = 0;
   const _proxyFormState: ReadFormState = {
     isDirty: false,
-    dirtyFields: {},
+    dirtyFields: false,
     validatingFields: false,
     touchedFields: false,
     isValidating: false,
