@@ -1594,6 +1594,65 @@ describe('reset', () => {
     });
   });
 
+  it('should keep dirty array value after reset with keepDirtyValues', async () => {
+    function App() {
+      const {
+        getValues,
+        reset,
+        setValue,
+        formState: { isDirty },
+      } = useForm<{
+        array: string[];
+      }>({
+        mode: 'onChange',
+        defaultValues: {
+          array: [],
+        },
+      });
+
+      return (
+        <form>
+          <input defaultValue="users#0" />
+          <p>{`users#${getValues().array.length}`}</p>
+          <p>isDirty = {isDirty ? 'true' : 'false'}</p>
+          <button
+            data-testid="dirtyButton"
+            type="button"
+            onClick={() => setValue('array', ['1'], { shouldDirty: true })}
+          >
+            dirty
+          </button>
+          <button
+            data-testid="resetButton"
+            type="button"
+            onClick={() => reset({ array: [] }, { keepDirtyValues: true })}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(await screen.findByText('isDirty = false')).toBeVisible();
+    await waitFor(() => {
+      screen.getByText('users#0');
+    });
+
+    fireEvent.click(screen.getByTestId('dirtyButton'));
+    expect(await screen.findByText('isDirty = true')).toBeVisible();
+    await waitFor(() => {
+      screen.getByText('users#1');
+    });
+
+    fireEvent.click(screen.getByTestId('resetButton'));
+
+    await waitFor(() => {
+      screen.getByText('users#1');
+    });
+  });
+
   it('should not mutate data outside of library', () => {
     const defaultValues = {
       test: 'ok',
