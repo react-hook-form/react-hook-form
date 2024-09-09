@@ -1,6 +1,6 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "jest.jestCommandLine": "pnpm test --",
