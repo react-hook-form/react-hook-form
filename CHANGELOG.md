@@ -17,9 +17,7 @@
 - added 'validateFields' to formState
 
 ```tsx
-const {
-  formState: { validateFields },
-} = useForm();
+const { formState: { validateFields } } = useForm();
 ```
 
 ## [7.49.0] - 2023-12-10
@@ -344,8 +342,7 @@ function App() {
   return (
     <form>
       <CustomFormComponent control={control} name="foo" /> {/* no error */}
-      <CustomFormComponent control={control} name="baz" />{' '}
-      {/*  throw an error since baz is string */}
+      <CustomFormComponent control={control} name="baz" /> {/*  throw an error since baz is string */}
     </form>
   );
 }
@@ -828,8 +825,7 @@ const App = () => {
           },
         })}
       />
-      <input {...register('lastName', { deps: ['firstName'] })} /> // dependant
-      validation
+      <input {...register('lastName', { deps: ['firstName'] })} /> // dependant validation
     </form>
   );
 };
