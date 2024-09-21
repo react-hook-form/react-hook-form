@@ -95,11 +95,7 @@ export type ControllerFieldState = {
 
 // @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    render: ({ field, fieldState, formState, }: {
-        field: ControllerRenderProps<TFieldValues, TName>;
-        fieldState: ControllerFieldState;
-        formState: UseFormStateReturn<TFieldValues>;
-    }) => React_2.ReactElement;
+    render: RenderFunction<TFieldValues, TName>;
 } & UseControllerProps<TFieldValues, TName>;
 
 // @public (undocumented)
@@ -498,6 +494,16 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     valueAsNumber?: true;
     valueAsDate?: false;
 });
+
+// @public (undocumented)
+export type RenderFunction<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = ({ field, fieldState, formState, }: RenderProps<TFieldValues, TName>) => React_2.ReactElement;
+
+// @public (undocumented)
+export type RenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
+    field: ControllerRenderProps<TFieldValues, TName>;
+    fieldState: ControllerFieldState;
+    formState: UseFormStateReturn<TFieldValues>;
+};
 
 // @public (undocumented)
 export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = any> = (values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;

@@ -56,6 +56,23 @@ export type UseControllerReturn<
   fieldState: ControllerFieldState;
 };
 
+export type RenderProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  field: ControllerRenderProps<TFieldValues, TName>;
+  fieldState: ControllerFieldState;
+  formState: UseFormStateReturn<TFieldValues>;
+};
+
+export type RenderFunction<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = ({
+  field,
+  fieldState,
+  formState,
+}: RenderProps<TFieldValues, TName>) => React.ReactElement;
 /**
  * Render function to provide the control for the field.
  *
@@ -81,13 +98,5 @@ export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  render: ({
-    field,
-    fieldState,
-    formState,
-  }: {
-    field: ControllerRenderProps<TFieldValues, TName>;
-    fieldState: ControllerFieldState;
-    formState: UseFormStateReturn<TFieldValues>;
-  }) => React.ReactElement;
+  render: RenderFunction<TFieldValues, TName>;
 } & UseControllerProps<TFieldValues, TName>;
