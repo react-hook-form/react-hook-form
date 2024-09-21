@@ -19,4 +19,27 @@ describe('form reset', () => {
       'hey',
     );
   });
+
+  it('should be able to re-populate the form while reset keeping dirty values', () => {
+    cy.visit('http://localhost:3000/resetKeepDirty');
+    cy.get('input[name="firstName"]').should('have.value', '');
+    cy.get('input[name="users"]').should('have.value', 'users#0');
+    cy.get('input[name="objectData.test"]').should('have.value', '');
+    cy.get('input[name="lastName"]').should('have.value', '');
+    cy.get('input[name="deepNest.level1.level2.data"]').should(
+      'have.value',
+      '',
+    );
+
+    cy.get('button').click({ multiple: true });
+
+    cy.get('input[name="firstName"]').should('have.value', 'bill');
+    cy.get('input[name="lastName"]').should('have.value', 'luo');
+    cy.get('input[name="users"]').should('have.value', 'users#1');
+    cy.get('input[name="objectData.test"]').should('have.value', 'data');
+    cy.get('input[name="deepNest.level1.level2.data"]').should(
+      'have.value',
+      'hey',
+    );
+  });
 });

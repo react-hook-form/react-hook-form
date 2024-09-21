@@ -172,9 +172,10 @@ export function createFormControl<
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (
-      _proxyFormState.isValid ||
-      _proxySubscribeFormState.isValid ||
-      shouldUpdateValid
+      !props.disabled &&
+      (_proxyFormState.isValid ||
+        _proxySubscribeFormState.isValid ||
+        shouldUpdateValid)
     ) {
       const isValid = _options.resolver
         ? isEmptyObject((await _runSchema()).errors)
@@ -190,10 +191,11 @@ export function createFormControl<
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (
-      _proxyFormState.isValidating ||
-      _proxyFormState.validatingFields ||
-      _proxySubscribeFormState.isValidating ||
-      _proxySubscribeFormState.validatingFields
+      !props.disabled &&
+      (_proxyFormState.isValidating ||
+        _proxyFormState.validatingFields ||
+        _proxySubscribeFormState.isValidating ||
+        _proxySubscribeFormState.validatingFields)
     ) {
       (names || Array.from(_names.mount)).forEach((name) => {
         if (name) {
@@ -218,7 +220,7 @@ export function createFormControl<
     shouldSetValues = true,
     shouldUpdateFieldsAndState = true,
   ) => {
-    if (args && method) {
+    if (args && method && !props.disabled) {
       _state.action = true;
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
@@ -326,49 +328,53 @@ export function createFormControl<
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
-    const disabledField = !!(
-      get(_fields, name) &&
-      get(_fields, name)._f &&
-      get(_fields, name)._f.disabled
-    );
 
-    if (!isBlurEvent || shouldDirty) {
-      if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-        isPreviousDirty = _formState.isDirty;
-        _formState.isDirty = output.isDirty = _getDirty();
-        shouldUpdateField = isPreviousDirty !== output.isDirty;
-      }
+    if (!props.disabled) {
+      const disabledField = !!(
+        get(_fields, name) &&
+        get(_fields, name)._f &&
+        get(_fields, name)._f.disabled
+      );
+      if (!isBlurEvent || shouldDirty) {
+        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+          isPreviousDirty = _formState.isDirty;
+          _formState.isDirty = output.isDirty = _getDirty();
+          shouldUpdateField = isPreviousDirty !== output.isDirty;
+        }
 
-      const isCurrentFieldPristine =
-        disabledField || deepEqual(get(_defaultValues, name), fieldValue);
+        const isCurrentFieldPristine =
+          disabledField || deepEqual(get(_defaultValues, name), fieldValue);
 
-      isPreviousDirty = !!(!disabledField && get(_formState.dirtyFields, name));
-      isCurrentFieldPristine || disabledField
-        ? unset(_formState.dirtyFields, name)
-        : set(_formState.dirtyFields, name, true);
-      output.dirtyFields = _formState.dirtyFields;
-      shouldUpdateField =
-        shouldUpdateField ||
-        ((_proxyFormState.dirtyFields ||
-          _proxySubscribeFormState.dirtyFields) &&
-          isPreviousDirty !== !isCurrentFieldPristine);
-    }
-
-    if (isBlurEvent) {
-      const isPreviousFieldTouched = get(_formState.touchedFields, name);
-
-      if (!isPreviousFieldTouched) {
-        set(_formState.touchedFields, name, isBlurEvent);
-        output.touchedFields = _formState.touchedFields;
+        isPreviousDirty = !!(
+          !disabledField && get(_formState.dirtyFields, name)
+        );
+        isCurrentFieldPristine || disabledField
+          ? unset(_formState.dirtyFields, name)
+          : set(_formState.dirtyFields, name, true);
+        output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
-          ((_proxyFormState.touchedFields ||
-            _proxySubscribeFormState.touchedFields) &&
-            isPreviousFieldTouched !== isBlurEvent);
+          ((_proxyFormState.dirtyFields ||
+            _proxySubscribeFormState.dirtyFields) &&
+            isPreviousDirty !== !isCurrentFieldPristine);
       }
-    }
 
-    shouldUpdateField && shouldRender && _subjects.state.next(output);
+      if (isBlurEvent) {
+        const isPreviousFieldTouched = get(_formState.touchedFields, name);
+
+        if (!isPreviousFieldTouched) {
+          set(_formState.touchedFields, name, isBlurEvent);
+          output.touchedFields = _formState.touchedFields;
+          shouldUpdateField =
+            shouldUpdateField ||
+            ((_proxyFormState.touchedFields ||
+              _proxySubscribeFormState.touchedFields) &&
+              isPreviousFieldTouched !== isBlurEvent);
+        }
+      }
+
+      shouldUpdateField && shouldRender && _subjects.state.next(output);
+    }
 
     return shouldUpdateField ? output : {};
   };
@@ -534,10 +540,10 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) => (
-    name && data && set(_formValues, name, data),
-    !deepEqual(getValues(), _defaultValues)
-  );
+  const _getDirty: GetIsDirty = (name, data) =>
+    !props.disabled &&
+    (name && data && set(_formValues, name, data),
+    !deepEqual(getValues(), _defaultValues));
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -1304,7 +1310,11 @@ export function createFormControl<
 
     if (!keepStateOptions.keepValues) {
       if (keepStateOptions.keepDirtyValues) {
-        for (const fieldName of _names.mount) {
+        const fieldsToCheck = new Set([
+          ..._names.mount,
+          ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
+        ]);
+        for (const fieldName of Array.from(fieldsToCheck)) {
           get(_formState.dirtyFields, fieldName)
             ? set(values, fieldName, get(_formValues, fieldName))
             : setValue(
