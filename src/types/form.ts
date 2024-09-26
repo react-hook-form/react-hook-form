@@ -220,7 +220,7 @@ export type UseFormRegisterReturn<
  * // Register custom field at useEffect
  * useEffect(() => {
  *   register("name4");
- *   register("name5", { value: '"hiddenValue" });
+ *   register("name5", { value: "hiddenValue" });
  * }, [register])
  *
  * // Register without ref
