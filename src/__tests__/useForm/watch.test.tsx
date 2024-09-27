@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   act,
   fireEvent,
@@ -537,6 +537,37 @@ describe('watch', () => {
         <form>
           <p>{firstName}</p>
           <Watcher control={control} />
+          <input {...register('firstName')} />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill',
+      },
+    });
+
+    screen.getByText('bill');
+  });
+
+  it('should update watch value with memo', () => {
+    function App() {
+      const { register, watch } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+
+      const firstName = useMemo(() => {
+        return watch('firstName');
+      }, [watch]);
+
+      return (
+        <form>
+          <p>{firstName}</p>
           <input {...register('firstName')} />
         </form>
       );
