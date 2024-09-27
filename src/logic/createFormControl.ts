@@ -688,9 +688,19 @@ export function createFormControl<
     const getCurrentFieldValue = () =>
       target.type ? getFieldValue(field._f) : getEventValue(event);
     const _updateIsFieldValueUpdated = (fieldValue: any): void => {
-      isFieldValueUpdated =
-        Number.isNaN(fieldValue) ||
-        fieldValue === get(_formValues, name, fieldValue);
+      if (Number.isNaN(fieldValue)) {
+        return true;
+      }
+      const _fieldValue = get(_formValues, name, fieldValue);
+      return fieldValue === _fieldValue
+        || (
+          isDateObject(fieldValue)
+          && isDateObject(_fieldValue)
+          && (
+            Number.isNaN(fieldValue.getTime())
+            || fieldValue.getTime() === fieldValue.getTime(_fieldValue)
+          )
+        )
     };
 
     if (field) {
