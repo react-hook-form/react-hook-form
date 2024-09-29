@@ -73,13 +73,13 @@ export interface Animal {
 }
 
 export interface Child {
-  animals?: Animal[];
+  animals: Animal[];
   person: string;
 }
 
 export type FormValues = {
-  age?: number;
-  passport?: Passport;
+  age: number;
+  passport: Passport;
   name: string;
   lastName: string;
   myChildren: Child[];

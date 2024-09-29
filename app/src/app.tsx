@@ -14,6 +14,7 @@ import DefaultValues from './defaultValues';
 import DefaultValuesAsync from './defaultValuesAsync';
 import WatchDefaultValues from './watchDefaultValues';
 import LensesBasic from './lensesBasic';
+import LensesTransform from './lensesTransform';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
@@ -123,6 +124,7 @@ const App: React.FC = () => {
         <Route path="/form" element={<FormComponent />} />
         <Route path="/disabled" element={<DisabledFields />} />
         <Route path="/lenses" element={<LensesBasic />} />
+        <Route path="/lenses-transform" element={<LensesTransform />} />
       </Routes>
     </BrowserRouter>
   );

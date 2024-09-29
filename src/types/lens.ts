@@ -3,10 +3,13 @@ import { Control, UseFormRegisterReturn } from './form';
 import { Path, PathValue } from './path';
 import { RegisterOptions } from './validator';
 
-export interface HookFormLens<_T> {
+export interface HookFormLens<T> {
   name: string;
   control: Control;
   register(options: RegisterOptions): UseFormRegisterReturn;
+  transform: <T2>(
+    getter: (original: LensFocus<T>) => T2,
+  ) => Lens<UnwrapLensDeep<T2>>;
 }
 
 export interface LensFocus<T> {
@@ -29,5 +32,7 @@ export type Lens<T> = HookFormLens<T> &
   (Exclude<T, undefined | null> extends FieldValues ? LensFocus<T> : unknown) &
   (Exclude<T, undefined | null> extends (infer U)[] ? ArrayLens<U> : unknown);
 
-export type UnwrapLens<T extends Lens<unknown>> =
-  T extends Lens<infer U> ? U : never;
+export type UnwrapLens<T> = T extends Lens<infer U> ? U : never;
+export type UnwrapLensDeep<T> = {
+  [P in keyof T]: UnwrapLens<T[P]>;
+};

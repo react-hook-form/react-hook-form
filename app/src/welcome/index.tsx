@@ -231,7 +231,7 @@ const items: Item[] = [
   {
     title: 'Lenses',
     description: 'Should enable lenses to work with controlled components',
-    slugs: ['/lenses'],
+    slugs: ['/lenses', '/lenses-transform'],
   },
 ];
 
