@@ -228,6 +228,11 @@ const items: Item[] = [
     description: 'Should behave correctly when disabling form or fields',
     slugs: ['/disabled'],
   },
+  {
+    title: 'Lenses',
+    description: 'Should enable lenses to work with controlled components',
+    slugs: ['/lenses'],
+  },
 ];
 
 const Component: React.FC = () => {

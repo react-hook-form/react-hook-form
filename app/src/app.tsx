@@ -13,6 +13,7 @@ import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
 import DefaultValuesAsync from './defaultValuesAsync';
 import WatchDefaultValues from './watchDefaultValues';
+import LensesBasic from './lensesBasic';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
@@ -121,6 +122,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Welcome />} />
         <Route path="/form" element={<FormComponent />} />
         <Route path="/disabled" element={<DisabledFields />} />
+        <Route path="/lenses" element={<LensesBasic />} />
       </Routes>
     </BrowserRouter>
   );
