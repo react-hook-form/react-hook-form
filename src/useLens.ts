@@ -42,6 +42,14 @@ class LensImpl<T extends FieldValues> {
     return this.cache.get(nestedPath);
   }
 
+  public transform(getter: Function) {
+    const newFields = getter(this);
+
+    return {
+      focus: (path: string) => newFields[path],
+    };
+  }
+
   public register(options: RegisterOptions<T>) {
     return this.control.register(this.name as Path<T>, options);
   }

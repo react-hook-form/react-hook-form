@@ -63,21 +63,21 @@ function NumberInput(props: {
   );
 }
 
-export interface Passport {
+interface Passport {
   date: string;
 }
 
-export interface Animal {
+interface Animal {
   breed: string;
   id: string;
 }
 
-export interface Child {
+interface Child {
   animals: Animal[];
   person: string;
 }
 
-export type FormValues = {
+type FormValues = {
   age: number;
   passport: Passport;
   name: string;
@@ -85,7 +85,7 @@ export type FormValues = {
   myChildren: Child[];
 };
 
-export function AnimalForm({ lens }: { lens: Lens<Animal[]> }) {
+function AnimalForm({ lens }: { lens: Lens<Animal[]> }) {
   const { append } = useFieldArray(lens);
 
   const addItem = () => {
@@ -111,7 +111,7 @@ export function AnimalForm({ lens }: { lens: Lens<Animal[]> }) {
   );
 }
 
-export function ChildForm({ lens }: { lens: Lens<Child[]> }) {
+function ChildForm({ lens }: { lens: Lens<Child[]> }) {
   const { append } = useFieldArray(lens);
 
   const addItem = () => {

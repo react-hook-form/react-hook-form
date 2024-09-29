@@ -34,12 +34,7 @@ function StringInput(props: {
   );
 }
 
-export type FormValues = {
-  firstName: string;
-  lastName: string;
-};
-
-export function PersonForm({
+function PersonForm({
   lens,
 }: {
   lens: Lens<{
@@ -54,6 +49,11 @@ export function PersonForm({
     </>
   );
 }
+
+export type FormValues = {
+  firstName: string;
+  lastName: string;
+};
 
 export default function LensesTransform() {
   const [data, setData] = React.useState({});
