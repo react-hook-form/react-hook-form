@@ -881,9 +881,7 @@ export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = {
-  children: React.ReactNode | React.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+> = React.PropsWithChildren<UseFormReturn<TFieldValues, TContext, TTransformedValues>>;
 
 export type FormProps<
   TFieldValues extends FieldValues,
