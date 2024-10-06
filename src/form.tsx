@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { flatten } from './utils/flatten';
 import get from './utils/get';
 import { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
@@ -61,8 +62,10 @@ function Form<
         formDataJson = JSON.stringify(data);
       } catch {}
 
-      for (const name of control._names.mount) {
-        formData.append(name, get(data, name));
+      const flattenFormValues = flatten(control._formValues);
+
+      for (const key in flattenFormValues) {
+        formData.append(key, get(data, flattenFormValues[key]));
       }
 
       if (onSubmit) {
