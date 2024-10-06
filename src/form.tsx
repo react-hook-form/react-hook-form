@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { flatten } from './utils/flatten';
-import get from './utils/get';
 import { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -65,7 +64,7 @@ function Form<
       const flattenFormValues = flatten(control._formValues);
 
       for (const key in flattenFormValues) {
-        formData.append(key, get(data, flattenFormValues[key]));
+        formData.append(key, flattenFormValues[key]);
       }
 
       if (onSubmit) {

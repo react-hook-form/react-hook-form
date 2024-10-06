@@ -9,4 +9,3 @@ export * from './useFormContext';
 export * from './useFormState';
 export * from './useWatch';
 export * from './utils';
-export { flatten } from './utils';
