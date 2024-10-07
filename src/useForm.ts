@@ -155,7 +155,6 @@ export function useForm<
   }, [props.shouldUnregister, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
-  _formControl.current.watch = _formControl.current.watch.bind({});
 
   return _formControl.current;
 }
