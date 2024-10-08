@@ -158,6 +158,81 @@ describe('setValue', () => {
     });
   });
 
+  it('should set value of multiple checkbox input correctly as a child', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ parent: { test: string[] } }>(),
+    );
+
+    const { ref } = result.current.register('parent.test');
+
+    const elm = document.createElement('input');
+    elm.type = 'checkbox';
+    elm.name = 'test';
+    elm.value = '2';
+
+    document.body.append(elm);
+    isFunction(ref) && ref(elm);
+
+    const { ref: ref1 } = result.current.register('parent.test');
+
+    const elm1 = document.createElement('input');
+    elm1.type = 'checkbox';
+    elm1.name = 'test';
+    elm1.value = '1';
+
+    document.body.append(elm1);
+
+    isFunction(ref1) && ref1(elm1);
+
+    result.current.setValue('parent', { test: ['1'] });
+    expect(elm1).toBeChecked();
+
+    await act(async () => {
+      await result.current.handleSubmit((data) => {
+        expect(data).toEqual({
+          parent: {
+            test: ['1'],
+          },
+        });
+      })({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+  });
+
+  it('should set value of single checkbox input correctly as a child', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ parent: { test: string } }>(),
+    );
+
+    const { ref } = result.current.register('parent.test');
+
+    const elm = document.createElement('input');
+    elm.type = 'checkbox';
+    elm.name = 'test';
+    elm.value = '1';
+
+    document.body.append(elm);
+    isFunction(ref) && ref(elm);
+
+    result.current.setValue('parent', { test: '1' });
+    expect(elm).toBeChecked();
+
+    await act(async () => {
+      await result.current.handleSubmit((data) => {
+        expect(data).toEqual({
+          parent: {
+            test: '1',
+          },
+        });
+      })({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+  });
+
   it('should set value of multiple select correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string[] }>());
     const { ref } = result.current.register('test');
