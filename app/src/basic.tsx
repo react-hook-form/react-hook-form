@@ -47,7 +47,7 @@ const Basic: React.FC = () => {
       }, onInvalid)}
     >
       <input
-        placeholder="nest.nest1"
+        placeholder="nestItem.nest1"
         {...register('nestItem.nest1', { required: true })}
       />
       {errors.nestItem?.nest1 && <p>nest 1 error</p>}
