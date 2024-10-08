@@ -404,7 +404,12 @@ describe('Controller', () => {
 
   it('should invoke custom onChange method', () => {
     const onChange = jest.fn();
-    const Component = () => {
+
+    type ComponentProps = {
+      onChange: () => void;
+    };
+
+    const Component = ({ onChange }: ComponentProps) => {
       const { control } = useForm<{
         test: string;
       }>();
@@ -424,7 +429,7 @@ describe('Controller', () => {
       );
     };
 
-    render(<Component />);
+    render(<Component onChange={onChange} />);
 
     fireEvent.input(screen.getByRole('textbox'), {
       target: {
@@ -437,7 +442,12 @@ describe('Controller', () => {
 
   it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
-    const Component = () => {
+
+    type ComponentProps = {
+      onBlur: () => void;
+    };
+
+    const Component = ({ onBlur }: ComponentProps) => {
       const { control } = useForm();
       return (
         <>
@@ -453,7 +463,7 @@ describe('Controller', () => {
       );
     };
 
-    render(<Component />);
+    render(<Component onBlur={onBlur} />);
 
     fireEvent.blur(screen.getByRole('textbox'));
 

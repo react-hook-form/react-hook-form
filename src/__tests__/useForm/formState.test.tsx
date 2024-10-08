@@ -670,7 +670,7 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
-  it('should update isDirty with getFieldState at child component', () => {
+  it('should update isDirty with getFieldState at child component', async () => {
     type FormValues = {
       test?: string;
     };
@@ -718,7 +718,7 @@ describe('formState', () => {
       },
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       screen.getByText('true');
     });
   });
