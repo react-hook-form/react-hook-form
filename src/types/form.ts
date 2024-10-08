@@ -623,7 +623,6 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
  * <form onSubmit={handleSubmit(onSubmit, onError)} />
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,

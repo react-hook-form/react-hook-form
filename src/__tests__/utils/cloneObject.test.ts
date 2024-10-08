@@ -4,7 +4,7 @@ import noop from '../../utils/noop';
 describe('clone', () => {
   it('should clone object and not mutate the original object', () => {
     const fileData = new File([''], 'filename');
-    const data = {
+    const data: Record<string, any> = {
       items: [],
       test: {
         date: new Date('2020-10-15'),
@@ -39,10 +39,8 @@ describe('clone', () => {
     const copy = cloneObject(data);
     expect(cloneObject(data)).toEqual(copy);
 
-    // @ts-expect-error
     copy.test.what = '1243';
     copy.test.date = new Date('2020-10-16');
-    // @ts-expect-error
     copy.items[0] = 2;
 
     expect(data).toEqual({
@@ -77,7 +75,6 @@ describe('clone', () => {
       ]),
     });
 
-    // @ts-expect-error
     data.items = [1, 2, 3];
 
     expect(copy.items).toEqual([2]);
@@ -116,7 +113,7 @@ describe('clone', () => {
 
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
-      // @ts-expect-error
+      // @ts-expect-error we want to test that clone skips polyfill
       Array.prototype.somePolyfill = () => 123;
     });
 
@@ -128,7 +125,7 @@ describe('clone', () => {
     });
 
     afterAll(() => {
-      // @ts-expect-error
+      // @ts-expect-error we want to test that clone skips polyfill
       delete Array.prototype.somePolyfill;
     });
   });
