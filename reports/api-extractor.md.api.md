@@ -693,6 +693,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
+    experimentalMultiError?: boolean;
 }>;
 
 // @public
