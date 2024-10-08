@@ -8,7 +8,7 @@ module.exports = {
     [
       'babel-plugin-react-compiler',
       {
-        runtimeModule: 'react-compiler-runtime-polyfill',
+        target: '18',
         sources: (filename) => {
           return filename.includes('__tests__');
         },
