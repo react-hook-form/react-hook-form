@@ -76,7 +76,7 @@ export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
   event?: React.BaseSyntheticEvent;
   formData: FormData;
   formDataJson: string;
-  method?: 'post' | 'put' | 'delete';
+  method?: 'POST' | 'PUT' | 'DELETE';
 }) => unknown | Promise<unknown>;
 
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
@@ -909,7 +909,7 @@ export type FormProps<
     onSubmit: TTransformedValues extends FieldValues
       ? FormSubmitHandler<TTransformedValues>
       : FormSubmitHandler<TFieldValues>;
-    method: 'post' | 'put' | 'delete';
+    method: 'POST' | 'PUT' | 'DELETE';
     children: React.ReactNode | React.ReactNode[];
     render: (props: {
       submit: (e?: React.FormEvent) => void;
