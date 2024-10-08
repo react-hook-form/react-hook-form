@@ -129,6 +129,7 @@ export function createFormControl<
     action: false,
     mount: false,
     watch: false,
+    isLoadingValues: false,
   };
   let _names: Names = {
     mount: new Set(),
