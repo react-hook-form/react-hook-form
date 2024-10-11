@@ -58,7 +58,6 @@ import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
-import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
@@ -649,7 +648,7 @@ export function createFormControl<
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
-        !isPrimitive(fieldValue) ||
+        isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
         ? setValues(fieldName, fieldValue, options)
