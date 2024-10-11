@@ -755,6 +755,55 @@ describe('formState', () => {
     expect(isDirty).toBe(false);
   });
 
+  it('should prevent dirty from updating when the form is disabled', async () => {
+    function App() {
+      const {
+        register,
+        control,
+        formState: { isDirty, dirtyFields },
+      } = useForm<{
+        test: { firstName: string; lastName: string }[];
+      }>({
+        disabled: true,
+        defaultValues: {
+          test: [{ firstName: 'Bill', lastName: 'Luo' }],
+        },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form>
+          <ul>
+            {fields.map((item, index) => {
+              return (
+                <li key={item.id}>
+                  <input
+                    {...register(`test.${index}.firstName`, { required: true })}
+                  />
+                  <Controller
+                    render={({ field }) => <input {...field} />}
+                    name={`test.${index}.lastName`}
+                    control={control}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+          <p>{isDirty ? 'dirty' : 'notDirty'}</p>
+          <p>{Object.keys(dirtyFields).length}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await screen.getByText('notDirty');
+    await screen.getByText('0');
+  });
+
   describe('when delay config is set', () => {
     const message = 'required.';
 
