@@ -58,7 +58,6 @@ import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
-import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
@@ -649,7 +648,7 @@ export function createFormControl<
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
-        !isPrimitive(fieldValue) ||
+        isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
         ? setValues(fieldName, fieldValue, options)
@@ -708,7 +707,7 @@ export function createFormControl<
     const _updateIsFieldValueUpdated = (fieldValue: any): void => {
       isFieldValueUpdated =
         Number.isNaN(fieldValue) ||
-        (fieldValue instanceof Date && isNaN(fieldValue.getTime())) ||
+        (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
 
@@ -1360,7 +1359,7 @@ export function createFormControl<
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
     _reset(
       isFunction(formValues)
-        ? formValues(_formValues as TFieldValues)
+        ? (formValues as Function)(_formValues as TFieldValues)
         : formValues,
       keepStateOptions,
     );
@@ -1392,7 +1391,7 @@ export function createFormControl<
 
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
-    _options.defaultValues().then((values: TFieldValues) => {
+    (_options.defaultValues as Function)().then((values: TFieldValues) => {
       reset(values, _options.resetOptions);
       _subjects.state.next({
         isLoading: false,
