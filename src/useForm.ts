@@ -154,8 +154,13 @@ export function useForm<
       });
   }, [props.shouldUnregister, control]);
 
+  React.useEffect(() => {
+    if (_formControl.current) {
+      _formControl.current.watch = _formControl.current.watch.bind({});
+    }
+  }, [formState]);
+
   _formControl.current.formState = getProxyFormState(formState, control);
-  _formControl.current.watch = _formControl.current.watch.bind({});
 
   return _formControl.current;
 }
