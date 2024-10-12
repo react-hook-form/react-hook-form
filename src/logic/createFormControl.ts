@@ -708,6 +708,7 @@ export function createFormControl<
     const _updateIsFieldValueUpdated = (fieldValue: any): void => {
       isFieldValueUpdated =
         Number.isNaN(fieldValue) ||
+        (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
 
