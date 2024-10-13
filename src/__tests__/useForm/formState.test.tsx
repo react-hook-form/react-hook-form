@@ -700,10 +700,11 @@ describe('formState', () => {
       const { formState, getFieldState, control } = useForm<FormValues>({
         values: {},
       });
-      formState.isDirty;
 
       return (
         <form>
+          <p>{formState.isDirty}</p>
+          <p>{formState.dirtyFields.test}</p>
           <TextInput control={control} />
           <Output getFieldState={getFieldState} formState={formState} />
         </form>

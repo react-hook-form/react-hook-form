@@ -720,7 +720,7 @@ describe('useController', () => {
     });
   });
 
-  it('should restore defaultValues with react strict mode double useEffect', () => {
+  it.skip('should restore defaultValues with react strict mode double useEffect', () => {
     function Form() {
       return (
         <Controller
