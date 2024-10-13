@@ -51,8 +51,7 @@ describe('validateField', () => {
             valueAsNumber: true,
           },
         },
-        // @ts-expect-error
-        NaN,
+        {},
         false,
       ),
     ).toEqual({
@@ -1794,11 +1793,9 @@ describe('validateField', () => {
               name: 'test',
             },
             value: 'This is a long text input',
-            // @ts-expect-error
-            validate: 'validate',
           },
         },
-        'This is a long text input',
+        { test: 'This is a long text input' },
         false,
       ),
     ).toEqual({});
