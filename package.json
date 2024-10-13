@@ -39,7 +39,7 @@
     "type": "tsc --noEmit",
     "jest-preview": "jest-preview",
     "test": "jest --config ./scripts/jest/jest.config.js",
-    "test:react-compiler": "jest --config ./scripts/jest/jest-react-compiler.config.js",
+    "test:react-compiler": "jest --config ./scripts/jest/jest-react-compiler.config.js --onlyChanged --watch",
     "test:coverage": "pnpm test -- --coverage",
     "test:watch": "pnpm test -- --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",

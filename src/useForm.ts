@@ -157,6 +157,8 @@ export function useForm<
   React.useEffect(() => {
     if (_formControl.current) {
       _formControl.current.watch = _formControl.current.watch.bind({});
+      _formControl.current.getFieldState =
+        _formControl.current.getFieldState.bind({});
     }
   }, [formState]);
 
