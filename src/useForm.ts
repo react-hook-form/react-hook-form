@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import { updateMethodsReference } from './utils/updateMethodsReference';
 import {
   FieldValues,
   FormState,
@@ -155,9 +156,7 @@ export function useForm<
   }, [props.shouldUnregister, control]);
 
   React.useEffect(() => {
-    if (_formControl.current) {
-      _formControl.current.watch = _formControl.current.watch.bind({});
-    }
+    updateMethodsReference(_formControl);
   }, [formState]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
