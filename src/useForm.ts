@@ -155,7 +155,9 @@ export function useForm<
       });
   }, [props.shouldUnregister, control]);
 
-  React.useEffect(() => updateMethodsReference(_formControl), [formState]);
+  React.useEffect(() => {
+    updateMethodsReference(_formControl);
+  }, [formState]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
