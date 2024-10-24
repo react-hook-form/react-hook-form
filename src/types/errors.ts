@@ -50,7 +50,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
     ? any
     : FieldErrorsImpl<DeepRequired<T>>
 > & {
-  root?: Record<string, GlobalError> & GlobalError;
+  root?: Record<string, GlobalError> | GlobalError;
 };
 
 export type InternalFieldErrors = Partial<
