@@ -1376,7 +1376,9 @@ export function createFormControl<
 
       if (fieldRef.focus) {
         fieldRef.focus();
-        options.shouldSelect && fieldRef.select();
+        options.shouldSelect &&
+          isFunction(fieldRef.select) &&
+          fieldRef.select();
       }
     }
   };
