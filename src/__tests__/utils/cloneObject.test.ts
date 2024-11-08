@@ -111,6 +111,20 @@ describe('clone', () => {
     });
   });
 
+  it('should skip clone if a node is not planeObject', () => {
+    class Foo {
+      a = 1;
+      b = 1;
+
+      static c = function () {};
+    }
+
+    const object = new Foo();
+    const copy = cloneObject(object);
+
+    expect(copy).toBe(object);
+  });
+
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips polyfill

@@ -164,7 +164,7 @@ export function createFormControl<
     };
 
   const _updateValid = async (shouldUpdateValid?: boolean) => {
-    if (!props.disabled && (_proxyFormState.isValid || shouldUpdateValid)) {
+    if (!_options.disabled && (_proxyFormState.isValid || shouldUpdateValid)) {
       const isValid = _options.resolver
         ? isEmptyObject((await _executeSchema()).errors)
         : await executeBuiltInValidation(_fields, true);
@@ -179,7 +179,7 @@ export function createFormControl<
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (
-      !props.disabled &&
+      !_options.disabled &&
       (_proxyFormState.isValidating || _proxyFormState.validatingFields)
     ) {
       (names || Array.from(_names.mount)).forEach((name) => {
@@ -205,7 +205,7 @@ export function createFormControl<
     shouldSetValues = true,
     shouldUpdateFieldsAndState = true,
   ) => {
-    if (args && method && !props.disabled) {
+    if (args && method && !_options.disabled) {
       _state.action = true;
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
@@ -313,7 +313,7 @@ export function createFormControl<
       name,
     };
 
-    if (!props.disabled) {
+    if (!_options.disabled) {
       const disabledField = !!(
         get(_fields, name) &&
         get(_fields, name)._f &&
@@ -377,9 +377,9 @@ export function createFormControl<
       isBoolean(isValid) &&
       _formState.isValid !== isValid;
 
-    if (props.delayError && error) {
+    if (_options.delayError && error) {
       delayErrorCallback = debounce(() => updateErrors(name, error));
-      delayErrorCallback(props.delayError);
+      delayErrorCallback(_options.delayError);
     } else {
       clearTimeout(timer);
       delayErrorCallback = null;
@@ -524,7 +524,7 @@ export function createFormControl<
   };
 
   const _getDirty: GetIsDirty = (name, data) =>
-    !props.disabled &&
+    !_options.disabled &&
     (name && data && set(_formValues, name, data),
     !deepEqual(getValues(), _defaultValues));
 
@@ -556,7 +556,7 @@ export function createFormControl<
       get(
         _state.mount ? _formValues : _defaultValues,
         name,
-        props.shouldUnregister ? get(_defaultValues, name, []) : [],
+        _options.shouldUnregister ? get(_defaultValues, name, []) : [],
       ),
     );
 
@@ -759,7 +759,7 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid) {
-          if (props.mode === 'onBlur') {
+          if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
               _updateValid();
             }
@@ -1029,7 +1029,7 @@ export function createFormControl<
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined =
-      isBoolean(options.disabled) || isBoolean(props.disabled);
+      isBoolean(options.disabled) || isBoolean(_options.disabled);
 
     set(_fields, name, {
       ...(field || {}),
@@ -1047,7 +1047,7 @@ export function createFormControl<
         field,
         disabled: isBoolean(options.disabled)
           ? options.disabled
-          : props.disabled,
+          : _options.disabled,
         name,
         value: options.value,
       });
@@ -1057,7 +1057,7 @@ export function createFormControl<
 
     return {
       ...(disabledIsDefined
-        ? { disabled: options.disabled || props.disabled }
+        ? { disabled: options.disabled || _options.disabled }
         : {}),
       ...(_options.progressive
         ? {
@@ -1159,6 +1159,14 @@ export function createFormControl<
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
       }
+
+      if (_options.disabled) {
+        if (onInvalid) {
+          await onInvalid({ ..._formState.errors }, e);
+        }
+        return;
+      }
+
       let fieldValues = cloneObject(_formValues);
 
       _subjects.state.next({
@@ -1289,7 +1297,7 @@ export function createFormControl<
         _fields = {};
       }
 
-      _formValues = props.shouldUnregister
+      _formValues = _options.shouldUnregister
         ? keepStateOptions.keepDefaultValues
           ? cloneObject(_defaultValues)
           : {}
@@ -1318,7 +1326,7 @@ export function createFormControl<
       !!keepStateOptions.keepIsValid ||
       !!keepStateOptions.keepDirtyValues;
 
-    _state.watch = !!props.shouldUnregister;
+    _state.watch = !!_options.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
