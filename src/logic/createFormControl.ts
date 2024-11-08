@@ -377,9 +377,9 @@ export function createFormControl<
       isBoolean(isValid) &&
       _formState.isValid !== isValid;
 
-    if (props.delayError && error) {
+    if (_options.delayError && error) {
       delayErrorCallback = debounce(() => updateErrors(name, error));
-      delayErrorCallback(props.delayError);
+      delayErrorCallback(_options.delayError);
     } else {
       clearTimeout(timer);
       delayErrorCallback = null;
@@ -556,7 +556,7 @@ export function createFormControl<
       get(
         _state.mount ? _formValues : _defaultValues,
         name,
-        props.shouldUnregister ? get(_defaultValues, name, []) : [],
+        _options.shouldUnregister ? get(_defaultValues, name, []) : [],
       ),
     );
 
@@ -759,7 +759,7 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid) {
-          if (props.mode === 'onBlur') {
+          if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
               _updateValid();
             }
@@ -1297,7 +1297,7 @@ export function createFormControl<
         _fields = {};
       }
 
-      _formValues = props.shouldUnregister
+      _formValues = _options.shouldUnregister
         ? keepStateOptions.keepDefaultValues
           ? cloneObject(_defaultValues)
           : {}
@@ -1326,7 +1326,7 @@ export function createFormControl<
       !!keepStateOptions.keepIsValid ||
       !!keepStateOptions.keepDirtyValues;
 
-    _state.watch = !!props.shouldUnregister;
+    _state.watch = !!_options.shouldUnregister;
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
