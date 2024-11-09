@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   act,
   fireEvent,
@@ -551,5 +551,55 @@ describe('watch', () => {
     });
 
     screen.getByText('bill');
+  });
+
+  it('should call the callback on every append', () => {
+    interface FormValues {
+      names: {
+        firstName: string;
+      }[];
+    }
+    const mockedFn = jest.fn();
+
+    function App() {
+      const { watch, control } = useForm<FormValues>({
+        defaultValues: { names: [] },
+      });
+
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'names',
+      });
+
+      useEffect(() => {
+        const subscription = watch((_value, { name }) => {
+          mockedFn(name, _value);
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      }, [watch]);
+
+      const addItem = (index: number) => {
+        append({ firstName: '' }, { focusName: `names.${index}.firstName` });
+      };
+
+      return (
+        <form>
+          <button type="button" onClick={() => addItem(fields.length)}>
+            append
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(mockedFn).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 });
