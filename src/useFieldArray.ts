@@ -92,6 +92,7 @@ export function useFieldArray<
     name,
     keyName = 'id',
     shouldUnregister,
+    rules,
   } = props;
   const [fields, setFields] = React.useState(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
@@ -105,10 +106,10 @@ export function useFieldArray<
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  props.rules &&
+  rules &&
     (control as Control<TFieldValues>).register(
       name as FieldPath<TFieldValues>,
-      props.rules as RegisterOptions<TFieldValues>,
+      rules as RegisterOptions<TFieldValues>,
     );
 
   useSubscribe({
@@ -195,6 +196,8 @@ export function useFieldArray<
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
+    !Array.isArray(get(control._fields, name)) &&
+      set(control._fields, name, undefined);
     control._updateFieldArray(name, updatedFieldArrayValues, removeArrayAt, {
       argA: index,
     });
