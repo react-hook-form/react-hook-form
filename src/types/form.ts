@@ -223,7 +223,7 @@ export type UseFormRegisterReturn<
  * // Register custom field at useEffect
  * useEffect(() => {
  *   register("name4");
- *   register("name5", { value: '"hiddenValue" });
+ *   register("name5", { value: "hiddenValue" });
  * }, [register])
  *
  * // Register without ref
@@ -655,7 +655,6 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
  * <form onSubmit={handleSubmit(onSubmit, onError)} />
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
