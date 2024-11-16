@@ -1015,13 +1015,15 @@ export function createFormControl<
     fields,
     value,
   }) => {
-    const inputValue = disabled
-      ? undefined
-      : isUndefined(value)
-        ? getFieldValue(field ? field._f : get(fields, name)._f)
-        : value;
-    set(_formValues, name, inputValue);
-    updateTouchAndDirty(name, inputValue, false, false, true);
+    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
+      const inputValue = disabled
+        ? undefined
+        : isUndefined(value)
+          ? getFieldValue(field ? field._f : get(fields, name)._f)
+          : value;
+      set(_formValues, name, inputValue);
+      updateTouchAndDirty(name, inputValue, false, false, true);
+    }
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
