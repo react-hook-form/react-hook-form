@@ -1015,25 +1015,19 @@ export function createFormControl<
     fields,
     value,
   }) => {
-    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
-      const inputValue = disabled
-        ? undefined
-        : isUndefined(value)
-          ? getFieldValue(field ? field._f : get(fields, name)._f)
-          : value;
-
-      if ((!disabled && !isUndefined(inputValue)) || disabled) {
-        set(_formValues, name, inputValue);
-        updateTouchAndDirty(name, inputValue, false, false, true);
-      }
-    }
+    const inputValue = disabled
+      ? undefined
+      : isUndefined(value)
+        ? getFieldValue(field ? field._f : get(fields, name)._f)
+        : value;
+    set(_formValues, name, inputValue);
+    updateTouchAndDirty(name, inputValue, false, false, true);
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
-    const disabled = options.disabled || _options.disabled;
 
     set(_fields, name, {
       ...(field || {}),
@@ -1049,7 +1043,9 @@ export function createFormControl<
     if (field && disabledIsDefined) {
       _updateDisabledField({
         field,
-        disabled,
+        disabled: disabledIsDefined
+          ? options.disabled || _options.disabled
+          : undefined,
         name,
         value: options.value,
       });
@@ -1058,7 +1054,9 @@ export function createFormControl<
     }
 
     return {
-      ...(disabledIsDefined ? { disabled } : {}),
+      ...(disabledIsDefined
+        ? { disabled: options.disabled || _options.disabled }
+        : {}),
       ...(_options.progressive
         ? {
             required: !!options.required,
