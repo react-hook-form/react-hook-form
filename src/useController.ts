@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import getEventValue from './logic/getEventValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -200,7 +200,7 @@ export function useController<
     }
   }, [disabled, name, control]);
 
-  return useMemo(
+  return React.useMemo(
     () => ({
       field,
       formState,
