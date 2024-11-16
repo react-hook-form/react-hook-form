@@ -1015,15 +1015,17 @@ export function createFormControl<
     fields,
     value,
   }) => {
-    const inputValue = disabled
-      ? undefined
-      : isUndefined(value)
-        ? getFieldValue(field ? field._f : get(fields, name)._f)
-        : value;
+    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
+      const inputValue = disabled
+        ? undefined
+        : isUndefined(value)
+          ? getFieldValue(field ? field._f : get(fields, name)._f)
+          : value;
 
-    if ((!disabled && !isUndefined(inputValue)) || disabled) {
-      set(_formValues, name, inputValue);
-      updateTouchAndDirty(name, inputValue, false, false, true);
+      if ((!disabled && !isUndefined(inputValue)) || disabled) {
+        set(_formValues, name, inputValue);
+        updateTouchAndDirty(name, inputValue, false, false, true);
+      }
     }
   };
 
