@@ -79,6 +79,83 @@ export function useController<
     }),
   );
 
+  const fieldState = React.useMemo(
+    () =>
+      Object.defineProperties(
+        {},
+        {
+          invalid: {
+            enumerable: true,
+            get: () => !!get(formState.errors, name),
+          },
+          isDirty: {
+            enumerable: true,
+            get: () => !!get(formState.dirtyFields, name),
+          },
+          isTouched: {
+            enumerable: true,
+            get: () => !!get(formState.touchedFields, name),
+          },
+          isValidating: {
+            enumerable: true,
+            get: () => !!get(formState.validatingFields, name),
+          },
+          error: {
+            enumerable: true,
+            get: () => get(formState.errors, name),
+          },
+        },
+      ) as ControllerFieldState,
+    [formState, name],
+  );
+
+  const field = React.useMemo(
+    () => ({
+      name,
+      value,
+      ...(isBoolean(disabled) || formState.disabled
+        ? { disabled: formState.disabled || disabled }
+        : {}),
+      onChange: (event: any) =>
+        _registerProps.current.onChange({
+          target: {
+            value: getEventValue(event),
+            name: name as InternalFieldName,
+          },
+          type: EVENTS.CHANGE,
+        }),
+      onBlur: () =>
+        _registerProps.current.onBlur({
+          target: {
+            value: get(control._formValues, name),
+            name: name as InternalFieldName,
+          },
+          type: EVENTS.BLUR,
+        }),
+      ref: (elm: any) => {
+        const field = get(control._fields, name);
+
+        if (field && elm) {
+          field._f.ref = {
+            focus: () => elm.focus(),
+            select: () => elm.select(),
+            setCustomValidity: (message: string) =>
+              elm.setCustomValidity(message),
+            reportValidity: () => elm.reportValidity(),
+          };
+        }
+      },
+    }),
+    [
+      name,
+      control._formValues,
+      disabled,
+      formState.disabled,
+      value,
+      control._fields,
+    ],
+  );
+
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
@@ -123,77 +200,12 @@ export function useController<
     }
   }, [disabled, name, control]);
 
-  return {
-    field: {
-      name,
-      value,
-      ...(isBoolean(disabled) || formState.disabled
-        ? { disabled: formState.disabled || disabled }
-        : {}),
-      onChange: React.useCallback(
-        (event) =>
-          _registerProps.current.onChange({
-            target: {
-              value: getEventValue(event),
-              name: name as InternalFieldName,
-            },
-            type: EVENTS.CHANGE,
-          }),
-        [name],
-      ),
-      onBlur: React.useCallback(
-        () =>
-          _registerProps.current.onBlur({
-            target: {
-              value: get(control._formValues, name),
-              name: name as InternalFieldName,
-            },
-            type: EVENTS.BLUR,
-          }),
-        [name, control],
-      ),
-      ref: React.useCallback(
-        (elm) => {
-          const field = get(control._fields, name);
-
-          if (field && elm) {
-            field._f.ref = {
-              focus: () => elm.focus(),
-              select: () => elm.select(),
-              setCustomValidity: (message: string) =>
-                elm.setCustomValidity(message),
-              reportValidity: () => elm.reportValidity(),
-            };
-          }
-        },
-        [control._fields, name],
-      ),
-    },
-    formState,
-    fieldState: Object.defineProperties(
-      {},
-      {
-        invalid: {
-          enumerable: true,
-          get: () => !!get(formState.errors, name),
-        },
-        isDirty: {
-          enumerable: true,
-          get: () => !!get(formState.dirtyFields, name),
-        },
-        isTouched: {
-          enumerable: true,
-          get: () => !!get(formState.touchedFields, name),
-        },
-        isValidating: {
-          enumerable: true,
-          get: () => !!get(formState.validatingFields, name),
-        },
-        error: {
-          enumerable: true,
-          get: () => get(formState.errors, name),
-        },
-      },
-    ) as ControllerFieldState,
-  };
+  return React.useMemo(
+    () => ({
+      field,
+      formState,
+      fieldState,
+    }),
+    [field, formState, fieldState],
+  );
 }
