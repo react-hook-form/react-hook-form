@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
@@ -96,11 +96,15 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     };
   }, [control]);
 
-  return getProxyFormState(
-    formState,
-    control,
-    _localProxyFormState.current,
-    false,
+  return useMemo(
+    () =>
+      getProxyFormState(
+        formState,
+        control,
+        _localProxyFormState.current,
+        false,
+      ),
+    [formState, control],
   );
 }
 
