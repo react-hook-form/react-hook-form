@@ -1021,7 +1021,9 @@ export function createFormControl<
         : isUndefined(value)
           ? getFieldValue(field ? field._f : get(fields, name)._f)
           : value;
-      set(_formValues, name, inputValue);
+      if ((disabled && isUndefined(inputValue)) || !disabled) {
+        set(_formValues, name, inputValue);
+      }
       updateTouchAndDirty(name, inputValue, false, false, true);
     }
   };
@@ -1042,12 +1044,12 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    if (field && disabledIsDefined) {
+    if (field) {
       _updateDisabledField({
         field,
-        disabled: disabledIsDefined
-          ? options.disabled || _options.disabled
-          : undefined,
+        disabled: isBoolean(options.disabled)
+          ? options.disabled
+          : _options.disabled,
         name,
         value: options.value,
       });
