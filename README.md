@@ -66,6 +66,9 @@ function App() {
 
 Thanks go to these kind and lovely sponsors!
 
+<a target="_blank" href='https://www.sanity.io/'>
+    <img width="94" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
+</a>
 <a target="_blank" href='https://route4me.com/'>
     <img width="94" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
 </a>
