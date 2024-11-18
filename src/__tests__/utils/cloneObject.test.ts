@@ -130,7 +130,7 @@ describe('clone', () => {
 
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips if FileList is not defined.
-      globalThis.FileList = undefined;
+      delete globalThis.FileList;
     });
 
     afterAll(() => {
