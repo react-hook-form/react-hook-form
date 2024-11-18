@@ -125,6 +125,29 @@ describe('clone', () => {
     expect(copy).toBe(object);
   });
 
+  describe('FileList not defined', () => {
+    const fileList = globalThis.FileList;
+
+    beforeAll(() => {
+      // @ts-expect-error we want to test that clone skips if FileList is not defined.
+      delete globalThis.FileList;
+    });
+
+    afterAll(() => {
+      globalThis.FileList = fileList;
+    });
+
+    it('should skip clone if FileList is not defined', () => {
+      const data = {
+        a: 1,
+        b: 2,
+      };
+      const copy = cloneObject(data);
+
+      expect(copy).toEqual(data);
+    });
+  });
+
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips polyfill
