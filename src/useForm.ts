@@ -154,13 +154,12 @@ export function useForm<
       });
   }, [props.shouldUnregister, control]);
 
-  const formControlCurrent = _formControl.current;
   return React.useMemo(
     () =>
       ({
-        ...formControlCurrent,
+        ..._formControl.current,
         formState: getProxyFormState(formState, control),
       }) as UseFormReturn<TFieldValues, TContext, TTransformedValues>,
-    [formState, control, formControlCurrent],
+    [formState, control],
   );
 }
