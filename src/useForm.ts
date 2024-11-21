@@ -156,11 +156,17 @@ export function useForm<
       });
   }, [props.shouldUnregister, control]);
 
-  React.useEffect(() => {
+  return React.useMemo(() => {
     updateMethodsReference(_formControl);
-  }, [formState]);
 
-  _formControl.current.formState = getProxyFormState(formState, control);
+    if (_formControl.current) {
+      _formControl.current.formState = getProxyFormState(formState, control);
+    }
 
-  return _formControl.current;
+    return _formControl.current as UseFormReturn<
+      TFieldValues,
+      TContext,
+      TTransformedValues
+    >;
+  }, [formState, control]);
 }
