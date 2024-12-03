@@ -1254,12 +1254,11 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     const isEmptyResetValues = isEmptyObject(formValues);
-    const values = isEmptyResetValues 
-      ? _defaultValues 
-      : formValues 
-        ? cloneObject(formValues) 
+    const values = isEmptyResetValues
+      ? _defaultValues
+      : formValues
+        ? cloneObject(formValues)
         : _defaultValues;
-    
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = values;
     }
