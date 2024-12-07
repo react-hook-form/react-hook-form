@@ -1078,7 +1078,9 @@ export function createFormControl<
         : isUndefined(value)
           ? getFieldValue(field ? field._f : get(fields, name)._f)
           : value;
-      set(_formValues, name, inputValue);
+      if (disabled || (!disabled && !isUndefined(inputValue))) {
+        set(_formValues, name, inputValue);
+      }
       updateTouchAndDirty(name, inputValue, false, false, true);
     }
   };

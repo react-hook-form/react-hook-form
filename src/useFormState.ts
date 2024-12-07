@@ -80,11 +80,15 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     _localProxyFormState.current.isValid && control._setValid(true);
   }, [control]);
 
-  return getProxyFormState(
-    formState,
-    control,
-    _localProxyFormState.current,
-    false,
+  return React.useMemo(
+    () =>
+      getProxyFormState(
+        formState,
+        control,
+        _localProxyFormState.current,
+        false,
+      ),
+    [formState, control],
   );
 }
 
