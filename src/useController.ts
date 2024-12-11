@@ -191,7 +191,7 @@ export function useController<
 
   React.useEffect(() => {
     if (isBoolean(disabled) && get(control._fields, name)) {
-      control._updateDisabledField({
+      control._setDisabledField({
         disabled,
         fields: control._fields,
         name,
