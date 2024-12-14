@@ -478,7 +478,7 @@ export function createFormControl<
             _updateIsValidating([name]);
           }
 
-          if (fieldError[_f.name] && !!get(_state.mount, name)) {
+          if (fieldError[_f.name]) {
             context.valid = false;
             if (shouldOnlyCheckValid) {
               break;
