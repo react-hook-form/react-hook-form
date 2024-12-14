@@ -710,6 +710,9 @@ describe('useFieldArray', () => {
 
     cy.get('#isValid').get('#isValid').contains('no');
 
+    // introduced by react 19 with race condition with blur and useEffect action
+    cy.get('#field0').blur();
+
     cy.get('#delete0').click();
 
     cy.get('#isValid').get('#isValid').contains('yes');
