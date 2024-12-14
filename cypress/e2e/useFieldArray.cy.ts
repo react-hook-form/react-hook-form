@@ -712,28 +712,28 @@ describe('useFieldArray', () => {
 
     cy.get('#delete0').click();
 
-    // cy.get('#isValid').get('#isValid').contains('yes');
-    //
-    // cy.get('#append').click();
-    // cy.get('#field0').clear();
-    //
-    // cy.get('#isValid').get('#isValid').contains('no');
-    //
-    // cy.get('#delete0').click();
-    //
-    // cy.get('#isValid').get('#isValid').contains('yes');
-    //
-    // cy.get('#append').click();
-    // cy.get('#append').click();
-    //
-    // cy.get('#field1').clear();
-    // cy.get('#field2').clear();
-    //
-    // cy.get('#isValid').get('#isValid').contains('no');
-    //
-    // cy.get('#delete1').click();
-    // cy.get('#delete1').click();
-    //
-    // cy.get('#isValid').get('#isValid').contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
+
+    cy.get('#append').click();
+    cy.get('#field0').clear();
+
+    cy.get('#isValid').get('#isValid').contains('no');
+
+    cy.get('#delete0').click();
+
+    cy.get('#isValid').get('#isValid').contains('yes');
+
+    cy.get('#append').click();
+    cy.get('#append').click();
+
+    cy.get('#field1').clear();
+    cy.get('#field2').clear();
+
+    cy.get('#isValid').get('#isValid').contains('no');
+
+    cy.get('#delete1').click();
+    cy.get('#delete1').click();
+
+    cy.get('#isValid').get('#isValid').contains('yes');
   });
 });
