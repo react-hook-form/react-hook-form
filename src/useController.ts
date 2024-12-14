@@ -178,6 +178,8 @@ export function useController<
       }
     }
 
+    !isArrayField && control.register(name);
+
     return () => {
       (
         isArrayField
