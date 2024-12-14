@@ -1,5 +1,4 @@
 import React from 'react';
-import { flushSync } from 'react-dom';
 
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
@@ -397,7 +396,8 @@ export function useFieldArray<
 
     control._names.focus = '';
 
-    flushSync(() => control._updateValid());
+    setTimeout(control._updateValid);
+
     _actioned.current = false;
   }, [fields, name, control]);
 
