@@ -58,6 +58,7 @@ import isHTMLElement from '../utils/isHTMLElement';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
+import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
@@ -610,8 +611,16 @@ export function createFormControl<
         } else if (isFileInput(fieldReference.ref)) {
           fieldReference.ref.value = '';
         } else {
-          fieldReference.ref.value = fieldValue;
-
+          if (
+            fieldReference.ref instanceof HTMLInputElement &&
+            !isString(fieldValue) &&
+            !isPrimitive(fieldValue) &&
+            (isObject(fieldValue) || Array.isArray(fieldValue))
+          ) {
+            fieldReference.ref.value = JSON.stringify(fieldValue);
+          } else {
+            fieldReference.ref.value = fieldValue;
+          }
           if (!fieldReference.ref.type) {
             _subjects.values.next({
               name,
