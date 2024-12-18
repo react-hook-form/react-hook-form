@@ -42,6 +42,7 @@ import './style.css';
 import FormComponent from './form';
 import DisabledFields from './disabledFields';
 import ResetKeepDirty from './resetKeepDirty';
+import SetInputValueAs from './setInputValueAs';
 
 const App = () => {
   return (
@@ -97,6 +98,7 @@ const App = () => {
         />
         <Route path="/isValid/:mode/:defaultValues" element={<IsValid />} />
         <Route path="/default-values" element={<DefaultValues />} />
+        <Route path="/setInput-value-as" element={<SetInputValueAs />} />
         <Route path="/default-values-async" element={<DefaultValuesAsync />} />
         <Route path="/trigger-validation" element={<TriggerValidation />} />
         <Route path="/watch-default-values" element={<WatchDefaultValues />} />

@@ -612,12 +612,14 @@ export function createFormControl<
           fieldReference.ref.value = '';
         } else {
           if (
+            fieldReference.setInputValueAs &&
             fieldReference.ref instanceof HTMLInputElement &&
             !isString(fieldValue) &&
             !isPrimitive(fieldValue) &&
             (isObject(fieldValue) || Array.isArray(fieldValue))
           ) {
-            fieldReference.ref.value = JSON.stringify(fieldValue);
+            fieldReference.ref.value =
+              fieldReference.setInputValueAs(fieldValue);
           } else {
             fieldReference.ref.value = fieldValue;
           }
