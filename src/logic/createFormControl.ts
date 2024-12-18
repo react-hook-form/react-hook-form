@@ -760,11 +760,9 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid) {
-          if (_options.mode === 'onBlur') {
-            if (isBlurEvent) {
-              _updateValid();
-            }
-          } else {
+          if (_options.mode === 'onBlur' && isBlurEvent) {
+            _updateValid();
+          } else if (!isBlurEvent) {
             _updateValid();
           }
         }
