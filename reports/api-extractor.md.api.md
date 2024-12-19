@@ -425,6 +425,7 @@ export type MultipleFieldErrors = {
 export type Names = {
     mount: InternalNameSet;
     unMount: InternalNameSet;
+    disabled: InternalNameSet;
     array: InternalNameSet;
     watch: InternalNameSet;
     focus?: InternalFieldName;
