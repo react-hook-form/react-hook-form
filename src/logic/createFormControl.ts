@@ -1,3 +1,5 @@
+import { Immer } from 'immer';
+
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
   BatchFieldArrayUpdate,
@@ -85,6 +87,11 @@ import skipValidation from './skipValidation';
 import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
+
+const immerNotFreeze = new Immer();
+const setAutoFreeze = immerNotFreeze.setAutoFreeze.bind(immerNotFreeze);
+setAutoFreeze(false);
+const produce = immerNotFreeze.produce;
 
 const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
@@ -612,14 +619,17 @@ export function createFormControl<
           fieldReference.ref.value = '';
         } else {
           if (
-            fieldReference.setInputValueAs &&
             fieldReference.ref instanceof HTMLInputElement &&
             !isString(fieldValue) &&
             !isPrimitive(fieldValue) &&
             (isObject(fieldValue) || Array.isArray(fieldValue))
           ) {
-            fieldReference.ref.value =
-              fieldReference.setInputValueAs(fieldValue);
+            if (fieldReference.setInputValueAs) {
+              fieldReference.ref.value =
+                fieldReference.setInputValueAs(fieldValue);
+            } else {
+              fieldReference.ref.value = JSON.stringify(fieldValue);
+            }
           } else {
             fieldReference.ref.value = fieldValue;
           }
@@ -677,7 +687,13 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
 
-    set(_formValues, name, cloneValue);
+    if (field._f.immerFormValues) {
+      _formValues = produce(_formValues as any, (draft: any) => {
+        set(draft, name, cloneValue);
+      });
+    } else {
+      set(_formValues, name, cloneValue);
+    }
 
     if (isFieldArray) {
       _subjects.array.next({
@@ -743,7 +759,13 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
-      set(_formValues, name, fieldValue);
+      if (field._f.immerFormValues) {
+        _formValues = produce(_formValues as any, (draft: any) => {
+          set(draft, name, fieldValue);
+        });
+      } else {
+        set(_formValues, name, fieldValue);
+      }
 
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);

@@ -1,20 +1,26 @@
-import React, { useImperativeHandle, useRef } from 'react';
+import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 function DefaultValues() {
-  const { register, watch, setValue, handleSubmit } = useForm<any>({
+  const { register, watch, setValue, handleSubmit, getValues } = useForm<any>({
     defaultValues: {
       test: {
         firstName: 'firstName',
         lastName: 'lastName',
       },
+      test2: 'test2',
     },
   });
   const test = watch('test');
-  let { ref, ...rest } = register('test', {
+  useEffect(() => {
+    console.log('test', test);
+  }, [test]);
+  console.log(test);
+  let { ref, ...rest } = register('test.firstName', {
     setInputValueAs: (inputValue) => {
       return JSON.stringify(inputValue);
     },
+    immerFormValues: true,
   });
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current);
@@ -37,17 +43,11 @@ function DefaultValues() {
         type={'button'}
         id={'toggle'}
         onClick={() => {
-          setValue(
-            'test',
-            { firstName: 'firstName3', lastName: 'lastName3' },
-            { shouldValidate: true },
-          );
+          setValue('test.firstName', 'firstName' + Math.random());
         }}
       >
         setValue
       </button>
-
-      {JSON.stringify(test)}
     </>
   );
 }
