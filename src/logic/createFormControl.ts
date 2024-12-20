@@ -1049,6 +1049,8 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
+    updateValidAndValue(name, true, options.value);
+
     if (field) {
       _updateDisabledField({
         field,
@@ -1058,8 +1060,6 @@ export function createFormControl<
         name,
         value: options.value,
       });
-    } else {
-      updateValidAndValue(name, true, options.value);
     }
 
     return {
