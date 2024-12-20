@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 
 function DefaultValues() {
   const { register, watch, setValue, handleSubmit, getValues } = useForm<any>({
+    immerFormValues: true,
     defaultValues: {
       test: {
         firstName: 'firstName',
@@ -43,7 +44,10 @@ function DefaultValues() {
         type={'button'}
         id={'toggle'}
         onClick={() => {
-          setValue('test.firstName', 'firstName' + Math.random());
+          setValue('test', {
+            firstName: 'firstName22222',
+            lastName: 'lastName33333',
+          });
         }}
       >
         setValue

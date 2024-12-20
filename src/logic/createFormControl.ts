@@ -687,7 +687,7 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
 
-    if (field._f.immerFormValues) {
+    if (field._f?.immerFormValues ?? _options.immerFormValues) {
       _formValues = produce(_formValues as any, (draft: any) => {
         set(draft, name, cloneValue);
       });
@@ -759,7 +759,7 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
-      if (field._f.immerFormValues) {
+      if (field._f?.immerFormValues ?? _options.immerFormValues) {
         _formValues = produce(_formValues as any, (draft: any) => {
           set(draft, name, fieldValue);
         });
