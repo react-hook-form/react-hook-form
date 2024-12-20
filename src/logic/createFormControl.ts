@@ -1022,11 +1022,13 @@ export function createFormControl<
     ) {
       disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
 
-      const inputValue = getFieldValue(field ? field._f : get(fields, name)._f);
-
-      set(_formValues, name, inputValue);
-
-      updateTouchAndDirty(name, inputValue, false, false, true);
+      updateTouchAndDirty(
+        name,
+        getFieldValue(field ? field._f : get(fields, name)._f),
+        false,
+        false,
+        true,
+      );
     }
   };
 
