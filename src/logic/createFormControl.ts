@@ -1014,7 +1014,6 @@ export function createFormControl<
     name,
     field,
     fields,
-    value,
   }) => {
     if (
       (isBoolean(disabled) && _state.mount) ||
@@ -1023,9 +1022,7 @@ export function createFormControl<
     ) {
       disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
 
-      const inputValue = isUndefined(value)
-        ? getFieldValue(field ? field._f : get(fields, name)._f)
-        : value;
+      const inputValue = getFieldValue(field ? field._f : get(fields, name)._f);
 
       set(_formValues, name, inputValue);
 
@@ -1058,7 +1055,6 @@ export function createFormControl<
           ? options.disabled
           : _options.disabled,
         name,
-        value: options.value,
       });
     }
 
