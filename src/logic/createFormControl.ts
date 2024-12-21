@@ -100,7 +100,9 @@ export function createFormControl<
   TContext = any,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
-): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> {
+): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> & {
+  formControl: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+} {
   let _options = {
     ...defaultOptions,
     ...props,
@@ -1473,7 +1475,7 @@ export function createFormControl<
       });
     });
 
-  return {
+  const methods = {
     control: {
       register,
       unregister,
@@ -1543,5 +1545,10 @@ export function createFormControl<
     setError,
     setFocus,
     getFieldState,
+  };
+
+  return {
+    ...methods,
+    formControl: methods,
   };
 }

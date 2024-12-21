@@ -113,7 +113,9 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
 };
 
 // @public (undocumented)
-export function createFormControl<TFieldValues extends FieldValues = FieldValues, TContext = any>(props?: UseFormProps<TFieldValues, TContext>): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+export function createFormControl<TFieldValues extends FieldValues = FieldValues, TContext = any>(props?: UseFormProps<TFieldValues, TContext>): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> & {
+    formControl: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+};
 
 // @public (undocumented)
 export type CriteriaMode = 'firstError' | 'all';
@@ -252,7 +254,9 @@ export type FieldPathValues<TFieldValues extends FieldValues, TPath extends Fiel
 };
 
 // @public (undocumented)
-export type FieldRefs = Partial<Record<InternalFieldName, Field>>;
+export type FieldRefs = Partial<{
+    [key: InternalFieldName]: Field | FieldRefs;
+}>;
 
 // @public (undocumented)
 export type FieldValue<TFieldValues extends FieldValues> = TFieldValues[InternalFieldName];
@@ -354,7 +358,7 @@ export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
 }) => () => void;
 
 // @public (undocumented)
-export const get: <T>(object: T, path?: string, defaultValue?: unknown) => any;
+export const get: <T>(object: T, path?: string | null, defaultValue?: unknown) => any;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
