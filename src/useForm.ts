@@ -88,14 +88,8 @@ export function useForm<
     next: (
       value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
     ) => {
-      if (
-        shouldRenderFormState(
-          value,
-          control._proxyFormState,
-          control._updateFormState,
-          true,
-        )
-      ) {
+      control._updateFormState(value);
+      if (shouldRenderFormState(value, control._proxyFormState, true)) {
         updateFormState({ ...control._formState });
       }
     },

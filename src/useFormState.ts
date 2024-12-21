@@ -68,22 +68,26 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     disabled,
     next: (
       value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
-    ) =>
-      _mounted.current &&
-      shouldSubscribeByName(
-        _name.current as InternalFieldName,
-        value.name,
-        exact,
-      ) &&
-      shouldRenderFormState(
-        value,
-        _localProxyFormState.current,
-        control._updateFormState,
-      ) &&
-      updateFormState({
-        ...control._formState,
-        ...value,
-      }),
+    ) => {
+      if (!_mounted.current) {
+        return;
+      }
+      if (
+        shouldSubscribeByName(
+          _name.current as InternalFieldName,
+          value.name,
+          exact,
+        )
+      ) {
+        control._updateFormState(value);
+        if (shouldRenderFormState(value, _localProxyFormState.current)) {
+          updateFormState({
+            ...control._formState,
+            ...value,
+          });
+        }
+      }
+    },
     subject: control._subjects.state,
   });
 
