@@ -44,8 +44,8 @@ export function useForm<
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
-  >();
-  const _values = React.useRef<typeof props.values>();
+  >(undefined);
+  const _values = React.useRef<typeof props.values>(undefined);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
@@ -138,12 +138,7 @@ export function useForm<
       });
   }, [props.shouldUnregister, control]);
 
-  return React.useMemo(
-    () =>
-      ({
-        ..._formControl.current,
-        formState: getProxyFormState(formState, control),
-      }) as UseFormReturn<TFieldValues, TContext, TTransformedValues>,
-    [formState, control],
-  );
+  _formControl.current.formState = getProxyFormState(formState, control);
+
+  return _formControl.current;
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.54.0] - 2024-12-09
+
+### Changed
+
+- `useForm` return methods will be memorized based `formState` update
+
 ## [7.53.0] - 2024-8-31
 
 ### Added

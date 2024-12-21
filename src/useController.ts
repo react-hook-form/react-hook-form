@@ -178,6 +178,8 @@ export function useController<
       }
     }
 
+    !isArrayField && control.register(name);
+
     return () => {
       (
         isArrayField
@@ -190,14 +192,11 @@ export function useController<
   }, [name, control, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
-    if (isBoolean(disabled) && get(control._fields, name)) {
-      control._setDisabledField({
-        disabled,
-        fields: control._fields,
-        name,
-        value: get(control._fields, name)._f.value,
-      });
-    }
+    control._setDisabledField({
+      disabled,
+      fields: control._fields,
+      name,
+    });
   }, [disabled, name, control]);
 
   return React.useMemo(

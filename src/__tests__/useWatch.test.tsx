@@ -519,7 +519,7 @@ describe('useWatch', () => {
             <>
               <input {...register('parent')} />
               <Child register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors?.parent)}</p>
               <button>submit</button>
             </>
           </form>
@@ -596,7 +596,7 @@ describe('useWatch', () => {
               <input {...register('parent')} />
               <Child register={register} control={control} />
               <ChildSecond register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors.parent)}</p>
               <button>submit</button>
             </>
           </form>
@@ -1533,9 +1533,11 @@ describe('useWatch', () => {
           defaultValues: { test: 'test' },
         });
 
+        const { setValue } = methods;
+
         React.useEffect(() => {
-          methods.setValue('test', 'bill');
-        }, [methods]);
+          setValue('test', 'bill');
+        }, [setValue]);
 
         return (
           <>

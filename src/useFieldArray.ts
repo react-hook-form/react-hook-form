@@ -359,6 +359,7 @@ export function useFieldArray<
         ) {
           validateField(
             field,
+            control._names.disabled,
             control._formValues,
             control._options.criteriaMode === VALIDATION_MODE.all,
             control._options.shouldUseNativeValidation,

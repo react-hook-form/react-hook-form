@@ -66,6 +66,9 @@ function App() {
 
 Thanks go to these kind and lovely sponsors!
 
+<a target="_blank" href='https://workleap.com/'>
+    <img width="94" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
+</a>
 <a target="_blank" href='https://www.sgkb.ch/'>
     <img width="94" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
 </a>
