@@ -711,7 +711,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
-    control?: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+    formControl?: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
 }>;
 
 // @public
