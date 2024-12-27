@@ -8,12 +8,11 @@ describe('subscribe', () => {
   it('should subscribe to correct form state and prevent form re-render', async () => {
     const callback = jest.fn();
 
-    const control = createFormControl({
+    const { subscribe, register, setValue, formControl } = createFormControl({
       defaultValues: {
         test: '',
       },
     });
-    const { subscribe, register, setValue } = control;
 
     subscribe({
       formState: {
@@ -49,7 +48,7 @@ describe('subscribe', () => {
 
     const App = () => {
       useForm({
-        control,
+        formControl,
       });
 
       renderCount++;
@@ -67,12 +66,11 @@ describe('subscribe', () => {
   it('should re-render by hook form state subscription', async () => {
     const callback = jest.fn();
 
-    const control = createFormControl({
+    const { subscribe, register, setValue, formControl } = createFormControl({
       defaultValues: {
         test: '',
       },
     });
-    const { subscribe, register, setValue } = control;
 
     subscribe({
       formState: {
@@ -90,7 +88,7 @@ describe('subscribe', () => {
       const {
         formState: { isDirty },
       } = useForm({
-        control,
+        formControl,
       });
 
       isDirty;

@@ -124,7 +124,7 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
-  control?: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+  formControl?: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
