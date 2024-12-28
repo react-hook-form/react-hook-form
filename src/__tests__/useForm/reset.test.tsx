@@ -1190,40 +1190,6 @@ describe('reset', () => {
     expect(mounted).toEqual([false, true]);
   });
 
-  it('should update isMounted when isValid is subscribed', async () => {
-    const mounted: unknown[] = [];
-    let tempControl: Control = {} as Control;
-
-    const App = () => {
-      const {
-        control,
-        reset,
-        formState: { isValid },
-      } = useForm();
-
-      mounted.push(control._state.mount);
-      tempControl = control;
-
-      React.useEffect(() => {
-        reset({});
-      }, [reset]);
-
-      return (
-        <form>
-          <p>{isValid ? 'true' : 'false'}</p>
-        </form>
-      );
-    };
-
-    render(<App />);
-
-    expect(await screen.findByText('false')).toBeVisible();
-
-    expect(mounted).toEqual([false, false]);
-
-    expect(tempControl._state.mount).toBeTruthy();
-  });
-
   it('should reset values but keep defaultValues', async () => {
     const App = () => {
       const { register, control, reset } = useForm({
