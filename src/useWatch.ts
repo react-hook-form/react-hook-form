@@ -188,6 +188,15 @@ export function useWatch<TFieldValues extends FieldValues>(
   const _compute = React.useRef(compute);
   const _computeFormValues = React.useRef(undefined);
 
+  const initialValue = control._getWatch(
+    name as InternalFieldName,
+    defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
+  );
+
+  const [value, updateValue] = React.useState(
+    compute ? compute(initialValue) : initialValue,
+  );
+
   _name.current = name;
 
   useSubscribe({
@@ -224,20 +233,6 @@ export function useWatch<TFieldValues extends FieldValues>(
       }
     },
   });
-
-  const [value, updateValue] = React.useState(
-    compute
-      ? compute(
-          control._getWatch(
-            name as InternalFieldName,
-            defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
-          ),
-        )
-      : control._getWatch(
-          name as InternalFieldName,
-          defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
-        ),
-  );
 
   React.useEffect(() => control._removeUnmounted());
 
