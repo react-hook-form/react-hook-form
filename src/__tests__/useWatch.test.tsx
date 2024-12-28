@@ -519,7 +519,7 @@ describe('useWatch', () => {
             <>
               <input {...register('parent')} />
               <Child register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors?.parent)}</p>
               <button>submit</button>
             </>
           </form>
@@ -596,7 +596,7 @@ describe('useWatch', () => {
               <input {...register('parent')} />
               <Child register={register} control={control} />
               <ChildSecond register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors.parent)}</p>
               <button>submit</button>
             </>
           </form>

@@ -131,6 +131,7 @@ export function createFormControl<
   };
   let _names: Names = {
     mount: new Set(),
+    disabled: new Set(),
     unMount: new Set(),
     array: new Set(),
     watch: new Set(),
@@ -468,6 +469,7 @@ export function createFormControl<
 
           const fieldError = await validateField(
             field as Field,
+            _names.disabled,
             _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
@@ -800,6 +802,7 @@ export function createFormControl<
         error = (
           await validateField(
             field,
+            _names.disabled,
             _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
@@ -1010,18 +1013,21 @@ export function createFormControl<
     name,
     field,
     fields,
-    value,
   }) => {
-    if ((isBoolean(disabled) && _state.mount) || !!disabled) {
-      const inputValue = disabled
-        ? undefined
-        : isUndefined(value)
-          ? getFieldValue(field ? field._f : get(fields, name)._f)
-          : value;
-      if (disabled || (!disabled && !isUndefined(inputValue))) {
-        set(_formValues, name, inputValue);
-      }
-      updateTouchAndDirty(name, inputValue, false, false, true);
+    if (
+      (isBoolean(disabled) && _state.mount) ||
+      !!disabled ||
+      _names.disabled.has(name)
+    ) {
+      disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
+
+      updateTouchAndDirty(
+        name,
+        getFieldValue(field ? field._f : get(fields, name)._f),
+        false,
+        false,
+        true,
+      );
     }
   };
 
@@ -1048,7 +1054,6 @@ export function createFormControl<
           ? options.disabled
           : _options.disabled,
         name,
-        value: options.value,
       });
     } else {
       updateValidAndValue(name, true, options.value);
@@ -1159,14 +1164,13 @@ export function createFormControl<
         e.persist && e.persist();
       }
 
-      if (_options.disabled) {
-        if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
-        }
-        return;
-      }
-
       let fieldValues = cloneObject(_formValues);
+
+      if (_names.disabled.size) {
+        for (const name of _names.disabled) {
+          set(fieldValues, name, undefined);
+        }
+      }
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1315,6 +1319,7 @@ export function createFormControl<
       mount: keepStateOptions.keepDirtyValues ? _names.mount : new Set(),
       unMount: new Set(),
       array: new Set(),
+      disabled: new Set(),
       watch: new Set(),
       watchAll: false,
       focus: '',
