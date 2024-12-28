@@ -19,7 +19,7 @@ const defaultValues = {
   sorting: '',
 };
 describe('issue #12484', () => {
-  it('DevTool should not cause extra renders', async () => {
+  it('DevTool should not cause extra rerenders after calling setValue after form reset', async () => {
     const Title = () => {
       const { control, setValue } = useFormContext<FormValues>();
       const title = useWatch({
