@@ -109,6 +109,47 @@ export function useController<
     [formState, name],
   );
 
+  const onChange = React.useCallback(
+    (event: any) =>
+      _registerProps.current.onChange({
+        target: {
+          value: getEventValue(event),
+          name: name as InternalFieldName,
+        },
+        type: EVENTS.CHANGE,
+      }),
+    [name],
+  );
+
+  const onBlur = React.useCallback(
+    () =>
+      _registerProps.current.onBlur({
+        target: {
+          value: get(control._formValues, name),
+          name: name as InternalFieldName,
+        },
+        type: EVENTS.BLUR,
+      }),
+    [name, control._formValues],
+  );
+
+  const ref = React.useCallback(
+    (elm: any) => {
+      const field = get(control._fields, name);
+
+      if (field && elm) {
+        field._f.ref = {
+          focus: () => elm.focus(),
+          select: () => elm.select(),
+          setCustomValidity: (message: string) =>
+            elm.setCustomValidity(message),
+          reportValidity: () => elm.reportValidity(),
+        };
+      }
+    },
+    [control._fields, name],
+  );
+
   const field = React.useMemo(
     () => ({
       name,
@@ -116,44 +157,11 @@ export function useController<
       ...(isBoolean(disabled) || formState.disabled
         ? { disabled: formState.disabled || disabled }
         : {}),
-      onChange: (event: any) =>
-        _registerProps.current.onChange({
-          target: {
-            value: getEventValue(event),
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.CHANGE,
-        }),
-      onBlur: () =>
-        _registerProps.current.onBlur({
-          target: {
-            value: get(control._formValues, name),
-            name: name as InternalFieldName,
-          },
-          type: EVENTS.BLUR,
-        }),
-      ref: (elm: any) => {
-        const field = get(control._fields, name);
-
-        if (field && elm) {
-          field._f.ref = {
-            focus: () => elm.focus(),
-            select: () => elm.select(),
-            setCustomValidity: (message: string) =>
-              elm.setCustomValidity(message),
-            reportValidity: () => elm.reportValidity(),
-          };
-        }
-      },
+      onChange,
+      onBlur,
+      ref,
     }),
-    [
-      name,
-      control._formValues,
-      disabled,
-      formState.disabled,
-      value,
-      control._fields,
-    ],
+    [name, disabled, formState.disabled, onChange, onBlur, ref, value],
   );
 
   React.useEffect(() => {
@@ -192,14 +200,11 @@ export function useController<
   }, [name, control, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
-    if (isBoolean(disabled) && get(control._fields, name)) {
-      control._updateDisabledField({
-        disabled,
-        fields: control._fields,
-        name,
-        value: get(control._fields, name)._f.value,
-      });
-    }
+    control._updateDisabledField({
+      disabled,
+      fields: control._fields,
+      name,
+    });
   }, [disabled, name, control]);
 
   return React.useMemo(

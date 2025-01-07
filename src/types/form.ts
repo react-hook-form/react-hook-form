@@ -741,6 +741,7 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 export type Names = {
   mount: InternalNameSet;
   unMount: InternalNameSet;
+  disabled: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
   focus?: InternalFieldName;
