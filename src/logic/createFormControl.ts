@@ -19,7 +19,6 @@ import {
   InternalFieldName,
   Names,
   Path,
-  PathValue,
   ReadFormState,
   Ref,
   SetFieldValue,
@@ -1282,10 +1281,7 @@ export function createFormControl<
       } else {
         setValue(
           name,
-          options.defaultValue as PathValue<
-            TFieldValues,
-            FieldPath<TFieldValues>
-          >,
+          options.defaultValue as Parameters<typeof setValue<typeof name>>[1],
         );
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
