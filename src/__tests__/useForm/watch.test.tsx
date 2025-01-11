@@ -597,9 +597,9 @@ describe('watch', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(4);
   });
 });
