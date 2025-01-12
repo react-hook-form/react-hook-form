@@ -1,7 +1,6 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
-import shouldSubscribeByName from './logic/shouldSubscribeByName';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import {
@@ -12,10 +11,10 @@ import {
   FieldPathValues,
   FieldValues,
   InternalFieldName,
+  ReadFormState,
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { useSubscribe } from './useSubscribe';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -199,40 +198,39 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   _name.current = name;
 
-  useSubscribe({
-    disabled,
-    subject: control._subjects.values,
-    next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
-      if (
-        shouldSubscribeByName(
-          _name.current as InternalFieldName,
-          formState.name,
-          exact,
-        )
-      ) {
-        if (!disabled) {
-          const formValues = generateWatchOutput(
-            _name.current as InternalFieldName | InternalFieldName[],
-            control._names,
-            formState.values || control._formValues,
-            false,
-            defaultValue,
-          );
+  React.useEffect(
+    () =>
+      control._subscribe({
+        name: _name.current as InternalFieldName,
+        formState: {
+          values: true,
+        } as ReadFormState,
+        exact,
+        callback: (formState) => {
+          if (!disabled) {
+            const formValues = generateWatchOutput(
+              _name.current as InternalFieldName | InternalFieldName[],
+              control._names,
+              formState.values || control._formValues,
+              false,
+              defaultValue,
+            );
 
-          if (_compute.current) {
-            const computedFormValues = _compute.current(formValues);
+            if (_compute.current) {
+              const computedFormValues = _compute.current(formValues);
 
-            if (!deepEqual(computedFormValues, _computeFormValues.current)) {
-              updateValue(computedFormValues);
-              _computeFormValues.current = computedFormValues;
+              if (!deepEqual(computedFormValues, _computeFormValues.current)) {
+                updateValue(computedFormValues);
+                _computeFormValues.current = computedFormValues;
+              }
+            } else {
+              updateValue(cloneObject(formValues));
             }
-          } else {
-            updateValue(cloneObject(formValues));
           }
-        }
-      }
-    },
-  });
+        },
+      }),
+    [control, defaultValue, disabled, exact],
+  );
 
   React.useEffect(() => control._removeUnmounted());
 

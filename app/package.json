@@ -12,7 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "3.9.0",
-    "@mui/material": "^5.16.12",
+    "@mui/material": "^5.16.13",
     "joi": "^17.13.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
