@@ -331,11 +331,6 @@ export function createFormControl<
     };
 
     if (!_options.disabled) {
-      const disabledField = !!(
-        get(_fields, name) &&
-        get(_fields, name)._f &&
-        get(_fields, name)._f.disabled
-      );
       if (!isBlurEvent || shouldDirty) {
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
           isPreviousDirty = _formState.isDirty;
@@ -343,12 +338,12 @@ export function createFormControl<
           shouldUpdateField = isPreviousDirty !== output.isDirty;
         }
 
-        const isCurrentFieldPristine =
-          disabledField || deepEqual(get(_defaultValues, name), fieldValue);
-
-        isPreviousDirty = !!(
-          !disabledField && get(_formState.dirtyFields, name)
+        const isCurrentFieldPristine = deepEqual(
+          get(_defaultValues, name),
+          fieldValue,
         );
+
+        isPreviousDirty = !!get(_formState.dirtyFields, name);
         isCurrentFieldPristine
           ? unset(_formState.dirtyFields, name)
           : set(_formState.dirtyFields, name, true);
