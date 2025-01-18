@@ -349,7 +349,7 @@ export function createFormControl<
         isPreviousDirty = !!(
           !disabledField && get(_formState.dirtyFields, name)
         );
-        isCurrentFieldPristine || disabledField
+        isCurrentFieldPristine
           ? unset(_formState.dirtyFields, name)
           : set(_formState.dirtyFields, name, true);
         output.dirtyFields = _formState.dirtyFields;
@@ -1070,8 +1070,6 @@ export function createFormControl<
   const _setDisabledField: Control<TFieldValues>['_setDisabledField'] = ({
     disabled,
     name,
-    field,
-    fields,
   }) => {
     if (
       (isBoolean(disabled) && _state.mount) ||
@@ -1079,14 +1077,6 @@ export function createFormControl<
       _names.disabled.has(name)
     ) {
       disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
-
-      updateTouchAndDirty(
-        name,
-        getFieldValue(field ? field._f : get(fields, name)._f),
-        false,
-        false,
-        true,
-      );
     }
   };
 
@@ -1108,7 +1098,6 @@ export function createFormControl<
 
     if (field) {
       _setDisabledField({
-        field,
         disabled: isBoolean(options.disabled)
           ? options.disabled
           : _options.disabled,
