@@ -202,7 +202,6 @@ export function useController<
   React.useEffect(() => {
     control._setDisabledField({
       disabled,
-      fields: control._fields,
       name,
     });
   }, [disabled, name, control]);

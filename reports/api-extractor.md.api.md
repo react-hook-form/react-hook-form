@@ -61,14 +61,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _setDisabledField: (props: {
         disabled?: boolean;
         name: FieldName<any>;
-        value?: unknown;
-    } & ({
-        field?: Field;
-        fields?: undefined;
-    } | {
-        field?: undefined;
-        fields?: FieldRefs;
-    })) => void;
+    }) => void;
     _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
@@ -590,11 +583,6 @@ export type TriggerConfig = Partial<{
     shouldFocus: boolean;
 }>;
 
-// @public @deprecated (undocumented)
-export type UnpackNestedValue<T> = T extends NestedValue<infer U> ? U : T extends Date | FileList | File | Blob ? T : T extends object ? {
-    [K in keyof T]: UnpackNestedValue<T[K]>;
-} : T;
-
 // @public
 export function useController<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(props: UseControllerProps<TFieldValues, TName>): UseControllerReturn<TFieldValues, TName>;
 
@@ -911,7 +899,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:477:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:464:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

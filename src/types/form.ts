@@ -7,7 +7,6 @@ import { ErrorOption, FieldError, FieldErrors } from './errors';
 import { EventType } from './events';
 import { FieldArray } from './fieldArray';
 import {
-  Field,
   FieldName,
   FieldRefs,
   FieldValue,
@@ -32,18 +31,6 @@ declare const $NestedValue: unique symbol;
 export type NestedValue<TValue extends object = object> = {
   [$NestedValue]: never;
 } & TValue;
-
-/**
- * @deprecated to be removed in the next major version
- */
-export type UnpackNestedValue<T> =
-  T extends NestedValue<infer U>
-    ? U
-    : T extends Date | FileList | File | Blob
-      ? T
-      : T extends object
-        ? { [K in keyof T]: UnpackNestedValue<T[K]> }
-        : T;
 
 export type DefaultValues<TFieldValues> =
   TFieldValues extends AsyncDefaultValues<TFieldValues>
@@ -835,22 +822,10 @@ export type Control<
     name: InternalFieldName,
   ) => Partial<TFieldArrayValues>[];
   _setErrors: (errors: FieldErrors<TFieldValues>) => void;
-  _setDisabledField: (
-    props: {
-      disabled?: boolean;
-      name: FieldName<any>;
-      value?: unknown;
-    } & (
-      | {
-          field?: Field;
-          fields?: undefined;
-        }
-      | {
-          field?: undefined;
-          fields?: FieldRefs;
-        }
-    ),
-  ) => void;
+  _setDisabledField: (props: {
+    disabled?: boolean;
+    name: FieldName<any>;
+  }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
