@@ -35,5 +35,4 @@ export default (
     object[key] = newValue;
     object = object[key];
   }
-  return object;
 };
