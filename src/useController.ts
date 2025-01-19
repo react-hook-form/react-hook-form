@@ -71,6 +71,7 @@ export function useController<
     exact: true,
   });
 
+  const _props = React.useRef(props);
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -167,6 +168,13 @@ export function useController<
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
+
+    control.register(name, {
+      ..._props.current.rules,
+      ...(isBoolean(_props.current.disabled)
+        ? { disabled: _props.current.disabled }
+        : {}),
+    });
 
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
