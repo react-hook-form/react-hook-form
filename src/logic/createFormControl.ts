@@ -630,7 +630,7 @@ export function createFormControl<
           if (!fieldReference.ref.type) {
             _subjects.state.next({
               name,
-              values: { ..._formValues },
+              values: cloneObject(_formValues),
             });
           }
         }
@@ -686,7 +686,7 @@ export function createFormControl<
     if (isFieldArray) {
       _subjects.array.next({
         name,
-        values: { ..._formValues },
+        values: cloneObject(_formValues),
       });
 
       if (
@@ -711,7 +711,7 @@ export function createFormControl<
     isWatched(name, _names) && _subjects.state.next({ ..._formState });
     _subjects.state.next({
       name: _state.mount ? name : undefined,
-      values: { ..._formValues },
+      values: cloneObject(_formValues),
     });
   };
 
@@ -767,7 +767,7 @@ export function createFormControl<
         _subjects.state.next({
           name,
           type: event.type,
-          values: { ..._formValues },
+          values: cloneObject(_formValues),
         });
 
       if (shouldSkipValidation) {
@@ -1010,7 +1010,7 @@ export function createFormControl<
           )
         ) {
           props.callback({
-            values: _formValues as TFieldValues,
+            values: { ..._formValues } as TFieldValues,
             ..._formState,
             ...formState,
           });
@@ -1051,7 +1051,7 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      values: { ..._formValues },
+      values: cloneObject(_formValues),
     });
 
     _subjects.state.next({

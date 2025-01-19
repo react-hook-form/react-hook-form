@@ -381,7 +381,7 @@ export function useFieldArray<
 
     control._subjects.state.next({
       name,
-      values: { ...control._formValues } as TFieldValues,
+      values: cloneObject(control._formValues) as TFieldValues,
     });
 
     control._names.focus &&
