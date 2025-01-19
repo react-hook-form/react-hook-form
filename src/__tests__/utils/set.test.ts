@@ -3,11 +3,23 @@ import set from '../../utils/set';
 describe('set', () => {
   it('should set the correct values', () => {
     const test1 = { a: [{ b: { c: 3 } }] };
-    expect(set(test1, 'a[0].b.c', 4)).toEqual(4);
+    expect(
+      set({
+        object: test1,
+        name: 'a[0].b.c',
+        value: 4,
+      }),
+    ).toEqual(4);
     expect(test1.a[0].b.c).toEqual(4);
 
     const test2 = { foo: { bar: 'baz' } };
-    expect(set(test2, 'foo.arr[0]', 3)).toEqual(3);
+    expect(
+      set({
+        object: test2,
+        name: 'foo.arr[0]',
+        value: 3,
+      }),
+    ).toEqual(3);
     expect(test2).toEqual({
       foo: {
         bar: 'baz',
@@ -16,7 +28,13 @@ describe('set', () => {
     });
 
     const test3 = { foo: { bar: 'baz' } };
-    expect(set(test3, 'foo.arr["1"]', true)).toEqual(true);
+    expect(
+      set({
+        object: test3,
+        name: 'foo.arr["1"]',
+        value: true,
+      }),
+    ).toEqual(true);
     expect(test3).toEqual({
       foo: {
         bar: 'baz',
@@ -25,7 +43,13 @@ describe('set', () => {
     });
 
     const test4 = { foo: { bar: 'baz' } };
-    expect(set(test4, 'foo.obj.key', 'test')).toEqual('test');
+    expect(
+      set({
+        object: test4,
+        name: 'foo.obj.key',
+        value: 'test',
+      }),
+    ).toEqual('test');
     expect(test4).toEqual({
       foo: {
         bar: 'baz',
@@ -34,7 +58,13 @@ describe('set', () => {
     });
 
     const test5 = { foo: 1 };
-    expect(set(test5, 'foo.obj.key', 3)).toEqual(3);
+    expect(
+      set({
+        object: test5,
+        name: 'foo.obj.key',
+        value: 3,
+      }),
+    ).toEqual(3);
     expect(test5).toEqual({
       foo: {
         obj: {
@@ -44,7 +74,13 @@ describe('set', () => {
     });
 
     const test6 = {};
-    expect(set(test6, 'foo.arr[0].obj.key', 1)).toEqual(1);
+    expect(
+      set({
+        object: test6,
+        name: 'foo.arr[0].obj.key',
+        value: 1,
+      }),
+    ).toEqual(1);
     expect(test6).toEqual({
       foo: {
         arr: [
@@ -59,7 +95,11 @@ describe('set', () => {
   });
 
   it('should not populate prototype', () => {
-    set({}, '__proto__[test2]', '456');
+    set({
+      object: {},
+      name: '__proto__[test2]',
+      value: '456',
+    });
     expect(Object.prototype).toEqual({});
   });
 });

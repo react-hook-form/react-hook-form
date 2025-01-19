@@ -14,7 +14,15 @@ export default <T extends FieldValues = FieldValues>(
   name: InternalFieldName,
 ): FieldErrors<T> => {
   const fieldArrayErrors = convertToArrayPayload(get(errors, name));
-  set(fieldArrayErrors, 'root', error[name]);
-  set(errors, name, fieldArrayErrors);
+  set({
+    object: fieldArrayErrors,
+    name: 'root',
+    value: error[name],
+  });
+  set({
+    object: errors,
+    name,
+    value: fieldArrayErrors,
+  });
   return errors;
 };

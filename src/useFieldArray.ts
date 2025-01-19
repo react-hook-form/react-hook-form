@@ -199,7 +199,10 @@ export function useFieldArray<
     updateValues(updatedFieldArrayValues);
     setFields(updatedFieldArrayValues);
     !Array.isArray(get(control._fields, name)) &&
-      set(control._fields, name, undefined);
+      set({
+        object: control._fields,
+        name,
+      });
     control._setFieldArray(name, updatedFieldArrayValues, removeArrayAt, {
       argA: index,
     });
@@ -340,7 +343,11 @@ export function useFieldArray<
               : error && error.type
           ) {
             error
-              ? set(control._formState.errors, name, error)
+              ? set({
+                  object: control._formState.errors,
+                  name,
+                  value: error,
+                })
               : unset(control._formState.errors, name);
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,
