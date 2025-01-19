@@ -4,20 +4,19 @@ import isKey from './isKey';
 import isObject from './isObject';
 import stringToPath from './stringToPath';
 
-export default (props: {
-  object: FieldValues;
-  name: FieldPath<FieldValues>;
-  value?: unknown;
-}) => {
-  let object = props.object;
+export default (
+  object: FieldValues,
+  path: FieldPath<FieldValues>,
+  value?: unknown,
+) => {
   let index = -1;
-  const tempPath = isKey(props.name) ? [props.name] : stringToPath(props.name);
+  const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
   const lastIndex = length - 1;
 
   while (++index < length) {
     const key = tempPath[index];
-    let newValue = props.value;
+    let newValue = value;
 
     if (index !== lastIndex) {
       const objValue = object[key];
@@ -36,6 +35,5 @@ export default (props: {
     object[key] = newValue;
     object = object[key];
   }
-
   return object;
 };

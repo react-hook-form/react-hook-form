@@ -20,12 +20,7 @@ export default <TFieldValues extends FieldValues>(
   for (const name of fieldsNames) {
     const field: Field = get(_fields, name);
 
-    field &&
-      set({
-        object: fields,
-        name,
-        value: field._f,
-      });
+    field && set(fields, name, field._f);
   }
 
   return {

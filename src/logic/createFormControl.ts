@@ -201,11 +201,7 @@ export function createFormControl<
       (names || Array.from(_names.mount)).forEach((name) => {
         if (name) {
           isValidating
-            ? set({
-                object: _formState.validatingFields,
-                name,
-                value: isValidating,
-              })
+            ? set(_formState.validatingFields, name, isValidating)
             : unset(_formState.validatingFields, name);
         }
       });
@@ -229,12 +225,7 @@ export function createFormControl<
       _state.action = true;
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
-        shouldSetValues &&
-          set({
-            object: _fields,
-            name,
-            value: fieldValues,
-          });
+        shouldSetValues && set(_fields, name, fieldValues);
       }
 
       if (
@@ -246,12 +237,7 @@ export function createFormControl<
           args.argA,
           args.argB,
         );
-        shouldSetValues &&
-          set({
-            object: _formState.errors,
-            name,
-            value: errors,
-          });
+        shouldSetValues && set(_formState.errors, name, errors);
         unsetEmptyArray(_formState.errors, name);
       }
 
@@ -266,12 +252,7 @@ export function createFormControl<
           args.argA,
           args.argB,
         );
-        shouldSetValues &&
-          set({
-            object: _formState.touchedFields,
-            name,
-            value: touchedFields,
-          });
+        shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
@@ -286,20 +267,12 @@ export function createFormControl<
         isValid: _formState.isValid,
       });
     } else {
-      set({
-        object: _formValues,
-        name,
-        value: values,
-      });
+      set(_formValues, name, values);
     }
   };
 
   const updateErrors = (name: InternalFieldName, error: FieldError) => {
-    set({
-      object: _formState.errors,
-      name,
-      value: error,
-    });
+    set(_formState.errors, name, error);
     _subjects.state.next({
       errors: _formState.errors,
     });
@@ -331,13 +304,11 @@ export function createFormControl<
       isUndefined(defaultValue) ||
       (ref && (ref as HTMLInputElement).defaultChecked) ||
       shouldSkipSetValueAs
-        ? set({
-            object: _formValues,
+        ? set(
+            _formValues,
             name,
-            value: shouldSkipSetValueAs
-              ? defaultValue
-              : getFieldValue(field._f),
-          })
+            shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
+          )
         : setFieldValue(name, defaultValue);
 
       _state.mount && _setValid();
@@ -375,11 +346,7 @@ export function createFormControl<
         isPreviousDirty = !!get(_formState.dirtyFields, name);
         isCurrentFieldPristine
           ? unset(_formState.dirtyFields, name)
-          : set({
-              object: _formState.dirtyFields,
-              name,
-              value: true,
-            });
+          : set(_formState.dirtyFields, name, true);
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
@@ -392,11 +359,7 @@ export function createFormControl<
         const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
         if (!isPreviousFieldTouched) {
-          set({
-            object: _formState.touchedFields,
-            name,
-            value: isBlurEvent,
-          });
+          set(_formState.touchedFields, name, isBlurEvent);
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField =
             shouldUpdateField ||
@@ -435,7 +398,7 @@ export function createFormControl<
       clearTimeout(timer);
       delayErrorCallback = null;
       error
-        ? set({ object: _formState.errors, name, value: error })
+        ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
     }
 
@@ -483,11 +446,7 @@ export function createFormControl<
       for (const name of names) {
         const error = get(errors, name);
         error
-          ? set({
-              object: _formState.errors,
-              name,
-              value: error,
-            })
+          ? set(_formState.errors, name, error)
           : unset(_formState.errors, name);
       }
     } else {
@@ -549,11 +508,7 @@ export function createFormControl<
                     fieldError,
                     _f.name,
                   )
-                : set({
-                    object: _formState.errors,
-                    name: _f.name,
-                    value: fieldError[_f.name],
-                  })
+                : set(_formState.errors, _f.name, fieldError[_f.name])
               : unset(_formState.errors, _f.name));
         }
 
@@ -585,13 +540,7 @@ export function createFormControl<
 
   const _getDirty: GetIsDirty = (name, data) =>
     !_options.disabled &&
-    (name &&
-      data &&
-      set({
-        object: _formValues,
-        name,
-        value: data,
-      }),
+    (name && data && set(_formValues, name, data),
     !deepEqual(getValues(), _defaultValues));
 
   const _getWatch: WatchInternal<TFieldValues> = (
@@ -639,11 +588,7 @@ export function createFormControl<
 
       if (fieldReference) {
         !fieldReference.disabled &&
-          set({
-            object: _formValues,
-            name,
-            value: getFieldValueAs(value, fieldReference),
-          });
+          set(_formValues, name, getFieldValueAs(value, fieldReference));
 
         fieldValue =
           isHTMLElement(fieldReference.ref) && isNullOrUndefined(value)
@@ -736,11 +681,7 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
 
-    set({
-      object: _formValues,
-      name,
-      value: cloneValue,
-    });
+    set(_formValues, name, cloneValue);
 
     if (isFieldArray) {
       _subjects.array.next({
@@ -809,11 +750,7 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
-      set({
-        object: _formValues,
-        name,
-        value: fieldValue,
-      });
+      set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
         field._f.onBlur && field._f.onBlur(event);
@@ -1015,14 +952,10 @@ export function createFormControl<
     // Don't override existing error messages elsewhere in the object tree.
     const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
 
-    set({
-      object: _formState.errors,
-      name,
-      value: {
-        ...restOfErrorTree,
-        ...error,
-        ref,
-      },
+    set(_formState.errors, name, {
+      ...restOfErrorTree,
+      ...error,
+      ref,
     });
 
     _subjects.state.next({
@@ -1147,17 +1080,13 @@ export function createFormControl<
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
 
-    set({
-      object: _fields,
-      name,
-      value: {
-        ...(field || {}),
-        _f: {
-          ...(field && field._f ? field._f : { ref: { name } }),
-          name,
-          mount: true,
-          ...options,
-        },
+    set(_fields, name, {
+      ...(field || {}),
+      _f: {
+        ...(field && field._f ? field._f : { ref: { name } }),
+        name,
+        mount: true,
+        ...options,
       },
     });
     _names.mount.add(name);
@@ -1211,25 +1140,19 @@ export function createFormControl<
             return;
           }
 
-          set({
-            object: _fields,
-            name,
-            value: {
-              _f: {
-                ...field._f,
-                ...(radioOrCheckbox
-                  ? {
-                      refs: [
-                        ...refs.filter(live),
-                        fieldRef,
-                        ...(Array.isArray(get(_defaultValues, name))
-                          ? [{}]
-                          : []),
-                      ],
-                      ref: { type: fieldRef.type, name },
-                    }
-                  : { ref: fieldRef }),
-              },
+          set(_fields, name, {
+            _f: {
+              ...field._f,
+              ...(radioOrCheckbox
+                ? {
+                    refs: [
+                      ...refs.filter(live),
+                      fieldRef,
+                      ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
+                    ],
+                    ref: { type: fieldRef.type, name },
+                  }
+                : { ref: fieldRef }),
             },
           });
 
@@ -1288,10 +1211,7 @@ export function createFormControl<
 
       if (_names.disabled.size) {
         for (const name of _names.disabled) {
-          set({
-            object: fieldValues,
-            name,
-          });
+          set(fieldValues, name, undefined);
         }
       }
 
@@ -1341,17 +1261,13 @@ export function createFormControl<
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
       if (isUndefined(options.defaultValue)) {
-        setValue(name, get(_defaultValues, name));
+        setValue(name, cloneObject(get(_defaultValues, name)));
       } else {
         setValue(
           name,
           options.defaultValue as Parameters<typeof setValue<typeof name>>[1],
         );
-        set({
-          object: _defaultValues,
-          name,
-          value: options.defaultValue,
-        });
+        set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
       if (!options.keepTouched) {
@@ -1395,11 +1311,7 @@ export function createFormControl<
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
           get(_formState.dirtyFields, fieldName)
-            ? set({
-                object: values,
-                name: fieldName,
-                value: get(_formValues, fieldName),
-              })
+            ? set(values, fieldName, get(_formValues, fieldName))
             : setValue(
                 fieldName as FieldPath<TFieldValues>,
                 get(values, fieldName),
