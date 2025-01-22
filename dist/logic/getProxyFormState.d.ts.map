@@ -1,0 +1,1 @@
+{"version":3,"file":"getProxyFormState.d.ts","sourceRoot":"","sources":["../../src/logic/getProxyFormState.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,OAAO,EAAE,WAAW,EAAE,SAAS,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;yBAE1D,YAAY,SAAS,WAAW,EAAE,QAAQ,mBAC7C,SAAS,CAAC,YAAY,CAAC,WACzB,OAAO,CAAC,YAAY,EAAE,QAAQ,CAAC,wBAClB,aAAa;AAHrC,wBA0BE"}
