@@ -288,7 +288,11 @@ export default async <T extends FieldValues>(
 
     setCustomValidity(true);
   } catch (err) {
-    console.log(err);
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    } else {
+      throw new Error('Unknown error in field object');
+    }
   }
   return error;
 };
