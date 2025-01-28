@@ -9,7 +9,6 @@ import {
   FieldPathValues,
   FieldValues,
   InternalFieldName,
-  ReadFormState,
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
@@ -151,6 +150,7 @@ export function useWatch<TFieldValues extends FieldValues>(
     exact,
   } = props || {};
   const _name = React.useRef(name);
+  const _defaultValue = React.useRef(defaultValue);
 
   _name.current = name;
 
@@ -160,7 +160,7 @@ export function useWatch<TFieldValues extends FieldValues>(
         name: _name.current as InternalFieldName,
         formState: {
           values: true,
-        } as ReadFormState,
+        },
         exact,
         callback: (formState) =>
           !disabled &&
@@ -170,11 +170,11 @@ export function useWatch<TFieldValues extends FieldValues>(
               control._names,
               formState.values || control._formValues,
               false,
-              defaultValue,
+              _defaultValue.current,
             ),
           ),
       }),
-    [control, defaultValue, disabled, exact],
+    [control, disabled, exact],
   );
 
   const [value, updateValue] = React.useState(
