@@ -151,6 +151,7 @@ export function useWatch<TFieldValues extends FieldValues>(
     exact,
   } = props || {};
   const _name = React.useRef(name);
+  const _defaultValue = React.useRef(defaultValue);
 
   _name.current = name;
 
@@ -170,11 +171,11 @@ export function useWatch<TFieldValues extends FieldValues>(
               control._names,
               formState.values || control._formValues,
               false,
-              defaultValue,
+              _defaultValue.current,
             ),
           ),
       }),
-    [control, defaultValue, disabled, exact],
+    [control, disabled, exact],
   );
 
   const [value, updateValue] = React.useState(
