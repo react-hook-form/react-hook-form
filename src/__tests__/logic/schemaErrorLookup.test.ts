@@ -251,14 +251,14 @@ describe('errorsLookup', () => {
                 type: 'deepNested',
                 message: 'error',
               },
-            }
+            },
           },
         },
       },
     };
 
     expect(
-      schemaErrorLookup<{test: {nested: {deepNested: string}[]}[]}>(
+      schemaErrorLookup<{ test: { nested: { deepNested: string }[] }[] }>(
         errors,
         {},
         'test.0.nested.1',
@@ -269,14 +269,14 @@ describe('errorsLookup', () => {
     });
 
     expect(
-      schemaErrorLookup<{test: {nested: {deepNested: string}[]}[]}>(
+      schemaErrorLookup<{ test: { nested: { deepNested: string }[] }[] }>(
         errors,
         {},
-        'test.0.nested.0',
+        'test.0.nested.0.deepNested',
       ),
     ).toEqual({
       error: { message: 'error', type: 'deepNested' },
-      name: 'test.0.nested.0',
+      name: 'test.0.nested.0.deepNested',
     });
   });
 });
