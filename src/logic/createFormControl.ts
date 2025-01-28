@@ -716,7 +716,6 @@ export function createFormControl<
   };
 
   const onChange: ChangeHandler = async (event) => {
-    _state.mount = true;
     const target = event.target;
     let name: string = target.name;
     let isFieldValueUpdated = true;
@@ -1364,11 +1363,6 @@ export function createFormControl<
       watchAll: false,
       focus: '',
     };
-
-    _state.mount =
-      !_proxyFormState.isValid ||
-      !!keepStateOptions.keepIsValid ||
-      !!keepStateOptions.keepDirtyValues;
 
     _state.watch = !!_options.shouldUnregister;
 
