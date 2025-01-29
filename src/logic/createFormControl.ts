@@ -993,7 +993,6 @@ export function createFormControl<
         );
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) =>
-    (_state.mount = true) &&
     _subjects.state.subscribe({
       next: (
         formState: Partial<FormState<TFieldValues>> & {
