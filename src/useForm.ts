@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
@@ -64,6 +64,7 @@ export function useForm<
       ? undefined
       : props.defaultValues,
   });
+  const [ready, setReady] = useState(false);
 
   if (!_formControl.current) {
     _formControl.current = {
@@ -75,15 +76,14 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useEffect(
-    () =>
-      control._subscribe({
-        formState: control._proxyFormState,
-        callback: () => updateFormState({ ...control._formState }),
-        reRenderRoot: true,
-      }),
-    [control],
-  );
+  React.useEffect(() => {
+    control._subscribe({
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
+    });
+    setReady(true);
+  }, [control]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),
@@ -140,5 +140,14 @@ export function useForm<
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
-  return _formControl.current;
+  return useMemo(() => {
+    return {
+      ...(_formControl.current as UseFormReturn<
+        TFieldValues,
+        TContext,
+        TTransformedValues
+      >),
+      ready,
+    };
+  }, [ready]);
 }
