@@ -140,14 +140,15 @@ export function useForm<
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
-  return useMemo(() => {
-    return {
+  return useMemo(
+    () => ({
       ...(_formControl.current as UseFormReturn<
         TFieldValues,
         TContext,
         TTransformedValues
       >),
       ready,
-    };
-  }, [ready]);
+    }),
+    [ready],
+  );
 }
