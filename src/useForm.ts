@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
@@ -64,7 +64,7 @@ export function useForm<
       ? undefined
       : props.defaultValues,
   });
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = React.useState(false);
 
   if (!_formControl.current) {
     _formControl.current = {
@@ -140,7 +140,7 @@ export function useForm<
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
-  return useMemo(
+  return React.useMemo(
     () => ({
       ...(_formControl.current as UseFormReturn<
         TFieldValues,
