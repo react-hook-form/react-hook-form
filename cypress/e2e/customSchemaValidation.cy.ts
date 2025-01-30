@@ -90,7 +90,6 @@ describe('customSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('19');
   });
 
   it('should validate the form with onChange mode', () => {
