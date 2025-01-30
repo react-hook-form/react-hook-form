@@ -60,11 +60,11 @@ export function useForm<
     validatingFields: {},
     errors: props.errors || {},
     disabled: props.disabled || false,
+    isReady: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
   });
-  const [ready, setReady] = React.useState(false);
 
   if (!_formControl.current) {
     _formControl.current = {
@@ -82,7 +82,10 @@ export function useForm<
       callback: () => updateFormState({ ...control._formState }),
       reRenderRoot: true,
     });
-    setReady(true);
+    updateFormState((data) => ({
+      ...data,
+      ready: true,
+    }));
   }, [control]);
 
   React.useEffect(
@@ -140,15 +143,5 @@ export function useForm<
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
-  return React.useMemo(
-    () => ({
-      ...(_formControl.current as UseFormReturn<
-        TFieldValues,
-        TContext,
-        TTransformedValues
-      >),
-      ready,
-    }),
-    [ready],
-  );
+  return _formControl.current;
 }
