@@ -1199,18 +1199,6 @@ export function createFormControl<
     }
   };
 
-  const _updateDisabledFormValues = <T extends FieldValues>(fieldValues: T) => {
-    const formValuesClone = cloneObject(fieldValues);
-
-    if (_names.disabled.size) {
-      for (const name of _names.disabled) {
-        set(formValuesClone, name, undefined);
-      }
-    }
-
-    return formValuesClone;
-  };
-
   const handleSubmit: UseFormHandleSubmit<TFieldValues> =
     (onValid, onInvalid) => async (e) => {
       let onValidError = undefined;
@@ -1219,7 +1207,7 @@ export function createFormControl<
         e.persist && e.persist();
       }
 
-      let fieldValues;
+      let fieldValues = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1228,9 +1216,15 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _formState.errors = errors;
-        fieldValues = _updateDisabledFormValues(values) as TFieldValues;
+        fieldValues = values as TFieldValues;
       } else {
         await executeBuiltInValidation(_fields);
+      }
+
+      if (_names.disabled.size) {
+        for (const name of _names.disabled) {
+          set(fieldValues, name, undefined);
+        }
       }
 
       unset(_formState.errors, 'root');
@@ -1240,10 +1234,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(
-            _updateDisabledFormValues(fieldValues as TFieldValues),
-            e,
-          );
+          await onValid(fieldValues as TFieldValues, e);
         } catch (error) {
           onValidError = error;
         }
