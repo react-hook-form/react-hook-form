@@ -1209,12 +1209,6 @@ export function createFormControl<
 
       let fieldValues = cloneObject(_formValues);
 
-      if (_names.disabled.size) {
-        for (const name of _names.disabled) {
-          set(fieldValues, name, undefined);
-        }
-      }
-
       _subjects.state.next({
         isSubmitting: true,
       });
@@ -1225,6 +1219,12 @@ export function createFormControl<
         fieldValues = values as TFieldValues;
       } else {
         await executeBuiltInValidation(_fields);
+      }
+
+      if (_names.disabled.size) {
+        for (const name of _names.disabled) {
+          set(fieldValues, name, undefined);
+        }
       }
 
       unset(_formState.errors, 'root');
