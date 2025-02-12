@@ -157,3 +157,8 @@ Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
 </a>
+
+<br />
+<br />
+
+<p align="center">Documentation website supported and backed by <a href="https://vercel.com"><b>Vercel</b></a></p>
