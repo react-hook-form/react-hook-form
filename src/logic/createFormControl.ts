@@ -772,8 +772,10 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
-          if (_options.mode === 'onBlur' && isBlurEvent) {
-            _setValid();
+          if (_options.mode === 'onBlur') {
+            if (isBlurEvent) {
+              _setValid();
+            }
           } else if (!isBlurEvent) {
             _setValid();
           }
