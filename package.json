@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.55.0-next.3",
+  "version": "7.55.0-next.4",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -69,7 +69,7 @@
     "url": "https://github.com/react-hook-form/react-hook-form"
   },
   "homepage": "https://www.react-hook-form.com",
-  "author": "<bluebill1049@hotmail.com>",
+  "author": "Beier(Bill) Luo <bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@eslint/compat": "^1.2.5",
