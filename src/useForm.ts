@@ -112,7 +112,7 @@ export function useForm<
   }, [props.values, control]);
 
   React.useEffect(() => {
-    if (props.errors) {
+    if (props.errors && Object.keys(props.errors).length > 0) {
       control._setErrors(props.errors);
     }
   }, [props.errors, control]);
