@@ -1,10 +1,14 @@
-import { FieldValues } from '../types';
+import { FieldPath, FieldValues } from '../types';
 
 import isKey from './isKey';
 import isObject from './isObject';
 import stringToPath from './stringToPath';
 
-export default (object: FieldValues, path: string, value?: unknown) => {
+export default (
+  object: FieldValues,
+  path: FieldPath<FieldValues>,
+  value?: unknown,
+) => {
   let index = -1;
   const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
@@ -20,16 +24,15 @@ export default (object: FieldValues, path: string, value?: unknown) => {
         isObject(objValue) || Array.isArray(objValue)
           ? objValue
           : !isNaN(+tempPath[index + 1])
-          ? []
-          : {};
+            ? []
+            : {};
     }
 
-    if (key === '__proto__') {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
       return;
     }
 
     object[key] = newValue;
     object = object[key];
   }
-  return object;
 };

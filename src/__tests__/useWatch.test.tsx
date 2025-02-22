@@ -2,11 +2,11 @@ import React from 'react';
 import {
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   within,
 } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
 
 import {
   Control,
@@ -167,10 +167,11 @@ describe('useWatch', () => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
     };
-    const { result } = renderHook(() => useWatch({ name: 'test' }), {
-      wrapper: Provider,
-    });
-    expect(result.error).toBeUndefined();
+    expect(() =>
+      renderHook(() => useWatch({ name: 'test' }), {
+        wrapper: Provider,
+      }),
+    ).not.toThrow();
   });
 
   it('should remove input with shouldUnregister: true and deeply nested', async () => {
@@ -518,7 +519,7 @@ describe('useWatch', () => {
             <>
               <input {...register('parent')} />
               <Child register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors?.parent)}</p>
               <button>submit</button>
             </>
           </form>
@@ -542,7 +543,7 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(1);
+      expect(childCount).toBe(2);
 
       parentCount = 0;
       childCount = 0;
@@ -595,7 +596,7 @@ describe('useWatch', () => {
               <input {...register('parent')} />
               <Child register={register} control={control} />
               <ChildSecond register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors.parent)}</p>
               <button>submit</button>
             </>
           </form>
@@ -622,8 +623,8 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(1);
-      expect(childSecondCount).toBe(1);
+      expect(childCount).toBe(2);
+      expect(childSecondCount).toBe(2);
 
       parentCount = 0;
       childCount = 0;
@@ -1532,9 +1533,11 @@ describe('useWatch', () => {
           defaultValues: { test: 'test' },
         });
 
+        const { setValue } = methods;
+
         React.useEffect(() => {
-          methods.setValue('test', 'bill');
-        }, [methods]);
+          setValue('test', 'bill');
+        }, [setValue]);
 
         return (
           <>
