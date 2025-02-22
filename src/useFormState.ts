@@ -39,10 +39,13 @@ import { useFormContext } from './useFormContext';
  * }
  * ```
  */
-function useFormState<TFieldValues extends FieldValues = FieldValues>(
-  props?: UseFormStateProps<TFieldValues>,
+function useFormState<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
+>(
+  props?: UseFormStateProps<TFieldValues, TTransformedValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const methods = useFormContext<TFieldValues>();
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({

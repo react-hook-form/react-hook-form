@@ -97,6 +97,7 @@ const defaultOptions = {
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext> = {},
 ): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> & {
@@ -1201,15 +1202,15 @@ export function createFormControl<
     }
   };
 
-  const handleSubmit: UseFormHandleSubmit<TFieldValues> =
+  const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
       }
-
-      let fieldValues = cloneObject(_formValues);
+      let fieldValues: TFieldValues | TTransformedValues | {} =
+        cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1236,7 +1237,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TFieldValues, e);
+          await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }

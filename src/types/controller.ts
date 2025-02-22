@@ -35,6 +35,7 @@ export type ControllerRenderProps<
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 > = {
   name: TName;
   rules?: Omit<
@@ -43,7 +44,7 @@ export type UseControllerProps<
   >;
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
 };
 
