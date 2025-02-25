@@ -1,1 +1,3 @@
 /reports
+dist
+pnpm-lock.yaml
