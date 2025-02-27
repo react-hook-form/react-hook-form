@@ -99,9 +99,15 @@ export function createFormControl<
   TContext = any,
   TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
-): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> & {
-  formControl: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
+): Omit<
+  UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  'formState'
+> & {
+  formControl: Omit<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+    'formState'
+  >;
 } {
   let _options = {
     ...defaultOptions,

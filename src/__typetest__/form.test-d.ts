@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectType } from 'tsd';
+import { z } from 'zod';
 
-import { FieldError } from '../types';
+import { FieldError, FieldValues, Resolver } from '../types';
 import { useForm } from '../useForm';
 
 /** {@link UseFormHandleSubmit} */ {
@@ -25,6 +27,25 @@ import { useForm } from '../useForm';
 
     handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
   }
+}
+
+/** it should infer the correct TTransformedValues from useForm resolver */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const { handleSubmit } = useForm({
+    resolver: mockZodResolver(
+      z.object({
+        test: z.string(),
+        test1: z.number(),
+      }),
+    ),
+  });
+
+  handleSubmit((data) => {
+    expectType<{
+      test: string;
+      test1: number;
+    }>(data);
+  });
 }
 
 /** it should infer the correct TTransformedValues from useForm generic */ {
@@ -78,4 +99,24 @@ import { useForm } from '../useForm';
       error?: FieldError;
     }>(getFieldState('test', formState));
   }
+}
+
+function mockZodResolver<
+  Input extends FieldValues,
+  Context = any,
+  Output = undefined,
+  Schema extends z.ZodSchema<any, any, any> = z.ZodSchema<any, any, any>,
+>(
+  _schema: Schema,
+  _schemaOptions?: Partial<z.ParseParams>,
+  _resolverOptions?: {
+    mode?: 'async' | 'sync';
+    raw?: boolean;
+  },
+): Resolver<
+  Input,
+  Context,
+  Output extends undefined ? z.output<Schema> : Output
+> {
+  return {} as any;
 }
