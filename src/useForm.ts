@@ -75,7 +75,7 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useEffect(
+  React.useLayoutEffect(
     () =>
       control._subscribe({
         formState: control._proxyFormState,
