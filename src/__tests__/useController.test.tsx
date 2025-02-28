@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues } from '../types';
+import { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -27,6 +27,33 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('component using the hook can be memoized', async () => {
+    function App() {
+      const form = useForm({
+        values: { login: 'john' },
+      });
+
+      return useMemo(() => <LoginField form={form} />, [form]);
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+      });
+
+      return <input {...ctrl.field} />;
+    }
+
+    render(<App />);
+
+    const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'abc' } });
+    expect(input.value).toBe('abc');
   });
 
   it('should only subscribe to formState at each useController level', async () => {
