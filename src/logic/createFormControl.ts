@@ -1206,7 +1206,8 @@ export function createFormControl<
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
-        e.persist && e.persist();
+        (e as React.BaseSyntheticEvent).persist &&
+          (e as React.BaseSyntheticEvent).persist();
       }
 
       let fieldValues = cloneObject(_formValues);
