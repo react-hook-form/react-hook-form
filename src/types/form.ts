@@ -53,10 +53,10 @@ export type ValidationModeFlags = {
 
 export type CriteriaMode = 'firstError' | 'all';
 
-export type SubmitHandler<TFieldValues extends FieldValues> = (
-  data: TFieldValues,
-  event?: React.BaseSyntheticEvent,
-) => unknown | Promise<unknown>;
+export type SubmitHandler<
+  TFieldValues extends FieldValues,
+  TEvent extends React.BaseSyntheticEvent | Event = React.BaseSyntheticEvent,
+> = (data: TFieldValues, event?: TEvent) => unknown | Promise<unknown>;
 
 export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
   data: TFieldValues;
@@ -66,9 +66,12 @@ export type FormSubmitHandler<TFieldValues extends FieldValues> = (payload: {
   method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
 
-export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
+export type SubmitErrorHandler<
+  TFieldValues extends FieldValues,
+  TEvent extends React.BaseSyntheticEvent | Event = React.BaseSyntheticEvent,
+> = (
   errors: FieldErrors<TFieldValues>,
-  event?: React.BaseSyntheticEvent,
+  event?: TEvent,
 ) => unknown | Promise<unknown>;
 
 export type SetValueConfig = Partial<{
@@ -645,14 +648,16 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
   TTransformedValues extends FieldValues | undefined = undefined,
-> = (
+> = <
+  TEvent extends React.BaseSyntheticEvent | Event = React.BaseSyntheticEvent,
+>(
   onValid: TTransformedValues extends undefined
-    ? SubmitHandler<TFieldValues>
+    ? SubmitHandler<TFieldValues, TEvent>
     : TTransformedValues extends FieldValues
-      ? SubmitHandler<TTransformedValues>
+      ? SubmitHandler<TTransformedValues, TEvent>
       : never,
-  onInvalid?: SubmitErrorHandler<TFieldValues>,
-) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  onInvalid?: SubmitErrorHandler<TFieldValues, TEvent>,
+) => (e?: TEvent) => Promise<void>;
 
 /**
  * Reset a field state and reference.
