@@ -101,7 +101,7 @@
     "jest-preview": "^0.3.1",
     "lint-staged": "^15.4.3",
     "msw": "^2.7.3",
-    "prettier": "3.3.2",
+    "prettier": "^3.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-test-renderer": "^18.3.1",
