@@ -46,7 +46,7 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
-  const _values = React.useRef<typeof props.values>(undefined);
+  const _values = React.useRef<typeof props.values>(props.values);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
@@ -76,7 +76,7 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useEffect(
+  React.useLayoutEffect(
     () =>
       control._subscribe({
         formState: control._proxyFormState,
