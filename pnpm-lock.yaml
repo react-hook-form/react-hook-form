@@ -96,7 +96,7 @@ importers:
         specifier: ^2.7.3
         version: 2.7.3(@types/node@22.13.7)(typescript@5.8.2)
       prettier:
-        specifier: 3.3.2
+        specifier: ^3.3.2
         version: 3.3.2
       react:
         specifier: ^19.0.0
@@ -123,7 +123,7 @@ importers:
         specifier: ^5.8.2
         version: 5.8.2
       typescript-eslint:
-        specifier: 7.18.0
+        specifier: ^7.18.0
         version: 7.18.0(eslint@9.21.0)(typescript@5.8.2)
       whatwg-fetch:
         specifier: ^3.6.20
