@@ -2609,9 +2609,9 @@ describe('useFieldArray', () => {
           names: [{ name: 'will' }, { name: 'Mike' }],
         },
       });
-      const { setValue } = methods;
+      const { setValue, watch } = methods;
 
-      result.push(methods.watch());
+      result.push(watch());
 
       return (
         <form>
@@ -2657,6 +2657,16 @@ describe('useFieldArray', () => {
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(result).toEqual([
+      {
+        names: [
+          {
+            name: 'will',
+          },
+          {
+            name: 'Mike',
+          },
+        ],
+      },
       {
         names: [
           {
@@ -2753,6 +2763,16 @@ describe('useFieldArray', () => {
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(watchedValues).toEqual([
+      {
+        test: [
+          {
+            value: 'test',
+          },
+          {
+            value: 'test1',
+          },
+        ],
+      },
       {
         test: [
           {

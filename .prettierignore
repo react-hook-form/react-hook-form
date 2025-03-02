@@ -1,7 +1,3 @@
 /reports
 dist
 pnpm-lock.yaml
-README.md
-*.README.md
-README.*.md
-README.yml

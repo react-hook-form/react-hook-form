@@ -573,10 +573,10 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
+export type SubmitErrorHandler<TFieldValues extends FieldValues, TEvent extends React_2.BaseSyntheticEvent | Event = React_2.BaseSyntheticEvent> = (errors: FieldErrors<TFieldValues>, event?: TEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export type SubmitHandler<TFieldValues extends FieldValues> = (data: TFieldValues, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
+export type SubmitHandler<TFieldValues extends FieldValues, TEvent extends React_2.BaseSyntheticEvent | Event = React_2.BaseSyntheticEvent> = (data: TFieldValues, event?: TEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
@@ -680,7 +680,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = (onValid: TTransformedValues extends undefined ? SubmitHandler<TFieldValues> : TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues> : never, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues extends FieldValues | undefined = undefined> = <TEvent extends React_2.BaseSyntheticEvent | Event = React_2.BaseSyntheticEvent>(onValid: TTransformedValues extends undefined ? SubmitHandler<TFieldValues, TEvent> : TTransformedValues extends FieldValues ? SubmitHandler<TTransformedValues, TEvent> : never, onInvalid?: SubmitErrorHandler<TFieldValues, TEvent>) => (e?: TEvent) => Promise<void>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any> = Partial<{
@@ -888,7 +888,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:464:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:467:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
