@@ -1,1 +1,8 @@
 /reports
+dist
+pnpm-lock.yaml
+# Exclude README related files
+README.md
+README.*
+*.README.*
+.github/workflows/README.yml
