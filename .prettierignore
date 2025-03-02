@@ -1,3 +1,4 @@
 /reports
 dist
 pnpm-lock.yaml
+.github/workflows/README.yml
