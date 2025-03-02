@@ -6,3 +6,4 @@ README.md
 README.*
 *.README.*
 .github/workflows/README.yml
+scripts/README/**
