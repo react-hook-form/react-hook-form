@@ -121,7 +121,7 @@ export function createFormControl<
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
-  let _fields: FieldRefs = {};
+  const _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
       ? cloneObject(_options.values || _options.defaultValues) || {}
@@ -1340,14 +1340,15 @@ export function createFormControl<
           }
         }
 
-        _fields = {};
+        for (const fieldName of _names.mount) {
+          setValue(
+            fieldName as FieldPath<TFieldValues>,
+            get(values, fieldName),
+          );
+        }
       }
 
-      _formValues = _options.shouldUnregister
-        ? keepStateOptions.keepDefaultValues
-          ? (cloneObject(_defaultValues) as TFieldValues)
-          : ({} as TFieldValues)
-        : (cloneObject(values) as TFieldValues);
+      _formValues = cloneObject(values) as TFieldValues;
 
       _subjects.array.next({
         values: { ...values },
