@@ -40,6 +40,7 @@ example/build/
 .idea/
 .rpt2_cache
 package-lock.json
+pnpm-lock.yaml
 /cypress/videos
 /cypress/parallel-weights.json
 /cypress/screenshots
