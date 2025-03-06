@@ -5,18 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
 import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
-import {
-  FieldValues,
-  FormState,
-  Resolver,
-  UseFormProps,
-  UseFormReturn,
-} from './types';
-
-type ExtractTransformedValues<R, Default> =
-  R extends Resolver<any, any, infer TResolvedValues>
-    ? TResolvedValues
-    : Default;
+import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
 /**
  * Custom hook to manage the entire form.
@@ -53,18 +42,9 @@ export function useForm<
   TTransformedValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
-): UseFormReturn<
-  TFieldValues,
-  TContext,
-  ExtractTransformedValues<(typeof props)['resolver'], TTransformedValues>
-> {
+): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
-    | UseFormReturn<
-        TFieldValues,
-        TContext,
-        ExtractTransformedValues<(typeof props)['resolver'], TTransformedValues>
-      >
-    | undefined
+    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
