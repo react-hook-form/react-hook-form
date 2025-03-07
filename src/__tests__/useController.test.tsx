@@ -56,6 +56,45 @@ describe('useController', () => {
     expect(input.value).toBe('abc');
   });
 
+  it("setting values doesn't cause fields to be unregistered", async () => {
+    function App() {
+      const [values, setValues] = useState<{ login: string } | undefined>();
+
+      const form = useForm({
+        values,
+      });
+
+      useEffect(() => {
+        setTimeout(() => {
+          setValues({ login: 'john' });
+        }, 100);
+      }, []);
+
+      return useMemo(
+        () => values?.login && <LoginField form={form} />,
+        [values, form],
+      );
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+        defaultValue: 'john',
+      });
+
+      return <input value={ctrl.field.value} onChange={ctrl.field.onChange} />;
+    }
+
+    render(<App />);
+
+    const input = await screen.findByRole<HTMLInputElement>('textbox');
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'jane' } });
+    expect(input.value).toBe('jane');
+  });
+
   it('should only subscribe to formState at each useController level', async () => {
     const renderCounter = [0, 0];
     type FormValues = {
