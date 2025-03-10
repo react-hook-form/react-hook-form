@@ -16,6 +16,7 @@ import {
   FieldValues,
   FormState,
   RegisterOptions,
+  SubmitHandler,
   UseFormGetFieldState,
   UseFormRegister,
   UseFormReturn,
@@ -24,7 +25,7 @@ import {
 import isFunction from '../utils/isFunction';
 import noop from '../utils/noop';
 import sleep from '../utils/sleep';
-import { Controller, useFieldArray, useForm } from '../';
+import { Controller, createFormControl, useFieldArray, useForm } from '../';
 
 jest.useFakeTimers();
 
@@ -2496,6 +2497,59 @@ describe('useForm', () => {
       expect(
         screen.getByText('no error') as HTMLInputElement,
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('when given formControl', () => {
+    it('accepts default values', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const { register, handleSubmit, formControl } =
+        createFormControl<FormValues>();
+
+      function FormComponent({
+        onSubmit,
+        defaultValues,
+      }: {
+        defaultValues: FormValues;
+        onSubmit: SubmitHandler<FormValues>;
+      }) {
+        useForm({
+          formControl,
+          defaultValues,
+        });
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('firstName')} placeholder="First Name" />
+            <input type="submit" />
+          </form>
+        );
+      }
+
+      function App() {
+        const [state, setState] = React.useState('');
+        return (
+          <div>
+            <FormComponent
+              defaultValues={{ firstName: 'Emilia' }}
+              onSubmit={(data) => {
+                setState(JSON.stringify(data));
+              }}
+            />
+            <pre>{state}</pre>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+      expect(input.value).toBe('Emilia');
+
+      fireEvent.input(input, { target: { value: 'abc' } });
+      expect(input.value).toBe('abc');
     });
   });
 });
