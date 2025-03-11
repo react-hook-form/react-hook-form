@@ -1653,6 +1653,99 @@ describe('reset', () => {
     });
   });
 
+  it('should reset unmounted non-dirty value in a nested field after reset with keepDirtyValues', async () => {
+    function App() {
+      const { getValues, reset, setValue, register } = useForm<{
+        nested: {
+          obj: {
+            value1: string;
+            value2: string;
+          };
+        };
+        topLevel: string;
+      }>({
+        mode: 'onChange',
+        defaultValues: {
+          nested: { obj: { value1: 'defaultValue1' } },
+          topLevel: 'defaultTopLevel',
+        },
+      });
+
+      return (
+        <form>
+          <input data-testid="value1Input" {...register('nested.obj.value1')} />
+          <input data-testid="topLevelInput" {...register('topLevel')} />
+
+          <p>value1: {getValues('nested.obj.value1')}</p>
+          <p>value2: {getValues('nested.obj.value2')}</p>
+          <p>topLevel: {getValues('topLevel')}</p>
+
+          <button
+            data-testid="dirtyValue1Button"
+            type="button"
+            onClick={() =>
+              setValue('nested.obj.value1', 'updatedValue1', {
+                shouldDirty: true,
+              })
+            }
+          >
+            Dirty Value 1
+          </button>
+
+          <button
+            data-testid="dirtyTopLevelButton"
+            type="button"
+            onClick={() =>
+              setValue('topLevel', 'updatedTopLevel', {
+                shouldDirty: true,
+              })
+            }
+          >
+            Dirty Top Level
+          </button>
+          <button
+            data-testid="resetButton"
+            type="button"
+            onClick={() =>
+              reset(
+                {
+                  nested: {
+                    obj: { value1: 'resetValue1', value2: 'resetValue2' },
+                  },
+                  topLevel: 'resetTopLevel',
+                },
+                { keepDirtyValues: true },
+              )
+            }
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(await screen.findByText('value1: defaultValue1')).toBeVisible();
+    expect(await screen.findByText('topLevel: defaultTopLevel')).toBeVisible();
+
+    fireEvent.click(screen.getByTestId('dirtyTopLevelButton'));
+    fireEvent.click(screen.getByTestId('dirtyValue1Button'));
+
+    expect(
+      (screen.getByTestId('value1Input') as HTMLInputElement).value,
+    ).toEqual('updatedValue1');
+    expect(
+      (screen.getByTestId('topLevelInput') as HTMLInputElement).value,
+    ).toEqual('updatedTopLevel');
+
+    fireEvent.click(screen.getByTestId('resetButton'));
+
+    expect(await screen.findByText('value1: updatedValue1')).toBeVisible();
+    expect(await screen.findByText('value2: resetValue2')).toBeVisible();
+    expect(await screen.findByText('topLevel: updatedTopLevel')).toBeVisible();
+  });
+
   it('should not mutate data outside of library', () => {
     const defaultValues = {
       test: 'ok',
