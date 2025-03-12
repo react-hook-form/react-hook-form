@@ -330,7 +330,8 @@ export function useFieldArray<
     if (
       _actioned.current &&
       (!getValidationModes(control._options.mode).isOnSubmit ||
-        control._formState.isSubmitted)
+        control._formState.isSubmitted) &&
+      !getValidationModes(control._options.reValidateMode).isOnSubmit
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {

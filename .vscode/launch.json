@@ -9,7 +9,7 @@
       "disableOptimisticBPs": true,
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "pnpm",
-      "args": ["test", "--", "--runInBand", "--watchAll=false"]
+      "args": ["test", "--runInBand", "--watchAll=false"]
     }
   ]
 }
