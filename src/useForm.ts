@@ -71,6 +71,14 @@ export function useForm<
       ...(props.formControl ? props.formControl : createFormControl(props)),
       formState,
     };
+
+    if (
+      props.formControl &&
+      props.defaultValues &&
+      !isFunction(props.defaultValues)
+    ) {
+      props.formControl.reset(props.defaultValues, props.resetOptions);
+    }
   }
 
   const control = _formControl.current.control;
