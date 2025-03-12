@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
@@ -810,13 +810,7 @@ describe('useFormState', () => {
     }
 
     function App() {
-      const [values, setValues] = React.useState({ firstName: '' });
-
-      useEffect(() => {
-        setValues({ firstName: 'test' });
-      }, [setValues]);
-
-      return <Form values={values} />;
+      return <Form values={{ firstName: 'test' }} />;
     }
 
     render(<App />);
