@@ -53,7 +53,7 @@ function Form<
     let hasError = false;
     let type = '';
 
-    await control.handleSubmit(async (data: TTransformedValues) => {
+    await control.handleSubmit(async (data) => {
       const formData = new FormData();
       let formDataJson = '';
 
