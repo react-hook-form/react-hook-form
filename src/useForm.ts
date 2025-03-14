@@ -39,14 +39,14 @@ import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
-  const _values = React.useRef<typeof props.values>(props.values);
+  const _values = React.useRef<typeof props.values>(undefined);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
@@ -71,6 +71,14 @@ export function useForm<
       ...(props.formControl ? props.formControl : createFormControl(props)),
       formState,
     };
+
+    if (
+      props.formControl &&
+      props.defaultValues &&
+      !isFunction(props.defaultValues)
+    ) {
+      props.formControl.reset(props.defaultValues, props.resetOptions);
+    }
   }
 
   const control = _formControl.current.control;
