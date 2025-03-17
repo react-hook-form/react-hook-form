@@ -414,8 +414,16 @@ export function useFieldArray<
     !get(control._formValues, name) && control._setFieldArray(name);
 
     return () => {
-      (control._options.shouldUnregister || shouldUnregister) &&
-        control.unregister(name as FieldPath<TFieldValues>);
+      const updateMounted = (name: InternalFieldName, value: boolean) => {
+        const field: Field = get(control._fields, name);
+        if (field && field._f) {
+          field._f.mount = value;
+        }
+      };
+
+      control._options.shouldUnregister || shouldUnregister
+        ? control.unregister(name as FieldPath<TFieldValues>)
+        : updateMounted(name, false);
     };
   }, [name, control, keyName, shouldUnregister]);
 

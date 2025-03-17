@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.55.0-next.8",
+  "version": "7.55.0-next.9",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -33,7 +33,7 @@
     "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.esm.config.js",
-    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css}\"",
+    "prettier:fix": "prettier --config .prettierrc --write .",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "pnpm lint --fix",
     "type": "tsc --noEmit",
