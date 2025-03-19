@@ -49,7 +49,15 @@ const Controller = <
   TTransformedValues = TFieldValues,
 >(
   props: ControllerProps<TFieldValues, TName, TTransformedValues>,
-) =>
-  props.render(useController<TFieldValues, TName, TTransformedValues>(props));
+) => {
+  const renderedController = useController<
+    TFieldValues,
+    TName,
+    TTransformedValues
+  >(props);
+  return ('children' in props ? props.children : props.render)(
+    renderedController,
+  );
+};
 
 export { Controller };
