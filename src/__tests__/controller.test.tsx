@@ -1649,6 +1649,113 @@ describe('Controller', () => {
     expect(screen.getByRole('textbox')).toBeEnabled();
   });
 
+  it('should work with children render pattern', () => {
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller defaultValue="" name="test" control={control}>
+          {({ field }) => <input {...field} />}
+        </Controller>
+      );
+    };
+
+    render(<Component />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+
+    expect(input).toBeVisible();
+    expect(input.name).toBe('test');
+  });
+
+  it('should update field value with children render pattern', () => {
+    let fieldValues: unknown;
+    const Component = () => {
+      const { control, getValues } = useForm();
+
+      return (
+        <>
+          <Controller defaultValue="" name="test" control={control}>
+            {({ field }) => <input {...field} />}
+          </Controller>
+          <button onClick={() => (fieldValues = getValues())}>getValues</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: { value: 'test' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /getValues/ }));
+
+    expect(fieldValues).toEqual({ test: 'test' });
+  });
+
+  it('should show field state with children render pattern', async () => {
+    const Component = () => {
+      const { control } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          control={control}
+          rules={{
+            required: 'This is required',
+          }}
+        >
+          {({ field, fieldState }) => (
+            <>
+              <input {...field} />
+              {fieldState.error && <p>{fieldState.error.message}</p>}
+            </>
+          )}
+        </Controller>
+      );
+    };
+
+    render(<Component />);
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'q' } });
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(await screen.findByText('This is required')).toBeVisible();
+  });
+
+  it('should prioritize children over render when both are provided', () => {
+    const renderFn = jest.fn().mockReturnValue(<input />);
+    const childrenFn = jest
+      .fn()
+      .mockReturnValue(<input data-testid="children-input" />);
+
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          control={control}
+          render={renderFn}
+        >
+          {childrenFn}
+        </Controller>
+      );
+    };
+
+    render(<Component />);
+
+    // Children function should be called, but render function should not be
+    expect(childrenFn).toHaveBeenCalled();
+    expect(renderFn).not.toHaveBeenCalled();
+    expect(screen.getByTestId('children-input')).toBeInTheDocument();
+  });
+
   it('should create error object when the value is Invalid Date during onChange event', async () => {
     let currentErrors: any = {};
     const name = 'test';
