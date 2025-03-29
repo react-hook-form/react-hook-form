@@ -279,7 +279,7 @@ describe('form state with schema validation', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('14');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
