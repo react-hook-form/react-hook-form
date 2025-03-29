@@ -37,7 +37,7 @@ describe('form setValue', () => {
 
     cy.get('#submit').click();
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('6');
+    cy.get('#renderCount').contains('7');
 
     cy.get('#setMultipleValues').click();
     cy.get('input[name="array.0"]').should('have.value', 'array[0]1');
