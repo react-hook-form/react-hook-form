@@ -2,6 +2,7 @@ import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
+import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
 import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
@@ -38,9 +39,9 @@ import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
@@ -71,6 +72,14 @@ export function useForm<
       ...(props.formControl ? props.formControl : createFormControl(props)),
       formState,
     };
+
+    if (
+      props.formControl &&
+      props.defaultValues &&
+      !isFunction(props.defaultValues)
+    ) {
+      props.formControl.reset(props.defaultValues, props.resetOptions);
+    }
   }
 
   const control = _formControl.current.control;
@@ -84,7 +93,7 @@ export function useForm<
     });
     updateFormState((data) => ({
       ...data,
-      ready: true,
+      isReady: true,
     }));
   }, [control]);
 
@@ -115,7 +124,7 @@ export function useForm<
   }, [props.values, control]);
 
   React.useEffect(() => {
-    if (props.errors) {
+    if (props.errors && !isEmptyObject(props.errors)) {
       control._setErrors(props.errors);
     }
   }, [props.errors, control]);

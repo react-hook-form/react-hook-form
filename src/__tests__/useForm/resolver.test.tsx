@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
+import { FieldErrors } from '../../types/errors';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
@@ -213,5 +214,88 @@ describe('resolver', () => {
     });
 
     expect(errorsObject).toEqual({});
+  });
+
+  it('should submit a transformed value on success', async () => {
+    type FormValues = {
+      alpha: string;
+      beta: string;
+    };
+
+    const App = () => {
+      const [data, setData] = React.useState(0);
+      const { handleSubmit, setValue } = useForm<FormValues, any, number>({
+        defaultValues: { alpha: '1', beta: '2' },
+        resolver: ({ alpha, beta }) => {
+          return {
+            values: parseInt(alpha, 10) + parseInt(beta, 10),
+            errors: {},
+          };
+        },
+      });
+
+      return (
+        <>
+          <button onClick={() => setValue('alpha', '9')}>Update</button>
+          <button onClick={handleSubmit((data) => setData(data))}>Test</button>
+          <p>result: {JSON.stringify(data)}</p>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Update'));
+    fireEvent.click(screen.getByText('Test'));
+
+    expect(
+      await screen.findByText('result: 11', undefined, { timeout: 3000 }),
+    ).toBeVisible();
+  });
+
+  it('should submit field errors on failure', async () => {
+    type FormValues = {
+      alpha: string;
+      beta: string;
+    };
+
+    const App = () => {
+      const [errors, setErrors] = React.useState<
+        FieldErrors<FormValues> | undefined
+      >(undefined);
+      const { handleSubmit, setValue } = useForm<FormValues, any, number>({
+        defaultValues: { alpha: '1', beta: '2' },
+        resolver: () => {
+          return {
+            values: {},
+            errors: {
+              alpha: {
+                message: 'alpha is wrong',
+                type: 'test',
+              },
+            },
+          };
+        },
+      });
+
+      return (
+        <>
+          <button onClick={() => setValue('alpha', '9')}>Update</button>
+          <button onClick={handleSubmit(() => {}, setErrors)}>Test</button>
+          <p>{errors?.alpha?.message}</p>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Update'));
+    fireEvent.click(screen.getByText('Test'));
+
+    expect(
+      await screen.findByText('alpha is wrong', undefined, {
+        timeout: 3000,
+      }),
+    ).toBeVisible();
   });
 });

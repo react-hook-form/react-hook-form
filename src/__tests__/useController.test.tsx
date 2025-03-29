@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues } from '../types';
+import { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -27,6 +27,72 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('component using the hook can be memoized', async () => {
+    function App() {
+      const form = useForm({
+        values: { login: 'john' },
+      });
+
+      return useMemo(() => <LoginField form={form} />, [form]);
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+      });
+
+      return <input {...ctrl.field} />;
+    }
+
+    render(<App />);
+
+    const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'abc' } });
+    expect(input.value).toBe('abc');
+  });
+
+  it("setting values doesn't cause fields to be unregistered", async () => {
+    function App() {
+      const [values, setValues] = useState<{ login: string } | undefined>();
+
+      const form = useForm({
+        values,
+      });
+
+      useEffect(() => {
+        setTimeout(() => {
+          setValues({ login: 'john' });
+        }, 100);
+      }, []);
+
+      return useMemo(
+        () => values?.login && <LoginField form={form} />,
+        [values, form],
+      );
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+        defaultValue: 'john',
+      });
+
+      return <input value={ctrl.field.value} onChange={ctrl.field.onChange} />;
+    }
+
+    render(<App />);
+
+    const input = await screen.findByRole<HTMLInputElement>('textbox');
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'jane' } });
+    expect(input.value).toBe('jane');
   });
 
   it('should only subscribe to formState at each useController level', async () => {

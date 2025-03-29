@@ -1094,4 +1094,32 @@ describe('formState', () => {
       screen.getByText('error');
     });
   });
+
+  it('should not update valid with onBlur mode', async () => {
+    function App() {
+      const {
+        formState: { isValid },
+        register,
+      } = useForm({ mode: 'onBlur' });
+
+      return (
+        <div>
+          <input {...register('name', { required: true })} />
+          <p>{isValid ? 'yes' : 'no'}</p>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '2a',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('no')).toBeInTheDocument();
+    });
+  });
 });

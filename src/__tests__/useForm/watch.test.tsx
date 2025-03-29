@@ -519,7 +519,17 @@ describe('watch', () => {
 
     expect(await screen.findByText('1234')).toBeVisible();
 
-    expect(watchedData).toEqual([{}, {}, { test: '1234' }]);
+    expect(watchedData).toEqual([
+      {},
+      {
+        test: '1234',
+        data: '1234',
+      },
+      {
+        test: '1234',
+        data: '1234',
+      },
+    ]);
   });
 
   it('should not be able to overwrite global watch state', () => {

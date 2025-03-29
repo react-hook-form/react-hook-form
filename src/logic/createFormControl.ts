@@ -97,10 +97,17 @@ const defaultOptions = {
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
-): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> & {
-  formControl: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
+): Omit<
+  UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  'formState'
+> & {
+  formControl: Omit<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+    'formState'
+  >;
 } {
   let _options = {
     ...defaultOptions,
@@ -122,10 +129,10 @@ export function createFormControl<
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
-  let _fields: FieldRefs = {};
+  const _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
-      ? cloneObject(_options.defaultValues || _options.values) || {}
+      ? cloneObject(_options.values || _options.defaultValues) || {}
       : {};
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
@@ -773,8 +780,10 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
-          if (_options.mode === 'onBlur' && isBlurEvent) {
-            _setValid();
+          if (_options.mode === 'onBlur') {
+            if (isBlurEvent) {
+              _setValid();
+            }
           } else if (!isBlurEvent) {
             _setValid();
           }
@@ -1200,21 +1209,16 @@ export function createFormControl<
     }
   };
 
-  const handleSubmit: UseFormHandleSubmit<TFieldValues> =
+  const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
-        e.persist && e.persist();
+        (e as React.BaseSyntheticEvent).persist &&
+          (e as React.BaseSyntheticEvent).persist();
       }
-
-      let fieldValues = cloneObject(_formValues);
-
-      if (_names.disabled.size) {
-        for (const name of _names.disabled) {
-          set(fieldValues, name, undefined);
-        }
-      }
+      let fieldValues: TFieldValues | TTransformedValues | {} =
+        cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1228,6 +1232,12 @@ export function createFormControl<
         await executeBuiltInValidation(_fields);
       }
 
+      if (_names.disabled.size) {
+        for (const name of _names.disabled) {
+          set(fieldValues, name, undefined);
+        }
+      }
+
       unset(_formState.errors, 'root');
 
       if (isEmptyObject(_formState.errors)) {
@@ -1235,7 +1245,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TFieldValues, e);
+          await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }
@@ -1338,14 +1348,15 @@ export function createFormControl<
           }
         }
 
-        _fields = {};
+        for (const fieldName of _names.mount) {
+          setValue(
+            fieldName as FieldPath<TFieldValues>,
+            get(values, fieldName),
+          );
+        }
       }
 
-      _formValues = _options.shouldUnregister
-        ? keepStateOptions.keepDefaultValues
-          ? (cloneObject(_defaultValues) as TFieldValues)
-          : ({} as TFieldValues)
-        : (cloneObject(values) as TFieldValues);
+      _formValues = cloneObject(values) as TFieldValues;
 
       _subjects.array.next({
         values: { ...values },
