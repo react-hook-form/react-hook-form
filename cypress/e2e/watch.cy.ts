@@ -3,7 +3,12 @@ describe('watch form validation', () => {
     cy.visit('http://localhost:3000/watch');
 
     cy.get('#watchAll').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        testSingle: '',
+        test: ['', ''],
+        testObject: { firstName: '', lastName: '' },
+        toggle: false,
+      }),
     );
 
     cy.get('#HideTestSingle').should('not.exist');

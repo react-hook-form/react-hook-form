@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
 import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
+import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
 /**
@@ -61,6 +61,7 @@ export function useForm<
     validatingFields: {},
     errors: props.errors || {},
     disabled: props.disabled || false,
+    isReady: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
@@ -84,15 +85,20 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useLayoutEffect(
-    () =>
-      control._subscribe({
-        formState: control._proxyFormState,
-        callback: () => updateFormState({ ...control._formState }),
-        reRenderRoot: true,
-      }),
-    [control],
-  );
+  React.useLayoutEffect(() => {
+    const sub = control._subscribe({
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
+    });
+
+    updateFormState((data) => ({
+      ...data,
+      isReady: true,
+    }));
+
+    return sub;
+  }, [control]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),
