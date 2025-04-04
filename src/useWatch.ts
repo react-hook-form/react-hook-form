@@ -1,8 +1,6 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
-import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import cloneObject from './utils/cloneObject';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -14,7 +12,6 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { useSubscribe } from './useSubscribe';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -39,9 +36,10 @@ import { useSubscribe } from './useSubscribe';
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
 >(props: {
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 }): DeepPartialSkipArrayKey<TFieldValues>;
@@ -68,10 +66,11 @@ export function useWatch<
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
@@ -102,10 +101,11 @@ export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldNames extends
     readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TTransformedValues = TFieldValues,
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
@@ -153,34 +153,32 @@ export function useWatch<TFieldValues extends FieldValues>(
     exact,
   } = props || {};
   const _name = React.useRef(name);
+  const _defaultValue = React.useRef(defaultValue);
 
   _name.current = name;
 
-  useSubscribe({
-    disabled,
-    subject: control._subjects.values,
-    next: (formState: { name?: InternalFieldName; values?: FieldValues }) => {
-      if (
-        shouldSubscribeByName(
-          _name.current as InternalFieldName,
-          formState.name,
-          exact,
-        )
-      ) {
-        updateValue(
-          cloneObject(
+  React.useEffect(
+    () =>
+      control._subscribe({
+        name: _name.current as InternalFieldName,
+        formState: {
+          values: true,
+        },
+        exact,
+        callback: (formState) =>
+          !disabled &&
+          updateValue(
             generateWatchOutput(
               _name.current as InternalFieldName | InternalFieldName[],
               control._names,
               formState.values || control._formValues,
               false,
-              defaultValue,
+              _defaultValue.current,
             ),
           ),
-        );
-      }
-    },
-  });
+      }),
+    [control, disabled, exact],
+  );
 
   const [value, updateValue] = React.useState(
     control._getWatch(

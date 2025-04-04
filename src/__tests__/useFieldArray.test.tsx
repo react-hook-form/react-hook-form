@@ -2609,9 +2609,9 @@ describe('useFieldArray', () => {
           names: [{ name: 'will' }, { name: 'Mike' }],
         },
       });
-      const { setValue } = methods;
+      const { setValue, watch } = methods;
 
-      result.push(methods.watch());
+      result.push(watch());
 
       return (
         <form>
@@ -2657,6 +2657,16 @@ describe('useFieldArray', () => {
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(result).toEqual([
+      {
+        names: [
+          {
+            name: 'will',
+          },
+          {
+            name: 'Mike',
+          },
+        ],
+      },
       {
         names: [
           {
@@ -2753,6 +2763,16 @@ describe('useFieldArray', () => {
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(watchedValues).toEqual([
+      {
+        test: [
+          {
+            value: 'test',
+          },
+          {
+            value: 'test1',
+          },
+        ],
+      },
       {
         test: [
           {
@@ -3438,6 +3458,89 @@ describe('useFieldArray', () => {
       });
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should no longer validate when unmounted', async () => {
+      const ArrayField = () => {
+        const { fields } = useFieldArray({
+          name: 'array',
+          rules: {
+            required: {
+              value: true,
+              message: 'This is required',
+            },
+            minLength: {
+              value: 2,
+              message: 'Min length should be 2',
+            },
+          },
+        });
+
+        return (
+          <div>
+            <div>
+              {fields.map((item, index) => (
+                <Controller
+                  key={item.id}
+                  name={`array.${index}.value` as const}
+                  render={({ field }) => <input {...field} />}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [displayArray, setDisplayArray] = useState(true);
+
+        const formValues = useForm({
+          defaultValues: { array: [{ value: '' }] },
+        });
+
+        return (
+          <FormProvider {...formValues}>
+            <form onSubmit={formValues.handleSubmit(noop)}>
+              <button
+                type="button"
+                onClick={() => setDisplayArray((current) => !current)}
+              >
+                Toggle
+              </button>
+
+              {displayArray && <ArrayField />}
+
+              <p>{formValues.formState.errors.array?.root?.message}</p>
+
+              <button type="submit">Submit</button>
+            </form>
+          </FormProvider>
+        );
+      };
+
+      render(<App />);
+
+      expect(
+        screen.queryByText('Min length should be 2'),
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(screen.queryByText('Min length should be 2')).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /toggle/i }));
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(
+        screen.queryByText('Min length should be 2'),
+      ).not.toBeInTheDocument();
     });
 
     it('should not conflict with field level error', async () => {

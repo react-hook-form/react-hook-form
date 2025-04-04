@@ -10,6 +10,7 @@ import {
 
 import { DeepMap, ErrorOption, FieldError, GlobalError } from '../../types';
 import { useForm } from '../../useForm';
+import { FormProvider, useFormContext } from '../../useFormContext';
 
 describe('setError', () => {
   const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
@@ -256,5 +257,51 @@ describe('setError', () => {
         },
       },
     });
+  });
+});
+
+it('should update error state in FormProvider when setError is called in useEffect', async () => {
+  type FormValues = {
+    firstname: string;
+    lastname: string;
+  };
+
+  const MyForm = () => {
+    const {
+      register,
+      setError,
+      formState: { errors },
+    } = useFormContext<FormValues>();
+
+    React.useEffect(() => {
+      setError('firstname', { type: 'manual', message: 'This is an error' });
+    }, [setError]);
+
+    return (
+      <form>
+        <div>
+          <input {...register('firstname')} placeholder="firstname" />
+          {errors.firstname && <p>{errors.firstname.message}</p>}
+        </div>
+        <div>
+          <input {...register('lastname')} placeholder="lastname" />
+        </div>
+      </form>
+    );
+  };
+
+  const App = () => {
+    const methods = useForm<FormValues>();
+    return (
+      <FormProvider {...methods}>
+        <MyForm />
+      </FormProvider>
+    );
+  };
+
+  render(<App />);
+
+  await waitFor(() => {
+    expect(screen.getByText('This is an error')).toBeInTheDocument();
   });
 });

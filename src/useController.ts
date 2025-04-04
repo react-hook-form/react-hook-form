@@ -49,10 +49,11 @@ import { useWatch } from './useWatch';
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
+  props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
-  const methods = useFormContext<TFieldValues>();
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const { name, disabled, control = methods.control, shouldUnregister } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
@@ -71,6 +72,7 @@ export function useController<
     exact: true,
   });
 
+  const _props = React.useRef(props);
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -168,6 +170,13 @@ export function useController<
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
+    control.register(name, {
+      ..._props.current.rules,
+      ...(isBoolean(_props.current.disabled)
+        ? { disabled: _props.current.disabled }
+        : {}),
+    });
+
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 
@@ -200,9 +209,8 @@ export function useController<
   }, [name, control, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
-    control._updateDisabledField({
+    control._setDisabledField({
       disabled,
-      fields: control._fields,
       name,
     });
   }, [disabled, name, control]);

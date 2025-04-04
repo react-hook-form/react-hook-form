@@ -510,7 +510,17 @@ describe('watch', () => {
 
     expect(await screen.findByText('1234')).toBeVisible();
 
-    expect(watchedData).toEqual([{}, {}, { test: '1234' }]);
+    expect(watchedData).toEqual([
+      {},
+      {
+        test: '1234',
+        data: '1234',
+      },
+      {
+        test: '1234',
+        data: '1234',
+      },
+    ]);
   });
 
   it('should not be able to overwrite global watch state', () => {
@@ -597,9 +607,9 @@ describe('watch', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(4);
   });
 });
