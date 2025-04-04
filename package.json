@@ -82,6 +82,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/jest": "^29.5.14",
+    "@types/node": "^22.1.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^18.3.5",
     "@types/testing-library__jest-dom": "^5.14.9",
@@ -140,9 +141,5 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "@types/node": "^22.1.0"
-  },
-  "packageManager": "pnpm@8.7.5+sha1.735d4d0e6fc66c4d2d64b269b08e5995b19230ca"
+  }
 }
