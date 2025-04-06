@@ -280,7 +280,7 @@ describe('form state with nested fields', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('13');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {

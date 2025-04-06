@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues } from '../types';
+import { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -27,6 +27,72 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('component using the hook can be memoized', async () => {
+    function App() {
+      const form = useForm({
+        values: { login: 'john' },
+      });
+
+      return useMemo(() => <LoginField form={form} />, [form]);
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+      });
+
+      return <input {...ctrl.field} />;
+    }
+
+    render(<App />);
+
+    const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'abc' } });
+    expect(input.value).toBe('abc');
+  });
+
+  it("setting values doesn't cause fields to be unregistered", async () => {
+    function App() {
+      const [values, setValues] = useState<{ login: string } | undefined>();
+
+      const form = useForm({
+        values,
+      });
+
+      useEffect(() => {
+        setTimeout(() => {
+          setValues({ login: 'john' });
+        }, 100);
+      }, []);
+
+      return useMemo(
+        () => values?.login && <LoginField form={form} />,
+        [values, form],
+      );
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+        defaultValue: 'john',
+      });
+
+      return <input value={ctrl.field.value} onChange={ctrl.field.onChange} />;
+    }
+
+    render(<App />);
+
+    const input = await screen.findByRole<HTMLInputElement>('textbox');
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'jane' } });
+    expect(input.value).toBe('jane');
   });
 
   it('should only subscribe to formState at each useController level', async () => {
@@ -109,7 +175,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([2, 3]);
+    expect(renderCounter).toEqual([3, 3]);
   });
 
   describe('checkbox', () => {
@@ -327,6 +393,64 @@ describe('useController', () => {
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       'data',
     );
+  });
+
+  it('should not change reference for onChange and onBlur on input value change', () => {
+    let counter = 0;
+
+    const App = () => {
+      const { control } = useForm();
+      const { field } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      useEffect(() => {
+        counter++;
+        field.onBlur;
+        field.onChange;
+        field.ref;
+      }, [field.onChange, field.onBlur, field.ref]);
+
+      return (
+        <div>
+          <input value={field.value} onChange={field.onChange} />
+          <button
+            onClick={() => {
+              field.onChange('data');
+            }}
+          >
+            setValue
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'b',
+      },
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bi',
+      },
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bil',
+      },
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill',
+      },
+    });
+
+    expect(counter).toEqual(1);
   });
 
   it('should be able to setValue after reset', async () => {

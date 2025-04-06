@@ -58,14 +58,19 @@ function App() {
 }
 ```
 
-<a href="https://ui.dev/bytes/?r=bill">
-  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
-</a>
-
 ### Sponsors
 
 Thanks go to these kind and lovely sponsors!
 
+<a target="_blank" href='https://workleap.com/'>
+    <img width="94" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
+</a>
+<a target="_blank" href='https://www.sgkb.ch/'>
+    <img width="94" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
+</a>
+<a target="_blank" href='https://www.sanity.io/'>
+    <img width="94" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
+</a>
 <a target="_blank" href='https://route4me.com/'>
     <img width="94" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
 </a>
@@ -148,3 +153,15 @@ Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
   <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
 </a>
+
+<br />
+<br />
+
+<a href="https://ui.dev/bytes/?r=bill">
+  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
+</a>
+
+<br />
+<br />
+
+<p align="center">Documentation website supported and backed by <a href="https://vercel.com"><b>Vercel</b></a></p>

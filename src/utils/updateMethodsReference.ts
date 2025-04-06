@@ -5,9 +5,9 @@ import { FieldValues, UseFormReturn } from '../types';
 export function updateMethodsReference<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 >(
-  _formControl: React.MutableRefObject<
+  _formControl: React.RefObject<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >,
 ) {
