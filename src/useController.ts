@@ -6,6 +6,7 @@ import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import mergeMissingRulesAsUndefined from './utils/mergeMissingKeysAsUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
 import {
@@ -54,7 +55,13 @@ export function useController<
   props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues, any, TTransformedValues>();
-  const { name, disabled, control = methods.control, shouldUnregister } = props;
+  const {
+    name,
+    disabled,
+    control = methods.control,
+    shouldUnregister,
+    rules,
+  } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
     control,
@@ -170,8 +177,12 @@ export function useController<
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
+    const refRules = _props.current.rules;
+    const newRules = mergeMissingRulesAsUndefined(refRules, rules);
+    _props.current = { ..._props.current, rules: newRules };
+
     control.register(name, {
-      ..._props.current.rules,
+      ...newRules,
       ...(isBoolean(_props.current.disabled)
         ? { disabled: _props.current.disabled }
         : {}),
@@ -206,7 +217,7 @@ export function useController<
         ? control.unregister(name)
         : updateMounted(name, false);
     };
-  }, [name, control, isArrayField, shouldUnregister]);
+  }, [name, control, isArrayField, shouldUnregister, rules]);
 
   React.useEffect(() => {
     control._setDisabledField({

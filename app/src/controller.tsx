@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller, ValidationMode } from 'react-hook-form';
 import ReactSelect from 'react-select';
 import {
@@ -23,7 +23,7 @@ const options = [
 
 const defaultValues = {
   Native: '',
-  TextField: '',
+  TextField: 'asd',
   Select: '',
   ReactSelect: '',
   Checkbox: false,
@@ -61,15 +61,18 @@ export default function Field() {
 
   const rerender = () => setRerender(Math.random());
 
+  const [isRulesEnabled, setIsRulesEnabled] = useState(false);
+
   return (
     <form onSubmit={handleSubmit(() => {})}>
       <div className="container">
-        <section id="input-checkbox">
+        {/* <section id="input-checkbox">
           <label>MUI Checkbox</label>
           <Controller
             name="Checkbox"
             control={control}
-            rules={{ required: true }}
+            rules={isRulesEnabled ? { required: true } : undefined}
+            //rules={{required: isRulesEnabled}}
             render={({ field: props }) => (
               <Checkbox
                 {...props}
@@ -79,101 +82,28 @@ export default function Field() {
           />
         </section>
 
-        {errors.Checkbox && <p id="Checkbox">Checkbox Error</p>}
-
-        <section id="input-radio-group">
-          <label>Radio Group</label>
-          <Controller
-            render={({ field }) => (
-              <RadioGroup aria-label="gender" {...field} name="gender1">
-                <FormControlLabel
-                  value="female"
-                  control={<Radio />}
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label="Male"
-                />
-                <FormControlLabel
-                  value="other"
-                  control={<Radio />}
-                  label="Other"
-                />
-              </RadioGroup>
-            )}
-            rules={{ required: true }}
-            name="RadioGroup"
-            control={control}
-          />
-        </section>
-
-        {errors.RadioGroup && <p id="RadioGroup">RadioGroup Error</p>}
+        {errors.Checkbox && <p id="Checkbox">Checkbox Error</p>} */}
 
         <section id="input-textField">
+          <p>isRulesEnabled: {String(isRulesEnabled)}</p>
           <label>MUI TextField</label>
           <Controller
             render={({ field }) => <TextField {...field} />}
             name="TextField"
             control={control}
-            rules={{ required: true }}
+            rules={isRulesEnabled ? {minLength: 5}: undefined}
           />
         </section>
+        {errors.TextField && <p id='TextField'>TextField error</p>}
 
-        {errors.TextField && <p id="TextField">TextField Error</p>}
-
-        <section id="input-select">
-          <label>MUI Select</label>
-          <Controller
-            render={({ field }) => (
-              <Select {...field}>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-            )}
-            rules={{ required: true }}
-            name="Select"
-            control={control}
-          />
-        </section>
-
-        {errors.Select && <p id="Select">Select Error</p>}
-
-        <section id="input-switch">
-          <label>MUI Switch</label>
-          <Controller
-            name="switch"
-            rules={{ required: true }}
-            render={({ field: props }) => (
-              <Switch
-                {...props}
-                onChange={(e) => props.onChange(e.target.checked)}
-              />
-            )}
-            control={control}
-          />
-        </section>
-
-        {errors.switch && <p id="switch">switch Error</p>}
-
-        <section id="input-ReactSelect">
-          <label>React Select</label>
-          <Controller
-            render={({ field }) => (
-              <PureReactSelect isClearable options={options} {...field} />
-            )}
-            name="ReactSelect"
-            control={control}
-            rules={{ required: true }}
-          />
-        </section>
-
-        {errors.ReactSelect && <p id="ReactSelect">ReactSelect Error</p>}
       </div>
+     
 
       <span id="renderCount">{renderCount}</span>
+
+      <button type="button" onClick={() => setIsRulesEnabled(!isRulesEnabled)}>
+        Toggle error
+      </button>
 
       <button type="button" onClick={rerender}>
         Rerender
