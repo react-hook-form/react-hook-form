@@ -84,7 +84,10 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useLayoutEffect(
+  const useIsomorphicLayoutEffect =
+    typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
         formState: control._proxyFormState,
