@@ -666,6 +666,9 @@ export function createFormControl<
     options: U,
   ) => {
     for (const fieldKey in value) {
+      if (!value.hasOwnProperty(fieldKey)) {
+        return;
+      }
       const fieldValue = value[fieldKey];
       const fieldName = `${name}.${fieldKey}`;
       const field = get(_fields, fieldName);
