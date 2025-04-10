@@ -112,6 +112,7 @@ export type UseFormProps<
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
+  id: string;
   formControl?: Omit<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
@@ -866,6 +867,8 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
+  id: string;
+  submit: () => void;
   subscribe: UseFromSubscribe<TFieldValues>;
 };
 

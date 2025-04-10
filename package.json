@@ -82,6 +82,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/jest": "^29.5.14",
+    "@types/node": "^22.1.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^18.3.5",
     "@types/testing-library__jest-dom": "^5.14.9",
