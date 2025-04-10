@@ -86,14 +86,12 @@ export type ControllerFieldState = {
     error?: FieldError;
 };
 
-// @public
-export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = {
-    render: ({ field, fieldState, formState, }: {
-        field: ControllerRenderProps<TFieldValues, TName>;
-        fieldState: ControllerFieldState;
-        formState: UseFormStateReturn<TFieldValues>;
-    }) => React_2.ReactElement;
-} & UseControllerProps<TFieldValues, TName, TTransformedValues>;
+// @public (undocumented)
+export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = ({
+    render: ControllerRender<TFieldValues, TName>;
+} | {
+    children: ControllerRender<TFieldValues, TName>;
+}) & UseControllerProps<TFieldValues, TName, TTransformedValues>;
 
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
@@ -888,6 +886,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
+// src/types/controller.ts:101:7 - (ae-forgotten-export) The symbol "ControllerRender" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:468:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
