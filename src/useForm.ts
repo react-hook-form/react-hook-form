@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
 import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
+import { updateMethodsReference } from './utils/updateMethodsReference';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
 /**
@@ -115,6 +116,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
+      updateMethodsReference(_formControl);
       control._reset(props.values, control._options.resetOptions);
       _values.current = props.values;
       updateFormState((state) => ({ ...state }));
@@ -150,7 +152,17 @@ export function useForm<
       });
   }, [props.shouldUnregister, control]);
 
-  _formControl.current.formState = getProxyFormState(formState, control);
+  return React.useMemo(() => {
+    updateMethodsReference(_formControl);
 
-  return _formControl.current;
+    if (_formControl.current) {
+      _formControl.current.formState = getProxyFormState(formState, control);
+    }
+
+    return _formControl.current as UseFormReturn<
+      TFieldValues,
+      TContext,
+      TTransformedValues
+    >;
+  }, [formState, control]);
 }
