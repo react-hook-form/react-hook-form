@@ -115,7 +115,17 @@ export function useForm<
     if (props.reValidateMode) {
       control._options.reValidateMode = props.reValidateMode;
     }
-  }, [control, props.mode, props.reValidateMode]);
+    if (props.errors && !isEmptyObject(props.errors)) {
+      control._setErrors(props.errors);
+    }
+  }, [control, props.errors, props.mode, props.reValidateMode]);
+
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.state.next({
+        values: control._getWatch(),
+      });
+  }, [control, props.shouldUnregister]);
 
   React.useEffect(() => {
     if (control._proxyFormState.isDirty) {
@@ -136,13 +146,7 @@ export function useForm<
     } else {
       control._resetDefaultValues();
     }
-  }, [props.values, control]);
-
-  React.useEffect(() => {
-    if (props.errors && !isEmptyObject(props.errors)) {
-      control._setErrors(props.errors);
-    }
-  }, [props.errors, control]);
+  }, [control, props.values]);
 
   React.useEffect(() => {
     if (!control._state.mount) {
@@ -157,13 +161,6 @@ export function useForm<
 
     control._removeUnmounted();
   });
-
-  React.useEffect(() => {
-    props.shouldUnregister &&
-      control._subjects.state.next({
-        values: control._getWatch(),
-      });
-  }, [props.shouldUnregister, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 
