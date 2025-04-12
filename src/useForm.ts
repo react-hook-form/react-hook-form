@@ -100,6 +100,15 @@ export function useForm<
   );
 
   React.useEffect(() => {
+    if (props.mode) {
+      control._options.mode = props.mode;
+    }
+    if (props.reValidateMode) {
+      control._options.reValidateMode = props.reValidateMode;
+    }
+  }, [control, props.mode, props.reValidateMode]);
+
+  React.useEffect(() => {
     if (control._proxyFormState.isDirty) {
       const isDirty = control._getDirty();
       if (isDirty !== formState.isDirty) {
