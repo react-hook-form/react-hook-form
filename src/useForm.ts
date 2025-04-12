@@ -1,11 +1,14 @@
 import React from 'react';
 
-import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
 import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
+import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
 
 /**
  * Custom hook to manage the entire form.
@@ -39,9 +42,9 @@ import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
@@ -61,6 +64,7 @@ export function useForm<
     validatingFields: {},
     errors: props.errors || {},
     disabled: props.disabled || false,
+    isReady: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
@@ -84,15 +88,20 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useLayoutEffect(
-    () =>
-      control._subscribe({
-        formState: control._proxyFormState,
-        callback: () => updateFormState({ ...control._formState }),
-        reRenderRoot: true,
-      }),
-    [control],
-  );
+  useIsomorphicLayoutEffect(() => {
+    const sub = control._subscribe({
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
+    });
+
+    updateFormState((data) => ({
+      ...data,
+      isReady: true,
+    }));
+
+    return sub;
+  }, [control]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),
