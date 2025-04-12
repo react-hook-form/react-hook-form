@@ -7,6 +7,9 @@ import isFunction from './utils/isFunction';
 import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
 /**
  * Custom hook to manage the entire form.
  *
@@ -85,7 +88,7 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const sub = control._subscribe({
       formState: control._proxyFormState,
       callback: () => updateFormState({ ...control._formState }),
