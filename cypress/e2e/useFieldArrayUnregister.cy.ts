@@ -133,7 +133,7 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: '6' },
-          { name: 'billtestl' },
+          { name: 'bill', conditional: '' },
           { name: '11' },
           { name: 'test1' },
           { name: 'test2' },
@@ -149,7 +149,7 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: '6' },
-          { name: 'billtestl' },
+          { name: 'bill', conditional: '' },
           { name: '11' },
           { name: 'test1test' },
           { name: 'test2' },
@@ -165,7 +165,7 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: '6' },
-          { name: 'billtestl' },
+          { name: 'bill', conditional: '' },
           { name: '11' },
           { name: 'test2' },
         ],

@@ -148,9 +148,10 @@ export function mockZodResolver<Input extends FieldValues, Context, Output>(
   },
 ): Resolver<Input, Context, Input>;
 
-export function mockZodResolver<Input extends FieldValues, Context, Output>(
-  _schema: z.ZodSchema<Output, any, Input>,
-  _schemaOptions?: Partial<z.ParseParams>,
-): Resolver<Input, Context, Output | Input> {
+export function mockZodResolver<
+  Input extends FieldValues,
+  Context,
+  Output,
+>(): Resolver<Input, Context, Output | Input> {
   return {} as any;
 }
