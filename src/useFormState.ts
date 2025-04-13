@@ -7,6 +7,7 @@ import {
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
+import { useDeepEqualEffect } from './useDeepEqualEffect';
 import { useFormContext } from './useFormContext';
 
 /**
@@ -39,7 +40,7 @@ import { useFormContext } from './useFormContext';
  * }
  * ```
  */
-function useFormState<
+export function useFormState<
   TFieldValues extends FieldValues = FieldValues,
   TTransformedValues = TFieldValues,
 >(
@@ -58,14 +59,11 @@ function useFormState<
     isValid: false,
     errors: false,
   });
-  const _name = React.useRef(name);
 
-  _name.current = name;
-
-  React.useEffect(
+  useDeepEqualEffect(
     () =>
       control._subscribe({
-        name: _name.current as InternalFieldName,
+        name: name as InternalFieldName,
         formState: _localProxyFormState.current,
         exact,
         callback: (formState) => {
@@ -76,7 +74,7 @@ function useFormState<
             });
         },
       }),
-    [control, disabled, exact],
+    [name, disabled, exact],
   );
 
   React.useEffect(() => {
@@ -94,5 +92,3 @@ function useFormState<
     [formState, control],
   );
 }
-
-export { useFormState };
