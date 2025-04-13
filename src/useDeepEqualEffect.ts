@@ -6,9 +6,9 @@ export const useDeepEqualEffect = <T extends DependencyList>(
   effect: EffectCallback,
   deps: T,
 ) => {
-  const ref = useRef<T | undefined>(undefined);
+  const ref = useRef<T>(deps);
 
-  if (!ref.current || !deepEqual(deps, ref.current)) {
+  if (!deepEqual(deps, ref.current)) {
     ref.current = deps;
   }
 
