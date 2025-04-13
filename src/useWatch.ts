@@ -11,6 +11,7 @@ import {
   InternalFieldName,
   UseWatchProps,
 } from './types';
+import { useDeepEqualEffect } from './useDeepEqualEffect';
 import { useFormContext } from './useFormContext';
 
 /**
@@ -152,15 +153,18 @@ export function useWatch<TFieldValues extends FieldValues>(
     disabled,
     exact,
   } = props || {};
-  const _name = React.useRef(name);
-  const _defaultValue = React.useRef(defaultValue);
 
-  _name.current = name;
+  const [value, updateValue] = React.useState(
+    control._getWatch(
+      name as InternalFieldName,
+      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
+    ),
+  );
 
-  React.useEffect(
+  useDeepEqualEffect(
     () =>
       control._subscribe({
-        name: _name.current as InternalFieldName,
+        name: name as InternalFieldName,
         formState: {
           values: true,
         },
@@ -169,22 +173,15 @@ export function useWatch<TFieldValues extends FieldValues>(
           !disabled &&
           updateValue(
             generateWatchOutput(
-              _name.current as InternalFieldName | InternalFieldName[],
+              name as InternalFieldName | InternalFieldName[],
               control._names,
               formState.values || control._formValues,
               false,
-              _defaultValue.current,
+              defaultValue,
             ),
           ),
       }),
-    [control, disabled, exact],
-  );
-
-  const [value, updateValue] = React.useState(
-    control._getWatch(
-      name as InternalFieldName,
-      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
-    ),
+    [name, defaultValue, disabled, exact],
   );
 
   React.useEffect(() => control._removeUnmounted());
