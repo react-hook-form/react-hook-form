@@ -143,7 +143,8 @@ export function useForm<
       control._reset(props.values, control._options.resetOptions);
       _values.current = props.values;
       updateFormState((state) => ({ ...state }));
-    } else {
+    } else if (!props.values && !control._state.isLoadingValues) {
+      control._state.isLoadingValues = true;
       control._resetDefaultValues();
     }
   }, [control, props.values]);
