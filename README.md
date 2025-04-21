@@ -60,7 +60,7 @@ function App() {
 
 ### Sponsors
 
-Thanks go to these kind and lovely sponsors!
+We’re incredibly grateful to these kind and generous sponsors for their support!
 
 <a target="_blank" href='https://workleap.com/'>
     <img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
