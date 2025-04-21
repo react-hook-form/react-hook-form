@@ -93,7 +93,9 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
     <img width="120" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
 </a>
 
-### Past sponsors
+### Past Sponsors
+
+Thank you to our previous sponsors for your generous support!
 
 <a href="https://www.leniolabs.com/" target="_blank">
   <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="24" height="24" />
