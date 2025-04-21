@@ -190,7 +190,7 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   _compute.current = compute;
 
-  const initialValue = React.useMemo(
+  const defaultValueMemo = React.useMemo(
     () =>
       control._getWatch(
         name as InternalFieldName,
@@ -200,7 +200,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   );
 
   const [value, updateValue] = React.useState(
-    _compute.current ? _compute.current(initialValue) : initialValue,
+    _compute.current ? _compute.current(defaultValueMemo) : defaultValueMemo,
   );
 
   useDeepEqualEffect(
