@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../constants';
 import {
@@ -16,6 +16,7 @@ import {
   FieldValues,
   FormState,
   RegisterOptions,
+  SubmitHandler,
   UseFormGetFieldState,
   UseFormRegister,
   UseFormReturn,
@@ -24,7 +25,7 @@ import {
 import isFunction from '../utils/isFunction';
 import noop from '../utils/noop';
 import sleep from '../utils/sleep';
-import { Controller, useFieldArray, useForm } from '../';
+import { Controller, createFormControl, useFieldArray, useForm } from '../';
 
 jest.useFakeTimers();
 
@@ -1697,25 +1698,6 @@ describe('useForm', () => {
     });
   });
 
-  it('should unsubscribe to all subject when hook unmounts', () => {
-    let tempControl: any;
-
-    const App = () => {
-      const { control } = useForm();
-      tempControl = control;
-
-      return null;
-    };
-
-    const { unmount } = render(<App />);
-
-    expect(tempControl._subjects.state.observers.length).toBeTruthy();
-
-    unmount();
-
-    expect(tempControl._subjects.state.observers.length).toBeFalsy();
-  });
-
   it('should update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
@@ -1780,7 +1762,7 @@ describe('useForm', () => {
     expect(getFieldState('firstName').isValidating).toBe(true);
     screen.getByText('stateValidation: true');
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(1000);
     });
 
@@ -1792,7 +1774,7 @@ describe('useForm', () => {
     expect(getFieldState('firstName').isValidating).toBe(false);
     screen.getByText('stateValidation: true');
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(4000);
     });
 
@@ -1860,7 +1842,7 @@ describe('useForm', () => {
     expect(formState.dirtyFields).toStrictEqual({ lastName: true });
     expect(getFieldState('lastName').isDirty).toStrictEqual(true);
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(1000);
     });
 
@@ -1873,7 +1855,7 @@ describe('useForm', () => {
     expect(formState.validatingFields).toStrictEqual({ lastName: true });
     expect(getFieldState('lastName').isValidating).toBe(true);
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.advanceTimersByTime(1500);
     });
 
@@ -1945,7 +1927,7 @@ describe('useForm', () => {
     expect(getFieldState('lastName').isValidating).toBe(true);
     expect(getFieldState('firstName').isValidating).toBe(true);
 
-    await actComponent(async () => {
+    await act(async () => {
       jest.runAllTimers();
     });
 
@@ -1991,7 +1973,7 @@ describe('useForm', () => {
     });
 
     expect(formState.validatingFields).toEqual({ firstName: true });
-    await actComponent(async () => {
+    await act(async () => {
       unregister('firstName');
       jest.runAllTimers();
     });
@@ -2496,6 +2478,59 @@ describe('useForm', () => {
       expect(
         screen.getByText('no error') as HTMLInputElement,
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('when given formControl', () => {
+    it('accepts default values', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const { register, handleSubmit, formControl } =
+        createFormControl<FormValues>();
+
+      function FormComponent({
+        onSubmit,
+        defaultValues,
+      }: {
+        defaultValues: FormValues;
+        onSubmit: SubmitHandler<FormValues>;
+      }) {
+        useForm({
+          formControl,
+          defaultValues,
+        });
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('firstName')} placeholder="First Name" />
+            <input type="submit" />
+          </form>
+        );
+      }
+
+      function App() {
+        const [state, setState] = React.useState('');
+        return (
+          <div>
+            <FormComponent
+              defaultValues={{ firstName: 'Emilia' }}
+              onSubmit={(data) => {
+                setState(JSON.stringify(data));
+              }}
+            />
+            <pre>{state}</pre>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+      expect(input.value).toBe('Emilia');
+
+      fireEvent.input(input, { target: { value: 'abc' } });
+      expect(input.value).toBe('abc');
     });
   });
 });

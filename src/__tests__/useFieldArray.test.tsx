@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../controller';
 import {
@@ -66,10 +66,11 @@ describe('useFieldArray', () => {
         const methods = useForm();
         return <FormProvider {...methods}>{children}</FormProvider>;
       };
-      const { result } = renderHook(() => useFieldArray({ name: 'test' }), {
-        wrapper: Provider,
-      });
-      expect(result.error).toBeUndefined();
+      expect(() =>
+        renderHook(() => useFieldArray({ name: 'test' }), {
+          wrapper: Provider,
+        }),
+      ).not.toThrow();
     });
   });
 
@@ -806,7 +807,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([
         { id: '0', value: 'default' },
         {
-          id: '1',
+          id: '2',
           value: 'test',
         },
       ]);
@@ -817,7 +818,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([
         { id: '0', value: 'default' },
         {
-          id: '1',
+          id: '2',
           value: 'test',
         },
       ]);
@@ -1118,7 +1119,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-      expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
+      expect(fieldsTemp).toEqual([{ id: '5', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -1145,7 +1146,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -1153,7 +1154,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '7', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -1274,7 +1275,7 @@ describe('useFieldArray', () => {
 
         render(<Component />);
 
-        await actComponent(async () => {
+        await act(async () => {
           setValue(
             'test',
             [
@@ -1336,7 +1337,7 @@ describe('useFieldArray', () => {
 
         render(<Component />);
 
-        actComponent(() => {
+        act(() => {
           setValue(
             'test',
             [
@@ -1356,7 +1357,7 @@ describe('useFieldArray', () => {
           expect(formState.isDirty).toBeTruthy();
         }
 
-        actComponent(() => {
+        act(() => {
           setValue(
             'test',
             [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
@@ -2608,9 +2609,9 @@ describe('useFieldArray', () => {
           names: [{ name: 'will' }, { name: 'Mike' }],
         },
       });
-      const { setValue } = methods;
+      const { setValue, watch } = methods;
 
-      result.push(methods.watch());
+      result.push(watch());
 
       return (
         <form>
@@ -2656,6 +2657,16 @@ describe('useFieldArray', () => {
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(result).toEqual([
+      {
+        names: [
+          {
+            name: 'will',
+          },
+          {
+            name: 'Mike',
+          },
+        ],
+      },
       {
         names: [
           {
@@ -2752,6 +2763,16 @@ describe('useFieldArray', () => {
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(watchedValues).toEqual([
+      {
+        test: [
+          {
+            value: 'test',
+          },
+          {
+            value: 'test1',
+          },
+        ],
+      },
       {
         test: [
           {
@@ -3243,13 +3264,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Min length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
@@ -3303,13 +3324,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Min length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
@@ -3358,13 +3379,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
       screen.getByText('Max length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove' }));
       });
 
@@ -3426,17 +3447,100 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
       screen.getByText('Max length should be 2');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove' }));
       });
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
+    });
+
+    it('should no longer validate when unmounted', async () => {
+      const ArrayField = () => {
+        const { fields } = useFieldArray({
+          name: 'array',
+          rules: {
+            required: {
+              value: true,
+              message: 'This is required',
+            },
+            minLength: {
+              value: 2,
+              message: 'Min length should be 2',
+            },
+          },
+        });
+
+        return (
+          <div>
+            <div>
+              {fields.map((item, index) => (
+                <Controller
+                  key={item.id}
+                  name={`array.${index}.value` as const}
+                  render={({ field }) => <input {...field} />}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [displayArray, setDisplayArray] = useState(true);
+
+        const formValues = useForm({
+          defaultValues: { array: [{ value: '' }] },
+        });
+
+        return (
+          <FormProvider {...formValues}>
+            <form onSubmit={formValues.handleSubmit(noop)}>
+              <button
+                type="button"
+                onClick={() => setDisplayArray((current) => !current)}
+              >
+                Toggle
+              </button>
+
+              {displayArray && <ArrayField />}
+
+              <p>{formValues.formState.errors.array?.root?.message}</p>
+
+              <button type="submit">Submit</button>
+            </form>
+          </FormProvider>
+        );
+      };
+
+      render(<App />);
+
+      expect(
+        screen.queryByText('Min length should be 2'),
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(screen.queryByText('Min length should be 2')).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /toggle/i }));
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(
+        screen.queryByText('Min length should be 2'),
+      ).not.toBeInTheDocument();
     });
 
     it('should not conflict with field level error', async () => {
@@ -3508,7 +3612,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
       expect(screen.queryByAltText('This is required')).toBeNull();
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getAllByRole('textbox')[0], {
           target: {
             value: '1',
@@ -3516,7 +3620,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.change(screen.getAllByRole('textbox')[0], {
           target: {
             value: '',
@@ -3526,13 +3630,13 @@ describe('useFieldArray', () => {
 
       screen.getByText('This is required');
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove' }));
       });
 
@@ -3585,7 +3689,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -3635,7 +3739,7 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button'));
       });
 
@@ -3749,11 +3853,11 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
@@ -3810,11 +3914,11 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
-      await actComponent(async () => {
+      await act(async () => {
         fireEvent.click(
           screen.getByRole('button', { name: 'Add nested array' }),
         );
@@ -3928,7 +4032,7 @@ describe('useFieldArray', () => {
       render(<Component />);
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
-      await waitFor(() => expect(renderCount).toEqual(2));
+      await waitFor(() => expect(renderCount).toEqual(3));
     });
 
     it('should trigger reRender on components that subscribe to useFieldArray fieldState', async () => {
@@ -3989,8 +4093,8 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       await waitFor(() => {
-        expect(rootRenderCount).toEqual(1);
-        expect(observerRenderCount).toEqual(2);
+        expect(rootRenderCount).toEqual(2);
+        expect(observerRenderCount).toEqual(3);
       });
     });
 
@@ -4102,8 +4206,8 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(rootRenderCount).toEqual(1);
-      expect(notObserverRenderCount).toEqual(1);
+      expect(rootRenderCount).toEqual(2);
+      expect(notObserverRenderCount).toEqual(2);
     });
   });
 });

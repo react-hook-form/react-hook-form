@@ -1,12 +1,13 @@
 import React from 'react';
 import {
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -511,6 +512,9 @@ describe('register', () => {
       {
         test: 'bill',
       },
+      {
+        test: 'bill',
+      },
       {},
     ]);
   });
@@ -648,7 +652,7 @@ describe('register', () => {
       });
     });
 
-    it('should omit all inputs which has disabled set to true', async () => {
+    it('should still show all inputs which has disabled set to true', async () => {
       let outputData: object = {};
       const watchedData: object[] = [];
 
@@ -700,20 +704,27 @@ describe('register', () => {
       expect(watchedData).toStrictEqual([
         {},
         {
-          test: undefined,
-          test1: undefined,
-          test2: undefined,
-          test3: undefined,
+          test: '',
+          test1: false,
+          test2: null,
+          test3: '',
+          test4: '',
+        },
+        {
+          test: '',
+          test1: false,
+          test2: null,
+          test3: '',
           test4: '1234',
         },
       ]);
 
       await waitFor(() =>
         expect(outputData).toStrictEqual({
-          test: undefined,
-          test1: undefined,
-          test2: undefined,
-          test3: undefined,
+          test: '',
+          test1: false,
+          test2: null,
+          test3: '',
           test4: '1234',
         }),
       );
@@ -1509,6 +1520,7 @@ describe('register', () => {
     fireEvent.click(screen.getAllByRole('checkbox')[0]);
 
     expect(watchedValue).toEqual([
+      { test: [true, false, false] },
       { test: [true, false, false] },
       { test: [false, false, false] },
     ]);
