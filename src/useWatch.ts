@@ -60,7 +60,6 @@ export function useWatch<
  * const { control } = useForm();
  * const values = useWatch({
  *   control,
- *   name: "fieldA",
  *   compute: (formValues) => formValues.fieldA
  * })
  * ```
@@ -73,7 +72,7 @@ export function useWatch<
   control?: Control<TFieldValues>;
   disabled?: boolean;
   exact?: boolean;
-  compute: (formValues: TFieldValues) => TComputeValues;
+  compute?: (formValues: TFieldValues) => TComputeValues;
 }): TComputeValues;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
