@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
@@ -38,7 +38,6 @@ import {
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
-import { useDeepEqualEffect } from './useDeepEqualEffect';
 import { useFormContext } from './useFormContext';
 
 /**
@@ -120,7 +119,7 @@ export function useFieldArray<
     [control, rules, name],
   );
 
-  useDeepEqualEffect(
+  useEffect(
     () =>
       control._subjects.array.subscribe({
         next: ({
@@ -139,7 +138,7 @@ export function useFieldArray<
           }
         },
       }).unsubscribe,
-    [name],
+    [control, name],
   );
 
   const updateValues = React.useCallback(
