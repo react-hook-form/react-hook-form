@@ -822,7 +822,7 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TComput
     control?: Control<TFieldValues>;
     disabled?: boolean;
     exact?: boolean;
-    compute: (formValues: TFieldValues) => TComputeValues;
+    compute?: (formValues: TFieldValues) => TComputeValues;
 }): TComputeValues;
 
 // @public
