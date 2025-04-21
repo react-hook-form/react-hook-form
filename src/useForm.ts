@@ -100,6 +100,8 @@ export function useForm<
       isReady: true,
     }));
 
+    control._formState.isReady = true;
+
     return sub;
   }, [control]);
 
