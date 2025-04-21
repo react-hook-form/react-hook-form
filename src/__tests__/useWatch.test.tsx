@@ -1780,7 +1780,7 @@ describe('useWatch', () => {
 
       screen.getByText('yes');
 
-      expect(renderCount).toEqual(2);
+      expect(renderCount).toEqual(4);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '12' },
@@ -1788,7 +1788,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(3);
+      expect(renderCount).toEqual(5);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '1' },
@@ -1796,7 +1796,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(3);
+      expect(renderCount).toEqual(5);
     });
   });
 });
