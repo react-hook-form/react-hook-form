@@ -3,20 +3,20 @@ name: Publish Forked Package
 on:
   push:
     tags:
-      - 'v*' # Triggers on tags like v1.2.3-plus.1
+      - 'v*'
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write # Needed to update GitHub Release body
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Required to compare commits
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,13 +54,6 @@ jobs:
 
       - name: Build package
         run: pnpm build
-
-      # - name: Publish
-      #   run: |
-      #     echo "Publishing version ${{ steps.version.outputs.version }}"
-      #     pnpm publish --access public
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Update GitHub Release notes
         if: always()
