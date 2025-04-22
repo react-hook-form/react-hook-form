@@ -60,82 +60,84 @@ function App() {
 
 ### Sponsors
 
-Thanks go to these kind and lovely sponsors!
+We’re incredibly grateful to these kind and generous sponsors for their support!
 
 <a target="_blank" href='https://workleap.com/'>
-    <img width="94" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
+    <img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
 </a>
 <a target="_blank" href='https://www.sgkb.ch/'>
-    <img width="94" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
+    <img width="120" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
 </a>
 <a target="_blank" href='https://www.sanity.io/'>
-    <img width="94" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
+    <img width="120" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
 </a>
 <a target="_blank" href='https://route4me.com/'>
-    <img width="94" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
+    <img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
 </a>
 <a target="_blank" href='https://twicsy.com/'>
-    <img width="94" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
+    <img width="120" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
 </a>
 <a target="_blank" href='https://toss.im'>
-    <img width="94" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
+    <img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
 </a>
 <a target="_blank" href='https://principal.com/about-us'>
-    <img width="94" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
+    <img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
 </a>
 <a target="_blank" href="https://graphcms.com">
-    <img width="94" src="https://avatars.githubusercontent.com/u/31031438" />
+    <img width="120" src="https://avatars.githubusercontent.com/u/31031438" />
 </a>
 <a target="_blank" href="https://www.beekai.com/">
-    <img width="94" src="https://www.beekai.com/marketing/logo/logo.svg" />
+    <img width="120" src="https://www.beekai.com/marketing/logo/logo.svg" />
 </a>
 <a target="_blank" href="https://kanamekey.com">
-    <img width="94" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
-</a>
-<a target="_blank" href="https://www.casinoreviews.net/">
-    <img width="94" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
+    <img width="120" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
 </a>
 
-### Past sponsors
+### Past Sponsors
+
+Thank you to our previous sponsors for your generous support!
 
 <a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="48" height="48" />
+  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="24" height="24" />
 </a>
 <a target="_blank" href="https://underbelly.is">
-    <img width="48" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
 </a>
 <a target="_blank" href="https://feathery.io">
-    <img width="48" src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" />
 </a>
 <a target="_blank" href="https://getform.io">
-    <img width="48" src="https://images.opencollective.com/getformio2/3c978c8/avatar/256.png" />
+    <img width="24" src="https://images.opencollective.com/getformio2/3c978c8/avatar/256.png" />
 </a>
 <a href="https://marmelab.com/" target="_blank">
-  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="48" height="48" />
+  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="24" height="24" />
 </a>
 <a target="_blank" href="https://formcarry.com/">
-    <img width="48" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
 </a>
 <a target="_blank" href="https://fabform.io">
-    <img width="48" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
 </a>
 <a target="_blank" href="https://www.thinkmill.com.au/">
-    <img width="48" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
 </a>
 <a target="_blank" href="https://kwork.studio/">
-    <img width="48" src="https://images.opencollective.com/knowledge-work/f91b72d/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/knowledge-work/f91b72d/logo/256.png" />
 </a>
 <a target="_blank" href="https://fiberplane.com/">
-    <img width="48" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
+    <img width="24" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
 </a>
 <a target="_blank" href="https://www.jetbrains.com/">
-    <img width="48" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" />
+    <img width="24" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" />
 </a>
 <a target="_blank" href="https://www.mirakl.com/">
-    <img width="48" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
 </a>
 <a target="_blank" href='https://wantedlyinc.com'>
-    <img width="48" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
+    <img width="24" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
+</a>
+<a target="_blank" href="https://www.casinoreviews.net/">
+    <img width="24" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
 </a>
 
 ### Backers
