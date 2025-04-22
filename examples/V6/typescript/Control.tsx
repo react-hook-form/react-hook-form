@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, useWatch, Control } from 'react-hook-form';
+import { useForm, useWatch, Control } from 'rhf-plus';
 
 type FormValues = {
   firstName: string;

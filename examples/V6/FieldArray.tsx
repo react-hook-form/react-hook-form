@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 
 function createArrayWithNumbers(length) {
   return Array.from({ length }, (_, k) => k);

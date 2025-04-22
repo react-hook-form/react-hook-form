@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 
 export default function App() {
   const { register, handleSubmit, setValue } = useForm();
@@ -23,7 +23,7 @@ export default function App() {
       <div>
         <label htmlFor="email">Email</label>
         <input
-          placeholder="bluebill1049@hotmail.com"
+          placeholder="email@hotmail.com"
           type="email"
           {...register('email')}
         />

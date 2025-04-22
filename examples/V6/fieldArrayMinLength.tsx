@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray } from 'rhf-plus';
 import { object, array, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers';
 
