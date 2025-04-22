@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller, useFieldArray, useForm, Control } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, Control } from 'rhf-plus';
 
 type FormValues = {
   test: {

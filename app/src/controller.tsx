@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller, ValidationMode } from 'react-hook-form';
+import { useForm, Controller, ValidationMode } from 'rhf-plus';
 import ReactSelect from 'react-select';
 import {
   TextField,

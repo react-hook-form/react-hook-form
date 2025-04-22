@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 import App from './app';
 
 const FRAME_CONTENT = `

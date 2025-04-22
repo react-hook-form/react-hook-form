@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormState, useForm, Control } from 'react-hook-form';
+import { useFormState, useForm, Control } from 'rhf-plus';
 
 let renderCounter = 0;
 

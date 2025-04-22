@@ -1,4 +1,4 @@
-import { useForm, Form } from 'react-hook-form';
+import { useForm, Form } from 'rhf-plus';
 import React from 'react';
 
 export default function FormComponent() {
