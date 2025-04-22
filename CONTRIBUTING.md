@@ -121,9 +121,3 @@ In case you want to change the `README.md`, please instead modify the `docs/Temp
 ## License
 
 By contributing your code to the react-hook-form GitHub repository, you agree to license your contribution under the MIT license.
-
-### Contributors
-
-Thank you to all the people who have already contributed to React Hook Form!
-
-<img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

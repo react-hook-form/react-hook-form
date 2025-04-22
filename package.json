@@ -58,6 +58,7 @@
     "react",
     "hooks",
     "form",
+    "plus",
     "forms",
     "form-validation",
     "validation",
@@ -66,10 +67,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/react-hook-form/react-hook-form"
+    "url": "https://github.com/bombillazo/rhf-plus"
   },
-  "homepage": "https://www.react-hook-form.com",
-  "author": "Beier(Bill) Luo <bluebill1049@hotmail.com>",
+  "author": "Hector Ayala <hran@bombillazo.com>",
   "license": "MIT",
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
