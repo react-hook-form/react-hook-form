@@ -23,7 +23,7 @@
 ### Quickstart
 
 ```jsx
-import { useForm } from 'react-hook-form';
+import { useForm } from '@bombillazo/rhf-plus';
 
 function App() {
   const {

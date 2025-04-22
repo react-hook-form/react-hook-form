@@ -1,6 +1,6 @@
 {
-  "name": "react-hook-form",
-  "description": "Performant, flexible and extensible forms library for React Hooks",
+  "name": "rhf-plus",
+  "description": "Enhanced functionality for React Hook Form",
   "version": "7.56.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
@@ -134,10 +134,6 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
-  },
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
     "node": ">=18.0.0"
