@@ -42,6 +42,9 @@ import './style.css';
 import FormComponent from './form';
 import DisabledFields from './disabledFields';
 import ResetKeepDirty from './resetKeepDirty';
+import ImperativeSubmit from './imperativeSubmit';
+import ImperativeSubmitContext from './imperativeSubmitContext';
+import ImperativeSubmitControl from './imperativeSubmitControl';
 
 const App = () => {
   return (
@@ -121,6 +124,15 @@ const App = () => {
         <Route path="/" element={<Welcome />} />
         <Route path="/form" element={<FormComponent />} />
         <Route path="/disabled" element={<DisabledFields />} />
+        <Route path="/imperative-submit" element={<ImperativeSubmit />} />
+        <Route
+          path="/imperative-submit-context"
+          element={<ImperativeSubmitContext />}
+        />
+        <Route
+          path="/imperative-submit-control"
+          element={<ImperativeSubmitControl />}
+        />
       </Routes>
     </BrowserRouter>
   );

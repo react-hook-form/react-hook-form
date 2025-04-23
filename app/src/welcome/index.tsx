@@ -228,6 +228,15 @@ const items: Item[] = [
     description: 'Should behave correctly when disabling form or fields',
     slugs: ['/disabled'],
   },
+  {
+    title: 'ImperativeSubmit',
+    description: 'Should submit the form imperatively',
+    slugs: [
+      '/imperative-submit',
+      '/imperative-submit-context',
+      '/imperative-submit-control',
+    ],
+  },
 ];
 
 const Component: React.FC = () => {
