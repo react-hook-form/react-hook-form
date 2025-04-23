@@ -13,7 +13,7 @@ describe('defaultValues', () => {
 
     nameInput().type('bill');
 
-    cy.get('button').click();
+    cy.get('#hookSubmit').click();
 
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -24,7 +24,7 @@ describe('defaultValues', () => {
     formIdInput().clear().type('my-new-form');
     nameInput().clear().type('luo');
 
-    cy.get('button').click();
+    cy.get('#hookSubmit').click();
 
     cy.get('#form-id').contains('my-new-form');
     cy.get('#result').should(($state) =>
@@ -35,5 +35,14 @@ describe('defaultValues', () => {
 
     formIdInput().clear();
     cy.get('#form-id').contains('form-');
+
+    nameInput().clear().type('bombillazo');
+    cy.get('#funcSubmit').click();
+
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        name: 'bombillazo',
+      }),
+    );
   });
 });
