@@ -46,6 +46,7 @@ import {
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
+import createId from '../utils/createId';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
@@ -65,8 +66,8 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
+import submitForm from '../utils/submit';
 import unset from '../utils/unset';
-import uuid from '../utils/uuid';
 
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
@@ -1466,17 +1467,10 @@ export function createFormControl<
       });
     });
 
-  const id = props.id || `form-${uuid()}`;
+  const id = createId(props.id);
 
   const submit = () => {
-    try {
-      document?.getElementById(id)?.dispatchEvent(
-        new Event('submit', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    } catch (_) {}
+    submitForm(id);
   };
 
   const methods = {

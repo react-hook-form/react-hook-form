@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 
 const Input = React.forwardRef(({ name }, ref) => {
   return <input ref={ref} name={name} />;

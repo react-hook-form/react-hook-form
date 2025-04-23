@@ -1,169 +1,174 @@
 <div align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-            <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" />
-        </a>
+  <img src="./docs/logo.png" alt="RHF Plus Logo" />
 </div>
 
 <div align="center">
 
-[![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
-[![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
-[![npm](https://img.shields.io/npm/l/react-hook-form?style=for-the-badge)](https://github.com/react-hook-form/react-hook-form/blob/master/LICENSE)
-[![Discord](https://img.shields.io/discord/754891658327359538.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/yYv7GZ8)
+[![npm downloads](https://img.shields.io/npm/dm/@bombillazo/rhf-plus.svg?style=for-the-badge)](https://www.npmjs.com/package/@bombillazo/rhf-plus)
+[![npm](https://img.shields.io/npm/dt/@bombillazo/rhf-plus.svg?style=for-the-badge)](https://www.npmjs.com/package/@bombillazo/rhf-plus)
+[![npm](https://img.shields.io/npm/l/@bombillazo/rhf-plus?style=for-the-badge)](https://github.com/bombillazo/rhf-plus/blob/master/LICENSE)
 
 </div>
 
-<p align="center">
-  <a href="https://react-hook-form.com/get-started">Get started</a> | 
-  <a href="https://react-hook-form.com/docs">API</a> |
-  <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
-  <a href="https://react-hook-form.com/faqs">FAQs</a> |
-  <a href="https://github.com/react-hook-form/react-hook-form/tree/master/examples">Examples</a>
-</p>
-
-### Features
-
-- Built with performance, UX and DX in mind
-- Embraces native HTML form [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
-- [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
-- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/colinhacks/zod), [AJV](https://github.com/ajv-validator/ajv), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) and [others](https://github.com/react-hook-form/resolvers)
+RHF+ (`rhf-plus`) is a fork of [react-hook-form](https://react-hook-form.com/) (**RHF**) with some feature enhancements. It is designed to be a drop-in replacement for RHF, so you can use it in your existing projects without any changes.
 
 ### Install
 
-    npm install react-hook-form
+```sh
+npm install @bombillazo/rhf-plus
+```
 
-### Quickstart
+## Enhancements
+
+### Imperative Form Submission
+
+New properties:
+
+- `id`: a unique identifier for the form. If not provided, a random ID is generated.
+- `submit`: a method to submit the form imperatively.
+
+API Changes:
+
+- `id` added to `useForm` props:
+
+```diff
+export type UseFormProps<...> = Partial<{
+    ...
+    delayError: number;
+    formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
++   id: string;
+}>;
+```
+
+- `id`, `submit` returned as part of the `UseFormReturn` form:
+  
+```diff
+export type UseFormReturn<...> = {
+    ...
+    setFocus: UseFormSetFocus<TFieldValues>;
+    subscribe: UseFromSubscribe<TFieldValues>;
++   id: string;
++   submit: () => void;
+};
+```
+
+Now all forms returned by any RHF API contains an `id` and `submit` function. You may assign a custom unique ID to each form using the `id` option in the `useForm` hook. If no ID is given, a random one is generated. Using the `form.submit()` method you can submit the form imperatively . This is useful when you want to trigger form submission from anywhere in your application (including outside the Form context).
 
 ```jsx
-import { useForm } from 'react-hook-form';
+// Example using the useForm hook
+import { useForm } from '@bombillazo/rhf-plus';
 
 function App() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const form = useForm({
+    id: 'my-form', // uniquely identify the form (optional)
+  });
 
   return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <input {...register('firstName')} />
-      <input {...register('lastName', { required: true })} />
-      {errors.lastName && <p>Last name is required.</p>}
-      <input {...register('age', { pattern: /\d+/ })} />
-      {errors.age && <p>Please enter number for age.</p>}
-      <input type="submit" />
-    </form>
+    <>
+      <form 
+        id={form.id} // assign the form ID to the form element
+        onSubmit={form.handleSubmit((data) => console.log(data))}
+      >
+        <input {...form.register('name')} />
+      </form>
+      {/* imperatively submit the form */}
+      <Button onClick={() => form.submit()}>
+        Submit
+      </Button>
+    </>
   );
 }
 ```
 
-### Sponsors
+```jsx
+// Example with Form Context
+import { useForm, FormProvider } from '@bombillazo/rhf-plus';
 
-We’re incredibly grateful to these kind and generous sponsors for their support!
+function App() {
+  const form = useForm();
 
-<a target="_blank" href='https://workleap.com/'>
-    <img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://www.sgkb.ch/'>
-    <img width="120" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://www.sanity.io/'>
-    <img width="120" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://route4me.com/'>
-    <img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
-</a>
-<a target="_blank" href='https://twicsy.com/'>
-    <img width="120" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://toss.im'>
-    <img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
-</a>
-<a target="_blank" href='https://principal.com/about-us'>
-    <img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
-</a>
-<a target="_blank" href="https://graphcms.com">
-    <img width="120" src="https://avatars.githubusercontent.com/u/31031438" />
-</a>
-<a target="_blank" href="https://www.beekai.com/">
-    <img width="120" src="https://www.beekai.com/marketing/logo/logo.svg" />
-</a>
-<a target="_blank" href="https://kanamekey.com">
-    <img width="120" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
-</a>
+  return (
+    <FormProvider {...form}>
+      <form 
+        id={form.id}
+        onSubmit={form.handleSubmit((data) => console.log(data))}
+      >
+        <input {...form.register('name')} />
+      </form>
+      <SubmitButton />
+    </FormProvider>
+  );
+}
 
-### Past Sponsors
+function SubmitButton() {
+  const form = useFormContext();
 
-Thank you to our previous sponsors for your generous support!
+  return (
+    <Button onClick={() => form.submit()}>
+      Submit
+    </Button>
+  );
+}
+```
 
-<a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="24" height="24" />
-</a>
-<a target="_blank" href="https://underbelly.is">
-    <img width="24" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
-</a>
-<a target="_blank" href="https://feathery.io">
-    <img width="24" src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" />
-</a>
-<a target="_blank" href="https://getform.io">
-    <img width="24" src="https://images.opencollective.com/getformio2/3c978c8/avatar/256.png" />
-</a>
-<a href="https://marmelab.com/" target="_blank">
-  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="24" height="24" />
-</a>
-<a target="_blank" href="https://formcarry.com/">
-    <img width="24" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
-</a>
-<a target="_blank" href="https://fabform.io">
-    <img width="24" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
-</a>
-<a target="_blank" href="https://www.thinkmill.com.au/">
-    <img width="24" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
-</a>
-<a target="_blank" href="https://kwork.studio/">
-    <img width="24" src="https://images.opencollective.com/knowledge-work/f91b72d/logo/256.png" />
-</a>
-<a target="_blank" href="https://fiberplane.com/">
-    <img width="24" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
-</a>
-<a target="_blank" href="https://www.jetbrains.com/">
-    <img width="24" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" />
-</a>
-<a target="_blank" href="https://www.mirakl.com/">
-    <img width="24" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
-</a>
-<a target="_blank" href='https://wantedlyinc.com'>
-    <img width="24" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
-</a>
-<a target="_blank" href="https://www.casinoreviews.net/">
-    <img width="24" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
-</a>
+```jsx
+// Example using Form Control
+import { useForm, createFormControl } from '@bombillazo/rhf-plus';
 
-### Backers
 
-Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+const fc = createFormControl()
 
-<a href="https://opencollective.com/react-hook-form#backers">
-    <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
-</a>
+function App() {
+  useForm({ formControl: fc.formControl });
+
+  const name = fc.watch('name');
+  
+  useEffect(() => {
+    if (name === '1234') {
+      // imperatively submit the form
+      fc.submit();
+    }
+  }, [name]); 
+
+  return (
+
+      <form 
+        id={fc.id}
+        onSubmit={fc.handleSubmit((data) => console.log(data))}
+      >
+        <input {...fc.register('code')} />
+      </form>
+  );
+}
+```
+
+1. **Form-level custom metadata** : You can add custom metadata to the form using the `form` object returned by the `useForm` hook. This is useful when you want to store additional information related to the form.
+
+### Versioning
+
+Even though we are enhancing RHF, `rhf-plus` aims to follow the original RHF package as closely as possible. Our focus will be on:
+
+- adding new enhancements
+- keeping this library synced with the `latest` RHF version
+
+To make versioning simple, `rhf-plus` follows these versioning rules:
+
+- `rhf-plus` versions are based on the `latest` existing RHF version to which the enhancements are applied (e.g., `7.5.0`).
+- `rhf-plus` versions are suffixed with `-plus.x`, staring with index `0`.
+  - For example, the first version of `rhf-plus` based on RHF `7.5.0` will be `7.5.0-plus.0`.
+- The `-plus.x` suffix is incremented with each new release of `rhf-plus`.
+  - For example, if the latest RHF version the second version of `rhf-plus` based on RHF `7.5.0` will be `7.5.0-plus.1`.
+- The `-plus.x` suffix is reset to `0` when a new version of RHF is released.
+
+#### Out of Scope
+
+Here is a list of things we will **NOT** do:
+
+- **Support older RHF versions**:  As new enhancements come in, they will only be applied to the current and latest RHF version. This is to ensure that we are closely synced to RHF and to reduce the overhead of maintaining multiple versions of `rhf-plus`.
+- **Fix RHF bugs**: Those are the responsibility of the RHF team. We will only focus on fixing bugs in `rhf-plus` that are related to our enhancements. Once RHF fixes a bug, we will roll them into `rhf-plus` when we sync versions.
+- **Add unrelated RHF features**: This is to ensure that we are not diverging too much from the original RHF package and are not creating a separate library.
+
 
 ### Contributors
 
 Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
-
-<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-  <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
-</a>
-
-<br />
-<br />
-
-<a href="https://ui.dev/bytes/?r=bill">
-  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
-</a>
-
-<br />
-<br />
-
-<p align="center">Documentation website supported and backed by <a href="https://vercel.com"><b>Vercel</b></a></p>

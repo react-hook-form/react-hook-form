@@ -6,7 +6,7 @@ import {
   Controller,
   Control,
   UseFormReturn,
-} from 'react-hook-form';
+} from 'rhf-plus';
 
 let renderCount = 0;
 

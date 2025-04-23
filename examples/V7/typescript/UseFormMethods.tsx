@@ -4,7 +4,7 @@ import {
   UseFormReturn,
   UseFormRegisterReturn,
   SubmitHandler,
-} from 'react-hook-form';
+} from 'rhf-plus';
 
 import './styles.css';
 

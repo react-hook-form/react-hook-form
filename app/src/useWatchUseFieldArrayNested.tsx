@@ -5,7 +5,7 @@ import {
   useForm,
   useWatch,
   Control,
-} from 'react-hook-form';
+} from 'rhf-plus';
 
 type FormValues = {
   test: {

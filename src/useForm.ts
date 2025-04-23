@@ -1,9 +1,11 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
+import createId from './utils/createId';
 import deepEqual from './utils/deepEqual';
 import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
+import submitForm from './utils/submit';
 import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 
@@ -163,6 +165,21 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    if (
+      _formControl.current &&
+      props.id !== undefined &&
+      _formControl.current.id !== props.id
+    ) {
+      const id = createId(props.id);
+      _formControl.current.id = id;
+      _formControl.current.submit = () => {
+        submitForm(id);
+      };
+      updateFormState((state) => ({ ...state }));
+    }
+  }, [props.id]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

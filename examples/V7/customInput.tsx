@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 import Input from '@material-ui/core/Input';
 import Select from 'react-select';
 import { Input as StrapInput } from 'reactstrap';
@@ -94,7 +94,7 @@ export default function App() {
         <div>
           <label htmlFor="email">Email</label>
           <input
-            placeholder="bluebill1049@hotmail.com"
+            placeholder="email@hotmail.com"
             type="email"
             {...register('email')}
           />

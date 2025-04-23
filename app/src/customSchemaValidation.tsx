@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
+import { useForm, ValidationMode } from 'rhf-plus';
 import Joi from 'joi';
 import { useParams } from 'react-router-dom';
 

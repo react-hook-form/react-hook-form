@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 
 function ResetKeepDirty() {
   const { register, reset, setValue, watch } = useForm<{

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
+import { useForm, ValidationMode } from 'rhf-plus';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useParams } from 'react-router-dom';

@@ -1,6 +1,6 @@
 {
-  "name": "react-hook-form",
-  "description": "Performant, flexible and extensible forms library for React Hooks",
+  "name": "rhf-plus",
+  "description": "Enhanced functionality for React Hook Form",
   "version": "7.56.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
@@ -58,6 +58,7 @@
     "react",
     "hooks",
     "form",
+    "plus",
     "forms",
     "form-validation",
     "validation",
@@ -66,10 +67,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/react-hook-form/react-hook-form"
+    "url": "https://github.com/bombillazo/rhf-plus"
   },
-  "homepage": "https://www.react-hook-form.com",
-  "author": "Beier(Bill) Luo <bluebill1049@hotmail.com>",
+  "author": "Hector Ayala <hran@bombillazo.com>",
   "license": "MIT",
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
@@ -134,10 +134,6 @@
     "*.{md,json,yml}": [
       "prettier --write"
     ]
-  },
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/react-hook-form"
   },
   "engines": {
     "node": ">=18.0.0"

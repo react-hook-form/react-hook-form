@@ -1,0 +1,65 @@
+name: Publish Forked Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "npm version: $TAG"
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          node -e "const fs=require('fs');let p=require('./package.json');p.version='$TAG';fs.writeFileSync('package.json', JSON.stringify(p,null,2));"
+
+      - name: Determine last tag
+        id: last_tag
+        run: |
+          echo "Getting last tag before this one..."
+          LAST_TAG=$(git tag --sort=-creatordate | grep '^v[0-9]' | grep -v "${GITHUB_REF#refs/tags/}" | head -n1)
+          echo "Last tag: $LAST_TAG"
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog since last tag
+        id: changelog
+        run: |
+          echo "Generating changelog from ${{ steps.last_tag.outputs.last_tag }} to ${{ github.ref_name }}"
+          LOG=$(git log --merges --pretty=format:'- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))' ${{ steps.last_tag.outputs.last_tag }}..HEAD)
+          echo "log<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Update GitHub Release notes
+        if: always()
+        run: |
+          gh release edit "${{ github.ref_name }}" \
+            --repo ${{ github.repository }} \
+            --notes "${{ steps.changelog.outputs.log }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

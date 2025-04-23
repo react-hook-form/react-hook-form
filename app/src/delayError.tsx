@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 import React from 'react';
 
 export function DelayError() {

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -35,7 +35,7 @@ export default function App() {
           <label htmlFor="email">Email</label>
           <input
             name="email"
-            placeholder="bluebill1049@hotmail.com"
+            placeholder="email@hotmail.com"
             type="text"
             ref={register}
           />

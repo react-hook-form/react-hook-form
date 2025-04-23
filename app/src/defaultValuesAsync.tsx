@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from 'rhf-plus';
 
 const sleep = <T,>(data: T, ms: number) =>
   new Promise<T>((res) => setTimeout(() => res(data), ms));

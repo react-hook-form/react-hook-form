@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useForm, ValidationMode } from 'react-hook-form';
+import { useForm, ValidationMode } from 'rhf-plus';
 
 type ReValidateMode = 'onBlur' | 'onChange' | 'onSubmit' | undefined;
 let renderCounter = 0;
