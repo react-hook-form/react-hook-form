@@ -57,7 +57,7 @@ We avoid enhancements that aggressively modify large parts of the RHF codebase. 
 
 `rhf-plus` versions look something like this:
 
-```js
+```sh
 7.55.0-plus.0
 \____/\___/ |
    |    |   |
