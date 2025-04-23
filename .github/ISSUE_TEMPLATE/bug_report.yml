@@ -1,36 +1,24 @@
 name: Bug Report
 description: File a bug report
-title: 'issue: '
+title: 'bug: '
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        **Remember:** These are bug reports related to enhancements provided by RHF+. If you are having issues with React Hook Form itself, please file an issue in the [React Hook Form repository](https://github.com/react-hook-form/react-hook-form/issues).
   - type: input
     id: version
     attributes:
       label: Version Number
-      description: What's the version number?
-      placeholder: Version number.
+      description: What's the RHV+ version?
     validations:
       required: true
   - type: input
     id: codesandbox
     attributes:
-      label: Codesandbox/Expo snack
-      description: Codesandbox/Expo snack link
+      label: CodeSandbox/Expo Snack Link
     validations:
       required: true
-  - type: markdown
-    attributes:
-      value: |
-        V7
-        - [JS](https://codesandbox.io/s/great-paper-deove) Template
-        - [TS](https://codesandbox.io/s/eager-sun-jt4df) Template
-
-        V6
-        - [JS](https://codesandbox.io/s/mystifying-keller-5jwf5) Template
-        - [TS](https://codesandbox.io/s/romantic-moon-0chz7) Template
   - type: textarea
     id: what-happened
     attributes:
