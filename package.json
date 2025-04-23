@@ -1,5 +1,5 @@
 {
-  "name": "rhf-plus",
+  "name": "@bombillazo/rhf-plus",
   "description": "Enhanced functionality for React Hook Form",
   "version": "7.56.1",
   "main": "dist/index.cjs.js",
@@ -67,7 +67,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bombillazo/rhf-plus"
+    "url": "git+https://github.com/bombillazo/rhf-plus.git"
   },
   "author": "Hector Ayala <hran@bombillazo.com>",
   "license": "MIT",
@@ -137,5 +137,12 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "bugs": {
+    "url": "https://github.com/bombillazo/rhf-plus/issues"
+  },
+  "homepage": "https://github.com/bombillazo/rhf-plus#readme"
 }
