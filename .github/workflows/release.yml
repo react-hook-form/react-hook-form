@@ -16,14 +16,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: 'https://registry.npmjs.org/'
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
       - name: Get base version from package.json
         id: version
