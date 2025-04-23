@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
 
 export default function App() {
   const { register, handleSubmit, reset } = useForm();

@@ -1,4 +1,4 @@
-import { useForm } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
 import React from 'react';
 
 export function DelayError() {

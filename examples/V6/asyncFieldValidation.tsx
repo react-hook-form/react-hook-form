@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

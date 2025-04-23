@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
 import Input from '@material-ui/core/Input';
 import Select from 'react-select';
 import { Input as StrapInput } from 'reactstrap';

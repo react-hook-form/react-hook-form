@@ -1,6 +1,6 @@
 import React from 'react';
-import { useForm } from 'rhf-plus';
-import type { DefaultValues } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
+import type { DefaultValues } from '@bombillazo/rhf-plus';
 
 type FormValues = {
   focusInput: string;

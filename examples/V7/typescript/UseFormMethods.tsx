@@ -4,7 +4,7 @@ import {
   UseFormReturn,
   UseFormRegisterReturn,
   SubmitHandler,
-} from 'rhf-plus';
+} from '@bombillazo/rhf-plus';
 
 import './styles.css';
 

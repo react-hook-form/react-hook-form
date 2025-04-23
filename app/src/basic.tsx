@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, ValidationMode } from 'rhf-plus';
+import { useForm, ValidationMode } from '@bombillazo/rhf-plus';
 import { useParams } from 'react-router-dom';
 
 let renderCounter = 0;

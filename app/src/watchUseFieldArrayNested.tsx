@@ -1,5 +1,10 @@
 import React from 'react';
-import { Controller, useFieldArray, useForm, Control } from 'rhf-plus';
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  Control,
+} from '@bombillazo/rhf-plus';
 
 type FormValues = {
   test: {

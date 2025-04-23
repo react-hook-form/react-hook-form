@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormState, useForm, Control } from 'rhf-plus';
+import { useFormState, useForm, Control } from '@bombillazo/rhf-plus';
 
 let renderCounter = 0;
 

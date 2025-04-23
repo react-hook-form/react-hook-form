@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
 import * as yup from 'yup'; // you will have to install yup
 
 const SignupSchema = yup.object().shape({

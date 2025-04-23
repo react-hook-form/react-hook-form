@@ -6,7 +6,7 @@ import {
   Controller,
   Control,
   UseFormReturn,
-} from 'rhf-plus';
+} from '@bombillazo/rhf-plus';
 
 let renderCount = 0;
 

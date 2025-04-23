@@ -1,4 +1,4 @@
-import { useForm, Form } from 'rhf-plus';
+import { useForm, Form } from '@bombillazo/rhf-plus';
 import React from 'react';
 
 export default function FormComponent() {

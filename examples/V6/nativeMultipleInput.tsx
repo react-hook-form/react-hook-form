@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, NestedValue } from 'rhf-plus';
+import { useForm, NestedValue } from '@bombillazo/rhf-plus';
 
 export default function App() {
   const { register, errors, handleSubmit } = useForm<{

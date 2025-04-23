@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, SubmitHandler } from 'rhf-plus';
+import { useForm, SubmitHandler } from '@bombillazo/rhf-plus';
 
 type FormValues = {
   firstName: string;

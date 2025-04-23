@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactSelect from 'react-select';
-import { useForm, Controller } from 'rhf-plus';
+import { useForm, Controller } from '@bombillazo/rhf-plus';
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },

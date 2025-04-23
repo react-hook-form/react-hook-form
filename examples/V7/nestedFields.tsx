@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'rhf-plus';
+import { useForm } from '@bombillazo/rhf-plus';
 
 export function FormSection1({ register }) {
   return (

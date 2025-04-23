@@ -1,6 +1,6 @@
 import React from 'react';
 import MaskedInput from 'react-input-mask';
-import { useForm, Controller } from 'rhf-plus';
+import { useForm, Controller } from '@bombillazo/rhf-plus';
 
 import './styles.css';
 

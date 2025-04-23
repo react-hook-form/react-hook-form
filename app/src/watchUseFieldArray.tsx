@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, useFieldArray } from 'rhf-plus';
+import { useForm, useFieldArray } from '@bombillazo/rhf-plus';
 import { useParams } from 'react-router-dom';
 
 let renderCount = 0;

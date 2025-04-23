@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormProvider, useForm, useFormContext } from 'rhf-plus';
+import { FormProvider, useForm, useFormContext } from '@bombillazo/rhf-plus';
 
 const ImperativeSubmitContext: React.FC = () => {
   const [result, setResult] = React.useState({});

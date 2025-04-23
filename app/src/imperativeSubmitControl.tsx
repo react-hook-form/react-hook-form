@@ -1,5 +1,5 @@
 import React from 'react';
-import { createFormControl, useForm } from 'rhf-plus';
+import { createFormControl, useForm } from '@bombillazo/rhf-plus';
 
 const fc = createFormControl<{
   name: string;

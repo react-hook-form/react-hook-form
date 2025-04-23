@@ -5,7 +5,7 @@ import {
   useFormState,
   useForm,
   Control,
-} from 'rhf-plus';
+} from '@bombillazo/rhf-plus';
 
 type FormValues = {
   test: {

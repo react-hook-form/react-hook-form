@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@bombillazo/rhf-plus':
+        specifier: file:..
+        version: file:..(react@19.1.0)
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.1.2)(react@19.1.0)
@@ -35,9 +38,6 @@ importers:
       react-select:
         specifier: ^5.9.0
         version: 5.10.1(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      rhf-plus:
-        specifier: file:..
-        version: file:..(react@19.1.0)
       yup:
         specifier: ^1.6.1
         version: 1.6.1
@@ -149,6 +149,12 @@ packages:
   '@babel/types@7.27.0':
     resolution: {integrity: sha512-H45s8fVLYjbhFH62dIJ3WtmJ6RSPt/3DRO0ZcT2SUiYiQyz3BLVb9ADEnLl91m74aQPS3AzzeajZHYOalWe3bg==}
     engines: {node: '>=6.9.0'}
+
+  '@bombillazo/rhf-plus@file:..':
+    resolution: {directory: .., type: directory}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
 
   '@emotion/babel-plugin@11.13.5':
     resolution: {integrity: sha512-pxHCpT2ex+0q+HH91/zsdHkw/lXd468DIN2zvfvLtPKLLMo6gQj7oLObq8PhkrxOZb/gGCq03S3Z7PDhS8pduQ==}
@@ -854,12 +860,6 @@ packages:
     engines: {node: '>= 0.4'}
     hasBin: true
 
-  rhf-plus@file:..:
-    resolution: {directory: .., type: directory}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18 || ^19
-
   rollup@4.40.0:
     resolution: {integrity: sha512-Noe455xmA96nnqH5piFtLobsGbCij7Tu+tb3c1vYjNbTkfzGqXqQXG3wJaYXkRZuQ0vEYN4bhwg7QnIrqB5B+w==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -1078,6 +1078,10 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
+
+  '@bombillazo/rhf-plus@file:..(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
 
   '@emotion/babel-plugin@11.13.5':
     dependencies:
@@ -1707,10 +1711,6 @@ snapshots:
       is-core-module: 2.16.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
-
-  rhf-plus@file:..(react@19.1.0):
-    dependencies:
-      react: 19.1.0
 
   rollup@4.40.0:
     dependencies:

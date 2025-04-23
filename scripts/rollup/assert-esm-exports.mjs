@@ -4,7 +4,7 @@
  *
  * @see https://nodejs.org/docs/latest/api/packages.html#packages_determining_module_system
  */
-import * as exported from 'rhf-plus';
+import * as exported from '@bombillazo/rhf-plus';
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';

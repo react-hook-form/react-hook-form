@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm, FormProvider, useFormContext } from 'rhf-plus';
+import { useForm, FormProvider, useFormContext } from '@bombillazo/rhf-plus';
 
 export default function App() {
   const methods = useForm();
