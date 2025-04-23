@@ -59,7 +59,7 @@ We avoid enhancements that aggressively modify large parts of the RHF codebase. 
 
 ```sh
 7.55.0-plus.0
-\____/\___/ |
+\____/\____/|
    |    |   |
    1    2   3
 ```
