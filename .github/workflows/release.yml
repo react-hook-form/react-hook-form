@@ -1,4 +1,4 @@
-name: Auto Tag & Publish Forked Package
+name: Release
 
 on:
   workflow_dispatch:
