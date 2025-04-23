@@ -1,6 +1,6 @@
 # Contributing to `React Hook Form`
 
-As a fan, user and contributor of `react-hook-form`, I want to help the library continue to grow and evolve. I encourage everyone to help and support this library by contributing.
+As fans, users and contributors of `react-hook-form`, we want to help the library continue to grow and evolve. We encourage everyone to help and support this library by contributing.
 
 ## Code contributions
 
