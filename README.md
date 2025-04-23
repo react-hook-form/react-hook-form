@@ -25,7 +25,7 @@ npm install @bombillazo/rhf-plus
 
 ## Motive
 
-RHF is a robust and delightfully designed form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
+RHF is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
 
 Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
 
