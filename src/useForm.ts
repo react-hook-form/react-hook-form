@@ -167,7 +167,11 @@ export function useForm<
   });
 
   React.useEffect(() => {
-    if (_formControl.current) {
+    if (
+      _formControl.current &&
+      props.id &&
+      _formControl.current.id !== props.id
+    ) {
       const id = createId(props.id);
       _formControl.current.id = id;
       _formControl.current.submit = () => {
