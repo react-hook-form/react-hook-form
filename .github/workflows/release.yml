@@ -1,19 +1,17 @@
-name: Publish Forked Package
+name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
+      packages: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -24,42 +22,59 @@ jobs:
           node-version: 20
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Install dependencies
+      - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: Extract version from tag
+      - name: Get base version from package.json
         id: version
         run: |
-          TAG=${GITHUB_REF#refs/tags/v}
-          echo "npm version: $TAG"
-          echo "version=$TAG" >> $GITHUB_OUTPUT
-          node -e "const fs=require('fs');let p=require('./package.json');p.version='$TAG';fs.writeFileSync('package.json', JSON.stringify(p,null,2));"
+          BASE=$(node -p "require('./package.json').version")
+          echo "base_version=$BASE" >> $GITHUB_OUTPUT
 
-      - name: Determine last tag
-        id: last_tag
+      - name: Calculate next available release tag
+        id: tag
         run: |
-          echo "Getting last tag before this one..."
-          LAST_TAG=$(git tag --sort=-creatordate | grep '^v[0-9]' | grep -v "${GITHUB_REF#refs/tags/}" | head -n1)
-          echo "Last tag: $LAST_TAG"
-          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+          BASE_VERSION="${{ steps.version.outputs.base_version }}"
+          TAG_PREFIX="v${BASE_VERSION}-plus"
+          EXISTING_TAGS=$(git tag -l "${TAG_PREFIX}.*" || true)
 
-      - name: Generate changelog since last tag
-        id: changelog
+          if [ -z "$EXISTING_TAGS" ]; then
+            NEXT_INDEX=0
+          else
+            LAST_INDEX=$(echo "$EXISTING_TAGS" | sed -E "s/^${TAG_PREFIX}\.//" | sort -n | tail -n1)
+            NEXT_INDEX=$((LAST_INDEX + 1))
+          fi
+
+          FINAL_TAG="${TAG_PREFIX}.${NEXT_INDEX}"
+          echo "Next tag: $FINAL_TAG"
+          echo "tag=$FINAL_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Git Tag
         run: |
-          echo "Generating changelog from ${{ steps.last_tag.outputs.last_tag }} to ${{ github.ref_name }}"
-          LOG=$(git log --merges --pretty=format:'- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))' ${{ steps.last_tag.outputs.last_tag }}..HEAD)
-          echo "log<<EOF" >> $GITHUB_OUTPUT
-          echo "$LOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag ${{ steps.tag.outputs.tag }}
+          git push origin ${{ steps.tag.outputs.tag }}
 
-      - name: Build package
+      - name: Update version in package.json for publish
+        run: |
+          node -e "const fs=require('fs');let p=require('./package.json');p.version='${{ steps.tag.outputs.tag }}'.replace(/^v/, '');fs.writeFileSync('./package.json', JSON.stringify(p,null,2));"
+
+      - name: Build
         run: pnpm build
 
-      - name: Update GitHub Release notes
-        if: always()
+      - name: Publish to npm (real)
+        run: pnpm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release with PR list
         run: |
-          gh release edit "${{ github.ref_name }}" \
-            --repo ${{ github.repository }} \
-            --notes "${{ steps.changelog.outputs.log }}"
+          LAST_TAG=$(git tag --sort=-creatordate | grep -v "${{ steps.tag.outputs.tag }}" | head -n1)
+          LOG=$(git log --merges --pretty=format:'- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))' $LAST_TAG..HEAD)
+
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            --title "${{ steps.tag.outputs.tag }}" \
+            --notes "$LOG"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
