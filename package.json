@@ -144,5 +144,8 @@
   "bugs": {
     "url": "https://github.com/bombillazo/rhf-plus/issues"
   },
-  "homepage": "https://github.com/bombillazo/rhf-plus#readme"
+  "homepage": "https://github.com/bombillazo/rhf-plus#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
