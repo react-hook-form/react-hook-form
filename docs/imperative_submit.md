@@ -38,8 +38,7 @@ export type UseFormReturn<...> = {
 
 ### Description
 
-Now all forms returned by any RHF API contains an `id` and `submit` function. You may assign a custom unique ID to each form using the `id` option in the `useForm` hook. If no ID is given, a random one is generated. Using the `form.submit()` method you can submit the form imperatively . This is useful when you want to trigger form submission from anywhere in your application (including outside the Form context).
-
+Now all forms returned by any RHF API contain an `id` and `submit` function. You may assign a custom unique ID to each form using the `id` option in the `useForm` hook. If no ID is given, a random one is generated. Using the `form.submit()` method you can submit the form imperatively. This is useful when you want to trigger form submission from anywhere in your application (including outside the Form context).
 ## Examples
 
 ```jsx
