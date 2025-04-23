@@ -9,14 +9,15 @@ body:
   - type: input
     id: version
     attributes:
-      label: Version Number
-      description: What's the RHV+ version?
+      label: RHF+ Version
+      description: e.g. v7.56.1-plus.0
     validations:
       required: true
   - type: input
     id: codesandbox
     attributes:
-      label: CodeSandbox/Expo Snack Link
+      label: Reproduction Link
+      description: Please provide a link to a minimal reproduction of the bug using a tool like [CodeSandbox](https://codesandbox.io/). This helps us to quickly identify and fix the issue.
     validations:
       required: true
   - type: textarea
@@ -27,8 +28,7 @@ body:
       value: |
         1. Go to '...'
         2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
+        3. See error
     validations:
       required: true
   - type: textarea
@@ -37,20 +37,10 @@ body:
       label: Expected behaviour
     validations:
       required: true
-  - type: dropdown
-    id: browsers
-    attributes:
-      label: What browsers are you seeing the problem on?
-      multiple: true
-      options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Edge
   - type: textarea
     id: logs
     attributes:
-      label: Relevant log output
+      label: Logs and Errors
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
   - type: checkboxes
