@@ -1,4 +1,4 @@
-describe('defaultValues', () => {
+describe('imperativeSubmit', () => {
   it('should submit form imperatively', () => {
     cy.visit('http://localhost:3000/imperative-submit');
 
