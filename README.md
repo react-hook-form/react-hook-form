@@ -36,22 +36,26 @@ Ideally, this fork would not exist, and all of these enhancements and features w
 - **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
 - **Compatibility**: New features should be additive, not destructive. `rhf-plus` aims to stay closely synced to the original RHF.
 - **Practicality**: The enhancements must be practical and solve real-world problems.
-- **Speed**: We want to discuss, review, and ship features faster!
+- **Speed**: Discuss, review, and ship features fast!
 - **Quality**: We maintain the same high-quality standards as RHF. This means clean code, testing, and clear documentation.
 
 ### ❌ Out of Scope
 
+- **RHF bugs**:  
+RHF maintainers are responsible for fixing RHF bugs. We focus on fixing bugs related to our enhancements. When RHF bugs are fixed, those fixes are rolled into this package when we sync to the latest RHF version.
+
+- **Refactors**:  
+We do not refactor RHF code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements that complicates syncing the fork with RHF.
+
+- **Breaking changes**:  
+We do not introduce breaking changes to the RHF API. We only add new features and enhancements that are backward compatible with the existing RHF API.
+
+- **Complex/bloated features**:  
+We avoid enhancements that aggressively modify large parts of the RHF codebase. This ensures we do not diverge too much from the original RHF package.
+
 - **Past RHF versions**:  
 As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
-- **Refactors**:  
-We do not refactor RHF code, add new tooling, update dependency versions, update code styling, etc. Our goal is to add new features and enhancements, which prevents us from diverging too much from the original RHF package.
-
-- **RHF bugs**:  
-RHF maintainers are responsible for fixing RHF bugs. We focus on fixing `rhf-plus` bugs related to our enhancements. When RHF bugs are fixed, the fixes are rolled into this package when we sync versions.
-
-- **Complex/bloated enhancements**:  
-We avoid enhancements that aggressively modify large parts of the RHF codebase. This ensures we do not diverge too much from the original RHF package.
 
 ## Versioning
 
