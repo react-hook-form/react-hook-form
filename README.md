@@ -20,17 +20,17 @@ npm install @bombillazo/rhf-plus
 
 ### Motive
 
-RHF is a delightfully designed and robust React form library. Preserving such high-quality standards takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a bottleneck that has slowed down and even stalled contributions. The PRs and feature requests keep piling up indefinitely.
+RHF is a delightfully designed and robust React form library. But preserving such high-quality standards takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a bottleneck that has slowed and stalled contributions.
 
-For risk-takers and restless devs, this led to the creation of `rhf-plus`: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
+This led to the creation of `rhf-plus`: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
 
 Our central tenets are:
 
-- **Feature-focused**: This package's main purpose is to enhance RHF's functionality. We avoid getting distracted by other development efforts.
-- **Compatibility**: Even though we are enhancing RHF, new features should be additive, not destructive. `rhf-plus` aims to stay as closely synced to the original RHF package as possible.
-- **Practicality**: The enhancements added must be helpful and practical. We want to ensure that the features solve real-world problems.
-- **Speed**: We want to be fast! New features should be discussed, reviewed, and shipped quickly!
-- **Quality**: We want to maintain the same high-quality standards as RHF. This means following the good practices of clean code, testing and writing clear documentation.
+- **Feature-focused**: This package aims to enhance RHF's functionality. We avoid other development efforts.
+- **Compatibility**: New features should be additive, not destructive. `rhf-plus` aims to stay closely synced to the original RHF.
+- **Practicality**: The enhancements added must be practical and solve real-world problems.
+- **Speed**: We want to discuss, review, and ship features faster!
+- **Quality**: We maintain the same high-quality standards as RHF. This means clean code, testing, and clear documentation.
 
 Ideally, this fork would not exist, and all of these enhancements and features would be built into RHF. In the meantime, we are happy to share our work with the community and hope that it will be helpful to you.
 
