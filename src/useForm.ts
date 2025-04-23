@@ -169,7 +169,7 @@ export function useForm<
   React.useEffect(() => {
     if (
       _formControl.current &&
-      props.id &&
+      props.id !== undefined &&
       _formControl.current.id !== props.id
     ) {
       const id = createId(props.id);
