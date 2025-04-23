@@ -64,8 +64,8 @@ As new enhancements are introduced, they are only applied to the current and lat
 ```sh
 7.55.0-plus.0
 \____/\____/|
-   |    |   |
-   1    2   3
+  |     |   |
+  1     2   3
 ```
 
 1. **RHF version**  
