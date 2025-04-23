@@ -6,6 +6,7 @@ type Item = {
   title: string;
   description: string;
   slugs: string[];
+  plus?: boolean;
 };
 
 const items: Item[] = [
@@ -228,6 +229,16 @@ const items: Item[] = [
     description: 'Should behave correctly when disabling form or fields',
     slugs: ['/disabled'],
   },
+  {
+    title: 'ImperativeSubmit',
+    description: 'Should submit the form imperatively',
+    slugs: [
+      '/imperative-submit',
+      '/imperative-submit-context',
+      '/imperative-submit-control',
+    ],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {
@@ -238,9 +249,12 @@ const Component: React.FC = () => {
         Here you have the full list of the available testing routes:
       </h2>
       <div style={S.items}>
-        {items.map(({ title, description, slugs }: Item) => (
+        {items.map(({ title, description, slugs, plus }: Item) => (
           <div style={S.item} key={title}>
-            <div style={S.title}>{title}</div>
+            <div style={S.title}>
+              {title}
+              {plus ? <sup>+</sup> : null}
+            </div>
             <div style={S.description}>{description}</div>
             <div>
               {slugs.map((slug, index) => (
