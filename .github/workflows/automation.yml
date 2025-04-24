@@ -15,7 +15,7 @@ jobs:
       - name: Install Cypress preemptively
         shell: bash
         run: |
-          cypress install
+          ./node_modules/cypress/bin/cypress install
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
