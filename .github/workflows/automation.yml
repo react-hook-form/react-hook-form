@@ -12,6 +12,12 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
+      - name: Install App Dependencies
+        shell: bash
+        run: |
+          cd app
+          pnpm install --frozen-lockfile
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
