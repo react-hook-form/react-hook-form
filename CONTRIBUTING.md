@@ -1,4 +1,4 @@
-# Contributing to `React Hook Form`
+# Contributing to `RHF+`
 
 As fans, users and contributors of `react-hook-form`, we want to help the library continue to grow and evolve. We encourage everyone to help and support this library by contributing.
 

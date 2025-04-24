@@ -18,10 +18,10 @@
 npm install @bombillazo/rhf-plus
 ```
 
-## Enhancements
+## ✨ Enhancements
 
 - [Imperative Form Submission](./docs/imperative_submit.md)
-- [Add displayName to `useFormContext`](./docs/use-form-context-display-name)
+- [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
 - More to come... ([Become a contributor](CONTRIBUTING.md))
 
 ## Motive
