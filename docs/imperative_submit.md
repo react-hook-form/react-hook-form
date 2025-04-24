@@ -11,7 +11,7 @@ This feature allows for the imperative submission of forms. This is useful in sc
 - `id`: a unique identifier for the form. If not provided, a random ID is generated.
 - `submit`: a method to submit the form imperatively.
 
-### Type changes
+### Type updates
 
 - `id` added to `useForm` props:
 
