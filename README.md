@@ -10,7 +10,7 @@
 
 </div>
 
-**RHF+** is a fork of [react-hook-form](https://react-hook-form.com/) (**RHF**) with some feature enhancements. It is designed to be a drop-in replacement for RHF so you can use it in your existing projects without any changes.
+**RHF+** is a fork of [react-hook-form](https://react-hook-form.com/) (**RHF**) with feature enhancements. It is designed to be a drop-in replacement for RHF so you can use it in your existing projects without any changes.
 
 ### Install
 
@@ -18,44 +18,71 @@
 npm install @bombillazo/rhf-plus
 ```
 
-### Motive
-
-RHF is a delightfully designed and robust React form library. Preserving such high-quality standards takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a bottleneck that has slowed down and even stalled contributions. The PRs and feature requests keep piling up indefinitely.
-
-For risk-takers and restless devs, this led to the creation of `rhf-plus`: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
-
-Our central tenets are:
-
-- **Feature-focused**: This package's main purpose is to enhance RHF's functionality. We avoid getting distracted by other development efforts.
-- **Compatibility**: Even though we are enhancing RHF, new features should be additive, not destructive. `rhf-plus` aims to stay as closely synced to the original RHF package as possible.
-- **Practicality**: The enhancements added must be helpful and practical. We want to ensure that the features solve real-world problems.
-- **Speed**: We want to be fast! New features should be discussed, reviewed, and shipped quickly!
-- **Quality**: We want to maintain the same high-quality standards as RHF. This means following the good practices of clean code, testing and writing clear documentation.
-
-Ideally, this fork would not exist, and all of these enhancements and features would be built into RHF. In the meantime, we are happy to share our work with the community and hope that it will be helpful to you.
-
-#### Out of Scope
-
-We want to be clear on what do **NOT** do in this package:
-
-- **Support past RHF versions**: As new enhancements are introduced, they will only be applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple versions of `rhf-plus`.
-- **Refactoring and styling**: We will not be refactoring RHF code, adding new tooling or updating code styling. We will only be adding new features and enhancements. This ensures that we are not diverging too much from the original RHF package and are not creating a separate library.
-**Fix RHF bugs**: The RHF maintainers are responsible for fixing RHF bugs. We will focus on fixing `rhf-plus` bugs related to our enhancements. When RHF bugs are fixed, we will roll the fixes into `rhf-plus` when we sync versions.
-- **Add complex or bloated enhancements**: We avoid enhancements that upend large parts of the codebase. This ensures we do not diverge too much from the original RHF package.
-
-### Enhancements
+## Enhancements
 
 - [Imperative Form Submission](./docs/imperative_submit.md)
-- Form Level Metadata (WIP)
 - More to come... ([Become a contributor](CONTRIBUTING.md))
 
-### Versioning
+## Motive
 
-To make versioning simple, `rhf-plus` follows these versioning rules:
+RHF is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
 
-- `rhf-plus` versions are based on the `latest` existing RHF version to which the enhancements are applied (e.g., `7.5.0`).
-- `rhf-plus` versions are suffixed with `-plus.x`, staring with index `0`.
-  - For example, the first version of `rhf-plus` based on RHF `7.5.0` will be `7.5.0-plus.0`.
-- The `-plus.x` suffix is incremented with each new release of `rhf-plus`.
-  - For example, an update to `rhf-plus` based on RHF `7.5.0` would bump the version to `7.5.0-plus.1`.
-- The `-plus.x` suffix is reset to `0` when a new version of RHF is released.
+Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
+
+## Goals
+
+Ideally, this fork would not exist, and all of these enhancements and features would be built into RHF. In the meantime, we are happy to share our work with the community. Our goals are:
+
+- **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
+- **Compatibility**: New features should be additive, not destructive. `rhf-plus` aims to stay closely synced to the original RHF.
+- **Practicality**: The enhancements must be practical and solve real-world problems.
+- **Speed**: Discuss, review, and ship features fast!
+- **Quality**: We maintain the same high-quality standards as RHF. This means clean code, testing, and clear documentation.
+
+### ❌ Out of Scope
+
+- **RHF bugs**  
+RHF maintainers are responsible for fixing RHF bugs. We focus on fixing bugs related to our enhancements. When RHF bugs are fixed, those fixes are rolled into this package when we sync to the latest RHF version.
+
+- **Refactors**  
+We do not refactor RHF code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements that complicates syncing the fork with RHF.
+
+- **Breaking changes**  
+We do not introduce breaking changes to the RHF API. We only add new features and enhancements that are backward compatible with the existing RHF API.
+
+- **Complex/bloated features**  
+We avoid enhancements that aggressively modify large parts of the RHF codebase. This ensures we do not diverge too much from the original RHF package.
+
+- **Past RHF versions**  
+As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
+
+
+## Versioning
+
+`rhf-plus` versions look something like this:
+
+```sh
+7.55.0-plus.0
+\____/\____/|
+  |     |   |
+  1     2   3
+```
+
+1. **RHF version**  
+The react-hook-form version used as the base to add enhancements to (e.g., `7.55.0`)  
+
+1. **Separator token**  
+Separates RHF from RHF+ version (always `-plus.`)  
+
+1. **RHF+ version**  
+RHF+ version index (e.g., `0`)
+
+### Conventions
+
+1. New RHF+ versions use the latest RHF version as the base version
+2. RHF+ versions staring from index `0`
+   - For example, the first version of `rhf-plus` based on RHF `7.55.0` will be `7.55.0-plus.0`
+3. The RHF+ version increments with each new `rhf-plus` release
+   - For example, a new release based on RHF `7.55.0` would bump the version to `7.5.0-plus.1`
+4. The RHF+ version is reset to `0` when a new version of RHF is released
+   - For example, if RHF `7.56.0` is released, the newly synced version of `rhf-plus` based on that would be `7.56.0-plus.0`
