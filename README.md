@@ -21,6 +21,7 @@ npm install @bombillazo/rhf-plus
 ## Enhancements
 
 - [Imperative Form Submission](./docs/imperative_submit.md)
+- [Add displayName to `useFormContext`](./docs/use-form-context-display-name)
 - More to come... ([Become a contributor](CONTRIBUTING.md))
 
 ## Motive
@@ -30,8 +31,6 @@ RHF is a robust and delightful form library for React. Preserving high-quality s
 Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
 
 ## Goals
-
-Ideally, this fork would not exist, and all of these enhancements and features would be built into RHF. In the meantime, we are happy to share our work with the community. Our goals are:
 
 - **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
 - **Compatibility**: New features should be additive, not destructive. `rhf-plus` aims to stay closely synced to the original RHF.
@@ -56,6 +55,18 @@ We avoid enhancements that aggressively modify large parts of the RHF codebase. 
 - **Past RHF versions**  
 As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
+### 📣 Help us grow
+
+Ideally, this fork would not exist, and all of these enhancements and features would be natively part of RHF. You can help RHF and RHF+ grow by:
+
+- Spreading the word about this fork so more people test these enhancements
+- Using this library to test the enhancements and provide feedback.
+- Reporting enhancement bugs and issues [here](https://github.com/bombillazo/rhf-plus/issues).
+- [Contributing](CONTRIBUTING.md) new code to add new enhancements.
+- Sharing the enhancements in the react-hook-form [issues](https://github.com/react-hook-form/react-hook-form/issues) (create a new one if it doesn't exist).:
+  - Upvote the issue to garner support
+  - Kindly comment in the issue to show RHF maintainers there is demand
+  - Link to the enhancement page in ths repo to show the working solution is available
 
 ## Versioning
 
