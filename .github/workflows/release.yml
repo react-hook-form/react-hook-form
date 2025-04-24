@@ -67,11 +67,7 @@ jobs:
 
       - name: Create GitHub Release with PR list
         run: |
-          LAST_TAG=$(git tag --sort=-creatordate | grep -v "${{ steps.tag.outputs.tag }}" | head -n1)
-          LOG=$(git log --merges --pretty=format:'- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))' $LAST_TAG..HEAD)
-
           gh release create "${{ steps.tag.outputs.tag }}" \
             --title "${{ steps.tag.outputs.tag }}" \
-            --notes "$LOG"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
