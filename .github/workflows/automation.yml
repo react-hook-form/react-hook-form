@@ -12,11 +12,11 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Install App Dependencies
+      - name: Install Cypress preemptively
         shell: bash
         run: |
           cd app
-          pnpm install --frozen-lockfile
+          cypress install
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
