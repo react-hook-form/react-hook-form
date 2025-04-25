@@ -91,8 +91,8 @@ RHF+ version index (e.g., `0`)
 ### Conventions
 
 1. New RHF+ versions use the latest RHF version as the base version
-2. RHF+ versions staring from index `0`
-   - For example, the first version of `rhf-plus` based on RHF `7.55.0` will be `7.55.0-plus.0`
+2. RHF+ versions start from index `0`
+   - For example, the first version of `rhf-plus` based on RHF `7.55.0` would be `7.55.0-plus.0`
 3. The RHF+ version increments with each new `rhf-plus` release
    - For example, a new release based on RHF `7.55.0` would bump the version to `7.5.0-plus.1`
 4. The RHF+ version is reset to `0` when a new version of RHF is released
