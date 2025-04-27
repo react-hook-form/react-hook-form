@@ -152,13 +152,13 @@ export function useWatch<TFieldValues extends FieldValues>(
     disabled,
     exact,
   } = props || {};
+  const _defaultValue = React.useRef(defaultValue);
   const [value, updateValue] = React.useState(
     control._getWatch(
       name as InternalFieldName,
       _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
     ),
   );
-  const _defaultValue = React.useRef(defaultValue);
 
   React.useEffect(
     () =>
