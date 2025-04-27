@@ -8,6 +8,7 @@ import {
   within,
 } from '@testing-library/react';
 
+import { Controller } from '../controller';
 import {
   Control,
   UseFieldArrayReturn,
@@ -1484,6 +1485,69 @@ describe('useWatch', () => {
 
         expect(await screen.findByText('test')).toBeDefined();
       });
+    });
+
+    it('Should update the value immediately after reset when used with Controller', async () => {
+      const getDefaultValue = () => ({
+        test: undefined,
+      });
+
+      const Component = () => {
+        const { reset, control } = useForm({
+          defaultValues: getDefaultValue(),
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              render={({ field: { onChange, value } }) => (
+                <select
+                  data-testid="test-select"
+                  value={value ?? ''}
+                  onChange={(e) => {
+                    onChange(e.target.value);
+                  }}
+                >
+                  <option value=""></option>
+                  <option value="test1">test1</option>
+                  <option value="test2">test2</option>
+                </select>
+              )}
+            />
+            <button
+              type="button"
+              data-testid="reset-button"
+              onClick={() => reset(getDefaultValue())}
+            >
+              Reset
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.change(screen.getByTestId('test-select'), {
+        target: { value: 'test1' },
+      });
+
+      expect(screen.getByTestId('test-select')).toHaveValue('test1');
+
+      fireEvent.click(screen.getByTestId('reset-button'));
+
+      expect(screen.getByTestId('test-select')).toHaveValue('');
+
+      fireEvent.change(screen.getByTestId('test-select'), {
+        target: { value: 'test2' },
+      });
+
+      expect(screen.getByTestId('test-select')).toHaveValue('test2');
+
+      fireEvent.click(screen.getByTestId('reset-button'));
+
+      expect(screen.getByTestId('test-select')).toHaveValue('');
     });
   });
 
