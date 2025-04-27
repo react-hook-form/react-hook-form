@@ -1486,6 +1486,7 @@ describe('useWatch', () => {
         expect(await screen.findByText('test')).toBeDefined();
       });
     });
+
     it('Should update the value immediately after reset when used with Controller', async () => {
       const getDefaultValue = () => ({
         test: undefined,
