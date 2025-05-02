@@ -12,9 +12,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
-
-const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
