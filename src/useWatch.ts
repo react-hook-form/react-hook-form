@@ -12,6 +12,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -160,7 +161,7 @@ export function useWatch<TFieldValues extends FieldValues>(
     ),
   );
 
-  React.useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
         name: name as InternalFieldName,

@@ -6,9 +6,7 @@ import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
 import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
-
-const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Custom hook to manage the entire form.

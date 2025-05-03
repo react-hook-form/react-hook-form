@@ -7,8 +7,8 @@ import {
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
-import { useDeepEqualEffect } from './useDeepEqualEffect';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
@@ -60,7 +60,7 @@ export function useFormState<
     errors: false,
   });
 
-  useDeepEqualEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
         name: name as InternalFieldName,
