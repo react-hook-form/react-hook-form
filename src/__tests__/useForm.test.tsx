@@ -2241,6 +2241,85 @@ describe('useForm', () => {
     });
   });
 
+  it('should keep defaultValues if set keep default values is true on reset option', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { register, formState } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'Alex',
+        },
+        values: {
+          firstName: 'John',
+        },
+        resetOptions: { keepDefaultValues: true },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <div>{String(formState.isDirty)}</div>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John' },
+    });
+
+    screen.getByText('true');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Alex' },
+    });
+
+    screen.getByText('false');
+  });
+
+  it('should change defaultValues if not reset options presented', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { register, formState } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'Alex',
+        },
+        values: {
+          firstName: 'John',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <div>{String(formState.isDirty)}</div>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Alex' },
+    });
+
+    screen.getByText('true');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John' },
+    });
+
+    screen.getByText('false');
+  });
+
   it('should disable the entire form inputs', async () => {
     function App() {
       const { register } = useForm({
