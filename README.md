@@ -70,6 +70,9 @@ Ideally, this fork would not exist, and all of these enhancements and features w
 
 ## Versioning
 
+> [!Note]
+> Please contact the maintainers if there is a new RHF version available and this library is behind. We will sync `rhf-plus` and release a new version.
+
 `rhf-plus` versions look something like this:
 
 ```sh
