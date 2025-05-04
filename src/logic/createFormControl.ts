@@ -134,7 +134,7 @@ export function createFormControl<
   const _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
-      ? cloneObject(_options.values || _options.defaultValues) || {}
+      ? cloneObject(_options.defaultValues || _options.values) || {}
       : {};
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
