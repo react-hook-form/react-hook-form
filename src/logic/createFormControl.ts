@@ -612,18 +612,20 @@ export function createFormControl<
           );
         } else if (fieldReference.refs) {
           if (isCheckBoxInput(fieldReference.ref)) {
-            fieldReference.refs.length > 1
+            Array.isArray(fieldValue)
               ? fieldReference.refs.forEach(
                   (checkboxRef) =>
                     (!checkboxRef.defaultChecked || !checkboxRef.disabled) &&
-                    (checkboxRef.checked = Array.isArray(fieldValue)
-                      ? !!(fieldValue as []).find(
-                          (data: string) => data === checkboxRef.value,
-                        )
-                      : fieldValue === checkboxRef.value),
+                    (checkboxRef.checked = !!(fieldValue as []).find(
+                      (data: string) => data === checkboxRef.value,
+                    )),
                 )
-              : fieldReference.refs[0] &&
-                (fieldReference.refs[0].checked = !!fieldValue);
+              : fieldReference.refs.forEach(
+                  (checkboxRef) =>
+                    (!checkboxRef.defaultChecked || !checkboxRef.disabled) &&
+                    (checkboxRef.checked =
+                      fieldValue === checkboxRef.value || !!fieldValue),
+                );
           } else {
             fieldReference.refs.forEach(
               (radioRef: HTMLInputElement) =>
