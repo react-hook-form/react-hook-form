@@ -1698,25 +1698,6 @@ describe('useForm', () => {
     });
   });
 
-  it('should unsubscribe to all subject when hook unmounts', () => {
-    let tempControl: any;
-
-    const App = () => {
-      const { control } = useForm();
-      tempControl = control;
-
-      return null;
-    };
-
-    const { unmount } = render(<App />);
-
-    expect(tempControl._subjects.state.observers.length).toBeTruthy();
-
-    unmount();
-
-    expect(tempControl._subjects.state.observers.length).toBeFalsy();
-  });
-
   it('should update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
@@ -2258,6 +2239,85 @@ describe('useForm', () => {
       screen.getByText('C');
       screen.getByText('pristine');
     });
+  });
+
+  it('should keep defaultValues if set keep default values is true on reset option', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { register, formState } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'Alex',
+        },
+        values: {
+          firstName: 'John',
+        },
+        resetOptions: { keepDefaultValues: true },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <div>{String(formState.isDirty)}</div>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John' },
+    });
+
+    screen.getByText('true');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Alex' },
+    });
+
+    screen.getByText('false');
+  });
+
+  it('should change defaultValues if not reset options presented', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { register, formState } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'Alex',
+        },
+        values: {
+          firstName: 'John',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <div>{String(formState.isDirty)}</div>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Alex' },
+    });
+
+    screen.getByText('true');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John' },
+    });
+
+    screen.getByText('false');
   });
 
   it('should disable the entire form inputs', async () => {

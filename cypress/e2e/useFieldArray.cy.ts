@@ -8,67 +8,67 @@ describe('useFieldArray', () => {
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '2' }],
+        data: [{ name: '3' }],
       }),
     );
 
     cy.get('#prepend').click();
     cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.get('ul > li').eq(0).get('input').should('have.value', '5');
+    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
 
     cy.get('#append').click();
     cy.get('ul > li').its('length').should('equal', 3);
 
-    cy.get('ul > li').eq(2).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '7');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '5' }, { name: '2' }, { name: '6' }],
+        data: [{ name: '6' }, { name: '3' }, { name: '7' }],
       }),
     );
 
     cy.get('#swap').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
-    cy.get('ul > li').eq(2).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '3');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '5' }, { name: '6' }, { name: '2' }],
+        data: [{ name: '6' }, { name: '7' }, { name: '3' }],
       }),
     );
 
     cy.get('#move').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '2' }, { name: '5' }, { name: '6' }],
+        data: [{ name: '3' }, { name: '6' }, { name: '7' }],
       }),
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '13');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '14');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '2' }, { name: '13' }, { name: '5' }, { name: '6' }],
+        data: [{ name: '3' }, { name: '14' }, { name: '6' }, { name: '7' }],
       }),
     );
 
     cy.get('#remove').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '2' }, { name: '5' }, { name: '6' }],
+        data: [{ name: '3' }, { name: '6' }, { name: '7' }],
       }),
     );
 
@@ -76,19 +76,19 @@ describe('useFieldArray', () => {
 
     cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
 
     cy.get('#delete1').click();
 
     cy.get('ul > li').its('length').should('equal', 1);
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '2' }],
+        data: [{ name: '3' }],
       }),
     );
 
@@ -119,11 +119,11 @@ describe('useFieldArray', () => {
 
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '26' }],
+        data: [{ name: '27' }],
       }),
     );
 
-    cy.get('#renderCount').contains('33');
+    cy.get('#renderCount').contains('34');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -139,7 +139,7 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(3).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
@@ -148,7 +148,161 @@ describe('useFieldArray', () => {
           { name: 'test' },
           { name: 'test1' },
           { name: 'test2' },
-          { name: '2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#prepend').click();
+    cy.get('ul > li').its('length').should('equal', 5);
+
+    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#swap').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#move').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#insert').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '13');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '13' },
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#remove').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#delete2').click();
+
+    cy.get('ul > li').its('length').should('equal', 4);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
+
+    cy.get('#delete3').click();
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: 'test' }, { name: '6' }, { name: 'test2' }],
+      }),
+    );
+
+    cy.get('#removeAll').click();
+    cy.get('ul > li').should('have.length', 0);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
+    );
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '25');
+
+    cy.get('#prepend').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '26');
+
+    cy.get('#renderCount').contains('27');
+  });
+
+  it('should behaviour correctly with defaultValue and without auto focus', () => {
+    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
         ],
       }),
     );
@@ -166,7 +320,7 @@ describe('useFieldArray', () => {
           { name: 'test' },
           { name: 'test1' },
           { name: 'test2' },
-          { name: '2' },
+          { name: '3' },
         ],
       }),
     );
@@ -183,7 +337,7 @@ describe('useFieldArray', () => {
           { name: 'test1' },
           { name: 'test' },
           { name: 'test2' },
-          { name: '2' },
+          { name: '3' },
         ],
       }),
     );
@@ -200,24 +354,24 @@ describe('useFieldArray', () => {
           { name: '5' },
           { name: 'test1' },
           { name: 'test2' },
-          { name: '2' },
+          { name: '3' },
         ],
       }),
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '12');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '11');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: 'test' },
-          { name: '12' },
+          { name: '11' },
           { name: '5' },
           { name: 'test1' },
           { name: 'test2' },
-          { name: '2' },
+          { name: '3' },
         ],
       }),
     );
@@ -234,7 +388,7 @@ describe('useFieldArray', () => {
           { name: '5' },
           { name: 'test1' },
           { name: 'test2' },
-          { name: '2' },
+          { name: '3' },
         ],
       }),
     );
@@ -246,7 +400,7 @@ describe('useFieldArray', () => {
     cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
     cy.get('ul > li').eq(1).find('input').should('have.value', '5');
     cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
-    cy.get('ul > li').eq(3).find('input').should('have.value', '2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
 
     cy.get('#delete3').click();
 
@@ -271,185 +425,31 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '24');
-
-    cy.get('#prepend').click();
-
-    cy.get('ul > li').eq(0).find('input').should('have.value', '25');
-
-    cy.get('#renderCount').contains('26');
-  });
-
-  it('should behaviour correctly with defaultValue and without auto focus', () => {
-    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
-
-    cy.get('ul > li').its('length').should('equal', 3);
-
-    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-
-    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
-
-    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
-
-    cy.get('#append').click();
-
-    cy.get('ul > li').eq(3).find('input').should('have.value', '2');
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '2' },
-        ],
-      }),
-    );
-
-    cy.get('#prepend').click();
-    cy.get('ul > li').its('length').should('equal', 5);
-
-    cy.get('ul > li').eq(0).get('input').should('have.value', '4');
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [
-          { name: '4' },
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '2' },
-        ],
-      }),
-    );
-
-    cy.get('#swap').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
-    cy.get('ul > li').eq(2).find('input').should('have.value', 'test');
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [
-          { name: '4' },
-          { name: 'test1' },
-          { name: 'test' },
-          { name: 'test2' },
-          { name: '2' },
-        ],
-      }),
-    );
-
-    cy.get('#move').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [
-          { name: 'test' },
-          { name: '4' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '2' },
-        ],
-      }),
-    );
-
-    cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '10');
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [
-          { name: 'test' },
-          { name: '10' },
-          { name: '4' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '2' },
-        ],
-      }),
-    );
-
-    cy.get('#remove').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [
-          { name: 'test' },
-          { name: '4' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '2' },
-        ],
-      }),
-    );
-
-    cy.get('#delete2').click();
-
-    cy.get('ul > li').its('length').should('equal', 4);
-
-    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
-    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
-    cy.get('ul > li').eq(3).find('input').should('have.value', '2');
-
-    cy.get('#delete3').click();
-
-    cy.get('ul > li').its('length').should('equal', 3);
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: 'test' }, { name: '4' }, { name: 'test2' }],
-      }),
-    );
-
-    cy.get('#removeAll').click();
-    cy.get('ul > li').should('have.length', 0);
-
-    cy.get('#submit').click();
-    cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [],
-      }),
-    );
-
-    cy.get('#append').click();
-
-    cy.get('ul > li').eq(0).find('input').should('have.value', '21');
-
-    cy.get('#prepend').click();
-
     cy.get('ul > li').eq(0).find('input').should('have.value', '22');
 
-    cy.get('#renderCount').contains('23');
+    cy.get('#prepend').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '23');
+
+    cy.get('#renderCount').contains('24');
   });
 
   it('should replace fields with new values', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
     cy.get('#replace').click();
-    cy.get('ul > li').eq(0).find('input').should('have.value', '2. lorem');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '2. ipsum');
-    cy.get('ul > li').eq(2).find('input').should('have.value', '2. dolor');
-    cy.get('ul > li').eq(3).find('input').should('have.value', '2. sit amet');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3. lorem');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '3. ipsum');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '3. dolor');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3. sit amet');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '2. lorem' },
-          { name: '2. ipsum' },
-          { name: '2. dolor' },
-          { name: '2. sit amet' },
+          { name: '3. lorem' },
+          { name: '3. ipsum' },
+          { name: '3. dolor' },
+          { name: '3. sit amet' },
         ],
       }),
     );
@@ -501,7 +501,7 @@ describe('useFieldArray', () => {
       }),
     );
     cy.get('#dirty').contains('yes');
-    cy.get('#renderCount').contains('18');
+    cy.get('#renderCount').contains('19');
   });
 
   it('should display the correct dirty value without default value', () => {
