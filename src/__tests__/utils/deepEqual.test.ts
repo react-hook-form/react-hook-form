@@ -41,6 +41,33 @@ describe('deepEqual', () => {
     expect(deepEqual(undefined, {})).toBeFalsy();
   });
 
+  it('should return false when two TypedArrays not match', () => {
+    expect(
+      deepEqual(
+        new TextEncoder().encode('12'),
+        new TextEncoder().encode('123'),
+      ),
+    ).toBeFalsy();
+    expect(
+      deepEqual(
+        new TextEncoder().encode('123'),
+        new TextEncoder().encode('455'),
+      ),
+    ).toBeFalsy();
+  });
+
+  it('should return false when two TypedArrays match', () => {
+    expect(
+      deepEqual(
+        new TextEncoder().encode('123'),
+        new TextEncoder().encode('123'),
+      ),
+    ).toBeTruthy();
+    expect(
+      deepEqual(new TextEncoder().encode(''), new TextEncoder().encode('')),
+    ).toBeTruthy();
+  });
+
   it('should return true when two sets matches', () => {
     expect(
       deepEqual([{ name: 'useFieldArray' }], [{ name: 'useFieldArray' }]),
