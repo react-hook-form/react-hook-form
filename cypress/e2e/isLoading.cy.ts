@@ -1,4 +1,4 @@
-describe('isLoading props', () => {
+describe('controllable isLoading state', () => {
   it('should return default value with watch', () => {
     cy.visit('http://localhost:3000/is-loading');
 

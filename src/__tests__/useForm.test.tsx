@@ -2613,7 +2613,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('isLoading prop', () => {
+  describe('controllable isLoading state', () => {
     it('should override isLoading to true when isLoading prop is true', async () => {
       const App = () => {
         const { formState } = useForm({
