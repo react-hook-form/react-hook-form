@@ -56,7 +56,7 @@ describe('deepEqual', () => {
     ).toBeFalsy();
   });
 
-  it('should return false when two TypedArrays match', () => {
+  it('should return true when two TypedArrays match', () => {
     expect(
       deepEqual(
         new TextEncoder().encode('123'),
