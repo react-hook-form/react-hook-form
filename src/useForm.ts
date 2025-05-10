@@ -53,7 +53,7 @@ export function useForm<
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    isLoading: isFunction(props.defaultValues),
+    isLoading: props.isLoading || isFunction(props.defaultValues),
     isSubmitted: false,
     isSubmitting: false,
     isSubmitSuccessful: false,
@@ -109,6 +109,10 @@ export function useForm<
     () => control._disableForm(props.disabled),
     [control, props.disabled],
   );
+
+  React.useEffect(() => {
+    control._updateIsLoading(props.isLoading);
+  }, [control, props.isLoading]);
 
   React.useEffect(() => {
     if (props.mode) {
