@@ -25,7 +25,7 @@ export type UseFormProps<...> = Partial<{
 
 ### Description
 
-Normally, the `isLoading` prop is a boolean that indicates whether the form is currently in a loading state based on the default values async function. If default values are synchronous, the state starts as `false`. With this feature, the `isLoading` prop can be controlled externally, allowing developers to set it to `true` based on their own logic, and have it accesible from the form state.
+Normally, the `isLoading` prop is a boolean that indicates whether the form is currently in a loading state based on the default values async function. If default values are synchronous, the state starts as `false`. With this feature, the `isLoading` prop can be controlled externally, allowing developers to set it to `true` based on their own logic, and have it accessible from the form state.
 
 ## Examples
 
