@@ -45,6 +45,7 @@ import ResetKeepDirty from './resetKeepDirty';
 import ImperativeSubmit from './imperativeSubmit';
 import ImperativeSubmitContext from './imperativeSubmitContext';
 import ImperativeSubmitControl from './imperativeSubmitControl';
+import IsLoading from './isLoading';
 
 const App = () => {
   return (
@@ -133,6 +134,7 @@ const App = () => {
           path="/imperative-submit-control"
           element={<ImperativeSubmitControl />}
         />
+        <Route path="/is-loading" element={<IsLoading />} />
       </Routes>
     </BrowserRouter>
   );
