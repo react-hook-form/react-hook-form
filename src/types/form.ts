@@ -117,6 +117,7 @@ export type UseFormProps<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
   >;
+  isLoading: boolean;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -831,6 +832,7 @@ export type Control<
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _disableForm: (disabled?: boolean) => void;
+  _updateIsLoading: (isLoading?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;

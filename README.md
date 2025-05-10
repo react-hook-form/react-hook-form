@@ -21,6 +21,7 @@ npm install @bombillazo/rhf-plus
 ## ✨ Enhancements
 
 - [Imperative Form Submission](./docs/imperative_submit.md)
+- [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
 - [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
 - More to come... ([Become a contributor](CONTRIBUTING.md))
 

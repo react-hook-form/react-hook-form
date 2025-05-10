@@ -239,6 +239,12 @@ const items: Item[] = [
     ],
     plus: true,
   },
+  {
+    title: 'IsLoading',
+    description: 'Should control the form loading state',
+    slugs: ['/is-loading'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {

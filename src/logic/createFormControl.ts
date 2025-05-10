@@ -115,11 +115,13 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
+  let internalLoading =
+    _options.isLoading || isFunction(_options.defaultValues);
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
     isReady: false,
-    isLoading: isFunction(_options.defaultValues),
+    isLoading: internalLoading,
     isValidating: false,
     isSubmitted: false,
     isSubmitting: false,
@@ -1465,12 +1467,30 @@ export function createFormControl<
       _subjects.state.next({
         isLoading: false,
       });
+      internalLoading = false;
     });
 
   const id = createId(props.id);
 
   const submit = () => {
     submitForm(id);
+  };
+
+  const _updateIsLoading = (isLoading?: boolean) => {
+    if (!isUndefined(isLoading)) {
+      const _loading = isLoading || internalLoading;
+      if (_formState.isLoading !== _loading) {
+        _formState.isLoading = _loading;
+        _subjects.state.next({
+          isLoading: _loading,
+        });
+      }
+    } else if (!!isLoading !== _formState.isLoading) {
+      _formState.isLoading = internalLoading;
+      _subjects.state.next({
+        isLoading: internalLoading,
+      });
+    }
   };
 
   const methods = {
@@ -1493,6 +1513,7 @@ export function createFormControl<
       _resetDefaultValues,
       _removeUnmounted,
       _disableForm,
+      _updateIsLoading,
       _subjects,
       _proxyFormState,
       get _fields() {

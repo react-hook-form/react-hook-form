@@ -66,6 +66,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         errors: FieldErrors;
     }>;
     _disableForm: (disabled?: boolean) => void;
+    _updateIsLoading: (isLoading?: boolean) => void;
     _subscribe: FromSubscribe<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
@@ -705,6 +706,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     delayError: number;
     id: string;
     formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
+    isLoading: boolean;
 }>;
 
 // @public
@@ -895,7 +897,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:470:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:471:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
