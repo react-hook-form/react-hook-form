@@ -167,8 +167,7 @@ export function createFormControl<
     array: createSubject(),
     state: createSubject(),
   };
-  const validationModeBeforeSubmit = getValidationModes(_options.mode);
-  const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
+
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
@@ -735,6 +734,10 @@ export function createFormControl<
         (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
+    const validationModeBeforeSubmit = getValidationModes(_options.mode);
+    const validationModeAfterSubmit = getValidationModes(
+      _options.reValidateMode,
+    );
 
     if (field) {
       let error;

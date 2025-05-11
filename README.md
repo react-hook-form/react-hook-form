@@ -62,7 +62,7 @@ function App() {
 
 We’re incredibly grateful to these kind and generous sponsors for their support!
 
-<a target="_blank" href="https://opencollective.com/follower24">
+<a target="_blank" href="https://www.follower24.de/">
     <img width="120" src="https://images.opencollective.com/follower24/avatar/256.png?height=256" />
 </a>
 <a target="_blank" href='https://workleap.com/'>
