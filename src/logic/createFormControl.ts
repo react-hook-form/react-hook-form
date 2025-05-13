@@ -1506,7 +1506,9 @@ export function createFormControl<
   const setMetadata = (metadata?: TMetadata) => {
     let _metadata: TMetadata;
     if (!metadata) {
-      _metadata = _options.defaultMetadata ?? ({} as TMetadata);
+      _metadata = _options.defaultMetadata
+        ? cloneObject(_options.defaultMetadata)
+        : ({} as TMetadata);
     } else {
       _metadata = metadata;
     }
