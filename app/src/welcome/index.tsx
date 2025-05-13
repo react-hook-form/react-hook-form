@@ -248,7 +248,7 @@ const items: Item[] = [
   {
     title: 'FormMetadata',
     description: 'Should store metadata',
-    slugs: ['/metadata'],
+    slugs: ['/metadata', '/metadata-control'],
     plus: true,
   },
 ];

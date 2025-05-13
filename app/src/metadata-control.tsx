@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from '@bombillazo/rhf-plus';
+import { useForm, createFormControl } from '@bombillazo/rhf-plus';
 
 const defaultMetadata: {
   id: number;
@@ -11,10 +11,12 @@ const defaultMetadata: {
   is_admin: true,
 };
 
-function Metadata() {
-  const { formState, setMetadata, updateMetadata } = useForm({
-    defaultMetadata,
-  });
+const { formControl, setMetadata, updateMetadata } = createFormControl({
+  defaultMetadata,
+});
+
+function MetadataControl() {
+  const { formState } = useForm({ formControl });
 
   return (
     <>
@@ -48,4 +50,4 @@ function Metadata() {
   );
 }
 
-export default Metadata;
+export default MetadataControl;

@@ -47,6 +47,7 @@ import ImperativeSubmitContext from './imperativeSubmitContext';
 import ImperativeSubmitControl from './imperativeSubmitControl';
 import IsLoading from './isLoading';
 import Metadata from './metadata';
+import MetadataControl from './metadata-control';
 
 const App = () => {
   return (
@@ -137,6 +138,7 @@ const App = () => {
         />
         <Route path="/is-loading" element={<IsLoading />} />
         <Route path="/metadata" element={<Metadata />} />
+        <Route path="/metadata-control" element={<MetadataControl />} />
       </Routes>
     </BrowserRouter>
   );
