@@ -55,7 +55,7 @@ export type UseFormReturn<...> = {
 };
 ```
 
-- metadata added to `formState`:
+- `metadata` added to `formState`:
 
 ```diff
 export type FormState<TFieldValues extends FieldValues = FieldValues> = {
@@ -93,16 +93,13 @@ function App() {
 
   return (
     <>
-      <form
-        onSubmit={form.handleSubmit((data) => console.log(data))}
-      >
-        <input {...form.register('name')} />
+      <form>
         <pre>{JSON.stringify(form.formState.metadata)}</pre>
       </form>
       <Button onClick={() => {
         setMetadata({ id: 100, name: 'Alice', is_admin: false });
         }}
-      >Update Metadata</Button>
+      >Set Metadata</Button>
     </>
   );
 }
