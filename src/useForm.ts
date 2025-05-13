@@ -83,7 +83,10 @@ export function useForm<
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
-    metadata: props.defaultMetadata || ({} as TMetadata),
+    metadata:
+      props.defaultMetadata ||
+      props.formControl?.control._options.defaultMetadata ||
+      ({} as TMetadata),
   });
 
   if (!_formControl.current) {

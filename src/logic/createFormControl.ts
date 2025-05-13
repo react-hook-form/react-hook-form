@@ -141,7 +141,7 @@ export function createFormControl<
     validatingFields: {},
     errors: _options.errors || {},
     disabled: _options.disabled || false,
-    metadata: _options.defaultMetadata as TMetadata,
+    metadata: _options.defaultMetadata || ({} as TMetadata),
   };
   const _fields: FieldRefs = {};
   let _defaultValues =
