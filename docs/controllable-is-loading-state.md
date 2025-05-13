@@ -12,7 +12,7 @@ This feature allows developers to control the `isLoading` prop to manage the loa
 
 ### Type updates
 
-- `isLoading` added to `useForm` props:
+- `isLoading` added to `useFormProps`:
 
 ```diff
 export type UseFormProps<...> = Partial<{

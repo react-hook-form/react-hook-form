@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from '@bombillazo/rhf-plus';
 
-const Watch: React.FC = () => {
+const IsLoading: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean | undefined>(false);
 
   const { formState, handleSubmit, register } = useForm<{
@@ -37,4 +37,4 @@ const Watch: React.FC = () => {
   );
 };
 
-export default Watch;
+export default IsLoading;

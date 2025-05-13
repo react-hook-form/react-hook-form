@@ -13,6 +13,7 @@ import {
   FieldPath,
   FieldRefs,
   FieldValues,
+  FormMetadata,
   FormState,
   FromSubscribe,
   GetIsDirty,
@@ -49,6 +50,7 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createId from '../utils/createId';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
+import deepMerge from '../utils/deepMerge';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -100,14 +102,20 @@ export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 >(
-  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
+  props: UseFormProps<
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TMetadata
+  > = {},
 ): Omit<
-  UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>,
   'formState'
 > & {
   formControl: Omit<
-    UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+    UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>,
     'formState'
   >;
 } {
@@ -115,13 +123,14 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let internalLoading =
+
+  let _internalLoading =
     _options.isLoading || isFunction(_options.defaultValues);
-  let _formState: FormState<TFieldValues> = {
+  let _formState: FormState<TFieldValues, TMetadata> = {
     submitCount: 0,
     isDirty: false,
     isReady: false,
-    isLoading: internalLoading,
+    isLoading: _internalLoading,
     isValidating: false,
     isSubmitted: false,
     isSubmitting: false,
@@ -132,6 +141,7 @@ export function createFormControl<
     validatingFields: {},
     errors: _options.errors || {},
     disabled: _options.disabled || false,
+    metadata: _options.defaultMetadata || ({} as TMetadata),
   };
   const _fields: FieldRefs = {};
   let _defaultValues =
@@ -175,6 +185,8 @@ export function createFormControl<
   const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
+
+  const id = createId(props.id);
 
   const debounce =
     <T extends Function>(callback: T) =>
@@ -1467,10 +1479,8 @@ export function createFormControl<
       _subjects.state.next({
         isLoading: false,
       });
-      internalLoading = false;
+      _internalLoading = false;
     });
-
-  const id = createId(props.id);
 
   const submit = () => {
     submitForm(id);
@@ -1478,7 +1488,7 @@ export function createFormControl<
 
   const _updateIsLoading = (isLoading?: boolean) => {
     if (!isUndefined(isLoading)) {
-      const _loading = isLoading || internalLoading;
+      const _loading = isLoading || _internalLoading;
       if (_formState.isLoading !== _loading) {
         _formState.isLoading = _loading;
         _subjects.state.next({
@@ -1486,11 +1496,37 @@ export function createFormControl<
         });
       }
     } else if (!!isLoading !== _formState.isLoading) {
-      _formState.isLoading = internalLoading;
+      _formState.isLoading = _internalLoading;
       _subjects.state.next({
-        isLoading: internalLoading,
+        isLoading: _internalLoading,
       });
     }
+  };
+
+  const setMetadata = (metadata?: TMetadata) => {
+    let _metadata: TMetadata;
+    if (!metadata) {
+      _metadata = _options.defaultMetadata
+        ? cloneObject(_options.defaultMetadata)
+        : ({} as TMetadata);
+    } else {
+      _metadata = metadata;
+    }
+    _formState.metadata = _metadata;
+    _subjects.state.next({
+      metadata: _metadata,
+    });
+  };
+
+  const updateMetadata = (metadata: Partial<TMetadata>) => {
+    const _metadata = deepMerge(
+      _formState.metadata,
+      metadata as Record<keyof TMetadata, any>,
+    );
+    _formState.metadata = _metadata;
+    _subjects.state.next({
+      metadata: _metadata,
+    });
   };
 
   const methods = {
@@ -1566,6 +1602,8 @@ export function createFormControl<
     getFieldState,
     id,
     submit,
+    setMetadata,
+    updateMetadata,
   };
 
   return {

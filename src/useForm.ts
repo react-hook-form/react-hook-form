@@ -7,7 +7,13 @@ import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
 import submitForm from './utils/submit';
 import { createFormControl } from './logic';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import {
+  FieldValues,
+  FormMetadata,
+  FormState,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
@@ -43,14 +49,23 @@ export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 >(
-  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
-): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
+  props: UseFormProps<
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TMetadata
+  > = {},
+): UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata> {
   const _formControl = React.useRef<
-    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
+    | UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>
+    | undefined
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, updateFormState] = React.useState<
+    FormState<TFieldValues, TMetadata>
+  >({
     isDirty: false,
     isValidating: false,
     isLoading: props.isLoading || isFunction(props.defaultValues),
@@ -68,6 +83,10 @@ export function useForm<
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
+    metadata:
+      props.defaultMetadata ||
+      props.formControl?.control._options.defaultMetadata ||
+      ({} as TMetadata),
   });
 
   if (!_formControl.current) {

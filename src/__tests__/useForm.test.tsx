@@ -2754,4 +2754,65 @@ describe('useForm', () => {
       });
     });
   });
+
+  describe('metadata', () => {
+    const defaultMetadata: {
+      data_1: string;
+      data_2: boolean;
+      num: number;
+    } = {
+      data_1: 'test',
+      data_2: true,
+      num: 0,
+    };
+
+    it('should set default metadata on formState', () => {
+      const { result } = renderHook(() => useForm({ defaultMetadata }));
+
+      expect(result.current.formState.metadata).toEqual(defaultMetadata);
+    });
+
+    it('should update metadata on formState', async () => {
+      const { result } = renderHook(() => useForm({ defaultMetadata }));
+
+      result.current.updateMetadata({ data_1: 'updated' });
+
+      expect(result.current.formState.metadata).toEqual({
+        data_1: 'updated',
+        data_2: true,
+        num: 0,
+      });
+
+      result.current.updateMetadata({ data_2: false });
+
+      expect(result.current.formState.metadata).toEqual({
+        data_1: 'updated',
+        data_2: false,
+        num: 0,
+      });
+    });
+
+    it('should set metadata on formState', async () => {
+      const setValue = {
+        data_1: 'value set',
+        data_2: false,
+        num: 100,
+      };
+      const { result } = renderHook(() => useForm({ defaultMetadata }));
+
+      expect(result.current.formState.metadata).toEqual(defaultMetadata);
+
+      await act(async () => {
+        result.current.setMetadata(setValue);
+      });
+
+      expect(result.current.formState.metadata).toEqual(setValue);
+
+      await act(async () => {
+        result.current.setMetadata();
+      });
+
+      expect(result.current.formState.metadata).toEqual(defaultMetadata);
+    });
+  });
 });

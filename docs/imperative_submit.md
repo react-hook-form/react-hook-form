@@ -13,7 +13,7 @@ This feature allows for the imperative submission of forms. This is useful in sc
 
 ### Type updates
 
-- `id` added to `useForm` props:
+- `id` added to `useFormProps`:
 
 ```diff
 export type UseFormProps<...> = Partial<{

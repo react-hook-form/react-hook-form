@@ -245,6 +245,12 @@ const items: Item[] = [
     slugs: ['/is-loading'],
     plus: true,
   },
+  {
+    title: 'FormMetadata',
+    description: 'Should store metadata',
+    slugs: ['/metadata', '/metadata-control'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {
