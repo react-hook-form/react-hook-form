@@ -107,8 +107,8 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
 };
 
 // @public (undocumented)
-export function createFormControl<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'> & {
-    formControl: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
+export function createFormControl<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues, TMetadata>): Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>, 'formState'> & {
+    formControl: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>, 'formState'>;
 };
 
 // @public (undocumented)
@@ -262,6 +262,11 @@ export type FieldValues = Record<string, any>;
 export function Form<TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(props: FormProps<TFieldValues, TTransformedValues>): React_2.JSX.Element;
 
 // @public (undocumented)
+export type FormMetadata = {
+    [key: string]: MetadataValue;
+};
+
+// @public (undocumented)
 export type FormProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = Omit<React_2.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> & Partial<{
     control: Control<TFieldValues, any, TTransformedValues>;
     headers: Record<string, string>;
@@ -286,15 +291,15 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues = TFi
 }>;
 
 // @public
-export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => React_2.JSX.Element;
+export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any>(props: FormProviderProps<TFieldValues, TContext, TTransformedValues, TMetadata>) => React_2.JSX.Element;
 
 // @public (undocumented)
-export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
+export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any> = {
     children: React_2.ReactNode | React_2.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>;
 
 // @public (undocumented)
-export type FormState<TFieldValues extends FieldValues> = {
+export type FormState<TFieldValues extends FieldValues, TMetadata extends FormMetadata = any> = {
     isDirty: boolean;
     isLoading: boolean;
     isSubmitted: boolean;
@@ -310,6 +315,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
     isReady: boolean;
+    metadata: TMetadata;
 };
 
 // @public (undocumented)
@@ -660,13 +666,13 @@ export type UseFieldArraySwap = (indexA: number, indexB: number) => void;
 export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (index: number, value: FieldArray<TFieldValues, TFieldArrayName>) => void;
 
 // @public
-export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues, TMetadata>): UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>;
 
 // @public
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
 
 // @public
-export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
@@ -688,7 +694,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = (onValid: SubmitHandler<TTransformedValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
 
 // @public (undocumented)
-export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = Partial<{
+export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any> = Partial<{
     mode: Mode;
     disabled: boolean;
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
@@ -704,9 +710,10 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
+    formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>, 'formState'>;
     id: string;
-    formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
     isLoading: boolean;
+    defaultMetadata: TMetadata;
 }>;
 
 // @public
@@ -741,7 +748,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 }>) => void;
 
 // @public (undocumented)
-export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
+export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
@@ -749,7 +756,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     clearErrors: UseFormClearErrors<TFieldValues>;
     setValue: UseFormSetValue<TFieldValues>;
     trigger: UseFormTrigger<TFieldValues>;
-    formState: FormState<TFieldValues>;
+    formState: FormState<TFieldValues, TMetadata>;
     resetField: UseFormResetField<TFieldValues>;
     reset: UseFormReset<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
@@ -757,9 +764,11 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     control: Control<TFieldValues, TContext, TTransformedValues>;
     register: UseFormRegister<TFieldValues>;
     setFocus: UseFormSetFocus<TFieldValues>;
-    id: string;
-    submit: () => void;
     subscribe: UseFromSubscribe<TFieldValues>;
+    id: string;
+    submit: UseFormSubmit;
+    setMetadata: UseFormSetMetadata<TMetadata>;
+    updateMetadata: UseFormUpdateMetadata<TMetadata>;
 };
 
 // @public
@@ -769,6 +778,9 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath
 
 // @public
 export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: SetFocusOptions) => void;
+
+// @public
+export type UseFormSetMetadata<TMetadata extends FormMetadata = any> = (metadata?: TMetadata) => void;
 
 // @public
 export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, value: FieldPathValue<TFieldValues, TFieldName>, options?: SetValueConfig) => void;
@@ -788,6 +800,9 @@ export type UseFormStateProps<TFieldValues extends FieldValues, TTransformedValu
 export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState<TFieldValues>;
 
 // @public
+export type UseFormSubmit = () => void;
+
+// @public
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
 // @public
@@ -796,6 +811,9 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldP
     keepDefaultValue?: boolean;
     keepError?: boolean;
 }) => void;
+
+// @public
+export type UseFormUpdateMetadata<TMetadata extends FormMetadata = any> = (metadata: Partial<TMetadata>) => void;
 
 // @public (undocumented)
 export type UseFormWatch<TFieldValues extends FieldValues> = {
@@ -897,7 +915,8 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:471:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:487:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
