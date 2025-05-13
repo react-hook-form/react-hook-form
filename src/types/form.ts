@@ -769,7 +769,7 @@ export type UseFormSubmit = () => void;
  * const defaultMetadata = { data_1: 1234, data_2: true };
  *
  * setMetadata({ data_1: 9999, data_2: false }) // sets the metadata, returns { data_1: 9999, data_2: false };
- * setMetadata(); // clears the entire metadata to de default metadata
+ * setMetadata(); // clears the entire metadata to the default metadata
  * ```
  */
 export type UseFormSetMetadata<TMetadata extends FormMetadata = any> = (

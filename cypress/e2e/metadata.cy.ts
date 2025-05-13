@@ -39,7 +39,7 @@ describe('controllable isLoading state', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({ ...def, id: 500 }),
     );
     cy.get('button').contains('clear').click();
-    // check vlaue cleared back to default
+    // check value cleared back to default
     cy.get('#metadata').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal(def),
     );
