@@ -24,6 +24,7 @@ npm install @bombillazo/rhf-plus
 - [Form metadata](./docs/form-metadata.md)
 - [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
 - [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
+- [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
 - More to come... ([Become a contributor](CONTRIBUTING.md))
 
 ## Motive
