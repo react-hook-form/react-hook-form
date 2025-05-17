@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
@@ -104,20 +104,22 @@ export function useFieldArray<
     control._getFieldArray(name).map(generateId),
   );
   const _fieldIds = React.useRef(fields);
-  const _name = React.useRef(name);
   const _actioned = React.useRef(false);
 
-  _name.current = name;
   _fieldIds.current = fields;
   control._names.array.add(name);
 
-  rules &&
-    (control as Control<TFieldValues, any, TTransformedValues>).register(
-      name as FieldPath<TFieldValues>,
-      rules as RegisterOptions<TFieldValues>,
-    );
+  React.useMemo(
+    () =>
+      rules &&
+      (control as Control<TFieldValues, any, TTransformedValues>).register(
+        name as FieldPath<TFieldValues>,
+        rules as RegisterOptions<TFieldValues>,
+      ),
+    [control, rules, name],
+  );
 
-  React.useEffect(
+  useEffect(
     () =>
       control._subjects.array.subscribe({
         next: ({
@@ -127,8 +129,8 @@ export function useFieldArray<
           values?: FieldValues;
           name?: InternalFieldName;
         }) => {
-          if (fieldArrayName === _name.current || !fieldArrayName) {
-            const fieldValues = get(values, _name.current);
+          if (fieldArrayName === name || !fieldArrayName) {
+            const fieldValues = get(values, name);
             if (Array.isArray(fieldValues)) {
               setFields(fieldValues);
               ids.current = fieldValues.map(generateId);
@@ -136,7 +138,7 @@ export function useFieldArray<
           }
         },
       }).unsubscribe,
-    [control],
+    [control, name],
   );
 
   const updateValues = React.useCallback(
