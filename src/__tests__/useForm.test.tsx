@@ -602,11 +602,44 @@ describe('useForm', () => {
 
       const alert1 = screen.getAllByRole('alert')[0];
       expect(alert1.textContent).toBe('test1 error');
+      const test1Input = screen.getAllByRole('textbox')[0];
+      expect(test1Input).toHaveFocus();
 
       fireEvent.click(screen.getByRole('button'));
 
       const alert2 = screen.getAllByRole('alert')[1];
       expect(alert2.textContent).toBe('test2 error');
+      expect(test1Input).toHaveFocus();
+    });
+
+    it("shouldn't focus the input of the error defined in the errors prop if shouldFocusError is false", () => {
+      const formErrors = {
+        test1: { type: 'test1', message: 'test1 error' },
+      };
+      const Form = () => {
+        type FormValues = {
+          test1: string;
+        };
+        const {
+          register,
+          formState: { errors },
+        } = useForm<FormValues>({
+          errors: formErrors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1')} type="text" />
+            <span role="alert">{errors.test1 && errors.test1.message}</span>
+          </div>
+        );
+      };
+
+      const renderRes = render(<Form />);
+      const alert1 = screen.getAllByRole('alert')[0];
+      expect(alert1.textContent).toBe('test1 error');
+      expect(renderRes.baseElement).toHaveFocus();
     });
   });
 

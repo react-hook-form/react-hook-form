@@ -1480,6 +1480,7 @@ export function createFormControl<
       setError,
       _subscribe,
       _runSchema,
+      _focusError,
       _getWatch,
       _getDirty,
       _setValid,

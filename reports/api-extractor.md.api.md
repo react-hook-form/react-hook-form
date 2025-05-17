@@ -65,6 +65,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
+    _focusError: () => boolean | undefined;
     _disableForm: (disabled?: boolean) => void;
     _subscribe: FromSubscribe<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
