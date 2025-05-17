@@ -157,7 +157,13 @@ export function useController<
       const field = get(control._fields, name);
 
       if (field && elm) {
-        field._f.ref = elm;
+        field._f.ref = {
+          focus: () => elm.focus(),
+          select: () => elm.select(),
+          setCustomValidity: (message: string) =>
+            elm.setCustomValidity(message),
+          reportValidity: () => elm.reportValidity(),
+        };
       }
     },
     [control._fields, name],
