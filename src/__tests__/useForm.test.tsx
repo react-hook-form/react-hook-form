@@ -15,6 +15,7 @@ import {
   FieldErrors,
   FieldValues,
   FormState,
+  Mode,
   RegisterOptions,
   SubmitHandler,
   UseFormGetFieldState,
@@ -1247,6 +1248,84 @@ describe('useForm', () => {
           names: ['test.sub', 'test1'],
         });
       });
+    });
+  });
+
+  describe('when mode or reValidateMode changes', () => {
+    it('should use updated mode and reValidateMode inside of onChange handler', async () => {
+      const resolver = jest.fn(async (data: any) => ({
+        values: data,
+        errors: {},
+      }));
+      const Form = () => {
+        const [mode, setMode] = React.useState<Mode>('onChange');
+        const [reValidateMode, setReValidateMode] =
+          React.useState<Exclude<Mode, 'onTouched' | 'all'>>('onBlur');
+        const { register, handleSubmit } = useForm<{ test: string }>({
+          mode,
+          reValidateMode,
+          resolver,
+        });
+        return (
+          <form onSubmit={handleSubmit(noop)}>
+            <input {...register('test')} type="text" />
+            <button
+              type="button"
+              onClick={() => {
+                setMode('onTouched');
+                setReValidateMode('onChange');
+              }}
+            >
+              Update Validation Mode
+            </button>
+            <input type="submit" />
+          </form>
+        );
+      };
+
+      render(<Form />);
+
+      fireEvent.click(
+        screen.getByRole('button', { name: /update validation mode/i }),
+      );
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(0);
+
+      fireEvent.blur(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(1);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test1',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(2);
+
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      await waitFor(() => expect(resolver).toHaveBeenCalledTimes(3));
+
+      fireEvent.blur(screen.getByRole('textbox'), {
+        target: {
+          value: 'test1',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(3);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test12',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(4);
     });
   });
 
