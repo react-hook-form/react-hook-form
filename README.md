@@ -47,7 +47,7 @@ Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of R
 RHF maintainers are responsible for fixing RHF bugs. We focus on fixing bugs related to our enhancements. When RHF bugs are fixed, those fixes are rolled into this package when we sync to the latest RHF version.
 
 - **Refactors**  
-We do not refactor RHF code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements that complicates syncing the fork with RHF.
+We do not refactor RHF code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements (these changes complicate syncing the fork with RHF).
 
 - **Breaking changes**  
 We do not introduce breaking changes to the RHF API. We only add new features and enhancements that are backward compatible with the existing RHF API.
@@ -68,13 +68,13 @@ Ideally, this fork would not exist, and all of these enhancements and features w
 - [Contributing](CONTRIBUTING.md) new code to add new enhancements.
 - Sharing the enhancements in the react-hook-form [issues](https://github.com/react-hook-form/react-hook-form/issues) (create a new one if it doesn't exist).:
   - Upvote the issue to garner support
-  - Kindly comment in the issue to show RHF maintainers there is demand
-  - Link to the enhancement page in ths repo to show the working solution is available
+  - Kindly comment on the issue to show RHF maintainers there is a demand
+  - Link to the enhancement page in this repo to show the working solution is available
 
 ## Versioning
 
 > [!Note]
-> Please contact the maintainers if there is a new RHF version available and this library is behind. We will sync `rhf-plus` and release a new version.
+> Please contact the maintainers if a new RHF version is available and this library is behind. We will sync `rhf-plus` and release a new version.
 
 `rhf-plus` versions look something like this:
 
