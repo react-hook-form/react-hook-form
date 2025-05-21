@@ -12,6 +12,11 @@ export default function deepEqual(object1: any, object2: any) {
     return object1.getTime() === object2.getTime();
   }
 
+  if (object1 instanceof Set && object2 instanceof Set) {
+    object1 = Array.from(object1);
+    object2 = Array.from(object2);
+  }
+
   const keys1 = Object.keys(object1);
   const keys2 = Object.keys(object2);
 
