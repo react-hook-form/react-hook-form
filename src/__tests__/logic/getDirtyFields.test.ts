@@ -341,4 +341,28 @@ describe('getDirtyFields', () => {
       ],
     });
   });
+  it('should show dirty when comparing sets', () => {
+    const result = getDirtyFields(
+      { test: new Set(['val1']) },
+      { test: new Set(['val2']) },
+    );
+
+    expect(result).toEqual({ test: true });
+  });
+  it('should show dirty when comparing sets in incorrect order', () => {
+    const result = getDirtyFields(
+      { test: new Set(['val1', 'val2']) },
+      { test: new Set(['val2', 'val1']) },
+    );
+
+    expect(result).toEqual({ test: true });
+  });
+  it('should not show dirty when comparing like sets', () => {
+    const result = getDirtyFields(
+      { test: new Set(['val1', 'val2']) },
+      { test: new Set(['val1', 'val2']) },
+    );
+
+    expect(result).toEqual({ test: false });
+  });
 });
