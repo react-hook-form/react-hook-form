@@ -357,6 +357,14 @@ describe('getDirtyFields', () => {
 
     expect(result).toEqual({ test: true });
   });
+  it('should show dirty when comparing different length sets', () => {
+    const result = getDirtyFields(
+      { test: new Set(['val1']) },
+      { test: new Set(['val1', 'val2']) },
+    );
+
+    expect(result).toEqual({ test: true });
+  });
   it('should not show dirty when comparing like sets', () => {
     const result = getDirtyFields(
       { test: new Set(['val1', 'val2']) },
