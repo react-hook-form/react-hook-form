@@ -670,7 +670,7 @@ export function createFormControl<
         return;
       }
       const fieldValue = value[fieldKey];
-      const fieldName = `${name}.${fieldKey}`;
+      const fieldName = name + '.' + fieldKey;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||

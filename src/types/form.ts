@@ -81,6 +81,16 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
+export type UseFormResetFieldOptions<
+  TFieldValues extends FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Partial<{
+  keepDirty: boolean;
+  keepTouched: boolean;
+  keepError: boolean;
+  defaultValue: FieldPathValue<TFieldValues, TFieldName>;
+}>;
+
 export type ChangeHandler = (event: {
   target: any;
   type?: any;
@@ -674,12 +684,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: Partial<{
-    keepDirty: boolean;
-    keepTouched: boolean;
-    keepError: boolean;
-    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
-  }>,
+  options?: UseFormResetFieldOptions<TFieldValues, TFieldName>,
 ) => void;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
