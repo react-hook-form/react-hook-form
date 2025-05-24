@@ -82,8 +82,14 @@ export function useFieldArray<
   TFieldArrayName extends
     FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+  props: UseFieldArrayProps<
+    TFieldValues,
+    TFieldArrayName,
+    TKeyName,
+    TTransformedValues
+  >,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const methods = useFormContext();
   const {
@@ -106,7 +112,7 @@ export function useFieldArray<
   control._names.array.add(name);
 
   rules &&
-    (control as Control<TFieldValues>).register(
+    (control as Control<TFieldValues, any, TTransformedValues>).register(
       name as FieldPath<TFieldValues>,
       rules as RegisterOptions<TFieldValues>,
     );
@@ -324,7 +330,8 @@ export function useFieldArray<
     if (
       _actioned.current &&
       (!getValidationModes(control._options.mode).isOnSubmit ||
-        control._formState.isSubmitted)
+        control._formState.isSubmitted) &&
+      !getValidationModes(control._options.reValidateMode).isOnSubmit
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
@@ -407,8 +414,16 @@ export function useFieldArray<
     !get(control._formValues, name) && control._setFieldArray(name);
 
     return () => {
-      (control._options.shouldUnregister || shouldUnregister) &&
-        control.unregister(name as FieldPath<TFieldValues>);
+      const updateMounted = (name: InternalFieldName, value: boolean) => {
+        const field: Field = get(control._fields, name);
+        if (field && field._f) {
+          field._f.mount = value;
+        }
+      };
+
+      control._options.shouldUnregister || shouldUnregister
+        ? control.unregister(name as FieldPath<TFieldValues>)
+        : updateMounted(name, false);
     };
   }, [name, control, keyName, shouldUnregister]);
 

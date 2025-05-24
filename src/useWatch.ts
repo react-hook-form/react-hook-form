@@ -12,6 +12,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -36,9 +37,10 @@ import { useFormContext } from './useFormContext';
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
 >(props: {
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 }): DeepPartialSkipArrayKey<TFieldValues>;
@@ -65,10 +67,11 @@ export function useWatch<
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
@@ -99,10 +102,11 @@ export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TFieldNames extends
     readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TTransformedValues = TFieldValues,
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValues<TFieldValues, TFieldNames>;
@@ -149,15 +153,18 @@ export function useWatch<TFieldValues extends FieldValues>(
     disabled,
     exact,
   } = props || {};
-  const _name = React.useRef(name);
   const _defaultValue = React.useRef(defaultValue);
+  const [value, updateValue] = React.useState(
+    control._getWatch(
+      name as InternalFieldName,
+      _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
+    ),
+  );
 
-  _name.current = name;
-
-  React.useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: _name.current as InternalFieldName,
+        name: name as InternalFieldName,
         formState: {
           values: true,
         },
@@ -166,7 +173,7 @@ export function useWatch<TFieldValues extends FieldValues>(
           !disabled &&
           updateValue(
             generateWatchOutput(
-              _name.current as InternalFieldName | InternalFieldName[],
+              name as InternalFieldName | InternalFieldName[],
               control._names,
               formState.values || control._formValues,
               false,
@@ -174,14 +181,7 @@ export function useWatch<TFieldValues extends FieldValues>(
             ),
           ),
       }),
-    [control, disabled, exact],
-  );
-
-  const [value, updateValue] = React.useState(
-    control._getWatch(
-      name as InternalFieldName,
-      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
-    ),
+    [name, control, disabled, exact],
   );
 
   React.useEffect(() => control._removeUnmounted());

@@ -8,6 +8,7 @@ import {
   UseFormStateReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
@@ -39,10 +40,13 @@ import { useFormContext } from './useFormContext';
  * }
  * ```
  */
-function useFormState<TFieldValues extends FieldValues = FieldValues>(
-  props?: UseFormStateProps<TFieldValues>,
+export function useFormState<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
+>(
+  props?: UseFormStateProps<TFieldValues, TTransformedValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const methods = useFormContext<TFieldValues>();
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
@@ -55,14 +59,11 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
-  const _name = React.useRef(name);
 
-  _name.current = name;
-
-  React.useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: _name.current as InternalFieldName,
+        name: name as InternalFieldName,
         formState: _localProxyFormState.current,
         exact,
         callback: (formState) => {
@@ -73,7 +74,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
             });
         },
       }),
-    [control, disabled, exact],
+    [name, disabled, exact],
   );
 
   React.useEffect(() => {
@@ -91,5 +92,3 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     [formState, control],
   );
 }
-
-export { useFormState };
