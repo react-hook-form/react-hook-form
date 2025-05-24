@@ -68,7 +68,7 @@
     "type": "git",
     "url": "https://github.com/react-hook-form/react-hook-form"
   },
-  "homepage": "https://www.react-hook-form.com",
+  "homepage": "https://react-hook-form.com",
   "author": "Beier(Bill) Luo <bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
