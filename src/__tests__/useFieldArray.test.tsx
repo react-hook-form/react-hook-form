@@ -61,6 +61,25 @@ describe('useFieldArray', () => {
       ]);
     });
 
+    it('should populate values into fields instead of defaultValues', () => {
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: { test: [{ test: '3' }, { test: '21' }] },
+          values: { test: [{ test: '1' }, { test: '3' }, { test: '55' }] },
+        });
+        return useFieldArray({
+          control,
+          name: 'test',
+        });
+      });
+
+      expect(result.current.fields).toEqual([
+        { test: '1', id: '2' },
+        { test: '3', id: '3' },
+        { test: '55', id: '4' },
+      ]);
+    });
+
     it('should render with FormProvider', () => {
       const Provider = ({ children }: { children: React.ReactNode }) => {
         const methods = useForm();
