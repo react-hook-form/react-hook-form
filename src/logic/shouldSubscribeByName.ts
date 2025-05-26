@@ -1,6 +1,6 @@
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 
-export default <T extends string | string[] | undefined>(
+export default <T extends string | readonly string[] | undefined>(
   name?: T,
   signalName?: string,
   exact?: boolean,

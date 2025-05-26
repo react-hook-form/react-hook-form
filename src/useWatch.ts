@@ -145,7 +145,7 @@ export function useWatch<
 export function useWatch<TFieldValues extends FieldValues>(
   props?: UseWatchProps<TFieldValues>,
 ) {
-  const methods = useFormContext();
+  const methods = useFormContext<TFieldValues>();
   const {
     control = methods.control,
     name,
@@ -164,7 +164,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: name as InternalFieldName,
+        name,
         formState: {
           values: true,
         },
