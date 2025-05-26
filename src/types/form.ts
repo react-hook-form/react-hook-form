@@ -391,8 +391,10 @@ useEffect(() => {
 })
  * ```
  */
-export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
-  name?: string;
+export type UseFromSubscribe<TFieldValues extends FieldValues> = <
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
+>(payload: {
+  name?: readonly [...TFieldNames] | TFieldNames[number];
   formState?: Partial<ReadFormState>;
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
@@ -790,8 +792,10 @@ export type BatchFieldArrayUpdate = <
   shouldUpdateFieldsAndErrors?: boolean,
 ) => void;
 
-export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
-  name?: string;
+export type FromSubscribe<TFieldValues extends FieldValues> = <
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
+>(payload: {
+  name?: readonly [...TFieldNames] | TFieldNames[number];
   formState?: Partial<ReadFormState>;
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },

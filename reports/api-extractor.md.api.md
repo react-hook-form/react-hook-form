@@ -342,8 +342,8 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 }) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
-    name?: string;
+export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
+    name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
@@ -802,8 +802,8 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
-    name?: string;
+export type UseFromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
+    name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
@@ -893,7 +893,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:479:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:481:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

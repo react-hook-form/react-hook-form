@@ -1,12 +1,7 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
-import {
-  FieldValues,
-  InternalFieldName,
-  UseFormStateProps,
-  UseFormStateReturn,
-} from './types';
+import { FieldValues, UseFormStateProps, UseFormStateReturn } from './types';
 import { useFormContext } from './useFormContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
@@ -63,7 +58,7 @@ export function useFormState<
   useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: name as InternalFieldName,
+        name,
         formState: _localProxyFormState.current,
         exact,
         callback: (formState) => {
