@@ -81,6 +81,16 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
+export type UseFormResetFieldOptions<
+  TFieldValues extends FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Partial<{
+  keepDirty: boolean;
+  keepTouched: boolean;
+  keepError: boolean;
+  defaultValue: FieldPathValue<TFieldValues, TFieldName>;
+}>;
+
 export type ChangeHandler = (event: {
   target: any;
   type?: any;
@@ -381,8 +391,10 @@ useEffect(() => {
 })
  * ```
  */
-export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
-  name?: string;
+export type UseFromSubscribe<TFieldValues extends FieldValues> = <
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
+>(payload: {
+  name?: readonly [...TFieldNames] | TFieldNames[number];
   formState?: Partial<ReadFormState>;
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
@@ -674,12 +686,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: Partial<{
-    keepDirty: boolean;
-    keepTouched: boolean;
-    keepError: boolean;
-    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
-  }>,
+  options?: UseFormResetFieldOptions<TFieldValues, TFieldName>,
 ) => void;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
@@ -785,8 +792,10 @@ export type BatchFieldArrayUpdate = <
   shouldUpdateFieldsAndErrors?: boolean,
 ) => void;
 
-export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
-  name?: string;
+export type FromSubscribe<TFieldValues extends FieldValues> = <
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
+>(payload: {
+  name?: readonly [...TFieldNames] | TFieldNames[number];
   formState?: Partial<ReadFormState>;
   callback: (
     data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
@@ -829,6 +838,7 @@ export type Control<
     name: FieldName<any>;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
+  _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
