@@ -3,7 +3,6 @@ import React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import createId from './utils/createId';
 import deepEqual from './utils/deepEqual';
-import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
 import submitForm from './utils/submit';
 import { createFormControl } from './logic';
@@ -140,10 +139,14 @@ export function useForm<
     if (props.reValidateMode) {
       control._options.reValidateMode = props.reValidateMode;
     }
-    if (props.errors && !isEmptyObject(props.errors)) {
+  }, [control, props.mode, props.reValidateMode]);
+
+  React.useEffect(() => {
+    if (props.errors) {
       control._setErrors(props.errors);
+      control._focusError();
     }
-  }, [control, props.errors, props.mode, props.reValidateMode]);
+  }, [control, props.errors]);
 
   React.useEffect(() => {
     props.shouldUnregister &&
