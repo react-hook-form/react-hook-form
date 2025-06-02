@@ -2691,4 +2691,207 @@ describe('useForm', () => {
       expect(input.value).toBe('abc');
     });
   });
+
+  describe('controllable isLoading state', () => {
+    it('should override isLoading to true when isLoading prop is true', async () => {
+      const App = () => {
+        const { formState } = useForm({
+          defaultValues: async () => {
+            await sleep(200);
+            return { test: 'test' };
+          },
+          isLoading: true,
+        });
+
+        return <p>{formState.isLoading ? 'loading' : 'not loading'}</p>;
+      };
+
+      render(<App />);
+      expect(screen.getByText('loading')).toBeInTheDocument();
+
+      // Should always report loading regardless of internal state
+      await waitFor(
+        () => {
+          expect(screen.getByText('loading')).toBeInTheDocument();
+        },
+        { timeout: 400 },
+      );
+    });
+
+    it('should fallback to internal isLoading state when isLoading prop is false', async () => {
+      const App = () => {
+        const { formState } = useForm({
+          defaultValues: async () => {
+            await sleep(200);
+            return { test: 'test' };
+          },
+          isLoading: false,
+        });
+
+        return <p>{formState.isLoading ? 'loading' : 'not loading'}</p>;
+      };
+
+      render(<App />);
+
+      // Should reflect actual internal state (starts loading)
+      expect(screen.getByText('loading')).toBeInTheDocument();
+
+      // Should transition to not loading after async resolves
+      await waitFor(() => {
+        expect(screen.getByText('not loading')).toBeInTheDocument();
+      });
+    });
+
+    it('should update isLoading override dynamically and fallback when unset', async () => {
+      const App = () => {
+        const [isLoading, setIsLoading] = React.useState<boolean | undefined>(
+          false,
+        );
+        const { formState } = useForm({
+          defaultValues: async () => {
+            await sleep(200);
+            return { test: 'test' };
+          },
+          isLoading,
+        });
+
+        return (
+          <div>
+            <div data-testid="state-value">{`${isLoading}`}</div>
+            <div data-testid="form-value">{`${formState.isLoading}`}</div>
+            <p>{formState.isLoading ? 'loading' : 'not loading'}</p>
+            <button type={'button'} onClick={() => setIsLoading(!isLoading)}>
+              toggle
+            </button>
+            <button type={'button'} onClick={() => setIsLoading(undefined)}>
+              unset
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      // Initially: no override → internal state is loading
+
+      expect(screen.getByTestId('state-value').textContent).toBe('false');
+      expect(screen.getByTestId('form-value').textContent).toBe('true');
+      expect(screen.getByText('loading')).toBeInTheDocument();
+
+      // Wait for async defaultValues to resolve
+      await waitFor(() => {
+        expect(screen.getByTestId('state-value').textContent).toBe('false');
+        expect(screen.getByTestId('form-value').textContent).toBe('false');
+        expect(screen.getByText('not loading')).toBeInTheDocument();
+      });
+
+      // Toggle to set state to loading
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+      // Should display loading
+      await waitFor(() => {
+        expect(screen.getByTestId('state-value').textContent).toBe('true');
+        expect(screen.getByTestId('form-value').textContent).toBe('true');
+        expect(screen.getByText('loading')).toBeInTheDocument();
+      });
+
+      // Unset value to fallback to internal state
+      fireEvent.click(screen.getByRole('button', { name: 'unset' }));
+
+      // Should show to internal not loading state
+      await waitFor(() => {
+        expect(screen.getByTestId('state-value').textContent).toBe('undefined');
+        expect(screen.getByTestId('form-value').textContent).toBe('false');
+        expect(screen.getByText('not loading')).toBeInTheDocument();
+      });
+
+      // Toggle to set state to loading again
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+      // Should display loading
+      await waitFor(() => {
+        expect(screen.getByTestId('state-value').textContent).toBe('true');
+        expect(screen.getByTestId('form-value').textContent).toBe('true');
+        expect(screen.getByText('loading')).toBeInTheDocument();
+      });
+
+      // Toggle to set state to not loading
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('state-value').textContent).toBe('false');
+        expect(screen.getByTestId('form-value').textContent).toBe('false');
+        expect(screen.getByText('not loading')).toBeInTheDocument();
+      });
+
+      // Unset value to fallback to internal state
+      fireEvent.click(screen.getByRole('button', { name: 'unset' }));
+
+      // Should show to internal not loading state
+      await waitFor(() => {
+        expect(screen.getByText('not loading')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('metadata', () => {
+    const defaultMetadata: {
+      data_1: string;
+      data_2: boolean;
+      num: number;
+    } = {
+      data_1: 'test',
+      data_2: true,
+      num: 0,
+    };
+
+    it('should set default metadata on formState', () => {
+      const { result } = renderHook(() => useForm({ defaultMetadata }));
+
+      expect(result.current.formState.metadata).toEqual(defaultMetadata);
+    });
+
+    it('should update metadata on formState', async () => {
+      const { result } = renderHook(() => useForm({ defaultMetadata }));
+
+      result.current.updateMetadata({ data_1: 'updated' });
+
+      expect(result.current.formState.metadata).toEqual({
+        data_1: 'updated',
+        data_2: true,
+        num: 0,
+      });
+
+      result.current.updateMetadata({ data_2: false });
+
+      expect(result.current.formState.metadata).toEqual({
+        data_1: 'updated',
+        data_2: false,
+        num: 0,
+      });
+    });
+
+    it('should set metadata on formState', async () => {
+      const setValue = {
+        data_1: 'value set',
+        data_2: false,
+        num: 100,
+      };
+      const { result } = renderHook(() => useForm({ defaultMetadata }));
+
+      expect(result.current.formState.metadata).toEqual(defaultMetadata);
+
+      await act(async () => {
+        result.current.setMetadata(setValue);
+      });
+
+      expect(result.current.formState.metadata).toEqual(setValue);
+
+      await act(async () => {
+        result.current.setMetadata();
+      });
+
+      expect(result.current.formState.metadata).toEqual(defaultMetadata);
+    });
+  });
 });

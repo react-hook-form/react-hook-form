@@ -1,172 +1,105 @@
 <div align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-            <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" />
-        </a>
+  <img src="./docs/logo.png" alt="RHF Plus Logo" />
 </div>
 
 <div align="center">
 
-[![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
-[![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
-[![npm](https://img.shields.io/npm/l/react-hook-form?style=for-the-badge)](https://github.com/react-hook-form/react-hook-form/blob/master/LICENSE)
-[![Discord](https://img.shields.io/discord/754891658327359538.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/yYv7GZ8)
+[![npm downloads](https://img.shields.io/npm/dm/@bombillazo/rhf-plus.svg?style=for-the-badge)](https://www.npmjs.com/package/@bombillazo/rhf-plus)
+[![npm](https://img.shields.io/npm/dt/@bombillazo/rhf-plus.svg?style=for-the-badge)](https://www.npmjs.com/package/@bombillazo/rhf-plus)
+[![npm](https://img.shields.io/npm/l/@bombillazo/rhf-plus?style=for-the-badge)](https://github.com/bombillazo/rhf-plus/blob/master/LICENSE)
 
 </div>
 
-<p align="center">
-  <a href="https://react-hook-form.com/get-started">Get started</a> | 
-  <a href="https://react-hook-form.com/docs">API</a> |
-  <a href="https://react-hook-form.com/form-builder">Form Builder</a> |
-  <a href="https://react-hook-form.com/faqs">FAQs</a> |
-  <a href="https://github.com/react-hook-form/react-hook-form/tree/master/examples">Examples</a>
-</p>
-
-### Features
-
-- Built with performance, UX and DX in mind
-- Embraces native HTML form [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Out of the box integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
-- [Small size](https://bundlephobia.com/result?p=react-hook-form@latest) and no [dependencies](./package.json)
-- Support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/colinhacks/zod), [AJV](https://github.com/ajv-validator/ajv), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) and [others](https://github.com/react-hook-form/resolvers)
+**RHF+** is a fork of [react-hook-form](https://react-hook-form.com/) (**RHF**) with feature enhancements. It is designed to be a drop-in replacement for RHF so you can use it in your existing projects without any changes.
 
 ### Install
 
-    npm install react-hook-form
-
-### Quickstart
-
-```jsx
-import { useForm } from 'react-hook-form';
-
-function App() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <input {...register('firstName')} />
-      <input {...register('lastName', { required: true })} />
-      {errors.lastName && <p>Last name is required.</p>}
-      <input {...register('age', { pattern: /\d+/ })} />
-      {errors.age && <p>Please enter number for age.</p>}
-      <input type="submit" />
-    </form>
-  );
-}
+```sh
+npm install @bombillazo/rhf-plus
 ```
 
-### Sponsors
+## ✨ Enhancements
 
-We’re incredibly grateful to these kind and generous sponsors for their support!
+- [Imperative Form Submission](./docs/imperative_submit.md)
+- [Form metadata](./docs/form-metadata.md)
+- [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
+- [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
+- [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
+- More to come... ([Become a contributor](CONTRIBUTING.md))
 
-<a target="_blank" href="https://www.follower24.de/">
-    <img width="120" src="https://images.opencollective.com/follower24/00297f8/avatar/256.png?height=256" />
-</a>
-<a target="_blank" href='https://workleap.com/'>
-    <img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://www.sgkb.ch/'>
-    <img width="120" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://www.sanity.io/'>
-    <img width="120" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://route4me.com/'>
-    <img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
-</a>
-<a target="_blank" href='https://twicsy.com/'>
-    <img width="120" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
-</a>
-<a target="_blank" href='https://toss.im'>
-    <img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
-</a>
-<a target="_blank" href='https://principal.com/about-us'>
-    <img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
-</a>
-<a target="_blank" href="https://graphcms.com">
-    <img width="120" src="https://avatars.githubusercontent.com/u/31031438" />
-</a>
-<a target="_blank" href="https://www.beekai.com/">
-    <img width="120" src="https://www.beekai.com/marketing/logo/logo.svg" />
-</a>
-<a target="_blank" href="https://kanamekey.com">
-    <img width="120" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" />
-</a>
+## Motive
 
-### Past Sponsors
+RHF is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
 
-Thank you to our previous sponsors for your generous support!
+Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
 
-<a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="24" height="24" />
-</a>
-<a target="_blank" href="https://underbelly.is">
-    <img width="24" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
-</a>
-<a target="_blank" href="https://feathery.io">
-    <img width="24" src="https://images.opencollective.com/feathery1/c29b0a1/logo/256.png" />
-</a>
-<a target="_blank" href="https://getform.io">
-    <img width="24" src="https://images.opencollective.com/getformio2/3c978c8/avatar/256.png" />
-</a>
-<a href="https://marmelab.com/" target="_blank">
-  <img src="https://images.opencollective.com/marmelab/d7fd82f/logo/256.png" width="24" height="24" />
-</a>
-<a target="_blank" href="https://formcarry.com/">
-    <img width="24" src="https://images.opencollective.com/formcarry/a40a4ea/logo/256.png" />
-</a>
-<a target="_blank" href="https://fabform.io">
-    <img width="24" src="https://images.opencollective.com/fabform/2834037/logo/256.png" />
-</a>
-<a target="_blank" href="https://www.thinkmill.com.au/">
-    <img width="24" src="https://images.opencollective.com/thinkmill/28910ec/logo/256.png" />
-</a>
-<a target="_blank" href="https://kwork.studio/">
-    <img width="24" src="https://images.opencollective.com/knowledge-work/f91b72d/logo/256.png" />
-</a>
-<a target="_blank" href="https://fiberplane.com/">
-    <img width="24" src="https://avatars.githubusercontent.com/u/61152955?s=200&v=4" />
-</a>
-<a target="_blank" href="https://www.jetbrains.com/">
-    <img width="24" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" />
-</a>
-<a target="_blank" href="https://www.mirakl.com/">
-    <img width="24" src="https://images.opencollective.com/mirakl/0b191f0/logo/256.png" />
-</a>
-<a target="_blank" href='https://wantedlyinc.com'>
-    <img width="24" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" />
-</a>
-<a target="_blank" href="https://www.casinoreviews.net/">
-    <img width="24" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" />
-</a>
+## Goals
 
-### Backers
+- **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
+- **Compatibility**: New features should be additive, not destructive. `rhf-plus` aims to stay closely synced to the original RHF.
+- **Practicality**: The enhancements must be practical and solve real-world problems.
+- **Speed**: Discuss, review, and ship features fast!
+- **Quality**: We maintain the same high-quality standards as RHF. This means clean code, testing, and clear documentation.
 
-Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+### ❌ Out of Scope
 
-<a href="https://opencollective.com/react-hook-form#backers">
-    <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
-</a>
+- **RHF bugs**  
+RHF maintainers are responsible for fixing RHF bugs. We focus on fixing bugs related to our enhancements. When RHF bugs are fixed, those fixes are rolled into this package when we sync to the latest RHF version.
 
-### Contributors
+- **Refactors**  
+We do not refactor RHF code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements (these changes complicate syncing the fork with RHF).
 
-Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
+- **Breaking changes**  
+We do not introduce breaking changes to the RHF API. We only add new features and enhancements that are backward compatible with the existing RHF API.
 
-<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-  <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
-</a>
+- **Complex/bloated features**  
+We avoid enhancements that aggressively modify large parts of the RHF codebase. This ensures we do not diverge too much from the original RHF package.
 
-<br />
-<br />
+- **Past RHF versions**  
+As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
-<a href="https://ui.dev/bytes/?r=bill">
-  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpeg" />
-</a>
+### 📣 Help us grow
 
-<br />
-<br />
+Ideally, this fork would not exist, and all of these enhancements and features would be natively part of RHF. You can help RHF and RHF+ grow by:
 
-<p align="center">Documentation website supported and backed by <a href="https://vercel.com"><b>Vercel</b></a></p>
+- Spreading the word about this fork so more people test these enhancements
+- Using this library to test the enhancements and provide feedback.
+- Reporting enhancement bugs and issues [here](https://github.com/bombillazo/rhf-plus/issues).
+- [Contributing](CONTRIBUTING.md) new code to add new enhancements.
+- Sharing the enhancements in the react-hook-form [issues](https://github.com/react-hook-form/react-hook-form/issues) (create a new one if it doesn't exist).:
+  - Upvote the issue to garner support
+  - Kindly comment on the issue to show RHF maintainers there is a demand
+  - Link to the enhancement page in this repo to show the working solution is available
+
+## Versioning
+
+> [!Note]
+> Please contact the maintainers if a new RHF version is available and this library is behind. We will sync `rhf-plus` and release a new version.
+
+`rhf-plus` versions look something like this:
+
+```sh
+7.55.0-plus.0
+\____/\____/|
+  |     |   |
+  1     2   3
+```
+
+1. **RHF version**  
+The react-hook-form version used as the base to add enhancements to (e.g., `7.55.0`)  
+
+1. **Separator token**  
+Separates RHF from RHF+ version (always `-plus.`)  
+
+1. **RHF+ version**  
+RHF+ version index (e.g., `0`)
+
+### Conventions
+
+1. New RHF+ versions use the latest RHF version as the base version
+2. RHF+ versions start from index `0`
+   - For example, the first version of `rhf-plus` based on RHF `7.55.0` would be `7.55.0-plus.0`
+3. The RHF+ version increments with each new `rhf-plus` release
+   - For example, a new release based on RHF `7.55.0` would bump the version to `7.5.0-plus.1`
+4. The RHF+ version is reset to `0` when a new version of RHF is released
+   - For example, if RHF `7.56.0` is released, the newly synced version of `rhf-plus` based on that would be `7.56.0-plus.0`

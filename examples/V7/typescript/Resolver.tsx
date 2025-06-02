@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Resolver } from 'react-hook-form';
+import { useForm, Resolver } from '@bombillazo/rhf-plus';
 
 type FormValues = {
   firstName: string;

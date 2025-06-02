@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from '@bombillazo/rhf-plus';
 
 export const maskPhoneNumber = (phone) => {
   //Example: 0(999) 999 99 99

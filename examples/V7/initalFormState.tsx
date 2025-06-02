@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from '@bombillazo/rhf-plus';
 
 import './styles.css';
 
 const defaultValues = {
   firstName: 'bill',
   lastName: 'luo',
-  email: 'bluebill1049@hotmail.com',
+  email: 'email@hotmail.com',
 };
 
 function App() {
@@ -39,7 +39,7 @@ function App() {
       <label htmlFor="email">Email</label>
       <input
         defaultValue={defaultValues.email}
-        placeholder="bluebill1049@hotmail.com"
+        placeholder="email@hotmail.com"
         type="email"
         {...register('email')}
       />

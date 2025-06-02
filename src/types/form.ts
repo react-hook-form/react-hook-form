@@ -25,6 +25,16 @@ import { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
 
+type MetadataValue =
+  | string
+  | number
+  | boolean
+  | null
+  | MetadataValue[]
+  | { [key: string]: MetadataValue };
+
+export type FormMetadata = { [key: string]: MetadataValue };
+
 /**
  * @deprecated to be removed in the next major version
  */
@@ -96,6 +106,7 @@ export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 > = Partial<{
   mode: Mode;
   disabled: boolean;
@@ -113,9 +124,12 @@ export type UseFormProps<
   criteriaMode: CriteriaMode;
   delayError: number;
   formControl?: Omit<
-    UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+    UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>,
     'formState'
   >;
+  id: string;
+  isLoading: boolean;
+  defaultMetadata: TMetadata;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -137,7 +151,10 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   values?: boolean;
 };
 
-export type FormState<TFieldValues extends FieldValues> = {
+export type FormState<
+  TFieldValues extends FieldValues,
+  TMetadata extends FormMetadata = any,
+> = {
   isDirty: boolean;
   isLoading: boolean;
   isSubmitted: boolean;
@@ -153,6 +170,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
   isReady: boolean;
+  metadata: TMetadata;
 };
 
 export type KeepStateOptions = Partial<{
@@ -726,6 +744,56 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
+/**
+ * Submits the related form imperatively.
+ *
+ * @example
+ * ```tsx
+ *
+ * const { submit } = useForm();
+ *
+ * <button onClick={() => submit()} />
+ * ```
+ */
+export type UseFormSubmit = () => void;
+
+/**
+ * Set the form metadata.
+ *
+ * @param metadata - the metadata values to store in the form. This set does not update or merge new data into the
+ * the existing data, it will overwrite it. To merge with existing data, use `updateMetadata`.
+ *
+ * @example
+ * Set metadata values
+ * ```tsx
+ * const defaultMetadata = { data_1: 1234, data_2: true };
+ *
+ * setMetadata({ data_1: 9999, data_2: false }) // sets the metadata, returns { data_1: 9999, data_2: false };
+ * setMetadata(); // clears the entire metadata to the default metadata
+ * ```
+ */
+export type UseFormSetMetadata<TMetadata extends FormMetadata = any> = (
+  metadata?: TMetadata,
+) => void;
+
+/**
+ * Update the form metadata.
+ *
+ * @param metadata - the metadata values to merge to the current metadata stored in the form. To replace the existing
+ * metadata with a completly new value, use `setMetadata`.
+ *
+ * @example
+ * Update metadata values
+ * ```tsx
+ * const defaultMetadata = { data_1: 1234, data_2: true };
+ *
+ * updateMetadata({ data_1: 9999}) // updates the metadata, returns { data_1: 9999, data_2: true };
+ * ```
+ */
+export type UseFormUpdateMetadata<TMetadata extends FormMetadata = any> = (
+  metadata: Partial<TMetadata>,
+) => void;
+
 export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: DeepPartial<TFieldValues>,
@@ -830,6 +898,7 @@ export type Control<
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _disableForm: (disabled?: boolean) => void;
+  _updateIsLoading: (isLoading?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
@@ -851,6 +920,7 @@ export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
@@ -859,7 +929,7 @@ export type UseFormReturn<
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
-  formState: FormState<TFieldValues>;
+  formState: FormState<TFieldValues, TMetadata>;
   resetField: UseFormResetField<TFieldValues>;
   reset: UseFormReset<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
@@ -868,6 +938,10 @@ export type UseFormReturn<
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
   subscribe: UseFromSubscribe<TFieldValues>;
+  id: string;
+  submit: UseFormSubmit;
+  setMetadata: UseFormSetMetadata<TMetadata>;
+  updateMetadata: UseFormUpdateMetadata<TMetadata>;
 };
 
 export type UseFormStateProps<
@@ -901,9 +975,10 @@ export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 > = {
   children: React.ReactNode | React.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>;
 
 export type FormProps<
   TFieldValues extends FieldValues,

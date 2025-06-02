@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller } from '@bombillazo/rhf-plus';
 
 const SetValueAsyncStrictMode = () => {
   const state = React.useRef(new Set());

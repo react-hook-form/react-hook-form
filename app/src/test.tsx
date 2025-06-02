@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from '@bombillazo/rhf-plus';
 import { Control } from '../../src/types';
 
 type FormData = {

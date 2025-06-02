@@ -1,5 +1,5 @@
 {
-  "name": "react-hook-form",
+  "name": "rhf-plus",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@bombillazo/rhf-plus": "file:..",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "3.9.0",
@@ -16,7 +17,6 @@
     "joi": "^17.13.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "file:..",
     "react-router-dom": "^6.28.1",
     "react-select": "^5.9.0",
     "yup": "^1.6.1"

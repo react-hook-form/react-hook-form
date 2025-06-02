@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from '@bombillazo/rhf-plus';
 
 export default function App() {
   const { register, errors, handleSubmit } = useForm();
@@ -46,7 +46,7 @@ export default function App() {
         <label htmlFor="email">Email</label>
         <input
           name="email"
-          placeholder="bluebill1049@hotmail.com"
+          placeholder="email@hotmail.com"
           type="text"
           ref={register({
             required: 'this is required',

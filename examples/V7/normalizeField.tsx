@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller } from '@bombillazo/rhf-plus';
 import NumberFormat from 'react-number-format';
 import { TextField, ThemeProvider, createMuiTheme } from '@material-ui/core';
 

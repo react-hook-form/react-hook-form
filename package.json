@@ -1,7 +1,7 @@
 {
-  "name": "react-hook-form",
-  "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.56.3",
+  "name": "@bombillazo/rhf-plus",
+  "description": "Enhanced functionality for React Hook Form",
+  "version": "7.56.4",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -58,6 +58,7 @@
     "react",
     "hooks",
     "form",
+    "plus",
     "forms",
     "form-validation",
     "validation",
@@ -66,10 +67,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/react-hook-form/react-hook-form"
+    "url": "git+https://github.com/bombillazo/rhf-plus.git"
   },
-  "homepage": "https://react-hook-form.com",
-  "author": "Beier(Bill) Luo <bluebill1049@hotmail.com>",
+  "author": "Hector Ayala <hran@bombillazo.com>",
   "license": "MIT",
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
@@ -82,6 +82,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^29.5.14",
+    "@types/node": "^22.1.0",
     "@types/react": "^19.1.1",
     "@types/react-dom": "^18.3.6",
     "@types/testing-library__jest-dom": "^5.14.9",
@@ -118,7 +119,7 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "11.0 kB"
+        "maxSize": "11.2 kB"
       }
     ]
   },
@@ -134,11 +135,17 @@
       "prettier --write"
     ]
   },
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/react-hook-form"
-  },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "bugs": {
+    "url": "https://github.com/bombillazo/rhf-plus/issues"
+  },
+  "homepage": "https://github.com/bombillazo/rhf-plus#readme",
+  "publishConfig": {
+    "access": "public"
   }
 }

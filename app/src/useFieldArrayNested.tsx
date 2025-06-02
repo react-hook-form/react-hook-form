@@ -5,7 +5,7 @@ import {
   useFormState,
   useForm,
   Control,
-} from 'react-hook-form';
+} from '@bombillazo/rhf-plus';
 
 type FormValues = {
   test: {

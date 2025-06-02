@@ -1,14 +1,14 @@
-# Contributing to `React Hook Form`
+# Contributing to `RHF+`
 
-As the creators and maintainers of this project, we want to ensure that `react-hook-form` lives and continues to grow and evolve. We would like to encourage everyone to help and support this library by contributing.
+As fans, users and contributors of `react-hook-form`, we want to help the library continue to grow and evolve. We encourage everyone to help and support this library by contributing.
 
 ## Code contributions
 
 Here is a quick guide to doing code contributions to the library.
 
-1. Fork and clone the repo to your local machine `git clone https://github.com/YOUR_GITHUB_USERNAME/react-hook-form.git`
+1. Fork and clone the repo to your local machine `git clone https://github.com/YOUR_GITHUB_USERNAME/rhf-plus.git`
 
-2. Create a new branch from `master` with a meaningful name for a new feature or an issue you want to work on: `git checkout -b your-meaningful-branch-name`
+2. Create a new branch from `master` with a meaningful name for a new feature or an issue you want to work on: `git checkout -b feature/your-awesome-feature-name`
 
 3. Install packages by running:
 
@@ -16,7 +16,7 @@ Here is a quick guide to doing code contributions to the library.
    pnpm install
    ```
 
-Pay attention that we use pnpm v9 along with Node.js 20.
+> Pay attention that we use pnpm v10 along with Node.js 22.
 
 4. If you've added a code that should be tested, ensure the test suite still passes.
 
@@ -52,9 +52,9 @@ Pay attention that we use pnpm v9 along with Node.js 20.
    pnpm api-extractor
    ```
 
-10. Push your branch: `git push -u origin your-meaningful-branch-name`
+10. Push your branch: `git push -u origin feature/your-awesome-feature-name`
 
-11. Submit a pull request to the upstream react-hook-form repository.
+11. Submit a pull request to the upstream `rhf-plus` repository.
 
 12. Choose a descriptive title and describe your changes briefly.
 
@@ -114,16 +114,6 @@ it('should render correctly', () => {
 });
 ```
 
-## Documentation
-
-In case you want to change the `README.md`, please instead modify the `docs/Template.md` file, as the README is generated from it upon committing.
-
 ## License
 
-By contributing your code to the react-hook-form GitHub repository, you agree to license your contribution under the MIT license.
-
-### Contributors
-
-Thank you to all the people who have already contributed to React Hook Form!
-
-<img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+By contributing your code to the `rhf-plus` GitHub repository, you agree to license your contribution under the MIT license.
