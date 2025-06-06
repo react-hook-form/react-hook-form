@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Get base version from package.json
+        id: version
+        run: |
+          BASE=$(node -p "require('./package.json').version")
+          echo "base_version=$BASE" >> $GITHUB_OUTPUT
+
+      - name: Calculate next available release tag
+        id: tag
+        run: |
+          BASE_VERSION="${{ steps.version.outputs.base_version }}"
+          TAG_PREFIX="v${BASE_VERSION}-plus"
+          EXISTING_TAGS=$(git tag -l "${TAG_PREFIX}.*" || true)
+
+          if [ -z "$EXISTING_TAGS" ]; then
+            NEXT_INDEX=0
+          else
+            LAST_INDEX=$(echo "$EXISTING_TAGS" | sed -E "s/^${TAG_PREFIX}\.//" | sort -n | tail -n1)
+            NEXT_INDEX=$((LAST_INDEX + 1))
+          fi
+
+          FINAL_TAG="${TAG_PREFIX}.${NEXT_INDEX}"
+          echo "Next tag: $FINAL_TAG"
+          echo "tag=$FINAL_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag ${{ steps.tag.outputs.tag }}
+          git push origin ${{ steps.tag.outputs.tag }}
+
+      - name: Update version in package.json for publish
+        run: |
+          node -e "const fs=require('fs');let p=require('./package.json');p.version='${{ steps.tag.outputs.tag }}'.replace(/^v/, '');fs.writeFileSync('./package.json', JSON.stringify(p,null,2));"
+
+      - name: Build
+        run: pnpm build
+
+      - name: Set registry
+        run: 'echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc'
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - name: Publish to npm (real)
+        run: pnpm publish --access public --no-git-checks
+
+      - name: Create GitHub Release with PR list
+        run: |
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            --title "${{ steps.tag.outputs.tag }}" \
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

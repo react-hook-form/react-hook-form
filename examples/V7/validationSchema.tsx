@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from '@bombillazo/rhf-plus';
 import * as yup from 'yup'; // you will have to install yup
 import { yupResolver } from '@hookform/resolvers/yup'; // you will have to install @hookform/resolvers
 

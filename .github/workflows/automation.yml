@@ -12,9 +12,14 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
+      - name: Install Cypress preemptively
+        shell: bash
+        run: |
+          ./node_modules/cypress/bin/cypress install
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           start: pnpm start
-          wait-on: 'http://ip6-localhost:3000'
+          wait-on: 'http://localhost:3000'
           wait-on-timeout: 120

@@ -8,6 +8,3 @@ README.*
 *.README.*
 .github/workflows/README.yml
 scripts/README/**
-docs/Helpers.yaml
-docs/Sponsors.yaml
-docs/Template.md

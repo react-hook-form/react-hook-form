@@ -1,8 +1,15 @@
 import React from 'react';
 
-import { FieldValues, FormProviderProps, UseFormReturn } from './types';
+import {
+  FieldValues,
+  FormMetadata,
+  FormProviderProps,
+  UseFormReturn,
+} from './types';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
+
+HookFormContext.displayName = 'HookFormContext';
 
 /**
  * This custom hook allows you to access the form context. useFormContext is intended to be used in deeply nested structures, where it would become inconvenient to pass the context as a prop. To be used with {@link FormProvider}.
@@ -38,11 +45,13 @@ export const useFormContext = <
   TFieldValues extends FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 >(): UseFormReturn<TFieldValues, TContext, TTransformedValues> =>
   React.useContext(HookFormContext) as UseFormReturn<
     TFieldValues,
     TContext,
-    TTransformedValues
+    TTransformedValues,
+    TMetadata
   >;
 
 /**
@@ -79,8 +88,14 @@ export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 >(
-  props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
+  props: FormProviderProps<
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TMetadata
+  >,
 ) => {
   const { children, ...data } = props;
   return (

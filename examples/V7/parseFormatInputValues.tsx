@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm } from '@bombillazo/rhf-plus';
 
 const ParseFormatTextarea = ({ value = [], onChange }) => {
   const [text, setText] = React.useState(value);

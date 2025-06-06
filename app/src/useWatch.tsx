@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Control, useWatch, Controller } from 'react-hook-form';
+import { useForm, Control, useWatch, Controller } from '@bombillazo/rhf-plus';
 import { useRef } from 'react';
 
 type FormInputs = {

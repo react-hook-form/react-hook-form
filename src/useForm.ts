@@ -1,10 +1,18 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
+import createId from './utils/createId';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import submitForm from './utils/submit';
 import { createFormControl } from './logic';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import {
+  FieldValues,
+  FormMetadata,
+  FormState,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
@@ -40,17 +48,26 @@ export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TMetadata extends FormMetadata = any,
 >(
-  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
-): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
+  props: UseFormProps<
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TMetadata
+  > = {},
+): UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata> {
   const _formControl = React.useRef<
-    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
+    | UseFormReturn<TFieldValues, TContext, TTransformedValues, TMetadata>
+    | undefined
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
+  const [formState, updateFormState] = React.useState<
+    FormState<TFieldValues, TMetadata>
+  >({
     isDirty: false,
     isValidating: false,
-    isLoading: isFunction(props.defaultValues),
+    isLoading: props.isLoading || isFunction(props.defaultValues),
     isSubmitted: false,
     isSubmitting: false,
     isSubmitSuccessful: false,
@@ -65,6 +82,10 @@ export function useForm<
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
+    metadata:
+      props.defaultMetadata ||
+      props.formControl?.control._options.defaultMetadata ||
+      ({} as TMetadata),
   });
 
   if (!_formControl.current) {
@@ -106,6 +127,10 @@ export function useForm<
     () => control._disableForm(props.disabled),
     [control, props.disabled],
   );
+
+  React.useEffect(() => {
+    control._updateIsLoading(props.isLoading);
+  }, [control, props.isLoading]);
 
   React.useEffect(() => {
     if (props.mode) {
@@ -164,6 +189,21 @@ export function useForm<
 
     control._removeUnmounted();
   });
+
+  React.useEffect(() => {
+    if (
+      _formControl.current &&
+      props.id !== undefined &&
+      _formControl.current.id !== props.id
+    ) {
+      const id = createId(props.id);
+      _formControl.current.id = id;
+      _formControl.current.submit = () => {
+        submitForm(id);
+      };
+      updateFormState((state) => ({ ...state }));
+    }
+  }, [props.id]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, UseFormMethods, SubmitHandler } from 'react-hook-form';
+import { useForm, UseFormMethods, SubmitHandler } from '@bombillazo/rhf-plus';
 
 type InputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,

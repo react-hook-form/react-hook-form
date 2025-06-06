@@ -6,6 +6,7 @@
   "createFormControl",
   "get",
   "set",
+  "submit",
   "useController",
   "useFieldArray",
   "useForm",

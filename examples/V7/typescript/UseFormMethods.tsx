@@ -4,7 +4,7 @@ import {
   UseFormReturn,
   UseFormRegisterReturn,
   SubmitHandler,
-} from 'react-hook-form';
+} from '@bombillazo/rhf-plus';
 
 import './styles.css';
 

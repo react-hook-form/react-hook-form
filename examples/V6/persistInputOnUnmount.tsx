@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch } from '@bombillazo/rhf-plus';
 
 function useInputCache(values, causeField, effectField, callback) {
   const [effectCache, setEffectCache] = React.useState(values[effectField]);
