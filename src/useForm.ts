@@ -2,7 +2,6 @@ import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
-import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
 import { createFormControl } from './logic';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
@@ -118,7 +117,7 @@ export function useForm<
   }, [control, props.mode, props.reValidateMode]);
 
   React.useEffect(() => {
-    if (props.errors && !isEmptyObject(props.errors)) {
+    if (props.errors) {
       control._setErrors(props.errors);
       control._focusError();
     }
