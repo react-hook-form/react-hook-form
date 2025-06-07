@@ -1449,6 +1449,9 @@ export function createFormControl<
         options.shouldSelect &&
           isFunction(fieldRef.select) &&
           fieldRef.select();
+        options.caret &&
+          isFunction(fieldRef.setSelectionRange) &&
+          fieldRef.setSelectionRange(options.caret, options.caret);
       }
     }
   };

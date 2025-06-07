@@ -242,6 +242,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 
 export type SetFocusOptions = Partial<{
   shouldSelect: boolean;
+  caret: number;
 }>;
 
 /**
