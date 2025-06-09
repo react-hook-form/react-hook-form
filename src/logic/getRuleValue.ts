@@ -1,4 +1,4 @@
-import {
+import type {
   ValidationRule,
   ValidationValue,
   ValidationValueMessage,
@@ -13,9 +13,9 @@ export default <T extends ValidationValue>(
   isUndefined(rule)
     ? rule
     : isRegex(rule)
-    ? rule.source
-    : isObject(rule)
-    ? isRegex(rule.value)
-      ? rule.value.source
-      : rule.value
-    : rule;
+      ? rule.source
+      : isObject(rule)
+        ? isRegex(rule.value)
+          ? rule.value.source
+          : rule.value
+        : rule;

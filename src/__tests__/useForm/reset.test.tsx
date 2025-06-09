@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { Controller } from '../../controller';
-import { Control, UseFormRegister, UseFormReturn } from '../../types';
+import type { Control, UseFormRegister, UseFormReturn } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -56,7 +56,7 @@ describe('reset', () => {
     };
     render(<App />);
 
-    actComponent(() =>
+    act(() =>
       methods.reset({
         test: 'test',
       }),
@@ -138,7 +138,7 @@ describe('reset', () => {
     };
     render(<App />);
 
-    actComponent(() => methods.reset());
+    act(() => methods.reset());
 
     expect(mockReset).not.toHaveBeenCalled();
   });
@@ -1337,7 +1337,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    actComponent(() => {
+    act(() => {
       jest.advanceTimersByTime(100);
     });
 
@@ -1591,6 +1591,65 @@ describe('reset', () => {
 
     await waitFor(() => {
       screen.getByText('34');
+    });
+  });
+
+  it('should keep dirty array value after reset with keepDirtyValues', async () => {
+    function App() {
+      const {
+        getValues,
+        reset,
+        setValue,
+        formState: { isDirty },
+      } = useForm<{
+        array: string[];
+      }>({
+        mode: 'onChange',
+        defaultValues: {
+          array: [],
+        },
+      });
+
+      return (
+        <form>
+          <input defaultValue="users#0" />
+          <p>{`users#${getValues().array.length}`}</p>
+          <p>isDirty = {isDirty ? 'true' : 'false'}</p>
+          <button
+            data-testid="dirtyButton"
+            type="button"
+            onClick={() => setValue('array', ['1'], { shouldDirty: true })}
+          >
+            dirty
+          </button>
+          <button
+            data-testid="resetButton"
+            type="button"
+            onClick={() => reset({ array: [] }, { keepDirtyValues: true })}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    expect(await screen.findByText('isDirty = false')).toBeVisible();
+    await waitFor(() => {
+      screen.getByText('users#0');
+    });
+
+    fireEvent.click(screen.getByTestId('dirtyButton'));
+    expect(await screen.findByText('isDirty = true')).toBeVisible();
+    await waitFor(() => {
+      screen.getByText('users#1');
+    });
+
+    fireEvent.click(screen.getByTestId('resetButton'));
+
+    await waitFor(() => {
+      screen.getByText('users#1');
     });
   });
 

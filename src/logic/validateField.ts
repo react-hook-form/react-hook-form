@@ -1,9 +1,10 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
-import {
+import type {
   Field,
   FieldError,
   FieldValues,
   InternalFieldErrors,
+  InternalNameSet,
   MaxType,
   Message,
   MinType,
@@ -32,6 +33,7 @@ import getValueAndMessage from './getValueAndMessage';
 
 export default async <T extends FieldValues>(
   field: Field,
+  disabledFieldNames: InternalNameSet,
   formValues: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
@@ -50,10 +52,9 @@ export default async <T extends FieldValues>(
     name,
     valueAsNumber,
     mount,
-    disabled,
   } = field._f;
   const inputValue: NativeFieldValue = get(formValues, name);
-  if (!mount || disabled) {
+  if (!mount || disabledFieldNames.has(name)) {
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
@@ -151,16 +152,16 @@ export default async <T extends FieldValues>(
         exceedMax = isTime
           ? convertTimeToDate(inputValue) > convertTimeToDate(maxOutput.value)
           : isWeek
-          ? inputValue > maxOutput.value
-          : valueDate > new Date(maxOutput.value);
+            ? inputValue > maxOutput.value
+            : valueDate > new Date(maxOutput.value);
       }
 
       if (isString(minOutput.value) && inputValue) {
         exceedMin = isTime
           ? convertTimeToDate(inputValue) < convertTimeToDate(minOutput.value)
           : isWeek
-          ? inputValue < minOutput.value
-          : valueDate < new Date(minOutput.value);
+            ? inputValue < minOutput.value
+            : valueDate < new Date(minOutput.value);
       }
     }
 

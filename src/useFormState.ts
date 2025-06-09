@@ -1,17 +1,13 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
-import shouldRenderFormState from './logic/shouldRenderFormState';
-import shouldSubscribeByName from './logic/shouldSubscribeByName';
-import {
+import type {
   FieldValues,
-  FormState,
-  InternalFieldName,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
-import { useSubscribe } from './useSubscribe';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
@@ -43,13 +39,15 @@ import { useSubscribe } from './useSubscribe';
  * }
  * ```
  */
-function useFormState<TFieldValues extends FieldValues = FieldValues>(
-  props?: UseFormStateProps<TFieldValues>,
+export function useFormState<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
+>(
+  props?: UseFormStateProps<TFieldValues, TTransformedValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const methods = useFormContext<TFieldValues>();
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const { control = methods.control, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
-  const _mounted = React.useRef(true);
   const _localProxyFormState = React.useRef({
     isDirty: false,
     isLoading: false,
@@ -60,48 +58,36 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>(
     isValid: false,
     errors: false,
   });
-  const _name = React.useRef(name);
 
-  _name.current = name;
-
-  useSubscribe({
-    disabled,
-    next: (
-      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
-    ) =>
-      _mounted.current &&
-      shouldSubscribeByName(
-        _name.current as InternalFieldName,
-        value.name,
+  useIsomorphicLayoutEffect(
+    () =>
+      control._subscribe({
+        name,
+        formState: _localProxyFormState.current,
         exact,
-      ) &&
-      shouldRenderFormState(
-        value,
-        _localProxyFormState.current,
-        control._updateFormState,
-      ) &&
-      updateFormState({
-        ...control._formState,
-        ...value,
+        callback: (formState) => {
+          !disabled &&
+            updateFormState({
+              ...control._formState,
+              ...formState,
+            });
+        },
       }),
-    subject: control._subjects.state,
-  });
+    [name, disabled, exact],
+  );
 
   React.useEffect(() => {
-    _mounted.current = true;
-    _localProxyFormState.current.isValid && control._updateValid(true);
-
-    return () => {
-      _mounted.current = false;
-    };
+    _localProxyFormState.current.isValid && control._setValid(true);
   }, [control]);
 
-  return getProxyFormState(
-    formState,
-    control,
-    _localProxyFormState.current,
-    false,
+  return React.useMemo(
+    () =>
+      getProxyFormState(
+        formState,
+        control,
+        _localProxyFormState.current,
+        false,
+      ),
+    [formState, control],
   );
 }
-
-export { useFormState };

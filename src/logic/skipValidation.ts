@@ -1,4 +1,4 @@
-import { ValidationModeFlags } from '../types';
+import type { ValidationModeFlags } from '../types';
 
 export default (
   isBlurEvent: boolean,

@@ -1,11 +1,17 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import React, { useEffect } from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
 
 import { Controller } from '../../controller';
-import { Control, FieldValues } from '../../types';
+import type { Control, FieldValues } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 import { useWatch } from '../../useWatch';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
@@ -132,7 +138,7 @@ describe('watch', () => {
 
     render(<App />);
 
-    expect(results).toEqual(['default']);
+    expect(results).toEqual(['default', 'default']);
   });
 
   it('should return array of default value for array of inputs', () => {
@@ -152,7 +158,10 @@ describe('watch', () => {
 
     render(<App />);
 
-    expect(results).toEqual([['default', 'test']]);
+    expect(results).toEqual([
+      ['default', 'test'],
+      [undefined, undefined],
+    ]);
   });
 
   it('should watch array of inputs', () => {
@@ -445,7 +454,7 @@ describe('watch', () => {
 
     render(<App />);
 
-    expect(watched).toEqual([{}]);
+    expect(watched).toEqual([{}, { test: '' }]);
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -456,6 +465,9 @@ describe('watch', () => {
     expect(watched).toEqual([
       {},
       {
+        test: '',
+      },
+      {
         test: '1',
       },
     ]);
@@ -464,6 +476,9 @@ describe('watch', () => {
 
     expect(watched).toEqual([
       {},
+      {
+        test: '',
+      },
       {
         test: '1',
       },
@@ -505,7 +520,17 @@ describe('watch', () => {
 
     expect(await screen.findByText('1234')).toBeVisible();
 
-    expect(watchedData).toEqual([{}, {}, { test: '1234' }]);
+    expect(watchedData).toEqual([
+      {},
+      {
+        test: '1234',
+        data: '1234',
+      },
+      {
+        test: '1234',
+        data: '1234',
+      },
+    ]);
   });
 
   it('should not be able to overwrite global watch state', () => {
@@ -546,5 +571,92 @@ describe('watch', () => {
     });
 
     screen.getByText('bill');
+  });
+
+  it('should call the callback on every append', () => {
+    interface FormValues {
+      names: {
+        firstName: string;
+      }[];
+    }
+    const mockedFn = jest.fn();
+
+    function App() {
+      const { watch, control } = useForm<FormValues>({
+        defaultValues: { names: [] },
+      });
+
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'names',
+      });
+
+      useEffect(() => {
+        const subscription = watch((_value, { name }) => {
+          mockedFn(name, _value);
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      }, [watch]);
+
+      const addItem = (index: number) => {
+        append({ firstName: '' }, { focusName: `names.${index}.firstName` });
+      };
+
+      return (
+        <form>
+          <button type="button" onClick={() => addItem(fields.length)}>
+            append
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(mockedFn).toHaveBeenCalledTimes(2);
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(mockedFn).toHaveBeenCalledTimes(4);
+  });
+
+  it('should remain isReady form state for subscription', () => {
+    function App() {
+      const {
+        watch,
+        formState: { isReady },
+        register,
+        control,
+      } = useForm({
+        defaultValues: { name: '' },
+      });
+      const { isReady: isFormStateReady } = useFormState({
+        control,
+      });
+
+      watch();
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <p>{isReady ? 'formStateReady' : ''}</p>
+          <p>{isFormStateReady ? 'useFormStateReady' : ''}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    screen.getByText('formStateReady');
+    screen.getByText('useFormStateReady');
   });
 });

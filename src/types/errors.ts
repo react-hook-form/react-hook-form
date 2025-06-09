@@ -1,6 +1,6 @@
-import { FieldValues, InternalFieldName, Ref } from './fields';
-import { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
-import { RegisterOptions, ValidateResult } from './validator';
+import type { FieldValues, InternalFieldName, Ref } from './fields';
+import type { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
+import type { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
 
@@ -34,10 +34,10 @@ export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
   [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
     ? FieldError
     : K extends 'root' | `root.${string}`
-    ? GlobalError
-    : T[K] extends object
-    ? Merge<FieldError, FieldErrorsImpl<T[K]>>
-    : FieldError;
+      ? GlobalError
+      : T[K] extends object
+        ? Merge<FieldError, FieldErrorsImpl<T[K]>>
+        : FieldError;
 };
 
 export type GlobalError = Partial<{

@@ -1,5 +1,5 @@
 import getFieldValue from '../../logic/getFieldValue';
-import { Field } from '../../types';
+import type { Field } from '../../types';
 
 jest.mock('../../logic/getRadioValue', () => ({
   __esModule: true,
@@ -77,19 +77,6 @@ describe('getFieldValue', () => {
         ref: {
           name: 'file',
           files: null,
-        },
-      }),
-    ).toEqual(undefined);
-  });
-
-  it('should not return value when the input is disabled', () => {
-    expect(
-      getFieldValue({
-        name: 'test',
-        ref: {
-          name: 'radio',
-          disabled: true,
-          type: 'radio',
         },
       }),
     ).toEqual(undefined);

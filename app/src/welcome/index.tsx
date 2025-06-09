@@ -99,7 +99,7 @@ const items: Item[] = [
   {
     title: 'Reset',
     description: 'Should be able to re-populate the form while reset',
-    slugs: ['/reset'],
+    slugs: ['/reset', '/resetKeepDirty'],
   },
   {
     title: 'ReValidateMode',

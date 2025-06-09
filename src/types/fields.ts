@@ -1,5 +1,5 @@
-import { IsFlatObject, Noop } from './utils';
-import { RegisterOptions } from './validator';
+import type { IsFlatObject, Noop } from './utils';
+import type { RegisterOptions } from './validator';
 
 export type InternalFieldName = string;
 
@@ -50,4 +50,6 @@ export type Field = {
   } & RegisterOptions;
 };
 
-export type FieldRefs = Partial<Record<InternalFieldName, Field>>;
+export type FieldRefs = Partial<{
+  [key: InternalFieldName]: Field | FieldRefs;
+}>;

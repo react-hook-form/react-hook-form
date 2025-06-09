@@ -1,7 +1,6 @@
-import React from 'react';
+import type React from 'react';
 
-import { RegisterOptions } from './validator';
-import {
+import type {
   Control,
   FieldError,
   FieldPath,
@@ -11,6 +10,7 @@ import {
   RefCallBack,
   UseFormStateReturn,
 } from './';
+import type { RegisterOptions } from './validator';
 
 export type ControllerFieldState = {
   invalid: boolean;
@@ -35,6 +35,7 @@ export type ControllerRenderProps<
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 > = {
   name: TName;
   rules?: Omit<
@@ -43,7 +44,7 @@ export type UseControllerProps<
   >;
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
 };
 
@@ -59,7 +60,7 @@ export type UseControllerReturn<
 /**
  * Render function to provide the control for the field.
  *
- * @returns all the event handler, and relevant field and form state.
+ * @returns all the event handlers, and relevant field and form state.
  *
  * @example
  * ```tsx
@@ -80,6 +81,7 @@ export type UseControllerReturn<
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 > = {
   render: ({
     field,
@@ -90,4 +92,4 @@ export type ControllerProps<
     fieldState: ControllerFieldState;
     formState: UseFormStateReturn<TFieldValues>;
   }) => React.ReactElement;
-} & UseControllerProps<TFieldValues, TName>;
+} & UseControllerProps<TFieldValues, TName, TTransformedValues>;

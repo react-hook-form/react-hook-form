@@ -6,8 +6,9 @@ import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import set from './utils/set';
 import { EVENTS } from './constants';
-import {
+import type {
   ControllerFieldState,
   Field,
   FieldPath,
@@ -20,7 +21,6 @@ import {
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
-import { set } from './utils';
 
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
@@ -49,10 +49,11 @@ import { set } from './utils';
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
+  props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
-  const methods = useFormContext<TFieldValues>();
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const { name, disabled, control = methods.control, shouldUnregister } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
   const value = useWatch({
@@ -68,8 +69,10 @@ export function useController<
   const formState = useFormState({
     control,
     name,
+    exact: true,
   });
 
+  const _props = React.useRef(props);
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -78,14 +81,106 @@ export function useController<
     }),
   );
 
+  const fieldState = React.useMemo(
+    () =>
+      Object.defineProperties(
+        {},
+        {
+          invalid: {
+            enumerable: true,
+            get: () => !!get(formState.errors, name),
+          },
+          isDirty: {
+            enumerable: true,
+            get: () => !!get(formState.dirtyFields, name),
+          },
+          isTouched: {
+            enumerable: true,
+            get: () => !!get(formState.touchedFields, name),
+          },
+          isValidating: {
+            enumerable: true,
+            get: () => !!get(formState.validatingFields, name),
+          },
+          error: {
+            enumerable: true,
+            get: () => get(formState.errors, name),
+          },
+        },
+      ) as ControllerFieldState,
+    [formState, name],
+  );
+
+  const onChange = React.useCallback(
+    (event: any) =>
+      _registerProps.current.onChange({
+        target: {
+          value: getEventValue(event),
+          name: name as InternalFieldName,
+        },
+        type: EVENTS.CHANGE,
+      }),
+    [name],
+  );
+
+  const onBlur = React.useCallback(
+    () =>
+      _registerProps.current.onBlur({
+        target: {
+          value: get(control._formValues, name),
+          name: name as InternalFieldName,
+        },
+        type: EVENTS.BLUR,
+      }),
+    [name, control._formValues],
+  );
+
+  const ref = React.useCallback(
+    (elm: any) => {
+      const field = get(control._fields, name);
+
+      if (field && elm) {
+        field._f.ref = {
+          focus: () => elm.focus && elm.focus(),
+          select: () => elm.select && elm.select(),
+          setCustomValidity: (message: string) =>
+            elm.setCustomValidity(message),
+          reportValidity: () => elm.reportValidity(),
+        };
+      }
+    },
+    [control._fields, name],
+  );
+
+  const field = React.useMemo(
+    () => ({
+      name,
+      value,
+      ...(isBoolean(disabled) || formState.disabled
+        ? { disabled: formState.disabled || disabled }
+        : {}),
+      onChange,
+      onBlur,
+      ref,
+    }),
+    [name, disabled, formState.disabled, onChange, onBlur, ref, value],
+  );
+
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
+    control.register(name, {
+      ..._props.current.rules,
+      ...(isBoolean(_props.current.disabled)
+        ? { disabled: _props.current.disabled }
+        : {}),
+    });
+
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
 
-      if (field) {
+      if (field && field._f) {
         field._f.mount = value;
       }
     };
@@ -100,6 +195,8 @@ export function useController<
       }
     }
 
+    !isArrayField && control.register(name);
+
     return () => {
       (
         isArrayField
@@ -112,84 +209,18 @@ export function useController<
   }, [name, control, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
-    if (get(control._fields, name)) {
-      control._updateDisabledField({
-        disabled,
-        fields: control._fields,
-        name,
-        value: get(control._fields, name)._f.value,
-      });
-    }
+    control._setDisabledField({
+      disabled,
+      name,
+    });
   }, [disabled, name, control]);
 
-  return {
-    field: {
-      name,
-      value,
-      ...(isBoolean(disabled) || formState.disabled
-        ? { disabled: formState.disabled || disabled }
-        : {}),
-      onChange: React.useCallback(
-        (event) =>
-          _registerProps.current.onChange({
-            target: {
-              value: getEventValue(event),
-              name: name as InternalFieldName,
-            },
-            type: EVENTS.CHANGE,
-          }),
-        [name],
-      ),
-      onBlur: React.useCallback(
-        () =>
-          _registerProps.current.onBlur({
-            target: {
-              value: get(control._formValues, name),
-              name: name as InternalFieldName,
-            },
-            type: EVENTS.BLUR,
-          }),
-        [name, control],
-      ),
-      ref: (elm) => {
-        const field = get(control._fields, name);
-
-        if (field && elm) {
-          field._f.ref = {
-            focus: () => elm.focus(),
-            select: () => elm.select(),
-            setCustomValidity: (message: string) =>
-              elm.setCustomValidity(message),
-            reportValidity: () => elm.reportValidity(),
-          };
-        }
-      },
-    },
-    formState,
-    fieldState: Object.defineProperties(
-      {},
-      {
-        invalid: {
-          enumerable: true,
-          get: () => !!get(formState.errors, name),
-        },
-        isDirty: {
-          enumerable: true,
-          get: () => !!get(formState.dirtyFields, name),
-        },
-        isTouched: {
-          enumerable: true,
-          get: () => !!get(formState.touchedFields, name),
-        },
-        isValidating: {
-          enumerable: true,
-          get: () => !!get(formState.validatingFields, name),
-        },
-        error: {
-          enumerable: true,
-          get: () => get(formState.errors, name),
-        },
-      },
-    ) as ControllerFieldState,
-  };
+  return React.useMemo(
+    () => ({
+      field,
+      formState,
+      fieldState,
+    }),
+    [field, formState, fieldState],
+  );
 }

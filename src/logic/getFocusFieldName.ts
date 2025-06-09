@@ -1,4 +1,4 @@
-import { FieldArrayMethodProps, InternalFieldName } from '../types';
+import type { FieldArrayMethodProps, InternalFieldName } from '../types';
 import isUndefined from '../utils/isUndefined';
 
 export default (

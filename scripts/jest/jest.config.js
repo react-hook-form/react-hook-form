@@ -21,7 +21,10 @@ const web = {
       'jest-preview/transforms/file',
   },
   setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup.ts'],
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-fixed-jsdom',
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
 };
 
 const server = {

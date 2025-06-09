@@ -97,7 +97,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('39');
+    cy.get('#renderCount').contains('35');
 
     cy.get('#on-invalid-called-times').contains('1');
   });
@@ -217,7 +217,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('28');
+    cy.get('#renderCount').contains('26');
   });
 
   it('should validate the form with onChange mode and reset the form', () => {
@@ -268,6 +268,6 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('21');
+    cy.get('#renderCount').contains('22');
   });
 });
