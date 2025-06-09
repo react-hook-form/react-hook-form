@@ -11,8 +11,8 @@ import {
   InternalFieldName,
   UseWatchProps,
 } from './types';
-import { useDeepEqualEffect } from './useDeepEqualEffect';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -145,7 +145,7 @@ export function useWatch<
 export function useWatch<TFieldValues extends FieldValues>(
   props?: UseWatchProps<TFieldValues>,
 ) {
-  const methods = useFormContext();
+  const methods = useFormContext<TFieldValues>();
   const {
     control = methods.control,
     name,
@@ -153,18 +153,18 @@ export function useWatch<TFieldValues extends FieldValues>(
     disabled,
     exact,
   } = props || {};
-
+  const _defaultValue = React.useRef(defaultValue);
   const [value, updateValue] = React.useState(
     control._getWatch(
       name as InternalFieldName,
-      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
+      _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
     ),
   );
 
-  useDeepEqualEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: name as InternalFieldName,
+        name,
         formState: {
           values: true,
         },
@@ -177,11 +177,11 @@ export function useWatch<TFieldValues extends FieldValues>(
               control._names,
               formState.values || control._formValues,
               false,
-              defaultValue,
+              _defaultValue.current,
             ),
           ),
       }),
-    [name, defaultValue, disabled, exact],
+    [name, control, disabled, exact],
   );
 
   React.useEffect(() => control._removeUnmounted());

@@ -62,6 +62,9 @@ function App() {
 
 We’re incredibly grateful to these kind and generous sponsors for their support!
 
+<a target="_blank" href="https://www.follower24.de/">
+    <img width="120" src="https://images.opencollective.com/follower24/00297f8/avatar/256.png?height=256" />
+</a>
 <a target="_blank" href='https://workleap.com/'>
     <img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
 </a>
@@ -73,9 +76,6 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 </a>
 <a target="_blank" href='https://route4me.com/'>
     <img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
-</a>
-<a target="_blank" href='https://twicsy.com/'>
-    <img width="120" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
 </a>
 <a target="_blank" href='https://toss.im'>
     <img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
@@ -97,8 +97,12 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 
 Thank you to our previous sponsors for your generous support!
 
+
+<a target="_blank" href='https://twicsy.com/'>
+    <img width="24" height="24" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
+</a>
 <a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="24" height="24" />
+  <img src="https://www.leniolabs.com/images/leniolabs-isologo-example.jpg" width="24" height="24" />
 </a>
 <a target="_blank" href="https://underbelly.is">
     <img width="24" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
