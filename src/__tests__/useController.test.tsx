@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
+import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';

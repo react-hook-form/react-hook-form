@@ -1,5 +1,5 @@
 import { VALIDATION_MODE } from '../constants';
-import { Control, FieldValues, FormState, ReadFormState } from '../types';
+import type { Control, FieldValues, FormState, ReadFormState } from '../types';
 
 export default <
   TFieldValues extends FieldValues,

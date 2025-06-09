@@ -1,5 +1,5 @@
 import { EVENTS, VALIDATION_MODE } from '../constants';
-import {
+import type {
   BatchFieldArrayUpdate,
   ChangeHandler,
   Control,

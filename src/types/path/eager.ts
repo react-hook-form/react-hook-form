@@ -1,7 +1,7 @@
-import { FieldValues } from '../fields';
-import { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
+import type { FieldValues } from '../fields';
+import type { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
 
-import { ArrayKey, IsTuple, TupleKeys } from './common';
+import type { ArrayKey, IsTuple, TupleKeys } from './common';
 
 /**
  * Helper function to break apart T1 and check if any are equal to T2

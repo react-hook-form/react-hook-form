@@ -5,7 +5,12 @@ import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
 import { updateMethodsReference } from './utils/updateMethodsReference';
 import { createFormControl } from './logic';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import type {
+  FieldValues,
+  FormState,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
