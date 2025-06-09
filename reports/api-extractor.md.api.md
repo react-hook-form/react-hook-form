@@ -65,6 +65,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
+    _focusError: () => boolean | undefined;
     _disableForm: (disabled?: boolean) => void;
     _subscribe: FromSubscribe<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
@@ -308,6 +309,7 @@ export type FormState<TFieldValues extends FieldValues> = {
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
+    isReady: boolean;
 };
 
 // @public (undocumented)
@@ -340,11 +342,12 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 }) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export type FromSubscribe<TFieldValues extends FieldValues> = (payload: {
-    name?: string;
+export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
+    name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
+        name?: InternalFieldName;
     }) => void;
     exact?: boolean;
     reRenderRoot?: boolean;
@@ -726,12 +729,15 @@ export type UseFormRegisterReturn<TFieldName extends InternalFieldName = Interna
 export type UseFormReset<TFieldValues extends FieldValues> = (values?: DefaultValues<TFieldValues> | TFieldValues | ResetAction<TFieldValues>, keepStateOptions?: KeepStateOptions) => void;
 
 // @public
-export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: Partial<{
+export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: UseFormResetFieldOptions<TFieldValues, TFieldName>) => void;
+
+// @public (undocumented)
+export type UseFormResetFieldOptions<TFieldValues extends FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = Partial<{
     keepDirty: boolean;
     keepTouched: boolean;
     keepError: boolean;
     defaultValue: FieldPathValue<TFieldValues, TFieldName>;
-}>) => void;
+}>;
 
 // @public (undocumented)
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
@@ -797,11 +803,12 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFromSubscribe<TFieldValues extends FieldValues> = (payload: {
-    name?: string;
+export type UseFromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
+    name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
+        name?: InternalFieldName;
     }) => void;
     exact?: boolean;
 }) => () => void;
@@ -888,7 +895,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:468:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:484:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

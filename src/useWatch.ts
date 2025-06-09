@@ -12,6 +12,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -144,7 +145,7 @@ export function useWatch<
 export function useWatch<TFieldValues extends FieldValues>(
   props?: UseWatchProps<TFieldValues>,
 ) {
-  const methods = useFormContext();
+  const methods = useFormContext<TFieldValues>();
   const {
     control = methods.control,
     name,
@@ -152,15 +153,18 @@ export function useWatch<TFieldValues extends FieldValues>(
     disabled,
     exact,
   } = props || {};
-  const _name = React.useRef(name);
   const _defaultValue = React.useRef(defaultValue);
+  const [value, updateValue] = React.useState(
+    control._getWatch(
+      name as InternalFieldName,
+      _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
+    ),
+  );
 
-  _name.current = name;
-
-  React.useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: _name.current as InternalFieldName,
+        name,
         formState: {
           values: true,
         },
@@ -169,7 +173,7 @@ export function useWatch<TFieldValues extends FieldValues>(
           !disabled &&
           updateValue(
             generateWatchOutput(
-              _name.current as InternalFieldName | InternalFieldName[],
+              name as InternalFieldName | InternalFieldName[],
               control._names,
               formState.values || control._formValues,
               false,
@@ -177,14 +181,7 @@ export function useWatch<TFieldValues extends FieldValues>(
             ),
           ),
       }),
-    [control, disabled, exact],
-  );
-
-  const [value, updateValue] = React.useState(
-    control._getWatch(
-      name as InternalFieldName,
-      defaultValue as DeepPartialSkipArrayKey<TFieldValues>,
-    ),
+    [name, control, disabled, exact],
   );
 
   React.useEffect(() => control._removeUnmounted());

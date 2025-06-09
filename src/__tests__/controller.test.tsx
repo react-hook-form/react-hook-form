@@ -875,7 +875,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should update Controller value with setValue', () => {
@@ -1079,6 +1079,9 @@ describe('Controller', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValue).toEqual([
+      {
+        test: 'bill',
+      },
       {
         test: 'bill',
       },

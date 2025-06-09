@@ -1,13 +1,9 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
-import {
-  FieldValues,
-  InternalFieldName,
-  UseFormStateProps,
-  UseFormStateReturn,
-} from './types';
+import { FieldValues, UseFormStateProps, UseFormStateReturn } from './types';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
@@ -39,7 +35,7 @@ import { useFormContext } from './useFormContext';
  * }
  * ```
  */
-function useFormState<
+export function useFormState<
   TFieldValues extends FieldValues = FieldValues,
   TTransformedValues = TFieldValues,
 >(
@@ -58,14 +54,11 @@ function useFormState<
     isValid: false,
     errors: false,
   });
-  const _name = React.useRef(name);
 
-  _name.current = name;
-
-  React.useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subscribe({
-        name: _name.current as InternalFieldName,
+        name,
         formState: _localProxyFormState.current,
         exact,
         callback: (formState) => {
@@ -76,7 +69,7 @@ function useFormState<
             });
         },
       }),
-    [control, disabled, exact],
+    [name, disabled, exact],
   );
 
   React.useEffect(() => {
@@ -94,5 +87,3 @@ function useFormState<
     [formState, control],
   );
 }
-
-export { useFormState };
