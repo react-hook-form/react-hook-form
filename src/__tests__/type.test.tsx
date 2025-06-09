@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Controller } from '../controller';
-import {
+import type {
   FieldErrors,
   FieldPath,
   FieldValues,

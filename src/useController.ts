@@ -8,7 +8,7 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
-import {
+import type {
   ControllerFieldState,
   Field,
   FieldPath,

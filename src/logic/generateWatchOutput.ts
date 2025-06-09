@@ -1,4 +1,4 @@
-import { DeepPartial, FieldValues, Names } from '../types';
+import type { DeepPartial, FieldValues, Names } from '../types';
 import get from '../utils/get';
 import isString from '../utils/isString';
 

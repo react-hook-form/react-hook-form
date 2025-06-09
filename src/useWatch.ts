@@ -1,7 +1,7 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
-import {
+import type {
   Control,
   DeepPartialSkipArrayKey,
   FieldPath,

@@ -1,6 +1,11 @@
-import { FieldErrors } from './errors';
-import { Field, FieldName, FieldValues, InternalFieldName } from './fields';
-import { CriteriaMode } from './form';
+import type { FieldErrors } from './errors';
+import type {
+  Field,
+  FieldName,
+  FieldValues,
+  InternalFieldName,
+} from './fields';
+import type { CriteriaMode } from './form';
 
 export type ResolverSuccess<TTransformedValues> = {
   values: TTransformedValues;

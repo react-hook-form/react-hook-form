@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
-import { FieldErrors } from '../../types/errors';
+import type { FieldErrors } from '../../types/errors';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';

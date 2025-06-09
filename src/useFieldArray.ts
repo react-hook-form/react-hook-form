@@ -22,7 +22,7 @@ import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
 import updateAt from './utils/update';
 import { VALIDATION_MODE } from './constants';
-import {
+import type {
   Control,
   Field,
   FieldArray,

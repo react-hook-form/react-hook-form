@@ -1,5 +1,5 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
-import {
+import type {
   Field,
   FieldError,
   FieldValues,

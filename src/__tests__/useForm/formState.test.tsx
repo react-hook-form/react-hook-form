@@ -10,7 +10,7 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control, FormState, UseFormGetFieldState } from '../../types';
+import type { Control, FormState, UseFormGetFieldState } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
