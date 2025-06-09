@@ -91,7 +91,7 @@
     "@types/testing-library__jest-dom": "^5.14.9",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "babel-plugin-react-compiler": "0.0.0-experimental-58c2b1c-20241007",
+    "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "bundlewatch": "^0.3.3",
     "cypress": "^13.17.0",
     "eslint": "^9.28.0",
