@@ -86,7 +86,7 @@ export function useForm<
   control._options = props;
 
   useIsomorphicLayoutEffect(() => {
-    const sub = control._subscribe({
+    const subscription = control._subscribe({
       formState: control._proxyFormState,
       callback: () => updateFormState({ ...control._formState }),
       reRenderRoot: true,
@@ -99,7 +99,7 @@ export function useForm<
 
     control._formState.isReady = true;
 
-    return sub;
+    return subscription;
   }, [control]);
 
   React.useEffect(
@@ -111,24 +111,28 @@ export function useForm<
     if (props.mode) {
       control._options.mode = props.mode;
     }
+
     if (props.reValidateMode) {
       control._options.reValidateMode = props.reValidateMode;
     }
-  }, [control, props.mode, props.reValidateMode]);
 
-  React.useEffect(() => {
+    if (props.shouldUnregister) {
+      control._subjects.state.next({
+        values: control._getWatch(),
+      });
+    }
+
     if (props.errors) {
       control._setErrors(props.errors);
       control._focusError();
     }
-  }, [control, props.errors]);
-
-  React.useEffect(() => {
-    props.shouldUnregister &&
-      control._subjects.state.next({
-        values: control._getWatch(),
-      });
-  }, [control, props.shouldUnregister]);
+  }, [
+    control,
+    props.mode,
+    props.reValidateMode,
+    props.errors,
+    props.shouldUnregister,
+  ]);
 
   React.useEffect(() => {
     if (control._proxyFormState.isDirty) {
