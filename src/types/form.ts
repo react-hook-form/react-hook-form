@@ -397,7 +397,10 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = <
   name?: readonly [...TFieldNames] | TFieldNames[number];
   formState?: Partial<ReadFormState>;
   callback: (
-    data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
+    data: Partial<FormState<TFieldValues>> & {
+      values: TFieldValues;
+      name?: InternalFieldName;
+    },
   ) => void;
   exact?: boolean;
 }) => () => void;
@@ -798,7 +801,10 @@ export type FromSubscribe<TFieldValues extends FieldValues> = <
   name?: readonly [...TFieldNames] | TFieldNames[number];
   formState?: Partial<ReadFormState>;
   callback: (
-    data: Partial<FormState<TFieldValues>> & { values: TFieldValues },
+    data: Partial<FormState<TFieldValues>> & {
+      values: TFieldValues;
+      name?: InternalFieldName;
+    },
   ) => void;
   exact?: boolean;
   reRenderRoot?: boolean;
