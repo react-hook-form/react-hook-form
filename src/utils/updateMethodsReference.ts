@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 
-import { FieldValues, UseFormReturn } from '../types';
+import type { FieldValues, UseFormReturn } from '../types';
 
 export function updateMethodsReference<
   TFieldValues extends FieldValues = FieldValues,
