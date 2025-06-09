@@ -73,17 +73,22 @@ export function useForm<
   });
 
   if (!_formControl.current) {
-    _formControl.current = {
-      ...(props.formControl ? props.formControl : createFormControl(props)),
-      formState,
-    };
+    if (props.formControl) {
+      _formControl.current = {
+        ...props.formControl,
+        formState,
+      };
 
-    if (
-      props.formControl &&
-      props.defaultValues &&
-      !isFunction(props.defaultValues)
-    ) {
-      props.formControl.reset(props.defaultValues, props.resetOptions);
+      if (props.defaultValues && !isFunction(props.defaultValues)) {
+        props.formControl.reset(props.defaultValues, props.resetOptions);
+      }
+    } else {
+      const { formControl, ...rest } = createFormControl(props);
+
+      _formControl.current = {
+        ...rest,
+        formState,
+      };
     }
   }
 
