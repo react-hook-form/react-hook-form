@@ -13,8 +13,7 @@ export default <T>(
     return defaultValue;
   }
 
-  const tempPath = isKey(path) ? [path] : stringToPath(path);
-  const result = tempPath.reduce(
+  const result = (isKey(path) ? [path] : stringToPath(path)).reduce(
     (result, key) =>
       isNullOrUndefined(result) ? result : result[key as keyof {}],
     object,
