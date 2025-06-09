@@ -1,4 +1,4 @@
-import { Field, NativeFieldValue } from '../types';
+import type { Field, NativeFieldValue } from '../types';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 

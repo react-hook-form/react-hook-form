@@ -1,4 +1,4 @@
-import { Noop } from '../types';
+import type { Noop } from '../types';
 
 export type Observer<T> = {
   next: (value: T) => void;

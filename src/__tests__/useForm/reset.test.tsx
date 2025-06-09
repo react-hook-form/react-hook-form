@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
-import { Control, UseFormRegister, UseFormReturn } from '../../types';
+import type { Control, UseFormRegister, UseFormReturn } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';

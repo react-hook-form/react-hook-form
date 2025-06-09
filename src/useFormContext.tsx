@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FieldValues, FormProviderProps, UseFormReturn } from './types';
+import type { FieldValues, FormProviderProps, UseFormReturn } from './types';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 

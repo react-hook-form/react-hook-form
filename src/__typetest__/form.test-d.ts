@@ -1,7 +1,7 @@
 import { expectType } from 'tsd';
 import { z } from 'zod';
 
-import { FieldError, FieldValues, Resolver } from '../types';
+import type { FieldError, FieldValues, Resolver } from '../types';
 import { useForm } from '../useForm';
 
 /** {@link UseFormHandleSubmit} */ {

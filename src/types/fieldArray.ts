@@ -1,7 +1,7 @@
-import { FieldValues } from './fields';
-import { Control } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './path';
-import { RegisterOptions, Validate } from './validator';
+import type { FieldValues } from './fields';
+import type { Control } from './form';
+import type { FieldArrayPath, FieldArrayPathValue } from './path';
+import type { RegisterOptions, Validate } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,

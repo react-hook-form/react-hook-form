@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import {
+import type {
   Control,
   FieldValues,
   SubmitHandler,

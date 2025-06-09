@@ -10,7 +10,7 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../constants';
-import {
+import type {
   Control,
   FieldErrors,
   FieldValues,

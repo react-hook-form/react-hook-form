@@ -1,4 +1,4 @@
-import { FieldError, FieldErrors, FieldValues } from '../types';
+import type { FieldError, FieldErrors, FieldValues } from '../types';
 import get from '../utils/get';
 import isKey from '../utils/isKey';
 
