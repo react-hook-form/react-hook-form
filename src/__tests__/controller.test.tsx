@@ -1172,7 +1172,7 @@ describe('Controller', () => {
     ).toEqual('720');
   });
 
-  it.skip('should mark mounted inputs correctly within field array', async () => {
+  it('should mark mounted inputs correctly within field array', async () => {
     const App = () => {
       const {
         control,
