@@ -79,7 +79,7 @@ export type UseControllerReturn<
  * ```
  */
 
-type ControllerRender<
+export type ControllerRender<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
 > = ({
