@@ -95,6 +95,13 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
     children: ControllerRender<TFieldValues, TName>;
 }) & UseControllerProps<TFieldValues, TName, TTransformedValues>;
 
+// @public
+export type ControllerRender<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> = ({ field, fieldState, formState, }: {
+    field: ControllerRenderProps<TFieldValues, TName>;
+    fieldState: ControllerFieldState;
+    formState: UseFormStateReturn<TFieldValues>;
+}) => React_2.ReactElement;
+
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
@@ -919,7 +926,6 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/controller.ts:101:7 - (ae-forgotten-export) The symbol "ControllerRender" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:502:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
