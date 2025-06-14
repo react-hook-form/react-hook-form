@@ -1,4 +1,4 @@
-import isUndefined from "../utils/isUndefined";
+import isUndefined from '../utils/isUndefined';
 
 export default () => {
   if (!isUndefined(crypto) && crypto.randomUUID) {
