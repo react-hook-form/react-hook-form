@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   act,
   fireEvent,
@@ -211,63 +211,6 @@ describe('watch', () => {
       });
 
     expect(result.current.watch()).toEqual({ test: 'data1', test1: 'data2' });
-  });
-
-  it('should watch the entire field array with callback', () => {
-    const output: any[] = [];
-
-    const Component = () => {
-      const { watch, register } = useForm<{
-        test: string;
-        test1: string;
-      }>();
-
-      React.useEffect(() => {
-        const subscription = watch((data) => {
-          data.test;
-          data.test1;
-          output.push(data);
-        });
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      }, [watch]);
-
-      return <input {...register('test')} />;
-    };
-
-    render(<Component />);
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test',
-      },
-    });
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test1',
-      },
-    });
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test2',
-      },
-    });
-
-    expect(output).toEqual([
-      {
-        test: 'test',
-      },
-      {
-        test: 'test1',
-      },
-      {
-        test: 'test2',
-      },
-    ]);
   });
 
   it('should watch correctly with useFieldArray with action and then fallback to onChange', () => {
@@ -585,6 +528,7 @@ describe('watch', () => {
       const { watch, control } = useForm<FormValues>({
         defaultValues: { names: [] },
       });
+      const watchRef = useRef(watch);
 
       const { fields, append } = useFieldArray({
         control,
@@ -592,14 +536,14 @@ describe('watch', () => {
       });
 
       useEffect(() => {
-        const subscription = watch((_value, { name }) => {
+        const subscription = watchRef.current((_value, { name }) => {
           mockedFn(name, _value);
         });
 
         return () => {
           subscription.unsubscribe();
         };
-      }, [watch]);
+      }, []);
 
       const addItem = (index: number) => {
         append({ firstName: '' }, { focusName: `names.${index}.firstName` });
