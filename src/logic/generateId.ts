@@ -1,4 +1,10 @@
+import isUndefined from '../utils/isUndefined';
+
 export default () => {
+  if (!isUndefined(crypto) && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
   const d =
     typeof performance === 'undefined' ? Date.now() : performance.now() * 1000;
 
