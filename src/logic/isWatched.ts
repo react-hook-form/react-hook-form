@@ -1,4 +1,4 @@
-import { InternalFieldName, Names } from '../types';
+import type { InternalFieldName, Names } from '../types';
 
 export default (
   name: InternalFieldName,

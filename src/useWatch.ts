@@ -2,7 +2,7 @@ import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
 import deepEqual from './utils/deepEqual';
-import {
+import type {
   Control,
   DeepPartialSkipArrayKey,
   FieldPath,

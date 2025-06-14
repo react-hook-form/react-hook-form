@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import {
+import type {
   FieldErrors,
   FieldPath,
   FieldValues,

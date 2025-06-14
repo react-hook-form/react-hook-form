@@ -1,7 +1,11 @@
 import React from 'react';
 
 import getProxyFormState from './logic/getProxyFormState';
-import { FieldValues, UseFormStateProps, UseFormStateReturn } from './types';
+import type {
+  FieldValues,
+  UseFormStateProps,
+  UseFormStateReturn,
+} from './types';
 import { useFormContext } from './useFormContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 

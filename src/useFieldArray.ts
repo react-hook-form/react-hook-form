@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
@@ -22,7 +22,7 @@ import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
 import updateAt from './utils/update';
 import { VALIDATION_MODE } from './constants';
-import {
+import type {
   Control,
   Field,
   FieldArray,
@@ -39,6 +39,7 @@ import {
   UseFieldArrayReturn,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -119,7 +120,7 @@ export function useFieldArray<
     [control, rules, name],
   );
 
-  useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subjects.array.subscribe({
         next: ({

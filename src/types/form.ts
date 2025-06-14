@@ -1,27 +1,27 @@
-import React from 'react';
+import type React from 'react';
 
-import { VALIDATION_MODE } from '../constants';
-import { Subject, Subscription } from '../utils/createSubject';
+import type { VALIDATION_MODE } from '../constants';
+import type { Subject, Subscription } from '../utils/createSubject';
 
-import { ErrorOption, FieldError, FieldErrors } from './errors';
-import { EventType } from './events';
-import { FieldArray } from './fieldArray';
-import {
+import type { ErrorOption, FieldError, FieldErrors } from './errors';
+import type { EventType } from './events';
+import type { FieldArray } from './fieldArray';
+import type {
   FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
   InternalFieldName,
 } from './fields';
-import {
+import type {
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
 } from './path';
-import { Resolver } from './resolvers';
-import { DeepMap, DeepPartial, Noop } from './utils';
-import { RegisterOptions } from './validator';
+import type { Resolver } from './resolvers';
+import type { DeepMap, DeepPartial, Noop } from './utils';
+import type { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
 
