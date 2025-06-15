@@ -911,6 +911,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     | readonly FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
   exact?: boolean;
+  compute?: (formValues: any) => any;
 };
 
 export type FormProviderProps<
