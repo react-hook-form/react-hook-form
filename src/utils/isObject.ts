@@ -8,4 +8,5 @@ export default <T extends object>(value: unknown): value is T =>
   !isNullOrUndefined(value) &&
   !Array.isArray(value) &&
   isObjectType(value) &&
-  !isDateObject(value);
+  !isDateObject(value) &&
+  !(value instanceof Set);
