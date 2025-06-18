@@ -15,36 +15,6 @@ import { useFormContext } from './useFormContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
- * Subscribe to the entire form values change and re-render at the hook level.
- *
- * @remarks
- *
- * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
- *
- * @param props - defaultValue, disable subscription and match exact name.
- *
- * @example
- * ```tsx
- * const { control } = useForm();
- * const values = useWatch({
- *   control,
- *   defaultValue: {
- *     name: "data"
- *   },
- *   exact: false,
- * })
- * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TTransformedValues = TFieldValues,
->(props: {
-  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-}): DeepPartialSkipArrayKey<TFieldValues>;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -75,6 +45,36 @@ export function useWatch<
   disabled?: boolean;
   exact?: boolean;
 }): FieldPathValue<TFieldValues, TFieldName>;
+/**
+ * Subscribe to the entire form values change and re-render at the hook level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   defaultValue: {
+ *     name: "data"
+ *   },
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
+>(props: {
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
+  disabled?: boolean;
+  exact?: boolean;
+}): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
