@@ -36,10 +36,10 @@ import type {
   UseFormSetError,
   UseFormSetFocus,
   UseFormSetValue,
+  UseFormSubscribe,
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
-  UseFormSubscribe,
   WatchInternal,
   WatchObserver,
 } from '../types';
