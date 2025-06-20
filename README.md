@@ -83,7 +83,7 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 <a target="_blank" href='https://principal.com/about-us'>
     <img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
 </a>
-<a target="_blank" href="https://graphcms.com">
+<a target="_blank" href="https://hygraph.com">
     <img width="120" src="https://avatars.githubusercontent.com/u/31031438" />
 </a>
 <a target="_blank" href="https://www.beekai.com/">
