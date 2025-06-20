@@ -39,7 +39,7 @@ import type {
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
-  UseFromSubscribe,
+  UseFormSubscribe,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -1034,7 +1034,7 @@ export function createFormControl<
       },
     }).unsubscribe;
 
-  const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
+  const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
     _proxySubscribeFormState = {
       ..._proxySubscribeFormState,
