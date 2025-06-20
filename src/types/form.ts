@@ -391,7 +391,7 @@ useEffect(() => {
 })
  * ```
  */
-export type UseFromSubscribe<TFieldValues extends FieldValues> = <
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <
   TFieldNames extends readonly FieldPath<TFieldValues>[],
 >(payload: {
   name?: readonly [...TFieldNames] | TFieldNames[number];
@@ -400,6 +400,7 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = <
     data: Partial<FormState<TFieldValues>> & {
       values: TFieldValues;
       name?: InternalFieldName;
+      type?: EventType;
     },
   ) => void;
   exact?: boolean;
@@ -883,7 +884,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
-  subscribe: UseFromSubscribe<TFieldValues>;
+  subscribe: UseFormSubscribe<TFieldValues>;
 };
 
 export type UseFormStateProps<
