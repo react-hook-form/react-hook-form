@@ -796,6 +796,7 @@ export type UseFormSubscribe<TFieldValues extends FieldValues> = <TFieldNames ex
     callback: (data: Partial<FormState<TFieldValues>> & {
         values: TFieldValues;
         name?: InternalFieldName;
+        type?: EventType;
     }) => void;
     exact?: boolean;
 }) => () => void;
@@ -900,7 +901,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:484:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:485:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

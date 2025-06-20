@@ -400,6 +400,7 @@ export type UseFormSubscribe<TFieldValues extends FieldValues> = <
     data: Partial<FormState<TFieldValues>> & {
       values: TFieldValues;
       name?: InternalFieldName;
+      type?: EventType;
     },
   ) => void;
   exact?: boolean;

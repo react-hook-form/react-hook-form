@@ -1014,6 +1014,7 @@ export function createFormControl<
         formState: Partial<FormState<TFieldValues>> & {
           name?: InternalFieldName;
           values?: TFieldValues | undefined;
+          type?: EventType;
         },
       ) => {
         if (
