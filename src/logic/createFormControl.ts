@@ -1234,7 +1234,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _formState.errors = errors;
-        fieldValues = values as TFieldValues;
+        fieldValues = cloneObject(values) as TFieldValues;
       } else {
         await executeBuiltInValidation(_fields);
       }
