@@ -36,10 +36,10 @@ import type {
   UseFormSetError,
   UseFormSetFocus,
   UseFormSetValue,
+  UseFormSubscribe,
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
-  UseFromSubscribe,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -1014,6 +1014,7 @@ export function createFormControl<
         formState: Partial<FormState<TFieldValues>> & {
           name?: InternalFieldName;
           values?: TFieldValues | undefined;
+          type?: EventType;
         },
       ) => {
         if (
@@ -1034,7 +1035,7 @@ export function createFormControl<
       },
     }).unsubscribe;
 
-  const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
+  const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
     _proxySubscribeFormState = {
       ..._proxySubscribeFormState,

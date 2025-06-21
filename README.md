@@ -71,9 +71,6 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 <a target="_blank" href='https://www.sgkb.ch/'>
     <img width="120" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
 </a>
-<a target="_blank" href='https://www.sanity.io/'>
-    <img width="120" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
-</a>
 <a target="_blank" href='https://route4me.com/'>
     <img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
 </a>
@@ -83,7 +80,7 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 <a target="_blank" href='https://principal.com/about-us'>
     <img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" />
 </a>
-<a target="_blank" href="https://graphcms.com">
+<a target="_blank" href="https://hygraph.com">
     <img width="120" src="https://avatars.githubusercontent.com/u/31031438" />
 </a>
 <a target="_blank" href="https://www.beekai.com/">
@@ -97,7 +94,9 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 
 Thank you to our previous sponsors for your generous support!
 
-
+<a target="_blank" href='https://www.sanity.io/'>
+    <img width="24" height="24" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" />
+</a>
 <a target="_blank" href='https://twicsy.com/'>
     <img width="24" height="24" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" />
 </a>

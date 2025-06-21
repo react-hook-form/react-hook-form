@@ -761,7 +761,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     control: Control<TFieldValues, TContext, TTransformedValues>;
     register: UseFormRegister<TFieldValues>;
     setFocus: UseFormSetFocus<TFieldValues>;
-    subscribe: UseFromSubscribe<TFieldValues>;
+    subscribe: UseFormSubscribe<TFieldValues>;
 };
 
 // @public
@@ -790,6 +790,18 @@ export type UseFormStateProps<TFieldValues extends FieldValues, TTransformedValu
 export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState<TFieldValues>;
 
 // @public
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
+    name?: readonly [...TFieldNames] | TFieldNames[number];
+    formState?: Partial<ReadFormState>;
+    callback: (data: Partial<FormState<TFieldValues>> & {
+        values: TFieldValues;
+        name?: InternalFieldName;
+        type?: EventType;
+    }) => void;
+    exact?: boolean;
+}) => () => void;
+
+// @public
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
 // @public
@@ -808,15 +820,13 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
-    name?: readonly [...TFieldNames] | TFieldNames[number];
-    formState?: Partial<ReadFormState>;
-    callback: (data: Partial<FormState<TFieldValues>> & {
-        values: TFieldValues;
-        name?: InternalFieldName;
-    }) => void;
+export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: {
+    name: TFieldName;
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+    control?: Control<TFieldValues, any, TTransformedValues>;
+    disabled?: boolean;
     exact?: boolean;
-}) => () => void;
+}): FieldPathValue<TFieldValues, TFieldName>;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props: {
@@ -825,15 +835,6 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransf
     disabled?: boolean;
     exact?: boolean;
 }): DeepPartialSkipArrayKey<TFieldValues>;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: {
-    name: TFieldName;
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-}): FieldPathValue<TFieldValues, TFieldName>;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[], TTransformedValues = TFieldValues>(props: {
@@ -900,7 +901,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:484:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:485:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
