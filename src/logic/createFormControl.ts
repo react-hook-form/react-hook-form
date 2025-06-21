@@ -1241,7 +1241,7 @@ export function createFormControl<
 
       if (_names.disabled.size) {
         for (const name of _names.disabled) {
-          set(fieldValues, name, undefined);
+          unset(fieldValues, name);
         }
       }
 
