@@ -1356,10 +1356,15 @@ export function createFormControl<
         }
 
         for (const fieldName of _names.mount) {
-          setValue(
-            fieldName as FieldPath<TFieldValues>,
-            get(values, fieldName),
-          );
+          const value = get(values, fieldName, get(_defaultValues, fieldName));
+
+          if (!isUndefined(value)) {
+            set(values, fieldName, value);
+            setValue(
+              fieldName as FieldPath<TFieldValues>,
+              get(values, fieldName),
+            );
+          }
         }
       }
 
