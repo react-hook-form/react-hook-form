@@ -81,7 +81,7 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
-export type UseFormResetFieldOptions<
+export type ResetFieldConfig<
   TFieldValues extends FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Partial<{
@@ -690,7 +690,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: UseFormResetFieldOptions<TFieldValues, TFieldName>,
+  options?: ResetFieldConfig<TFieldValues, TFieldName>,
 ) => void;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
