@@ -97,8 +97,8 @@ describe('deepEqual', () => {
   });
 
   it('should be capable of comparing objects with circular references', () => {
-    let a: any = { test: '123' };
-    let b: any = { test: '123' };
+    const a: any = { test: '123' };
+    const b: any = { test: '123' };
     a.self = a;
     b.self = b;
 
