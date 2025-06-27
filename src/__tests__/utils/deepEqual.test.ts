@@ -95,4 +95,29 @@ describe('deepEqual', () => {
       deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),
     ).toBeTruthy();
   });
+
+  it('should be capable of comparing objects with circular references', () => {
+    let a: any = { test: '123' };
+    let b: any = { test: '123' };
+    a.self = a;
+    b.self = b;
+
+    expect(deepEqual(a, b)).toBeTruthy();
+
+    a.other = { test: '123' };
+    b.other = { test: '456' };
+
+    expect(deepEqual(a, b)).toBeFalsy();
+
+    b.other.test = '123';
+
+    a.other.parent = b;
+    b.other.parent = a;
+
+    expect(deepEqual(a, b)).toBeTruthy();
+
+    b.other.parent = a.other;
+
+    expect(deepEqual(a, b)).toBeFalsy();
+  });
 });
