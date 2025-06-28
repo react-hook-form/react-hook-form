@@ -17,7 +17,8 @@ export default <T>(
   if (Array.isArray(names)) {
     return names.map(
       (fieldName) => (
-        isGlobal && _names.watch.add(fieldName), get(formValues, fieldName)
+        isGlobal && _names.watch.add(fieldName),
+        get(formValues, fieldName)
       ),
     );
   }
