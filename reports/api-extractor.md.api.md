@@ -830,16 +830,6 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransf
 }): DeepPartialSkipArrayKey<TFieldValues>;
 
 // @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues, TComputeValue = unknown>(props: {
-    name?: undefined;
-    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute: (formValues: TFieldValues) => TComputeValue;
-}): TComputeValue;
-
-// @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: {
     name: TFieldName;
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
@@ -848,6 +838,16 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldN
     exact?: boolean;
     compute?: undefined;
 }): FieldPathValue<TFieldValues, TFieldName>;
+
+// @public
+export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues, TComputeValue = unknown>(props: {
+    name?: undefined;
+    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+    control?: Control<TFieldValues, any, TTransformedValues>;
+    disabled?: boolean;
+    exact?: boolean;
+    compute: (formValues: TFieldValues) => TComputeValue;
+}): TComputeValue;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues, TComputeValue = unknown>(props: {
