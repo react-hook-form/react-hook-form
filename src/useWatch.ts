@@ -48,36 +48,6 @@ export function useWatch<
   compute?: undefined;
 }): DeepPartialSkipArrayKey<TFieldValues>;
 /**
- * Custom hook to subscribe to field change and compute function to produce state update
- *
- * @remarks
- *
- * [API](https://react-hook-form.com/docs/usewatch)
- *
- * @param props - defaultValue, disable subscription and match exact name.
- *
- * @example
- * ```tsx
- * const { control } = useForm();
- * const values = useWatch({
- *   control,
- *   compute: (formValues) => formValues.fieldA
- * })
- * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TTransformedValues = TFieldValues,
-  TComputeValue = unknown,
->(props: {
-  name?: undefined;
-  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute: (formValues: TFieldValues) => TComputeValue;
-}): TComputeValue;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -109,6 +79,36 @@ export function useWatch<
   exact?: boolean;
   compute?: undefined;
 }): FieldPathValue<TFieldValues, TFieldName>;
+/**
+ * Custom hook to subscribe to field change and compute function to produce state update
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   compute: (formValues) => formValues.fieldA
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
+  TComputeValue = unknown,
+>(props: {
+  name?: undefined;
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
+  disabled?: boolean;
+  exact?: boolean;
+  compute: (formValues: TFieldValues) => TComputeValue;
+}): TComputeValue;
 /**
  * Custom hook to subscribe to field change and compute function to produce state update
  *
