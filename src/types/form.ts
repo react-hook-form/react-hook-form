@@ -81,7 +81,7 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
-export type UseFormResetFieldOptions<
+export type ResetFieldConfig<
   TFieldValues extends FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Partial<{
@@ -391,7 +391,7 @@ useEffect(() => {
 })
  * ```
  */
-export type UseFromSubscribe<TFieldValues extends FieldValues> = <
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <
   TFieldNames extends readonly FieldPath<TFieldValues>[],
 >(payload: {
   name?: readonly [...TFieldNames] | TFieldNames[number];
@@ -400,6 +400,7 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = <
     data: Partial<FormState<TFieldValues>> & {
       values: TFieldValues;
       name?: InternalFieldName;
+      type?: EventType;
     },
   ) => void;
   exact?: boolean;
@@ -689,7 +690,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: UseFormResetFieldOptions<TFieldValues, TFieldName>,
+  options?: ResetFieldConfig<TFieldValues, TFieldName>,
 ) => void;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
@@ -883,7 +884,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
-  subscribe: UseFromSubscribe<TFieldValues>;
+  subscribe: UseFormSubscribe<TFieldValues>;
 };
 
 export type UseFormStateProps<

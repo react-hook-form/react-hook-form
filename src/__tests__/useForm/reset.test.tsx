@@ -1681,4 +1681,47 @@ describe('reset', () => {
 
     expect(defaultValues.test).toBe('ok');
   });
+
+  it('should not reset value to undefined with onSubmit data', async () => {
+    const onSubmit = jest.fn();
+    const App = () => {
+      const { handleSubmit, reset, register } = useForm({
+        defaultValues: {
+          test: 'test' as string | undefined,
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+          <button
+            onClick={() => {
+              reset(
+                {
+                  test: undefined,
+                },
+                {
+                  keepDefaultValues: true,
+                },
+              );
+            }}
+          >
+            reset
+          </button>
+          <input {...register('test')} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toBeCalledWith({
+        test: 'test',
+      }),
+    );
+  });
 });
