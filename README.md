@@ -68,11 +68,17 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 <a target="_blank" href='https://workleap.com/'>
     <img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" />
 </a>
+<a target="_blank" href='https://www.sent.dm'>
+    <img width="120" src="https://avatars.githubusercontent.com/u/153308555?s=200&v=4" />
+</a>
 <a target="_blank" href='https://www.sgkb.ch/'>
     <img width="120" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" />
 </a>
 <a target="_blank" href='https://route4me.com/'>
     <img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" />
+</a>
+<a target="_blank" href='https://niche.com'>
+    <img width="120" src="https://avatars.githubusercontent.com/u/8988784?s=200&v=4" />
 </a>
 <a target="_blank" href='https://toss.im'>
     <img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" />
