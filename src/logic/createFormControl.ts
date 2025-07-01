@@ -1057,13 +1057,32 @@ export function createFormControl<
       // Always remove from _fields
       unset(_fields, fieldName);
 
-      // Patch: strictly respect shouldUnregister (global only)
+      // Enhanced: strictly respect shouldUnregister (global only)
       if (_options.shouldUnregister) {
-        // Always remove value from _formValues
+        // Remove value from _formValues and recursively clean up parent if empty
         unset(_formValues, fieldName);
-      } else {
-        // Always retain value in _formValues
-        // Do not unset _formValues
+        // Clean up parent objects/arrays if empty
+        let pathParts = fieldName.split('.');
+        while (pathParts.length > 0) {
+          const parentPath = pathParts.slice(0, -1).join('.');
+          const parentValue = parentPath
+            ? get(_formValues, parentPath)
+            : _formValues;
+          if (
+            parentValue &&
+            typeof parentValue === 'object' &&
+            !Array.isArray(parentValue) &&
+            Object.keys(parentValue).length === 0
+          ) {
+            unset(_formValues, parentPath);
+            pathParts = parentPath.split('.');
+          } else if (Array.isArray(parentValue) && parentValue.length === 0) {
+            unset(_formValues, parentPath);
+            pathParts = parentPath.split('.');
+          } else {
+            break;
+          }
+        }
       }
 
       // Remove errors, dirty, touched, validating as before
@@ -1079,6 +1098,7 @@ export function createFormControl<
       }
     }
 
+    // After unregister, update watched values to reflect removal
     _subjects.state.next({
       values: cloneObject(_formValues),
     });
