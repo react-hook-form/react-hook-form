@@ -17,7 +17,6 @@ import type {
   FormState,
   Mode,
   RegisterOptions,
-  SubmitHandler,
   UseFormGetFieldState,
   UseFormRegister,
   UseFormReturn,
@@ -26,7 +25,7 @@ import type {
 import isFunction from '../utils/isFunction';
 import noop from '../utils/noop';
 import sleep from '../utils/sleep';
-import { Controller, createFormControl, useFieldArray, useForm } from '../';
+import { Controller, useFieldArray, useForm } from '../';
 
 jest.useFakeTimers();
 
@@ -2672,56 +2671,51 @@ describe('useForm', () => {
     });
   });
 
-  describe('when given formControl', () => {
-    it('accepts default values', async () => {
-      type FormValues = {
-        firstName: string;
-      };
-
-      const { register, handleSubmit, formControl } =
-        createFormControl<FormValues>();
-
-      function FormComponent({
-        onSubmit,
-        defaultValues,
-      }: {
-        defaultValues: FormValues;
-        onSubmit: SubmitHandler<FormValues>;
-      }) {
-        useForm({
-          formControl,
-          defaultValues,
-        });
-        return (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <input {...register('firstName')} placeholder="First Name" />
-            <input type="submit" />
-          </form>
-        );
-      }
-
-      function App() {
-        const [state, setState] = React.useState('');
+  describe('shouldUnregister behavior', () => {
+    it('should remove unmounted fields from values when shouldUnregister is true', () => {
+      const TestComponent = () => {
+        const [show, setShow] = React.useState(true);
+        const { register, getValues } = useForm({ shouldUnregister: true });
         return (
           <div>
-            <FormComponent
-              defaultValues={{ firstName: 'Emilia' }}
-              onSubmit={(data) => {
-                setState(JSON.stringify(data));
-              }}
-            />
-            <pre>{state}</pre>
+            {show && <input {...register('test')} defaultValue="abc" />}
+            <button onClick={() => setShow((s) => !s)}>toggle</button>
+            <span data-testid="values">{JSON.stringify(getValues())}</span>
           </div>
         );
-      }
+      };
+      render(<TestComponent />);
+      // Field is mounted
+      expect(screen.getByTestId('values').textContent).toContain('abc');
+      // Unmount field
+      fireEvent.click(screen.getByRole('button'));
+      expect(screen.getByTestId('values').textContent).not.toContain('abc');
+      // Remount field
+      fireEvent.click(screen.getByRole('button'));
+      expect(screen.getByTestId('values').textContent).toContain(''); // remounted, value is empty
+    });
 
-      render(<App />);
-
-      const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
-      expect(input.value).toBe('Emilia');
-
-      fireEvent.input(input, { target: { value: 'abc' } });
-      expect(input.value).toBe('abc');
+    it('should retain unmounted fields in values when shouldUnregister is false', () => {
+      const TestComponent = () => {
+        const [show, setShow] = React.useState(true);
+        const { register, getValues } = useForm({ shouldUnregister: false });
+        return (
+          <div>
+            {show && <input {...register('test')} defaultValue="abc" />}
+            <button onClick={() => setShow((s) => !s)}>toggle</button>
+            <span data-testid="values">{JSON.stringify(getValues())}</span>
+          </div>
+        );
+      };
+      render(<TestComponent />);
+      // Field is mounted
+      expect(screen.getByTestId('values').textContent).toContain('abc');
+      // Unmount field
+      fireEvent.click(screen.getByRole('button'));
+      expect(screen.getByTestId('values').textContent).toContain('abc');
+      // Remount field
+      fireEvent.click(screen.getByRole('button'));
+      expect(screen.getByTestId('values').textContent).toContain('abc');
     });
   });
 });

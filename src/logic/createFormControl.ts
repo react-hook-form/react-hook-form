@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { EVENTS, VALIDATION_MODE } from '../constants';
 import type {
   BatchFieldArrayUpdate,
@@ -1052,19 +1054,29 @@ export function createFormControl<
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
 
-      if (!options.keepValue) {
-        unset(_fields, fieldName);
+      // Always remove from _fields
+      unset(_fields, fieldName);
+
+      // Patch: strictly respect shouldUnregister (global only)
+      if (_options.shouldUnregister) {
+        // Always remove value from _formValues
         unset(_formValues, fieldName);
+      } else {
+        // Always retain value in _formValues
+        // Do not unset _formValues
       }
 
+      // Remove errors, dirty, touched, validating as before
       !options.keepError && unset(_formState.errors, fieldName);
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
       !options.keepIsValidating &&
         unset(_formState.validatingFields, fieldName);
-      !_options.shouldUnregister &&
-        !options.keepDefaultValue &&
+
+      // Only remove from defaultValues if shouldUnregister is false
+      if (!_options.shouldUnregister && !options.keepDefaultValue) {
         unset(_defaultValues, fieldName);
+      }
     }
 
     _subjects.state.next({
@@ -1416,15 +1428,9 @@ export function createFormControl<
         : false,
       dirtyFields: isEmptyResetValues
         ? {}
-        : keepStateOptions.keepDirtyValues
-          ? keepStateOptions.keepDefaultValues && _formValues
-            ? getDirtyFields(_defaultValues, _formValues)
-            : _formState.dirtyFields
-          : keepStateOptions.keepDefaultValues && formValues
-            ? getDirtyFields(_defaultValues, formValues)
-            : keepStateOptions.keepDirty
-              ? _formState.dirtyFields
-              : {},
+        : keepStateOptions.keepDirtyValues && _formValues
+          ? getDirtyFields(_defaultValues, _formValues)
+          : _formState.dirtyFields,
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
