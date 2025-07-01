@@ -1357,14 +1357,10 @@ export function createFormControl<
 
         if (keepStateOptions.keepFieldsRef) {
           for (const fieldName of _names.mount) {
-            const value = get(values, fieldName);
-
-            if (!isUndefined(value)) {
-              setValue(
-                fieldName as FieldPath<TFieldValues>,
-                get(values, fieldName),
-              );
-            }
+            setValue(
+              fieldName as FieldPath<TFieldValues>,
+              get(values, fieldName),
+            );
           }
         } else {
           _fields = {};
