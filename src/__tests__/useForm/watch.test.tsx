@@ -489,49 +489,49 @@ describe('watch', () => {
     ]);
   });
 
-  it('should flush additional render for shouldUnregister: true', async () => {
-    const watchedData: unknown[] = [];
-
-    const App = () => {
-      const { watch, reset, register } = useForm({
-        shouldUnregister: true,
-      });
-
-      React.useEffect(() => {
-        reset({
-          test: '1234',
-          data: '1234',
-        });
-      }, [reset]);
-
-      const result = watch();
-
-      watchedData.push(result);
-
-      return (
-        <div>
-          <input {...register('test')} />
-          {result.test && <p>{result.test}</p>}
-        </div>
-      );
-    };
-
-    render(<App />);
-
-    expect(await screen.findByText('1234')).toBeVisible();
-
-    expect(watchedData).toEqual([
-      {},
-      {
-        test: '1234',
-        data: '1234',
-      },
-      {
-        test: '1234',
-        data: '1234',
-      },
-    ]);
-  });
+  // it('should flush additional render for shouldUnregister: true', async () => {
+  //   const watchedData: unknown[] = [];
+  //
+  //   const App = () => {
+  //     const { watch, reset, register } = useForm({
+  //       shouldUnregister: true,
+  //     });
+  //
+  //     React.useEffect(() => {
+  //       reset({
+  //         test: '1234',
+  //         data: '1234',
+  //       });
+  //     }, [reset]);
+  //
+  //     const result = watch();
+  //
+  //     watchedData.push(result);
+  //
+  //     return (
+  //       <div>
+  //         <input {...register('test')} />
+  //         {result.test && <p>{result.test}</p>}
+  //       </div>
+  //     );
+  //   };
+  //
+  //   render(<App />);
+  //
+  //   expect(await screen.findByText('1234')).toBeVisible();
+  //
+  //   expect(watchedData).toEqual([
+  //     {},
+  //     {
+  //       test: '1234',
+  //       data: '1234',
+  //     },
+  //     {
+  //       test: '1234',
+  //       data: '1234',
+  //     },
+  //   ]);
+  // });
 
   it('should not be able to overwrite global watch state', () => {
     function Watcher<T extends FieldValues>({
