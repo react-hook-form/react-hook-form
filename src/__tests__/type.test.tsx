@@ -1,7 +1,8 @@
 import React from 'react';
+import { expectType } from 'tsd';
 
 import { Controller } from '../controller';
-import {
+import type {
   FieldErrors,
   FieldPath,
   FieldValues,
@@ -496,6 +497,36 @@ test('should provide correct type for validate function with useFieldArray', () 
         },
       },
     });
+
+    return null;
+  };
+
+  App;
+});
+
+test('useWatch should correctly select the name from object like param', () => {
+  const App = () => {
+    const { control } = useForm<{
+      test: {
+        first: { second: string };
+      };
+    }>();
+
+    const obj = {
+      name: 'test.first' as const,
+      control,
+    };
+
+    const resultFromObj = useWatch(obj);
+
+    const resultFromInline = useWatch({
+      name: 'test.first',
+      control,
+    });
+
+    expectType<{ second: string }>(resultFromObj);
+    expectType<{ second: string }>({ ...resultFromObj });
+    expectType<{ second: string }>(resultFromInline);
 
     return null;
   };
