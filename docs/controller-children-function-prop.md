@@ -1,10 +1,14 @@
-# `Controller` supports children render props
+# `Controller` children function prop
 
 ## Purpose
 
-- Provides more intuitive usage that aligns with common React component patterns by supporting children prop.
-- Allows users to use the Controller component in their preferred way (render prop or children function).
-- Maintains consistency with other React libraries and provides a better developer experience.
+Currently, the `Controller` component in React Hook Form (RHF) only supports a `render` prop for rendering the controlled component. This enhancement adds support for a `children` function prop.
+
+### Benefits
+
+- Provide more intuitive usage that aligns with common React component patterns.
+- Allow developers to use the `Controller` component in their preferred way (render prop or children function).
+- Maintain parity with other React libraries and provides a better developer experience.
 
 ## API Changes
 
@@ -14,27 +18,15 @@
 
 ### Type updates
 
-- `isLoading` added to `useFormProps`:
+- `children` prop accepts the same signature as the `render` prop:
 
 ```diff
-export type ControllerRender<
-  TFieldValues extends FieldValues,
-  TName extends FieldPath<TFieldValues>,
-> = ({
-  field,
-  fieldState,
-  formState,
-}: {
-  field: ControllerRenderProps<TFieldValues, TName>;
-  fieldState: ControllerFieldState;
-  formState: UseFormStateReturn<TFieldValues>;
-}) => React.ReactElement;
-
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues,
-- > = {
+> =
+- {
 -   render: ({
 -     field,
 -     fieldState,
@@ -44,15 +36,29 @@ export type ControllerProps<
 -     fieldState: ControllerFieldState;
 -     formState: UseFormStateReturn<TFieldValues>;
 -   }) => React.ReactElement;
-- } & UseControllerProps<TFieldValues, TName, TTransformedValues>;
-+ > = (
+- }
++ (
 +   | {
 +       render: ControllerRender<TFieldValues, TName>;
 +     }
 +   | {
 +       children: ControllerRender<TFieldValues, TName>;
 +     }
-+ ) & UseControllerProps<TFieldValues, TName, TTransformedValues>;
++ )
+  & UseControllerProps<TFieldValues, TName, TTransformedValues>;
+
++ export type ControllerRender<
++   TFieldValues extends FieldValues,
++   TName extends FieldPath<TFieldValues>,
++ > = ({
++   field,
++   fieldState,
++   formState,
++ }: {
++   field: ControllerRenderProps<TFieldValues, TName>;
++   fieldState: ControllerFieldState;
++   formState: UseFormStateReturn<TFieldValues>;
++ }) => React.ReactElement;
 ```
 
 ## Examples

@@ -2,7 +2,12 @@
 
 ## Purpose
 
-This feature allows for the imperative submission of forms. This is useful in scenarios where you want to trigger form submission from outside the form context, such as from a button click or other event.
+This feature allows for the imperative submission of forms, meaning you can trigger form submission programmatically from anywhere in your application, even outside the form context.
+
+### Benefit
+
+- Add a new, simple mechanism to trigger form submission from outside the form context, such as from a button click or other event.
+- Simplify the process of submitting forms imperatively that would otherwise require restucturing components or logic.
 
 ## API Changes
 
