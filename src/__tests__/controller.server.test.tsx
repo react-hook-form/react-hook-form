@@ -24,4 +24,20 @@ describe('Controller with SSR', () => {
 
     renderToString(<Component />);
   });
+
+  it('should render correctly with children', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+      }>();
+
+      return (
+        <Controller defaultValue="default" name="test" control={control}>
+          {({ field }) => <input {...field} />}
+        </Controller>
+      );
+    };
+
+    renderToString(<Component />);
+  });
 });

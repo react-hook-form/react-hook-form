@@ -88,14 +88,19 @@ export type ControllerFieldState = {
     error?: FieldError;
 };
 
+// @public (undocumented)
+export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = ({
+    render: ControllerRender<TFieldValues, TName>;
+} | {
+    children: ControllerRender<TFieldValues, TName>;
+}) & UseControllerProps<TFieldValues, TName, TTransformedValues>;
+
 // @public
-export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = {
-    render: ({ field, fieldState, formState, }: {
-        field: ControllerRenderProps<TFieldValues, TName>;
-        fieldState: ControllerFieldState;
-        formState: UseFormStateReturn<TFieldValues>;
-    }) => React_2.ReactElement;
-} & UseControllerProps<TFieldValues, TName, TTransformedValues>;
+export type ControllerRender<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> = ({ field, fieldState, formState, }: {
+    field: ControllerRenderProps<TFieldValues, TName>;
+    fieldState: ControllerFieldState;
+    formState: UseFormStateReturn<TFieldValues>;
+}) => React_2.ReactElement;
 
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {

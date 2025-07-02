@@ -25,19 +25,20 @@ import { useController } from './useController';
  *       <Controller
  *         control={control}
  *         name="test"
- *         render={({ field: { onChange, onBlur, value, ref }, formState, fieldState }) => (
- *           <>
- *             <input
- *               onChange={onChange} // send value to hook form
- *               onBlur={onBlur} // notify when input is touched
- *               value={value} // return updated value
- *               ref={ref} // set ref for focus management
- *             />
- *             <p>{formState.isSubmitted ? "submitted" : ""}</p>
- *             <p>{fieldState.isTouched ? "touched" : ""}</p>
- *           </>
- *         )}
- *       />
+ *       >
+ *       ({ field: { onChange, onBlur, value, ref }, formState, fieldState }) => (
+ *         <>
+ *           <input
+ *             onChange={onChange} // send value to hook form
+ *             onBlur={onBlur} // notify when input is touched
+ *             value={value} // return updated value
+ *             ref={ref} // set ref for focus management
+ *           />
+ *           <p>{formState.isSubmitted ? "submitted" : ""}</p>
+ *           <p>{fieldState.isTouched ? "touched" : ""}</p>
+ *         </>
+ *       )
+ *       </Controller>
  *     </form>
  *   );
  * }
@@ -49,7 +50,15 @@ const Controller = <
   TTransformedValues = TFieldValues,
 >(
   props: ControllerProps<TFieldValues, TName, TTransformedValues>,
-) =>
-  props.render(useController<TFieldValues, TName, TTransformedValues>(props));
+) => {
+  const renderedController = useController<
+    TFieldValues,
+    TName,
+    TTransformedValues
+  >(props);
+  return ('children' in props ? props.children : props.render)(
+    renderedController,
+  );
+};
 
 export { Controller };
