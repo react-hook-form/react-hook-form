@@ -204,6 +204,11 @@ export type FieldArrayMethodProps = {
 export type FieldArrayPath<TFieldValues extends FieldValues> = ArrayPath<TFieldValues>;
 
 // @public
+export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
+    [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<TFieldValues, Key> extends TValue ? Key : never;
+}[FieldArrayPath<TFieldValues>];
+
+// @public
 export type FieldArrayPathValue<TFieldValues extends FieldValues, TFieldArrayPath extends FieldArrayPath<TFieldValues>> = PathValue<TFieldValues, TFieldArrayPath>;
 
 // @public
@@ -531,6 +536,14 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
 });
 
 // @public (undocumented)
+export type ResetFieldConfig<TFieldValues extends FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = Partial<{
+    keepDirty: boolean;
+    keepTouched: boolean;
+    keepError: boolean;
+    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
+}>;
+
+// @public (undocumented)
 export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = (values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<ResolverResult<TFieldValues, TTransformedValues>> | ResolverResult<TFieldValues, TTransformedValues>;
 
 // @public (undocumented)
@@ -747,15 +760,7 @@ export type UseFormRegisterReturn<TFieldName extends InternalFieldName = Interna
 export type UseFormReset<TFieldValues extends FieldValues> = (values?: DefaultValues<TFieldValues> | TFieldValues | ResetAction<TFieldValues>, keepStateOptions?: KeepStateOptions) => void;
 
 // @public
-export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: UseFormResetFieldOptions<TFieldValues, TFieldName>) => void;
-
-// @public (undocumented)
-export type UseFormResetFieldOptions<TFieldValues extends FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = Partial<{
-    keepDirty: boolean;
-    keepTouched: boolean;
-    keepError: boolean;
-    defaultValue: FieldPathValue<TFieldValues, TFieldName>;
-}>;
+export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, options?: ResetFieldConfig<TFieldValues, TFieldName>) => void;
 
 // @public (undocumented)
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any> = {
@@ -774,7 +779,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     control: Control<TFieldValues, TContext, TTransformedValues>;
     register: UseFormRegister<TFieldValues>;
     setFocus: UseFormSetFocus<TFieldValues>;
-    subscribe: UseFromSubscribe<TFieldValues>;
+    subscribe: UseFormSubscribe<TFieldValues>;
     id: string;
     submit: UseFormSubmit;
     setMetadata: UseFormSetMetadata<TMetadata>;
@@ -813,6 +818,18 @@ export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState<TFi
 export type UseFormSubmit = () => void;
 
 // @public
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
+    name?: readonly [...TFieldNames] | TFieldNames[number];
+    formState?: Partial<ReadFormState>;
+    callback: (data: Partial<FormState<TFieldValues>> & {
+        values: TFieldValues;
+        name?: InternalFieldName;
+        type?: EventType;
+    }) => void;
+    exact?: boolean;
+}) => () => void;
+
+// @public
 export type UseFormTrigger<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[], options?: TriggerConfig) => Promise<boolean>;
 
 // @public
@@ -834,15 +851,13 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
-    name?: readonly [...TFieldNames] | TFieldNames[number];
-    formState?: Partial<ReadFormState>;
-    callback: (data: Partial<FormState<TFieldValues>> & {
-        values: TFieldValues;
-        name?: InternalFieldName;
-    }) => void;
+export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: {
+    name: TFieldName;
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+    control?: Control<TFieldValues, any, TTransformedValues>;
+    disabled?: boolean;
     exact?: boolean;
-}) => () => void;
+}): FieldPathValue<TFieldValues, TFieldName>;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props: {
@@ -851,15 +866,6 @@ export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransf
     disabled?: boolean;
     exact?: boolean;
 }): DeepPartialSkipArrayKey<TFieldValues>;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: {
-    name: TFieldName;
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-}): FieldPathValue<TFieldValues, TFieldName>;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[], TTransformedValues = TFieldValues>(props: {
@@ -927,7 +933,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:502:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:503:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

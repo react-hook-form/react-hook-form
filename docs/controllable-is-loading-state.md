@@ -2,7 +2,11 @@
 
 ## Purpose
 
-This feature allows developers to control the `isLoading` prop to manage the loading state of forms programmatically. This provides better control over the user experience by enabling or disabling the loading state based on external conditions or events.
+This feature allows developers to control the `isLoading` prop to manage the loading state of forms programmatically.
+
+### Benefits
+
+- Provide better control over the Form loading state based on external conditions or events.
 
 ## API Changes
 

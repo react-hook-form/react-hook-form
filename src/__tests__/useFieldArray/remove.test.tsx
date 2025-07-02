@@ -10,7 +10,7 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control, DeepMap, FieldError } from '../../types';
+import type { Control, DeepMap, FieldError } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';

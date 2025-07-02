@@ -1,4 +1,4 @@
-import { Field } from '../types';
+import type { Field } from '../types';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isFileInput from '../utils/isFileInput';
 import isMultipleSelect from '../utils/isMultipleSelect';

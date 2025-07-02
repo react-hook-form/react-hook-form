@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
-import { Control, UseFormRegister, UseFormReturn } from '../../types';
+import type { Control, UseFormRegister, UseFormReturn } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -1683,5 +1683,48 @@ describe('reset', () => {
     fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
 
     expect(defaultValues.test).toBe('ok');
+  });
+
+  it('should not reset value to undefined with onSubmit data', async () => {
+    const onSubmit = jest.fn();
+    const App = () => {
+      const { handleSubmit, reset, register } = useForm({
+        defaultValues: {
+          test: 'test' as string | undefined,
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+          <button
+            onClick={() => {
+              reset(
+                {
+                  test: undefined,
+                },
+                {
+                  keepDefaultValues: true,
+                },
+              );
+            }}
+          >
+            reset
+          </button>
+          <input {...register('test')} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toBeCalledWith({
+        test: 'test',
+      }),
+    );
   });
 });

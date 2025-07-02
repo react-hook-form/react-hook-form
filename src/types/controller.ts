@@ -1,7 +1,6 @@
-import React from 'react';
+import type React from 'react';
 
-import { RegisterOptions } from './validator';
-import {
+import type {
   Control,
   FieldError,
   FieldPath,
@@ -11,6 +10,7 @@ import {
   RefCallBack,
   UseFormStateReturn,
 } from './';
+import type { RegisterOptions } from './validator';
 
 export type ControllerFieldState = {
   invalid: boolean;

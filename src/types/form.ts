@@ -1,27 +1,27 @@
-import React from 'react';
+import type React from 'react';
 
-import { VALIDATION_MODE } from '../constants';
-import { Subject, Subscription } from '../utils/createSubject';
+import type { VALIDATION_MODE } from '../constants';
+import type { Subject, Subscription } from '../utils/createSubject';
 
-import { ErrorOption, FieldError, FieldErrors } from './errors';
-import { EventType } from './events';
-import { FieldArray } from './fieldArray';
-import {
+import type { ErrorOption, FieldError, FieldErrors } from './errors';
+import type { EventType } from './events';
+import type { FieldArray } from './fieldArray';
+import type {
   FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
   InternalFieldName,
 } from './fields';
-import {
+import type {
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
 } from './path';
-import { Resolver } from './resolvers';
-import { DeepMap, DeepPartial, Noop } from './utils';
-import { RegisterOptions } from './validator';
+import type { Resolver } from './resolvers';
+import type { DeepMap, DeepPartial, Noop } from './utils';
+import type { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
 
@@ -91,7 +91,7 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
-export type UseFormResetFieldOptions<
+export type ResetFieldConfig<
   TFieldValues extends FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Partial<{
@@ -409,7 +409,7 @@ useEffect(() => {
 })
  * ```
  */
-export type UseFromSubscribe<TFieldValues extends FieldValues> = <
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <
   TFieldNames extends readonly FieldPath<TFieldValues>[],
 >(payload: {
   name?: readonly [...TFieldNames] | TFieldNames[number];
@@ -418,6 +418,7 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = <
     data: Partial<FormState<TFieldValues>> & {
       values: TFieldValues;
       name?: InternalFieldName;
+      type?: EventType;
     },
   ) => void;
   exact?: boolean;
@@ -707,7 +708,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: UseFormResetFieldOptions<TFieldValues, TFieldName>,
+  options?: ResetFieldConfig<TFieldValues, TFieldName>,
 ) => void;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
@@ -953,7 +954,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
-  subscribe: UseFromSubscribe<TFieldValues>;
+  subscribe: UseFormSubscribe<TFieldValues>;
   id: string;
   submit: UseFormSubmit;
   setMetadata: UseFormSetMetadata<TMetadata>;

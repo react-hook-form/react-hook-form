@@ -2,7 +2,12 @@
 
 ## Purpose
 
-This feature allows developers to store custom metadata related to form right inside the form object. This is helpful to centralize and simplify application logic related to a form.
+This feature adds a new `metadata` property to the Form state to store custom metadata related to form right inside the form object.
+
+### Benefits
+
+- Enable developers to centralize and simplify application logic related to a form instead fo tracking metadata in separate objects or state
+- Provide a simple API to manage the form metadata
 
 ## API Changes
 

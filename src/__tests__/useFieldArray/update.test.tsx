@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control } from '../../types';
+import type { Control } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
