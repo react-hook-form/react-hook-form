@@ -12,8 +12,7 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist",
-    "dist/__tests__"
+    "dist"
   ],
   "exports": {
     "./package.json": "./package.json",
@@ -30,7 +29,7 @@
     "prebuild": "pnpm clean",
     "build": "pnpm build:modern",
     "build:watch": "pnpm build:modern -w",
-    "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
+    "postbuild": "node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write .",
