@@ -1,4 +1,4 @@
-import isPlainObject from './isPlainObject';
+import { isObjectType } from './isObject';
 
 export default function extractFormValues<
   T extends object,
@@ -11,13 +11,13 @@ export default function extractFormValues<
       const fieldState = fieldsState[key];
       const fieldValue = formValues[key];
 
-      if (fieldState && isPlainObject(fieldState) && fieldValue) {
+      if (fieldState && isObjectType(fieldState) && fieldValue) {
         const nestedFieldsState = extractFormValues(
           fieldState,
           fieldValue as K,
         );
 
-        if (isPlainObject(nestedFieldsState)) {
+        if (isObjectType(nestedFieldsState)) {
           values[key] = nestedFieldsState;
         }
       } else if (fieldsState[key]) {
