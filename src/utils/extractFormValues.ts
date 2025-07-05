@@ -3,24 +3,25 @@ import isPlainObject from './isPlainObject';
 export default function extractFormValues<
   T extends object,
   K extends Record<string, unknown>,
->(fieldsState: T, formData: K) {
-  const result: Record<string, unknown> = {};
+>(fieldsState: T, formValues: K) {
+  const values: Record<string, unknown> = {};
 
   for (const key in fieldsState) {
     if (fieldsState.hasOwnProperty(key)) {
-      const value = fieldsState[key];
+      const fieldState = fieldsState[key];
+      const fieldValue = formValues[key];
 
-      if (value && isPlainObject(value) && formData[key]) {
-        const nested = extractFormValues(value, formData[key] as K);
+      if (fieldState && isPlainObject(fieldState) && fieldValue) {
+        const nested = extractFormValues(fieldState, fieldValue as K);
 
         if (isPlainObject(nested)) {
-          result[key] = nested;
+          values[key] = nested;
         }
       } else if (fieldsState[key]) {
-        result[key] = formData[key];
+        values[key] = fieldValue;
       }
     }
   }
 
-  return result;
+  return values;
 }
