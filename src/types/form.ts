@@ -449,8 +449,6 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
    * @param name - the path name to the form field value.
-   * @param defaultValue - defaultValues for the entire form
-   *
    * @returns return the single field value
    *
    * @example
@@ -460,8 +458,47 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    */
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName> | undefined;
+  /**
+   * Watch and subscribe to a single field used outside of render.
+   *
+   * @remarks
+   * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
+   *
+   * @param name - the path name to the form field value.
+   * @param defaultValue - defaultValue for the form field
+   *
+   * @returns return the single field value
+   *
+   * @example
+   * ```tsx
+   * const name = watch("name", "default value");
+   * ```
+   */
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    defaultValue: FieldPathValue<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
+  /**
+   * Watch and subscribe to a single field used outside of render.
+   *
+   * @remarks
+   * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
+   *
+   * @param name - the path name to the form field value.
+   * @param defaultValue - defaultValue for the form field
+   *
+   * @returns return the single field value
+   *
+   * @example
+   * ```tsx
+   * const name = watch("name", "default value");
+   * ```
+   */
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
+  ): FieldPathValue<TFieldValues, TFieldName> | undefined;
   /**
    * Subscribe to field update/change without trigger re-render
    *

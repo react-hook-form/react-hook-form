@@ -57,7 +57,33 @@ const schema = z.object({
     resolver: mockZodResolver(schema),
   });
 
-  expectType<number>(form.watch('id'));
+  expectType<number | undefined>(form.watch('id'));
+
+  form.handleSubmit((data) => {
+    expectType<{ id: number }>(data);
+  });
+}
+
+/** it should correctly infer the output type from a schema */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const form = useForm({
+    resolver: mockZodResolver(schema),
+  });
+
+  expectType<number>(form.watch('id', 4711));
+
+  form.handleSubmit((data) => {
+    expectType<{ id: number }>(data);
+  });
+}
+
+/** it should correctly infer the output type from a schema */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const form = useForm({
+    resolver: mockZodResolver(schema),
+  });
+
+  expectType<number | undefined>(form.watch('id', undefined));
 
   form.handleSubmit((data) => {
     expectType<{ id: number }>(data);
