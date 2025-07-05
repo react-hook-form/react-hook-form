@@ -8,12 +8,10 @@ export default function extractFormValues<
 
   for (const key in fieldsState) {
     if (fieldsState.hasOwnProperty(key)) {
-      if (
-        fieldsState[key] &&
-        isPlainObject(fieldsState[key]) &&
-        formData[key]
-      ) {
-        const nested = extractFormValues(fieldsState[key], formData[key]);
+      const value = fieldsState[key];
+
+      if (value && isPlainObject(value) && formData[key]) {
+        const nested = extractFormValues(value, formData[key] as K);
 
         if (isPlainObject(nested)) {
           result[key] = nested;
