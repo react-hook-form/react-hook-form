@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.60.0-next.0",
+  "version": "7.60.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -12,8 +12,7 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist",
-    "dist/__tests__"
+    "dist"
   ],
   "exports": {
     "./package.json": "./package.json",
@@ -30,7 +29,7 @@
     "prebuild": "pnpm clean",
     "build": "pnpm build:modern",
     "build:watch": "pnpm build:modern -w",
-    "postbuild": "rimraf dist/__tests__ && node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
+    "postbuild": "node ./scripts/rollup/assert-esm-exports.mjs && node ./scripts/rollup/assert-cjs-exports.cjs",
     "build:modern": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write .",
@@ -39,8 +38,8 @@
     "type": "tsc --noEmit",
     "jest-preview": "jest-preview",
     "test": "jest --config ./scripts/jest/jest.config.js",
-    "test:coverage": "pnpm test -- --coverage",
-    "test:watch": "pnpm test -- --onlyChanged --watch",
+    "test:coverage": "pnpm test --coverage",
+    "test:watch": "pnpm test --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",
     "test:type": "tsd src/__typetest__",
     "e2e": "cypress run",
