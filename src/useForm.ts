@@ -153,7 +153,10 @@ export function useForm<
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
-      control._reset(props.values, control._options.resetOptions);
+      control._reset(props.values, {
+        keepFieldsRef: true,
+        ...control._options.resetOptions,
+      });
       _values.current = props.values;
       updateFormState((state) => ({ ...state }));
     } else {
