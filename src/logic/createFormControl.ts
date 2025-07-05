@@ -16,6 +16,7 @@ import type {
   FormState,
   FromSubscribe,
   GetIsDirty,
+  GetValuesConfig,
   InternalFieldName,
   Names,
   Path,
@@ -48,6 +49,7 @@ import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
+import extractFormValues from '../utils/extractFormValues';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -927,10 +929,18 @@ export function createFormControl<
     fieldNames?:
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
+    config?: GetValuesConfig,
   ) => {
-    const values = {
+    let values = {
       ...(_state.mount ? _formValues : _defaultValues),
     };
+
+    if (config) {
+      values = extractFormValues(
+        config.dirtyFields ? _formState.dirtyFields : _formState.touchedFields,
+        values,
+      );
+    }
 
     return isUndefined(fieldNames)
       ? values
