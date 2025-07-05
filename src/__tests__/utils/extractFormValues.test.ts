@@ -1,7 +1,7 @@
 import extractFormValues from '../../utils/extractFormValues';
 
-describe('loopObject', () => {
-  it('should return true when it is an undefined value', () => {
+describe('extractFormValues', () => {
+  it('should return extracted form values based on form state', () => {
     const formData = {
       test: {
         test: 'test',
