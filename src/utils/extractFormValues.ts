@@ -12,10 +12,13 @@ export default function extractFormValues<
       const fieldValue = formValues[key];
 
       if (fieldState && isPlainObject(fieldState) && fieldValue) {
-        const nested = extractFormValues(fieldState, fieldValue as K);
+        const nestedFieldsState = extractFormValues(
+          fieldState,
+          fieldValue as K,
+        );
 
-        if (isPlainObject(nested)) {
-          values[key] = nested;
+        if (isPlainObject(nestedFieldsState)) {
+          values[key] = nestedFieldsState;
         }
       } else if (fieldsState[key]) {
         values[key] = fieldValue;
