@@ -522,13 +522,9 @@ describe('watch', () => {
 
     expect(watchedData).toEqual([
       {},
+      {},
       {
         test: '1234',
-        data: '1234',
-      },
-      {
-        test: '1234',
-        data: '1234',
       },
     ]);
   });
