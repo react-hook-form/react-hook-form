@@ -993,6 +993,7 @@ export function createFormControl<
     isFunction(name)
       ? _subjects.state.subscribe({
           next: (payload) =>
+            'values' in payload &&
             name(
               _getWatch(undefined, defaultValue),
               payload as {

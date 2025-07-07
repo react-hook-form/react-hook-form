@@ -613,10 +613,10 @@ describe('watch', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(4);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 
   it('should remain isReady form state for subscription', () => {
