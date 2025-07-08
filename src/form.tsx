@@ -88,7 +88,7 @@ function Form<
             method,
             headers: {
               ...headers,
-              ...(encType != 'multipart/form-data'
+              ...(encType && encType !== 'multipart/form-data'
                 ? { 'Content-Type': encType }
                 : {}),
             },
