@@ -88,7 +88,9 @@ function Form<
             method,
             headers: {
               ...headers,
-              ...(encType ? { 'Content-Type': encType } : {}),
+              ...(encType != 'multipart/form-data'
+                ? { 'Content-Type': encType }
+                : {}),
             },
             body: shouldStringifySubmissionData ? formDataJson : formData,
           });
