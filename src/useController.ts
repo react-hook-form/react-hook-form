@@ -59,6 +59,7 @@ export function useController<
     disabled,
     control = methods?.control,
     shouldUnregister,
+    defaultValue,
   } = props;
 
   if (!control) {
@@ -68,16 +69,24 @@ export function useController<
   }
 
   const isArrayField = isNameInFieldArray(control._names.array, name);
+
+  const defaultValueMemo = React.useMemo(
+    () =>
+      get(
+        control._formValues,
+        name,
+        get(control._defaultValues, name, defaultValue),
+      ),
+    [control, name, defaultValue],
+  );
+
   const value = useWatch({
     control,
     name,
-    defaultValue: get(
-      control._formValues,
-      name,
-      get(control._defaultValues, name, props.defaultValue),
-    ),
+    defaultValue: defaultValueMemo,
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
+
   const formState = useFormState({
     control,
     name,
@@ -85,6 +94,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -92,6 +102,8 @@ export function useController<
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }),
   );
+
+  _props.current = props;
 
   const fieldState = React.useMemo(
     () =>
