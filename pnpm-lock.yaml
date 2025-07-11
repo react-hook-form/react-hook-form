@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       '@eslint/compat':
-        specifier: ^1.2.9
+        specifier: ^1.3.1
         version: 1.3.1(eslint@9.30.1)
       '@microsoft/api-extractor':
         specifier: ^7.52.8
@@ -24,7 +24,7 @@ importers:
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.44.1)
       '@swc/core':
-        specifier: ^1.11.31
+        specifier: ^1.12.7
         version: 1.12.9
       '@swc/jest':
         specifier: ^0.2.38
@@ -42,7 +42,7 @@ importers:
         specifier: ^22.1.0
         version: 22.14.1
       '@types/react':
-        specifier: ^19.1.6
+        specifier: ^19.1.8
         version: 19.1.8
       '@types/react-dom':
         specifier: ^18.3.7
@@ -57,7 +57,7 @@ importers:
         specifier: ^13.17.0
         version: 13.17.0
       eslint:
-        specifier: ^9.28.0
+        specifier: ^9.30.0
         version: 9.30.1
       eslint-config-prettier:
         specifier: ^9.1.0
@@ -66,8 +66,8 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0(eslint@9.30.1)
       eslint-plugin-prettier:
-        specifier: ^5.4.1
-        version: 5.5.1(eslint-config-prettier@9.1.0(eslint@9.30.1))(eslint@9.30.1)(prettier@3.5.3)
+        specifier: ^5.5.1
+        version: 5.5.1(eslint-config-prettier@9.1.0(eslint@9.30.1))(eslint@9.30.1)(prettier@3.6.2)
       eslint-plugin-react:
         specifier: ^7.37.5
         version: 7.37.5(eslint@9.30.1)
@@ -96,11 +96,11 @@ importers:
         specifier: ^15.5.2
         version: 15.5.2
       msw:
-        specifier: ^2.10.0
+        specifier: ^2.10.2
         version: 2.10.2(@types/node@22.14.1)(typescript@5.8.3)
       prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
+        specifier: ^3.6.2
+        version: 3.6.2
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -114,7 +114,7 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
       rollup:
-        specifier: ^4.42.0
+        specifier: ^4.44.1
         version: 4.44.1
       rollup-plugin-typescript2:
         specifier: ^0.36.0
@@ -132,7 +132,7 @@ importers:
         specifier: ^3.6.20
         version: 3.6.20
       zod:
-        specifier: ^3.25.56
+        specifier: ^3.25.67
         version: 3.25.67
 
 packages:
@@ -3346,8 +3346,8 @@ packages:
     resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
     engines: {node: '>=6.0.0'}
 
-  prettier@3.5.3:
-    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+  prettier@3.6.2:
+    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -6227,10 +6227,10 @@ snapshots:
       eslint: 9.30.1
       globals: 13.24.0
 
-  eslint-plugin-prettier@5.5.1(eslint-config-prettier@9.1.0(eslint@9.30.1))(eslint@9.30.1)(prettier@3.5.3):
+  eslint-plugin-prettier@5.5.1(eslint-config-prettier@9.1.0(eslint@9.30.1))(eslint@9.30.1)(prettier@3.6.2):
     dependencies:
       eslint: 9.30.1
-      prettier: 3.5.3
+      prettier: 3.6.2
       prettier-linter-helpers: 1.0.0
       synckit: 0.11.8
     optionalDependencies:
@@ -6290,7 +6290,7 @@ snapshots:
       '@humanfs/node': 0.16.6
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.2
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       '@types/json-schema': 7.0.15
       ajv: 6.12.6
       chalk: 4.1.2
@@ -7975,7 +7975,7 @@ snapshots:
     dependencies:
       fast-diff: 1.3.0
 
-  prettier@3.5.3: {}
+  prettier@3.6.2: {}
 
   pretty-bytes@5.6.0: {}
 
