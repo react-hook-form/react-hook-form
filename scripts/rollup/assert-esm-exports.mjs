@@ -10,17 +10,14 @@ import fs from 'fs';
 import path from 'path';
 import url from 'url';
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 /**
- * A shell one-liner to update this array when neccessary (run from root of repo):
+ * A shell one-liner to update this array when necessary (run from root of repo):
  *  node -e "import('react-hook-form').then((mod) => console.log(JSON.stringify(Object.keys(mod), null, 2)))" > scripts/rollup/all-exports.json
  */
 const expected = JSON.parse(
-  fs.readFileSync(
-    path.resolve(__dirname, './all-exports.json'),
-    'utf-8',
-  ),
+  fs.readFileSync(path.resolve(__dirname, './all-exports.json'), 'utf-8'),
 );
 
 assert.deepStrictEqual(Object.keys(exported), expected);

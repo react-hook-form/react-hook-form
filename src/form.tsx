@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { flatten } from './utils/flatten';
-import { FieldValues, FormProps } from './types';
+import type { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
 
 const POST_REQUEST = 'post';
@@ -29,10 +29,10 @@ const POST_REQUEST = 'post';
  * ```
  */
 function Form<
-  T extends FieldValues,
-  U extends FieldValues | undefined = undefined,
->(props: FormProps<T, U>) {
-  const methods = useFormContext<T>();
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+>(props: FormProps<TFieldValues, TTransformedValues>) {
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const [mounted, setMounted] = React.useState(false);
   const {
     control = methods.control,
@@ -88,7 +88,9 @@ function Form<
             method,
             headers: {
               ...headers,
-              ...(encType ? { 'Content-Type': encType } : {}),
+              ...(encType && encType !== 'multipart/form-data'
+                ? { 'Content-Type': encType }
+                : {}),
             },
             body: shouldStringifySubmissionData ? formDataJson : formData,
           });

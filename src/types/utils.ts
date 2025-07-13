@@ -1,4 +1,4 @@
-import { NestedValue } from './form';
+import type { NestedValue } from './form';
 
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.

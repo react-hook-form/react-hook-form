@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control, FieldPath } from '../../types';
+import type { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -46,7 +46,7 @@ describe('insert', () => {
 
     expect(result.current.fields).toEqual([
       { id: '0', test: '1' },
-      { id: '2', test: '3' },
+      { id: '4', test: '3' },
       { id: '1', test: '2' },
     ]);
   });
@@ -71,8 +71,8 @@ describe('insert', () => {
 
     expect(result.current.fields).toEqual([
       { id: '0', test: '1' },
-      { id: '2', test: '3' },
-      { id: '3', test: '4' },
+      { id: '4', test: '3' },
+      { id: '5', test: '4' },
       { id: '1', test: '2' },
     ]);
   });

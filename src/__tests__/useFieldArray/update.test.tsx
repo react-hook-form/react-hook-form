@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control } from '../../types';
+import type { Control } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -338,7 +338,16 @@ describe('update', () => {
       ],
       [
         {
-          id: '1',
+          id: '0',
+          value: {
+            firstName: 'bill',
+            lastName: 'luo',
+          },
+        },
+      ],
+      [
+        {
+          id: '2',
           value: {
             firstName: 'firstName',
             lastName: 'lastName',
@@ -472,12 +481,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'test1',
-        id: '2',
+        id: '4',
         lastName: 'test2',
       },
       {
         firstName: 'test3',
-        id: '3',
+        id: '5',
         lastName: 'test4',
       },
     ]);

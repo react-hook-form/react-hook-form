@@ -1,17 +1,18 @@
-import { FieldValues } from './fields';
-import { Control } from './form';
-import { FieldArrayPath, FieldArrayPathValue } from './path';
-import { RegisterOptions, Validate } from './validator';
+import type { FieldValues } from './fields';
+import type { Control } from './form';
+import type { FieldArrayPath, FieldArrayPathValue } from './path';
+import type { RegisterOptions, Validate } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends
     FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
+  TTransformedValues = TFieldValues,
 > = {
   name: TFieldArrayName;
   keyName?: TKeyName;
-  control?: Control<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
   rules?: {
     validate?:
       | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>

@@ -8,9 +8,10 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
-import { Control, FieldValues } from '../../types';
+import type { Control, FieldValues } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 import { useWatch } from '../../useWatch';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
@@ -137,7 +138,7 @@ describe('watch', () => {
 
     render(<App />);
 
-    expect(results).toEqual(['default']);
+    expect(results).toEqual(['default', 'default']);
   });
 
   it('should return array of default value for array of inputs', () => {
@@ -157,7 +158,10 @@ describe('watch', () => {
 
     render(<App />);
 
-    expect(results).toEqual([['default', 'test']]);
+    expect(results).toEqual([
+      ['default', 'test'],
+      [undefined, undefined],
+    ]);
   });
 
   it('should watch array of inputs', () => {
@@ -450,7 +454,7 @@ describe('watch', () => {
 
     render(<App />);
 
-    expect(watched).toEqual([{}]);
+    expect(watched).toEqual([{}, { test: '' }]);
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -461,6 +465,9 @@ describe('watch', () => {
     expect(watched).toEqual([
       {},
       {
+        test: '',
+      },
+      {
         test: '1',
       },
     ]);
@@ -469,6 +476,9 @@ describe('watch', () => {
 
     expect(watched).toEqual([
       {},
+      {
+        test: '',
+      },
       {
         test: '1',
       },
@@ -512,13 +522,9 @@ describe('watch', () => {
 
     expect(watchedData).toEqual([
       {},
+      {},
       {
         test: '1234',
-        data: '1234',
-      },
-      {
-        test: '1234',
-        data: '1234',
       },
     ]);
   });
@@ -607,9 +613,46 @@ describe('watch', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(4);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('should remain isReady form state for subscription', () => {
+    function App() {
+      const {
+        watch,
+        formState: { isReady },
+        register,
+        control,
+      } = useForm({
+        defaultValues: { name: '' },
+      });
+      const { isReady: isFormStateReady } = useFormState({
+        control,
+      });
+
+      watch();
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <p>{isReady ? 'formStateReady' : ''}</p>
+          <p>{isFormStateReady ? 'useFormStateReady' : ''}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    screen.getByText('formStateReady');
+    screen.getByText('useFormStateReady');
   });
 });
