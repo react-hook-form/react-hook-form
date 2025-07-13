@@ -1,5 +1,5 @@
 import { VALIDATION_MODE } from '../constants';
-import {
+import type {
   FieldValues,
   FormState,
   InternalFieldName,

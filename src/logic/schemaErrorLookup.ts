@@ -1,4 +1,4 @@
-import { FieldError, FieldErrors, FieldValues } from '../types';
+import type { FieldError, FieldErrors, FieldValues } from '../types';
 import get from '../utils/get';
 import isKey from '../utils/isKey';
 
@@ -34,6 +34,13 @@ export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
       return {
         name: fieldName,
         error: foundError,
+      };
+    }
+
+    if (foundError && foundError.root && foundError.root.type) {
+      return {
+        name: `${fieldName}.root`,
+        error: foundError.root,
       };
     }
 
