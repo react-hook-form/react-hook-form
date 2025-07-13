@@ -997,7 +997,7 @@ export function createFormControl<
   const _subscribe: FromSubscribe<TFieldValues> = (props) =>
     _subjects.state.subscribe({
       next: (
-        formState: Partial<FormState<TFieldValues>> & {
+        formState: Partial<Omit<FormState<TFieldValues>, 'defaultValues'>> & {
           name?: InternalFieldName;
           values?: TFieldValues | undefined;
         },
