@@ -1011,9 +1011,11 @@ export function createFormControl<
             props.reRenderRoot,
           )
         ) {
+          const { defaultValues, ...rest } = _formState;
+
           props.callback({
             values: { ..._formValues } as TFieldValues,
-            ..._formState,
+            ...rest,
             ...formState,
           });
         }
