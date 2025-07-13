@@ -1031,6 +1031,8 @@ export function createFormControl<
             values: { ..._formValues } as TFieldValues,
             ..._formState,
             ...formState,
+            defaultValues:
+              _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
         }
       },
