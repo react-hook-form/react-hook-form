@@ -163,6 +163,8 @@ export function useController<
           setCustomValidity: (message: string) =>
             elm.setCustomValidity(message),
           reportValidity: () => elm.reportValidity(),
+          setSelectionRange: (start: number, end: number) =>
+            elm.setSelectionRange && elm.setSelectionRange(start, end),
         };
       }
     },
