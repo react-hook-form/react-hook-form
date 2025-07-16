@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { expectType } from 'tsd';
+import * as tstyche from 'tstyche';
 
 import { Controller } from '../controller';
 import type {
@@ -610,9 +610,9 @@ test('useWatch should correctly select the name from object like param', () => {
       control,
     });
 
-    expectType<{ second: string }>(resultFromObj);
-    expectType<{ second: string }>({ ...resultFromObj });
-    expectType<{ second: string }>(resultFromInline);
+    tstyche.expect(resultFromObj).type.toBe<{ second: string }>();
+    tstyche.expect({ ...resultFromObj }).type.toBe<{ second: string }>();
+    tstyche.expect(resultFromInline).type.toBe<{ second: string }>();
 
     return null;
   };

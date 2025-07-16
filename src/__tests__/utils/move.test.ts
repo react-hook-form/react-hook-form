@@ -40,7 +40,7 @@ describe('move', () => {
   });
 
   it('should return empty array when data passed was not an array', () => {
-    // @ts-expect-error we want to test function on non-array input
+    // @ts-expect-error! we want to test function on non-array input
     expect(move({}, 0, 3)).toEqual([]);
   });
 

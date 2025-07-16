@@ -1,111 +1,98 @@
-import { expectType } from 'tsd';
+import { describe, expect, it } from 'tstyche';
 
 import type { ArrayPath, FieldPathValues, Path, PathValue } from '../../types';
+
 import type { Depth3Type } from '../__fixtures__';
-import { _ } from '../__fixtures__';
 
-/** {@link Path} */ {
-  /** it should evaluate to never for an empty object */ {
-    const actual = _ as Path<{}>;
-    expectType<never>(actual);
-  }
+describe('Path', () => {
+  it('should evaluate to never for an empty object', () => {
+    expect<Path<{}>>().type.toBe<never>();
+  });
 
-  /** it should evaluate to all paths of an object */ {
-    const actual = _ as Path<{ foo: { bar: string; baz: string } }>;
-    expectType<'foo' | 'foo.bar' | 'foo.baz'>(actual);
-  }
+  it('should evaluate to all paths of an object', () => {
+    expect<Path<{ foo: { bar: string; baz: string } }>>().type.toBe<
+      'foo' | 'foo.bar' | 'foo.baz'
+    >();
+  });
 
-  /** it should include paths through tuples */ {
-    const actual = _ as Path<{ foo: [string, number] }>;
-    expectType<'foo' | 'foo.0' | 'foo.1'>(actual);
-  }
+  it('should include paths through tuples', () => {
+    expect<Path<{ foo: [string, number] }>>().type.toBe<
+      'foo' | 'foo.0' | 'foo.1'
+    >();
+  });
 
-  /** it should include paths through arrays */ {
-    const actual = _ as Path<{ foo: string[] }>;
-    expectType<'foo' | `foo.${number}`>(actual);
-  }
+  it('should include paths through arrays', () => {
+    expect<Path<{ foo: string[] }>>().type.toBe<'foo' | `foo.${number}`>();
+  });
 
-  /** it should be able to avoid self-referencing/recursion, not crashing on self-referencing types. */ {
+  it('should be able to avoid self-referencing/recursion, not crashing on self-referencing types', () => {
     type Foo = { foo: Foo };
-    const actual = _ as Path<Foo>;
-    expectType<'foo'>(actual);
-  }
+    expect<Path<Foo>>().type.toBe<'foo'>();
+  });
 
-  /** it should not erroneously match subtypes as traversed */ {
-    type Foo =
-      | {
-          foo?: Foo;
-          bar?: {
-            baz: 1;
-          };
-        }
-      | {};
-    const actual = _ as Path<Foo>;
-    expectType<'foo' | 'bar' | 'bar.baz'>(actual);
-  }
-}
+  it('should not erroneously match subtypes as traversed', () => {
+    type Foo = { foo?: Foo; bar?: { baz: 1 } } | {};
+    expect<Path<Foo>>().type.toBe<'foo' | 'bar' | 'bar.baz'>();
+  });
+});
 
-/** {@link ArrayPath} */ {
-  /** it should evaluate to all paths pointing to a non-primitive array */ {
-    const actual = _ as ArrayPath<{
-      foo: Array<{ bar: string[]; baz: string[] }>;
-    }>;
-    expectType<'foo'>(actual);
-  }
+describe('ArrayPath', () => {
+  it('should evaluate to all paths pointing to a non-primitive array', () => {
+    expect<
+      ArrayPath<{ foo: Array<{ bar: string[]; baz: string[] }> }>
+    >().type.toBe<'foo'>();
+  });
 
-  /** it should include paths through tuples */ {
-    const actual = _ as ArrayPath<{ foo: [object[], object[]] }>;
-    expectType<'foo' | 'foo.0' | 'foo.1'>(actual);
-  }
+  it('should include paths through tuples', () => {
+    expect<ArrayPath<{ foo: [object[], object[]] }>>().type.toBe<
+      'foo' | 'foo.0' | 'foo.1'
+    >();
+  });
 
-  /** it should include paths through arrays */ {
-    const actual = _ as ArrayPath<{ foo: string[][][] }>;
-    expectType<'foo' | `foo.${number}`>(actual);
-  }
+  it('should include paths through arrays', () => {
+    expect<ArrayPath<{ foo: string[][][] }>>().type.toBe<
+      'foo' | `foo.${number}`
+    >();
+  });
 
-  /** it should be able to avoid self-referencing/recursion, not crashing on self-referencing types. */ {
+  it('should be able to avoid self-referencing/recursion, not crashing on self-referencing types', () => {
     type Foo = { foo: Foo[] };
-    const actual = _ as ArrayPath<Foo>;
-    expectType<'foo'>(actual);
-  }
+    expect<ArrayPath<Foo>>().type.toBe<'foo'>();
+  });
 
-  /** it should not erroneously match subtypes as traversed */ {
-    type Foo =
-      | {
-          bar?: {
-            baz?: 1;
-            fooArr?: Foo[];
-          };
-        }
-      | {};
-    const actual = _ as ArrayPath<Foo>;
-    expectType<'bar.fooArr'>(actual);
-  }
-}
+  it('should not erroneously match subtypes as traversed', () => {
+    type Foo = { bar?: { baz?: 1; fooArr?: Foo[] } } | {};
+    expect<ArrayPath<Foo>>().type.toBe<'bar.fooArr'>();
+  });
+});
 
-/** {@link PathValue} */ {
-  /** it should traverse an object */ {
-    const actual = _ as PathValue<Depth3Type<number>, 'foo.foo.value'>;
-    expectType<number>(actual);
-  }
+describe('PathValue', () => {
+  it('should traverse an object', () => {
+    expect<
+      PathValue<Depth3Type<number>, 'foo.foo.value'>
+    >().type.toBe<number>();
+  });
 
-  /** it should traverse a tuple */ {
-    const actual = _ as PathValue<Depth3Type<boolean>, 'bar.0.value'>;
-    expectType<boolean>(actual);
-  }
+  it('should traverse a tuple', () => {
+    expect<
+      PathValue<Depth3Type<boolean>, 'bar.0.value'>
+    >().type.toBe<boolean>();
+  });
 
-  /** it should traverse an array */ {
-    const actual = _ as PathValue<Depth3Type<boolean>, 'baz.42.value'>;
-    expectType<boolean>(actual);
-  }
-}
+  it('should traverse an array', () => {
+    expect<
+      PathValue<Depth3Type<boolean>, 'baz.42.value'>
+    >().type.toBe<boolean>();
+  });
+});
 
-/** {@link FieldPathValues} */ {
-  /** it should resolve all paths */ {
-    const actual = _ as FieldPathValues<
-      Depth3Type<string>,
-      ['foo.foo.value', 'bar.0.value', 'baz.42.value']
-    >;
-    expectType<[string, string, string]>(actual);
-  }
-}
+describe('FieldPathValues', () => {
+  it('should resolve all paths', () => {
+    expect<
+      FieldPathValues<
+        Depth3Type<string>,
+        ['foo.foo.value', 'bar.0.value', 'baz.42.value']
+      >
+    >().type.toBe<[string, string, string]>();
+  });
+});

@@ -312,7 +312,7 @@ describe('unset', () => {
 
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
-      // @ts-expect-error we want to test unset in presence of polyfills
+      // @ts-expect-error! we want to test unset in presence of polyfills
       Array.prototype.somePolyfill = () => 123;
     });
 
@@ -326,7 +326,7 @@ describe('unset', () => {
     });
 
     afterAll(() => {
-      // @ts-expect-error we want to test unset in presence of polyfills
+      // @ts-expect-error! we want to test unset in presence of polyfills
       delete Array.prototype.somePolyfill;
     });
   });

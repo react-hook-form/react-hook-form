@@ -129,7 +129,7 @@ describe('clone', () => {
     const fileList = globalThis.FileList;
 
     beforeAll(() => {
-      // @ts-expect-error we want to test that clone skips if FileList is not defined.
+      // @ts-expect-error! we want to test that clone skips if FileList is not defined.
       delete globalThis.FileList;
     });
 
@@ -150,7 +150,7 @@ describe('clone', () => {
 
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
-      // @ts-expect-error we want to test that clone skips polyfill
+      // @ts-expect-error! we want to test that clone skips polyfill
       Array.prototype.somePolyfill = () => 123;
     });
 
@@ -162,7 +162,7 @@ describe('clone', () => {
     });
 
     afterAll(() => {
-      // @ts-expect-error we want to test that clone skips polyfill
+      // @ts-expect-error! we want to test that clone skips polyfill
       delete Array.prototype.somePolyfill;
     });
   });
