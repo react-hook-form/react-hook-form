@@ -107,7 +107,7 @@
     "rimraf": "^5.0.10",
     "rollup": "^4.44.1",
     "rollup-plugin-typescript2": "^0.36.0",
-    "tstyche": "^4.2.0",
+    "tstyche": "^4.3.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^7.18.0",
     "whatwg-fetch": "^3.6.20",
