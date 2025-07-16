@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'tstyche';
 
 import type { ArrayPath, FieldPathValues, Path, PathValue } from '../../types';
-
 import type { Depth3Type } from '../__fixtures__';
 
 describe('Path', () => {

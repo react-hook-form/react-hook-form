@@ -7,7 +7,6 @@ it('should correctly infer the output type from useFormContext', () => {
     test: string;
   };
 
-  /* eslint-disable react-hooks/rules-of-hooks */
   const { handleSubmit } = useFormContext<Input>();
 
   handleSubmit((data) => {
@@ -24,7 +23,6 @@ it('should correctly infer the output type from useFormContext with different ou
     test: number;
   };
 
-  /* eslint-disable react-hooks/rules-of-hooks */
   const { handleSubmit } = useFormContext<Input, unknown, Output>();
 
   handleSubmit((data) => {

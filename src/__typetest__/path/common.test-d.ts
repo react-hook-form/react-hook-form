@@ -23,7 +23,6 @@ import type {
   UnionToIntersection,
   ValidPathPrefix,
 } from '../../types/path/common';
-
 import type {
   HundredPathString,
   HundredTuple,

@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'tstyche';
 
-import { useForm } from '../useForm';
 import type { FieldError, GlobalError, Merge } from '../types';
+import { useForm } from '../useForm';
 
 describe('errors', () => {
   it('should support optional record fields', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const {
       formState: { errors },
     } = useForm<{
@@ -35,7 +34,6 @@ describe('errors', () => {
   });
 
   it('should support nullable record fields', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const {
       formState: { errors },
     } = useForm<{
@@ -65,7 +63,6 @@ describe('errors', () => {
   });
 
   it('should not treat Date, File, FileList or Blob as record fields', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const {
       formState: { errors },
     } = useForm<{

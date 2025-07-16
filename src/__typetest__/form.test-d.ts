@@ -8,7 +8,6 @@ import { zodResolver } from './__fixtures__';
 
 describe('handleSubmit', () => {
   it('should infer the correct defaultValues from useForm', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm({
       defaultValues: {
         test: '',
@@ -22,7 +21,6 @@ describe('handleSubmit', () => {
   });
 
   it('should infer the correct defaultValues from useForm generic', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm<{
       test: string;
       test1: number;
@@ -34,7 +32,6 @@ describe('handleSubmit', () => {
   });
 
   it('should infer the correct TTransformedValues from useForm resolver', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm({
       resolver: zodResolver(
         z.object({
@@ -54,7 +51,6 @@ describe('handleSubmit', () => {
   });
 
   it('should correctly infer the output type from a schema', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const form = useForm({
       resolver: zodResolver(schema),
     });
@@ -67,7 +63,6 @@ describe('handleSubmit', () => {
   });
 
   it('should correctly infer the output type from a schema', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const form = useForm({
       resolver: zodResolver(schema),
     });
@@ -80,7 +75,6 @@ describe('handleSubmit', () => {
   });
 
   it('should correctly infer the output type from a schema', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const form = useForm({
       resolver: zodResolver(schema),
     });
@@ -93,7 +87,6 @@ describe('handleSubmit', () => {
   });
 
   it('should correctly infer the output type from a zod schema with a transform', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const form = useForm({
       resolver: zodResolver(
         z.object({ id: z.number().transform((val) => String(val)) }),
@@ -106,7 +99,6 @@ describe('handleSubmit', () => {
   });
 
   it('should infer the correct TTransformedValues from useForm generic', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm<
       { test: string },
       unknown,
@@ -121,7 +113,6 @@ describe('handleSubmit', () => {
 
 describe('getFieldState', () => {
   it('should return associated field state', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const { getFieldState } = useForm({
       defaultValues: {
         test: '',
@@ -138,7 +129,6 @@ describe('getFieldState', () => {
   });
 
   it('should return associated field state when formState is supplied', () => {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const { getFieldState, formState } = useForm({
       defaultValues: {
         test: '',
