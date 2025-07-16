@@ -151,7 +151,7 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  const _proxyFormState: ReadFormState = {
+  const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
     validatingFields: false,
@@ -159,6 +159,9 @@ export function createFormControl<
     isValidating: false,
     isValid: false,
     errors: false,
+  };
+  const _proxyFormState: ReadFormState = {
+    ...defaultProxyFormState,
   };
   let _proxySubscribeFormState = {
     ..._proxyFormState,
@@ -1046,7 +1049,10 @@ export function createFormControl<
     };
     return _subscribe({
       ...props,
-      formState: _proxySubscribeFormState,
+      formState: {
+        ...defaultProxyFormState,
+        ...props.formState,
+      },
     });
   };
 
