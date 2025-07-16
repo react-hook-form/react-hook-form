@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
+import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
 
 describe('subscribe', () => {
@@ -8,7 +9,14 @@ describe('subscribe', () => {
     const cb1 = jest.fn();
     const cb2 = jest.fn();
 
-    function ChildComp({ subscribe }: { subscribe: any }) {
+    function ChildComp({
+      subscribe,
+    }: {
+      subscribe: UseFormSubscribe<{
+        first: string;
+        sec: string;
+      }>;
+    }) {
       React.useEffect(() => {
         return subscribe({
           formState: {
