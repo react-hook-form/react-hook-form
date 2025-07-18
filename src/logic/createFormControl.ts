@@ -766,12 +766,16 @@ export function createFormControl<
 
       set(_formValues, name, fieldValue);
 
-      if (isBlurEvent) {
-        field._f.onBlur && field._f.onBlur(event);
-        delayErrorCallback && delayErrorCallback(0);
-      } else if (field._f.onChange) {
-        field._f.onChange(event);
-      }
+     if (isBlurEvent) {
+  const target = event.target as HTMLInputElement;
+  if (!target.readOnly) {
+    field._f.onBlur && field._f.onBlur(event);
+    delayErrorCallback && delayErrorCallback(0);
+  }
+} else if (field._f.onChange) {
+  field._f.onChange(event);
+}
+
 
       const fieldState = updateTouchAndDirty(name, fieldValue, isBlurEvent);
 
