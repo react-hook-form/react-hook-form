@@ -270,6 +270,17 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   options?: SetFocusOptions,
 ) => void;
 
+type EitherOption<T> = {
+  [K in keyof T]: {
+    [P in K]: T[P];
+  } & Partial<Record<Exclude<keyof T, K>, never>>;
+}[keyof T];
+
+export type GetValuesConfig = EitherOption<{
+  dirtyFields: boolean;
+  touchedFields: boolean;
+}>;
+
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   /**
    * Get the entire form values when no argument is supplied to this function.
@@ -288,7 +299,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * })} />
    * ```
    */
-  (): TFieldValues;
+  (name?: undefined, config?: GetValuesConfig): TFieldValues;
   /**
    * Get a single field value.
    *
@@ -296,6 +307,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
    * @param name - the path name to the form field value.
+   * @param config - return touched or dirty fields
    *
    * @returns the single field value
    *
@@ -310,6 +322,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    */
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
+    config?: GetValuesConfig,
   ): FieldPathValue<TFieldValues, TFieldName>;
   /**
    * Get an array of field values.
@@ -318,6 +331,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
    * @param names - an array of field names
+   * @param config - return touched or dirty fields
    *
    * @returns An array of field values
    *
@@ -332,6 +346,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    */
   <TFieldNames extends FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
+    config?: GetValuesConfig,
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
