@@ -1,96 +1,75 @@
-import { expectAssignable, expectType } from 'tsd';
+import { describe, expect, it } from 'tstyche';
 
 import type { DeepPartial, ExtractObjects, IsAny, IsNever } from '../types';
 
-import { _ } from './__fixtures__';
+describe('IsAny', () => {
+  it('should evaluate to true for any', () => {
+    expect<IsAny<any>>().type.toBe<true>();
+  });
 
-/** {@link IsAny} */ {
-  /** it should evaluate to true for any */ {
-    const actual = _ as IsAny<any>;
-    expectType<true>(actual);
-  }
+  it('should evaluate to false for never', () => {
+    expect<IsAny<never>>().type.toBe<false>();
+  });
 
-  /** it should evaluate to false for never */ {
-    const actual = _ as IsAny<never>;
-    expectType<false>(actual);
-  }
+  it('should evaluate to false for unknown', () => {
+    expect<IsAny<unknown>>().type.toBe<false>();
+  });
 
-  /** it should evaluate to false for unknown */ {
-    const actual = _ as IsAny<unknown>;
-    expectType<false>(actual);
-  }
+  it('should evaluate to false for string', () => {
+    expect<IsAny<string>>().type.toBe<false>();
+  });
+});
 
-  /** it should evaluate to false for string */ {
-    const actual = _ as IsAny<string>;
-    expectType<false>(actual);
-  }
-}
+describe('IsNever', () => {
+  it('should evaluate to false for any', () => {
+    expect<IsNever<any>>().type.toBe<false>();
+  });
 
-/** {@link IsNever} */ {
-  /** it should evaluate to false for any */ {
-    const actual = _ as IsNever<any>;
-    expectType<false>(actual);
-  }
+  it('should evaluate to true for never', () => {
+    expect<IsNever<never>>().type.toBe<true>();
+  });
 
-  /** it should evaluate to true for never */ {
-    const actual = _ as IsNever<never>;
-    expectType<true>(actual);
-  }
+  it('should evaluate to false for unknown', () => {
+    expect<IsNever<unknown>>().type.toBe<false>();
+  });
 
-  /** it should evaluate to false for unknown */ {
-    const actual = _ as IsNever<unknown>;
-    expectType<false>(actual);
-  }
+  it('should evaluate to false for string', () => {
+    expect<IsNever<string>>().type.toBe<false>();
+  });
+});
 
-  /** it should evaluate to false for string */ {
-    const actual = _ as IsNever<string>;
-    expectType<false>(actual);
-  }
-}
+describe('ExtractObjects', () => {
+  it('should extract all objects from a union', () => {
+    expect<
+      ExtractObjects<
+        { x: string } | { y: number; z: { w: number } } | number | string | null
+      >
+    >().type.toBe<{ x: string } | { y: number; z: { w: number } }>();
+  });
+});
 
-/** {@link ExtractObjects} */ {
-  /** it should extract all objects from a union */ {
-    const actual = _ as ExtractObjects<
-      { x: string } | { y: number; z: { w: number } } | number | string | null
-    >;
-    expectType<{ x: string } | { y: number; z: { w: number } }>(actual);
-  }
-}
+describe('DeepPartial', () => {
+  it('should make all nested properties optional', () => {
+    expect<
+      DeepPartial<{ x: string; y: number; z: { w: boolean } }>
+    >().type.toBe<{ x?: string; y?: number; z?: { w?: boolean } }>();
+  });
 
-/** {@link DeepPartial} */ {
-  /** it should make all nested properties optional */ {
-    const actual = _ as DeepPartial<{
-      x: string;
-      y: number;
-      z: { w: boolean };
-    }>;
-    expectType<{ x?: string; y?: number; z?: { w?: boolean } }>(actual);
-  }
+  it('should make all nested properties optional for union types', () => {
+    expect<
+      DeepPartial<{ x: string | number; y: { a: string | null } | null }>
+    >().type.toBe<{ x?: string | number; y?: { a?: string | null } | null }>();
+  });
 
-  /** it should make all nested properties optional for union types */ {
-    const actual = _ as DeepPartial<{
-      x: string | number;
-      y: { a: string | null } | null;
-    }>;
-    expectType<{
-      x?: string | number;
-      y?: { a?: string | null } | null;
-    }>(actual);
-  }
+  it('should make all nested properties optional for intersection types', () => {
+    expect<
+      DeepPartial<{ x: string; y: { a: string } & { b: number } }>
+    >().type.toBe<{ x?: string; y?: { a?: string; b?: number } }>();
+  });
 
-  /** it should make all nested properties optional for intersection types */ {
-    const actual = _ as DeepPartial<{
-      x: string;
-      y: { a: string } & { b: number };
-    }>;
-    expectType<{
-      x?: string;
-      y?: { a?: string; b?: number };
-    }>(actual);
-  }
-
-  /** it should be assignable for types containing unknown */ {
-    const actual = _ as { x: unknown };
-    expectAssignable<DeepPartial<{ x: unknown }>>(actual);
-  }
-}
+  it('should be assignable for types containing unknown', () => {
+    expect<DeepPartial<{ x: unknown }>>().type.toBeAssignableWith<{
+      x: unknown;
+    }>();
+  });
+});

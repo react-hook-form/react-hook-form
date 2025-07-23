@@ -1,21 +1,20 @@
-import { expectType } from 'tsd';
+import { expect, it } from 'tstyche';
 
 import { useFormContext } from '../useFormContext';
 
-/** it should correctly infer the output type from useFormContext */ {
+it('should correctly infer the output type from useFormContext', () => {
   type Input = {
     test: string;
   };
 
-  /* eslint-disable react-hooks/rules-of-hooks */
   const { handleSubmit } = useFormContext<Input>();
 
   handleSubmit((data) => {
-    expectType<Input>(data);
+    expect(data).type.toBe<Input>();
   });
-}
+});
 
-/** it should correctly infer the output type from useFormContext with different output type */ {
+it('should correctly infer the output type from useFormContext with different output type', () => {
   type Input = {
     test: string;
   };
@@ -24,10 +23,9 @@ import { useFormContext } from '../useFormContext';
     test: number;
   };
 
-  /* eslint-disable react-hooks/rules-of-hooks */
-  const { handleSubmit } = useFormContext<Input, any, Output>();
+  const { handleSubmit } = useFormContext<Input, unknown, Output>();
 
   handleSubmit((data) => {
-    expectType<Output>(data);
+    expect(data).type.toBe<Output>();
   });
-}
+});
