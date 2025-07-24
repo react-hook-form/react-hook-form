@@ -5,6 +5,10 @@ import type { Control } from '../../types';
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 
+type SimpleFormValues = {
+  test: string;
+};
+
 type FormValues = {
   nested: {
     first: string;
@@ -209,6 +213,68 @@ describe('getFieldState', () => {
 
         expect(screen.getByText('error undefined')).toBeVisible();
       });
+
+      it('should show the default value', () => {
+        const App = () => {
+          const { register, getFieldState } = useForm<SimpleFormValues>({
+            defaultValues: {
+              test: 'the-default',
+            },
+          });
+
+          const { defaultValue } = getFieldState('test');
+
+          return (
+            <form>
+              <input {...register('test')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('the-default')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('the-default')).toBeVisible();
+      });
+
+      it('should omit the default value if not specified', () => {
+        const App = () => {
+          const { register, getFieldState } = useForm<SimpleFormValues>();
+
+          const { defaultValue } = getFieldState('test');
+
+          return (
+            <form>
+              <input {...register('test')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
+      });
     });
 
     describe('when input is nested data type', () => {
@@ -384,6 +450,71 @@ describe('getFieldState', () => {
 
         expect(screen.getByText('error undefined')).toBeVisible();
       });
+
+      it('should show the default value', () => {
+        const App = () => {
+          const { register, getFieldState } = useForm<FormValues>({
+            defaultValues: {
+              nested: {
+                first: 'the-default',
+                last: '',
+              },
+            },
+          });
+
+          const { defaultValue } = getFieldState('nested.first');
+
+          return (
+            <form>
+              <input {...register('nested.first')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('the-default')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('the-default')).toBeVisible();
+      });
+
+      it('should omit the default value if not specified', () => {
+        const App = () => {
+          const { register, getFieldState } = useForm<FormValues>();
+
+          const { defaultValue } = getFieldState('nested.first');
+
+          return (
+            <form>
+              <input {...register('nested.first')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
+      });
     });
   });
 
@@ -519,6 +650,69 @@ describe('getFieldState', () => {
         render(<App />);
 
         expect(screen.getByText('error undefined')).toBeVisible();
+      });
+
+      it('should show the default value', () => {
+        const App = () => {
+          const { register, getFieldState, formState } = useForm({
+            defaultValues: {
+              test: 'the-default',
+            },
+          });
+
+          const { defaultValue } = getFieldState('test', formState);
+
+          return (
+            <form>
+              <input {...register('test')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('the-default')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('the-default')).toBeVisible();
+      });
+
+      it('should omit the default value if not specified', () => {
+        const App = () => {
+          const { register, getFieldState, formState } =
+            useForm<SimpleFormValues>();
+
+          const { defaultValue } = getFieldState('test', formState);
+
+          return (
+            <form>
+              <input {...register('test')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
       });
     });
 
@@ -670,6 +864,71 @@ describe('getFieldState', () => {
         render(<App />);
 
         expect(screen.getByText('error undefined')).toBeVisible();
+      });
+
+      it('should show the default value', () => {
+        const App = () => {
+          const { register, getFieldState, formState } = useForm<FormValues>({
+            defaultValues: {
+              nested: {
+                first: 'the-default',
+                last: '',
+              },
+            },
+          });
+
+          const { defaultValue } = getFieldState('nested.first', formState);
+
+          return (
+            <form>
+              <input {...register('nested.first')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('the-default')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('the-default')).toBeVisible();
+      });
+
+      it('should omit the default value if not specified', () => {
+        const App = () => {
+          const { register, getFieldState, formState } = useForm<FormValues>();
+
+          const { defaultValue } = getFieldState('nested.first', formState);
+
+          return (
+            <form>
+              <input {...register('nested.first')} />
+              <p>
+                {defaultValue === undefined
+                  ? 'defaultValue undefined'
+                  : defaultValue}
+              </p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'a changed value' },
+        });
+
+        expect(screen.getByText('defaultValue undefined')).toBeVisible();
       });
     });
   });

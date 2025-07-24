@@ -370,6 +370,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   isTouched: boolean;
   isValidating: boolean;
   error?: FieldError;
+  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
 };
 
 /**
