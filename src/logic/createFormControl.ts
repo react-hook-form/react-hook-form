@@ -942,13 +942,21 @@ export function createFormControl<
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
-  ) => ({
-    invalid: !!get((formState || _formState).errors, name),
-    isDirty: !!get((formState || _formState).dirtyFields, name),
-    error: get((formState || _formState).errors, name),
-    isValidating: !!get(_formState.validatingFields, name),
-    isTouched: !!get((formState || _formState).touchedFields, name),
-  });
+  ) => {
+    const state = formState || _formState;
+    const error = get(state.errors, name);
+    return {
+      invalid: !!error,
+      isDirty: !!get(state.dirtyFields, name),
+      error,
+      isValidating: !!get(_formState.validatingFields, name),
+      isTouched: !!get(state.touchedFields, name),
+      defaultValue: get(
+        formState ? formState.defaultValues : _defaultValues,
+        name,
+      ),
+    };
+  };
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     name &&

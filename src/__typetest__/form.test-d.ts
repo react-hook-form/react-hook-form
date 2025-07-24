@@ -135,6 +135,7 @@ const schema = z.object({
       isTouched: boolean;
       isValidating: boolean;
       error?: FieldError;
+      defaultValue?: string;
     }>(getFieldState('test'));
   }
 
@@ -152,6 +153,7 @@ const schema = z.object({
       isTouched: boolean;
       isValidating: boolean;
       error?: FieldError;
+      defaultValue?: string;
     }>(getFieldState('test', formState));
   }
 }
