@@ -166,4 +166,13 @@ describe('clone', () => {
       delete Array.prototype.somePolyfill;
     });
   });
+
+  it('should not override prototype of nested object', () => {
+    const UtcProto = {
+      _tag: 'Utc',
+    };
+    const dateTime = Object.create(UtcProto);
+    const copy = cloneObject(dateTime);
+    expect(copy._tag).toBe('Utc');
+  });
 });
