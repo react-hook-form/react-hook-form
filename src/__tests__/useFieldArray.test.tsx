@@ -4125,7 +4125,7 @@ describe('useFieldArray', () => {
         }[];
       };
 
-      let array: { data: string }[] | undefined = [];
+      let array: { data: string }[] = [];
 
       function FieldArray({ control }: { control: Control<FormValues> }) {
         useFieldArray({
