@@ -767,8 +767,7 @@ export function createFormControl<
       set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
-        const target = event.target as HTMLInputElement;
-        if (!target.readOnly) {
+        if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
           delayErrorCallback && delayErrorCallback(0);
         }
