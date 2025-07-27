@@ -1438,9 +1438,7 @@ export function createFormControl<
         ? _formState.isSubmitSuccessful
         : false,
       isSubmitting: false,
-      defaultValues: !isEmptyObject(_defaultValues)
-        ? (_defaultValues as FormState<TFieldValues>['defaultValues'])
-        : undefined,
+      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
     });
   };
 
