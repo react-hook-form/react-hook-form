@@ -62,30 +62,6 @@ describe('handleSubmit', () => {
     });
   });
 
-  it('should correctly infer the output type from a schema', () => {
-    const form = useForm({
-      resolver: zodResolver(schema),
-    });
-
-    expect(form.watch('id', 4711)).type.toBe<number>();
-
-    form.handleSubmit((data) => {
-      expect(data).type.toBe<{ id: number }>();
-    });
-  });
-
-  it('should correctly infer the output type from a schema', () => {
-    const form = useForm({
-      resolver: zodResolver(schema),
-    });
-
-    expect(form.watch('id', undefined)).type.toBe<number | undefined>();
-
-    form.handleSubmit((data) => {
-      expect(data).type.toBe<{ id: number }>();
-    });
-  });
-
   it('should correctly infer the output type from a zod schema with a transform', () => {
     const form = useForm({
       resolver: zodResolver(

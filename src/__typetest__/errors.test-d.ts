@@ -83,4 +83,19 @@ describe('errors', () => {
     expect(errors?.record?.file).type.toBe<FieldError | undefined>();
     expect(errors?.record?.fileList).type.toBe<FieldError | undefined>();
   });
+
+  it(' should handle field name conflicts with FieldError properties correctly', () => {
+    const {
+      formState: { errors },
+    } = useForm<{
+      frequencyInput: {
+        type: 'monthly' | 'yearly';
+      };
+    }>();
+
+    expect(errors?.frequencyInput?.type).type.toBe<FieldError | undefined>();
+    expect(errors?.frequencyInput?.type?.message).type.toBe<
+      string | undefined
+    >();
+  });
 });
