@@ -55,7 +55,7 @@ describe('handleSubmit', () => {
       resolver: zodResolver(schema),
     });
 
-    expect(form.watch('id')).type.toBe<number | undefined>();
+    expect(form.watch('id')).type.toBe<number>();
 
     form.handleSubmit((data) => {
       expect(data).type.toBe<{ id: number }>();
