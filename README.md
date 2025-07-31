@@ -12,20 +12,22 @@
 
 **RHF+** is a fork of [react-hook-form](https://react-hook-form.com/) (**RHF**) with feature enhancements. It is designed to be a drop-in replacement for RHF so you can use it in your existing projects without any changes.
 
-### Install
+## Install
 
-#### npm
+### npm
 
 ```sh
 npm install @bombillazo/rhf-plus
 ```
 
-#### yarn
+### yarn
+
 ```sh
 yarn add @bombillazo/rhf-plus
 ```
 
-#### pnpm
+### pnpm
+
 ```sh
 pnpm add @bombillazo/rhf-plus
 ```
