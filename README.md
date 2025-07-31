@@ -14,8 +14,20 @@
 
 ### Install
 
+#### npm
+
 ```sh
 npm install @bombillazo/rhf-plus
+```
+
+#### yarn
+```sh
+yarn add @bombillazo/rhf-plus
+```
+
+#### pnpm
+```sh
+pnpm add @bombillazo/rhf-plus
 ```
 
 ## ✨ Enhancements
