@@ -734,7 +734,7 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    isWatched(name, _names) && _subjects.state.next({ ..._formState });
+    isWatched(name, _names) && _subjects.state.next({ ..._formState, name });
     _subjects.state.next({
       name: _state.mount ? name : undefined,
       values: cloneObject(_formValues),
@@ -1009,6 +1009,7 @@ export function createFormControl<
     isFunction(name)
       ? _subjects.state.subscribe({
           next: (payload) =>
+            'values' in payload &&
             name(
               _getWatch(undefined, defaultValue),
               payload as {
@@ -1046,6 +1047,8 @@ export function createFormControl<
             values: { ..._formValues } as TFieldValues,
             ..._formState,
             ...formState,
+            defaultValues:
+              _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
         }
       },
