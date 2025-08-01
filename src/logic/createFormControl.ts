@@ -715,7 +715,7 @@ export function createFormControl<
     if (field._f?.immerFormValues ?? _options.immerFormValues) {
       _formValues = produce(_formValues as any, (draft: any) => {
         set(draft, name, cloneValue);
-      });
+      }) as unknown as TFieldValues;
     } else {
       set(_formValues, name, cloneValue);
     }
@@ -794,7 +794,7 @@ export function createFormControl<
       if (field._f?.immerFormValues ?? _options.immerFormValues) {
         _formValues = produce(_formValues as any, (draft: any) => {
           set(draft, name, fieldValue);
-        });
+        }) as unknown as TFieldValues;
       } else {
         set(_formValues, name, fieldValue);
       }
