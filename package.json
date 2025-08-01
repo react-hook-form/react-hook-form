@@ -1,5 +1,5 @@
 {
-  "name": "react-hook-form",
+  "name": "@niuchart/react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
   "version": "7.61.1",
   "main": "dist/index.cjs.js",
@@ -51,7 +51,8 @@
     "prepublishOnly": "pnpm install && pnpm lint:fix && pnpm type && pnpm test && pnpm build",
     "bundlewatch": "pnpm build:modern && bundlewatch",
     "start": "pnpm build:esm && pnpm --dir ./app install && pnpm --dir ./app run dev",
-    "csb:install": "npm i -g pnpm@8 && pnpm i"
+    "csb:install": "npm i -g pnpm@8 && pnpm i",
+    "publish:skip": "pnpm publish --ignore-scripts --no-git-checks"
   },
   "keywords": [
     "react",
@@ -122,7 +123,8 @@
     ]
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17 || ^18 || ^19"
+    "react": "^16.8.0 || ^17 || ^18 || ^19",
+    "immer": "^10.1.1"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [

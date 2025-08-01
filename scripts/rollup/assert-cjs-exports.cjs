@@ -5,7 +5,7 @@
  * @see https://nodejs.org/docs/latest/api/packages.html#packages_determining_module_system
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const exported = require('react-hook-form');
+const exported = require('@niuchart/react-hook-form');
 const assert = require('assert');
 const fs = require('fs');
 

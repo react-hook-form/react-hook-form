@@ -41,6 +41,8 @@ export type RegisterOptions<
       >;
   value: FieldPathValue<TFieldValues, TFieldName>;
   setValueAs: (value: any) => any;
+  setInputValueAs: (value: any) => any;
+  immerFormValues?: boolean;
   shouldUnregister?: boolean;
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;

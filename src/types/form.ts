@@ -109,6 +109,7 @@ export type UseFormProps<
 > = Partial<{
   mode: Mode;
   disabled: boolean;
+  immerFormValues?: boolean;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
