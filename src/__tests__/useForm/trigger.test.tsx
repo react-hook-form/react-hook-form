@@ -9,7 +9,13 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
-import type { Control, FieldPath } from '../../types';
+import type {
+  Control,
+  FieldPath,
+  FieldValues,
+  FormState,
+  UseFormGetFieldState,
+} from '../../types';
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
@@ -939,5 +945,98 @@ describe('trigger', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(count).toEqual(2);
+  });
+
+  it('should update validatingFields form states correctly when trigger() called', async () => {
+    jest.useFakeTimers();
+
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
+      } = useForm({ mode: 'onBlur' });
+      getFieldState = tmpGetFieldState;
+      formState = tmpFormState;
+      formState.isValidating;
+      formState.validatingFields;
+
+      return (
+        <div>
+          <form>
+            <input
+              {...register('test1', {
+                validate: async () => {
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      resolve(true);
+                    }, 1000);
+                  });
+                },
+              })}
+              placeholder="async"
+            />
+            <input
+              {...register('test2.sub', {
+                validate: async () => {
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      resolve(true);
+                    }, 1000);
+                  });
+                },
+              })}
+              placeholder="asyncSub"
+            />
+            <button
+              data-testid="trigger-button"
+              type="button"
+              onClick={() => {
+                trigger();
+              }}
+            >
+              trigger
+            </button>
+          </form>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(formState.isValidating).toBe(true);
+      expect(getFieldState('test1').isValidating).toBe(true);
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(formState.isValidating).toBe(true);
+      expect(getFieldState('test2.sub').isValidating).toBe(true);
+      expect(formState.validatingFields).toStrictEqual({
+        test2: { sub: true },
+      });
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(formState.isValidating).toBe(false);
+      expect(getFieldState('test1').isValidating).toBe(false);
+      expect(getFieldState('test2.sub').isValidating).toBe(false);
+      expect(formState.validatingFields).toStrictEqual({});
+    });
   });
 });
