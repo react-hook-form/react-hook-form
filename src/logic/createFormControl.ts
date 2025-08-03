@@ -1229,8 +1229,10 @@ export function createFormControl<
         (e as React.BaseSyntheticEvent).persist &&
           (e as React.BaseSyntheticEvent).persist();
       }
-      let fieldValues: TFieldValues | TTransformedValues | {} =
-        cloneObject(_formValues);
+      let fieldValues:
+        | TFieldValues
+        | TTransformedValues
+        | Record<string, never> = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1257,7 +1259,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TTransformedValues, e);
+          await onValid(fieldValues as unknown as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }
