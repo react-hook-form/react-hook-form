@@ -26,7 +26,13 @@ import type {
 import isFunction from '../utils/isFunction';
 import noop from '../utils/noop';
 import sleep from '../utils/sleep';
-import { Controller, createFormControl, useFieldArray, useForm } from '../';
+import {
+  Controller,
+  createFormControl,
+  useFieldArray,
+  useForm,
+  useFormState,
+} from '../';
 
 jest.useFakeTimers();
 
@@ -2725,6 +2731,50 @@ describe('useForm', () => {
     });
   });
 
+  describe('When using defaultValues', () => {
+    function App() {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const [defaults, setDefaults] = React.useState<FormValues>({
+        firstName: '1',
+      });
+
+      const { control, formState, reset, register } = useForm<FormValues>({
+        defaultValues: defaults,
+      });
+
+      const { defaultValues: stateDefaults } = useFormState({ control });
+
+      const handleClick = () => {
+        const next = { firstName: String(Number(defaults.firstName) + 1) };
+        setDefaults(next);
+        reset(next);
+      };
+
+      return (
+        <div>
+          <input {...register('firstName')} />
+          <button onClick={handleClick}>reset</button>
+          <span data-testid="react">{defaults.firstName}</span>
+          <span data-testid="form">{formState.defaultValues?.firstName}</span>
+          <span data-testid="state">{stateDefaults?.firstName}</span>
+        </div>
+      );
+    }
+    it('formState.defaultValues and useFormState().defaultValues should be equal after reset', () => {
+      render(<App />);
+
+      fireEvent.click(screen.getByText('reset'));
+      fireEvent.click(screen.getByText('reset'));
+      fireEvent.click(screen.getByText('reset'));
+
+      const reactValue = screen.getByTestId('react').textContent;
+      expect(screen.getByTestId('form').textContent).toBe(reactValue);
+      expect(screen.getByTestId('state').textContent).toBe(reactValue);
+    });
+  });
   describe('controllable isLoading state', () => {
     it('should override isLoading to true when isLoading prop is true', async () => {
       const App = () => {
