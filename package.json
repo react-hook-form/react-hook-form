@@ -1,7 +1,7 @@
 {
   "name": "@bombillazo/rhf-plus",
   "description": "Enhanced functionality for React Hook Form",
-  "version": "7.60.1",
+  "version": "7.62.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
