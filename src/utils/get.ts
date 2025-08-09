@@ -15,7 +15,7 @@ export default <T>(
 
   const result = (isKey(path) ? [path] : stringToPath(path)).reduce(
     (result, key) =>
-      isNullOrUndefined(result) ? result : result[key as keyof {}],
+      isNullOrUndefined(result) ? result : result[key as keyof T & object],
     object,
   );
 
