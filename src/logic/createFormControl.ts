@@ -1241,7 +1241,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _formState.errors = errors;
-        fieldValues = cloneObject(values) as TFieldValues;
+        fieldValues = cloneObject(values);
       } else {
         await executeBuiltInValidation(_fields);
       }
@@ -1259,7 +1259,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as unknown as TTransformedValues, e);
+          await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }

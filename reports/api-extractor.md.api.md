@@ -537,7 +537,7 @@ export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = 
 
 // @public (undocumented)
 export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
-    values: object;
+    values: Record<string, never>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -559,7 +559,7 @@ export type ResolverResult<TFieldValues extends FieldValues = FieldValues, TTran
 // @public (undocumented)
 export type ResolverSuccess<TTransformedValues> = {
     values: TTransformedValues;
-    errors: object;
+    errors: Record<string, never>;
 };
 
 // @public (undocumented)

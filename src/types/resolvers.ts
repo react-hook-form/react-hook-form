@@ -9,11 +9,11 @@ import type { CriteriaMode } from './form';
 
 export type ResolverSuccess<TTransformedValues> = {
   values: TTransformedValues;
-  errors: object;
+  errors: Record<string, never>;
 };
 
 export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
-  values: object;
+  values: Record<string, never>;
   errors: FieldErrors<TFieldValues>;
 };
 
