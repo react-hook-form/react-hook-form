@@ -364,6 +364,14 @@ export const get: <T>(object: T, path?: string | null, defaultValue?: unknown) =
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
 
+// Warning: (ae-forgotten-export) The symbol "EitherOption" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type GetValuesConfig = EitherOption<{
+    dirtyFields: boolean;
+    touchedFields: boolean;
+}>;
+
 // @public (undocumented)
 export type GlobalError = Partial<{
     type: string | number;
@@ -691,9 +699,9 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
 
 // @public (undocumented)
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
-    (): TFieldValues;
-    <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): FieldPathValue<TFieldValues, TFieldName>;
-    <TFieldNames extends FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames]): [...FieldPathValues<TFieldValues, TFieldNames>];
+    (name?: undefined, config?: GetValuesConfig): TFieldValues;
+    <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, config?: GetValuesConfig): FieldPathValue<TFieldValues, TFieldName>;
+    <TFieldNames extends FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames], config?: GetValuesConfig): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
 // @public
@@ -937,7 +945,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:486:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
