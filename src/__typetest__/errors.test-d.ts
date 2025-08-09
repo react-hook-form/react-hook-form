@@ -1,21 +1,22 @@
-import { expectType } from 'tsd';
+import { describe, expect, it } from 'tstyche';
 
-import type { FieldError, FieldErrors, GlobalError, Merge } from '../types';
+import type { FieldError, GlobalError, Merge } from '../types';
+import { useForm } from '../useForm';
 
-import { _ } from './__fixtures__';
-
-/** {@link FieldErrors} */ {
-  /** it should support optional record fields */
-  {
-    const actual = _ as FieldErrors<{
+describe('errors', () => {
+  it('should support optional record fields', () => {
+    const {
+      formState: { errors },
+    } = useForm<{
       test?: string;
       test1?: string;
       attachment: {
         data: string;
         data1: string;
       };
-    }>;
-    expectType<
+    }>();
+
+    expect(errors).type.toBe<
       {
         test?: FieldError;
         test1?: FieldError;
@@ -29,20 +30,22 @@ import { _ } from './__fixtures__';
       } & {
         root?: Record<string, GlobalError> & GlobalError;
       }
-    >(actual);
-  }
+    >();
+  });
 
-  /** it should support nullable record fields */
-  {
-    const actual = _ as FieldErrors<{
+  it('should support nullable record fields', () => {
+    const {
+      formState: { errors },
+    } = useForm<{
       test?: string;
       test1?: string | null;
       attachment: {
         data: string;
         data1: string;
       } | null;
-    }>;
-    expectType<
+    }>();
+
+    expect(errors).type.toBe<
       {
         test?: FieldError;
         test1?: FieldError;
@@ -56,12 +59,13 @@ import { _ } from './__fixtures__';
       } & {
         root?: Record<string, GlobalError> & GlobalError;
       }
-    >(actual);
-  }
+    >();
+  });
 
-  /** it should not treat Date, File, FileList or Blob as record fields */
-  {
-    const actual = _ as FieldErrors<{
+  it('should not treat Date, File, FileList or Blob as record fields', () => {
+    const {
+      formState: { errors },
+    } = useForm<{
       date: Date;
       file: File;
       fileList: FileList;
@@ -70,24 +74,28 @@ import { _ } from './__fixtures__';
         file: File;
         fileList: FileList;
       };
-    }>;
-    expectType<FieldError | undefined>(actual.date);
-    expectType<FieldError | undefined>(actual.file);
-    expectType<FieldError | undefined>(actual.fileList);
-    expectType<FieldError | undefined>(actual.record?.date);
-    expectType<FieldError | undefined>(actual.record?.file);
-    expectType<FieldError | undefined>(actual.record?.fileList);
-  }
+    }>();
 
-  /** it should handle field name conflicts with FieldError properties correctly */
-  {
-    const actual = _ as FieldErrors<{
+    expect(errors?.date).type.toBe<FieldError | undefined>();
+    expect(errors?.file).type.toBe<FieldError | undefined>();
+    expect(errors?.fileList).type.toBe<FieldError | undefined>();
+    expect(errors?.record?.date).type.toBe<FieldError | undefined>();
+    expect(errors?.record?.file).type.toBe<FieldError | undefined>();
+    expect(errors?.record?.fileList).type.toBe<FieldError | undefined>();
+  });
+
+  it(' should handle field name conflicts with FieldError properties correctly', () => {
+    const {
+      formState: { errors },
+    } = useForm<{
       frequencyInput: {
         type: 'monthly' | 'yearly';
       };
-    }>;
+    }>();
 
-    expectType<FieldError | undefined>(actual.frequencyInput?.type);
-    expectType<string | undefined>(actual.frequencyInput?.type?.message);
-  }
-}
+    expect(errors?.frequencyInput?.type).type.toBe<FieldError | undefined>();
+    expect(errors?.frequencyInput?.type?.message).type.toBe<
+      string | undefined
+    >();
+  });
+});

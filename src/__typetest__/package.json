@@ -1,6 +1,0 @@
-{
-  "types": "./__fixtures__/dummy.d.ts",
-  "tsd": {
-    "directory": "."
-  }
-}
