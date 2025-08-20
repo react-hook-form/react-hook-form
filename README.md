@@ -35,7 +35,7 @@ pnpm add @bombillazo/rhf-plus
 ## ✨ Enhancements
 
 - [Imperative form submission](./docs/imperative_submit.md)
-- [Smart form disabling](./docs/smart-form-disabling.md)
+- [Smart `disabled` state](./docs/smart-disabled-state.md)
 - [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
 - [Form metadata](./docs/form-metadata.md)
 - [`Controller` children function](./docs/controller-children-function.md)
