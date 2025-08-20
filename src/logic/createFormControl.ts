@@ -767,7 +767,7 @@ export function createFormControl<
         : isBoolean(_options.disabled)
           ? _options.disabled
           : Array.isArray(_options.disabled)
-            ? _options.disabled.includes(name as FieldPath<TFieldValues>)
+            ? new Set(_options.disabled).has(name as FieldPath<TFieldValues>)
             : false;
 
       if (isFieldDisabled) {
