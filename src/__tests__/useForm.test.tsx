@@ -2678,6 +2678,240 @@ describe('useForm', () => {
     });
   });
 
+  // Array-based disabled functionality tests
+  describe('disabled with array of field names', () => {
+    it('should disable specific fields when disabled is an array', async () => {
+      function App() {
+        const { register } = useForm({
+          disabled: ['firstName'],
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+            email: '',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="firstName" />
+            <input {...register('lastName')} placeholder="lastName" />
+            <input {...register('email')} placeholder="email" />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+        expect(
+          (screen.getByPlaceholderText('email') as HTMLInputElement).disabled,
+        ).toBeFalsy();
+      });
+    });
+
+    it('should disable multiple specific fields when disabled is an array', async () => {
+      function App() {
+        const { register } = useForm({
+          disabled: ['firstName', 'email'],
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+            email: '',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="firstName" />
+            <input {...register('lastName')} placeholder="lastName" />
+            <input {...register('email')} placeholder="email" />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+        expect(
+          (screen.getByPlaceholderText('email') as HTMLInputElement).disabled,
+        ).toBeTruthy();
+      });
+    });
+
+    it('should disable no fields when disabled is an empty array', async () => {
+      function App() {
+        const { register } = useForm({
+          disabled: [],
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="firstName" />
+            <input {...register('lastName')} placeholder="lastName" />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+      });
+    });
+
+    it('should handle non-existent field names gracefully', async () => {
+      function App() {
+        const { register } = useForm({
+          disabled: ['nonExistentField', 'firstName'],
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="firstName" />
+            <input {...register('lastName')} placeholder="lastName" />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+      });
+    });
+
+    it('should respect field-level disabled prop over array disabled', async () => {
+      function App() {
+        const { register } = useForm({
+          disabled: ['firstName'],
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="firstName" />
+            <input
+              {...register('lastName', { disabled: true })}
+              placeholder="lastName"
+            />
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+      });
+    });
+
+    it('should work with dynamic array changes', async () => {
+      function App() {
+        const [disabledFields, setDisabledFields] = useState<string[]>([
+          'firstName',
+        ]);
+        const { register } = useForm({
+          disabled: disabledFields,
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('firstName')} placeholder="firstName" />
+            <input {...register('lastName')} placeholder="lastName" />
+            <button
+              type="button"
+              onClick={() => setDisabledFields(['lastName'])}
+              data-testid="change-disabled"
+            >
+              Change Disabled
+            </button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      // Initially firstName should be disabled
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+      });
+
+      // Change disabled fields
+      fireEvent.click(screen.getByTestId('change-disabled'));
+
+      // Now lastName should be disabled instead
+      await waitFor(() => {
+        expect(
+          (screen.getByPlaceholderText('firstName') as HTMLInputElement)
+            .disabled,
+        ).toBeFalsy();
+        expect(
+          (screen.getByPlaceholderText('lastName') as HTMLInputElement)
+            .disabled,
+        ).toBeTruthy();
+      });
+    });
+  });
+
   describe('when given formControl', () => {
     it('accepts default values', async () => {
       type FormValues = {
