@@ -1,5 +1,9 @@
 import React from 'react';
-import { useController, useForm } from '@bombillazo/rhf-plus';
+import {
+  useController,
+  UseControllerReturn,
+  useForm,
+} from '@bombillazo/rhf-plus';
 
 export default function ScrollIntoViewExample() {
   const { control } = useForm<{
@@ -46,7 +50,9 @@ export default function ScrollIntoViewExample() {
     rules: { required: 'Message is required' },
   });
 
-  const handleScrollToField = (fieldController: any) => {
+  const handleScrollToField = (
+    fieldController: UseControllerReturn<any, any>,
+  ) => {
     if (fieldController.field.ref.scrollIntoView) {
       fieldController.field.ref.scrollIntoView({
         behavior: 'smooth',
