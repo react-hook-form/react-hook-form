@@ -176,19 +176,30 @@ export function useController<
     [control._fields, name],
   );
 
-  const field = React.useMemo(
-    () => ({
+  const field = React.useMemo(() => {
+    // Calculate if this specific field should be disabled
+    let isFieldDisabled: boolean | undefined;
+
+    if (isBoolean(disabled)) {
+      // Field-level disabled prop takes precedence
+      isFieldDisabled = disabled;
+    } else if (isBoolean(control._options.disabled)) {
+      // Form-level boolean disabled
+      isFieldDisabled = control._options.disabled;
+    } else if (Array.isArray(control._options.disabled)) {
+      // Form-level array disabled - check if this field is in the array
+      isFieldDisabled = control._options.disabled.includes(name);
+    }
+
+    return {
       name,
       value,
-      ...(isBoolean(disabled) || formState.disabled
-        ? { disabled: formState.disabled || disabled }
-        : {}),
+      ...(isBoolean(isFieldDisabled) ? { disabled: isFieldDisabled } : {}),
       onChange,
       onBlur,
       ref,
-    }),
-    [name, disabled, formState.disabled, onChange, onBlur, ref, value],
-  );
+    };
+  }, [name, disabled, control._options.disabled, onChange, onBlur, ref, value]);
 
   React.useEffect(() => {
     const _shouldUnregisterField =

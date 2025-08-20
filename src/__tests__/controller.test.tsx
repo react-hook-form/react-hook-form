@@ -1811,4 +1811,185 @@ describe('Controller', () => {
 
     await waitFor(() => expect(currentErrors).not.toHaveProperty(name));
   });
+
+  describe('Controller with array disabled', () => {
+    it('should disable Controller field when included in disabled array', async () => {
+      const Component = () => {
+        const { control } = useForm({
+          disabled: ['test'],
+          defaultValues: {
+            test: '',
+            other: '',
+          },
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              render={({ field }) => (
+                <input {...field} placeholder="test" data-testid="test-input" />
+              )}
+            />
+            <Controller
+              control={control}
+              name="other"
+              render={({ field }) => (
+                <input
+                  {...field}
+                  placeholder="other"
+                  data-testid="other-input"
+                />
+              )}
+            />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('test-input')).toBeDisabled();
+        expect(screen.getByTestId('other-input')).not.toBeDisabled();
+      });
+    });
+
+    it('should not disable Controller field when not included in disabled array', async () => {
+      const Component = () => {
+        const { control } = useForm({
+          disabled: ['other'],
+          defaultValues: {
+            test: '',
+            other: '',
+          },
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              render={({ field }) => (
+                <input {...field} placeholder="test" data-testid="test-input" />
+              )}
+            />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('test-input')).not.toBeDisabled();
+      });
+    });
+
+    it('should respect Controller-level disabled prop over array disabled', async () => {
+      const Component = () => {
+        const { control } = useForm({
+          disabled: ['test'],
+          defaultValues: {
+            test: '',
+          },
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              disabled={false}
+              render={({ field }) => (
+                <input {...field} placeholder="test" data-testid="test-input" />
+              )}
+            />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('test-input')).not.toBeDisabled();
+      });
+    });
+
+    it('should handle empty disabled array correctly', async () => {
+      const Component = () => {
+        const { control } = useForm({
+          disabled: [],
+          defaultValues: {
+            test: '',
+          },
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              render={({ field }) => (
+                <input {...field} placeholder="test" data-testid="test-input" />
+              )}
+            />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('test-input')).not.toBeDisabled();
+      });
+    });
+
+    it('should work with dynamic disabled array changes', async () => {
+      const Component = () => {
+        const [disabledFields, setDisabledFields] = React.useState<string[]>([
+          'test',
+        ]);
+        const { control } = useForm({
+          disabled: disabledFields,
+          defaultValues: {
+            test: '',
+          },
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              render={({ field }) => (
+                <input {...field} placeholder="test" data-testid="test-input" />
+              )}
+            />
+            <button
+              type="button"
+              onClick={() => setDisabledFields([])}
+              data-testid="enable-field"
+            >
+              Enable Field
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      // Initially should be disabled
+      await waitFor(() => {
+        expect(screen.getByTestId('test-input')).toBeDisabled();
+      });
+
+      // Enable the field
+      fireEvent.click(screen.getByTestId('enable-field'));
+
+      // Should now be enabled
+      await waitFor(() => {
+        expect(screen.getByTestId('test-input')).not.toBeDisabled();
+      });
+    });
+  });
 });

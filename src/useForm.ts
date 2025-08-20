@@ -77,7 +77,9 @@ export function useForm<
     touchedFields: {},
     validatingFields: {},
     errors: props.errors || {},
-    disabled: props.disabled || false,
+    // If it's an array, set formState.disabled to false because when using array mode,
+    // the form itself isn't disabled - only specific fields are
+    disabled: Array.isArray(props.disabled) ? false : props.disabled || false,
     isReady: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined

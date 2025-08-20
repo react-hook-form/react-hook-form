@@ -66,7 +66,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         errors: FieldErrors;
     }>;
     _focusError: () => boolean | undefined;
-    _disableForm: (disabled?: boolean) => void;
+    _disableForm: (disabled?: boolean | FieldPath<TFieldValues>[]) => void;
     _updateIsLoading: (isLoading?: boolean) => void;
     _subscribe: FromSubscribe<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
@@ -717,7 +717,7 @@ export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedVa
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TMetadata extends FormMetadata = any> = Partial<{
     mode: Mode;
-    disabled: boolean;
+    disabled: boolean | FieldPath<TFieldValues>[];
     reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
     defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
     values: TFieldValues;

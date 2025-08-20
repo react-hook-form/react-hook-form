@@ -251,6 +251,12 @@ const items: Item[] = [
     slugs: ['/metadata', '/metadata-control'],
     plus: true,
   },
+  {
+    title: 'EnhancedDisabled',
+    description: 'Should handle array-based field disabled targeting',
+    slugs: ['/enhanced-disabled'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {
