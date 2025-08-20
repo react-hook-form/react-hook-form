@@ -252,6 +252,13 @@ const items: Item[] = [
     plus: true,
   },
   {
+    title: 'ScrollIntoView',
+    description:
+      'Should expose scrollIntoView method on field refs for smooth scrolling to form fields',
+    slugs: ['/scroll-into-view'],
+    plus: true,
+  },
+  {
     title: 'SmartDisabled',
     description:
       'Should propagate the disabled form value to fields and handle array-based field disabled',

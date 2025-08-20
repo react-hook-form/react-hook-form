@@ -109,7 +109,9 @@ export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues
     value: FieldPathValue<TFieldValues, TName>;
     disabled?: boolean;
     name: TName;
-    ref: RefCallBack;
+    ref: RefCallBack & {
+        scrollIntoView?: (options?: ScrollIntoViewOptions) => void;
+    };
 };
 
 // @public (undocumented)

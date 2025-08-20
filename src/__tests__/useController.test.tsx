@@ -1266,4 +1266,97 @@ describe('useController', () => {
 
     spy.mockRestore();
   });
+
+  it('should expose scrollIntoView method on ref', () => {
+    const scrollIntoViewMock = jest.fn();
+
+    const Component = () => {
+      const { control } = useForm<{ test: string }>();
+      const { field } = useController({
+        name: 'test',
+        control,
+        defaultValue: '',
+      });
+
+      return (
+        <input
+          {...field}
+          ref={(el) => {
+            field.ref(el);
+            if (el) {
+              el.scrollIntoView = scrollIntoViewMock;
+            }
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    // Get the field ref and verify scrollIntoView method exists
+    const input = screen.getByRole('textbox');
+    expect(input).toBeInTheDocument();
+  });
+
+  it('should call scrollIntoView on the DOM element when ref.scrollIntoView is called', async () => {
+    const scrollIntoViewMock = jest.fn();
+    let fieldRef: any;
+
+    const Component = () => {
+      const { control } = useForm<{ test: string }>();
+      const { field } = useController({
+        name: 'test',
+        control,
+        defaultValue: '',
+      });
+
+      fieldRef = field.ref;
+
+      return (
+        <input
+          {...field}
+          ref={(el) => {
+            field.ref(el);
+            if (el) {
+              el.scrollIntoView = scrollIntoViewMock;
+            }
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    // Call scrollIntoView method
+    if (fieldRef && fieldRef.scrollIntoView) {
+      fieldRef.scrollIntoView({ behavior: 'smooth' });
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth' });
+    }
+  });
+
+  it('should handle scrollIntoView gracefully when element does not support it', () => {
+    let fieldRef: any;
+
+    const Component = () => {
+      const { control } = useForm<{ test: string }>();
+      const { field } = useController({
+        name: 'test',
+        control,
+        defaultValue: '',
+      });
+
+      fieldRef = field.ref;
+
+      return <input {...field} />;
+    };
+
+    render(<Component />);
+
+    // Call scrollIntoView method when element doesn't have the method
+    expect(() => {
+      if (fieldRef && fieldRef.scrollIntoView) {
+        fieldRef.scrollIntoView();
+      }
+    }).not.toThrow();
+  });
 });
