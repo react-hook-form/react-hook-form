@@ -9,7 +9,7 @@ export default function getValidateError(
 ): FieldError | void {
   if (
     isMessage(result) ||
-    (Array.isArray(result) && result.every(isMessage)) ||
+    (Array.isArray(result) && (result as unknown[]).every(isMessage)) ||
     (isBoolean(result) && !result)
   ) {
     return {
