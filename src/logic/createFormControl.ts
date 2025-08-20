@@ -1156,7 +1156,7 @@ export function createFormControl<
         disabled: isBoolean(options.disabled)
           ? options.disabled
           : Array.isArray(_options.disabled)
-            ? _options.disabled.includes(name)
+            ? new Set(_options.disabled).has(name)
             : _options.disabled,
         name,
       });
