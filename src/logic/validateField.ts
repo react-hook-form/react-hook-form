@@ -58,9 +58,16 @@ export default async <T extends FieldValues>(
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
-  const setCustomValidity = (message?: string | boolean) => {
+  const setCustomValidity = (message?: Message | boolean) => {
     if (shouldUseNativeValidation && inputRef.reportValidity) {
-      inputRef.setCustomValidity(isBoolean(message) ? '' : message || '');
+      if (isBoolean(message)) {
+        inputRef.setCustomValidity('');
+      } else if (typeof message === 'string') {
+        inputRef.setCustomValidity(message || '');
+      } else {
+        // For ReactNode messages, convert to string or use empty string for native validation
+        inputRef.setCustomValidity('');
+      }
       inputRef.reportValidity();
     }
   };

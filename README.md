@@ -36,6 +36,7 @@ pnpm add @bombillazo/rhf-plus
 
 - [Imperative form submission](./docs/imperative_submit.md)
 - [Smart `disabled` state](./docs/smart-disabled-state.md)
+- [JSX error messages](./docs/jsx-error-messages.md)
 - [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
 - [Form metadata](./docs/form-metadata.md)
 - [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)

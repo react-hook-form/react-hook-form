@@ -1,6 +1,12 @@
 import { expectType } from 'tsd';
 
-import type { FieldError, FieldErrors, GlobalError, Merge } from '../types';
+import type {
+  FieldError,
+  FieldErrors,
+  GlobalError,
+  Merge,
+  Message,
+} from '../types';
 
 import { _ } from './__fixtures__';
 
@@ -88,6 +94,6 @@ import { _ } from './__fixtures__';
     }>;
 
     expectType<FieldError | undefined>(actual.frequencyInput?.type);
-    expectType<string | undefined>(actual.frequencyInput?.type?.message);
+    expectType<Message | undefined>(actual.frequencyInput?.type?.message);
   }
 }
