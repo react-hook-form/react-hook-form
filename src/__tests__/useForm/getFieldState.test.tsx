@@ -686,10 +686,10 @@ describe('getFieldState', () => {
           },
         });
 
-        // @ts-expect-error expected to show type error for field name
+        // @ts-expect-error! expected to show type error for field name
         const { isDirty } = getFieldState('nestedMissing', formState);
 
-        // @ts-expect-error expected to show type error for field name
+        // @ts-expect-error! expected to show type error for field name
         const { isTouched, error } = getFieldState('nestedMissing');
 
         return (
