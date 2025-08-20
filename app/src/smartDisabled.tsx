@@ -66,7 +66,7 @@ export default function EnhancedDisabled() {
 
   return (
     <div>
-      <h1>Enhanced Disabled Prop Testing</h1>
+      <h1>Smart Disabled State Testing</h1>
 
       {/* Mode Controls */}
       <div

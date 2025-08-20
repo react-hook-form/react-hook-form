@@ -1,6 +1,6 @@
-describe('Enhanced Disabled Prop', () => {
+describe('Smart Disabled State', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/enhanced-disabled');
+    cy.visit('http://localhost:3000/smart-disabled');
   });
 
   describe('Basic array disabled functionality', () => {

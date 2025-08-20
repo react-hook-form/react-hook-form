@@ -252,9 +252,10 @@ const items: Item[] = [
     plus: true,
   },
   {
-    title: 'EnhancedDisabled',
-    description: 'Should handle array-based field disabled targeting',
-    slugs: ['/enhanced-disabled'],
+    title: 'SmartDisabled',
+    description:
+      'Should propagate the disabled form value to fields and handle array-based field disabled',
+    slugs: ['/smart-disabled'],
     plus: true,
   },
 ];

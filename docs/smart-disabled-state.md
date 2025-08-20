@@ -1,8 +1,8 @@
-# Smart form disabling
+# Smart `disabled` state
 
 ## Purpose
 
-Smart form disabling enhances the existing `disabled` prop functionality by propagating form-level `disabled` to register props. It also accepts an array of field names for targeted field disabling, while maintaining backward compatibility with boolean values for full-form disabling.
+Smart form disabling enhances the existing `disabled` prop functionality by propagating form-level `disabled` to registered field props. It also accepts an array of field names for targeted field disabling, while maintaining backward compatibility with boolean values for full-form disabling.
 
 ### Benefits
 
