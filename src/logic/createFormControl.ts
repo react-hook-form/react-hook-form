@@ -1239,8 +1239,10 @@ export function createFormControl<
         (e as React.BaseSyntheticEvent).persist &&
           (e as React.BaseSyntheticEvent).persist();
       }
-      let fieldValues: TFieldValues | TTransformedValues | {} =
-        cloneObject(_formValues);
+      let fieldValues:
+        | TFieldValues
+        | TTransformedValues
+        | Record<string, never> = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1249,7 +1251,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _formState.errors = errors;
-        fieldValues = cloneObject(values) as TFieldValues;
+        fieldValues = cloneObject(values);
       } else {
         await executeBuiltInValidation(_fields);
       }

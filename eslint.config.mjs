@@ -1,12 +1,12 @@
 // @ts-check
 
-import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import { fixupPluginRules } from '@eslint/compat';
 import pluginCypress from 'eslint-plugin-cypress/flat';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import reactPlugin from 'eslint-plugin-react';
 import reactHookPlugin from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import { fixupPluginRules } from '@eslint/compat';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
@@ -83,6 +83,8 @@ export default tseslint.config(
         },
       ],
       'simple-import-sort/exports': 'error',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
     },
   },
   {

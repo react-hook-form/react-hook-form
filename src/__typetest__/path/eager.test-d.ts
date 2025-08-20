@@ -6,7 +6,7 @@ import { _ } from '../__fixtures__';
 
 /** {@link Path} */ {
   /** it should evaluate to never for an empty object */ {
-    const actual = _ as Path<{}>;
+    const actual = _ as Path<object>;
     expectType<never>(actual);
   }
 
@@ -39,7 +39,7 @@ import { _ } from '../__fixtures__';
             baz: 1;
           };
         }
-      | {};
+      | Record<string, never>;
     const actual = _ as Path<Foo>;
     expectType<'foo' | 'bar' | 'bar.baz'>(actual);
   }
@@ -77,7 +77,7 @@ import { _ } from '../__fixtures__';
             fooArr?: Foo[];
           };
         }
-      | {};
+      | Record<string, never>;
     const actual = _ as ArrayPath<Foo>;
     expectType<'bar.fooArr'>(actual);
   }
