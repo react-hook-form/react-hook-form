@@ -48,6 +48,7 @@ import ImperativeSubmitControl from './imperativeSubmitControl';
 import IsLoading from './isLoading';
 import Metadata from './metadata';
 import MetadataControl from './metadata-control';
+import EnhancedDisabled from './enhancedDisabled';
 
 const App = () => {
   return (
@@ -139,6 +140,7 @@ const App = () => {
         <Route path="/is-loading" element={<IsLoading />} />
         <Route path="/metadata" element={<Metadata />} />
         <Route path="/metadata-control" element={<MetadataControl />} />
+        <Route path="/enhanced-disabled" element={<EnhancedDisabled />} />
       </Routes>
     </BrowserRouter>
   );
