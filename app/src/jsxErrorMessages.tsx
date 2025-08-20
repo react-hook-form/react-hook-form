@@ -206,7 +206,6 @@ export default function JsxErrorMessagesExample() {
           </label>
           <input
             id="email"
-            type="email"
             {...register('email', {
               required: (
                 <span style={{ color: '#e74c3c' }}>
