@@ -440,7 +440,7 @@ export type Merge<A, B> = {
 };
 
 // @public (undocumented)
-export type Message = string;
+export type Message = string | React_2.ReactElement;
 
 // @public (undocumented)
 export type MinType = InputValidationRules['min'] | InputValidationRules['minLength'];
