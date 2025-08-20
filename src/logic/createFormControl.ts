@@ -140,7 +140,9 @@ export function createFormControl<
     dirtyFields: {},
     validatingFields: {},
     errors: _options.errors || {},
-    disabled: _options.disabled || false,
+    disabled: Array.isArray(_options.disabled)
+      ? false
+      : _options.disabled || false,
     metadata: _options.defaultMetadata || ({} as TMetadata),
   };
   let _fields: FieldRefs = {};
@@ -196,7 +198,7 @@ export function createFormControl<
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (
-      !_options.disabled &&
+      (Array.isArray(_options.disabled) || !_options.disabled) &&
       (_proxyFormState.isValid ||
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
@@ -759,6 +761,24 @@ export function createFormControl<
     );
 
     if (field) {
+      // Check if field is disabled and should not process events
+      const isFieldDisabled = isBoolean(field._f.disabled)
+        ? field._f.disabled
+        : isBoolean(_options.disabled)
+          ? _options.disabled
+          : Array.isArray(_options.disabled)
+            ? _options.disabled.includes(name as FieldPath<TFieldValues>)
+            : false;
+
+      if (isFieldDisabled) {
+        // Restore the original value if the field is disabled
+        const originalValue = get(_formValues, name);
+        if (target.value !== originalValue) {
+          target.value = originalValue;
+        }
+        return;
+      }
+
       let error;
       let isValid;
       const fieldValue = target.type
@@ -1116,7 +1136,9 @@ export function createFormControl<
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined =
-      isBoolean(options.disabled) || isBoolean(_options.disabled);
+      isBoolean(options.disabled) ||
+      isBoolean(_options.disabled) ||
+      Array.isArray(_options.disabled);
 
     set(_fields, name, {
       ...(field || {}),
@@ -1133,7 +1155,9 @@ export function createFormControl<
       _setDisabledField({
         disabled: isBoolean(options.disabled)
           ? options.disabled
-          : _options.disabled,
+          : Array.isArray(_options.disabled)
+            ? _options.disabled.includes(name)
+            : _options.disabled,
         name,
       });
     } else {
@@ -1142,7 +1166,13 @@ export function createFormControl<
 
     return {
       ...(disabledIsDefined
-        ? { disabled: options.disabled || _options.disabled }
+        ? {
+            disabled: isBoolean(options.disabled)
+              ? options.disabled
+              : Array.isArray(_options.disabled)
+                ? _options.disabled.includes(name)
+                : !!_options.disabled,
+          }
         : {}),
       ...(_options.progressive
         ? {
@@ -1214,7 +1244,7 @@ export function createFormControl<
     _options.shouldFocusError &&
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
-  const _disableForm = (disabled?: boolean) => {
+  const _disableForm = (disabled?: boolean | string[]) => {
     if (isBoolean(disabled)) {
       _subjects.state.next({ disabled });
       iterateFieldsByAction(
@@ -1222,11 +1252,39 @@ export function createFormControl<
         (ref, name) => {
           const currentField: Field = get(_fields, name);
           if (currentField) {
-            ref.disabled = currentField._f.disabled || disabled;
+            ref.disabled = isBoolean(currentField._f.disabled)
+              ? currentField._f.disabled
+              : disabled;
 
             if (Array.isArray(currentField._f.refs)) {
               currentField._f.refs.forEach((inputRef) => {
-                inputRef.disabled = currentField._f.disabled || disabled;
+                inputRef.disabled = isBoolean(currentField._f.disabled)
+                  ? currentField._f.disabled
+                  : disabled;
+              });
+            }
+          }
+        },
+        0,
+        false,
+      );
+    } else if (Array.isArray(disabled)) {
+      // For array mode, we don't set the global disabled state
+      // but we update individual fields based on their inclusion in the array
+      iterateFieldsByAction(
+        _fields,
+        (ref, name) => {
+          const currentField: Field = get(_fields, name);
+          if (currentField) {
+            // Field-level disabled takes precedence over array disabled
+            const isFieldDisabled = isBoolean(currentField._f.disabled)
+              ? currentField._f.disabled
+              : disabled.includes(name);
+            ref.disabled = isFieldDisabled;
+
+            if (Array.isArray(currentField._f.refs)) {
+              currentField._f.refs.forEach((inputRef) => {
+                inputRef.disabled = isFieldDisabled;
               });
             }
           }

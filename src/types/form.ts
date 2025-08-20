@@ -119,7 +119,7 @@ export type UseFormProps<
   TMetadata extends FormMetadata = any,
 > = Partial<{
   mode: Mode;
-  disabled: boolean;
+  disabled: boolean | FieldPath<TFieldValues>[];
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
@@ -915,7 +915,7 @@ export type Control<
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _focusError: () => boolean | undefined;
-  _disableForm: (disabled?: boolean) => void;
+  _disableForm: (disabled?: boolean | FieldPath<TFieldValues>[]) => void;
   _updateIsLoading: (isLoading?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
