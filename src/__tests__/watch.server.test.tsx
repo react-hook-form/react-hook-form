@@ -9,9 +9,11 @@ describe('Watch with SSR', () => {
     const Component = () => {
       const { control } = useForm({ defaultValues: { foo: 'bar' } });
       return (
-        <Watch control={control} names={['foo']}>
-          {([foo]) => <span>{foo}</span>}
-        </Watch>
+        <Watch
+          control={control}
+          names={['foo']}
+          render={([foo]) => <span>{foo}</span>}
+        />
       );
     };
 

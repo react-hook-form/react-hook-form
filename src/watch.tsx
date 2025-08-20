@@ -27,19 +27,21 @@ type GetValues<
  *
  * @param control - The form control object from useForm
  * @param names - Array of field names to watch for changes
- * @param children - Either a ReactNode to render or a function that receives watched values and returns ReactNode
- * @returns The rendered children, either directly or as the result of calling children function with watched values
+ * @param render - The function that receives watched values and returns ReactNode
+ * @returns The result of calling render function with watched values
  *
  * @example
- * The `Watch` component's children only re-render when the values of `foo`, `bar`, and `baz.qux` change.
+ * The `Watch` component only re-render when the values of `foo`, `bar`, and `baz.qux` change.
  * The types of `foo`, `bar`, and `baz.qux` are precisely inferred.
  *
  * ```tsx
  * const { control } = useForm();
  *
- * <Watch control={control} names={['foo', 'bar', 'baz.qux']}>
- *   {([foo, bar, baz_qux]) => <div>{foo}{bar}{baz_qux}</div>}
- * </Watch>
+ * <Watch
+ *   control={control}
+ *   names={['foo', 'bar', 'baz.qux']}
+ *   render={([foo, bar, baz_qux]) => <div>{foo}{bar}{baz_qux}</div>}
+ * />
  * ```
  */
 export const Watch = <
@@ -50,17 +52,12 @@ export const Watch = <
 >({
   control,
   names,
-  children,
+  render,
 }: {
   control: Control<TFieldValues, TContext, TTransformedValues>;
   names: TFieldNames;
-  children?:
-    | ReactNode
-    | ((values: GetValues<TFieldValues, TFieldNames>) => ReactNode);
+  render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
 }) => {
   const values = useWatch({ control, name: names });
-
-  return typeof children === 'function'
-    ? children(values as GetValues<TFieldValues, TFieldNames>)
-    : children;
+  return render(values as GetValues<TFieldValues, TFieldNames>);
 };

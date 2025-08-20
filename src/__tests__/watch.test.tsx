@@ -17,7 +17,7 @@ type FormType = {
 };
 
 describe('Watch', () => {
-  it('should have correct types for children function parameters', () => {
+  it('should have correct types for render function parameters', () => {
     const Component = () => {
       const { control } = useForm<FormType>();
       return (
@@ -34,8 +34,17 @@ describe('Watch', () => {
             'foe.qux',
             'foe.qux.0',
           ]}
-        >
-          {([foo, bar, baz, bazQux, quux, fie, foe, foeQux, foeQux0]) => {
+          render={([
+            foo,
+            bar,
+            baz,
+            bazQux,
+            quux,
+            fie,
+            foe,
+            foeQux,
+            foeQux0,
+          ]) => {
             expectType<string>(foo);
             expectType<string>(bar);
             expectType<{ qux: string }>(baz);
@@ -47,14 +56,14 @@ describe('Watch', () => {
             expectType<number>(foeQux0);
             return null;
           }}
-        </Watch>
+        />
       );
     };
 
     Component;
   });
 
-  it('should pass the values corresponding to the `names` prop to children', () => {
+  it('should pass the values corresponding to the `names` prop to render function', () => {
     const Component = () => {
       const { control, register } = useForm<FormType>();
       return (
@@ -62,15 +71,23 @@ describe('Watch', () => {
           <input data-testid="foo" {...register('foo')} />
           <input data-testid="bar" {...register('bar')} />
           <input data-testid="baz_qux" {...register('baz.qux')} />
-          <Watch control={control} names={['foo']}>
-            {([foo]) => <span data-testid="fooText">{foo}</span>}
-          </Watch>
-          <Watch control={control} names={['bar']}>
-            {([bar]) => <span data-testid="barText">{bar}</span>}
-          </Watch>
-          <Watch control={control} names={['baz.qux']}>
-            {([bazQux]) => <span data-testid="bazQuxText">{bazQux}</span>}
-          </Watch>
+          <Watch
+            control={control}
+            names={['foo']}
+            render={([foo]) => <span data-testid="fooText">{foo}</span>}
+          />
+          <Watch
+            control={control}
+            names={['bar']}
+            render={([bar]) => <span data-testid="barText">{bar}</span>}
+          />
+          <Watch
+            control={control}
+            names={['baz.qux']}
+            render={([bazQux]) => (
+              <span data-testid="bazQuxText">{bazQux}</span>
+            )}
+          />
         </form>
       );
     };
@@ -119,15 +136,21 @@ describe('Watch', () => {
           <input data-testid="bar" {...register('bar')} />
           <input data-testid="baz_qux" {...register('baz.qux')} />
           <OnRender callback={outerCallback} />
-          <Watch control={control} names={['foo']}>
-            {() => <OnRender callback={fooCallback} />}
-          </Watch>
-          <Watch control={control} names={['bar']}>
-            {() => <OnRender callback={barCallback} />}
-          </Watch>
-          <Watch control={control} names={['baz.qux']}>
-            {() => <OnRender callback={bazQuxCallback} />}
-          </Watch>
+          <Watch
+            control={control}
+            names={['foo']}
+            render={() => <OnRender callback={fooCallback} />}
+          />
+          <Watch
+            control={control}
+            names={['bar']}
+            render={() => <OnRender callback={barCallback} />}
+          />
+          <Watch
+            control={control}
+            names={['baz.qux']}
+            render={() => <OnRender callback={bazQuxCallback} />}
+          />
         </form>
       );
     };
