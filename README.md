@@ -34,13 +34,16 @@ pnpm add @bombillazo/rhf-plus
 
 ## ✨ Enhancements
 
-- [Imperative Form Submission](./docs/imperative_submit.md)
-- [Form metadata](./docs/form-metadata.md)
+- [Imperative form submission](./docs/imperative_submit.md)
+- [Smart form disabling](./docs/smart-form-disabling.md)
 - [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
+- [Form metadata](./docs/form-metadata.md)
+- [`Controller` children function](./docs/controller-children-function.md)
+
+Minor improvements:
+
 - [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
 - [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
-- [`Controller` children function prop](./docs/controller-children-function-prop.md)
-- More to come... ([Become a contributor](CONTRIBUTING.md))
 
 ## Motive
 

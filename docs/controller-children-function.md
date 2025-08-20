@@ -1,4 +1,4 @@
-# `Controller` children function prop
+# `Controller` children function
 
 ## Purpose
 
