@@ -38,6 +38,7 @@ pnpm add @bombillazo/rhf-plus
 - [Smart `disabled` state](./docs/smart-disabled-state.md)
 - [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
 - [Form metadata](./docs/form-metadata.md)
+- [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
 - [`Controller` children function](./docs/controller-children-function.md)
 
 Minor improvements:
