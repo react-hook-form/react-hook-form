@@ -65,9 +65,11 @@ jobs:
       - name: Publish to npm (real)
         run: pnpm publish --access public --no-git-checks
 
-      - name: Create GitHub Release with PR list
-        run: |
-          gh release create "${{ steps.tag.outputs.tag }}" \
-            --title "${{ steps.tag.outputs.tag }}" \
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
