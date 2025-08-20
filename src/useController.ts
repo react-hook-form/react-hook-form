@@ -159,14 +159,17 @@ export function useController<
     [name, control._formValues],
   );
 
+  const elementRef = React.useRef<HTMLElement | null>(null);
+
   const ref = React.useCallback(
     (elm: any) => {
+      elementRef.current = elm;
       const field = get(control._fields, name);
 
       if (field && elm) {
         field._f.ref = {
-          focus: () => elm.focus && elm.focus(),
-          select: () => elm.select && elm.select(),
+          focus: () => elm.focus?.(),
+          select: () => elm.select?.(),
           setCustomValidity: (message: string) =>
             elm.setCustomValidity(message),
           reportValidity: () => elm.reportValidity(),
@@ -174,6 +177,19 @@ export function useController<
       }
     },
     [control._fields, name],
+  );
+
+  // Add scrollIntoView method to the ref callback function
+  (ref as any).scrollIntoView = React.useCallback(
+    (options?: ScrollIntoViewOptions) => {
+      if (
+        elementRef.current &&
+        typeof elementRef.current.scrollIntoView === 'function'
+      ) {
+        elementRef.current.scrollIntoView(options);
+      }
+    },
+    [],
   );
 
   const field = React.useMemo(() => {

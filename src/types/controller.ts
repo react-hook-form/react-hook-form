@@ -29,7 +29,9 @@ export type ControllerRenderProps<
   value: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
   name: TName;
-  ref: RefCallBack;
+  ref: RefCallBack & {
+    scrollIntoView?: (options?: ScrollIntoViewOptions) => void;
+  };
 };
 
 export type UseControllerProps<
