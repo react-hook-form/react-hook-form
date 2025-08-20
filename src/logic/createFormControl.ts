@@ -1170,7 +1170,7 @@ export function createFormControl<
             disabled: isBoolean(options.disabled)
               ? options.disabled
               : Array.isArray(_options.disabled)
-                ? _options.disabled.includes(name)
+                ? new Set(_options.disabled).has(name)
                 : !!_options.disabled,
           }
         : {}),
@@ -1279,7 +1279,7 @@ export function createFormControl<
             // Field-level disabled takes precedence over array disabled
             const isFieldDisabled = isBoolean(currentField._f.disabled)
               ? currentField._f.disabled
-              : disabled.includes(name);
+              : new Set(disabled).has(name);
             ref.disabled = isFieldDisabled;
 
             if (Array.isArray(currentField._f.refs)) {
