@@ -827,8 +827,9 @@ export function createFormControl<
           _formState.isSubmitted,
           validationModeAfterSubmit,
           validationModeBeforeSubmit,
+          isFocusEvent,
         );
-      const watched = isWatched(name, _names, isBlurEvent);
+      const watched = isWatched(name, _names, isBlurEvent || isFocusEvent);
 
       set(_formValues, name, fieldValue);
 
