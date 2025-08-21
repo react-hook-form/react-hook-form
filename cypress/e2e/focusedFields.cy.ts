@@ -1,6 +1,6 @@
 describe('focusedField', () => {
   it('should track which field is currently focused', () => {
-    cy.visit('http://localhost:3001/focused-fields');
+    cy.visit('http://localhost:3000/focused-fields');
 
     // Initially no fields should be focused
     cy.get('#focused-field').should('contain', 'none');
@@ -53,7 +53,7 @@ describe('focusedField', () => {
   });
 
   it('should reset focused field when form is reset', () => {
-    cy.visit('http://localhost:3001/focused-fields');
+    cy.visit('http://localhost:3000/focused-fields');
 
     // Focus on a field
     cy.get('#firstName').focus();
@@ -73,7 +73,7 @@ describe('focusedField', () => {
   });
 
   it('should handle focus switching between multiple fields', () => {
-    cy.visit('http://localhost:3001/focused-fields');
+    cy.visit('http://localhost:3000/focused-fields');
 
     // Rapid focus switching
     cy.get('#firstName').focus();

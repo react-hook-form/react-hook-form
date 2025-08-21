@@ -107,6 +107,7 @@ const schema = z.object({
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isFocused: boolean;
       isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test'));
@@ -124,6 +125,7 @@ const schema = z.object({
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isFocused: boolean;
       isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test', formState));
