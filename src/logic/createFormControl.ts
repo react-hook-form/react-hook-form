@@ -138,6 +138,7 @@ export function createFormControl<
     isValid: false,
     touchedFields: {},
     dirtyFields: {},
+    focusedField: undefined,
     validatingFields: {},
     errors: _options.errors || {},
     disabled: Array.isArray(_options.disabled)
@@ -172,6 +173,7 @@ export function createFormControl<
     dirtyFields: false,
     validatingFields: false,
     touchedFields: false,
+    focusedField: false,
     isValidating: false,
     isValid: false,
     errors: false,
@@ -344,10 +346,14 @@ export function createFormControl<
     name: InternalFieldName,
     fieldValue: unknown,
     isBlurEvent?: boolean,
+    isFocusEvent?: boolean,
     shouldDirty?: boolean,
     shouldRender?: boolean,
   ): Partial<
-    Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
+    Pick<
+      FormState<TFieldValues>,
+      'dirtyFields' | 'isDirty' | 'touchedFields' | 'focusedField'
+    >
   > => {
     let shouldUpdateField = false;
     let isPreviousDirty = false;
@@ -391,6 +397,26 @@ export function createFormControl<
             ((_proxyFormState.touchedFields ||
               _proxySubscribeFormState.touchedFields) &&
               isPreviousFieldTouched !== isBlurEvent);
+        }
+      }
+
+      // Handle focus state
+      if (isFocusEvent || isBlurEvent) {
+        const wasPreviouslyFocused = _formState.focusedField === name;
+        const shouldBeFocused = isFocusEvent && !isBlurEvent;
+
+        if (wasPreviouslyFocused !== shouldBeFocused) {
+          if (shouldBeFocused) {
+            _formState.focusedField = name as FieldPath<TFieldValues>;
+          } else {
+            _formState.focusedField = undefined;
+          }
+          output.focusedField = _formState.focusedField;
+          shouldUpdateField =
+            shouldUpdateField ||
+            ((_proxyFormState.focusedField ||
+              _proxySubscribeFormState.focusedField) &&
+              wasPreviouslyFocused !== shouldBeFocused);
         }
       }
 
@@ -667,6 +693,7 @@ export function createFormControl<
         name,
         fieldValue,
         options.shouldTouch,
+        false, // isFocusEvent - not applicable for setValue
         options.shouldDirty,
         true,
       );
@@ -786,6 +813,9 @@ export function createFormControl<
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+      const isFocusEvent =
+        event.type === EVENTS.FOCUS || event.type === EVENTS.FOCUS_IN;
+
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !_options.resolver &&
@@ -811,7 +841,12 @@ export function createFormControl<
         field._f.onChange(event);
       }
 
-      const fieldState = updateTouchAndDirty(name, fieldValue, isBlurEvent);
+      const fieldState = updateTouchAndDirty(
+        name,
+        fieldValue,
+        isBlurEvent,
+        isFocusEvent,
+      );
 
       const shouldRender = !isEmptyObject(fieldState) || watched;
 
@@ -986,6 +1021,7 @@ export function createFormControl<
     error: get((formState || _formState).errors, name),
     isValidating: !!get(_formState.validatingFields, name),
     isTouched: !!get((formState || _formState).touchedFields, name),
+    isFocused: (formState || _formState).focusedField === name,
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
@@ -1187,6 +1223,7 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
+      onFocus: onChange,
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
           register(name, options);
@@ -1507,6 +1544,7 @@ export function createFormControl<
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
+      focusedField: undefined, // Always reset focused field on form reset
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
       isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
         ? _formState.isSubmitSuccessful
