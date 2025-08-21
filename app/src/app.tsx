@@ -52,6 +52,7 @@ import JsxErrorMessages from './jsxErrorMessages';
 import ScrollIntoView from './scrollIntoView';
 import SmartDisabled from './smartDisabled';
 import ControllerRulesUpdate from './controllerRulesUpdate';
+import { FocusedFields } from './focusedFields';
 
 const App = () => {
   return (
@@ -150,6 +151,7 @@ const App = () => {
           path="/controller-rules-update"
           element={<ControllerRulesUpdate />}
         />
+        <Route path="/focused-fields" element={<FocusedFields />} />
       </Routes>
     </BrowserRouter>
   );
