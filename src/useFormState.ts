@@ -53,6 +53,7 @@ export function useFormState<
     isLoading: false,
     dirtyFields: false,
     touchedFields: false,
+    focusedField: false,
     validatingFields: false,
     isValidating: false,
     isValid: false,

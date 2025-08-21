@@ -75,6 +75,7 @@ export function useForm<
     submitCount: 0,
     dirtyFields: {},
     touchedFields: {},
+    focusedField: undefined,
     validatingFields: {},
     errors: props.errors || {},
     // If it's an array, set formState.disabled to false because when using array mode,
