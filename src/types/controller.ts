@@ -16,6 +16,7 @@ export type ControllerFieldState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
+  isFocused: boolean;
   isValidating: boolean;
   error?: FieldError;
 };

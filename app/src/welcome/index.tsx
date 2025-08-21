@@ -279,6 +279,13 @@ const items: Item[] = [
     slugs: ['/controller-rules-update'],
     plus: true,
   },
+  {
+    title: 'FocusedFields',
+    description:
+      'Should track focused fields and update form state accordingly',
+    slugs: ['/focused-fields'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {

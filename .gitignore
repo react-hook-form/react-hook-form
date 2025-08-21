@@ -20,6 +20,7 @@ example/build/
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+.claude
 
 # Optional npm cache directory
 .npm

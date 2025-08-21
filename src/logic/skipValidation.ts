@@ -9,7 +9,16 @@ export default (
     isOnChange: boolean;
   },
   mode: Partial<ValidationModeFlags>,
+  /**
+   * Need to keep this order of parameters for backward compatibility
+   */
+  isFocusEvent: boolean,
 ) => {
+  // Focus events should always skip validation
+  if (isFocusEvent) {
+    return true;
+  }
+
   if (mode.isOnAll) {
     return false;
   } else if (!isSubmitted && mode.isOnTouch) {

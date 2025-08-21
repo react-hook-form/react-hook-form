@@ -114,6 +114,48 @@ describe('should skip validation', () => {
       ),
     ).toBeTruthy();
   });
+
+  it('when focus event occurs, always skip validation', () => {
+    expect(
+      skipValidation(
+        false,
+        false,
+        false,
+        {
+          isOnChange: true,
+          isOnBlur: false,
+        },
+        {
+          isOnChange: true,
+          isOnBlur: false,
+          isOnTouch: false,
+          isOnAll: true,
+        },
+        true, // isFocusEvent
+      ),
+    ).toBeTruthy();
+  });
+
+  it('when focus event occurs in onAll mode, still skip validation', () => {
+    expect(
+      skipValidation(
+        false,
+        false,
+        false,
+        {
+          isOnChange: true,
+          isOnBlur: false,
+        },
+        {
+          isOnChange: false,
+          isOnBlur: false,
+          isOnTouch: false,
+          isOnAll: true,
+        },
+        true, // isFocusEvent
+      ),
+    ).toBeTruthy();
+  });
 });
 
 describe('should validate the input', () => {

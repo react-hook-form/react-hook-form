@@ -84,6 +84,7 @@ export type ControllerFieldState = {
     invalid: boolean;
     isTouched: boolean;
     isDirty: boolean;
+    isFocused: boolean;
     isValidating: boolean;
     error?: FieldError;
 };
@@ -325,6 +326,7 @@ export type FormState<TFieldValues extends FieldValues, TMetadata extends FormMe
     defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
     dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+    focusedField: FieldPath<TFieldValues> | undefined;
     validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
     errors: FieldErrors<TFieldValues>;
     isReady: boolean;
@@ -337,6 +339,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
     isValidating: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
+    focusedField: boolean;
     validatingFields: FieldNamesMarkedBoolean<TFieldValues>;
     errors: boolean;
     isValid: boolean;
@@ -702,6 +705,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
+    isFocused: boolean;
     isValidating: boolean;
     error?: FieldError;
 };
@@ -746,6 +750,7 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <TFieldName exte
 export type UseFormRegisterReturn<TFieldName extends InternalFieldName = InternalFieldName> = {
     onChange: ChangeHandler;
     onBlur: ChangeHandler;
+    onFocus: ChangeHandler;
     ref: RefCallBack;
     name: TFieldName;
     min?: string | number;
@@ -971,7 +976,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:504:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:508:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

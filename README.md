@@ -41,6 +41,7 @@ pnpm add @bombillazo/rhf-plus
 - [Form metadata](./docs/form-metadata.md)
 - [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
 - [`Controller` children function](./docs/controller-children-function.md)
+- [Form focus data with `focusedField` and `isFocused`](./docs/focused-fields.md)
 
 Minor improvements:
 
@@ -78,6 +79,10 @@ We avoid enhancements that aggressively modify large parts of the RHF codebase. 
 
 - **Past RHF versions**  
 As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
+
+### Performance Note
+
+Due to the nature of React and hooks, some features may cause additional renders as the form state needs to update to reflect the new statuses and data events. Still, we optimzed the performance of these features to minimize the impact on form rendering.
 
 ### 📣 Help us grow
 

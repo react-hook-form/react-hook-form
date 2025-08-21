@@ -139,6 +139,10 @@ export function useController<
             enumerable: true,
             get: () => !!get(formState.touchedFields, name),
           },
+          isFocused: {
+            enumerable: true,
+            get: () => formState.focusedField === name,
+          },
           isValidating: {
             enumerable: true,
             get: () => !!get(formState.validatingFields, name),
@@ -172,6 +176,18 @@ export function useController<
           name: name as InternalFieldName,
         },
         type: EVENTS.BLUR,
+      }),
+    [name, control._formValues],
+  );
+
+  const onFocus = React.useCallback(
+    () =>
+      _registerProps.current.onFocus({
+        target: {
+          value: get(control._formValues, name),
+          name: name as InternalFieldName,
+        },
+        type: EVENTS.FOCUS,
       }),
     [name, control._formValues],
   );
@@ -230,9 +246,19 @@ export function useController<
       ...(isBoolean(isFieldDisabled) ? { disabled: isFieldDisabled } : {}),
       onChange,
       onBlur,
+      onFocus,
       ref,
     };
-  }, [name, disabled, control._options.disabled, onChange, onBlur, ref, value]);
+  }, [
+    name,
+    disabled,
+    control._options.disabled,
+    onChange,
+    onBlur,
+    onFocus,
+    ref,
+    value,
+  ]);
 
   React.useEffect(() => {
     const _shouldUnregisterField =

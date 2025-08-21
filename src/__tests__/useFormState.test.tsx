@@ -843,4 +843,255 @@ describe('useFormState', () => {
       screen.getByText('disabled');
     });
   });
+
+  describe('focusedField and isFocused', () => {
+    it('should track which field is currently focused', async () => {
+      let formState: any;
+
+      const Test = ({
+        control,
+      }: {
+        control: Control<{ test1: string; test2: string }>;
+      }) => {
+        formState = useFormState({ control });
+
+        return (
+          <div>
+            <div data-testid="focused-field">
+              {formState.focusedField || 'none'}
+            </div>
+            <div data-testid="test1-focused">
+              {formState.focusedField === 'test1'
+                ? 'test1 focused'
+                : 'test1 not focused'}
+            </div>
+            <div data-testid="test2-focused">
+              {formState.focusedField === 'test2'
+                ? 'test2 focused'
+                : 'test2 not focused'}
+            </div>
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm<{
+          test1: string;
+          test2: string;
+        }>();
+
+        return (
+          <div>
+            <input data-testid="test1" {...register('test1')} />
+            <input data-testid="test2" {...register('test2')} />
+            <Test control={control} />
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      // Initially no fields should be focused
+      expect(screen.getByTestId('focused-field')).toHaveTextContent('none');
+      expect(screen.getByTestId('test1-focused')).toHaveTextContent(
+        'test1 not focused',
+      );
+      expect(screen.getByTestId('test2-focused')).toHaveTextContent(
+        'test2 not focused',
+      );
+
+      // Focus first field
+      fireEvent.focus(screen.getByTestId('test1'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('focused-field')).toHaveTextContent('test1');
+        expect(screen.getByTestId('test1-focused')).toHaveTextContent(
+          'test1 focused',
+        );
+        expect(screen.getByTestId('test2-focused')).toHaveTextContent(
+          'test2 not focused',
+        );
+      });
+
+      // Focus second field
+      fireEvent.focus(screen.getByTestId('test2'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('focused-field')).toHaveTextContent('test2');
+        expect(screen.getByTestId('test1-focused')).toHaveTextContent(
+          'test1 not focused',
+        );
+        expect(screen.getByTestId('test2-focused')).toHaveTextContent(
+          'test2 focused',
+        );
+      });
+
+      // Blur second field
+      fireEvent.blur(screen.getByTestId('test2'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('focused-field')).toHaveTextContent('none');
+        expect(screen.getByTestId('test1-focused')).toHaveTextContent(
+          'test1 not focused',
+        );
+        expect(screen.getByTestId('test2-focused')).toHaveTextContent(
+          'test2 not focused',
+        );
+      });
+    });
+
+    it('should reset focused field when form is reset', async () => {
+      let formState: any;
+      let resetForm: any;
+
+      const Test = ({ control }: { control: Control<{ test: string }> }) => {
+        formState = useFormState({ control });
+
+        return (
+          <div>
+            <div data-testid="focused-field">
+              {formState.focusedField || 'none'}
+            </div>
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control, reset } = useForm<{ test: string }>();
+        resetForm = reset;
+
+        return (
+          <div>
+            <input data-testid="test" {...register('test')} />
+            <Test control={control} />
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      // Focus the field
+      fireEvent.focus(screen.getByTestId('test'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('focused-field')).toHaveTextContent('test');
+      });
+
+      // Reset form
+      resetForm();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('focused-field')).toHaveTextContent('none');
+      });
+    });
+
+    it('should work with nested field names', async () => {
+      let formState: any;
+
+      const Test = ({
+        control,
+      }: {
+        control: Control<{ nested: { field: string } }>;
+      }) => {
+        formState = useFormState({ control });
+
+        return (
+          <div>
+            <div data-testid="nested-focused">
+              {formState.focusedField === 'nested.field'
+                ? 'nested focused'
+                : 'nested not focused'}
+            </div>
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm<{ nested: { field: string } }>();
+
+        return (
+          <div>
+            <input data-testid="nested-field" {...register('nested.field')} />
+            <Test control={control} />
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      // Focus the nested field
+      fireEvent.focus(screen.getByTestId('nested-field'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('nested-focused')).toHaveTextContent(
+          'nested focused',
+        );
+      });
+
+      // Blur the nested field
+      fireEvent.blur(screen.getByTestId('nested-field'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('nested-focused')).toHaveTextContent(
+          'nested not focused',
+        );
+      });
+    });
+
+    it('should work with Controller and provide isFocused in fieldState', async () => {
+      let fieldStateRef: any;
+
+      const Component = () => {
+        const { control } = useForm<{ test: string }>();
+
+        return (
+          <div>
+            <Controller
+              name="test"
+              control={control}
+              render={({ field, fieldState }) => {
+                fieldStateRef = fieldState;
+                return (
+                  <div>
+                    <input data-testid="controller-input" {...field} />
+                    <div data-testid="controller-focused">
+                      {fieldState.isFocused ? 'focused' : 'not focused'}
+                    </div>
+                  </div>
+                );
+              }}
+            />
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      // Initially not focused
+      expect(screen.getByTestId('controller-focused')).toHaveTextContent(
+        'not focused',
+      );
+      expect(fieldStateRef.isFocused).toBe(false);
+
+      // Focus the controller field
+      fireEvent.focus(screen.getByTestId('controller-input'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('controller-focused')).toHaveTextContent(
+          'focused',
+        );
+        expect(fieldStateRef.isFocused).toBe(true);
+      });
+
+      // Blur the controller field
+      fireEvent.blur(screen.getByTestId('controller-input'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('controller-focused')).toHaveTextContent(
+          'not focused',
+        );
+        expect(fieldStateRef.isFocused).toBe(false);
+      });
+    });
+  });
 });
