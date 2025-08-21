@@ -51,6 +51,7 @@ import MetadataControl from './metadata-control';
 import JsxErrorMessages from './jsxErrorMessages';
 import ScrollIntoView from './scrollIntoView';
 import SmartDisabled from './smartDisabled';
+import ControllerRulesUpdate from './controllerRulesUpdate';
 
 const App = () => {
   return (
@@ -145,6 +146,10 @@ const App = () => {
         <Route path="/jsx-error-messages" element={<JsxErrorMessages />} />
         <Route path="/scroll-into-view" element={<ScrollIntoView />} />
         <Route path="/smart-disabled" element={<SmartDisabled />} />
+        <Route
+          path="/controller-rules-update"
+          element={<ControllerRulesUpdate />}
+        />
       </Routes>
     </BrowserRouter>
   );

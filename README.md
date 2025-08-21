@@ -45,6 +45,7 @@ pnpm add @bombillazo/rhf-plus
 Minor improvements:
 
 - [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
+- [Controller rules no longer stale on prop change](./docs/controller-rules-update.md)
 - [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
 
 ## Motive

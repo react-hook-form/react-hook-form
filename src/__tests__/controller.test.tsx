@@ -486,6 +486,101 @@ describe('Controller', () => {
     expect(fieldsRef.test.required).toBeFalsy();
   });
 
+  it('should update validation behavior when rules change', async () => {
+    const Component = ({ required = true }: { required?: boolean }) => {
+      const { control, formState } = useForm({
+        mode: 'onBlur', // Enable validation on blur
+      });
+      return (
+        <div>
+          <Controller
+            defaultValue=""
+            name="test"
+            render={({ field }) => (
+              <input {...field} data-testid="test-input" />
+            )}
+            rules={{ required }}
+            control={control}
+          />
+          {formState.errors.test && <span data-testid="error">Required</span>}
+        </div>
+      );
+    };
+
+    const { rerender } = render(<Component required={true} />);
+
+    // Trigger validation with required=true - should show error
+    fireEvent.blur(screen.getByTestId('test-input'), {
+      target: { value: '' },
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('error')).toBeInTheDocument();
+    });
+
+    // Change rules to not required
+    rerender(<Component required={false} />);
+
+    // Trigger validation again - error should be cleared
+    fireEvent.blur(screen.getByTestId('test-input'), {
+      target: { value: '' },
+    });
+    await waitFor(() => {
+      expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should properly remove old validation rules when updated', async () => {
+    const Component = ({ rules }: { rules: any }) => {
+      const { control, formState } = useForm({
+        mode: 'onBlur',
+      });
+      return (
+        <div>
+          <Controller
+            defaultValue=""
+            name="test"
+            render={({ field }) => (
+              <input {...field} data-testid="test-input" />
+            )}
+            rules={rules}
+            control={control}
+          />
+          {formState.errors.test && (
+            <span data-testid="error">{formState.errors.test.message}</span>
+          )}
+        </div>
+      );
+    };
+
+    // Start with minLength rule
+    const { rerender } = render(
+      <Component rules={{ minLength: { value: 5, message: 'Too short' } }} />,
+    );
+
+    // Enter short text - should show error
+    fireEvent.change(screen.getByTestId('test-input'), {
+      target: { value: 'abc' },
+    });
+    fireEvent.blur(screen.getByTestId('test-input'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error')).toHaveTextContent('Too short');
+    });
+
+    // Change rules to only required (removing minLength)
+    rerender(<Component rules={{ required: 'This field is required' }} />);
+
+    // Enter short text again - should not show minLength error
+    fireEvent.change(screen.getByTestId('test-input'), {
+      target: { value: 'abc' },
+    });
+    fireEvent.blur(screen.getByTestId('test-input'));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+    });
+  });
+
   it('should set initial state from unmount state', () => {
     const Component = ({ isHide }: { isHide?: boolean }) => {
       const { control } = useForm();

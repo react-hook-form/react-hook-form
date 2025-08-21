@@ -128,6 +128,32 @@ export default function JsxErrorMessagesExample() {
         content.
       </p>
 
+      <h3>💡 Features Demonstrated:</h3>
+      <ul>
+        <li>
+          <strong>Rich JSX Elements:</strong> Styled error messages with HTML
+          formatting
+        </li>
+        <li>
+          <strong>React Components:</strong> Custom components as error messages
+        </li>
+        <li>
+          <strong>Custom Validation:</strong> Complex validation logic with
+          visual feedback
+        </li>
+        <li>
+          <strong>Programmatic Errors:</strong> Dynamic error messages with
+          setError
+        </li>
+        <li>
+          <strong>Conditional Styling:</strong> Color-coded validation states
+        </li>
+        <li>
+          <strong>Backward Compatibility:</strong> Works alongside traditional
+          string messages
+        </li>
+      </ul>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
@@ -171,20 +197,7 @@ export default function JsxErrorMessagesExample() {
             }}
             placeholder="Enter your username"
           />
-          <button
-            type="button"
-            onClick={triggerCustomError}
-            style={{
-              marginTop: '5px',
-              padding: '4px 8px',
-              fontSize: '12px',
-              backgroundColor: '#3498db',
-              color: 'white',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="button" onClick={triggerCustomError}>
             Trigger Custom JSX Error
           </button>
           {errors.username && (
@@ -322,105 +335,8 @@ export default function JsxErrorMessagesExample() {
           )}
         </div>
 
-        <button
-          type="submit"
-          style={{
-            padding: '12px',
-            backgroundColor: '#2ecc71',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '16px',
-            cursor: 'pointer',
-          }}
-        >
-          Submit Form
-        </button>
+        <button type="submit">Submit Form</button>
       </form>
-
-      <div
-        style={{
-          marginTop: '30px',
-          padding: '20px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          borderLeft: '4px solid #3498db',
-        }}
-      >
-        <h3 style={{ color: '#2c3e50', marginTop: 0 }}>
-          💡 Features Demonstrated:
-        </h3>
-        <ul style={{ color: '#34495e' }}>
-          <li>
-            <strong>Rich JSX Elements:</strong> Styled error messages with HTML
-            formatting
-          </li>
-          <li>
-            <strong>React Components:</strong> Custom components as error
-            messages
-          </li>
-          <li>
-            <strong>Custom Validation:</strong> Complex validation logic with
-            visual feedback
-          </li>
-          <li>
-            <strong>Programmatic Errors:</strong> Dynamic error messages with
-            setError
-          </li>
-          <li>
-            <strong>Conditional Styling:</strong> Color-coded validation states
-          </li>
-          <li>
-            <strong>Backward Compatibility:</strong> Works alongside traditional
-            string messages
-          </li>
-        </ul>
-      </div>
-
-      <div
-        style={{
-          marginTop: '20px',
-          padding: '15px',
-          backgroundColor: '#ecf0f1',
-          borderRadius: '4px',
-        }}
-      >
-        <h4>Usage Example:</h4>
-        <pre
-          style={{
-            fontSize: '12px',
-            overflow: 'auto',
-            backgroundColor: '#ffffff',
-            padding: '10px',
-            borderRadius: '3px',
-          }}
-        >
-          {`// JSX error message in validation rules
-register('field', {
-  required: (
-    <span style={{ color: 'red' }}>
-      <strong>This field is required!</strong>
-    </span>
-  ),
-  validate: (value) => {
-    if (value.length < 5) {
-      return (
-        <div>
-          Too short! Need at least <em>5 characters</em>
-        </div>
-      );
-    }
-    return true;
-  }
-})
-
-// Programmatic JSX error
-setError('field', {
-  type: 'custom',
-  message: <CustomErrorComponent field="field" />
-});`}
-        </pre>
-      </div>
     </div>
   );
 }

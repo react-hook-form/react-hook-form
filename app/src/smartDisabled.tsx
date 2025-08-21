@@ -82,7 +82,7 @@ export default function EnhancedDisabled() {
           onClick={() => setDisabledMode('none')}
           data-testid="mode-none"
           style={{
-            backgroundColor: disabledMode === 'none' ? '#007bff' : '#ccc',
+            backgroundColor: disabledMode === 'none' ? '#bf1650' : undefined,
             color: 'white',
             margin: '5px',
           }}
@@ -94,7 +94,7 @@ export default function EnhancedDisabled() {
           onClick={() => setDisabledMode('boolean')}
           data-testid="mode-boolean"
           style={{
-            backgroundColor: disabledMode === 'boolean' ? '#007bff' : '#ccc',
+            backgroundColor: disabledMode === 'boolean' ? '#bf1650' : undefined,
             color: 'white',
             margin: '5px',
           }}
@@ -106,7 +106,7 @@ export default function EnhancedDisabled() {
           onClick={() => setDisabledMode('array')}
           data-testid="mode-array"
           style={{
-            backgroundColor: disabledMode === 'array' ? '#007bff' : '#ccc',
+            backgroundColor: disabledMode === 'array' ? '#bf1650' : undefined,
             color: 'white',
             margin: '5px',
           }}
@@ -339,7 +339,6 @@ export default function EnhancedDisabled() {
           style={{
             marginTop: '20px',
             padding: '10px',
-            backgroundColor: '#f5f5f5',
           }}
         >
           <h3>Debug Info:</h3>

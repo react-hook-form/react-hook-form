@@ -6,6 +6,7 @@ import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import mergeMissingKeysAsUndefined from './utils/mergeMissingKeysAsUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
 import type {
@@ -94,6 +95,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _previousRules = React.useRef(props.rules);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -102,6 +104,21 @@ export function useController<
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }),
   );
+
+  const mergedRules = React.useMemo(
+    () => mergeMissingKeysAsUndefined(_previousRules.current, props.rules),
+    [props.rules],
+  );
+
+  // Update register props when rules change
+  React.useEffect(() => {
+    _registerProps.current = control.register(name, {
+      ...mergedRules,
+      value,
+      ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
+    });
+    _previousRules.current = props.rules;
+  }, [mergedRules, props.rules, value, props.disabled, control, name]);
 
   _props.current = props;
 
