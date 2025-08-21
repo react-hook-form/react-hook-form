@@ -105,19 +105,20 @@ export function useController<
     }),
   );
 
+  const mergedRules = React.useMemo(
+    () => mergeMissingKeysAsUndefined(_previousRules.current, props.rules),
+    [props.rules],
+  );
+
   // Update register props when rules change
   React.useEffect(() => {
-    const mergedRules = mergeMissingKeysAsUndefined(
-      _previousRules.current,
-      props.rules,
-    );
     _registerProps.current = control.register(name, {
       ...mergedRules,
       value,
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     });
     _previousRules.current = props.rules;
-  }, [props.rules, value, props.disabled, control, name]);
+  }, [mergedRules, props.rules, value, props.disabled, control, name]);
 
   _props.current = props;
 
