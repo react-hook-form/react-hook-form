@@ -152,6 +152,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
+  focusedField: boolean;
   validatingFields: FieldNamesMarkedBoolean<TFieldValues>;
   errors: boolean;
   isValid: boolean;
@@ -177,6 +178,7 @@ export type FormState<
   defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
+  focusedField: FieldPath<TFieldValues> | undefined;
   validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
   isReady: boolean;
@@ -208,6 +210,7 @@ export type UseFormRegisterReturn<
 > = {
   onChange: ChangeHandler;
   onBlur: ChangeHandler;
+  onFocus: ChangeHandler;
   ref: RefCallBack;
   name: TFieldName;
   min?: string | number;
@@ -386,6 +389,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   invalid: boolean;
   isDirty: boolean;
   isTouched: boolean;
+  isFocused: boolean;
   isValidating: boolean;
   error?: FieldError;
 };

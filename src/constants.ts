@@ -1,6 +1,8 @@
 export const EVENTS = {
   BLUR: 'blur',
   FOCUS_OUT: 'focusout',
+  FOCUS: 'focus',
+  FOCUS_IN: 'focusin',
   CHANGE: 'change',
 } as const;
 
