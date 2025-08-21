@@ -80,6 +80,10 @@ We avoid enhancements that aggressively modify large parts of the RHF codebase. 
 - **Past RHF versions**  
 As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
+### Performance Note
+
+Due to the nature of React and hooks, some features may cause additional renders as the form state needs to update to reflect the new statuses and data events. Still, we optimzed the performance of these features to minimize the impact on form rendering.
+
 ### 📣 Help us grow
 
 Ideally, this fork would not exist, and all of these enhancements and features would be natively part of RHF. You can help RHF and RHF+ grow by:
