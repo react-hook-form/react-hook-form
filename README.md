@@ -41,6 +41,7 @@ pnpm add @bombillazo/rhf-plus
 - [Form metadata](./docs/form-metadata.md)
 - [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
 - [`Controller` children function](./docs/controller-children-function.md)
+- [Form focus data with `focusedField` and `isFocused`](./docs/focused-fields.md)
 
 Minor improvements:
 
