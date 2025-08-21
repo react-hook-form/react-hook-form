@@ -286,6 +286,12 @@ const items: Item[] = [
     slugs: ['/focused-fields'],
     plus: true,
   },
+  {
+    title: 'EmptyArrayValidation',
+    description: 'Should trigger validation when setting empty array',
+    slugs: ['/empty-array-validation'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {
