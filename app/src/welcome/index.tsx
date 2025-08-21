@@ -252,7 +252,7 @@ const items: Item[] = [
     plus: true,
   },
   {
-    title: 'JSX Error Messages',
+    title: 'JSXErrorMessages',
     description:
       'Should support JSX/ReactElement as error messages for rich formatted error displays',
     slugs: ['/jsx-error-messages'],
@@ -270,6 +270,13 @@ const items: Item[] = [
     description:
       'Should propagate the disabled form value to fields and handle array-based field disabled',
     slugs: ['/smart-disabled'],
+    plus: true,
+  },
+  {
+    title: 'ControllerRulesUpdate',
+    description:
+      'Should update controller rules dynamically based on user selection',
+    slugs: ['/controller-rules-update'],
     plus: true,
   },
 ];

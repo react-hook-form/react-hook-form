@@ -6,6 +6,13 @@ import {
 } from '@bombillazo/rhf-plus';
 
 export default function ScrollIntoViewExample() {
+  React.useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }, []);
+
   const { control } = useForm<{
     firstName: string;
     lastName: string;
@@ -63,6 +70,20 @@ export default function ScrollIntoViewExample() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        style={{
+          width: '150px',
+          position: 'fixed',
+          top: '10px',
+          right: '64px',
+          color: '#fff',
+          border: 'none',
+        }}
+      >
+        Return to top
+      </button>
       <h2>ScrollIntoView Example</h2>
       <p>
         This demo shows the new scrollIntoView method available on field refs.
@@ -180,29 +201,6 @@ export default function ScrollIntoViewExample() {
           )}
         </div>
       </form>
-
-      <div
-        style={{
-          marginTop: '20px',
-          padding: '20px',
-          backgroundColor: '#f5f5f5',
-          borderRadius: '4px',
-        }}
-      >
-        <h3>Usage Example:</h3>
-        <pre style={{ fontSize: '14px', overflow: 'auto' }}>
-          {`const { field } = useController({
-  name: 'fieldName',
-  control,
-});
-
-// Scroll to the field element
-field.ref.scrollIntoView({
-  behavior: 'smooth',
-  block: 'center',
-});`}
-        </pre>
-      </div>
     </div>
   );
 }
