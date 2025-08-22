@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useForm } from '@bombillazo/rhf-plus';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -27,9 +27,8 @@ type FormData = {
   };
 };
 
-let renderCounter = 0;
-
 const EmptyArrayValidation: React.FC = () => {
+  const renderCounter = useRef(0);
   const {
     register,
     setValue,
@@ -51,7 +50,7 @@ const EmptyArrayValidation: React.FC = () => {
     },
   });
 
-  renderCounter++;
+  renderCounter.current++;
 
   const clearItems = () => {
     setValue('items', [], { shouldValidate: true });
@@ -118,7 +117,7 @@ const EmptyArrayValidation: React.FC = () => {
       <button type="submit" id="submit">
         Submit
       </button>
-      <div id="renderCount">Render count: {renderCounter}</div>
+      <div id="renderCount">Render count: {renderCounter.current}</div>
     </form>
   );
 };
