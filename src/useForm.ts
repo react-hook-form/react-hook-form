@@ -66,6 +66,7 @@ export function useForm<
     FormState<TFieldValues, TMetadata>
   >({
     isDirty: false,
+    isDirtySinceSubmit: false,
     isValidating: false,
     isLoading: props.isLoading || isFunction(props.defaultValues),
     isSubmitted: false,

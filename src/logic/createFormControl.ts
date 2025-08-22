@@ -129,6 +129,7 @@ export function createFormControl<
   let _formState: FormState<TFieldValues, TMetadata> = {
     submitCount: 0,
     isDirty: false,
+    isDirtySinceSubmit: false,
     isReady: false,
     isLoading: _internalLoading,
     isValidating: false,
@@ -146,6 +147,9 @@ export function createFormControl<
       : _options.disabled || false,
     metadata: _options.defaultMetadata || ({} as TMetadata),
   };
+
+  // Track if form was ever submitted (persists through resets)
+  let _wasEverSubmitted = false;
   let _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
@@ -170,6 +174,7 @@ export function createFormControl<
   let timer = 0;
   const _proxyFormState: ReadFormState = {
     isDirty: false,
+    isDirtySinceSubmit: false,
     dirtyFields: false,
     validatingFields: false,
     touchedFields: false,
@@ -352,7 +357,11 @@ export function createFormControl<
   ): Partial<
     Pick<
       FormState<TFieldValues>,
-      'dirtyFields' | 'isDirty' | 'touchedFields' | 'focusedField'
+      | 'dirtyFields'
+      | 'isDirty'
+      | 'touchedFields'
+      | 'focusedField'
+      | 'isDirtySinceSubmit'
     >
   > => {
     let shouldUpdateField = false;
@@ -384,6 +393,25 @@ export function createFormControl<
           ((_proxyFormState.dirtyFields ||
             _proxySubscribeFormState.dirtyFields) &&
             isPreviousDirty !== !isCurrentFieldPristine);
+      }
+
+      // Set isDirtySinceSubmit to true if form was ever submitted and a field value is being changed
+      // For change events (not blur/focus), always set if form was ever submitted
+      // shouldDirty is true for onChange events, false for blur
+      if (
+        (_formState.isSubmitted || _wasEverSubmitted) &&
+        !_formState.isDirtySinceSubmit &&
+        !isBlurEvent &&
+        !isFocusEvent &&
+        shouldDirty
+      ) {
+        _formState.isDirtySinceSubmit = output.isDirtySinceSubmit = true;
+        shouldUpdateField =
+          shouldUpdateField ||
+          !!(
+            _proxyFormState.isDirtySinceSubmit ||
+            _proxySubscribeFormState.isDirtySinceSubmit
+          );
       }
 
       if (isBlurEvent) {
@@ -688,13 +716,23 @@ export function createFormControl<
       }
     }
 
-    (options.shouldDirty || options.shouldTouch) &&
+    // If form was submitted, always track value changes for isDirtySinceSubmit
+    // even if shouldDirty is not explicitly set
+    const shouldTrackChange =
+      options.shouldDirty ||
+      options.shouldTouch ||
+      ((_formState.isSubmitted || _wasEverSubmitted) &&
+        !deepEqual(get(_defaultValues, name), fieldValue));
+
+    shouldTrackChange &&
       updateTouchAndDirty(
         name,
         fieldValue,
         options.shouldTouch,
         false, // isFocusEvent - not applicable for setValue
-        options.shouldDirty,
+        options.shouldDirty ||
+          ((_formState.isSubmitted || _wasEverSubmitted) &&
+            !deepEqual(get(_defaultValues, name), fieldValue)),
         true,
       );
 
@@ -748,13 +786,27 @@ export function createFormControl<
         (_proxyFormState.isDirty ||
           _proxyFormState.dirtyFields ||
           _proxySubscribeFormState.isDirty ||
-          _proxySubscribeFormState.dirtyFields) &&
+          _proxySubscribeFormState.dirtyFields ||
+          _proxyFormState.isDirtySinceSubmit ||
+          _proxySubscribeFormState.isDirtySinceSubmit) &&
         options.shouldDirty
       ) {
         _subjects.state.next({
           name,
           dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
+          ...((_formState.isSubmitted || _wasEverSubmitted) &&
+          !_formState.isDirtySinceSubmit
+            ? { isDirtySinceSubmit: true }
+            : {}),
+        });
+      } else if (
+        (_formState.isSubmitted || _wasEverSubmitted) &&
+        !_formState.isDirtySinceSubmit
+      ) {
+        _subjects.state.next({
+          name,
+          isDirtySinceSubmit: true,
         });
       }
     } else {
@@ -856,6 +908,7 @@ export function createFormControl<
         fieldValue,
         isBlurEvent,
         isFocusEvent,
+        !isBlurEvent, // shouldDirty - true for onChange events, false for blur
       );
 
       const shouldRender = !isEmptyObject(fieldState) || watched;
@@ -1390,11 +1443,13 @@ export function createFormControl<
         setTimeout(_focusError);
       }
 
+      _wasEverSubmitted = true; // Mark that form was submitted at least once
       _subjects.state.next({
         isSubmitted: true,
         isSubmitting: false,
         isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,
         submitCount: _formState.submitCount + 1,
+        isDirtySinceSubmit: false,
         errors: _formState.errors,
       });
       if (onValidError) {
@@ -1472,7 +1527,7 @@ export function createFormControl<
 
               if (isHTMLElement(fieldReference)) {
                 const form = fieldReference.closest('form');
-                if (form) {
+                if (form && form.reset && typeof form.reset === 'function') {
                   form.reset();
                   break;
                 }
@@ -1537,6 +1592,7 @@ export function createFormControl<
               keepStateOptions.keepDefaultValues &&
               !deepEqual(formValues, _defaultValues)
             ),
+      isDirtySinceSubmit: false,
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,

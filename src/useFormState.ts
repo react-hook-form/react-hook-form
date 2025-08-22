@@ -50,6 +50,7 @@ export function useFormState<
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
+    isDirtySinceSubmit: false,
     isLoading: false,
     dirtyFields: false,
     touchedFields: false,
