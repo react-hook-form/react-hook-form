@@ -17,9 +17,9 @@ The JSX error messages enhancement allows developers to use React elements (`Rea
 
 The core `Message` type has been enhanced to support React elements:
 
-```diff
-- export type Message = string;
-+ export type Message = string | React.ReactElement;
+```typescript
+// Enhanced: now accepts React elements
+export type Message = string | React.ReactElement;
 ```
 
 ### Method compatibility

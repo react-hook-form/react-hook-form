@@ -22,20 +22,15 @@ The scrollIntoView method enhancement exposes the native DOM `scrollIntoView()` 
 
 - `ControllerRenderProps` type updated to include the new method:
 
-```diff
+```typescript
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  onChange: (...event: any[]) => void;
-  onBlur: Noop;
-  value: FieldPathValue<TFieldValues, TName>;
-  disabled?: boolean;
-  name: TName;
-- ref: RefCallBack;
-+ ref: RefCallBack & {
-+   scrollIntoView?: (options?: ScrollIntoViewOptions) => void;
-+ };
+  // ... existing properties
+  ref: RefCallBack & {
+    scrollIntoView?: (options?: ScrollIntoViewOptions) => void; // New method added
+  };
 };
 ```
 
