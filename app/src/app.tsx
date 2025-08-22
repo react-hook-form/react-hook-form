@@ -53,7 +53,8 @@ import JsxErrorMessages from './jsxErrorMessages';
 import ScrollIntoView from './scrollIntoView';
 import SmartDisabled from './smartDisabled';
 import ControllerRulesUpdate from './controllerRulesUpdate';
-import { FocusedFields } from './focusedFields';
+import FocusedFields from './focusedFields';
+import IsDirtySinceSubmit from './isDirtySinceSubmit';
 
 const App = () => {
   return (
@@ -157,6 +158,7 @@ const App = () => {
           path="/empty-array-validation"
           element={<EmptyArrayValidation />}
         />
+        <Route path="/is-dirty-since-submit" element={<IsDirtySinceSubmit />} />
       </Routes>
     </BrowserRouter>
   );

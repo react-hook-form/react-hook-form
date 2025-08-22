@@ -292,6 +292,12 @@ const items: Item[] = [
     slugs: ['/empty-array-validation'],
     plus: true,
   },
+  {
+    title: 'IsDirtySinceSubmit',
+    description: 'Should track dirty state since last submission',
+    slugs: ['/is-dirty-since-submit'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {
