@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from '@bombillazo/rhf-plus';
 
-export default function IsDirtySinceSubmit() {
+export default () => {
   const { register, handleSubmit, formState, reset, setValue } = useForm({
     defaultValues: {
       firstName: '',
@@ -59,4 +59,4 @@ export default function IsDirtySinceSubmit() {
       </div>
     </div>
   );
-}
+};

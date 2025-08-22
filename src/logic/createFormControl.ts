@@ -1529,7 +1529,7 @@ export function createFormControl<
               if (isHTMLElement(fieldReference)) {
                 const form = fieldReference.closest('form');
                 if (form) {
-                  form.reset();
+                  HTMLFormElement.prototype.reset.call(form);
                   break;
                 }
               }
