@@ -41,12 +41,12 @@ pnpm add @bombillazo/rhf-plus
 - [Form metadata](./docs/form-metadata.md)
 - [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
 - [`Controller` children function](./docs/controller-children-function.md)
-- [Form and field `focus` states](./docs/focused-fields.md)
+- [Form and field `focus` state](./docs/focused-fields.md)
 
 Minor improvements:
 
+- [Controller rules update on prop change](./docs/controller-rules-update.md)
 - [Empty array validation](./docs/empty-array-validation.md)
-- [Controller rules no longer stale on prop change](./docs/controller-rules-update.md)
 - [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
 - [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
 
@@ -55,6 +55,15 @@ Minor improvements:
 RHF is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
 
 Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
+
+> [!Warning] Performance Note
+>
+> The inevitable reality of adding new form states, methods and data events include:
+>
+> - Additional form renders
+> - Increased package size
+>
+> As we add new enhancements, we work to optimize these features to minimize the impact on form performance.
 
 ## Goals
 
@@ -81,10 +90,6 @@ We avoid enhancements that aggressively modify large parts of the RHF codebase. 
 - **Past RHF versions**  
 As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
-### Performance Note
-
-Due to the nature of React and hooks, some features may cause additional renders as the form state needs to update to reflect the new statuses and data events. Still, we optimzed the performance of these features to minimize the impact on form rendering.
-
 ### 📣 Help us grow
 
 Ideally, this fork would not exist, and all of these enhancements and features would be natively part of RHF. You can help RHF and RHF+ grow by:
@@ -99,9 +104,6 @@ Ideally, this fork would not exist, and all of these enhancements and features w
   - Link to the enhancement page in this repo to show the working solution is available
 
 ## Versioning
-
-> [!Note]
-> Please contact the maintainers if a new RHF version is available and this library is behind. We will sync `rhf-plus` and release a new version.
 
 `rhf-plus` versions look something like this:
 
@@ -120,6 +122,9 @@ Separates RHF from RHF+ version (always `-plus.`)
 
 1. **RHF+ version**  
 RHF+ version index (e.g., `0`)
+
+> [!Note]
+> Please contact the maintainers if a new RHF version is available and this library is behind. We will sync `rhf-plus` and release a new version.
 
 ### Conventions
 
