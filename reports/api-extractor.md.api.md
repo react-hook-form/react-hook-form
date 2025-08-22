@@ -315,6 +315,7 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues, TMetadata extends FormMetadata = any> = {
     isDirty: boolean;
+    isDirtySinceSubmit: boolean;
     isLoading: boolean;
     isSubmitted: boolean;
     isSubmitSuccessful: boolean;
@@ -336,6 +337,7 @@ export type FormState<TFieldValues extends FieldValues, TMetadata extends FormMe
 // @public (undocumented)
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
     isDirty: boolean;
+    isDirtySinceSubmit: boolean;
     isValidating: boolean;
     dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
     touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
@@ -976,7 +978,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:508:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:510:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
