@@ -33,7 +33,7 @@ function App() {
   });
 
   return (
-    // This will show as "RHFFormProvider" in React DevTools
+    // This will show as "HookFormContext" in React DevTools
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(console.log)}>
         <NestedFormComponent />
