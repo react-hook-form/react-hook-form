@@ -41,12 +41,13 @@ pnpm add @bombillazo/rhf-plus
 - [Form metadata](./docs/form-metadata.md)
 - [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
 - [`Controller` children function](./docs/controller-children-function.md)
-- [Form focus data with `focusedField` and `isFocused`](./docs/focused-fields.md)
+- [Form and field `focus` states](./docs/focused-fields.md)
 
 Minor improvements:
 
-- [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
+- [Empty array validation](./docs/empty-array-validation.md)
 - [Controller rules no longer stale on prop change](./docs/controller-rules-update.md)
+- [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
 - [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
 
 ## Motive

@@ -768,6 +768,15 @@ export function createFormControl<
       name: _state.mount ? name : undefined,
       values: cloneObject(_formValues),
     });
+
+    // Trigger validation when shouldValidate is true
+    // This ensures validation happens for all cases including:
+    // - Field arrays
+    // - Empty arrays
+    // - Nested fields with array values
+    if (options.shouldValidate) {
+      trigger(name as Path<TFieldValues>);
+    }
   };
 
   const onChange: ChangeHandler = async (event) => {

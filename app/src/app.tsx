@@ -22,6 +22,7 @@ import ConditionalField from './conditionalField';
 import FormStateWithSchema from './formStateWithSchema';
 import SetValueWithSchema from './setValueWithSchema';
 import SetValueWithTrigger from './setValueWithTrigger';
+import EmptyArrayValidation from './emptyArrayValidation';
 import IsValid from './isValid';
 import Controller from './controller';
 import UseFieldArray from './useFieldArray';
@@ -152,6 +153,10 @@ const App = () => {
           element={<ControllerRulesUpdate />}
         />
         <Route path="/focused-fields" element={<FocusedFields />} />
+        <Route
+          path="/empty-array-validation"
+          element={<EmptyArrayValidation />}
+        />
       </Routes>
     </BrowserRouter>
   );
