@@ -20,45 +20,34 @@ Currently, the `Controller` component in React Hook Form (RHF) only supports a `
 
 - `children` prop accepts the same signature as the `render` prop:
 
-```diff
+```typescript
 export type ControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues,
-> =
-- {
--   render: ({
--     field,
--     fieldState,
--     formState,
--   }: {
--     field: ControllerRenderProps<TFieldValues, TName>;
--     fieldState: ControllerFieldState;
--     formState: UseFormStateReturn<TFieldValues>;
--   }) => React.ReactElement;
-- }
-+ (
-+   | {
-+       render: ControllerRender<TFieldValues, TName>;
-+     }
-+   | {
-+       children: ControllerRender<TFieldValues, TName>;
-+     }
-+ )
-  & UseControllerProps<TFieldValues, TName, TTransformedValues>;
+> = (
+  | {
+      render: ControllerRender<TFieldValues, TName>;
+    }
+  | {
+      children: ControllerRender<TFieldValues, TName>; // New: children prop as alternative
+    }
+) &
+  UseControllerProps<TFieldValues, TName, TTransformedValues>;
 
-+ export type ControllerRender<
-+   TFieldValues extends FieldValues,
-+   TName extends FieldPath<TFieldValues>,
-+ > = ({
-+   field,
-+   fieldState,
-+   formState,
-+ }: {
-+   field: ControllerRenderProps<TFieldValues, TName>;
-+   fieldState: ControllerFieldState;
-+   formState: UseFormStateReturn<TFieldValues>;
-+ }) => React.ReactElement;
+// New shared type for the render/children function
+export type ControllerRender<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+> = ({
+  field,
+  fieldState,
+  formState,
+}: {
+  field: ControllerRenderProps<TFieldValues, TName>;
+  fieldState: ControllerFieldState;
+  formState: UseFormStateReturn<TFieldValues>;
+}) => React.ReactElement;
 ```
 
 ## Examples

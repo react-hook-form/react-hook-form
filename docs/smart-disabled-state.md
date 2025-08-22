@@ -21,23 +21,19 @@ Smart form disabling enhances the existing `disabled` prop functionality by prop
 
 - `disabled` type updated in `useFormProps`:
 
-```diff
+```typescript
 export type UseFormProps<...> = Partial<{
-    ...
-    mode: Mode;
--   disabled: boolean;
-+   disabled: boolean | FieldPath<TFieldValues>[];
-    reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
+    // ... existing properties
+    disabled: boolean | FieldPath<TFieldValues>[]; // Enhanced: now accepts array of field paths
 }>;
 ```
 
 - `_disableForm` method signature updated in `Control` type:
 
-```diff
+```typescript
 export type Control<...> = {
-    ...
--   _disableForm: (disabled?: boolean) => void;
-+   _disableForm: (disabled?: boolean | FieldPath<TFieldValues>[]) => void;
+    // ... existing properties
+    _disableForm: (disabled?: boolean | FieldPath<TFieldValues>[]) => void; // Enhanced signature
 };
 ```
 

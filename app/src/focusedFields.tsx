@@ -47,7 +47,7 @@ const FocusDisplay = ({ control }: { control: Control<FormInputs> }) => {
   );
 };
 
-export const FocusedFields: React.FC = () => {
+export default () => {
   const { register, control, reset } = useForm<FormInputs>();
 
   return (

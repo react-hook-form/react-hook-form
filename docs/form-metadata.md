@@ -39,35 +39,29 @@ export type FormMetadata = { [key: string]: MetadataValue };
 
 - `defaultMetadata` added to `useFormProps`:
 
-```diff
+```typescript
 export type UseFormProps<...> = Partial<{
-    ...
-    delayError: number;
-    formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
-+   defaultMetadata: FormMetadata;
+    // ... existing properties
+    defaultMetadata: FormMetadata; // New property
 }>;
 ```
 
 - `setMetadata`, `updateMetadata` returned as part of the `UseFormReturn` form:
 
-```diff
+```typescript
 export type UseFormReturn<...> = {
-    ...
-    setFocus: UseFormSetFocus<TFieldValues>;
-    subscribe: UseFromSubscribe<TFieldValues>;
-+   setMetadata: UseFormSetMetadata<TMetadata>;
-+   updateMetadata: UseFormUpdateMetadata<TMetadata>;
+    // ... existing properties
+    setMetadata: UseFormSetMetadata<TMetadata>; // New method
+    updateMetadata: UseFormUpdateMetadata<TMetadata>; // New method
 };
 ```
 
 - `metadata` added to `formState`:
 
-```diff
+```typescript
 export type FormState<TFieldValues extends FieldValues = FieldValues> = {
-    ...
-    errors: FieldErrors<TFieldValues>;
-    isReady: boolean;
-+   metadata: TMetadata;
+  // ... existing properties
+  metadata: TMetadata; // New property
 };
 ```
 

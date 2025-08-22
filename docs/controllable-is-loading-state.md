@@ -18,12 +18,10 @@ This feature allows developers to control the `isLoading` prop to manage the loa
 
 - `isLoading` added to `useFormProps`:
 
-```diff
+```typescript
 export type UseFormProps<...> = Partial<{
-    ...
-    delayError: number;
-    formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
-+   isLoading: boolean;
+    // ... existing properties
+    isLoading: boolean; // New property
 }>;
 ```
 

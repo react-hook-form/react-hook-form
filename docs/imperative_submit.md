@@ -20,24 +20,20 @@ This feature allows for the imperative submission of forms, meaning you can trig
 
 - `id` added to `useFormProps`:
 
-```diff
+```typescript
 export type UseFormProps<...> = Partial<{
-    ...
-    delayError: number;
-    formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
-+   id: string;
+    // ... existing properties
+    id: string; // New property
 }>;
 ```
 
 - `id`, `submit` returned as part of the `UseFormReturn` form:
 
-```diff
+```typescript
 export type UseFormReturn<...> = {
-    ...
-    setFocus: UseFormSetFocus<TFieldValues>;
-    subscribe: UseFromSubscribe<TFieldValues>;
-+   id: string;
-+   submit: () => void;
+    // ... existing properties
+    id: string; // New property
+    submit: () => void; // New method
 };
 ```
 
