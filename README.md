@@ -42,7 +42,7 @@ pnpm add @bombillazo/rhf-plus
 - [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
 - [`Controller` children function](./docs/controller-children-function.md)
 - [Form and field `focus` state](./docs/focused-fields.md)
-- [`isDirtySinceSubmit` form state](./docs/is-dirty-since-submit.md)
+- [Form `isDirtySinceSubmit` state](./docs/is-dirty-since-submit.md)
 
 Minor improvements:
 

@@ -1,70 +1,48 @@
-# `isDirtySinceSubmit` form state
+# Form `isDirtySinceSubmit` state
 
-## Overview
+## Purpose
 
-The `isDirtySinceSubmit` property is a boolean value in the form state that indicates whether any form fields have been modified since the last form submission. This is particularly useful for managing submission errors and providing better user experience.
+This enhancement adds a new form state property that tracks whether any form fields have been modified since the last form submission. This is particularly useful for managing submission errors and providing better user experience when dealing with server-side validation.
 
-## Use Cases
+### Benefits
 
-### Clearing Submission Errors
+- Automatically track field changes after form submission
+- Clear errors when users start correcting the form
+- Improve UX by showing/hiding submission errors appropriately
+- Works with all input types and validation modes
 
-The primary use case for `isDirtySinceSubmit` is to automatically hide server-side submission errors when the user starts correcting the form:
+## Key Behaviors
 
-```tsx
-function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isDirtySinceSubmit },
-    setError,
-  } = useForm();
+1. **Initial state**: Initialized to `false` when the form is first rendered
+2. **Pre-submit**: Remains `false` regardless of field changes before first submit
+3. **On submit**: Resets to `false` when the form is submitted
+4. **Post-submit**: Changes to `true` when any field is modified after submission
+5. **Form reset**: Resets to `false` but remembers it has been submitted for future changes
 
-  const onSubmit = async (data) => {
-    try {
-      await login(data);
-    } catch (error) {
-      // Show server error
-      setError('root.server', {
-        type: 'server',
-        message: 'Invalid credentials',
-      });
-    }
-  };
+## API
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('email')} type="email" />
-      <input {...register('password')} type="password" />
+The `isDirtySinceSubmit` property is available in `formState` from both `useForm` and `useFormState`:
 
-      {/* Hide server error if user has modified form since submission */}
-      {errors.root?.server && !isDirtySinceSubmit && (
-        <p>{errors.root.server.message}</p>
-      )}
-
-      <button type="submit">Login</button>
-    </form>
-  );
-}
+```typescript
+type FormState = {
+  isDirtySinceSubmit: boolean;
+  // ... other form state properties
+};
 ```
 
-## Behavior
+## Examples
 
-- **Initial State**: `isDirtySinceSubmit` is `false` when the form is first rendered
-- **Before First Submit**: Remains `false` regardless of field changes
-- **On Submit**: Resets to `false` when the form is submitted
-- **After Submit**: Changes to `true` when any field is modified after submission
-- **On Reset**: Resets to `false` when the form is reset
+### Basic Usage
 
-## Example
-
-```tsx
-import { useForm } from 'react-hook-form';
+```jsx
+import React from 'react';
+import { useForm } from '@bombillazo/rhf-plus';
 
 function ContactForm() {
   const {
     register,
     handleSubmit,
-    formState: { isDirtySinceSubmit, isSubmitted, errors },
+    formState: { isDirtySinceSubmit, isSubmitted },
     reset,
   } = useForm({
     defaultValues: {
@@ -101,30 +79,41 @@ function ContactForm() {
 }
 ```
 
-## Integration with Other Form State
+### Using with useFormState
 
-`isDirtySinceSubmit` works alongside other form state properties:
+```jsx
+import React from 'react';
+import { useForm, useFormState } from '@bombillazo/rhf-plus';
 
-- **isDirty**: Indicates if any field has been modified from default values
-- **isSubmitted**: Indicates if the form has been submitted at least once
-- **submitCount**: Tracks the number of form submissions
-- **isDirtySinceSubmit**: Specifically tracks changes after the most recent submission
+const ErrorDisplay = ({ control }) => {
+  const { isDirtySinceSubmit } = useFormState({ control });
 
-## TypeScript
+  return (
+    <div>
+      {!isDirtySinceSubmit && (
+        <div className="error-message">Please correct the errors above</div>
+      )}
+    </div>
+  );
+};
 
-The `isDirtySinceSubmit` property is automatically typed as a boolean in the `FormState` type:
+function FormWithErrorDisplay() {
+  const { register, control, handleSubmit } = useForm();
 
-```typescript
-interface FormState<TFieldValues> {
-  // ... other properties
-  isDirtySinceSubmit: boolean;
-  // ... other properties
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('username')} />
+      <input {...register('password')} />
+      <ErrorDisplay control={control} />
+      <button type="submit">Submit</button>
+    </form>
+  );
 }
 ```
 
-## Notes
+## Backward Compatibility
 
-- This feature is particularly useful for forms that handle server-side validation errors
-- It helps provide immediate feedback when users correct form errors
-- The property is reset on both form submission and form reset
-- Works with all validation modes (onSubmit, onBlur, onChange, onTouched, all)
+This feature is fully backward compatible:
+
+- Existing forms continue to work without any changes
+- Compatible with all validation modes and form configurations
