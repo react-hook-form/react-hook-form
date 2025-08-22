@@ -716,14 +716,15 @@ export function createFormControl<
       }
     }
 
+    const isSubmittedAndDirty =
+      (_formState.isSubmitted || _wasEverSubmitted) &&
+      !deepEqual(get(_defaultValues, name), fieldValue);
+
     // If the form was submitted, track value changes for isDirtySinceSubmit
     // only when the value actually differs from the default value,
     // even if shouldDirty is not explicitly set
     const shouldTrackChange =
-      options.shouldDirty ||
-      options.shouldTouch ||
-      ((_formState.isSubmitted || _wasEverSubmitted) &&
-        !deepEqual(get(_defaultValues, name), fieldValue));
+      options.shouldDirty || options.shouldTouch || isSubmittedAndDirty;
 
     shouldTrackChange &&
       updateTouchAndDirty(
@@ -731,9 +732,7 @@ export function createFormControl<
         fieldValue,
         options.shouldTouch,
         false, // isFocusEvent - not applicable for setValue
-        options.shouldDirty ||
-          ((_formState.isSubmitted || _wasEverSubmitted) &&
-            !deepEqual(get(_defaultValues, name), fieldValue)),
+        options.shouldDirty || isSubmittedAndDirty,
         true,
       );
 
