@@ -130,6 +130,7 @@ export function createFormControl<
     submitCount: 0,
     isDirty: false,
     isDirtySinceSubmit: false,
+    hasBeenSubmitted: false,
     isReady: false,
     isLoading: _internalLoading,
     isValidating: false,
@@ -148,8 +149,6 @@ export function createFormControl<
     metadata: _options.defaultMetadata || ({} as TMetadata),
   };
 
-  // Track if form was ever submitted (persists through resets)
-  let _wasEverSubmitted = false;
   let _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
@@ -175,6 +174,7 @@ export function createFormControl<
   const _proxyFormState: ReadFormState = {
     isDirty: false,
     isDirtySinceSubmit: false,
+    hasBeenSubmitted: false,
     dirtyFields: false,
     validatingFields: false,
     touchedFields: false,
@@ -195,6 +195,9 @@ export function createFormControl<
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const id = createId(props.id);
+
+  // Track if form was ever submitted (persists through resets)
+  let _hasBeenSubmitted = false;
 
   const debounce =
     <T extends Function>(callback: T) =>
@@ -399,7 +402,7 @@ export function createFormControl<
       // For change events (not blur/focus), always set if form was ever submitted
       // shouldDirty is true for onChange events, false for blur
       if (
-        (_formState.isSubmitted || _wasEverSubmitted) &&
+        (_formState.isSubmitted || _hasBeenSubmitted) &&
         !_formState.isDirtySinceSubmit &&
         !isBlurEvent &&
         !isFocusEvent &&
@@ -717,7 +720,7 @@ export function createFormControl<
     }
 
     const isSubmittedAndDirty =
-      (_formState.isSubmitted || _wasEverSubmitted) &&
+      (_formState.isSubmitted || _hasBeenSubmitted) &&
       !deepEqual(get(_defaultValues, name), fieldValue);
 
     // If the form was submitted, track value changes for isDirtySinceSubmit
@@ -795,13 +798,13 @@ export function createFormControl<
           name,
           dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
-          ...((_formState.isSubmitted || _wasEverSubmitted) &&
+          ...((_formState.isSubmitted || _hasBeenSubmitted) &&
           !_formState.isDirtySinceSubmit
             ? { isDirtySinceSubmit: true }
             : {}),
         });
       } else if (
-        (_formState.isSubmitted || _wasEverSubmitted) &&
+        (_formState.isSubmitted || _hasBeenSubmitted) &&
         !_formState.isDirtySinceSubmit
       ) {
         _subjects.state.next({
@@ -1443,13 +1446,14 @@ export function createFormControl<
         setTimeout(_focusError);
       }
 
-      _wasEverSubmitted = true; // Mark that form was submitted at least once
+      _hasBeenSubmitted = true; // Mark that form was submitted at least once
       _subjects.state.next({
         isSubmitted: true,
         isSubmitting: false,
         isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,
         submitCount: _formState.submitCount + 1,
         isDirtySinceSubmit: false,
+        hasBeenSubmitted: _hasBeenSubmitted,
         errors: _formState.errors,
       });
       if (onValidError) {
@@ -1593,6 +1597,7 @@ export function createFormControl<
               !deepEqual(formValues, _defaultValues)
             ),
       isDirtySinceSubmit: false,
+      hasBeenSubmitted: _hasBeenSubmitted, // Persist the hasBeenSubmitted flag
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,

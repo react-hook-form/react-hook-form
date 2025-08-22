@@ -67,6 +67,7 @@ export function useForm<
   >({
     isDirty: false,
     isDirtySinceSubmit: false,
+    hasBeenSubmitted: false,
     isValidating: false,
     isLoading: props.isLoading || isFunction(props.defaultValues),
     isSubmitted: false,
