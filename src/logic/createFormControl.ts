@@ -716,7 +716,8 @@ export function createFormControl<
       }
     }
 
-    // If form was submitted, always track value changes for isDirtySinceSubmit
+    // If the form was submitted, track value changes for isDirtySinceSubmit
+    // only when the value actually differs from the default value,
     // even if shouldDirty is not explicitly set
     const shouldTrackChange =
       options.shouldDirty ||
@@ -1527,7 +1528,7 @@ export function createFormControl<
 
               if (isHTMLElement(fieldReference)) {
                 const form = fieldReference.closest('form');
-                if (form && form.reset && typeof form.reset === 'function') {
+                if (form) {
                   form.reset();
                   break;
                 }
