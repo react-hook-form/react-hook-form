@@ -43,6 +43,7 @@ pnpm add @bombillazo/rhf-plus
 - [`Controller` children function](./docs/controller-children-function.md)
 - [Form and field `focus` state](./docs/focused-fields.md)
 - [Form `isDirtySinceSubmit` state](./docs/is-dirty-since-submit.md)
+- [Form `hasBeenSubmitted` state](./docs/has-been-submitted.md)
 
 Minor improvements:
 

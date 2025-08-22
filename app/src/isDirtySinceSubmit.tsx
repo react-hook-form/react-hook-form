@@ -52,6 +52,7 @@ export default () => {
         {JSON.stringify({
           isDirty: formState.isDirty,
           isDirtySinceSubmit: formState.isDirtySinceSubmit,
+          hasBeenSubmitted: formState.hasBeenSubmitted,
           isSubmitted: formState.isSubmitted,
           submitCount: formState.submitCount,
           dirtyFields: Object.keys(formState.dirtyFields),
