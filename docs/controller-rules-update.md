@@ -1,4 +1,4 @@
-# Controller rules no longer stale on prop change
+# Controller rules update on prop change
 
 ## Purpose
 
@@ -12,7 +12,9 @@ This enhancement allows the validation rules provided to the `Controller` compon
 - Update each field's validation rules independently
 - Seamless integration with existing `Controller` components
 
-## Key Behaviors
+## API Changes
+
+### Key Behaviors
 
 1. **Immediate rule updates**: New rules take effect as soon as the `Controller` re-renders with updated props
 2. **Previous errors cleared**: When rules change, previous validation errors are cleared appropriately

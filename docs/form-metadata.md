@@ -6,7 +6,7 @@ This feature adds a new `metadata` property to the Form state to store custom me
 
 ### Benefits
 
-- Enable developers to centralize and simplify application logic related to a form instead fo tracking metadata in separate objects or state
+- Enable developers to centralize and simplify application logic related to a form instead of tracking metadata in separate objects or state
 - Provide a simple API to manage the form metadata
 
 ## API Changes
@@ -76,7 +76,7 @@ export type FormState<TFieldValues extends FieldValues = FieldValues> = {
 To properly use the new form metadata, you first pass an object value with the desired type to the `defaultMetadata`. This will initiate the metadata when the form is created and define the metadata type for the state and mutation methods. The metadata object can have as many properties as necessary, have nested properties, and valid values include strings, numbers, booleans, nulls, arrays, and objects.
 
 You can access the metadata by using the `metadata` property of `formState`, which contains the current metadata for the form. The metadata can be updated using the `setMetadata` and `updateMetadata` mutation methods.
-The `setMetadata` method replaces the entire metadata object with the new metadata. The `updateMetadata` method merges the new metadata with the existing metadata. These allow for more flexibility in managing the form metadata.
+The `setMetadata` method replaces the entire metadata object with the new metadata. The `updateMetadata` method merges the new metadata with the existing metadata. These methods provide flexibility in managing the form metadata, allowing you to either completely replace or partially update the metadata as needed.
 
 ## Examples
 
@@ -94,12 +94,12 @@ const defaultMetadata: {
 };
 
 function App() {
-  const form = useForm({ defaultValues });
+  const { formState, setMetadata } = useForm({ defaultMetadata });
 
   return (
     <>
       <form>
-        <pre>{JSON.stringify(form.formState.metadata)}</pre>
+        <pre>{JSON.stringify(formState.metadata)}</pre>
       </form>
       <Button onClick={() => {
         setMetadata({ id: 100, name: 'Alice', is_admin: false });
@@ -109,3 +109,7 @@ function App() {
   );
 }
 ```
+
+## Backward Compatibility
+
+This feature is fully backward compatible. The metadata functionality is optional and doesn't affect existing forms that don't use it.

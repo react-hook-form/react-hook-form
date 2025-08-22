@@ -1,4 +1,4 @@
-# Form focus data with `focusedField` and `isFocused`
+# Form and field `focus` state
 
 ## Purpose
 

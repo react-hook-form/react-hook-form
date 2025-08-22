@@ -109,3 +109,7 @@ export type ControllerProps<
   )
 </Controller>
 ```
+
+## Backward Compatibility
+
+This feature is fully backward compatible. The existing `render` prop pattern continues to work, and the `children` function pattern is an additional option.

@@ -4,10 +4,10 @@
 
 This feature allows for the imperative submission of forms, meaning you can trigger form submission programmatically from anywhere in your application, even outside the form context.
 
-### Benefit
+### Benefits
 
 - Add a new, simple mechanism to trigger form submission from outside the form context, such as from a button click or other event.
-- Simplify the process of submitting forms imperatively that would otherwise require restucturing components or logic.
+- Simplify the process of submitting forms imperatively that would otherwise require restructuring components or logic.
 
 ## API Changes
 
@@ -73,7 +73,7 @@ function App() {
 
 ```jsx
 // Example with Form Context
-import { useForm, FormProvider } from '@bombillazo/rhf-plus';
+import { useForm, FormProvider, useFormContext } from '@bombillazo/rhf-plus';
 
 function App() {
   const form = useForm();
@@ -123,3 +123,7 @@ function App() {
   );
 }
 ```
+
+## Backward Compatibility
+
+This feature is fully backward compatible. The `id` and `submit` properties are automatically added to all forms without breaking existing implementations.

@@ -35,6 +35,7 @@ Normally, the `isLoading` prop is a boolean that indicates whether the form is c
 
 ```jsx
 // Example using the useForm hook
+import React, { useState } from 'react';
 import { useForm } from '@bombillazo/rhf-plus';
 
 function App() {
@@ -46,16 +47,19 @@ function App() {
 
   return (
     <>
-      <Button onClick={() => form.submit()}>Toggle Loading</Button>
+      <Button onClick={() => setIsLoading(!isLoading)}>Toggle Loading</Button>
       <p>
         This form is {form.formState.isLoading ? 'loading!' : 'not loading.'}
       </p>
       <form onSubmit={form.handleSubmit((data) => console.log(data))}>
         <input {...form.register('name')} />
       </form>
-      {/* imperatively submit the form */}
       <Button onClick={() => form.submit()}>Submit</Button>
     </>
   );
 }
 ```
+
+## Backward Compatibility
+
+This feature is fully backward compatible. The `isLoading` prop is optional and doesn't affect existing forms that don't use it.
