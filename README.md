@@ -69,7 +69,7 @@ RHF is a robust and delightful form library for React. Preserving high-quality s
 
 Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
 
-## Goals
+### 🏁 Goals
 
 - **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
 - **Compatibility**: New features should be additive and non-breaking. `rhf-plus` aims to stay closely synced to the original RHF.
