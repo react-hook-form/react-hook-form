@@ -44,6 +44,7 @@ pnpm add @bombillazo/rhf-plus
 - [Form and field `focus` state](./docs/focused-fields.md)
 - [Form `isDirtySinceSubmit` state](./docs/is-dirty-since-submit.md)
 - [Form `hasBeenSubmitted` state](./docs/has-been-submitted.md)
+- [Readonly field validation skip](./docs/readonly-validation-skip.md)
 
 Minor improvements:
 
