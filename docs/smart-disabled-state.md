@@ -13,12 +13,9 @@ Smart form disabling enhances the existing `disabled` prop functionality by prop
 
 ## API Changes
 
-### Enhanced properties
+### Property updates
 
 - `disabled`: now accepts `boolean | FieldPath<TFieldValues>[]` instead of just `boolean`
-
-### Type updates
-
 - `disabled` type updated in `useFormProps`:
 
 ```typescript
@@ -47,9 +44,9 @@ The enhanced `disabled` prop now supports two modes:
 
 Field-level disabled options (via `register` options or `Controller` props) take precedence over both boolean and array modes, allowing for fine-grained override control.
 
-## Examples
+### Examples
 
-### Basic array usage
+#### Basic array usage
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -77,7 +74,7 @@ function App() {
 }
 ```
 
-### Dynamic disabled fields
+#### Dynamic disabled fields
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -117,7 +114,7 @@ function App() {
 }
 ```
 
-### Field-level overrides
+#### Field-level overrides
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -150,7 +147,7 @@ function App() {
 }
 ```
 
-### Controller component support
+#### Controller component support
 
 ```jsx
 import { useForm, Controller } from '@bombillazo/rhf-plus';
@@ -196,7 +193,7 @@ function App() {
 }
 ```
 
-### Nested field paths
+#### Nested field paths
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -229,7 +226,7 @@ function App() {
 }
 ```
 
-### Mixed with boolean mode
+#### Mixed with boolean mode
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -270,7 +267,16 @@ function App() {
 }
 ```
 
-## Backward Compatibility
+## Limitations
+
+### Edge Cases
+
+- Empty array `disabled: []` behaves the same as `disabled: false`
+- Non-existent field names in the array are ignored gracefully
+- Field registration order doesn't affect disabled behavior
+- Form reset preserves disabled state configuration
+
+## Backward compatibility
 
 This enhancement is fully backward compatible:
 
@@ -278,11 +284,3 @@ This enhancement is fully backward compatible:
 - Existing `disabled: false` behavior remains unchanged
 - Field-level disabled options continue to work as before
 - All existing APIs and patterns continue to function normally
-
-## Edge Cases
-
-- Empty array `disabled: []` behaves the same as `disabled: false`
-- Non-existent field names in the array are ignored gracefully
-- Field registration order doesn't affect disabled behavior
-- Form reset preserves disabled state configuration
-- Disabled fields are excluded from form submission data

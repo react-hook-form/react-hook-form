@@ -13,12 +13,9 @@ The readonly validation skip feature allows you to opt-in to excluding fields wi
 
 ## API Changes
 
-### New properties
+### Property updates
 
-- `shouldSkipReadOnlyValidation`: A boolean flag that enables readonly field validation skipping when set to `true`
-
-### Type updates
-
+- `shouldSkipReadOnlyValidation`: a boolean prop that enables readonly field validation skipping when set to `true`
 - `shouldSkipReadOnlyValidation` added to `useFormProps`:
 
 ```typescript
@@ -32,7 +29,7 @@ export type UseFormProps<...> = Partial<{
 
 When `shouldSkipReadOnlyValidation` is set to `true`, fields with the HTML `readOnly` attribute are excluded from all validation rules while maintaining their form integration for value updates and submission data.
 
-## Behavior
+### Behavior
 
 When `shouldSkipReadOnlyValidation: true` is set, readonly fields with the HTML `readOnly` attribute are excluded from field validation rules. However, readonly fields still:
 
@@ -41,9 +38,9 @@ When `shouldSkipReadOnlyValidation: true` is set, readonly fields with the HTML 
 - Are included in form submission data
 - Support programmatic value updates via `setValue`
 
-## Examples
+### Examples
 
-### Basic readonly field
+#### Basic readonly field
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -86,7 +83,7 @@ function App() {
 }
 ```
 
-### Coexistence with disabled fields
+#### Coexistence with disabled fields
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -129,7 +126,15 @@ function App() {
 }
 ```
 
-## Backward Compatibility
+## Limitations
+
+This feature has no significant limitations:
+
+- Works with all input types and form configurations
+- Compatible with existing validation patterns
+- No impact on form performance
+
+## Backward compatibility
 
 This feature is fully backward compatible:
 

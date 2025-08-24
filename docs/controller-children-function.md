@@ -12,12 +12,9 @@ Currently, the `Controller` component in React Hook Form (RHF) only supports a `
 
 ## API Changes
 
-### New properties
+### Property updates
 
-- `children`: Added support for using children prop in the `Controller` component.
-
-### Type updates
-
+- `children`: added support for using children prop in the `Controller` component.
 - `children` prop accepts the same signature as the `render` prop:
 
 ```typescript
@@ -50,9 +47,17 @@ export type ControllerRender<
 }) => React.ReactElement;
 ```
 
-## Examples
+### Description
 
-### Previous use cases
+The `Controller` component now supports both `render` and `children` function patterns for rendering controlled components. Both props accept identical function signatures and provide the same field, fieldState, and formState arguments to their respective functions.
+
+### Behavior
+
+The component internally handles both patterns identically, with the function receiving field control props, field state, and form state as arguments.
+
+### Examples
+
+#### Previous use cases
 
 ```tsx
 <Controller
@@ -77,7 +82,7 @@ export type ControllerRender<
 />
 ```
 
-### New supporting usage
+#### New supporting usage
 
 ```tsx
 <Controller
@@ -98,6 +103,10 @@ export type ControllerRender<
   )
 </Controller>
 ```
+
+## Limitations
+
+- Only one of `render` or `children` can be used at a time - they are mutually exclusive. `children` will take precedence if both are provided.
 
 ## Backward Compatibility
 

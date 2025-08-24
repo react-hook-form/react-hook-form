@@ -11,13 +11,10 @@ This feature allows for the imperative submission of forms, meaning you can trig
 
 ## API Changes
 
-### New properties
+### Property updates
 
 - `id`: a unique identifier for the form. If not provided, a random ID is generated.
 - `submit`: a method to submit the form imperatively.
-
-### Type updates
-
 - `id` added to `useFormProps`:
 
 ```typescript
@@ -41,7 +38,18 @@ export type UseFormReturn<...> = {
 
 Now all forms returned by any RHF API contain an `id` and `submit` function. You may assign a custom unique ID to each form using the `id` option in the `useForm` hook. If no ID is given, a random one is generated. Using the `form.submit()` method you can submit the form imperatively. This is useful when you want to trigger form submission from anywhere in your application (including outside the Form context).
 
-## Examples
+### Behavior
+
+The `submit()` method programmatically triggers form submission using the same validation and submission flow as if the user submitted the form normally. The method will:
+
+1. Validate all form fields according to their validation rules
+2. If validation passes, call the `onSubmit` handler
+3. If validation fails, populate form errors and prevent submission
+4. Work correctly with all form validation modes and configurations
+
+### Examples
+
+#### Basic Imperative Submission
 
 ```jsx
 // Example using the useForm hook
@@ -66,6 +74,8 @@ function App() {
   );
 }
 ```
+
+#### With Form Context
 
 ```jsx
 // Example with Form Context
@@ -94,6 +104,8 @@ function SubmitButton() {
 }
 ```
 
+#### With Form Control
+
 ```jsx
 // Example using Form Control
 import { useForm, createFormControl } from '@bombillazo/rhf-plus';
@@ -119,6 +131,10 @@ function App() {
   );
 }
 ```
+
+## Limitations
+
+- The form element must have the same `id` as the form object for proper DOM integration.
 
 ## Backward Compatibility
 

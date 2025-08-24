@@ -10,12 +10,9 @@ This feature allows developers to control the `isLoading` prop to manage the loa
 
 ## API Changes
 
-### New properties
+### Property updates
 
 - `isLoading`: a boolean prop that indicates whether the form is in a loading state. This prop overrides the internal loading state of the form only if the internal loading state is `false`.
-
-### Type updates
-
 - `isLoading` added to `useFormProps`:
 
 ```typescript
@@ -29,7 +26,11 @@ export type UseFormProps<...> = Partial<{
 
 Normally, the `isLoading` prop is a boolean that indicates whether the form is currently in a loading state based on the default values async function. If default values are synchronous, the state starts as `false`. With this feature, the `isLoading` prop can be controlled externally, allowing developers to set it to `true` based on their own logic, and have it accessible from the form state.
 
-## Examples
+### Behavior
+
+When the `isLoading` prop is set to `true`, it overrides the internal loading state only if the internal loading state is `false`. This ensures that the external control doesn't interfere with the form's natural loading process during async default value resolution.
+
+### Examples
 
 ```jsx
 // Example using the useForm hook
@@ -57,6 +58,10 @@ function App() {
   );
 }
 ```
+
+## Limitations
+
+None. This feature works with both synchronous and asynchronous default values without any restrictions.
 
 ## Backward Compatibility
 

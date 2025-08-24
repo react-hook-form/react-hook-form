@@ -11,16 +11,13 @@ This feature adds a new `metadata` property to the Form state to store custom me
 
 ## API Changes
 
-### New properties
+### Property updates
 
 - `defaultMetadata`: an object that contains the default metadata for the form. This is used to initialize the form metadata.
 - `metadata`: an object that contains the form custom metadata.
 - `setMetadata` a mutation method to set the form metadata. This overwrites the existing metadata.
 - `updateMetadata`: a mutation method to update the form metadata. This merges the new metadata with the existing metadata.
-
-### Type updates
-
-- New metadata related types:
+- New `FormMetadata` types:
 
 ```ts
 type MetadataValue =
@@ -69,10 +66,13 @@ export type FormState<TFieldValues extends FieldValues = FieldValues> = {
 
 To properly use the new form metadata, you first pass an object value with the desired type to the `defaultMetadata`. This will initiate the metadata when the form is created and define the metadata type for the state and mutation methods. The metadata object can have as many properties as necessary, have nested properties, and valid values include strings, numbers, booleans, nulls, arrays, and objects.
 
+### Behavior
+
 You can access the metadata by using the `metadata` property of `formState`, which contains the current metadata for the form. The metadata can be updated using the `setMetadata` and `updateMetadata` mutation methods.
+
 The `setMetadata` method replaces the entire metadata object with the new metadata. The `updateMetadata` method merges the new metadata with the existing metadata. These methods provide flexibility in managing the form metadata, allowing you to either completely replace or partially update the metadata as needed.
 
-## Examples
+### Examples
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -103,6 +103,11 @@ function App() {
   );
 }
 ```
+
+## Limitations
+
+- Metadata values must be serializable (string, number, boolean, null, arrays, or plain objects).
+- Deep mutations to metadata objects will not trigger re-renders - use `setMetadata` or `updateMetadata` for updates.
 
 ## Backward Compatibility
 

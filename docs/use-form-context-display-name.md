@@ -12,13 +12,21 @@ Add a `displayName` property to the `HookFormContext` context for better develop
 
 ## API Changes
 
-### Implementation Details
+### Property updates
+
+- `FormProvider.displayName`: set to `"HookFormContext"` for React DevTools identification
+
+### Description
 
 The `FormProvider` component now includes a `displayName` property set to `"HookFormContext"`. This allows React DevTools to display a meaningful name instead of an anonymous component.
 
-## Examples
+### Behavior
 
-### Using FormProvider with DevTools
+This enhancement only affects the display name shown in React DevTools and has no runtime behavior changes.
+
+### Examples
+
+#### Using FormProvider with DevTools
 
 ```tsx
 import { useForm, FormProvider, useFormContext } from '@bombillazo/rhf-plus';
@@ -55,6 +63,12 @@ function NestedFormComponent() {
 }
 ```
 
-## Backward Compatibility
+## Limitations
+
+- Only affects React DevTools display
+- No runtime behavior changes
+- No performance impact
+
+## Backward compatibility
 
 This change is fully backward compatible. It only adds a `displayName` property for debugging purposes and doesn't affect any runtime behavior or API.

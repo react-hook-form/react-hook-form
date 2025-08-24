@@ -9,17 +9,12 @@ This enhancement adds a new form state property `hasBeenSubmitted` that tracks w
 - Track if a form has ever been submitted, even after resets
 - Enable conditional UI/UX based on submission history
 
-## Key Behaviors
+## API Changes
 
-1. **Initial state**: Initialized to `false` when the form is first rendered
-2. **First submission**: Changes to `true` on the first successful form submission
-3. **Subsequent submissions**: Remains `true` for all future submissions
-4. **Form reset**: Persists as `true` even when the form is reset (unlike `isSubmitted`)
-5. **Form unmount**: Resets to `false` only when the form component is unmounted and remounted
+### Property updates
 
-## API
-
-The `hasBeenSubmitted` property is available in `formState` from both `useForm` and `useFormState`:
+- `hasBeenSubmitted`: a boolean prop added to form state that tracks whether the form has ever been submitted.
+- `hasBeenSubmitted` added to `FormState`:
 
 ```typescript
 type FormState = {
@@ -28,9 +23,21 @@ type FormState = {
 };
 ```
 
-## Examples
+### Description
 
-### Basic Usage
+The `hasBeenSubmitted` property is available in `formState` from both `useForm` and `useFormState`. This property provides a persistent way to track submission history that is independent of form resets, making it ideal for conditional UI based on user interaction history.
+
+### Behavior
+
+1. **Initial state**: Initialized to `false` when the form is first rendered
+2. **First submission**: Changes to `true` on the first successful form submission
+3. **Subsequent submissions**: Remains `true` for all future submissions
+4. **Form reset**: Persists as `true` even when the form is reset (unlike `isSubmitted`)
+5. **Form unmount**: Resets to `false` only when the form component is unmounted and remounted
+
+### Examples
+
+#### Basic Usage
 
 ```jsx
 import React from 'react';
@@ -84,6 +91,11 @@ function FeedbackForm() {
   );
 }
 ```
+
+## Limitations
+
+- The flag only resets when the form component is completely unmounted and remounted.
+- Cannot be manually reset to `false` once set to `true` during the component lifecycle.
 
 ## Backward Compatibility
 

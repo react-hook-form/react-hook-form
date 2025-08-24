@@ -12,13 +12,21 @@ Improve the error message when the `control` prop is missing in the `useControll
 
 ## API Changes
 
-### Error Message Updates
+### Property updates
 
-The error message has been enhanced to provide clearer guidance when `useController` is used without a `control` prop.
+No new properties are added. This enhancement only improves existing error handling behavior. No type changes are required. All existing types remain unchanged.
 
-## Examples
+### Description
 
-### Incorrect Usage (Will throw improved error)
+The error message has been enhanced to provide clearer guidance when `useController` is used without a `control` prop. This improvement helps developers quickly understand what went wrong and how to fix it.
+
+### Behavior
+
+When `useController` is called without a `control` prop, the improved error message provides specific guidance about the missing requirement and suggests common solutions for resolving the issue.
+
+### Examples
+
+#### Incorrect Usage (Will throw improved error)
 
 ```tsx
 import { useController } from '@bombillazo/rhf-plus';
@@ -34,7 +42,7 @@ function MyInput() {
 }
 ```
 
-### Correct Usage
+#### Correct Usage
 
 ```tsx
 import { useForm, useController } from '@bombillazo/rhf-plus';
@@ -59,6 +67,10 @@ function ControlledInput({ name, control }) {
   return <input {...field} />;
 }
 ```
+
+## Limitations
+
+None. This change only affects error scenarios that were already failing.
 
 ## Backward Compatibility
 

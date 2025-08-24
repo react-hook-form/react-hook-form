@@ -14,12 +14,9 @@ The scrollIntoView method enhancement exposes the native DOM `scrollIntoView()` 
 
 ## API Changes
 
-### Enhanced properties
+### Property updates
 
-- `field.ref`: Now includes a `scrollIntoView` method in addition to existing ref functionality
-
-### Type updates
-
+- `field.ref`: now includes a `scrollIntoView` method in addition to existing ref functionality
 - `ControllerRenderProps` type updated to include the new method:
 
 ```typescript
@@ -34,7 +31,13 @@ export type ControllerRenderProps<
 };
 ```
 
-### Method signature
+### Description
+
+The scrollIntoView method enhancement exposes the native DOM `scrollIntoView()` function on field refs returned by `useController` and `Controller` components, enabling programmatic scrolling to form fields.
+
+### Behavior
+
+**Method signature:**
 
 ```typescript
 field.ref.scrollIntoView(options?: ScrollIntoViewOptions) => void
@@ -47,9 +50,9 @@ field.ref.scrollIntoView(options?: ScrollIntoViewOptions) => void
   - `block?: 'start' | 'center' | 'end' | 'nearest'`
   - `inline?: 'start' | 'center' | 'end' | 'nearest'`
 
-## Examples
+### Examples
 
-### Basic usage with useController
+#### Basic usage with useController
 
 ```jsx
 import { useController, useForm } from '@bombillazo/rhf-plus';
@@ -81,7 +84,7 @@ function MyForm() {
 }
 ```
 
-### Error handling workflow
+#### Error handling workflow
 
 ```jsx
 import { useForm, useController } from '@bombillazo/rhf-plus';
@@ -164,7 +167,7 @@ function FormWithErrorHandling() {
 }
 ```
 
-### Usage with Controller component
+#### Usage with Controller component
 
 ```jsx
 import { Controller, useForm } from '@bombillazo/rhf-plus';
@@ -205,11 +208,11 @@ function MyForm() {
 }
 ```
 
-## Browser Support
+## Limitations
 
-The `scrollIntoView` method leverages the native DOM `Element.scrollIntoView()` API. For older browsers, the method will gracefully fallback or not execute if `scrollIntoView` is not available on the element.
+- The `scrollIntoView` method leverages the native DOM `Element.scrollIntoView()` API. For older browsers, the method will gracefully fallback or not execute if `scrollIntoView` is not available on the element on unsupported browsers.
 
-## Backward Compatibility
+## Backward compatibility
 
 This enhancement is fully backward compatible:
 

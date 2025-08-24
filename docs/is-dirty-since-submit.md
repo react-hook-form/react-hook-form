@@ -11,17 +11,12 @@ This enhancement adds a new form state property that tracks whether any form fie
 - Improve UX by showing/hiding submission errors appropriately
 - Works with all input types and validation modes
 
-## Key Behaviors
+## API Changes
 
-1. **Initial state**: Initialized to `false` when the form is first rendered
-2. **Pre-submit**: Remains `false` regardless of field changes before first submit
-3. **On submit**: Resets to `false` when the form is submitted
-4. **Post-submit**: Changes to `true` when any field is modified after submission
-5. **Form reset**: Resets to `false` but remembers it has been submitted for future changes
+### Property updates
 
-## API
-
-The `isDirtySinceSubmit` property is available in `formState` from both `useForm` and `useFormState`:
+- `isDirtySinceSubmit`: a boolean prop available in `formState` that tracks whether any form fields have been modified since the last form submission.
+- The property is available in both `useForm` and `useFormState`.
 
 ```typescript
 type FormState = {
@@ -30,9 +25,21 @@ type FormState = {
 };
 ```
 
-## Examples
+### Description
 
-### Basic Usage
+The `isDirtySinceSubmit` property is available in `formState` from both `useForm` and `useFormState` and tracks field modifications after form submission.
+
+### Behavior
+
+1. **Initial state**: Initialized to `false` when the form is first rendered
+2. **Pre-submit**: Remains `false` regardless of field changes before first submit
+3. **On submit**: Resets to `false` when the form is submitted
+4. **Post-submit**: Changes to `true` when any field is modified after submission
+5. **Form reset**: Resets to `false` but remembers it has been submitted for future changes
+
+### Examples
+
+#### Basic Usage
 
 ```jsx
 import React from 'react';
@@ -79,7 +86,7 @@ function ContactForm() {
 }
 ```
 
-### Using with useFormState
+#### Using with useFormState
 
 ```jsx
 import React from 'react';
@@ -111,7 +118,15 @@ function FormWithErrorDisplay() {
 }
 ```
 
-## Backward Compatibility
+## Limitations
+
+This feature has no significant limitations:
+
+- Works with all input types and validation modes
+- Compatible with all form configurations
+- No performance impact on form operations
+
+## Backward compatibility
 
 This feature is fully backward compatible:
 

@@ -10,18 +10,13 @@ This enhancement adds native focus tracking to React Hook Form, allowing you to 
 - Works with all form input types and Controller components
 - Field-level `isFocused` property available in fieldState for Controllers
 
-## Key Behaviors
+## API Changes
 
-1. **Single focus tracking**: Only one field can be focused at a time - focusing a new field automatically clears the previous focused field
-2. **Real-time updates**: Focus state updates immediately when fields gain or lose focus
-3. **Form reset compatibility**: Focused field is cleared when the form is reset
-4. **Works everywhere**: Compatible with `register`, `Controller`, nested fields, and field arrays
+### Property updates
 
-## API
-
-### Form-level Focus Tracking
-
-The `focusedField` property is available in both `formState` from `useForm` and `useFormState`:
+- `focusedField`: a string prop added to form state to track which field is currently focused
+- `isFocused`: a boolean prop added to the field state to indicate if the specific field is focused
+- `focusedField` added to `FormState`:
 
 ```typescript
 type FormState = {
@@ -30,9 +25,7 @@ type FormState = {
 };
 ```
 
-### Field-level Focus Tracking
-
-The `isFocused` property is available in fieldState for Controllers and `getFieldState`:
+- `isFocused` added to `FieldState`:
 
 ```typescript
 type FieldState = {
@@ -41,9 +34,20 @@ type FieldState = {
 };
 ```
 
-## Examples
+### Description
 
-### Basic Focus Tracking
+The focus tracking feature provides both form-level and field-level focus state management. The `focusedField` property is available in both `formState` from `useForm` and `useFormState`, while the `isFocused` property is available in fieldState for Controllers and `getFieldState`.
+
+### Behavior
+
+1. **Single focus tracking**: Only one field can be focused at a time - focusing a new field automatically clears the previous focused field
+2. **Real-time updates**: Focus state updates immediately when fields gain or lose focus
+3. **Form reset compatibility**: Focused field is cleared when the form is reset
+4. **Works everywhere**: Compatible with `register`, `Controller`, nested fields, and field arrays
+
+### Examples
+
+#### Basic Focus Tracking
 
 ```jsx
 import React from 'react';
@@ -72,7 +76,7 @@ function FocusTrackingForm() {
 }
 ```
 
-### Using with useFormState
+#### Using with useFormState
 
 ```jsx
 import React from 'react';
@@ -108,7 +112,7 @@ function FormWithFocusIndicator() {
 }
 ```
 
-### Using with Controller
+#### Using with Controller
 
 ```jsx
 import React from 'react';
@@ -158,7 +162,7 @@ function ControllerFocusForm() {
 }
 ```
 
-### Using getFieldState
+#### Using getFieldState
 
 You can also use `getFieldState` to get field-level focus information:
 
@@ -181,6 +185,11 @@ function FieldStateExample() {
   );
 }
 ```
+
+## Limitations
+
+- Focus tracking is limited to HTML input elements and components that properly handle focus/blur events.
+- Programmatic focus changes (using `focus()` method) are tracked, but may have slight timing differences.
 
 ## Backward Compatibility
 

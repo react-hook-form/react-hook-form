@@ -13,16 +13,14 @@ The JSX error messages enhancement allows developers to use React elements (`Rea
 
 ## API Changes
 
-### Enhanced types
+### Property updates
 
-The core `Message` type has been enhanced to support React elements:
+- `Message`: type has been enhanced to support React elements:
 
 ```typescript
 // Enhanced: now accepts React elements
 export type Message = string | React.ReactElement;
 ```
-
-### Method compatibility
 
 All existing methods that work with error messages now support React elements:
 
@@ -31,9 +29,17 @@ All existing methods that work with error messages now support React elements:
 - Custom validators: `validate: () => <ErrorComponent />`
 - Schema validation libraries (when returning JSX from custom messages)
 
-## Examples
+### Description
 
-### Basic JSX error messages
+The JSX error messages enhancement allows developers to use React elements (`ReactElement`) as error messages instead of being limited to plain strings while maintaining full backward compatibility with existing string-based error messages.
+
+### Behavior
+
+JSX error messages work seamlessly with all existing validation patterns and render in the same React context as your form component.
+
+### Examples
+
+#### Basic JSX error messages
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';
@@ -71,7 +77,7 @@ function BasicExample() {
 }
 ```
 
-### Dynamic error messages with setError
+#### Dynamic error messages with setError
 
 ```jsx
 import { useForm } from '@bombillazo/rhf-plus';

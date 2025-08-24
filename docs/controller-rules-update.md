@@ -14,16 +14,24 @@ This enhancement allows the validation rules provided to the `Controller` compon
 
 ## API Changes
 
-### Key Behaviors
+### Property updates
+
+- `rules`: enhanced to support dynamic updates when prop changes are detected on the `Controller` component.
+
+### Description
+
+The `Controller` component now monitors changes to the `rules` prop and automatically applies updated validation rules when they change. This allows for dynamic validation scenarios where rules need to be modified based on application state or user interactions.
+
+### Behavior
 
 1. **Immediate rule updates**: New rules take effect as soon as the `Controller` re-renders with updated props
 2. **Previous errors cleared**: When rules change, previous validation errors are cleared appropriately
 3. **Re-validation triggers**: Existing validation modes (`onBlur`, `onChange`, etc.) continue to work with new rules
 4. **Form state consistency**: `isValid`, `errors`, and other form state properties update to reflect new validation rules
 
-## Examples
+### Examples
 
-### Basic Dynamic Rules
+#### Basic Dynamic Rules
 
 ```jsx
 import React, { useState } from 'react';
@@ -83,6 +91,11 @@ function DynamicValidationExample() {
   );
 }
 ```
+
+## Limitations
+
+- Rules updates only apply to `Controller` components; regular `register` calls with static rules are not affected.
+- Performance considerations: Frequent rule changes may impact performance in forms with many fields.
 
 ## Backward Compatibility
 
