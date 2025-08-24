@@ -130,6 +130,7 @@ export type UseFormProps<
   shouldFocusError: boolean;
   shouldUnregister: boolean;
   shouldUseNativeValidation: boolean;
+  shouldSkipReadOnlyValidation: boolean;
   progressive: boolean;
   criteriaMode: CriteriaMode;
   delayError: number;
@@ -848,6 +849,7 @@ export type Names = {
   mount: InternalNameSet;
   unMount: InternalNameSet;
   disabled: InternalNameSet;
+  readonly: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
   focus?: InternalFieldName;
@@ -925,6 +927,7 @@ export type Control<
   _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean | FieldPath<TFieldValues>[]) => void;
   _updateIsLoading: (isLoading?: boolean) => void;
+  _updateReadonlyFieldTracking: () => void;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;

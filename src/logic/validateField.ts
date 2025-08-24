@@ -33,7 +33,7 @@ import getValueAndMessage from './getValueAndMessage';
 
 export default async <T extends FieldValues>(
   field: Field,
-  disabledFieldNames: InternalNameSet,
+  skippedFieldNames: InternalNameSet,
   formValues: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
@@ -54,10 +54,11 @@ export default async <T extends FieldValues>(
     mount,
   } = field._f;
   const inputValue: NativeFieldValue = get(formValues, name);
-  if (!mount || disabledFieldNames.has(name)) {
+  if (!mount || skippedFieldNames.has(name)) {
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
+
   const setCustomValidity = (message?: Message | boolean) => {
     if (shouldUseNativeValidation && inputRef.reportValidity) {
       if (isBoolean(message)) {
