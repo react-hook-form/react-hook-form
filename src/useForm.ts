@@ -138,6 +138,12 @@ export function useForm<
     [control, props.disabled],
   );
 
+  // Handle shouldSkipReadOnlyValidation flag changes
+  React.useEffect(() => {
+    // Re-evaluate readonly field tracking when the flag changes
+    control._updateReadonlyFieldTracking();
+  }, [control, props.shouldSkipReadOnlyValidation]);
+
   React.useEffect(() => {
     control._updateIsLoading(props.isLoading);
   }, [control, props.isLoading]);

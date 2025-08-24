@@ -68,6 +68,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _focusError: () => boolean | undefined;
     _disableForm: (disabled?: boolean | FieldPath<TFieldValues>[]) => void;
     _updateIsLoading: (isLoading?: boolean) => void;
+    _updateReadonlyFieldTracking: () => void;
     _subscribe: FromSubscribe<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
     handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
@@ -467,6 +468,7 @@ export type Names = {
     mount: InternalNameSet;
     unMount: InternalNameSet;
     disabled: InternalNameSet;
+    readonly: InternalNameSet;
     array: InternalNameSet;
     watch: InternalNameSet;
     focus?: InternalFieldName;
@@ -738,6 +740,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldFocusError: boolean;
     shouldUnregister: boolean;
     shouldUseNativeValidation: boolean;
+    shouldSkipReadOnlyValidation: boolean;
     progressive: boolean;
     criteriaMode: CriteriaMode;
     delayError: number;
@@ -980,7 +983,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:512:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:513:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

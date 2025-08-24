@@ -298,6 +298,13 @@ const items: Item[] = [
     slugs: ['/is-dirty-since-submit'],
     plus: true,
   },
+  {
+    title: 'ReadonlyValidation',
+    description:
+      'Should skip validation for readonly fields while maintaining form functionality',
+    slugs: ['/readonly-validation'],
+    plus: true,
+  },
 ];
 
 const Component: React.FC = () => {

@@ -96,6 +96,7 @@ const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
+  shouldSkipReadOnlyValidation: false,
 } as const;
 
 export function createFormControl<
@@ -165,6 +166,7 @@ export function createFormControl<
   let _names: Names = {
     mount: new Set(),
     disabled: new Set(),
+    readonly: new Set(),
     unMount: new Set(),
     array: new Set(),
     watch: new Set(),
@@ -562,9 +564,15 @@ export function createFormControl<
             _updateIsValidating([name], true);
           }
 
+          // Combine disabled and readonly field names for validation skipping
+          const skipValidationFields = new Set([
+            ..._names.disabled,
+            ..._names.readonly,
+          ]);
+
           const fieldError = await validateField(
             field as Field,
-            _names.disabled,
+            skipValidationFields,
             _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
@@ -870,6 +878,52 @@ export function createFormControl<
         return;
       }
 
+      // Check if field is readonly and should skip validation (only when flag is enabled)
+      if (_options.shouldSkipReadOnlyValidation && target && target.readOnly) {
+        // Add to readonly fields set for validation skipping
+        _names.readonly.add(name);
+
+        // For readonly fields, we still want to update the form values
+        // but skip validation (similar to disabled fields behavior)
+        const fieldValue = target.type
+          ? getFieldValue(field._f)
+          : getEventValue(event);
+        const isBlurEvent =
+          event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+        const isFocusEvent =
+          event.type === EVENTS.FOCUS || event.type === EVENTS.FOCUS_IN;
+        const watched = isWatched(name, _names, isBlurEvent || isFocusEvent);
+
+        // Update form values but skip validation and error handling
+        set(_formValues, name, fieldValue);
+
+        // Update touch and dirty state
+        const fieldState = updateTouchAndDirty(
+          name,
+          fieldValue,
+          isBlurEvent,
+          isFocusEvent,
+          !isBlurEvent, // shouldDirty - true for onChange events, false for blur
+        );
+
+        const shouldRender = !isEmptyObject(fieldState) || watched;
+
+        !isBlurEvent &&
+          _subjects.state.next({
+            name,
+            type: event.type,
+            values: cloneObject(_formValues),
+          });
+
+        return (
+          shouldRender &&
+          _subjects.state.next({ name, ...(watched ? {} : fieldState) })
+        );
+      } else if (_options.shouldSkipReadOnlyValidation) {
+        // Remove from readonly fields set if not readonly anymore (only when flag is enabled)
+        _names.readonly.delete(name);
+      }
+
       let error;
       let isValid;
       const fieldValue = target.type
@@ -898,10 +952,8 @@ export function createFormControl<
       set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
-        if (!target || !target.readOnly) {
-          field._f.onBlur && field._f.onBlur(event);
-          delayErrorCallback && delayErrorCallback(0);
-        }
+        field._f.onBlur && field._f.onBlur(event);
+        delayErrorCallback && delayErrorCallback(0);
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
@@ -966,13 +1018,21 @@ export function createFormControl<
         }
       } else {
         _updateIsValidating([name], true);
+
+        // Combine disabled and readonly field names for validation skipping
+        const skipValidationFields = new Set([
+          ..._names.disabled,
+          ..._names.readonly,
+        ]);
+
         error = (
           await validateField(
             field,
-            _names.disabled,
+            skipValidationFields,
             _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
+            false, // isFieldArray
           )
         )[name];
         _updateIsValidating([name]);
@@ -1328,6 +1388,16 @@ export function createFormControl<
           });
 
           updateValidAndValue(name, false, undefined, fieldRef);
+
+          // Check if field is readonly and should skip validation (only when flag is enabled)
+          if (
+            _options.shouldSkipReadOnlyValidation &&
+            fieldRef &&
+            'readOnly' in fieldRef &&
+            fieldRef.readOnly
+          ) {
+            _names.readonly.add(name);
+          }
         } else {
           field = get(_fields, name, {});
 
@@ -1572,6 +1642,7 @@ export function createFormControl<
       unMount: new Set(),
       array: new Set(),
       disabled: new Set(),
+      readonly: new Set(),
       watch: new Set(),
       watchAll: false,
       focus: '',
@@ -1691,6 +1762,32 @@ export function createFormControl<
     }
   };
 
+  const _updateReadonlyFieldTracking = () => {
+    // Re-evaluate all registered fields and update readonly tracking
+    // based on current shouldSkipReadOnlyValidation flag and field readonly state
+    Object.keys(_fields).forEach((fieldName) => {
+      const field = get(_fields, fieldName);
+
+      if (field && field._f) {
+        // Get the actual DOM element reference
+        const fieldRef = field._f.refs ? field._f.refs[0] : field._f.ref;
+
+        if (fieldRef && 'readOnly' in fieldRef) {
+          const isFieldReadonly = Boolean(fieldRef.readOnly);
+          const shouldTrackAsReadonly =
+            _options.shouldSkipReadOnlyValidation && isFieldReadonly;
+
+          // Update readonly tracking set
+          if (shouldTrackAsReadonly) {
+            _names.readonly.add(fieldName);
+          } else {
+            _names.readonly.delete(fieldName);
+          }
+        }
+      }
+    });
+  };
+
   const setMetadata = (metadata?: TMetadata) => {
     let _metadata: TMetadata;
     if (!metadata) {
@@ -1739,6 +1836,7 @@ export function createFormControl<
       _removeUnmounted,
       _disableForm,
       _updateIsLoading,
+      _updateReadonlyFieldTracking,
       _subjects,
       _proxyFormState,
       get _fields() {
