@@ -53,25 +53,26 @@ Minor improvements:
 - [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
 - [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
 
+> [!Warning]
+>
+> The unavoidable outcome of adding new form states, methods, and data events includes:
+>
+> - Increased package size
+> - Additional form renders
+>
+> As we add new enhancements, we work to optimize these features to minimize the impact on form performance.
+
+
 ## Motive
 
 RHF is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
 
 Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
 
-> [!Warning]
->
-> The inevitable reality of adding new form states, methods, and data events includes:
->
-> - Additional form renders
-> - Increased package size
->
-> As we add new enhancements, we work to optimize these features to minimize the impact on form performance.
-
-## Goals
+### 🏁 Goals
 
 - **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
-- **Compatibility**: New features should be additive, not destructive. `rhf-plus` aims to stay closely synced to the original RHF.
+- **Compatibility**: New features should be additive and non-breaking. `rhf-plus` aims to stay closely synced to the original RHF.
 - **Practicality**: The enhancements must be practical and solve real-world problems.
 - **Speed**: Discuss, review, and ship features fast!
 - **Quality**: We maintain the same high-quality standards as RHF. This means clean code, thorough testing, and precise documentation.
