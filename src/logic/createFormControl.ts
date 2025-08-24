@@ -952,8 +952,10 @@ export function createFormControl<
       set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
-        field._f.onBlur && field._f.onBlur(event);
-        delayErrorCallback && delayErrorCallback(0);
+        if (!target || !target.readOnly) {
+          field._f.onBlur && field._f.onBlur(event);
+          delayErrorCallback && delayErrorCallback(0);
+        }
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
