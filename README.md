@@ -10,7 +10,7 @@
 
 </div>
 
-React Hook Form Plus (**RHF+**) is a fork of [React Hook Form](https://react-hook-form.com/) (**RHF**) with feature enhancements. It is designed to be a drop-in replacement for RHF, so you can use it in your existing projects without any changes.
+React Hook Form Plus (**RHF+**) is a fork of [React Hook Form](https://react-hook-form.com/) with feature enhancements. It is designed to be a drop-in replacement for React Hook Form, so you can use it in your existing projects without any changes.
 
 ## Install
 
@@ -65,47 +65,46 @@ Minor improvements:
 
 ## Motive
 
-RHF is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of RHF, this has caused a development bottleneck that slows and stalls contributions.
+React Hook Form is a robust and delightful form library for React. Preserving high-quality standards for such a popular package takes time, effort, and thoughtfulness from maintainers. In the case of React Hook Form, this has caused a development bottleneck that slows and stalls contributions.
 
-Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of RHF that enhances the library with new features and improvements while keeping the core of RHF intact.
+Thus, [`rhf-plus`](https://github.com/bombillazo/rhf-plus) was born: a fork of React Hook Form that enhances the library with new features and improvements while keeping the core of the library intact.
 
 ### 🏁 Goals
 
-- **Features**: This package aims to enhance RHF's functionality. We avoid other development efforts.
-- **Compatibility**: New features should be additive and non-breaking. `rhf-plus` aims to stay closely synced to the original RHF.
+- **Features**: This package aims to enhance React Hook Form's functionality. We avoid other development efforts.
+- **Compatibility**: New features should be additive and non-breaking. `rhf-plus` aims to stay closely synced to the original React Hook Form.
 - **Practicality**: The enhancements must be practical and solve real-world problems.
 - **Speed**: Discuss, review, and ship features fast!
-- **Quality**: We maintain the same high-quality standards as RHF. This means clean code, thorough testing, and precise documentation.
+- **Quality**: We maintain the same high-quality standards as React Hook Form. This means clean code, thorough testing, and precise documentation.
 
 ### ❌ Out of Scope
 
-- **RHF bugs**  
-RHF maintainers are responsible for fixing RHF bugs. We focus on fixing bugs related to our enhancements. When RHF bugs are fixed, those fixes are rolled into this package when we sync to the latest RHF version.
+- **React Hook Form bugs**  
+React Hook Form maintainers are responsible for fixing its bugs. We focus on fixing bugs related to our enhancements. When those bugs are fixed, they are rolled into this package when we sync to the latest React Hook Form version.
 
 - **Refactors**  
-We do not refactor RHF code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements (these changes complicate syncing the fork with RHF).
+We do not refactor React Hook Form code. This includes adding new tooling, changing documentation, updating dependency versions, fixing code styling, and anything unrelated to adding new features and enhancements (these changes complicate syncing the fork with the upstream repository).
 
 - **Breaking changes**  
-We do not introduce breaking changes to the RHF API. We only add new features and enhancements that are backward compatible with the existing RHF API.
+We do not introduce breaking changes to the React Hook Form API. We only add new features and enhancements that are backward compatible with the existing API.
 
 - **Complex/bloated features**  
-We avoid enhancements that aggressively modify large parts of the RHF codebase. This ensures we do not diverge too much from the original RHF package.
+We avoid enhancements that aggressively modify large parts of the React Hook Form codebase. This ensures we do not diverge too much from the original package.
 
-- **Past RHF versions**  
-As new enhancements are introduced, they are only applied to the current and latest RHF versions. This ensures that we are closely synced to RHF and reduces the overhead of maintaining multiple `rhf-plus` versions.
+- **Past React Hook Form versions**  
+As new enhancements are introduced, they are only applied to the current and latest React Hook Form versions. This ensures that we are closely synced to React Hook Form and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
 ### 📣 Help us grow
 
-Ideally, this fork would not exist, and all of these enhancements and features would be natively part of RHF. You can help RHF and RHF+ grow by:
+Ideally, this fork would not exist, and all of these enhancements and features would be natively part of React Hook Form. Here's how you can help RHF+ grow:
 
-- Spreading the word about this fork so more people can test these enhancements
-- Using this library to test the enhancements and provide feedback.
-- Reporting enhancement bugs and issues [here](https://github.com/bombillazo/rhf-plus/issues).
-- [Contributing](CONTRIBUTING.md) new code to add new enhancements.
-- Sharing the enhancements in the react-hook-form [issues](https://github.com/react-hook-form/react-hook-form/issues) (create a new one if it doesn't exist).:
+- Spread the word about this package so more people can test these enhancements
+- Use this library to test the enhancements and provide feedback.
+- Report enhancement bugs and issues [here](https://github.com/bombillazo/rhf-plus/issues).
+- [Contribute](CONTRIBUTING.md) new code to add new enhancements.
+- Share the enhancements in the React Hook Form [issues](https://github.com/react-hook-form/react-hook-form/issues) where applicable:
   - Upvote the issue to garner support
-  - Kindly comment on the issue to show RHF maintainers there is a demand
-  - Link to the enhancement page in this repo to show that a working solution is available
+  - Link to the enhancement page in this repo to show the available working solution
 
 ## Versioning
 
@@ -118,24 +117,24 @@ Ideally, this fork would not exist, and all of these enhancements and features w
   1     2   3
 ```
 
-1. **RHF version**  
-The react-hook-form version used as the base to add enhancements to (e.g., `7.55.0`)  
+1. **React Hook Form version**  
+The React Hook Form version used as the base to add enhancements to (e.g., `7.55.0`)  
 
 1. **Separator token**  
-Separates RHF from RHF+ version (always `-plus.`)  
+Separates React Hook Form from RHF+ version (always `-plus.`)  
 
 1. **RHF+ version**  
 RHF+ version index (e.g., `0`)
 
 > [!Note]
-> Please get in touch with maintainers if a new RHF version is available and this library is behind. We will sync `rhf-plus` and release a new version.
+> Please get in touch with maintainers if a new React Hook Form version is available and this library is behind. We will sync `rhf-plus` and release a new version.
 
 ### Conventions
 
-1. New RHF+ versions use the latest RHF version as the base version
+1. New RHF+ versions use the latest React Hook Form version as the base version
 2. RHF+ versions start from index `0`
-   - For example, the first version of `rhf-plus` based on RHF `7.55.0` would be `7.55.0-plus.0`
+   - For example, the first version of `rhf-plus` based on React Hook Form `7.55.0` would be `7.55.0-plus.0`
 3. The RHF+ version increments with each new `rhf-plus` release
-   - For example, a new release based on RHF `7.55.0` would bump the version to `7.5.0-plus.1`
-4. The RHF+ version is reset to `0` when a new version of RHF is released
-   - For example, if RHF `7.56.0` is released, the newly synced version of `rhf-plus` based on that would be `7.56.0-plus.0`
+   - For example, a new release based on React Hook Form `7.55.0` would bump the version to `7.5.0-plus.1`
+4. The RHF+ version is reset to `0` when a new version of React Hook Form is released
+   - For example, if React Hook Form `7.56.0` is released, the newly synced version of `rhf-plus` based on that would be `7.56.0-plus.0`
