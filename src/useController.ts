@@ -183,9 +183,16 @@ export function useController<
     [name, disabled, formState.disabled, onChange, onBlur, ref, value],
   );
 
+  const previousNameRef = React.useRef<string | undefined>(undefined);
+
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
+    const previousName = previousNameRef.current;
+
+    if (previousName && previousName !== name && !isArrayField) {
+      control.unregister(previousName as FieldPath<TFieldValues>);
+    }
 
     control.register(name, {
       ..._props.current.rules,
@@ -213,6 +220,8 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    previousNameRef.current = name;
 
     return () => {
       (
