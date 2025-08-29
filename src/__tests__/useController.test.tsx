@@ -1246,4 +1246,61 @@ describe('useController', () => {
 
     expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
   });
+
+  it('should prevent field value leakage when field names change at same position', () => {
+    type FormValues = {
+      type: 'personal' | 'business';
+      personalName: string;
+      businessName: string;
+    };
+
+    const Component = () => {
+      const { control, watch, setValue } = useForm<FormValues>({
+        defaultValues: {
+          type: 'personal',
+          personalName: '',
+          businessName: '',
+        },
+      });
+
+      const type = watch('type');
+
+      return (
+        <div>
+          <select
+            value={type}
+            onChange={(e) => setValue('type', e.target.value as any)}
+          >
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+          </select>
+          {type === 'personal' ? (
+            <Controller
+              name="personalName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          ) : (
+            <Controller
+              name="businessName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          )}
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John Doe' },
+    });
+
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'business' },
+    });
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
+  });
 });
