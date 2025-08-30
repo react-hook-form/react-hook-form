@@ -109,7 +109,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "tsd": "^0.31.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^7.18.0",
+    "typescript-eslint": "^8.38.0",
     "whatwg-fetch": "^3.6.20",
     "zod": "^3.25.67"
   },
