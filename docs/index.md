@@ -1,14 +1,12 @@
-# React Hook Form Plus (RHF+)
-
 <div align="center">
   <img src="./logo.png" alt="RHF Plus Logo" />
 </div>
 
 <div align="center">
 
-[![npm downloads](https://img.shields.io/npm/dm/@bombillazo/rhf-plus.svg?style=for-the-badge)](https://www.npmjs.com/package/@bombillazo/rhf-plus)
-[![npm](https://img.shields.io/npm/dt/@bombillazo/rhf-plus.svg?style=for-the-badge)](https://www.npmjs.com/package/@bombillazo/rhf-plus)
-[![npm](https://img.shields.io/npm/l/@bombillazo/rhf-plus?style=for-the-badge)](https://github.com/bombillazo/rhf-plus/blob/master/LICENSE)
+<a href="https://www.npmjs.com/package/@bombillazo/rhf-plus"><img src="https://img.shields.io/npm/dm/@bombillazo/rhf-plus.svg?style=for-the-badge" alt="npm downloads" /></a>
+<a href="https://www.npmjs.com/package/@bombillazo/rhf-plus"><img src="https://img.shields.io/npm/dt/@bombillazo/rhf-plus.svg?style=for-the-badge" alt="npm total downloads" /></a>
+<a href="https://github.com/bombillazo/rhf-plus/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/@bombillazo/rhf-plus?style=for-the-badge" alt="license" /></a>
 
 </div>
 
