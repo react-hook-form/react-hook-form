@@ -18,13 +18,9 @@ React Hook Form Plus (**RHF+**) is an enhanced fork of [React Hook Form](https:/
 
 ```sh
 npm install @bombillazo/rhf-plus
-```
 
-```sh
 yarn add @bombillazo/rhf-plus
-```
 
-```sh
 pnpm add @bombillazo/rhf-plus
 ```
 
@@ -33,23 +29,23 @@ pnpm add @bombillazo/rhf-plus
 ### Major Features
 
 - [**Imperative form submission**](./imperative_submit.md) - Submit forms programmatically with enhanced control
-- [**Smart `disabled` state**](./smart-disabled-state.md) - Intelligent field disabling based on form state
+- [**Smart "disabled" state**](./smart-disabled-state.md) - Intelligent field disabling based on form state
 - [**JSX error messages**](./jsx-error-messages.md) - Render JSX components as error messages
-- [**Controllable `isLoading` state**](./controllable-is-loading-state.md) - Manual control over form loading state
+- [**Controllable "isLoading" state**](./controllable-is-loading-state.md) - Manual control over form loading state
 - [**Form metadata**](./form-metadata.md) - Access additional form information and statistics
-- [**`ScrollIntoView` method on field refs**](./scroll-into-view-method.md) - Automatically scroll to fields with errors
-- [**`Controller` children function**](./controller-children-function.md) - Enhanced controller component with function children
-- [**Form and field `focus` state**](./focused-fields.md) - Track which fields are currently focused
-- [**Form `isDirtySinceSubmit` state**](./is-dirty-since-submit.md) - Detect changes after form submission
-- [**Form `hasBeenSubmitted` state**](./has-been-submitted.md) - Track if form has ever been submitted
+- [**"ScrollIntoView" method on field refs**](./scroll-into-view-method.md) - Automatically scroll to fields with errors
+- [**"Controller" children function**](./controller-children-function.md) - Enhanced controller component with function children
+- [**Form and field "focus" state**](./focused-fields.md) - Track which fields are currently focused
+- [**Form "isDirtySinceSubmit" state**](./is-dirty-since-submit.md) - Detect changes after form submission
+- [**Form "hasBeenSubmitted" state**](./has-been-submitted.md) - Track if form has ever been submitted
 - [**Readonly field validation skip**](./readonly-validation-skip.md) - Skip validation for readonly fields
 
 ### Minor Improvements
 
 - [Controller rules update on prop change](./controller-rules-update.md)
 - [Empty array validation](./empty-array-validation.md)
-- [Add displayName to `useFormContext`](./use-form-context-display-name.md)
-- [Improve `useController` error on missing `control` prop](./improve-missing-use-controller-prop-error.md)
+- [Add displayName to "useFormContext"](./use-form-context-display-name.md)
+- [Improve "useController" error on missing "control" prop](./improve-missing-use-controller-prop-error.md)
 
 ### ⚠️ Performance Note
 
