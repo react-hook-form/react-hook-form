@@ -16,19 +16,13 @@ React Hook Form Plus (**RHF+**) is a fork of [React Hook Form](https://react-hoo
 
 ## Install
 
-### npm
-
 ```sh
 npm install @bombillazo/rhf-plus
 ```
 
-### yarn
-
 ```sh
 yarn add @bombillazo/rhf-plus
 ```
-
-### pnpm
 
 ```sh
 pnpm add @bombillazo/rhf-plus
@@ -36,7 +30,7 @@ pnpm add @bombillazo/rhf-plus
 
 ## 📖 Documentation
 
-**[View all enhancements and documentation →](./docs/)**
+**[View all enhancements and documentation →](https://bombillazo.github.io/rhf-plus/)**
 
 ## Motive
 
@@ -70,8 +64,6 @@ We avoid enhancements that aggressively modify large parts of the React Hook For
 As new enhancements are introduced, they are only applied to the current and latest React Hook Form versions. This ensures that we are closely synced to React Hook Form and reduces the overhead of maintaining multiple `rhf-plus` versions.
 
 ### 📣 Help us grow
-
-Ideally, this fork would not exist, and all of these enhancements and features would be natively part of React Hook Form. Here's how you can help RHF+ grow:
 
 - Spread the word about this package so more people can test these enhancements
 - Use this library to test the enhancements and provide feedback.

@@ -10,7 +10,7 @@
 
 </div>
 
-React Hook Form Plus (**RHF+**) is a fork of [React Hook Form](https://react-hook-form.com/) with feature enhancements. It is designed to be a drop-in replacement for React Hook Form, so you can use it in your existing projects without any changes.
+React Hook Form Plus (**RHF+**) is an enhanced fork of [React Hook Form](https://react-hook-form.com/). It is designed to be a drop-in replacement for React Hook Form, so you can use it in your existing projects without any changes.
 
 ## Quick Start
 
@@ -51,10 +51,6 @@ pnpm add @bombillazo/rhf-plus
 - [Add displayName to `useFormContext`](./use-form-context-display-name.md)
 - [Improve `useController` error on missing `control` prop](./improve-missing-use-controller-prop-error.md)
 
-## Why RHF+?
-
-React Hook Form is a robust and delightful form library for React. However, maintaining high-quality standards for such a popular package requires careful consideration that can slow feature development. RHF+ was created to bridge this gap by providing enhanced functionality while maintaining full compatibility with the original library.
-
 > [!Warning]
 >
 > The unavoidable outcome of adding new form states, methods, and data events includes:
@@ -63,15 +59,3 @@ React Hook Form is a robust and delightful form library for React. However, main
 > - Additional form renders
 >
 > As we add new enhancements, we work to optimize these features to minimize the impact on form performance.
-
-## Contributing
-
-We welcome contributions! Check out our [Contributing Guide](../CONTRIBUTING.md) to get started.
-
-## Issues & Support
-
-Report bugs and request features in our [GitHub Issues](https://github.com/bombillazo/rhf-plus/issues).
-
-## License
-
-This project is licensed under the same terms as React Hook Form. See the [LICENSE](../LICENSE) file for details.
