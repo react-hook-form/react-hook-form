@@ -1,3 +1,5 @@
+# React Hook Form Plus (RHF+)
+
 <div align="center">
   <img src="./docs/logo.png" alt="RHF Plus Logo" />
 </div>
@@ -32,36 +34,9 @@ yarn add @bombillazo/rhf-plus
 pnpm add @bombillazo/rhf-plus
 ```
 
-## ✨ Enhancements
+## 📖 Documentation
 
-- [Imperative form submission](./docs/imperative_submit.md)
-- [Smart `disabled` state](./docs/smart-disabled-state.md)
-- [JSX error messages](./docs/jsx-error-messages.md)
-- [Controllable `isLoading` state](./docs/controllable-is-loading-state.md)
-- [Form metadata](./docs/form-metadata.md)
-- [`ScrollIntoView` method on field refs](./docs/scroll-into-view-method.md)
-- [`Controller` children function](./docs/controller-children-function.md)
-- [Form and field `focus` state](./docs/focused-fields.md)
-- [Form `isDirtySinceSubmit` state](./docs/is-dirty-since-submit.md)
-- [Form `hasBeenSubmitted` state](./docs/has-been-submitted.md)
-- [Readonly field validation skip](./docs/readonly-validation-skip.md)
-
-Minor improvements:
-
-- [Controller rules update on prop change](./docs/controller-rules-update.md)
-- [Empty array validation](./docs/empty-array-validation.md)
-- [Add displayName to `useFormContext`](./docs/use-form-context-display-name.md)
-- [Improve `useController` error on missing `control` prop](./docs/improve-missing-use-controller-prop-error.md)
-
-> [!Warning]
->
-> The unavoidable outcome of adding new form states, methods, and data events includes:
->
-> - Increased package size
-> - Additional form renders
->
-> As we add new enhancements, we work to optimize these features to minimize the impact on form performance.
-
+**[View all enhancements and documentation →](./docs/)**
 
 ## Motive
 
