@@ -24,6 +24,16 @@ yarn add @bombillazo/rhf-plus
 pnpm add @bombillazo/rhf-plus
 ```
 
+Simply replace your React Hook Form import:
+
+```ts
+// Before
+import { useForm } from 'react-hook-form';
+
+// After
+import { useForm } from '@bombillazo/rhf-plus';
+```
+
 ## ✨ Enhancements
 
 ### Major Features

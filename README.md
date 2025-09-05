@@ -12,7 +12,7 @@
 
 </div>
 
-React Hook Form Plus (**RHF+**) is a fork of [React Hook Form](https://react-hook-form.com/) with feature enhancements. It is designed to be a drop-in replacement for React Hook Form, so you can use it in your existing projects without any changes.
+React Hook Form Plus (**RHF+**) is an enhanced fork of [React Hook Form](https://react-hook-form.com/). It is designed to be a drop-in replacement for React Hook Form, so you can use it in your existing projects without any changes.
 
 ## Install
 
@@ -28,9 +28,19 @@ yarn add @bombillazo/rhf-plus
 pnpm add @bombillazo/rhf-plus
 ```
 
+Simply replace your React Hook Form import:
+
+```ts
+// Before
+import { useForm } from 'react-hook-form'
+
+// After  
+import { useForm } from '@bombillazo/rhf-plus'
+```
+
 ## 📖 Documentation
 
-**[View all enhancements and documentation →](https://bombillazo.github.io/rhf-plus/)**
+**[View all features and enhancements →](https://bombillazo.github.io/rhf-plus/)**
 
 ## Motive
 
