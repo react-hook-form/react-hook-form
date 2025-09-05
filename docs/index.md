@@ -51,11 +51,9 @@ pnpm add @bombillazo/rhf-plus
 - [Add displayName to `useFormContext`](./use-form-context-display-name.md)
 - [Improve `useController` error on missing `control` prop](./improve-missing-use-controller-prop-error.md)
 
-> [!Warning]
->
-> The unavoidable outcome of adding new form states, methods, and data events includes:
->
-> - Increased package size
-> - Additional form renders
->
-> As we add new enhancements, we work to optimize these features to minimize the impact on form performance.
+### ⚠️ Performance Note
+
+We've optimized enhancements and features to minimize the impact on form performance. That said, adding new form states, methods, and data events results in the unavoidable outcome of:
+
+- Increased package size
+- Additional form renders
