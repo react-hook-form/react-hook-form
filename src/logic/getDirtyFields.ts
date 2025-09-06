@@ -10,14 +10,12 @@ function isTraversable(value: any): boolean {
 }
 
 function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
-  if (isObject(data) || Array.isArray(data)) {
-    for (const key in data) {
-      if (isTraversable(data[key])) {
-        fields[key] = Array.isArray(data[key]) ? [] : {};
-        markFieldsDirty(data[key], fields[key]);
-      } else if (!isNullOrUndefined(data[key])) {
-        fields[key] = true;
-      }
+  for (const key in data) {
+    if (isTraversable(data[key])) {
+      fields[key] = Array.isArray(data[key]) ? [] : {};
+      markFieldsDirty(data[key], fields[key]);
+    } else if (!isNullOrUndefined(data[key])) {
+      fields[key] = true;
     }
   }
 
@@ -32,9 +30,7 @@ function getDirtyFieldsFromDefaultValues<T>(
     ReturnType<typeof markFieldsDirty> | boolean
   >,
 ) {
-  const isParentNodeArray = Array.isArray(data);
-
-  if (isObject(data) || isParentNodeArray) {
+  if (isTraversable(data)) {
     for (const key in data) {
       if (isTraversable(data[key])) {
         if (
