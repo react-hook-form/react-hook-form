@@ -37,9 +37,10 @@ export default function getDirtyFields<T>(
   for (const key in data) {
     if (isTraversable(data[key])) {
       if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
-        dirtyFieldsFromValues[key] = Array.isArray(data[key])
-          ? markFieldsDirty(data[key], [])
-          : { ...markFieldsDirty(data[key]) };
+        dirtyFieldsFromValues[key] = markFieldsDirty(
+          data[key],
+          Array.isArray(data[key]) ? [] : {},
+        );
       } else {
         getDirtyFields(
           data[key],
