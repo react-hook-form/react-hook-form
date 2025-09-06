@@ -18,16 +18,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "app",
-    "examples",
-    "cypress",
-    "src/*.test.ts",
-    "src/*.test.tsx",
-    "src/*.test-d.ts",
-    "src/*.test-d.tsx",
-    "src/__mocks__"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["**/__tests__/**/*", "**/__typetest__/**/*"]
 }

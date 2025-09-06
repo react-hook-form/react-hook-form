@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import {
+import type {
   Control,
   FieldValues,
   SubmitHandler,
@@ -58,6 +58,25 @@ describe('useFieldArray', () => {
       expect(result.current.fields).toEqual([
         { test: '1', id: '0' },
         { test: '2', id: '1' },
+      ]);
+    });
+
+    it('should populate values into fields instead of defaultValues', () => {
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: { test: [{ test: '3' }, { test: '21' }] },
+          values: { test: [{ test: '1' }, { test: '3' }, { test: '55' }] },
+        });
+        return useFieldArray({
+          control,
+          name: 'test',
+        });
+      });
+
+      expect(result.current.fields).toEqual([
+        { test: '1', id: '2' },
+        { test: '3', id: '3' },
+        { test: '55', id: '4' },
       ]);
     });
 
@@ -807,7 +826,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([
         { id: '0', value: 'default' },
         {
-          id: '1',
+          id: '2',
           value: 'test',
         },
       ]);
@@ -818,7 +837,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([
         { id: '0', value: 'default' },
         {
-          id: '1',
+          id: '2',
           value: 'test',
         },
       ]);
@@ -1119,7 +1138,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-      expect(fieldsTemp).toEqual([{ id: '4', value: 'default' }]);
+      expect(fieldsTemp).toEqual([{ id: '5', value: 'default' }]);
     });
 
     it('should reset with field array with shouldUnregister set to false', () => {
@@ -1146,7 +1165,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '4', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'default' }]);
 
       act(() => {
         result.current.reset({
@@ -1154,7 +1173,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '7', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -3460,6 +3479,89 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
     });
 
+    it('should no longer validate when unmounted', async () => {
+      const ArrayField = () => {
+        const { fields } = useFieldArray({
+          name: 'array',
+          rules: {
+            required: {
+              value: true,
+              message: 'This is required',
+            },
+            minLength: {
+              value: 2,
+              message: 'Min length should be 2',
+            },
+          },
+        });
+
+        return (
+          <div>
+            <div>
+              {fields.map((item, index) => (
+                <Controller
+                  key={item.id}
+                  name={`array.${index}.value` as const}
+                  render={({ field }) => <input {...field} />}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [displayArray, setDisplayArray] = useState(true);
+
+        const formValues = useForm({
+          defaultValues: { array: [{ value: '' }] },
+        });
+
+        return (
+          <FormProvider {...formValues}>
+            <form onSubmit={formValues.handleSubmit(noop)}>
+              <button
+                type="button"
+                onClick={() => setDisplayArray((current) => !current)}
+              >
+                Toggle
+              </button>
+
+              {displayArray && <ArrayField />}
+
+              <p>{formValues.formState.errors.array?.root?.message}</p>
+
+              <button type="submit">Submit</button>
+            </form>
+          </FormProvider>
+        );
+      };
+
+      render(<App />);
+
+      expect(
+        screen.queryByText('Min length should be 2'),
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(screen.queryByText('Min length should be 2')).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /toggle/i }));
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(
+        screen.queryByText('Min length should be 2'),
+      ).not.toBeInTheDocument();
+    });
+
     it('should not conflict with field level error', async () => {
       const App = () => {
         const {
@@ -3949,7 +4051,7 @@ describe('useFieldArray', () => {
       render(<Component />);
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
-      await waitFor(() => expect(renderCount).toEqual(2));
+      await waitFor(() => expect(renderCount).toEqual(3));
     });
 
     it('should trigger reRender on components that subscribe to useFieldArray fieldState', async () => {
@@ -4010,8 +4112,8 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       await waitFor(() => {
-        expect(rootRenderCount).toEqual(1);
-        expect(observerRenderCount).toEqual(2);
+        expect(rootRenderCount).toEqual(2);
+        expect(observerRenderCount).toEqual(3);
       });
     });
 
@@ -4123,8 +4225,185 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(rootRenderCount).toEqual(1);
-      expect(notObserverRenderCount).toEqual(1);
+      expect(rootRenderCount).toEqual(2);
+      expect(notObserverRenderCount).toEqual(2);
+    });
+  });
+});
+
+describe('useFieldArray with checkbox', () => {
+  it('should correctly duplicate checkbox items with their values', async () => {
+    const App = () => {
+      const methods = useForm<{
+        checkboxes: {
+          label: string;
+          value: boolean;
+        }[];
+      }>({
+        defaultValues: {
+          checkboxes: [
+            { label: 'Option 1', value: true },
+            { label: 'Option 2', value: true },
+          ],
+        },
+      });
+
+      const { register, control } = methods;
+      const { fields, insert } = useFieldArray({
+        control,
+        name: 'checkboxes',
+        rules: {
+          minLength: {
+            value: 1,
+            message: 'At least one checkbox is required',
+          },
+        },
+      });
+
+      const handleDuplicate = (index: number) => {
+        const currentItem = methods.getValues(`checkboxes.${index}`);
+        insert(index + 1, {
+          label: `${currentItem.label} (copy)`,
+          value: currentItem.value,
+        });
+      };
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            {fields.map((field, index) => (
+              <label key={field.id} data-testid={`checkbox-item-${index}`}>
+                <span>{field.label}</span>
+                <input
+                  type="checkbox"
+                  id={field.id}
+                  {...register(`checkboxes.${index}.value`)}
+                  data-testid={`checkbox-${index}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDuplicate(index)}
+                  data-testid={`duplicate-button-${index}`}
+                >
+                  Duplicate
+                </button>
+              </label>
+            ))}
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('checkbox-0')).toBeChecked();
+    expect(screen.getByTestId('checkbox-1')).toBeChecked();
+
+    fireEvent.click(screen.getByTestId('duplicate-button-0'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Option 1 (copy)')).toBeInTheDocument();
+      expect(screen.getByTestId('checkbox-1')).toBeChecked();
+    });
+
+    fireEvent.click(screen.getByTestId('duplicate-button-2'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Option 2 (copy)')).toBeInTheDocument();
+      expect(screen.getByTestId('checkbox-2')).toBeChecked();
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes).toHaveLength(4);
+    checkboxes.forEach((checkbox) => {
+      expect(checkbox).toBeChecked();
+    });
+  });
+
+  it('should maintain correct checkbox states after multiple duplications', async () => {
+    const App = () => {
+      const methods = useForm<{
+        checkboxes: {
+          label: string;
+          value: boolean;
+        }[];
+      }>({
+        defaultValues: {
+          checkboxes: [
+            { label: 'Option 1', value: true },
+            { label: 'Option 2', value: false },
+          ],
+        },
+      });
+
+      const { register, control } = methods;
+      const { fields, insert } = useFieldArray({
+        control,
+        name: 'checkboxes',
+        rules: {
+          minLength: {
+            value: 1,
+            message: 'At least one checkbox is required',
+          },
+        },
+      });
+
+      const handleDuplicate = (index: number) => {
+        const currentItem = methods.getValues(`checkboxes.${index}`);
+        insert(index + 1, {
+          label: `${currentItem.label} (copy)`,
+          value: currentItem.value,
+        });
+      };
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            {fields.map((field, index) => (
+              <label key={field.id} data-testid={`checkbox-item-${index}`}>
+                <span>{field.label}</span>
+                <input
+                  type="checkbox"
+                  {...register(`checkboxes.${index}.value`)}
+                  data-testid={`checkbox-${index}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDuplicate(index)}
+                  data-testid={`duplicate-button-${index}`}
+                >
+                  Duplicate
+                </button>
+              </label>
+            ))}
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('checkbox-0')).toBeChecked();
+    expect(screen.getByTestId('checkbox-1')).not.toBeChecked();
+
+    fireEvent.click(screen.getByTestId('duplicate-button-0'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Option 1 (copy)')).toBeInTheDocument();
+      expect(screen.getByTestId('checkbox-1')).toBeChecked();
+    });
+
+    fireEvent.click(screen.getByTestId('checkbox-1'));
+
+    fireEvent.click(screen.getByTestId('duplicate-button-1'));
+
+    await waitFor(() => {
+      const checkboxes = screen.getAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(4);
+      expect(checkboxes[0]).toBeChecked(); // Option 1
+      expect(checkboxes[1]).not.toBeChecked(); // Option 1 (copy)
+      expect(checkboxes[2]).not.toBeChecked(); // Option 1 (copy) (copy)
+      expect(checkboxes[3]).not.toBeChecked(); // Option 2
     });
   });
 });

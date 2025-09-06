@@ -1,6 +1,6 @@
 import { expectAssignable, expectType } from 'tsd';
 
-import { DeepPartial, ExtractObjects, IsAny, IsNever } from '../types';
+import type { DeepPartial, ExtractObjects, IsAny, IsNever } from '../types';
 
 import { _ } from './__fixtures__';
 

@@ -1,11 +1,16 @@
 import React from 'react';
 
-import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import deepEqual from './utils/deepEqual';
-import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
-import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import { createFormControl } from './logic';
+import type {
+  FieldValues,
+  FormState,
+  UseFormProps,
+  UseFormReturn,
+} from './types';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Custom hook to manage the entire form.
@@ -39,9 +44,9 @@ import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
@@ -61,43 +66,79 @@ export function useForm<
     validatingFields: {},
     errors: props.errors || {},
     disabled: props.disabled || false,
+    isReady: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
   });
 
   if (!_formControl.current) {
-    _formControl.current = {
-      ...(props.formControl ? props.formControl : createFormControl(props)),
-      formState,
-    };
+    if (props.formControl) {
+      _formControl.current = {
+        ...props.formControl,
+        formState,
+      };
 
-    if (
-      props.formControl &&
-      props.defaultValues &&
-      !isFunction(props.defaultValues)
-    ) {
-      props.formControl.reset(props.defaultValues, props.resetOptions);
+      if (props.defaultValues && !isFunction(props.defaultValues)) {
+        props.formControl.reset(props.defaultValues, props.resetOptions);
+      }
+    } else {
+      const { formControl, ...rest } = createFormControl(props);
+
+      _formControl.current = {
+        ...rest,
+        formState,
+      };
     }
   }
 
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useLayoutEffect(
-    () =>
-      control._subscribe({
-        formState: control._proxyFormState,
-        callback: () => updateFormState({ ...control._formState }),
-        reRenderRoot: true,
-      }),
-    [control],
-  );
+  useIsomorphicLayoutEffect(() => {
+    const sub = control._subscribe({
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
+    });
+
+    updateFormState((data) => ({
+      ...data,
+      isReady: true,
+    }));
+
+    control._formState.isReady = true;
+
+    return sub;
+  }, [control]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),
     [control, props.disabled],
   );
+
+  React.useEffect(() => {
+    if (props.mode) {
+      control._options.mode = props.mode;
+    }
+    if (props.reValidateMode) {
+      control._options.reValidateMode = props.reValidateMode;
+    }
+  }, [control, props.mode, props.reValidateMode]);
+
+  React.useEffect(() => {
+    if (props.errors) {
+      control._setErrors(props.errors);
+      control._focusError();
+    }
+  }, [control, props.errors]);
+
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.state.next({
+        values: control._getWatch(),
+      });
+  }, [control, props.shouldUnregister]);
 
   React.useEffect(() => {
     if (control._proxyFormState.isDirty) {
@@ -112,19 +153,16 @@ export function useForm<
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
-      control._reset(props.values, control._options.resetOptions);
+      control._reset(props.values, {
+        keepFieldsRef: true,
+        ...control._options.resetOptions,
+      });
       _values.current = props.values;
       updateFormState((state) => ({ ...state }));
     } else {
       control._resetDefaultValues();
     }
-  }, [props.values, control]);
-
-  React.useEffect(() => {
-    if (props.errors && !isEmptyObject(props.errors)) {
-      control._setErrors(props.errors);
-    }
-  }, [props.errors, control]);
+  }, [control, props.values]);
 
   React.useEffect(() => {
     if (!control._state.mount) {
@@ -139,13 +177,6 @@ export function useForm<
 
     control._removeUnmounted();
   });
-
-  React.useEffect(() => {
-    props.shouldUnregister &&
-      control._subjects.state.next({
-        values: control._getWatch(),
-      });
-  }, [props.shouldUnregister, control]);
 
   _formControl.current.formState = getProxyFormState(formState, control);
 

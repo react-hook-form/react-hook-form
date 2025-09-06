@@ -8,7 +8,12 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import { DeepMap, ErrorOption, FieldError, GlobalError } from '../../types';
+import type {
+  DeepMap,
+  ErrorOption,
+  FieldError,
+  GlobalError,
+} from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 

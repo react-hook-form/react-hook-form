@@ -9,7 +9,11 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues, ValidateResult } from '../types';
+import type {
+  ControllerRenderProps,
+  FieldValues,
+  ValidateResult,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -865,7 +869,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should update Controller value with setValue', () => {
@@ -1069,6 +1073,9 @@ describe('Controller', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValue).toEqual([
+      {
+        test: 'bill',
+      },
       {
         test: 'bill',
       },

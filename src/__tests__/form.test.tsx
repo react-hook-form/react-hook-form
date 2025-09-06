@@ -31,6 +31,21 @@ const server = setupServer(
 
     return new HttpResponse(null, { status: 500 });
   }),
+  http.post('/formData', async ({ request }) => {
+    if (
+      request.headers.get('content-type')?.startsWith('multipart/form-data') &&
+      request.headers.get('content-type')?.includes('boundary=')
+    ) {
+      try {
+        await request.formData();
+        return new HttpResponse(null, { status: 200 });
+      } catch {
+        return new HttpResponse(null, { status: 500 });
+      }
+    }
+
+    return new HttpResponse(null, { status: 500 });
+  }),
 );
 
 describe('Form', () => {
@@ -293,6 +308,36 @@ describe('Form', () => {
         <Form
           encType={'application/json'}
           action={'/json'}
+          control={control}
+          onSuccess={onSuccess}
+        >
+          <button>Submit</button>
+          <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSuccess).toBeCalled();
+    });
+  });
+
+  it('should support explicit "multipart/form-data" encType', async () => {
+    const onSuccess = jest.fn();
+    const App = () => {
+      const {
+        control,
+        formState: { isSubmitSuccessful },
+      } = useForm();
+
+      return (
+        <Form
+          encType={'multipart/form-data'}
+          action={'/formData'}
           control={control}
           onSuccess={onSuccess}
         >

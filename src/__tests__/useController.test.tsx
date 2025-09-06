@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
+import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -151,7 +151,7 @@ describe('useController', () => {
 
     render(<Component />);
 
-    expect(renderCounter).toEqual([1, 1]);
+    expect(renderCounter).toEqual([2, 2]);
 
     fireEvent.change(screen.getAllByRole('textbox')[1], {
       target: {
@@ -165,7 +165,7 @@ describe('useController', () => {
 
     expect(screen.getByText('isTouched')).toBeVisible();
 
-    expect(renderCounter).toEqual([1, 3]);
+    expect(renderCounter).toEqual([2, 4]);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -175,7 +175,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([3, 3]);
+    expect(renderCounter).toEqual([4, 4]);
   });
 
   describe('checkbox', () => {
@@ -199,15 +199,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: true }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: true },
+        { test: false },
+      ]);
     });
 
     it('should work for checkbox by assign checked', async () => {
@@ -236,15 +241,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: true }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: true },
+        { test: false },
+      ]);
     });
 
     it('should work for checkbox by assign value manually', async () => {
@@ -276,15 +286,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: 'on' }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: 'on' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: 'on' }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: 'on' },
+        { test: false },
+      ]);
     });
   });
 
@@ -330,7 +345,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(counter).toEqual(1);
+    expect(counter).toEqual(2);
 
     expect(screen.getByText('dirty')).toBeVisible();
     expect(screen.getByText('touched')).toBeVisible();
@@ -766,6 +781,9 @@ describe('useController', () => {
     expect(watchResults).toEqual([
       {},
       {
+        test: '',
+      },
+      {
         test: 'updated value',
       },
     ]);
@@ -1197,7 +1215,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    expect(renderCounter).toEqual({ test: 1, test_with_suffix: 1 });
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
     expect(screen.queryByText('test is required')).toBeNull();
     expect(screen.queryByText('test_with_suffix is required')).toBeNull();
 
@@ -1211,7 +1229,7 @@ describe('useController', () => {
 
     expect(screen.getByText('test isDirty')).toBeVisible();
 
-    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 1 });
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 2 });
 
     fireEvent.change(
       screen.getByRole('textbox', { name: 'test_with_suffix' }),
@@ -1226,6 +1244,63 @@ describe('useController', () => {
 
     expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
 
-    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+  });
+
+  it('should prevent field value leakage when field names change at same position', () => {
+    type FormValues = {
+      type: 'personal' | 'business';
+      personalName: string;
+      businessName: string;
+    };
+
+    const Component = () => {
+      const { control, watch, setValue } = useForm<FormValues>({
+        defaultValues: {
+          type: 'personal',
+          personalName: '',
+          businessName: '',
+        },
+      });
+
+      const type = watch('type');
+
+      return (
+        <div>
+          <select
+            value={type}
+            onChange={(e) => setValue('type', e.target.value as any)}
+          >
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+          </select>
+          {type === 'personal' ? (
+            <Controller
+              name="personalName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          ) : (
+            <Controller
+              name="businessName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          )}
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John Doe' },
+    });
+
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'business' },
+    });
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
   });
 });

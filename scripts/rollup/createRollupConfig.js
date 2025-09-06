@@ -28,9 +28,7 @@ export function createRollupConfig(options, callback) {
     external: Object.keys(pkg.peerDependencies),
     plugins: [
       typescript({
-        tsconfig: options.tsconfig,
         clean: true,
-        exclude: ['**/__tests__', '**/*.test.ts', '**/__typetest__'],
       }),
       options.format === 'umd' &&
         commonjs({
@@ -39,9 +37,7 @@ export function createRollupConfig(options, callback) {
       options.format !== 'esm' &&
         terser({
           output: { comments: false },
-          compress: {
-            drop_console: true,
-          },
+          compress: { drop_console: true },
         }),
     ].filter(Boolean),
   };

@@ -10,13 +10,11 @@ export default function cloneObject<T>(data: T): T {
 
   if (data instanceof Date) {
     copy = new Date(data);
-  } else if (data instanceof Set) {
-    copy = new Set(data);
   } else if (
     !(isWeb && (data instanceof Blob || isFileListInstance)) &&
     (isArray || isObject(data))
   ) {
-    copy = isArray ? [] : {};
+    copy = isArray ? [] : Object.create(Object.getPrototypeOf(data));
 
     if (!isArray && !isPlainObject(data)) {
       copy = data;

@@ -1,16 +1,26 @@
 // @ts-check
 
-import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import pluginCypress from 'eslint-plugin-cypress/flat';
-import reactHookPlugin from "eslint-plugin-react-hooks";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
 import { fixupPluginRules } from '@eslint/compat';
+import pluginCypress from 'eslint-plugin-cypress/flat';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import reactPlugin from 'eslint-plugin-react';
+import reactHookPlugin from 'eslint-plugin-react-hooks';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ["app", "examples", "node_modules", "dist", "coverage", "src/types/global.d.ts","!.*.js", "reports", "scripts/README"],
+    ignores: [
+      'app',
+      'examples',
+      'node_modules',
+      'dist',
+      'coverage',
+      'src/types/global.d.ts',
+      '!.*.js',
+      'reports',
+      'scripts/README',
+    ],
   },
   reactPlugin.configs.flat.recommended,
   ...tseslint.configs.recommended,
@@ -19,7 +29,7 @@ export default tseslint.config(
   {
     plugins: {
       'react-hooks': fixupPluginRules(reactHookPlugin),
-      "simple-import-sort": simpleImportSort
+      'simple-import-sort': simpleImportSort,
     },
     languageOptions: {
       ecmaVersion: 2020,
@@ -46,6 +56,7 @@ export default tseslint.config(
       '@typescript-eslint/ban-types': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { ignoreRestSiblings: true },
@@ -72,6 +83,8 @@ export default tseslint.config(
         },
       ],
       'simple-import-sort/exports': 'error',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
     },
   },
   {
