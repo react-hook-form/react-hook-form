@@ -15,11 +15,11 @@ importers:
         specifier: ^7.52.11
         version: 7.52.11(@types/node@24.3.1)
       '@rollup/plugin-commonjs':
-        specifier: ^26.0.3
-        version: 26.0.3(rollup@4.50.0)
+        specifier: ^28.0.6
+        version: 28.0.6(rollup@4.50.0)
       '@rollup/plugin-node-resolve':
-        specifier: ^15.3.1
-        version: 15.3.1(rollup@4.50.0)
+        specifier: ^16.0.1
+        version: 16.0.1(rollup@4.50.0)
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.50.0)
@@ -587,8 +587,8 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@rollup/plugin-commonjs@26.0.3':
-    resolution: {integrity: sha512-2BJcolt43MY+y5Tz47djHkodCC3c1VKVrBDKpVqHKpQ9z9S158kCCqB8NF6/gzxLdNlYW9abB3Ibh+kOWLp8KQ==}
+  '@rollup/plugin-commonjs@28.0.6':
+    resolution: {integrity: sha512-XSQB1K7FUU5QP+3lOQmVCE3I0FcbbNvmNT4VJSj93iUjayaARrTQeoRdiYQoftAJBLrR9t2agwAd3ekaTgHNlw==}
     engines: {node: '>=16.0.0 || 14 >= 14.17'}
     peerDependencies:
       rollup: ^2.68.0||^3.0.0||^4.0.0
@@ -596,8 +596,8 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-node-resolve@15.3.1':
-    resolution: {integrity: sha512-tgg6b91pAybXHJQMAAwW9VuWBO6Thi+q7BCNARLwSqlmsHz0XYURtGvh/AuwSADXSI4h/2uHbs7s4FzlZDGSGA==}
+  '@rollup/plugin-node-resolve@16.0.1':
+    resolution: {integrity: sha512-tk5YCxJWIG81umIvNkSod2qK5KyQW19qcBF/B78n1bjtOON6gzKoVeSzAE8yHCZEDmqkHKkxplExA8KzdJLJpA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.78.0||^3.0.0||^4.0.0
@@ -2038,6 +2038,15 @@ packages:
 
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
+
+  fdir@6.5.0:
+    resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
 
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
@@ -4853,18 +4862,19 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@rollup/plugin-commonjs@26.0.3(rollup@4.50.0)':
+  '@rollup/plugin-commonjs@28.0.6(rollup@4.50.0)':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.50.0)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      glob: 10.4.5
+      fdir: 6.5.0(picomatch@4.0.3)
       is-reference: 1.2.1
       magic-string: 0.30.18
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 4.50.0
 
-  '@rollup/plugin-node-resolve@15.3.1(rollup@4.50.0)':
+  '@rollup/plugin-node-resolve@16.0.1(rollup@4.50.0)':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.50.0)
       '@types/resolve': 1.20.2
@@ -6480,6 +6490,10 @@ snapshots:
   fd-slicer@1.1.0:
     dependencies:
       pend: 1.2.0
+
+  fdir@6.5.0(picomatch@4.0.3):
+    optionalDependencies:
+      picomatch: 4.0.3
 
   figures@3.2.0:
     dependencies:
