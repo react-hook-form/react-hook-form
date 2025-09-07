@@ -567,9 +567,9 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(focus).toBeCalled());
-    expect(setCustomValidity).toBeCalledWith(message);
-    expect(reportValidity).toBeCalled();
+    await waitFor(() => expect(focus).toHaveBeenCalled());
+    expect(setCustomValidity).toHaveBeenCalledWith(message);
+    expect(reportValidity).toHaveBeenCalled();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -579,9 +579,9 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
-    expect(reportValidity).toBeCalledTimes(3);
-    expect(focus).toBeCalledTimes(2);
+    await waitFor(() => expect(setCustomValidity).toHaveBeenCalledTimes(3));
+    expect(reportValidity).toHaveBeenCalledTimes(3);
+    expect(focus).toHaveBeenCalledTimes(2);
   });
 
   it('should update with inline defaultValue', async () => {
@@ -606,7 +606,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -818,8 +818,8 @@ describe('useController', () => {
 
     render(<App />);
 
-    expect(select).toBeCalled();
-    expect(focus).toBeCalled();
+    expect(select).toHaveBeenCalled();
+    expect(focus).toHaveBeenCalled();
   });
 
   it('should update isValid correctly with strict mode', async () => {
@@ -1078,7 +1078,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     waitFor(() => {
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -1129,7 +1129,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -1139,7 +1139,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -1149,7 +1149,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: undefined,
       }),
     );
