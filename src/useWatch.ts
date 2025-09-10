@@ -269,54 +269,67 @@ export function useWatch<TFieldValues extends FieldValues>(
   const _compute = React.useRef(compute);
   const _computeFormValues = React.useRef(undefined);
 
+  const _prevControl = React.useRef(control);
+  const _prevName = React.useRef(name);
+
   _compute.current = compute;
 
-  const defaultValueMemo = React.useMemo(
-    () =>
-      control._getWatch(
-        name as InternalFieldName,
-        _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
-      ),
-    [control, name],
-  );
+  const [value, updateValue] = React.useState(() => {
+    const defaultValue = control._getWatch(
+      name as InternalFieldName,
+      _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
+    );
 
-  const [value, updateValue] = React.useState(
-    _compute.current ? _compute.current(defaultValueMemo) : defaultValueMemo,
-  );
+    return _compute.current ? _compute.current(defaultValue) : defaultValue;
+  });
 
-  useIsomorphicLayoutEffect(
-    () =>
-      control._subscribe({
-        name,
-        formState: {
-          values: true,
-        },
-        exact,
-        callback: (formState) => {
-          if (!disabled) {
-            const formValues = generateWatchOutput(
-              name as InternalFieldName | InternalFieldName[],
-              control._names,
-              formState.values || control._formValues,
-              false,
-              _defaultValue.current,
-            );
+  const refreshValue = React.useCallback(
+    (values?: TFieldValues) => {
+      if (!disabled) {
+        const formValues = generateWatchOutput(
+          name as InternalFieldName | InternalFieldName[],
+          control._names,
+          values || control._formValues,
+          false,
+          _defaultValue.current,
+        );
 
-            if (_compute.current) {
-              const computedFormValues = _compute.current(formValues);
+        if (_compute.current) {
+          const computedFormValues = _compute.current(formValues);
 
-              if (!deepEqual(computedFormValues, _computeFormValues.current)) {
-                updateValue(computedFormValues);
-                _computeFormValues.current = computedFormValues;
-              }
-            } else {
-              updateValue(formValues);
-            }
+          if (!deepEqual(computedFormValues, _computeFormValues.current)) {
+            updateValue(computedFormValues);
+            _computeFormValues.current = computedFormValues;
           }
-        },
-      }),
-    [control, disabled, name, exact],
+        } else {
+          updateValue(formValues);
+        }
+      }
+    },
+    [control._formValues, control._names, disabled, name],
   );
+
+  useIsomorphicLayoutEffect(() => {
+    if (
+      _prevControl.current !== control ||
+      !deepEqual(_prevName.current, name)
+    ) {
+      _prevControl.current = control;
+      _prevName.current = name;
+      refreshValue();
+    }
+
+    return control._subscribe({
+      name,
+      formState: {
+        values: true,
+      },
+      exact,
+      callback: (formState) => {
+        refreshValue(formState.values);
+      },
+    });
+  }, [control, exact, name, refreshValue]);
 
   React.useEffect(() => control._removeUnmounted());
 
