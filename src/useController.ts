@@ -185,36 +185,32 @@ export function useController<
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
+
     const previousName = _previousNameRef.current;
     const previousControl = _previousControlRef.current;
-    const isControlChanged = previousControl !== control;
-    const isNameChanged = previousName !== name;
+    const hasChanged = previousControl !== control || previousName !== name;
 
-    // If control changed, we need to unregister from the old control
-    if (previousControl && isControlChanged && previousName && !isArrayField) {
-      previousControl.unregister(previousName as FieldPath<TFieldValues>);
+    // Unregister previous when either control or name changed
+    if (hasChanged && previousName && !isArrayField) {
+      const target =
+        previousControl && previousControl !== control
+          ? previousControl
+          : control;
+      target.unregister(previousName as FieldPath<TFieldValues>);
     }
 
-    // If name changed within the same control, unregister the old name
-    if (!isControlChanged && previousName && isNameChanged && !isArrayField) {
-      control.unregister(previousName as FieldPath<TFieldValues>);
-    }
+    // Register current
+    _registerProps.current = control.register(name, {
+      ..._props.current.rules,
+      ...(isBoolean(_props.current.disabled)
+        ? { disabled: _props.current.disabled }
+        : {}),
+    });
 
-    // Re-register when name or control changes
-    if (isNameChanged || isControlChanged) {
-      _registerProps.current = control.register(name, {
-        ..._props.current.rules,
-        ...(isBoolean(_props.current.disabled)
-          ? { disabled: _props.current.disabled }
-          : {}),
-      });
-    }
-
-    const updateMounted = (name: InternalFieldName, value: boolean) => {
-      const field: Field = get(control._fields, name);
-
+    const updateMounted = (fieldName: InternalFieldName, mounted: boolean) => {
+      const field: Field = get(control._fields, fieldName);
       if (field && field._f) {
-        field._f.mount = value;
+        field._f.mount = mounted;
       }
     };
 
