@@ -67,7 +67,7 @@ export function useController<
   const _previousNameRef = React.useRef<string | undefined>(undefined);
   const _previousControlRef = React.useRef(control);
 
-  const watchedValue = useWatch({
+  const value = useWatch({
     control,
     name,
     defaultValue: get(
@@ -77,17 +77,6 @@ export function useController<
     ),
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
-
-  // Minimal sync fallback: if control or name changed this render, read the
-  // current form value directly to avoid returning a stale watched value.
-  const value =
-    _previousControlRef.current !== control || _previousNameRef.current !== name
-      ? (get(
-          control._formValues,
-          name,
-          get(control._defaultValues, name, defaultValue),
-        ) as FieldPathValue<TFieldValues, TName>)
-      : watchedValue;
 
   const formState = useFormState({
     control,

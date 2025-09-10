@@ -283,6 +283,22 @@ export function useWatch<TFieldValues extends FieldValues>(
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
   });
 
+  // Helper to compute current output synchronously
+  const getCurrentOutput = React.useCallback(
+    (values?: TFieldValues) => {
+      const formValues = generateWatchOutput(
+        name as InternalFieldName | InternalFieldName[],
+        control._names,
+        values || control._formValues,
+        false,
+        _defaultValue.current,
+      );
+
+      return _compute.current ? _compute.current(formValues) : formValues;
+    },
+    [control._formValues, control._names, name],
+  );
+
   const refreshValue = React.useCallback(
     (values?: TFieldValues) => {
       if (!disabled) {
@@ -333,5 +349,14 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   React.useEffect(() => control._removeUnmounted());
 
-  return value;
+  // If name or control changed for this render, synchronously reflect the
+  // latest value so callers (like useController) see the correct value
+  // immediately on the same render.
+  const shouldReturnImmediate =
+    _prevControl.current !== control || !deepEqual(_prevName.current, name);
+
+  const immediate =
+    !disabled && shouldReturnImmediate ? getCurrentOutput() : undefined;
+
+  return (immediate as any) ?? value;
 }
