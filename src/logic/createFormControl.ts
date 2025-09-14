@@ -858,6 +858,7 @@ export function createFormControl<
 
       if (isFieldValueUpdated) {
         field._f.deps &&
+          (!Array.isArray(field._f.deps) || field._f.deps.length > 0) &&
           trigger(
             field._f.deps as
               | FieldPath<TFieldValues>
