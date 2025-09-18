@@ -187,4 +187,17 @@ describe('clone', () => {
     const copy = cloneObject(dateTime);
     expect(copy._tag).toBe('Utc');
   });
+
+  it('should clone date object with custom constructor', () => {
+    class CustomDate extends Date {
+      customMethod() {
+        return 'custom';
+      }
+    };
+    const date = new CustomDate();
+    const copy = cloneObject(date);
+    expect(copy).toEqual(date);
+    expect(copy.constructor).toBe(CustomDate);
+    expect(copy.customMethod()).toBe('custom');
+  });
 });
