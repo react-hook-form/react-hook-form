@@ -193,7 +193,7 @@ describe('clone', () => {
       customMethod() {
         return 'custom';
       }
-    };
+    }
     const date = new CustomDate();
     const copy = cloneObject(date);
     expect(copy).toEqual(date);
