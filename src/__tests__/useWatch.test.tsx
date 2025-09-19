@@ -342,6 +342,48 @@ describe('useWatch', () => {
     expect(screen.getByText('345')).toBeVisible();
   });
 
+  it('should avoid triggering extra callbacks', () => {
+    const onChange = jest.fn();
+    type FormInputs = {
+      firstName: string;
+    };
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+        clearErrors,
+        watch,
+      } = useForm<FormInputs>();
+
+      React.useEffect(() => {
+        const unsubscribe = watch(onChange)?.unsubscribe;
+        return () => unsubscribe?.();
+      }, [watch]);
+
+      return (
+        <form>
+          <label>First Name</label>
+          <input type="text" {...register('firstName', { required: true })} />
+          {errors.firstName && <p>This Field is Required</p>}
+
+          <button type="button" onClick={() => clearErrors('firstName')}>
+            Clear First Name Errors
+          </button>
+          <button type="button" onClick={() => clearErrors()}>
+            Clear All Errors
+          </button>
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Clear All Errors'));
+    expect(onChange).toHaveBeenCalledTimes(0);
+  });
+
   describe('when disabled prop is used', () => {
     it('should be able to disabled subscription and started with true', async () => {
       type FormValues = {
@@ -1796,6 +1838,71 @@ describe('useWatch', () => {
       render(<Form />);
 
       expect(await screen.findByText('test')).toBeDefined();
+    });
+  });
+
+  describe('compute ', () => {
+    it('should only update when value changed within compute', () => {
+      type FormValue = {
+        test: string;
+      };
+
+      let renderCount = 0;
+
+      const Form = () => {
+        const methods = useForm<FormValue>({
+          defaultValues: { test: '' },
+        });
+
+        const watchedValue = useWatch({
+          control: methods.control,
+          compute: (data: FormValue) => data.test?.length > 2,
+        });
+
+        renderCount++;
+
+        return (
+          <div>
+            <input {...methods.register('test')} />
+            <p>{watchedValue ? 'yes' : 'no'}</p>
+            <p>{renderCount}</p>
+          </div>
+        );
+      };
+
+      render(<Form />);
+
+      screen.getByText('no');
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12' },
+      });
+
+      screen.getByText('no');
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123' },
+      });
+
+      screen.getByText('yes');
+
+      expect(renderCount).toEqual(4);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12' },
+      });
+
+      screen.getByText('no');
+
+      expect(renderCount).toEqual(5);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '1' },
+      });
+
+      screen.getByText('no');
+
+      expect(renderCount).toEqual(5);
     });
   });
 });

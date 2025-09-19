@@ -443,7 +443,7 @@ describe('append', () => {
         result.current.append({ value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -472,7 +472,7 @@ describe('append', () => {
         result.current.append({ value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
   });
 

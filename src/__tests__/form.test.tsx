@@ -31,6 +31,21 @@ const server = setupServer(
 
     return new HttpResponse(null, { status: 500 });
   }),
+  http.post('/formData', async ({ request }) => {
+    if (
+      request.headers.get('content-type')?.startsWith('multipart/form-data') &&
+      request.headers.get('content-type')?.includes('boundary=')
+    ) {
+      try {
+        await request.formData();
+        return new HttpResponse(null, { status: 200 });
+      } catch {
+        return new HttpResponse(null, { status: 500 });
+      }
+    }
+
+    return new HttpResponse(null, { status: 500 });
+  }),
 );
 
 describe('Form', () => {
@@ -123,8 +138,8 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
-      expect(onError).not.toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onError).not.toHaveBeenCalled();
       screen.getByText('submitSuccessful');
       screen.getByText('ok');
     });
@@ -166,8 +181,8 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
-      expect(onSuccess).not.toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
       screen.getByText('This is a server error');
       screen.getByText('500');
       screen.getByText('submitFailed');
@@ -293,7 +308,7 @@ describe('Form', () => {
     await waitFor(() => {
       screen.getByText('submitSuccessful');
 
-      expect(fetcher).toBeCalled();
+      expect(fetcher).toHaveBeenCalled();
     });
   });
 
@@ -328,7 +343,37 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSuccess).toBeCalled();
+      expect(onSuccess).toHaveBeenCalled();
+    });
+  });
+
+  it('should support explicit "multipart/form-data" encType', async () => {
+    const onSuccess = jest.fn();
+    const App = () => {
+      const {
+        control,
+        formState: { isSubmitSuccessful },
+      } = useForm();
+
+      return (
+        <Form
+          encType={'multipart/form-data'}
+          action={'/formData'}
+          control={control}
+          onSuccess={onSuccess}
+        >
+          <button>Submit</button>
+          <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalled();
     });
   });
 });

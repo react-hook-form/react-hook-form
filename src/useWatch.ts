@@ -1,6 +1,7 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
+import deepEqual from './utils/deepEqual';
 import type {
   Control,
   DeepPartialSkipArrayKey,
@@ -14,6 +15,38 @@ import type {
 import { useFormContext } from './useFormContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
+/**
+ * Subscribe to the entire form values change and re-render at the hook level.
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   defaultValue: {
+ *     name: "data"
+ *   },
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TTransformedValues = TFieldValues,
+>(props: {
+  name?: undefined;
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
+  disabled?: boolean;
+  exact?: boolean;
+  compute?: undefined;
+}): DeepPartialSkipArrayKey<TFieldValues>;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
@@ -44,13 +77,14 @@ export function useWatch<
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
+  compute?: undefined;
 }): FieldPathValue<TFieldValues, TFieldName>;
 /**
- * Subscribe to the entire form values change and re-render at the hook level.
+ * Custom hook to subscribe to field change and compute function to produce state update
  *
  * @remarks
  *
- * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
+ * [API](https://react-hook-form.com/docs/usewatch)
  *
  * @param props - defaultValue, disable subscription and match exact name.
  *
@@ -59,22 +93,58 @@ export function useWatch<
  * const { control } = useForm();
  * const values = useWatch({
  *   control,
- *   defaultValue: {
- *     name: "data"
- *   },
- *   exact: false,
+ *   compute: (formValues) => formValues.fieldA
  * })
  * ```
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
   TTransformedValues = TFieldValues,
+  TComputeValue = unknown,
 >(props: {
+  name?: undefined;
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
-}): DeepPartialSkipArrayKey<TFieldValues>;
+  compute: (formValues: TFieldValues) => TComputeValue;
+}): TComputeValue;
+/**
+ * Custom hook to subscribe to field change and compute function to produce state update
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   name: "fieldA",
+ *   defaultValue: "default value",
+ *   exact: false,
+ *   compute: (fieldValue) => fieldValue === "data" ? fieldValue : null,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+  TComputeValue = unknown,
+>(props: {
+  name: TFieldName;
+  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
+  disabled?: boolean;
+  exact?: boolean;
+  compute: (
+    fieldValue: FieldPathValue<TFieldValues, TFieldName>,
+  ) => TComputeValue;
+}): TComputeValue;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
@@ -109,7 +179,48 @@ export function useWatch<
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
+  compute?: undefined;
 }): FieldPathValues<TFieldValues, TFieldNames>;
+/**
+ * Custom hook to subscribe to field change and compute function to produce state update
+ *
+ * @remarks
+ *
+ * [API](https://react-hook-form.com/docs/usewatch)
+ *
+ * @param props - defaultValue, disable subscription and match exact name.
+ *
+ * @example
+ * ```tsx
+ * const { control } = useForm();
+ * const values = useWatch({
+ *   control,
+ *   name: ["fieldA", "fieldB"],
+ *   defaultValue: {
+ *     fieldA: "data",
+ *     fieldB: 0
+ *   },
+ *   compute: ([fieldAValue, fieldBValue]) => fieldB === 2 ? fieldA : null,
+ *   exact: false,
+ * })
+ * ```
+ */
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldNames extends
+    readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TTransformedValues = TFieldValues,
+  TComputeValue = unknown,
+>(props: {
+  name: readonly [...TFieldNames];
+  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+  control?: Control<TFieldValues, any, TTransformedValues>;
+  disabled?: boolean;
+  exact?: boolean;
+  compute: (
+    fieldValue: FieldPathValues<TFieldValues, TFieldNames>,
+  ) => TComputeValue;
+}): TComputeValue;
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
@@ -152,13 +263,25 @@ export function useWatch<TFieldValues extends FieldValues>(
     defaultValue,
     disabled,
     exact,
+    compute,
   } = props || {};
   const _defaultValue = React.useRef(defaultValue);
+  const _compute = React.useRef(compute);
+  const _computeFormValues = React.useRef(undefined);
+
+  _compute.current = compute;
+
+  const defaultValueMemo = React.useMemo(
+    () =>
+      control._getWatch(
+        name as InternalFieldName,
+        _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
+      ),
+    [control, name],
+  );
+
   const [value, updateValue] = React.useState(
-    control._getWatch(
-      name as InternalFieldName,
-      _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
-    ),
+    _compute.current ? _compute.current(defaultValueMemo) : defaultValueMemo,
   );
 
   useIsomorphicLayoutEffect(
@@ -169,19 +292,30 @@ export function useWatch<TFieldValues extends FieldValues>(
           values: true,
         },
         exact,
-        callback: (formState) =>
-          !disabled &&
-          updateValue(
-            generateWatchOutput(
+        callback: (formState) => {
+          if (!disabled) {
+            const formValues = generateWatchOutput(
               name as InternalFieldName | InternalFieldName[],
               control._names,
               formState.values || control._formValues,
               false,
               _defaultValue.current,
-            ),
-          ),
+            );
+
+            if (_compute.current) {
+              const computedFormValues = _compute.current(formValues);
+
+              if (!deepEqual(computedFormValues, _computeFormValues.current)) {
+                updateValue(computedFormValues);
+                _computeFormValues.current = computedFormValues;
+              }
+            } else {
+              updateValue(formValues);
+            }
+          }
+        },
       }),
-    [name, control, disabled, exact],
+    [control, disabled, name, exact],
   );
 
   React.useEffect(() => control._removeUnmounted());

@@ -54,18 +54,32 @@ export function useController<
   props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
   const methods = useFormContext<TFieldValues, any, TTransformedValues>();
-  const { name, disabled, control = methods.control, shouldUnregister } = props;
+  const {
+    name,
+    disabled,
+    control = methods.control,
+    shouldUnregister,
+    defaultValue,
+  } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
+
+  const defaultValueMemo = React.useMemo(
+    () =>
+      get(
+        control._formValues,
+        name,
+        get(control._defaultValues, name, defaultValue),
+      ),
+    [control, name, defaultValue],
+  );
+
   const value = useWatch({
     control,
     name,
-    defaultValue: get(
-      control._formValues,
-      name,
-      get(control._defaultValues, name, props.defaultValue),
-    ),
+    defaultValue: defaultValueMemo,
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
+
   const formState = useFormState({
     control,
     name,
@@ -73,6 +87,9 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+
+  const _previousNameRef = React.useRef<string | undefined>(undefined);
+
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -80,6 +97,8 @@ export function useController<
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }),
   );
+
+  _props.current = props;
 
   const fieldState = React.useMemo(
     () =>
@@ -169,6 +188,11 @@ export function useController<
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
+    const previousName = _previousNameRef.current;
+
+    if (previousName && previousName !== name && !isArrayField) {
+      control.unregister(previousName as FieldPath<TFieldValues>);
+    }
 
     control.register(name, {
       ..._props.current.rules,
@@ -196,6 +220,8 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    _previousNameRef.current = name;
 
     return () => {
       (

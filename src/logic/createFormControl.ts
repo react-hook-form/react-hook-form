@@ -16,6 +16,7 @@ import type {
   FormState,
   FromSubscribe,
   GetIsDirty,
+  GetValuesConfig,
   InternalFieldName,
   Names,
   Path,
@@ -48,6 +49,7 @@ import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
+import extractFormValues from '../utils/extractFormValues';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -129,7 +131,7 @@ export function createFormControl<
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
-  const _fields: FieldRefs = {};
+  let _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
       ? cloneObject(_options.defaultValues || _options.values) || {}
@@ -484,7 +486,7 @@ export function createFormControl<
             field._f && hasPromiseValidation((field as Field)._f);
 
           if (isPromiseFunction && _proxyFormState.validatingFields) {
-            _updateIsValidating([name], true);
+            _updateIsValidating([_f.name], true);
           }
 
           const fieldError = await validateField(
@@ -497,7 +499,7 @@ export function createFormControl<
           );
 
           if (isPromiseFunction && _proxyFormState.validatingFields) {
-            _updateIsValidating([name]);
+            _updateIsValidating([_f.name]);
           }
 
           if (fieldError[_f.name]) {
@@ -718,7 +720,7 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    isWatched(name, _names) && _subjects.state.next({ ..._formState });
+    isWatched(name, _names) && _subjects.state.next({ ..._formState, name });
     _subjects.state.next({
       name: _state.mount ? name : undefined,
       values: cloneObject(_formValues),
@@ -767,8 +769,10 @@ export function createFormControl<
       set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
-        field._f.onBlur && field._f.onBlur(event);
-        delayErrorCallback && delayErrorCallback(0);
+        if (!target || !target.readOnly) {
+          field._f.onBlur && field._f.onBlur(event);
+          delayErrorCallback && delayErrorCallback(0);
+        }
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
@@ -854,6 +858,7 @@ export function createFormControl<
 
       if (isFieldValueUpdated) {
         field._f.deps &&
+          (!Array.isArray(field._f.deps) || field._f.deps.length > 0) &&
           trigger(
             field._f.deps as
               | FieldPath<TFieldValues>
@@ -927,10 +932,18 @@ export function createFormControl<
     fieldNames?:
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
+    config?: GetValuesConfig,
   ) => {
-    const values = {
+    let values = {
       ...(_state.mount ? _formValues : _defaultValues),
     };
+
+    if (config) {
+      values = extractFormValues(
+        config.dirtyFields ? _formState.dirtyFields : _formState.touchedFields,
+        values,
+      );
+    }
 
     return isUndefined(fieldNames)
       ? values
@@ -993,6 +1006,7 @@ export function createFormControl<
     isFunction(name)
       ? _subjects.state.subscribe({
           next: (payload) =>
+            'values' in payload &&
             name(
               _getWatch(undefined, defaultValue),
               payload as {
@@ -1030,6 +1044,8 @@ export function createFormControl<
             values: { ..._formValues } as TFieldValues,
             ..._formState,
             ...formState,
+            defaultValues:
+              _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
         }
       },
@@ -1224,8 +1240,10 @@ export function createFormControl<
         (e as React.BaseSyntheticEvent).persist &&
           (e as React.BaseSyntheticEvent).persist();
       }
-      let fieldValues: TFieldValues | TTransformedValues | {} =
-        cloneObject(_formValues);
+      let fieldValues:
+        | TFieldValues
+        | TTransformedValues
+        | Record<string, never> = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1234,7 +1252,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _formState.errors = errors;
-        fieldValues = cloneObject(values) as TFieldValues;
+        fieldValues = cloneObject(values);
       } else {
         await executeBuiltInValidation(_fields);
       }
@@ -1355,20 +1373,23 @@ export function createFormControl<
           }
         }
 
-        for (const fieldName of _names.mount) {
-          const value = get(values, fieldName, get(_defaultValues, fieldName));
-
-          if (!isUndefined(value)) {
-            set(values, fieldName, value);
+        if (keepStateOptions.keepFieldsRef) {
+          for (const fieldName of _names.mount) {
             setValue(
               fieldName as FieldPath<TFieldValues>,
               get(values, fieldName),
             );
           }
+        } else {
+          _fields = {};
         }
       }
 
-      _formValues = cloneObject(values) as TFieldValues;
+      _formValues = _options.shouldUnregister
+        ? keepStateOptions.keepDefaultValues
+          ? (cloneObject(_defaultValues) as TFieldValues)
+          : ({} as TFieldValues)
+        : (cloneObject(values) as TFieldValues);
 
       _subjects.array.next({
         values: { ...values },
@@ -1430,6 +1451,7 @@ export function createFormControl<
         ? _formState.isSubmitSuccessful
         : false,
       isSubmitting: false,
+      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
     });
   };
 

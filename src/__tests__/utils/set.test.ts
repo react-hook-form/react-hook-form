@@ -56,6 +56,12 @@ describe('set', () => {
         ],
       },
     });
+
+    const test7 = { a: [{ b: { c: 3 } }] };
+    set(test7, 'a', undefined);
+    expect(test7).toEqual({
+      a: undefined,
+    });
   });
 
   it('should not populate prototype', () => {

@@ -1719,7 +1719,7 @@ describe('reset', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );

@@ -898,7 +898,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [],
         },
@@ -926,7 +926,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
 
     it('should remove the first index correctly', async () => {
