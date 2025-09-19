@@ -602,7 +602,7 @@ describe('insert', () => {
         result.current.insert(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -631,7 +631,7 @@ describe('insert', () => {
         result.current.insert(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
 
     it('should insert update fields during async submit', () => {
