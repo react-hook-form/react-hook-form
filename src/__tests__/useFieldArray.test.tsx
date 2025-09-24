@@ -2898,36 +2898,34 @@ describe('useFieldArray', () => {
       });
 
       return (
-        <React.StrictMode>
-          <form onSubmit={handleSubmit(noop)}>
-            {fields.map((field, index) => {
-              return (
-                <div key={field.id}>
-                  <input {...register(`test.${index}.yourDetail.firstName`)} />
-                  <input {...register(`test.${index}.yourDetail.lastName`)} />
-                </div>
-              );
-            })}
-            <button
-              type="button"
-              onClick={() =>
-                append({
-                  yourDetail: {
-                    firstName: 'bill',
-                    lastName: 'luo',
-                  },
-                })
-              }
-            >
-              Append
-            </button>
-            <input type="submit" />
-          </form>
-        </React.StrictMode>
+        <form onSubmit={handleSubmit(noop)}>
+          {fields.map((field, index) => {
+            return (
+              <div key={field.id}>
+                <input {...register(`test.${index}.yourDetail.firstName`)} />
+                <input {...register(`test.${index}.yourDetail.lastName`)} />
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() =>
+              append({
+                yourDetail: {
+                  firstName: 'bill',
+                  lastName: 'luo',
+                },
+              })
+            }
+          >
+            Append
+          </button>
+          <input type="submit" />
+        </form>
       );
     }
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.click(screen.getByRole('button', { name: 'Append' }));
 

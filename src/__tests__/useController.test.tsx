@@ -838,27 +838,62 @@ describe('useController', () => {
       const { isValid } = form.formState;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...form}>
-            <Controller
-              render={({ field }) => (
-                <input value={field.value} onChange={field.onChange} />
-              )}
-              name="name"
-              rules={{
-                required: true,
-              }}
-            />
-            <p>{isValid ? 'valid' : 'not'}</p>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...form}>
+          <Controller
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            name="name"
+            rules={{
+              required: true,
+            }}
+          />
+          <p>{isValid ? 'valid' : 'not'}</p>
+        </FormProvider>
       );
     };
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     await waitFor(() => {
       screen.getByText('not');
+    });
+  });
+
+  it('should restore defaultValue from Controller with react strict mode double useEffect', async () => {
+    const onSubmit = jest.fn();
+
+    function App() {
+      const { handleSubmit, control } = useForm({
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <Controller
+            control={control}
+            name="firstName"
+            defaultValue={'luo'}
+            render={({ field }) => <input {...field} />}
+          />
+
+          <button>submit</button>
+        </form>
+      );
+    }
+
+    render(<App />, { reactStrictMode: true });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        firstName: 'luo',
+      });
     });
   });
 
@@ -884,18 +919,16 @@ describe('useController', () => {
       } = methods;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...methods}>
-            <form>
-              <Form />
-              {dirtyFields.lastName ? 'dirty' : 'pristine'}
-            </form>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...methods}>
+          <form>
+            <Form />
+            {dirtyFields.lastName ? 'dirty' : 'pristine'}
+          </form>
+        </FormProvider>
       );
     }
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
