@@ -833,24 +833,22 @@ describe('useController', () => {
       const { isValid } = form.formState;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...form}>
-            <Controller
-              render={({ field }) => (
-                <input value={field.value} onChange={field.onChange} />
-              )}
-              name="name"
-              rules={{
-                required: true,
-              }}
-            />
-            <p>{isValid ? 'valid' : 'not'}</p>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...form}>
+          <Controller
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            name="name"
+            rules={{
+              required: true,
+            }}
+          />
+          <p>{isValid ? 'valid' : 'not'}</p>
+        </FormProvider>
       );
     };
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     await waitFor(() => {
       screen.getByText('not');
@@ -879,18 +877,16 @@ describe('useController', () => {
       } = methods;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...methods}>
-            <form>
-              <Form />
-              {dirtyFields.lastName ? 'dirty' : 'pristine'}
-            </form>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...methods}>
+          <form>
+            <Form />
+            {dirtyFields.lastName ? 'dirty' : 'pristine'}
+          </form>
+        </FormProvider>
       );
     }
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
