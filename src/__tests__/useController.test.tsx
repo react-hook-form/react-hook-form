@@ -855,6 +855,43 @@ describe('useController', () => {
     });
   });
 
+  it('should restore defaultValue from Controller with react strict mode double useEffect', async () => {
+    const onSubmit = jest.fn();
+
+    function App() {
+      const { handleSubmit, control } = useForm({
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <Controller
+            control={control}
+            name="firstName"
+            defaultValue={'luo'}
+            render={({ field }) => <input {...field} />}
+          />
+
+          <button>submit</button>
+        </form>
+      );
+    }
+
+    render(<App />, { reactStrictMode: true });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        firstName: 'luo',
+      });
+    });
+  });
+
   it('should restore defaultValues with react strict mode double useEffect', () => {
     function Form() {
       return (
