@@ -21,7 +21,7 @@ describe('iterateFieldsByAction', () => {
       },
     );
 
-    expect(focus).toBeCalled();
+    expect(focus).toHaveBeenCalled();
   });
 
   it('should focus on first option when options input error encounters', () => {
@@ -48,7 +48,7 @@ describe('iterateFieldsByAction', () => {
       },
     );
 
-    expect(focus).toBeCalled();
+    expect(focus).toHaveBeenCalled();
   });
 
   it('should not call focus when field is undefined', () => {
@@ -94,8 +94,8 @@ describe('iterateFieldsByAction', () => {
         return 1;
       },
     );
-    expect(focus).toBeCalledWith('first');
-    expect(focus).not.toBeCalledWith('second');
+    expect(focus).toHaveBeenCalledWith('first');
+    expect(focus).not.toHaveBeenCalledWith('second');
   });
 
   it('should recursively drill into objects', () => {
@@ -134,8 +134,8 @@ describe('iterateFieldsByAction', () => {
         return;
       },
     );
-    expect(focus).not.toBeCalledWith('first');
-    expect(focus).toBeCalledWith('last');
+    expect(focus).not.toHaveBeenCalledWith('first');
+    expect(focus).toHaveBeenCalledWith('last');
   });
 
   it('should should recursively drill into objects and break out of all loops on first focus', () => {
@@ -193,14 +193,14 @@ describe('iterateFieldsByAction', () => {
       },
     );
     // 'focus' should be called on 'last' and never again
-    expect(focus).not.toBeCalledWith('first'); // not valid
-    expect(focus).toBeCalledWith('last'); // valid
-    expect(focus).not.toBeCalledWith('phone'); // stopped
-    expect(focus).not.toBeCalledWith('line1');
+    expect(focus).not.toHaveBeenCalledWith('first'); // not valid
+    expect(focus).toHaveBeenCalledWith('last'); // valid
+    expect(focus).not.toHaveBeenCalledWith('phone'); // stopped
+    expect(focus).not.toHaveBeenCalledWith('line1');
     // 'notFocus' should be called on the first, then never again
-    expect(notFocus).toBeCalledWith('first'); // not valid
-    expect(notFocus).not.toBeCalledWith('last'); // valid
-    expect(notFocus).not.toBeCalledWith('phone'); // stopped
-    expect(notFocus).not.toBeCalledWith('line1');
+    expect(notFocus).toHaveBeenCalledWith('first'); // not valid
+    expect(notFocus).not.toHaveBeenCalledWith('last'); // valid
+    expect(notFocus).not.toHaveBeenCalledWith('phone'); // stopped
+    expect(notFocus).not.toHaveBeenCalledWith('line1');
   });
 });
