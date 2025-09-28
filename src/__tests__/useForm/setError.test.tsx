@@ -168,7 +168,7 @@ describe('setError', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
       expect(screen.queryByText('custom error')).not.toBeInTheDocument();
     });
 

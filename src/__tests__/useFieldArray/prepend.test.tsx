@@ -475,7 +475,7 @@ describe('prepend', () => {
         result.current.prepend({ value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -504,7 +504,7 @@ describe('prepend', () => {
         result.current.prepend({ value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
   });
 

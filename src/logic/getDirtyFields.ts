@@ -5,68 +5,53 @@ import isPrimitive from '../utils/isPrimitive';
 import isUndefined from '../utils/isUndefined';
 import objectHasFunction from '../utils/objectHasFunction';
 
-function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
-  const isParentNodeArray = Array.isArray(data);
+function isTraversable(value: any): boolean {
+  return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
+}
 
-  if (isObject(data) || isParentNodeArray) {
-    for (const key in data) {
-      if (
-        Array.isArray(data[key]) ||
-        (isObject(data[key]) && !objectHasFunction(data[key]))
-      ) {
-        fields[key] = Array.isArray(data[key]) ? [] : {};
-        markFieldsDirty(data[key], fields[key]);
-      } else if (!isNullOrUndefined(data[key])) {
-        fields[key] = true;
-      }
+function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
+  for (const key in data) {
+    if (isTraversable(data[key])) {
+      fields[key] = Array.isArray(data[key]) ? [] : {};
+      markFieldsDirty(data[key], fields[key]);
+    } else if (!isNullOrUndefined(data[key])) {
+      fields[key] = true;
     }
   }
 
   return fields;
 }
 
-function getDirtyFieldsFromDefaultValues<T>(
+export default function getDirtyFields<T>(
   data: T,
   formValues: T,
-  dirtyFieldsFromValues: Record<
+  dirtyFieldsFromValues?: Record<
     Extract<keyof T, string>,
     ReturnType<typeof markFieldsDirty> | boolean
   >,
 ) {
-  const isParentNodeArray = Array.isArray(data);
+  if (!dirtyFieldsFromValues) {
+    dirtyFieldsFromValues = markFieldsDirty(formValues);
+  }
 
-  if (isObject(data) || isParentNodeArray) {
-    for (const key in data) {
-      if (
-        Array.isArray(data[key]) ||
-        (isObject(data[key]) && !objectHasFunction(data[key]))
-      ) {
-        if (
-          isUndefined(formValues) ||
-          isPrimitive(dirtyFieldsFromValues[key])
-        ) {
-          dirtyFieldsFromValues[key] = Array.isArray(data[key])
-            ? markFieldsDirty(data[key], [])
-            : { ...markFieldsDirty(data[key]) };
-        } else {
-          getDirtyFieldsFromDefaultValues(
-            data[key],
-            isNullOrUndefined(formValues) ? {} : formValues[key],
-            dirtyFieldsFromValues[key],
-          );
-        }
+  for (const key in data) {
+    if (isTraversable(data[key])) {
+      if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
+        dirtyFieldsFromValues[key] = markFieldsDirty(
+          data[key],
+          Array.isArray(data[key]) ? [] : {},
+        );
       } else {
-        dirtyFieldsFromValues[key] = !deepEqual(data[key], formValues[key]);
+        getDirtyFields(
+          data[key],
+          isNullOrUndefined(formValues) ? {} : formValues[key],
+          dirtyFieldsFromValues[key],
+        );
       }
+    } else {
+      dirtyFieldsFromValues[key] = !deepEqual(data[key], formValues[key]);
     }
   }
 
   return dirtyFieldsFromValues;
 }
-
-export default <T>(defaultValues: T, formValues: T) =>
-  getDirtyFieldsFromDefaultValues(
-    defaultValues,
-    formValues,
-    markFieldsDirty(formValues),
-  );

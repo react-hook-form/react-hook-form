@@ -133,8 +133,8 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
-      expect(onError).not.toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onError).not.toHaveBeenCalled();
       screen.getByText('submitSuccessful');
       screen.getByText('ok');
     });
@@ -170,8 +170,8 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
-      expect(onSuccess).not.toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
       screen.getByText('This is a server error');
       screen.getByText('500');
       screen.getByText('submitFailed');
@@ -292,7 +292,7 @@ describe('Form', () => {
     await waitFor(() => {
       screen.getByText('submitSuccessful');
 
-      expect(fetcher).toBeCalled();
+      expect(fetcher).toHaveBeenCalled();
     });
   });
 
@@ -322,7 +322,7 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSuccess).toBeCalled();
+      expect(onSuccess).toHaveBeenCalled();
     });
   });
 
@@ -352,7 +352,7 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSuccess).toBeCalled();
+      expect(onSuccess).toHaveBeenCalled();
     });
   });
 });
