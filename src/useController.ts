@@ -63,18 +63,20 @@ export function useController<
   } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
 
-  // Track previous control and name to detect prop changes during render
-  const _previousNameRef = React.useRef<string | undefined>(undefined);
-  const _previousControlRef = React.useRef(control);
+  const defaultValueMemo = React.useMemo(
+    () =>
+      get(
+        control._formValues,
+        name,
+        get(control._defaultValues, name, defaultValue),
+      ),
+    [control, name, defaultValue],
+  );
 
   const value = useWatch({
     control,
     name,
-    defaultValue: get(
-      control._formValues,
-      name,
-      get(control._defaultValues, name, defaultValue),
-    ),
+    defaultValue: defaultValueMemo,
     exact: true,
   }) as FieldPathValue<TFieldValues, TName>;
 
@@ -85,6 +87,8 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+
+  const _previousNameRef = React.useRef<string | undefined>(undefined);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -147,7 +151,7 @@ export function useController<
         },
         type: EVENTS.BLUR,
       }),
-    [name, control],
+    [name, control._formValues],
   );
 
   const ref = React.useCallback(
@@ -164,7 +168,7 @@ export function useController<
         };
       }
     },
-    [control, name],
+    [control._fields, name],
   );
 
   const field = React.useMemo(
@@ -178,39 +182,30 @@ export function useController<
       onBlur,
       ref,
     }),
-    // Include control in dependencies to force update when control changes
     [name, disabled, formState.disabled, onChange, onBlur, ref, value],
   );
 
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
-
     const previousName = _previousNameRef.current;
-    const previousControl = _previousControlRef.current;
-    const hasChanged = previousControl !== control || previousName !== name;
 
-    // Unregister previous when either control or name changed
-    if (hasChanged && previousName && !isArrayField) {
-      const target =
-        previousControl && previousControl !== control
-          ? previousControl
-          : control;
-      target.unregister(previousName as FieldPath<TFieldValues>);
+    if (previousName && previousName !== name && !isArrayField) {
+      control.unregister(previousName as FieldPath<TFieldValues>);
     }
 
-    // Register current
-    _registerProps.current = control.register(name, {
+    control.register(name, {
       ..._props.current.rules,
       ...(isBoolean(_props.current.disabled)
         ? { disabled: _props.current.disabled }
         : {}),
     });
 
-    const updateMounted = (fieldName: InternalFieldName, mounted: boolean) => {
-      const field: Field = get(control._fields, fieldName);
+    const updateMounted = (name: InternalFieldName, value: boolean) => {
+      const field: Field = get(control._fields, name);
+
       if (field && field._f) {
-        field._f.mount = mounted;
+        field._f.mount = value;
       }
     };
 
@@ -229,7 +224,6 @@ export function useController<
     !isArrayField && control.register(name);
 
     _previousNameRef.current = name;
-    _previousControlRef.current = control;
 
     return () => {
       (
