@@ -283,7 +283,6 @@ export function useWatch<TFieldValues extends FieldValues>(
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
   });
 
-  // Helper to compute current output synchronously
   const getCurrentOutput = React.useCallback(
     (values?: TFieldValues) => {
       const formValues = generateWatchOutput(
