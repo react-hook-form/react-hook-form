@@ -351,11 +351,18 @@ export function useWatch<TFieldValues extends FieldValues>(
   // If name or control changed for this render, synchronously reflect the
   // latest value so callers (like useController) see the correct value
   // immediately on the same render.
-  const shouldReturnImmediate =
-    _prevControl.current !== control || !deepEqual(_prevName.current, name);
 
-  const immediate =
-    !disabled && shouldReturnImmediate ? getCurrentOutput() : undefined;
+  // Optimize: Check control reference first before expensive deepEqual
+  const controlChanged = _prevControl.current !== control;
+  const nameChanged = !controlChanged && !deepEqual(_prevName.current, name);
+  const shouldReturnImmediate = controlChanged || nameChanged;
 
-  return (immediate as any) ?? value;
+  // Cache the computed output to avoid duplicate calls within the same render
+  // We include shouldReturnImmediate in deps to ensure proper recomputation
+  const computedOutput = React.useMemo(
+    () => (!disabled && shouldReturnImmediate ? getCurrentOutput() : null),
+    [disabled, shouldReturnImmediate, getCurrentOutput],
+  );
+
+  return computedOutput !== null ? computedOutput : value;
 }
