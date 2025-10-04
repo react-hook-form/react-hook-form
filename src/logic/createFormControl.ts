@@ -341,10 +341,14 @@ export function createFormControl<
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
+        // Calculate isDirty to keep internal state up to date
+        const currentIsDirty = _getDirty();
+        isPreviousDirty = _formState.isDirty;
+        _formState.isDirty = currentIsDirty;
+
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          isPreviousDirty = _formState.isDirty;
-          _formState.isDirty = output.isDirty = _getDirty();
-          shouldUpdateField = isPreviousDirty !== output.isDirty;
+          output.isDirty = currentIsDirty;
+          shouldUpdateField = isPreviousDirty !== currentIsDirty;
         }
 
         const isCurrentFieldPristine = deepEqual(
