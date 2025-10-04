@@ -935,11 +935,7 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public
-export const Watch: <const TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>({ control, names, render, }: {
-    control: Control<TFieldValues, TContext, TTransformedValues>;
-    names: TFieldNames;
-    render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
-}) => ReactNode;
+export const Watch: <TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>({ control, names, render, }: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) => ReactNode;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
@@ -951,10 +947,17 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
     values?: unknown;
 }) => void;
 
+// @public (undocumented)
+export type WatchProps<TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
+    control: Control<TFieldValues, TContext, TTransformedValues>;
+    names: TFieldNames;
+    render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
+};
+
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:59:3 - (ae-forgotten-export) The symbol "GetValues" needs to be exported by the entry point index.d.ts
+// src/watch.tsx:33:3 - (ae-forgotten-export) The symbol "GetValues" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
