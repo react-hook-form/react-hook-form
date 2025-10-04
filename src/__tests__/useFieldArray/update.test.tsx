@@ -511,7 +511,7 @@ describe('update', () => {
         result.current.update(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -540,7 +540,7 @@ describe('update', () => {
         result.current.update(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
   });
 

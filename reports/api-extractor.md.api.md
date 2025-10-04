@@ -7,6 +7,7 @@
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 
 // @public (undocumented)
 export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: boolean, errors: InternalFieldErrors, type: string, message: ValidateResult) => {};
@@ -364,6 +365,14 @@ export const get: <T>(object: T, path?: string | null, defaultValue?: unknown) =
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
 
+// Warning: (ae-forgotten-export) The symbol "EitherOption" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type GetValuesConfig = EitherOption<{
+    dirtyFields: boolean;
+    touchedFields: boolean;
+}>;
+
 // @public (undocumented)
 export type GlobalError = Partial<{
     type: string | number;
@@ -422,7 +431,7 @@ export type MaxType = InputValidationRules['max'] | InputValidationRules['maxLen
 
 // @public (undocumented)
 export type Merge<A, B> = {
-    [K in keyof A | keyof B]?: K extends keyof A & keyof B ? [A[K], B[K]] extends [object, object] ? Merge<A[K], B[K]> : A[K] | B[K] : K extends keyof A ? A[K] : K extends keyof B ? B[K] : never;
+    [K in keyof A | keyof B]?: K extends keyof A & keyof B ? [A[K], B[K]] extends [object, object] ? Merge<A[K], B[K]> : B[K] : K extends keyof A ? A[K] : K extends keyof B ? B[K] : never;
 };
 
 // @public (undocumented)
@@ -537,7 +546,7 @@ export type Resolver<TFieldValues extends FieldValues = FieldValues, TContext = 
 
 // @public (undocumented)
 export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
-    values: {};
+    values: Record<string, never>;
     errors: FieldErrors<TFieldValues>;
 };
 
@@ -559,7 +568,7 @@ export type ResolverResult<TFieldValues extends FieldValues = FieldValues, TTran
 // @public (undocumented)
 export type ResolverSuccess<TTransformedValues> = {
     values: TTransformedValues;
-    errors: {};
+    errors: Record<string, never>;
 };
 
 // @public (undocumented)
@@ -691,9 +700,9 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
 
 // @public (undocumented)
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
-    (): TFieldValues;
-    <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): FieldPathValue<TFieldValues, TFieldName>;
-    <TFieldNames extends FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames]): [...FieldPathValues<TFieldValues, TFieldNames>];
+    (name?: undefined, config?: GetValuesConfig): TFieldValues;
+    <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, config?: GetValuesConfig): FieldPathValue<TFieldValues, TFieldName>;
+    <TFieldNames extends FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames], config?: GetValuesConfig): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
 // @public
@@ -925,6 +934,9 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
     message: Message;
 };
 
+// @public
+export const Watch: <TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>({ control, names, render, }: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) => ReactNode;
+
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
 
@@ -935,9 +947,17 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
     values?: unknown;
 }) => void;
 
+// @public (undocumented)
+export type WatchProps<TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
+    control: Control<TFieldValues, TContext, TTransformedValues>;
+    names: TFieldNames;
+    render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
+};
+
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:486:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/watch.tsx:33:3 - (ae-forgotten-export) The symbol "GetValues" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

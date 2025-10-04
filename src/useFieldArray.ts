@@ -104,10 +104,9 @@ export function useFieldArray<
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
   );
-  const _fieldIds = React.useRef(fields);
+
   const _actioned = React.useRef(false);
 
-  _fieldIds.current = fields;
   control._names.array.add(name);
 
   React.useMemo(

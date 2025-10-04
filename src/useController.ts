@@ -88,6 +88,8 @@ export function useController<
 
   const _props = React.useRef(props);
 
+  const _previousNameRef = React.useRef<string | undefined>(undefined);
+
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -186,6 +188,11 @@ export function useController<
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
+    const previousName = _previousNameRef.current;
+
+    if (previousName && previousName !== name && !isArrayField) {
+      control.unregister(previousName as FieldPath<TFieldValues>);
+    }
 
     control.register(name, {
       ..._props.current.rules,
@@ -205,7 +212,9 @@ export function useController<
     updateMounted(name, true);
 
     if (_shouldUnregisterField) {
-      const value = cloneObject(get(control._options.defaultValues, name));
+      const value = cloneObject(
+        get(control._options.defaultValues, name, _props.current.defaultValue),
+      );
       set(control._defaultValues, name, value);
       if (isUndefined(get(control._formValues, name))) {
         set(control._formValues, name, value);
@@ -213,6 +222,8 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    _previousNameRef.current = name;
 
     return () => {
       (

@@ -303,7 +303,7 @@ describe('move', () => {
         result.current.move(0, 1);
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '2' }, { value: '1' }],
         },
@@ -335,7 +335,7 @@ describe('move', () => {
         result.current.move(0, 1);
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
   });
 
