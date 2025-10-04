@@ -979,11 +979,7 @@ describe('setValue', () => {
         );
       }
 
-      render(
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>,
-      );
+      render(<App />, { reactStrictMode: true });
 
       jest.advanceTimersByTime(10000);
 
