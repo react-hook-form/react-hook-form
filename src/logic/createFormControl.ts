@@ -16,6 +16,7 @@ import type {
   FormState,
   FromSubscribe,
   GetIsDirty,
+  GetValuesConfig,
   InternalFieldName,
   Names,
   Path,
@@ -48,6 +49,7 @@ import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
+import extractFormValues from '../utils/extractFormValues';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -484,7 +486,7 @@ export function createFormControl<
             field._f && hasPromiseValidation((field as Field)._f);
 
           if (isPromiseFunction && _proxyFormState.validatingFields) {
-            _updateIsValidating([name], true);
+            _updateIsValidating([_f.name], true);
           }
 
           const fieldError = await validateField(
@@ -497,7 +499,7 @@ export function createFormControl<
           );
 
           if (isPromiseFunction && _proxyFormState.validatingFields) {
-            _updateIsValidating([name]);
+            _updateIsValidating([_f.name]);
           }
 
           if (fieldError[_f.name]) {
@@ -856,6 +858,7 @@ export function createFormControl<
 
       if (isFieldValueUpdated) {
         field._f.deps &&
+          (!Array.isArray(field._f.deps) || field._f.deps.length > 0) &&
           trigger(
             field._f.deps as
               | FieldPath<TFieldValues>
@@ -929,10 +932,18 @@ export function createFormControl<
     fieldNames?:
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
+    config?: GetValuesConfig,
   ) => {
-    const values = {
+    let values = {
       ...(_state.mount ? _formValues : _defaultValues),
     };
+
+    if (config) {
+      values = extractFormValues(
+        config.dirtyFields ? _formState.dirtyFields : _formState.touchedFields,
+        values,
+      );
+    }
 
     return isUndefined(fieldNames)
       ? values
@@ -1229,8 +1240,10 @@ export function createFormControl<
         (e as React.BaseSyntheticEvent).persist &&
           (e as React.BaseSyntheticEvent).persist();
       }
-      let fieldValues: TFieldValues | TTransformedValues | {} =
-        cloneObject(_formValues);
+      let fieldValues:
+        | TFieldValues
+        | TTransformedValues
+        | Record<string, never> = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1239,7 +1252,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _formState.errors = errors;
-        fieldValues = cloneObject(values) as TFieldValues;
+        fieldValues = cloneObject(values);
       } else {
         await executeBuiltInValidation(_fields);
       }

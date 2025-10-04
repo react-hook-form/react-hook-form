@@ -181,7 +181,10 @@ test('should allow unpackedValue and deep partial unpackValue for reset', () => 
 test('should infer context type into control', () => {
   function App() {
     const [isValid] = React.useState(true);
-    const { control } = useForm<{ test: {}[] }, { isValid: boolean }>({
+    const { control } = useForm<
+      { test: Record<string, unknown>[] },
+      { isValid: boolean }
+    >({
       resolver: (data, context) => {
         return {
           values: context?.isValid ? data : {},

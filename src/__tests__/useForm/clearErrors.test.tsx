@@ -214,14 +214,14 @@ describe('clearErrors', () => {
     });
 
     await act(async () => await result.current.handleSubmit(submit)());
-    expect(submit).not.toBeCalled();
+    expect(submit).not.toHaveBeenCalled();
 
     act(() => {
       result.current.clearErrors('whatever');
     });
 
     await act(async () => await result.current.handleSubmit(submit)());
-    expect(submit).toBeCalled();
+    expect(submit).toHaveBeenCalled();
   });
 
   it('should update isValid to true with setError', async () => {

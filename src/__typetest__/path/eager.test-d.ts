@@ -5,7 +5,7 @@ import type { Depth3Type } from '../__fixtures__';
 
 describe('Path', () => {
   it('should evaluate to never for an empty object', () => {
-    expect<Path<{}>>().type.toBe<never>();
+    expect<Path<object>>().type.toBe<never>();
   });
 
   it('should evaluate to all paths of an object', () => {
@@ -30,7 +30,7 @@ describe('Path', () => {
   });
 
   it('should not erroneously match subtypes as traversed', () => {
-    type Foo = { foo?: Foo; bar?: { baz: 1 } } | {};
+    type Foo = { foo?: Foo; bar?: { baz: 1 } } | Record<string, never>;
     expect<Path<Foo>>().type.toBe<'foo' | 'bar' | 'bar.baz'>();
   });
 });
@@ -60,7 +60,7 @@ describe('ArrayPath', () => {
   });
 
   it('should not erroneously match subtypes as traversed', () => {
-    type Foo = { bar?: { baz?: 1; fooArr?: Foo[] } } | {};
+    type Foo = { bar?: { baz?: 1; fooArr?: Foo[] } } | Record<string, never>;
     expect<ArrayPath<Foo>>().type.toBe<'bar.fooArr'>();
   });
 });
@@ -82,6 +82,30 @@ describe('PathValue', () => {
     expect<
       PathValue<Depth3Type<boolean>, 'baz.42.value'>
     >().type.toBe<boolean>();
+  });
+
+  it('should apply optional type for optional arrays', () => {
+    expect<PathValue<Depth3Type<string[] | undefined>, 'value.1'>>().type.toBe<
+      string | undefined
+    >();
+  });
+
+  it('should traverse an object and apply optional type for optional arrays', () => {
+    expect<
+      PathValue<Depth3Type<string[] | undefined>, 'foo.foo.value.3'>
+    >().type.toBe<string | undefined>();
+  });
+
+  it('should traverse a tuple and apply optional type for optional arrays', () => {
+    expect<
+      PathValue<Depth3Type<string[] | undefined>, 'bar.0.value.3'>
+    >().type.toBe<string | undefined>();
+  });
+
+  it('should traverse an array and apply optional type for optional arrays', () => {
+    expect<
+      PathValue<Depth3Type<string[] | undefined>, 'baz.0.value.3'>
+    >().type.toBe<string | undefined>();
   });
 });
 
