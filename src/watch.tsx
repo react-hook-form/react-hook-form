@@ -64,7 +64,7 @@ export const Watch = <
   control,
   names,
   render,
-}: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) => {
-  const values = useWatch({ control, name: names });
-  return render(values as GetValues<TFieldValues, TFieldNames>);
-};
+}: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) =>
+  render(
+    useWatch({ control, name: names }) as GetValues<TFieldValues, TFieldNames>,
+  );
