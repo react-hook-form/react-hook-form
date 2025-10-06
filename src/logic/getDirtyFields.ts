@@ -14,7 +14,7 @@ function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
     if (isTraversable(data[key])) {
       fields[key] = Array.isArray(data[key]) ? [] : {};
       markFieldsDirty(data[key], fields[key]);
-    } else if (!isNullOrUndefined(data[key])) {
+    } else if (!isUndefined(data[key])) {
       fields[key] = true;
     }
   }
