@@ -112,7 +112,7 @@ export function useFieldArray<
   React.useMemo(
     () =>
       rules &&
-      fields.length &&
+      fields.length >=0 &&
       (control as Control<TFieldValues, any, TTransformedValues>).register(
         name as FieldPath<TFieldValues>,
         rules as RegisterOptions<TFieldValues>,
