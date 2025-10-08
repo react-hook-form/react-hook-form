@@ -109,11 +109,16 @@ export function useFieldArray<
 
   control._names.array.add(name);
 
-  rules &&
-    (control as Control<TFieldValues, any, TTransformedValues>).register(
-      name as FieldPath<TFieldValues>,
-      rules as RegisterOptions<TFieldValues>,
-    );
+  React.useMemo(
+    () =>
+      rules &&
+      (control as Control<TFieldValues, any, TTransformedValues>).register(
+        name as FieldPath<TFieldValues>,
+        rules as RegisterOptions<TFieldValues>,
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [control, name, fields.length, rules],
+  );
 
   useIsomorphicLayoutEffect(
     () =>
