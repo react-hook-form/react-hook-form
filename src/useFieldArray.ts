@@ -109,15 +109,11 @@ export function useFieldArray<
 
   control._names.array.add(name);
 
-  React.useMemo(
-    () =>
-      rules &&
-      (control as Control<TFieldValues, any, TTransformedValues>).register(
-        name as FieldPath<TFieldValues>,
-        rules as RegisterOptions<TFieldValues>,
-      ),
-    [control, rules, name],
-  );
+  rules &&
+    (control as Control<TFieldValues, any, TTransformedValues>).register(
+      name as FieldPath<TFieldValues>,
+      rules as RegisterOptions<TFieldValues>,
+    );
 
   useIsomorphicLayoutEffect(
     () =>
