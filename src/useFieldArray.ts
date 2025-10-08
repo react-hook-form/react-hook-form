@@ -111,12 +111,11 @@ export function useFieldArray<
 
   React.useMemo(
     () =>
-      rules &&
+      rules && fields.length &&
       (control as Control<TFieldValues, any, TTransformedValues>).register(
         name as FieldPath<TFieldValues>,
         rules as RegisterOptions<TFieldValues>,
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [control, name, fields.length, rules],
   );
 
