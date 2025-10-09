@@ -59,13 +59,14 @@ const PerFieldModes: React.FC = () => {
           )}
         </div>
 
-        {/* Override to onBlur */}
+        {/* Override to onBlur for both mode and reValidateMode */}
         <div>
           <label>onBlur Field:</label>
           <input
             {...register('onBlurField', {
               required: 'onBlur field is required',
               mode: 'onBlur',
+              reValidateMode: 'onBlur', // Also use onBlur for revalidation
             })}
             placeholder="onBlur field"
             data-testid="onBlurField"
@@ -75,7 +76,7 @@ const PerFieldModes: React.FC = () => {
           )}
         </div>
 
-        {/* Override reValidateMode */}
+        {/* Override only reValidateMode, use form's mode (onSubmit) */}
         <div>
           <label>Mixed Revalidate (onBlur revalidate):</label>
           <input

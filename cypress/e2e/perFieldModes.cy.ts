@@ -57,46 +57,61 @@ describe('per-field validation modes', () => {
 
     // Fix defaultField
     cy.get('input[data-testid="defaultField"]').type('valid');
+    // Wait for defaultField error to clear (form reValidateMode is onChange)
+    cy.get('p[data-testid="defaultFieldError"]').should('not.exist');
 
     // Test 5: Test mixedRevalidate field (onBlur reValidateMode after submit)
-    cy.get('input[data-testid="mixedRevalidate"]').type('test');
-    cy.get('input[data-testid="mixedRevalidate"]').clear();
-    // Should not validate before submit (using form default mode: onSubmit)
-    cy.get('p[data-testid="mixedRevalidateError"]').should('not.exist');
-
-    // Submit to trigger validation
-    cy.get('button[data-testid="submit"]').click();
-    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
-    cy.get('p[data-testid="mixedRevalidateError"]').contains(
-      'Mixed field is required',
-    );
-
-    // After submit, should use field-level reValidateMode (onBlur)
-    // Typing should not clear error (reValidateMode is onBlur, not onChange)
-    cy.get('input[data-testid="mixedRevalidate"]').type('test');
-    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
-
-    // Blur should revalidate and clear error
-    cy.get('input[data-testid="mixedRevalidate"]').blur();
-    cy.get('p[data-testid="mixedRevalidateError"]').should('not.exist');
-
-    // Clear and blur again to test revalidation
-    cy.get('input[data-testid="mixedRevalidate"]').clear();
-    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
-    cy.get('input[data-testid="mixedRevalidate"]').blur();
-    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
-    cy.get('p[data-testid="mixedRevalidateError"]').contains(
-      'Mixed field is required',
-    );
-
-    // Fix it
+    //  Note: Form was already submitted once, so we need to test reValidate behavior
+    // Fill mixedRevalidate and submit successfully
     cy.get('input[data-testid="mixedRevalidate"]').type('valid');
+    cy.get('button[data-testid="submit"]').click();
+
+    // Now form is submitted successfully. Clear the field to test reValidateMode
+    // Field has reValidateMode: 'onBlur', so clearing (onChange) should NOT validate
+    cy.get('input[data-testid="mixedRevalidate"]').clear();
+    cy.get('p[data-testid="mixedRevalidateError"]').should('not.exist');
+
+    // Blur should trigger revalidation and show error
+    cy.get('input[data-testid="mixedRevalidate"]').blur();
+    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
+    cy.get('p[data-testid="mixedRevalidateError"]').contains(
+      'Mixed field is required',
+    );
+
+    // Typing should NOT clear the error (reValidateMode is onBlur, not onChange)
+    cy.get('input[data-testid="mixedRevalidate"]').type('valid');
+    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
+
+    // Blur should revalidate and clear the error
     cy.get('input[data-testid="mixedRevalidate"]').blur();
     cy.get('p[data-testid="mixedRevalidateError"]').should('not.exist');
 
     // Final submission should succeed
     cy.get('button[data-testid="submit"]').click();
     cy.get('p').should('have.length', 0);
+  });
+
+  it('should test field-level reValidateMode', () => {
+    cy.visit('http://localhost:3000/per-field-modes');
+
+    // Fill all fields
+    cy.get('input[data-testid="defaultField"]').type('valid');
+    cy.get('input[data-testid="onChangeField"]').type('valid');
+    cy.get('input[data-testid="onBlurField"]').type('valid');
+    cy.get('input[data-testid="mixedRevalidate"]').type('valid');
+
+    // Submit form - all fields are valid
+    cy.get('button[data-testid="submit"]').click();
+
+    // Now form is submitted. Clear mixedRevalidate field
+    // This field has reValidateMode: 'onBlur', so clearing it (onChange event)
+    // should NOT trigger validation
+    cy.get('input[data-testid="mixedRevalidate"]').clear();
+    cy.get('p[data-testid="mixedRevalidateError"]').should('not.exist');
+
+    // Blur should trigger validation
+    cy.get('input[data-testid="mixedRevalidate"]').blur();
+    cy.get('p[data-testid="mixedRevalidateError"]').should('exist');
   });
 
   it('should respect field-level onChange mode throughout form lifecycle', () => {
@@ -137,6 +152,9 @@ describe('per-field validation modes', () => {
 
     // Fix and submit
     cy.get('input[data-testid="onBlurField"]').type('valid');
+    cy.get('input[data-testid="onBlurField"]').blur();
+    cy.get('p[data-testid="onBlurFieldError"]').should('not.exist');
+
     cy.get('input[data-testid="defaultField"]').type('valid');
     cy.get('input[data-testid="onChangeField"]').type('valid');
     cy.get('input[data-testid="mixedRevalidate"]').type('valid');
