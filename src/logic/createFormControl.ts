@@ -861,6 +861,14 @@ export function createFormControl<
       _options.reValidateMode,
     );
 
+    // Extract field-level modes if they exist
+    const fieldMode = field?._f.mode
+      ? getValidationModes(field._f.mode)
+      : undefined;
+    const fieldReValidateMode = field?._f.reValidateMode
+      ? getValidationModes(field._f.reValidateMode)
+      : undefined;
+
     if (field) {
       // Check if field is disabled and should not process events
       const isFieldDisabled = isBoolean(field._f.disabled)
@@ -948,6 +956,8 @@ export function createFormControl<
           validationModeAfterSubmit,
           validationModeBeforeSubmit,
           isFocusEvent,
+          fieldMode,
+          fieldReValidateMode,
         );
       const watched = isWatched(name, _names, isBlurEvent || isFocusEvent);
 
