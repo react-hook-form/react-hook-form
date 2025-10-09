@@ -98,6 +98,35 @@ import { _ } from '../__fixtures__';
     const actual = _ as PathValue<Depth3Type<boolean>, 'baz.42.value'>;
     expectType<boolean>(actual);
   }
+
+  /** it should apply optional type for optional arrays */ {
+    const actual = _ as PathValue<Depth3Type<string[] | undefined>, 'value.1'>;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should traverse an object and apply optional type for optional arrays */ {
+    const actual = _ as PathValue<
+      Depth3Type<string[] | undefined>,
+      'foo.foo.value.3'
+    >;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should traverse a tuple and apply optional type for optional arrays */ {
+    const actual = _ as PathValue<
+      Depth3Type<string[] | undefined>,
+      'bar.0.value.3'
+    >;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should traverse an array and apply optional type for optional arrays */ {
+    const actual = _ as PathValue<
+      Depth3Type<string[] | undefined>,
+      'baz.0.value.3'
+    >;
+    expectType<string | undefined>(actual);
+  }
 }
 
 /** {@link FieldPathValues} */ {
