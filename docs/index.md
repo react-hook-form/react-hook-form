@@ -49,6 +49,7 @@ import { useForm } from '@bombillazo/rhf-plus';
 - [**Form "isDirtySinceSubmit" state**](./is-dirty-since-submit.md) - Detect changes after form submission
 - [**Form "hasBeenSubmitted" state**](./has-been-submitted.md) - Track if form has ever been submitted
 - [**Readonly field validation skip**](./readonly-validation-skip.md) - Skip validation for readonly fields
+- [**Per-field validation modes**](./per-field-validation-modes.md) - Override form-level validation timing per field
 
 ### Minor Improvements
 

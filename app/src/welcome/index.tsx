@@ -299,6 +299,13 @@ const items: Item[] = [
     plus: true,
   },
   {
+    title: 'PerFieldModes',
+    description:
+      'Should allow per-field validation mode overrides for granular validation control',
+    slugs: ['/per-field-modes'],
+    plus: true,
+  },
+  {
     title: 'ReadonlyValidation',
     description:
       'Should skip validation for readonly fields while maintaining form functionality',
