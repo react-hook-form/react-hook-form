@@ -602,14 +602,10 @@ describe('useFormState', () => {
     }
 
     const App = () => {
-      return (
-        <React.StrictMode>
-          <FieldArray />
-        </React.StrictMode>
-      );
+      return <FieldArray />;
     };
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.click(screen.getByRole('button', { name: 'add' }));
 

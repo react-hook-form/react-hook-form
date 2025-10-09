@@ -289,7 +289,9 @@ export function useController<
     updateMounted(name, true);
 
     if (_shouldUnregisterField) {
-      const value = cloneObject(get(control._options.defaultValues, name));
+      const value = cloneObject(
+        get(control._options.defaultValues, name, _props.current.defaultValue),
+      );
       set(control._defaultValues, name, value);
       if (isUndefined(get(control._formValues, name))) {
         set(control._formValues, name, value);
