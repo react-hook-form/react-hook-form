@@ -104,6 +104,8 @@ export function useController<
       ...props.rules,
       value,
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
+      ...(props.mode ? { mode: props.mode } : {}),
+      ...(props.reValidateMode ? { reValidateMode: props.reValidateMode } : {}),
     }),
   );
 
@@ -118,9 +120,20 @@ export function useController<
       ...mergedRules,
       value,
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
+      ...(props.mode ? { mode: props.mode } : {}),
+      ...(props.reValidateMode ? { reValidateMode: props.reValidateMode } : {}),
     });
     _previousRules.current = props.rules;
-  }, [mergedRules, props.rules, value, props.disabled, control, name]);
+  }, [
+    mergedRules,
+    props.rules,
+    value,
+    props.disabled,
+    props.mode,
+    props.reValidateMode,
+    control,
+    name,
+  ]);
 
   _props.current = props;
 
@@ -275,6 +288,10 @@ export function useController<
       ..._props.current.rules,
       ...(isBoolean(_props.current.disabled)
         ? { disabled: _props.current.disabled }
+        : {}),
+      ...(_props.current.mode ? { mode: _props.current.mode } : {}),
+      ...(_props.current.reValidateMode
+        ? { reValidateMode: _props.current.reValidateMode }
         : {}),
     });
 

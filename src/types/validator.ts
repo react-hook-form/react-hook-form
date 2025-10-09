@@ -2,6 +2,7 @@ import type { INPUT_VALIDATION_RULES } from '../constants';
 
 import type { Message } from './errors';
 import type { FieldValues } from './fields';
+import type { Mode } from './form';
 import type { FieldPath, FieldPathValue } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
@@ -46,6 +47,8 @@ export type RegisterOptions<
   onBlur?: (event: any) => void;
   disabled: boolean;
   deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
+  mode: Mode;
+  reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
 }> &
   (
     | {

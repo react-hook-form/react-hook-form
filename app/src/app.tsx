@@ -56,6 +56,7 @@ import ReadonlyValidation from './readonlyValidation';
 import ControllerRulesUpdate from './controllerRulesUpdate';
 import FocusedFields from './focusedFields';
 import IsDirtySinceSubmit from './isDirtySinceSubmit';
+import PerFieldModes from './perFieldModes';
 
 const App = () => {
   return (
@@ -161,6 +162,7 @@ const App = () => {
           element={<EmptyArrayValidation />}
         />
         <Route path="/is-dirty-since-submit" element={<IsDirtySinceSubmit />} />
+        <Route path="/per-field-modes" element={<PerFieldModes />} />
       </Routes>
     </BrowserRouter>
   );

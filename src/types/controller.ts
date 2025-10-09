@@ -6,6 +6,7 @@ import type {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  Mode,
   Noop,
   RefCallBack,
   UseFormStateReturn,
@@ -43,12 +44,19 @@ export type UseControllerProps<
   name: TName;
   rules?: Omit<
     RegisterOptions<TFieldValues, TName>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
+    | 'valueAsNumber'
+    | 'valueAsDate'
+    | 'setValueAs'
+    | 'disabled'
+    | 'mode'
+    | 'reValidateMode'
   >;
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
+  mode?: Mode;
+  reValidateMode?: Exclude<Mode, 'onTouched' | 'all'>;
 };
 
 export type UseControllerReturn<

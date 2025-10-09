@@ -541,6 +541,8 @@ export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFie
     onBlur?: (event: any) => void;
     disabled: boolean;
     deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
+    mode: Mode;
+    reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
 }> & ({
     pattern?: ValidationRule<RegExp>;
     valueAsNumber?: false;
@@ -640,11 +642,13 @@ export function useController<TFieldValues extends FieldValues = FieldValues, TN
 // @public (undocumented)
 export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = {
     name: TName;
-    rules?: Omit<RegisterOptions<TFieldValues, TName>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'>;
+    rules?: Omit<RegisterOptions<TFieldValues, TName>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled' | 'mode' | 'reValidateMode'>;
     shouldUnregister?: boolean;
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues, any, TTransformedValues>;
     disabled?: boolean;
+    mode?: Mode;
+    reValidateMode?: Exclude<Mode, 'onTouched' | 'all'>;
 };
 
 // @public (undocumented)
