@@ -861,7 +861,10 @@ export function createFormControl<
       _options.reValidateMode,
     );
 
-    // Extract field-level modes if they exist
+    // Extract field-level validation modes if they exist
+    // Field-level modes take precedence over form-level modes, allowing
+    // individual fields to override when they validate (mode) and when they
+    // revalidate after form submission (reValidateMode)
     const fieldMode = field?._f.mode
       ? getValidationModes(field._f.mode)
       : undefined;
