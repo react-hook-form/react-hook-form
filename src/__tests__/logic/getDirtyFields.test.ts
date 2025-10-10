@@ -341,4 +341,39 @@ describe('getDirtyFields', () => {
       ],
     });
   });
+
+  it('should include fields with null values', () => {
+    expect(
+      getDirtyFields(
+        {},
+        {
+          views: null,
+          name: 'test',
+          count: 0,
+        },
+      ),
+    ).toEqual({
+      views: true,
+      name: true,
+      count: true,
+    });
+  });
+
+  it('should mark null values as dirty when comparing with defaultValues', () => {
+    expect(
+      getDirtyFields(
+        {
+          views: null,
+          name: 'test',
+        },
+        {
+          views: null,
+          name: 'other',
+        },
+      ),
+    ).toEqual({
+      views: false,
+      name: true,
+    });
+  });
 });
