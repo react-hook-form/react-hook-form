@@ -22,6 +22,17 @@ type GetValues<
       ? readonly []
       : never;
 
+export type WatchProps<
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
+  TFieldValues extends FieldValues = FieldValues,
+  TContext = any,
+  TTransformedValues = TFieldValues,
+> = {
+  control: Control<TFieldValues, TContext, TTransformedValues>;
+  names: TFieldNames;
+  render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
+};
+
 /**
  * Watch component that subscribes to form field changes and re-renders when watched fields update.
  *
@@ -45,7 +56,7 @@ type GetValues<
  * ```
  */
 export const Watch = <
-  const TFieldNames extends readonly FieldPath<TFieldValues>[],
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
@@ -53,11 +64,7 @@ export const Watch = <
   control,
   names,
   render,
-}: {
-  control: Control<TFieldValues, TContext, TTransformedValues>;
-  names: TFieldNames;
-  render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
-}) => {
-  const values = useWatch({ control, name: names });
-  return render(values as GetValues<TFieldValues, TFieldNames>);
-};
+}: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) =>
+  render(
+    useWatch({ control, name: names }) as GetValues<TFieldValues, TFieldNames>,
+  );
