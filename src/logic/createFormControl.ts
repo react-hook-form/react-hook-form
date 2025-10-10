@@ -51,6 +51,7 @@ import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import extractFormValues from '../utils/extractFormValues';
 import get from '../utils/get';
+import hasTruthyValue from '../utils/hasTruthyValue';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
@@ -334,38 +335,51 @@ export function createFormControl<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
     let shouldUpdateField = false;
-    let isPreviousDirty = false;
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
-        // Calculate isDirty to keep internal state up to date
-        const currentIsDirty = _getDirty();
-        isPreviousDirty = _formState.isDirty;
-        _formState.isDirty = currentIsDirty;
-
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          output.isDirty = currentIsDirty;
-          shouldUpdateField = isPreviousDirty !== currentIsDirty;
-        }
-
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
           fieldValue,
         );
+        const wasFieldDirty = !!get(_formState.dirtyFields, name);
 
-        isPreviousDirty = !!get(_formState.dirtyFields, name);
         isCurrentFieldPristine
           ? unset(_formState.dirtyFields, name)
           : set(_formState.dirtyFields, name, true);
-        output.dirtyFields = _formState.dirtyFields;
-        shouldUpdateField =
-          shouldUpdateField ||
-          ((_proxyFormState.dirtyFields ||
-            _proxySubscribeFormState.dirtyFields) &&
-            isPreviousDirty !== !isCurrentFieldPristine);
+
+        const prevIsDirty = _formState.isDirty;
+
+        let hasAnyDirty: boolean;
+        if (!isCurrentFieldPristine) {
+          hasAnyDirty = true;
+        } else if (prevIsDirty) {
+          hasAnyDirty = hasTruthyValue(_formState.dirtyFields);
+        } else {
+          hasAnyDirty = false;
+        }
+
+        _formState.isDirty = hasAnyDirty;
+
+        const isDirtySubscribed =
+          _proxyFormState.isDirty || _proxySubscribeFormState.isDirty;
+        const dirtyFieldsSubscribed =
+          _proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields;
+
+        if (isDirtySubscribed && prevIsDirty !== _formState.isDirty) {
+          output.isDirty = _formState.isDirty;
+          shouldUpdateField = true;
+        }
+
+        if (dirtyFieldsSubscribed) {
+          output.dirtyFields = _formState.dirtyFields;
+          if (wasFieldDirty !== !isCurrentFieldPristine) {
+            shouldUpdateField = true;
+          }
+        }
       }
 
       if (isBlurEvent) {
@@ -373,12 +387,14 @@ export function createFormControl<
 
         if (!isPreviousFieldTouched) {
           set(_formState.touchedFields, name, isBlurEvent);
-          output.touchedFields = _formState.touchedFields;
-          shouldUpdateField =
-            shouldUpdateField ||
-            ((_proxyFormState.touchedFields ||
-              _proxySubscribeFormState.touchedFields) &&
-              isPreviousFieldTouched !== isBlurEvent);
+
+          if (
+            _proxyFormState.touchedFields ||
+            _proxySubscribeFormState.touchedFields
+          ) {
+            output.touchedFields = _formState.touchedFields;
+            shouldUpdateField = true;
+          }
         }
       }
 
