@@ -115,6 +115,7 @@ describe('register', () => {
             test: type === 'checkbox' ? false : type === 'radio' ? null : '',
           },
           expect.any(Object),
+          undefined,
         ),
       );
     },
@@ -151,6 +152,7 @@ describe('register', () => {
           test: ['A'],
         },
         expect.any(Object),
+        undefined,
       ),
     );
   });

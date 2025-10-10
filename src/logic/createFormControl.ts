@@ -1233,7 +1233,7 @@ export function createFormControl<
   };
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
-    (onValid, onInvalid) => async (e) => {
+    (onValid, onInvalid) => async (e, meta) => {
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
@@ -1270,13 +1270,13 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TTransformedValues, e);
+          await onValid(fieldValues as TTransformedValues, e, meta);
         } catch (error) {
           onValidError = error;
         }
       } else {
         if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
+          await onInvalid({ ..._formState.errors }, e, meta);
         }
         _focusError();
         setTimeout(_focusError);
@@ -1413,7 +1413,8 @@ export function createFormControl<
     _state.mount =
       !_proxyFormState.isValid ||
       !!keepStateOptions.keepIsValid ||
-      !!keepStateOptions.keepDirtyValues;
+      !!keepStateOptions.keepDirtyValues ||
+      (!_options.shouldUnregister && !isEmptyObject(values));
 
     _state.watch = !!_options.shouldUnregister;
 
