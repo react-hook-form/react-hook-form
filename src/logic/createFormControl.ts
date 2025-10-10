@@ -1391,6 +1391,12 @@ export function createFormControl<
           : ({} as TFieldValues)
         : (cloneObject(values) as TFieldValues);
 
+      _state.mount =
+        !_proxyFormState.isValid ||
+        !!keepStateOptions.keepIsValid ||
+        !!keepStateOptions.keepDirtyValues ||
+        (!_options.shouldUnregister && !isEmptyObject(values));
+
       _subjects.array.next({
         values: { ...values },
       });
@@ -1409,11 +1415,6 @@ export function createFormControl<
       watchAll: false,
       focus: '',
     };
-
-    _state.mount =
-      !_proxyFormState.isValid ||
-      !!keepStateOptions.keepIsValid ||
-      !!keepStateOptions.keepDirtyValues;
 
     _state.watch = !!_options.shouldUnregister;
 
