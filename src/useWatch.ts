@@ -354,15 +354,22 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   // Optimize: Check control reference first before expensive deepEqual
   const controlChanged = _prevControl.current !== control;
-  const nameChanged = !controlChanged && !deepEqual(_prevName.current, name);
-  const shouldReturnImmediate = controlChanged || nameChanged;
 
   // Cache the computed output to avoid duplicate calls within the same render
-  // We include shouldReturnImmediate in deps to ensure proper recomputation
-  const computedOutput = React.useMemo(
-    () => (!disabled && shouldReturnImmediate ? getCurrentOutput() : null),
-    [disabled, shouldReturnImmediate, getCurrentOutput],
-  );
+  const computedOutput = React.useMemo(() => {
+    if (disabled) {
+      return null;
+    }
+
+    // If control changed, immediately return current output
+    if (controlChanged) {
+      return getCurrentOutput();
+    }
+
+    // Only run deepEqual if control hasn't changed
+    const nameChanged = !deepEqual(_prevName.current, name);
+    return nameChanged ? getCurrentOutput() : null;
+  }, [disabled, controlChanged, name, getCurrentOutput]);
 
   return computedOutput !== null ? computedOutput : value;
 }
