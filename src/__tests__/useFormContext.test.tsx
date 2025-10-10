@@ -80,7 +80,7 @@ describe('FormProvider', () => {
     const input = screen.getByRole('textbox');
 
     expect(input).toBeVisible();
-    expect(await screen.findByText('Value: undefined value')).toBeVisible();
+    expect(await screen.findByText('Value:')).toBeVisible();
     expect(screen.getByText('Dirty: no')).toBeVisible();
 
     fireEvent.change(input, { target: { value: 'test' } });

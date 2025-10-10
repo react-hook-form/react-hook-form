@@ -561,7 +561,7 @@ export function createFormControl<
       names,
       _names,
       {
-        ...(_state.mount
+        ...(_state.mount || !isEmptyObject(_formValues)
           ? _formValues
           : isUndefined(defaultValue)
             ? _defaultValues

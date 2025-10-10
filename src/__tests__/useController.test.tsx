@@ -779,7 +779,9 @@ describe('useController', () => {
     });
 
     expect(watchResults).toEqual([
-      {},
+      {
+        test: '',
+      },
       {
         test: '',
       },
