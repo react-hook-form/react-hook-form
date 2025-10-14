@@ -54,7 +54,8 @@ export type ValidationModeFlags = {
 export type CriteriaMode = 'firstError' | 'all';
 
 export type SubmitHandler<T> = (
-  data: T,
+  data: T,  
+  meta? : any,
   event?: React.BaseSyntheticEvent,
 ) => unknown | Promise<unknown>;
 
@@ -69,6 +70,7 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
+  meta?: any,
 ) => unknown | Promise<unknown>;
 
 export type SetValueConfig = Partial<{
@@ -685,7 +687,7 @@ export type UseFormHandleSubmit<
 > = (
   onValid: SubmitHandler<TTransformedValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
-) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+) => (e?: React.BaseSyntheticEvent, meta?: any) => Promise<void>;
 
 /**
  * Reset a field state and reference.
