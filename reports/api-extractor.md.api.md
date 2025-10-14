@@ -599,10 +599,10 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 // @public (undocumented)
-export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
+export type SubmitErrorHandler<TFieldValues extends FieldValues> = (errors: FieldErrors<TFieldValues>, event?: React_2.BaseSyntheticEvent, meta?: any) => unknown | Promise<unknown>;
 
 // @public (undocumented)
-export type SubmitHandler<T> = (data: T, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
+export type SubmitHandler<T> = (data: T, meta?: any, event?: React_2.BaseSyntheticEvent) => unknown | Promise<unknown>;
 
 // @public (undocumented)
 export type TriggerConfig = Partial<{
@@ -706,7 +706,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = (onValid: SubmitHandler<TTransformedValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<void>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = (onValid: SubmitHandler<TTransformedValues>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent, meta?: any) => Promise<void>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = Partial<{
@@ -956,7 +956,7 @@ export type WatchProps<TFieldNames extends readonly FieldPath<TFieldValues>[], T
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:503:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/watch.tsx:33:3 - (ae-forgotten-export) The symbol "GetValues" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
