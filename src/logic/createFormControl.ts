@@ -339,7 +339,9 @@ export function createFormControl<
       name,
     };
 
-    if (!_options.disabled) {
+    // Check if this is a programmatic update (like from setValue) or user interaction
+    const isProgrammaticUpdate = shouldDirty === true;
+    if (!_options.disabled || isProgrammaticUpdate) {
       if (!isBlurEvent || shouldDirty) {
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
           isPreviousDirty = _formState.isDirty;
@@ -547,10 +549,10 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(getValues(), _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => (
+    name && data && set(_formValues, name, data),
+    !deepEqual(getValues(), _defaultValues)
+  );
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
