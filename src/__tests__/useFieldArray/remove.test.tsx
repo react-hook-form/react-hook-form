@@ -49,7 +49,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${i}.name` as const)} />
               <button type={'button'} onClick={() => remove(i)}>
                 remove
@@ -109,7 +109,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input
                 {...register(`test.${i}.name` as const, { required: true })}
               />
@@ -167,7 +167,7 @@ describe('remove', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.fields).toEqual([{ id: '0', value: 'default' }]);
+    expect(result.current.fields).toEqual([{ key: '0', value: 'default' }]);
 
     act(() => {
       result.current.remove(0);
