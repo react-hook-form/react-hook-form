@@ -78,7 +78,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     >
       <ul>
         {fields.map((data, index) => (
-          <li key={data.id}>
+          <li key={data.key}>
             {index % 2 ? (
               <input
                 id={`field${index}`}
