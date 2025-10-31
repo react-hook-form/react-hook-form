@@ -51,7 +51,7 @@ describe('update', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => update(0, { value: 'changed' })}>
             update
@@ -99,7 +99,7 @@ describe('update', () => {
           {fields.map((field, index) => {
             return (
               <input
-                key={field.id}
+                key={field.key}
                 {...register(`test.${index}.test` as const)}
               />
             );
@@ -136,7 +136,7 @@ describe('update', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => update(0, { value: '' })}>
             update
@@ -193,7 +193,7 @@ describe('update', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -287,7 +287,7 @@ describe('update', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <GroupInput control={control} index={i} />
             </div>
           ))}
@@ -308,7 +308,7 @@ describe('update', () => {
 
     expect(fieldArrayValues.at(-1)).toEqual([
       {
-        id: '0',
+        key: '0',
         value: {
           firstName: 'bill',
           lastName: 'luo',
@@ -329,7 +329,7 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       [
         {
-          id: '0',
+          key: '0',
           value: {
             firstName: 'bill',
             lastName: 'luo',
@@ -338,7 +338,7 @@ describe('update', () => {
       ],
       [
         {
-          id: '0',
+          key: '0',
           value: {
             firstName: 'bill',
             lastName: 'luo',
@@ -347,7 +347,7 @@ describe('update', () => {
       ],
       [
         {
-          id: '2',
+          key: '2',
           value: {
             firstName: 'firstName',
             lastName: 'lastName',
@@ -381,7 +381,7 @@ describe('update', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -431,7 +431,7 @@ describe('update', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${i}.firstName` as const)} />
               <input {...register(`test.${i}.lastName` as const)} />
             </div>
@@ -453,12 +453,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'bill',
-        id: '0',
+        key: '0',
         lastName: 'luo',
       },
       {
         firstName: 'bill1',
-        id: '1',
+        key: '1',
         lastName: 'luo1',
       },
     ]);
@@ -481,12 +481,12 @@ describe('update', () => {
     expect(fieldArrayValues).toEqual([
       {
         firstName: 'test1',
-        id: '4',
+        key: '4',
         lastName: 'test2',
       },
       {
         firstName: 'test3',
-        id: '5',
+        key: '5',
         lastName: 'test4',
       },
     ]);
@@ -568,7 +568,9 @@ describe('update', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -618,7 +620,9 @@ describe('update', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -677,7 +681,7 @@ describe('update', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.firstName` as const, {
                 required: 'This is required',
               })}
