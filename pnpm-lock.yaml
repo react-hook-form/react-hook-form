@@ -54,8 +54,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0(@types/react@19.2.0)
       babel-plugin-react-compiler:
-        specifier: ^19.1.0-rc.2
-        version: 19.1.0-rc.3
+        specifier: ^1.0.0
+        version: 1.0.0
       bundlewatch:
         specifier: ^0.4.1
         version: 0.4.1
@@ -108,8 +108,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0
       react-compiler-runtime:
-        specifier: 0.0.0-experimental-8d8e73f-20241007
-        version: 0.0.0-experimental-8d8e73f-20241007(react@19.2.0)
+        specifier: ^1.0.0
+        version: 1.0.0(react@19.2.0)
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
@@ -1886,8 +1886,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-plugin-react-compiler@19.1.0-rc.3:
-    resolution: {integrity: sha512-mjRn69WuTz4adL0bXGx8Rsyk1086zFJeKmes6aK0xPuK3aaXmDJdLHqwKKMrpm6KAI1MCoUK72d2VeqQbu8YIA==}
+  babel-plugin-react-compiler@1.0.0:
+    resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
 
   babel-preset-current-node-syntax@1.2.0:
     resolution: {integrity: sha512-E/VlAEzRrsLEb2+dv8yp3bo4scof3l9nR4lrld+Iy5NyVqgVYUJnDAmunkhPMisRI32Qc4iRiz425d8vM++2fg==}
@@ -3893,10 +3893,10 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
-  react-compiler-runtime@0.0.0-experimental-8d8e73f-20241007:
-    resolution: {integrity: sha512-cTEaKQ5S0EhS5SZaJDbG8v3+mHjNrToDbnY1mcqcR5R51kGykCf2qE4kKJssDHPacKtmRoHk4//llZOTiFoH7w==}
+  react-compiler-runtime@1.0.0:
+    resolution: {integrity: sha512-rRfjYv66HlG8896yPUDONgKzG5BxZD1nV9U6rkm+7VCuvQc903C4MjcoZR4zPw53IKSOX9wMQVpA1IAbRtzQ7w==}
     peerDependencies:
-      react: ^18.2.0 || ^19.0.0
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
 
   react-dom@19.2.0:
     resolution: {integrity: sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==}
@@ -6732,7 +6732,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-react-compiler@19.1.0-rc.3:
+  babel-plugin-react-compiler@1.0.0:
     dependencies:
       '@babel/types': 7.28.4
 
@@ -9086,7 +9086,7 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  react-compiler-runtime@0.0.0-experimental-8d8e73f-20241007(react@19.2.0):
+  react-compiler-runtime@1.0.0(react@19.2.0):
     dependencies:
       react: 19.2.0
 
