@@ -66,19 +66,19 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 <a target="_blank" href='https://workleap.com/'><img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" /></a>
 <a target="_blank" href="https://kinsta.com/"><img width="120" src="https://images.opencollective.com/kinsta/55912d7/logo/256.png?height=256" /></a>
 <a target="_blank" href='https://www.sent.dm'><img width="120" src="https://avatars.githubusercontent.com/u/153308555?s=200&v=4" /></a>
-<a target="_blank" href='https://www.sgkb.ch/'><img width="120" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" /></a>
-<a target="_blank" href='https://route4me.com/'><img width="120" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" /></a>
 <a target="_blank" href='https://niche.com'><img width="120" src="https://avatars.githubusercontent.com/u/8988784?s=200&v=4" /></a>
 <a target="_blank" href='https://toss.im'><img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" /></a>
 <a target="_blank" href='https://principal.com/about-us'><img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" /></a>
 <a target="_blank" href="https://hygraph.com"><img width="120" src="https://avatars.githubusercontent.com/u/31031438" /></a>
-<a target="_blank" href="https://www.beekai.com/"><img width="120" src="https://www.beekai.com/marketing/logo/logo.svg" /></a>
 <a target="_blank" href="https://kanamekey.com"><img width="120" src="https://images.opencollective.com/kaname/d15fd98/logo/256.png" /></a>
 
 ### Past Sponsors
 
 Thank you to our previous sponsors for your generous support!
 
+<a target="_blank" href="https://www.beekai.com/"><img width="24" src="https://www.beekai.com/marketing/logo/logo.svg" /></a>
+<a target="_blank" href='https://route4me.com/'><img width="24" src="https://images.opencollective.com/route4me/71fb6fa/avatar/256.png?height=256" /></a>
+<a target="_blank" href='https://www.sgkb.ch/'><img width="24" src="https://images.opencollective.com/st-galler-kantonalbank-ag/bfdd17f/logo/256.png?height=256" /></a>
 <a target="_blank" href='https://www.sanity.io/'><img width="24" height="24" src="https://images.opencollective.com/sanity_io/558f87f/logo/256.png?height=256" /></a>
 <a target="_blank" href='https://twicsy.com/'><img width="24" height="24" src="https://images.opencollective.com/buy-instagram-followers-twicsy/b4c5d7f/logo/256.png?height=256" /></a>
 <a href="https://www.leniolabs.com/" target="_blank"><img src="https://www.leniolabs.com/images/leniolabs-isologo-example.jpg" width="24" height="24" /></a>
