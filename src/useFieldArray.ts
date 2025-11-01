@@ -82,7 +82,7 @@ export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends
     FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TKeyName extends string = 'key',
   TTransformedValues = TFieldValues,
 >(
   props: UseFieldArrayProps<
@@ -96,7 +96,7 @@ export function useFieldArray<
   const {
     control = methods.control,
     name,
-    keyName = 'id',
+    keyName = 'key',
     shouldUnregister,
     rules,
   } = props;

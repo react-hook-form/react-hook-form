@@ -620,7 +620,7 @@ describe('Controller', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <Controller
                 render={({ field }) => <input {...field} />}
                 name={`test.${i}.value`}
