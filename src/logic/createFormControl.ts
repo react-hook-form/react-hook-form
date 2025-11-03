@@ -156,6 +156,7 @@ export function createFormControl<
   let timer = 0;
   const _proxyFormState: ReadFormState = {
     isDirty: false,
+    isSubmitting: false,
     dirtyFields: false,
     validatingFields: false,
     touchedFields: false,

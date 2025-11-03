@@ -137,7 +137,11 @@ export function useForm<
   // so formState.isSubmitting reflects external submission state.
   React.useEffect(() => {
     if (typeof props.isPending !== 'undefined') {
+      // update internal control state and React state so subscribers and
+      // consumers of `formState` see the change regardless of proxy
+      control._formState.isSubmitting = !!props.isPending;
       control._subjects.state.next({ isSubmitting: !!props.isPending });
+      updateFormState((s) => ({ ...s, isSubmitting: !!props.isPending }));
     }
   }, [control, props.isPending]);
 
