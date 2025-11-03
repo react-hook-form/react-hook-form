@@ -133,6 +133,14 @@ export function useForm<
     }
   }, [control, props.errors]);
 
+  // Sync external pending state (e.g. React 19's useActionState) with RHF
+  // so formState.isSubmitting reflects external submission state.
+  React.useEffect(() => {
+    if (typeof props.isPending !== 'undefined') {
+      control._subjects.state.next({ isSubmitting: !!props.isPending });
+    }
+  }, [control, props.isPending]);
+
   React.useEffect(() => {
     props.shouldUnregister &&
       control._subjects.state.next({

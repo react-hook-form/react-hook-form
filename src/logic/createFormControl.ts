@@ -94,6 +94,7 @@ const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
+  isPending: false,
 } as const;
 
 export function createFormControl<
