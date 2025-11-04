@@ -1454,6 +1454,8 @@ export function createFormControl<
       isSubmitting: false,
       defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
     });
+
+    !keepStateOptions.keepIsValid && _setValid();
   };
 
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
