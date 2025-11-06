@@ -1,0 +1,54 @@
+---
+id: best-practices-dynamic-forms
+title: 🧠 Best Practices – Dynamic Forms
+sidebar_label: Dynamic Forms
+---
+
+### 🧠 Best Practice: Prevent Unnecessary Re-renders in Dynamic Forms
+
+When your form receives data from an API or async operation, re-renders can occur if the `defaultValues` object keeps changing on every render.  
+This can reset the entire form unexpectedly and lead to a poor user experience.
+
+Here’s a **real-world example** 👇
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+
+export default function UserProfileForm({ user }) {
+  // ✅ Keep defaultValues stable to prevent form reset
+  const defaultValues = React.useMemo(() => user, [user]);
+
+  const { register, handleSubmit } = useForm({ defaultValues });
+
+  const onSubmit = (data) => {
+    console.log("Updated user data:", data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("name")} placeholder="Full Name" />
+      <input {...register("email")} placeholder="Email Address" />
+      <button type="submit">Update Profile</button>
+    </form>
+  );
+}
+
+:::tip
+Always wrap dynamic `defaultValues` in `React.useMemo()` when fetching data from APIs.  
+This keeps the object reference stable and avoids unnecessary re-renders or resets.
+:::
+
+---
+
+## Tips & Takeaways
+
+- Always use `React.useMemo()` for dynamic `defaultValues` to prevent unnecessary form resets.  
+- Keep your form’s initial data stable when fetching from APIs.  
+- Use React Hook Form’s `reset()` method carefully—only when you *intend* to clear or repopulate the form.  
+- Debugging re-renders? Try wrapping your form in `React.memo()` to test performance behaviour.  
+- Follow this pattern across all forms fetching user-specific or async data.
+
+
+
+
