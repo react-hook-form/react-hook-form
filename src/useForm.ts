@@ -164,6 +164,25 @@ export function useForm<
     }
   }, [control, props.values]);
 
+  // 🆕 Handle dynamic defaultValues changes
+  React.useEffect(() => {
+    if (
+      props.defaultValues &&
+      !deepEqual(props.defaultValues, formState.defaultValues)
+    ) {
+      // Only reset if defaultValues actually changed
+      control._reset(props.defaultValues, {
+        keepValues: true, // don't override user input
+        ...control._options.resetOptions,
+      });
+
+      updateFormState((state) => ({
+        ...state,
+        defaultValues: props.defaultValues,
+      }));
+    }
+  }, [control, props.defaultValues, formState.defaultValues]);
+
   React.useEffect(() => {
     if (!control._state.mount) {
       control._setValid();
