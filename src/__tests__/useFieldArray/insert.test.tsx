@@ -826,4 +826,46 @@ describe('insert', () => {
       await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
     ).toBeVisible();
   });
+
+  it('should not invoke resolver per register during insert; only array-scoped + final isValid', async () => {
+    const resolver = jest
+      .fn()
+      .mockImplementation((values) => ({ values, errors: {} }));
+
+    const App = () => {
+      const { register, formState, control } = useForm<{
+        test: { value: string }[];
+      }>({
+        mode: VALIDATION_MODE.onTouched,
+        resolver,
+        defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+      });
+      formState.isValid;
+      const { fields, insert } = useFieldArray({ control, name: 'test' });
+
+      return (
+        <form>
+          {fields.map((f, i) => (
+            <input key={f.id} {...register(`test.${i}.value` as const)} />
+          ))}
+          <button type="button" onClick={() => insert(1, { value: 'x' })}>
+            insert
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+    );
+    const initialCalls = resolver.mock.calls.length;
+
+    fireEvent.click(screen.getByRole('button', { name: 'insert' }));
+
+    await waitFor(() =>
+      expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+    );
+  });
 });
