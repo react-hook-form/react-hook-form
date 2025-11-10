@@ -4,8 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { FormStateSubscribe } from '../formStateSubscribe';
 import { useForm } from '../useForm';
 
-describe('FormState with SSR', () => {
-  // issue: https://github.com/react-hook-form/react-hook-form/issues/1398
+describe('FormStateSubscribe with SSR', () => {
   it('should render correctly', () => {
     const Component = () => {
       const { control } = useForm<{
