@@ -157,6 +157,9 @@ export function useForm<
         keepFieldsRef: true,
         ...control._options.resetOptions,
       });
+      if (!control._options.resetOptions?.keepIsValid) {
+        control._setValid();
+      }
       _values.current = props.values;
       updateFormState((state) => ({ ...state }));
     } else {
