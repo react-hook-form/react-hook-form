@@ -2,6 +2,7 @@
   "Controller",
   "Form",
   "FormProvider",
+  "FormStateSubscribe",
   "Watch",
   "appendErrors",
   "createFormControl",
