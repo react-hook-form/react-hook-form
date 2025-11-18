@@ -62,6 +62,7 @@ function App() {
 
 We’re incredibly grateful to these kind and generous sponsors for their support!
 
+<a target="_blank" href="https://thanks.dev/"><img width="120" src="https://avatars.githubusercontent.com/u/72539280?s=200&v=4" /></a>
 <a target="_blank" href="https://www.follower24.de/"><img width="120" src="https://images.opencollective.com/follower24/00297f8/avatar/256.png?height=256" /></a>
 <a target="_blank" href='https://workleap.com/'><img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" /></a>
 <a target="_blank" href="https://kinsta.com/"><img width="120" src="https://images.opencollective.com/kinsta/55912d7/logo/256.png?height=256" /></a>
