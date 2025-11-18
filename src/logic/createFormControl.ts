@@ -320,7 +320,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && _setValid();
+      _state.mount && !_state.action && _setValid();
     }
   };
 
