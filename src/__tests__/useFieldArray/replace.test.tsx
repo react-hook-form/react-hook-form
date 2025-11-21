@@ -1,6 +1,7 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import { VALIDATION_MODE } from '../../constants';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -317,5 +318,63 @@ describe('replace', () => {
     expect(
       screen.getByText('{"fieldArray":[{"firstName":true}]}'),
     ).toBeVisible();
+  });
+
+  describe('with resolver', () => {
+    it('should not invoke resolver per register during replace, but run after replace completes', async () => {
+      const resolver = jest
+        .fn()
+        .mockImplementation((values) => ({ values, errors: {} }));
+
+      const App = () => {
+        const { register, formState, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          mode: VALIDATION_MODE.onTouched,
+          resolver,
+          defaultValues: { test: [] },
+        });
+
+        formState.isValid;
+
+        const { fields, replace } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            {fields.map((f, i) => (
+              <input key={f.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                replace([{ value: '1' }, { value: '2' }, { value: '3' }])
+              }
+            >
+              replace
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      // wait for any initial resolver run triggered by isValid subscription
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+      );
+      const initialCalls = resolver.mock.calls.length;
+
+      fireEvent.click(screen.getByRole('button', { name: 'replace' }));
+
+      // ensure 3 inputs are mounted (all fields registered)
+      await waitFor(async () => {
+        expect((await screen.findAllByRole('textbox')).length).toBe(3);
+      });
+
+      // assert only two extra resolver calls: array-scoped + final isValid
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+      );
+    });
   });
 });

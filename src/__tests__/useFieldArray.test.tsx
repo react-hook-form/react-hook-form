@@ -13,6 +13,7 @@ import type {
   Control,
   FieldValues,
   SubmitHandler,
+  UseFieldArrayProps,
   UseFormRegister,
   UseFormReturn,
 } from '../types';
@@ -3353,6 +3354,93 @@ describe('useFieldArray', () => {
       });
 
       expect(screen.queryByAltText('Min length should be 2')).toBeNull();
+    });
+
+    it('should respect rules passed from parent component', async () => {
+      const onValid = jest.fn();
+      const onInvalid = jest.fn();
+
+      type FormValues = {
+        items: { value: string }[];
+      };
+
+      const FieldArray = ({
+        control,
+        register,
+        rules,
+      }: {
+        control: Control<FormValues>;
+        register: UseFormReturn<FormValues>['register'];
+        rules: NonNullable<UseFieldArrayProps<FormValues, 'items'>['rules']>;
+      }) => {
+        const { fields, append, remove } = useFieldArray<FormValues, 'items'>({
+          name: 'items',
+          control,
+          rules,
+        });
+
+        return (
+          <>
+            {fields.map((field, index) => (
+              <fieldset key={field.id}>
+                <input {...register(`items.${index}.value` as const)} />
+                <button type="button" onClick={() => remove(index)}>
+                  remove
+                </button>
+              </fieldset>
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </>
+        );
+      };
+
+      const App = () => {
+        const { control, handleSubmit, register } = useForm<FormValues>({
+          defaultValues: {
+            items: [],
+          },
+        });
+
+        const rules = React.useMemo(
+          () => ({
+            minLength: {
+              value: 4,
+              message: 'Min length 4',
+            },
+          }),
+          [],
+        );
+
+        return (
+          <form onSubmit={handleSubmit(onValid, onInvalid)}>
+            <FieldArray control={control} register={register} rules={rules} />
+            <button type="submit">submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        const appendButton = screen.getByRole('button', { name: 'append' });
+        fireEvent.click(appendButton);
+        fireEvent.click(appendButton);
+        fireEvent.click(appendButton);
+        fireEvent.click(appendButton);
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+      expect(onValid).not.toHaveBeenCalled();
     });
 
     it('should validate the maxLength of the entire field array after submit and correct accordingly', async () => {
