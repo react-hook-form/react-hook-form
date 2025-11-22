@@ -33,7 +33,7 @@
     "build:modern": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.esm.config.js",
     "prettier:fix": "prettier --config .prettierrc --write .",
-    "lint": "eslint '**/*.{js,ts,tsx}' --cache",
+    "lint": "eslint . --cache",
     "lint:fix": "pnpm lint --fix",
     "type": "tsc --noEmit",
     "jest-preview": "jest-preview",
