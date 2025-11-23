@@ -1144,9 +1144,10 @@ export function createFormControl<
       options.onChange
     ) {
       hasWarnedAboutOnChange = true;
+      // eslint-disable-next-line no-console
       console.warn(
         'React Hook Form: `onChange` is not supported in React Native. ' +
-        'Use `onChangeText` instead.',
+          'Use `onChangeText` instead.',
       );
     }
 
