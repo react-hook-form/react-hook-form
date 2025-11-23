@@ -1137,7 +1137,6 @@ export function createFormControl<
     }
 
     if (
-      process.env.NODE_ENV !== 'production' &&
       !hasWarnedAboutOnChange &&
       typeof navigator !== 'undefined' &&
       navigator?.product === 'ReactNative' &&
