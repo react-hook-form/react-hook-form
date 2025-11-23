@@ -153,6 +153,7 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
+  let hasWarnedAboutOnChange = false;
   const _proxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -1133,6 +1134,20 @@ export function createFormControl<
       });
     } else {
       updateValidAndValue(name, true, options.value);
+    }
+
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      !hasWarnedAboutOnChange &&
+      typeof navigator !== 'undefined' &&
+      navigator?.product === 'ReactNative' &&
+      options.onChange
+    ) {
+      hasWarnedAboutOnChange = true;
+      console.warn(
+        'React Hook Form: `onChange` is not supported in React Native. ' +
+        'Use `onChangeText` instead.',
+      );
     }
 
     return {
