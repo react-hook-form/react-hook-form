@@ -1145,7 +1145,7 @@ export function createFormControl<
       hasWarnedAboutOnChange = true;
       // eslint-disable-next-line no-console
       console.warn(
-        'RHF: onChange not supported in React Native. Use onChangeText.'
+        'RHF: onChange not supported in React Native. Use onChangeText.',
       );
     }
 
