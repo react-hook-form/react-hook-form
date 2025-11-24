@@ -44,6 +44,7 @@ import type {
   WatchInternal,
   WatchObserver,
 } from '../types';
+import { isIOSSafari } from '../utils/browser';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
@@ -66,6 +67,7 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
+import { raf } from '../utils/requestAnimation';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -870,11 +872,39 @@ export function createFormControl<
   };
 
   const _focusInput = (ref: Ref, key: string) => {
-    if (get(_formState.errors, key) && ref.focus) {
-      ref.focus();
-      return 1;
+    if (!get(_formState.errors, key)) {
+      return;
     }
-    return;
+
+    if (!ref || typeof ref.focus !== 'function') {
+      return;
+    }
+
+    const isBrowser = typeof document !== 'undefined';
+
+    if (isBrowser && isIOSSafari() && document.activeElement === ref) {
+      if (typeof ref.blur === 'function') {
+        ref.blur();
+      }
+
+      raf(() => {
+        if (typeof ref.scrollIntoView === 'function') {
+          ref.scrollIntoView({
+            block: 'center',
+            inline: 'nearest',
+            behavior: 'smooth',
+          });
+        }
+
+        raf(() => {
+          ref.focus?.();
+        });
+      });
+    } else {
+      ref.focus?.();
+    }
+
+    return 1;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
