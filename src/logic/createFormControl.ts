@@ -1135,6 +1135,16 @@ export function createFormControl<
       updateValidAndValue(name, true, options.value);
     }
 
+    if (
+      navigator?.product === 'ReactNative' &&
+      options.onChange
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'RHF: onChange not supported in React Native. Use onChangeText.',
+      );
+    }
+
     return {
       ...(disabledIsDefined
         ? { disabled: options.disabled || _options.disabled }
