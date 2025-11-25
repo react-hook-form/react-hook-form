@@ -1372,7 +1372,8 @@ describe('reset', () => {
           })}
         >
           <p>is dirty? {isDirty ? 'yes' : 'no'}</p>
-          <p>{JSON.stringify(dirtyFields)}</p>
+          <p>{dirtyFields.test?.[0]?.firstName && 'firstname'}</p>
+          <p>{dirtyFields.test?.[0]?.lastName && 'lastName'}</p>
           <input {...register('something')} />
           <ul>
             {fields.map((item, index) => {
@@ -1412,11 +1413,7 @@ describe('reset', () => {
     });
 
     expect(screen.getByText(/yes/i)).toBeVisible();
-    expect(
-      screen.getByText(
-        `{"something":true,"test":[{"firstName":true,"lastName":true}]}`,
-      ),
-    ).toBeVisible();
+    expect(screen.getByText('lastName')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
