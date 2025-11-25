@@ -646,6 +646,10 @@ export function createFormControl<
       }
     }
 
+    if (options.shouldDirty === false) {
+      set(_defaultValues, name, cloneObject(fieldValue));
+    }
+
     (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(
         name,
