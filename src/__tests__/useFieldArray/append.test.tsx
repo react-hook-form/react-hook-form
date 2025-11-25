@@ -474,6 +474,60 @@ describe('append', () => {
 
       expect(resolver).toHaveBeenCalled();
     });
+
+    it('should not invoke resolver per register during append; only array-scoped + final isValid', async () => {
+      const resolver = jest
+        .fn()
+        .mockImplementation((values) => ({ values, errors: {} }));
+
+      const App = () => {
+        const { register, formState, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          mode: VALIDATION_MODE.onTouched,
+          resolver,
+          defaultValues: { test: [] },
+        });
+
+        formState.isValid;
+
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            <input {...register('test' as const)} />
+            {fields.map((f, i) => (
+              <input key={f.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                append([{ value: '1' }, { value: '2' }, { value: '3' }])
+              }
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+      );
+      const initialCalls = resolver.mock.calls.length;
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(async () => {
+        expect((await screen.findAllByRole('textbox')).length).toBe(4); // 1 root + 3 items
+      });
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+      );
+    });
   });
 
   it('should not omit keyName when provided', async () => {

@@ -1293,6 +1293,99 @@ describe('useController', () => {
     expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
   });
 
+  it('should listen to similar fields with exact - false', () => {
+    type FormValues = {
+      test: string;
+      test_with_suffix: string;
+    };
+
+    const renderCounter: Record<keyof FormValues, number> = {
+      test: 0,
+      test_with_suffix: 0,
+    };
+
+    const ControlledInput = ({
+      name,
+      control,
+    }: {
+      name: keyof FormValues;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field,
+        fieldState: { error, isDirty },
+      } = useController({
+        name,
+        control,
+        rules: { required: 'is required' },
+        exact: false,
+      });
+
+      renderCounter[name]++;
+
+      return (
+        <div>
+          <input aria-label={name} {...field} />
+          {error && (
+            <p>
+              {name} {error.message}
+            </p>
+          )}
+          {isDirty && <p>{name} isDirty</p>}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control } = useForm<FormValues>({
+        mode: 'onBlur',
+        defaultValues: {
+          test: '1234',
+          test_with_suffix: '1234',
+        },
+      });
+      return (
+        <form>
+          <ControlledInput name="test" control={control} />
+          <ControlledInput name="test_with_suffix" control={control} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
+    expect(screen.queryByText('test is required')).toBeNull();
+    expect(screen.queryByText('test_with_suffix is required')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
+      target: {
+        value: '',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+
+    expect(screen.getByText('test isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'test_with_suffix' }),
+      {
+        target: {
+          value: '',
+        },
+      },
+    );
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+
+    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
+  });
+
   it('should prevent field value leakage when field names change at same position', () => {
     type FormValues = {
       type: 'personal' | 'business';
