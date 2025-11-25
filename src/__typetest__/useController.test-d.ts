@@ -32,7 +32,7 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectType<string[]>(field.value);
+    expectType<string[] | undefined>(field.value);
     expectType<'items'>(field.name);
   }
 
@@ -65,7 +65,7 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectType<number[]>(field.value);
+    expectType<number[] | undefined>(field.value);
   }
 
   /** it should handle array of objects */ {
@@ -80,6 +80,6 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectType<Array<{ id: string; name: string }>>(field.value);
+    expectType<Array<{ id: string; name: string }> | undefined>(field.value);
   }
 }
