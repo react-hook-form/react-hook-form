@@ -101,7 +101,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
     onBlur: Noop;
-    value: FieldPathValue<TFieldValues, TName>;
+    value: FieldPathValue<TFieldValues, TName> | undefined;
     disabled?: boolean;
     name: TName;
     ref: RefCallBack;
@@ -628,6 +628,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues, any, TTransformedValues>;
     disabled?: boolean;
+    exact?: boolean;
 };
 
 // @public (undocumented)
