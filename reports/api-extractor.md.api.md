@@ -620,6 +620,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues, any, TTransformedValues>;
     disabled?: boolean;
+    exact?: boolean;
 };
 
 // @public (undocumented)
