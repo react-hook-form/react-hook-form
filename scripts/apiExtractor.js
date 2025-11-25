@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
 const fs = require('fs');
 const path = require('path');
