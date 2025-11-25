@@ -67,7 +67,6 @@ import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
-import { raf } from '../utils/requestAnimation';
 import set from '../utils/set';
 import unset from '../utils/unset';
 
@@ -872,36 +871,36 @@ export function createFormControl<
   };
 
   const _focusInput = (ref: Ref, key: string) => {
-    if (!get(_formState.errors, key)) {
+    if (
+      !get(_formState.errors, key) ||
+      !ref ||
+      typeof ref.focus !== 'function'
+    ) {
       return;
     }
 
-    if (!ref || typeof ref.focus !== 'function') {
-      return;
-    }
+    if (
+      typeof document !== 'undefined' &&
+      isIOSSafari() &&
+      document.activeElement === ref
+    ) {
+      const el = ref as any;
 
-    const isBrowser = typeof document !== 'undefined';
-
-    if (isBrowser && isIOSSafari() && document.activeElement === ref) {
-      if (typeof ref.blur === 'function') {
-        ref.blur();
+      if (el.blur) {
+        el.blur();
       }
 
-      raf(() => {
-        if (typeof ref.scrollIntoView === 'function') {
-          ref.scrollIntoView({
-            block: 'center',
-            inline: 'nearest',
-            behavior: 'smooth',
-          });
+      setTimeout(() => {
+        if (el.scrollIntoView) {
+          el.scrollIntoView();
         }
 
-        raf(() => {
-          ref.focus?.();
-        });
-      });
+        setTimeout(() => {
+          el.focus();
+        }, 0);
+      }, 0);
     } else {
-      ref.focus?.();
+      ref.focus();
     }
 
     return 1;
