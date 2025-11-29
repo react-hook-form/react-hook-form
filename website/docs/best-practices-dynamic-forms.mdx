@@ -1,0 +1,72 @@
+---
+id: best-practices-dynamic-forms
+title: Best Practices for Dynamic Forms
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Best Practices for Dynamic Forms
+
+Dynamic forms are forms where fields can appear, disappear, or change dynamically based on user input or other conditions. React Hook Form provides powerful tools to handle dynamic forms efficiently.
+
+## 1. Use `useFieldArray` for Field Arrays
+
+When you have a dynamic list of fields (e.g., adding multiple users), use `useFieldArray` instead of manually managing state.
+
+```tsx
+import { useForm, useFieldArray } from "react-hook-form";
+
+function App() {
+  const { control, register, handleSubmit } = useForm();
+  const { fields, append, remove } = useFieldArray({ control, name: "users" });
+
+  return (
+    <form onSubmit={handleSubmit(data => console.log(data))}>
+      {fields.map((field, index) => (
+        <div key={field.id}>
+          <input {...register(`users.${index}.name` as const)} />
+          <button type="button" onClick={() => remove(index)}>Delete</button>
+        </div>
+      ))}
+      <button type="button" onClick={() => append({ name: "" })}>Add User</button>
+      <input type="submit" />
+    </form>
+  );
+}
+
+2. Use shouldUnregister for Conditional Fields
+
+For fields that appear/disappear based on conditions, set shouldUnregister: true in useForm to remove them from form values when unmounted.
+
+const { register, handleSubmit } = useForm({ shouldUnregister: true });
+
+3. Leverage watch for Dynamic UI Updates
+
+Use watch to dynamically render fields based on other field values.
+
+const watchAge = watch("age");
+return watchAge > 18 ? <input {...register("driverLicense")} /> : null;
+
+4. Default Values & Resets
+
+Always provide defaultValues and use reset carefully to handle dynamic updates.
+
+reset({ users: [{ name: "John" }] });
+
+5. Optimize Performance
+
+Use shouldFocusError: true to focus first error automatically.
+
+Use mode: "onChange" to reduce unnecessary renders.
+
+Avoid anonymous functions in JSX when registering fields dynamically.
+
+
+6. Tips
+
+Keep your dynamic forms simple and predictable.
+
+Use key={field.id} when rendering dynamic lists.
+
+Combine useFormContext if using nested forms for better maintainability.
