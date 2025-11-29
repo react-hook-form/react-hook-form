@@ -88,6 +88,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['scripts/**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
     files: ['*.test.ts', '*.test.tsx'],
     rules: {
       // Allow testing runtime errors to suppress TS errors
