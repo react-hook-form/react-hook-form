@@ -94,4 +94,11 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
+  {
+    files: ['cypress.config.ts', 'scripts/**/*.js'],
+    rules: {
+      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 );
