@@ -201,15 +201,48 @@ export function useFieldArray<
   };
 
   const remove = (index?: number | number[]) => {
-    const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-    >[] = removeArrayAt(control._getFieldArray(name), index);
+    const current = control._getFieldArray(name);
+    const updatedFieldArrayValues = removeArrayAt(current, index);
+
     ids.current = removeArrayAt(ids.current, index);
-    updateValues(updatedFieldArrayValues);
-    setFields(updatedFieldArrayValues);
-    !Array.isArray(get(control._fields, name)) &&
-      set(control._fields, name, undefined);
-    control._setFieldArray(name, updatedFieldArrayValues, removeArrayAt, {
+
+    const dirtyFieldsRoot =
+      control._formState && control._formState.dirtyFields;
+    const dirtyForName = (dirtyFieldsRoot && get(dirtyFieldsRoot, name)) || [];
+
+    const currentValues = get(control._formValues, name) as any[] | undefined;
+
+    const merged = updatedFieldArrayValues.map((item, i) =>
+      dirtyForName?.[i] ? (currentValues?.[i] ?? item) : item,
+    );
+
+    if (typeof index === 'undefined') {
+      unset(control._formState, `dirtyFields.${name}`);
+      unset(control._formValues, name);
+      ids.current = [];
+    } else {
+      const removedIndexes = Array.isArray(index)
+        ? index.slice().sort((a, b) => b - a)
+        : [index];
+
+      removedIndexes.forEach((i) => {
+        unset(control._formState, `dirtyFields.${name}.${i}`);
+        unset(control._formValues, `${name}.${i}`);
+      });
+    }
+
+    set(control._formValues, name, merged);
+
+    updateValues(merged);
+    setFields(merged);
+
+    if (!merged.length) {
+      unset(control._fields, name);
+      unset(control._formValues, name);
+      ids.current = [];
+    }
+
+    control._setFieldArray(name, merged, removeArrayAt, {
       argA: index,
     });
   };

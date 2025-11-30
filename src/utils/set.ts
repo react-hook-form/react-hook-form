@@ -19,6 +19,10 @@ export default (
     let newValue = value;
 
     if (index !== lastIndex) {
+      if (!object || typeof object !== 'object') {
+        return;
+      }
+
       const objValue = object[key];
       newValue =
         isObject(objValue) || Array.isArray(objValue)
