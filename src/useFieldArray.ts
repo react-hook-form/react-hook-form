@@ -202,19 +202,23 @@ export function useFieldArray<
 
   const remove = (index?: number | number[]) => {
     const current = control._getFieldArray(name);
-    const updated = removeArrayAt(current, index);
-    const formValues = control._formValues;
+    const updatedFieldArrayValues = removeArrayAt(current, index);
+
+    ids.current = removeArrayAt(ids.current, index);
+
     const dirtyFieldsRoot =
       control._formState && control._formState.dirtyFields;
+    const dirtyForName = (dirtyFieldsRoot && get(dirtyFieldsRoot, name)) || [];
 
-    const dirtyForName = get(dirtyFieldsRoot, name) || [];
-    const merged = updated.map((item, i) =>
-      dirtyForName?.[i] ? current?.[i] : item,
+    const currentValues = get(control._formValues, name) as any[] | undefined;
+
+    const merged = updatedFieldArrayValues.map((item, i) =>
+      dirtyForName?.[i] ? (currentValues?.[i] ?? item) : item,
     );
 
     if (typeof index === 'undefined') {
       unset(control._formState, `dirtyFields.${name}`);
-      unset(formValues, name);
+      unset(control._formValues, name);
       ids.current = [];
     } else {
       const removedIndexes = Array.isArray(index)
@@ -223,18 +227,18 @@ export function useFieldArray<
 
       removedIndexes.forEach((i) => {
         unset(control._formState, `dirtyFields.${name}.${i}`);
-        unset(formValues, `${name}.${i}`);
+        unset(control._formValues, `${name}.${i}`);
       });
-
-      ids.current = removeArrayAt(ids.current, index);
     }
 
-    set(formValues, name, merged);
+    set(control._formValues, name, merged);
+
+    updateValues(merged);
     setFields(merged);
 
     if (!merged.length) {
       unset(control._fields, name);
-      unset(formValues, name);
+      unset(control._formValues, name);
       ids.current = [];
     }
 
@@ -464,7 +468,7 @@ export function useFieldArray<
     move: React.useCallback(move, [updateValues, name, control]),
     prepend: React.useCallback(prepend, [updateValues, name, control]),
     append: React.useCallback(append, [updateValues, name, control]),
-    remove: React.useCallback(remove, [name, control]),
+    remove: React.useCallback(remove, [updateValues, name, control]),
     insert: React.useCallback(insert, [updateValues, name, control]),
     update: React.useCallback(update, [updateValues, name, control]),
     replace: React.useCallback(replace, [updateValues, name, control]),
