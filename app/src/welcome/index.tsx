@@ -252,13 +252,6 @@ const items: Item[] = [
     plus: true,
   },
   {
-    title: 'JSXErrorMessages',
-    description:
-      'Should support JSX/ReactElement as error messages for rich formatted error displays',
-    slugs: ['/jsx-error-messages'],
-    plus: true,
-  },
-  {
     title: 'ScrollIntoView',
     description:
       'Should expose scrollIntoView method on field refs for smooth scrolling to form fields',

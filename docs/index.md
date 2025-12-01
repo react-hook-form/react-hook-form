@@ -40,7 +40,6 @@ import { useForm } from '@bombillazo/rhf-plus';
 
 - [**Imperative form submission**](./imperative_submit.md) - Submit forms programmatically with enhanced control
 - [**Smart "disabled" state**](./smart-disabled-state.md) - Intelligent field disabling based on form state
-- [**JSX error messages**](./jsx-error-messages.md) - Render JSX components as error messages
 - [**Controllable "isLoading" state**](./controllable-is-loading-state.md) - Manual control over form loading state
 - [**Form metadata**](./form-metadata.md) - Access additional form information and statistics
 - [**"ScrollIntoView" method on field refs**](./scroll-into-view-method.md) - Automatically scroll to fields with errors

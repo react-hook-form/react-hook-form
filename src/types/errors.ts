@@ -1,10 +1,8 @@
-import type React from 'react';
-
 import type { FieldValues, InternalFieldName, Ref } from './fields';
 import type { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
 import type { RegisterOptions, ValidateResult } from './validator';
 
-export type Message = string | React.ReactElement;
+export type Message = string;
 
 export type MultipleFieldErrors = {
   [K in keyof RegisterOptions]?: ValidateResult;

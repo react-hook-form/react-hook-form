@@ -1,6 +1,6 @@
 import type { FieldError, Ref, ValidateResult } from '../types';
 import isBoolean from '../utils/isBoolean';
-import isMessage from '../utils/isMessage';
+import isString from '../utils/isString';
 
 export default function getValidateError(
   result: ValidateResult,
@@ -8,13 +8,13 @@ export default function getValidateError(
   type = 'validate',
 ): FieldError | void {
   if (
-    isMessage(result) ||
-    (Array.isArray(result) && result.every(isMessage)) ||
+    isString(result) ||
+    (Array.isArray(result) && result.every(isString)) ||
     (isBoolean(result) && !result)
   ) {
     return {
       type,
-      message: isMessage(result) ? result : '',
+      message: isString(result) ? result : '',
       ref,
     };
   }

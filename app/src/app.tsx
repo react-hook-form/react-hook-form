@@ -49,7 +49,6 @@ import ImperativeSubmitControl from './imperativeSubmitControl';
 import IsLoading from './isLoading';
 import Metadata from './metadata';
 import MetadataControl from './metadata-control';
-import JsxErrorMessages from './jsxErrorMessages';
 import ScrollIntoView from './scrollIntoView';
 import SmartDisabled from './smartDisabled';
 import ReadonlyValidation from './readonlyValidation';
@@ -148,7 +147,6 @@ const App = () => {
         <Route path="/is-loading" element={<IsLoading />} />
         <Route path="/metadata" element={<Metadata />} />
         <Route path="/metadata-control" element={<MetadataControl />} />
-        <Route path="/jsx-error-messages" element={<JsxErrorMessages />} />
         <Route path="/scroll-into-view" element={<ScrollIntoView />} />
         <Route path="/smart-disabled" element={<SmartDisabled />} />
         <Route path="/readonly-validation" element={<ReadonlyValidation />} />
