@@ -101,7 +101,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
     onBlur: Noop;
-    value: FieldPathValue<TFieldValues, TName> | undefined;
+    value: FieldPathValue<TFieldValues, TName>;
     disabled?: boolean;
     name: TName;
     ref: RefCallBack;
@@ -337,6 +337,14 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
     values?: TFieldValues;
     type?: EventType;
 }>;
+
+// @public (undocumented)
+export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>({ control, disabled, exact, name, render, }: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
+
+// @public (undocumented)
+export type FormStateSubscribeProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = UseFormStateProps<TFieldValues, TTransformedValues> & {
+    render: (values: UseFormStateReturn<TFieldValues>) => ReactNode;
+};
 
 // @public (undocumented)
 export type FormSubmitHandler<TTransformedValues> = (payload: {

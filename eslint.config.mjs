@@ -28,7 +28,7 @@ export default tseslint.config(
   pluginCypress.configs.recommended,
   {
     plugins: {
-      'react-hooks': fixupPluginRules(reactHookPlugin),
+      'react-hooks': reactHookPlugin,
       'simple-import-sort': simpleImportSort,
     },
     languageOptions: {
