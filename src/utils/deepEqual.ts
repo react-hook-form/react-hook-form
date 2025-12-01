@@ -9,7 +9,7 @@ export default function deepEqual(
   _internal_visited = new WeakSet(),
 ) {
   if (isPrimitive(object1) || isPrimitive(object2)) {
-    return object1 === object2;
+    return Object.is(object1, object2);
   }
 
   if (isDateObject(object1) && isDateObject(object2)) {
@@ -44,7 +44,7 @@ export default function deepEqual(
         (isObject(val1) && isObject(val2)) ||
         (Array.isArray(val1) && Array.isArray(val2))
           ? !deepEqual(val1, val2, _internal_visited)
-          : val1 !== val2
+          : !Object.is(val1, val2)
       ) {
         return false;
       }

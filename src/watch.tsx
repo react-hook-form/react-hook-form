@@ -56,7 +56,7 @@ export type WatchProps<
  * ```
  */
 export const Watch = <
-  TFieldNames extends readonly FieldPath<TFieldValues>[],
+  const TFieldNames extends readonly FieldPath<TFieldValues>[],
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,

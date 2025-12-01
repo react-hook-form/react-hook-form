@@ -226,6 +226,48 @@ describe('formState', () => {
 
       expect(await screen.findByText('invalid')).toBeVisible();
     });
+
+    it('should set isValid to true after async values provide valid data', async () => {
+      jest.useFakeTimers();
+
+      const App = () => {
+        const [value, setValue] = React.useState<{ name: string } | undefined>(
+          undefined,
+        );
+
+        React.useEffect(() => {
+          const t = setTimeout(() => setValue({ name: 'Mike' }), 2000);
+          return () => clearTimeout(t);
+        }, []);
+
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<{ name: string }>({
+          defaultValues: { name: '' },
+          values: value ?? { name: '' },
+          mode: 'onBlur',
+        });
+
+        return (
+          <div>
+            <input {...register('name', { required: true })} />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.getByText('invalid')).toBeVisible();
+
+      act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+      jest.useRealTimers();
+    });
   });
 
   it('should be a proxy object that returns undefined for unknown properties', () => {

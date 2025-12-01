@@ -350,7 +350,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && _setValid();
+      _state.mount && !_state.action && _setValid();
     }
   };
 
@@ -1679,7 +1679,8 @@ export function createFormControl<
     _state.mount =
       !_proxyFormState.isValid ||
       !!keepStateOptions.keepIsValid ||
-      !!keepStateOptions.keepDirtyValues;
+      !!keepStateOptions.keepDirtyValues ||
+      (!_options.shouldUnregister && !isEmptyObject(values));
 
     _state.watch = !!_options.shouldUnregister;
 
