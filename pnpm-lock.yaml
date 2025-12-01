@@ -7376,8 +7376,8 @@ snapshots:
 
   eslint-plugin-react-hooks@7.0.1(eslint@9.39.0):
     dependencies:
-      '@babel/core': 7.28.5
-      '@babel/parser': 7.28.5
+      '@babel/core': 7.28.4
+      '@babel/parser': 7.28.4
       eslint: 9.39.0
       hermes-parser: 0.25.1
       zod: 3.25.76
