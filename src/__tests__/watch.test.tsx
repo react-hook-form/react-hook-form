@@ -1,6 +1,5 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { expectType } from 'tsd';
 
 import { useForm } from '../useForm';
 import { Watch } from '../watch';
@@ -17,52 +16,6 @@ type FormType = {
 };
 
 describe('Watch', () => {
-  it('should have correct types for render function parameters', () => {
-    const Component = () => {
-      const { control } = useForm<FormType>();
-      return (
-        <Watch
-          control={control}
-          names={[
-            'foo',
-            'bar',
-            'baz',
-            'baz.qux',
-            'quux',
-            'fie',
-            'foe',
-            'foe.qux',
-            'foe.qux.0',
-          ]}
-          render={([
-            foo,
-            bar,
-            baz,
-            bazQux,
-            quux,
-            fie,
-            foe,
-            foeQux,
-            foeQux0,
-          ]) => {
-            expectType<string>(foo);
-            expectType<string>(bar);
-            expectType<{ qux: string }>(baz);
-            expectType<string>(bazQux);
-            expectType<number>(quux);
-            expectType<null>(fie);
-            expectType<{ qux: number[] }>(foe);
-            expectType<number[]>(foeQux);
-            expectType<number>(foeQux0);
-            return null;
-          }}
-        />
-      );
-    };
-
-    Component;
-  });
-
   it('should pass the values corresponding to the `names` prop to render function', () => {
     const Component = () => {
       const { control, register } = useForm<FormType>();

@@ -881,6 +881,84 @@ describe('useWatch', () => {
 
       expect(screen.getByText('yes')).toBeVisible();
     });
+
+    it('should react to changing field name', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: formResult } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            field1: 'value1',
+            field2: 'value2',
+          },
+        }),
+      );
+
+      const { result, rerender } = renderHook(
+        ({ fieldName }: { fieldName: 'field1' | 'field2' }) => {
+          const watchedValue = useWatch({
+            control: formResult.current.control,
+            name: fieldName,
+          });
+          return watchedValue;
+        },
+        {
+          initialProps: { fieldName: 'field1' },
+        },
+      );
+
+      expect(result.current).toBe('value1');
+
+      rerender({ fieldName: 'field2' });
+      expect(result.current).toBe('value2');
+
+      rerender({ fieldName: 'field1' });
+      expect(result.current).toBe('value1');
+    });
+
+    it('should react to changing control', () => {
+      type FormValues = {
+        name: string;
+      };
+
+      const { result: form1Result } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            name: 'form1-value',
+          },
+        }),
+      );
+
+      const { result: form2Result } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            name: 'form2-value',
+          },
+        }),
+      );
+
+      const { result, rerender } = renderHook(
+        ({ control }: { control: Control<FormValues> }) =>
+          useWatch({
+            control,
+            name: 'name',
+          }),
+        {
+          initialProps: { control: form1Result.current.control },
+        },
+      );
+
+      expect(result.current).toBe('form1-value');
+
+      rerender({ control: form2Result.current.control });
+      expect(result.current).toBe('form2-value');
+
+      rerender({ control: form1Result.current.control });
+      expect(result.current).toBe('form1-value');
+    });
   });
 
   describe('fieldArray', () => {

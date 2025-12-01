@@ -1219,6 +1219,8 @@ describe('reset', () => {
 
     expect(await screen.findByText('false')).toBeVisible();
 
+    // With fix for #13088, mount is set based on conditions including !isEmptyObject(_formValues)
+    // When reset({}) is called, _formValues becomes {}, so mount becomes true
     expect(mounted).toEqual([false, false]);
 
     expect(tempControl._state.mount).toBeTruthy();
