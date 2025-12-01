@@ -26,7 +26,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
-  value: FieldPathValue<TFieldValues, TName>;
+  value: FieldPathValue<TFieldValues, TName> | undefined;
   disabled?: boolean;
   name: TName;
   ref: RefCallBack;
@@ -46,6 +46,7 @@ export type UseControllerProps<
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
+  exact?: boolean;
 };
 
 export type UseControllerReturn<

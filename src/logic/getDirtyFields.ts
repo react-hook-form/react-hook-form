@@ -11,10 +11,12 @@ function isTraversable(value: any): boolean {
 
 function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
   for (const key in data) {
-    if (isTraversable(data[key])) {
-      fields[key] = Array.isArray(data[key]) ? [] : {};
-      markFieldsDirty(data[key], fields[key]);
-    } else if (!isNullOrUndefined(data[key])) {
+    const value = data[key];
+
+    if (isTraversable(value)) {
+      fields[key] = Array.isArray(value) ? [] : {};
+      markFieldsDirty(value, fields[key]);
+    } else if (!isUndefined(value)) {
       fields[key] = true;
     }
   }
@@ -35,21 +37,24 @@ export default function getDirtyFields<T>(
   }
 
   for (const key in data) {
-    if (isTraversable(data[key])) {
+    const value = data[key];
+
+    if (isTraversable(value)) {
       if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
         dirtyFieldsFromValues[key] = markFieldsDirty(
-          data[key],
-          Array.isArray(data[key]) ? [] : {},
+          value,
+          Array.isArray(value) ? [] : {},
         );
       } else {
         getDirtyFields(
-          data[key],
+          value,
           isNullOrUndefined(formValues) ? {} : formValues[key],
           dirtyFieldsFromValues[key],
         );
       }
     } else {
-      dirtyFieldsFromValues[key] = !deepEqual(data[key], formValues[key]);
+      const formValue = formValues[key];
+      dirtyFieldsFromValues[key] = !deepEqual(value, formValue);
     }
   }
 
