@@ -26,7 +26,7 @@ export type ControllerRenderProps<
 > = {
   onChange: (...event: any[]) => void;
   onBlur: Noop;
-  value: FieldPathValue<TFieldValues, TName> | undefined;
+  value: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
   name: TName;
   ref: RefCallBack;
