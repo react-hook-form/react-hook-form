@@ -1,5 +1,4 @@
-import isObject from '../utils/isObject';
-
+import isObject from './isObject';
 import isDateObject from './isDateObject';
 import isPrimitive from './isPrimitive';
 
