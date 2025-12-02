@@ -1,5 +1,5 @@
-import isObject from './isObject';
 import isDateObject from './isDateObject';
+import isObject from './isObject';
 import isPrimitive from './isPrimitive';
 
 export default function deepEqual(
