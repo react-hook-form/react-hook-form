@@ -1849,4 +1849,125 @@ describe('reset', () => {
       screen.queryByText('Description must be at least 5 characters'),
     ).not.toBeInTheDocument();
   });
+
+  it('should keep isValid value when reset is called with keepIsValid option', async () => {
+    let formState: { isValid: boolean } = { isValid: false };
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { isValid },
+      } = useForm({
+        defaultValues: { name: 'Mike' },
+        mode: 'onChange',
+      });
+
+      formState = { isValid };
+
+      return (
+        <div>
+          <p>
+            <input {...register('name', { required: true })} />
+          </p>
+          <button
+            onClick={() => {
+              reset({ name: '' }, { keepIsValid: true });
+            }}
+          >
+            reset
+          </button>
+          <p>is valid: {isValid ? 'true' : 'false'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    });
+
+    expect(formState).toEqual({ isValid: true });
+    expect(input.value).toBe('Mike');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    expect(formState).toEqual({ isValid: true });
+  });
+
+  it('should keep isValid value when form has resetOptions.keepIsValid configured', async () => {
+    let formState: { isValid: boolean } = { isValid: false };
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { isValid },
+      } = useForm({
+        defaultValues: { name: 'Mike' },
+        mode: 'onChange',
+        resetOptions: {
+          keepIsValid: true,
+        },
+      });
+
+      formState = { isValid };
+
+      return (
+        <div>
+          <p>
+            <input {...register('name', { required: true })} />
+          </p>
+          <button
+            onClick={() => {
+              reset({ name: '' });
+            }}
+          >
+            reset
+          </button>
+          <p>is valid: {isValid ? 'true' : 'false'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    });
+
+    expect(formState).toEqual({ isValid: true });
+    expect(input.value).toBe('Mike');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    expect(formState).toEqual({ isValid: true });
+  });
 });
