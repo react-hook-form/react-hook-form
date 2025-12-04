@@ -3,30 +3,29 @@ import isPlainObject from './isPlainObject';
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
-  let copy: any;
-  const isArray = Array.isArray(data);
-  const isFileListInstance =
-    typeof FileList !== 'undefined' ? data instanceof FileList : false;
-
   if (data instanceof Date) {
-    copy = new Date(data);
-  } else if (
-    !(isWeb && (data instanceof Blob || isFileListInstance)) &&
-    (isArray || isObject(data))
-  ) {
-    copy = isArray ? [] : Object.create(Object.getPrototypeOf(data));
+    return new Date(data) as any;
+  }
 
-    if (!isArray && !isPlainObject(data)) {
-      copy = data;
-    } else {
-      for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-          copy[key] = cloneObject(data[key]);
-        }
-      }
-    }
-  } else {
+  const isFileListInstance =
+    typeof FileList !== 'undefined' && data instanceof FileList;
+
+  if (isWeb && (data instanceof Blob || isFileListInstance)) {
     return data;
+  }
+
+  const isArray = Array.isArray(data);
+
+  if (!isArray && !(isObject(data) && isPlainObject(data))) {
+    return data;
+  }
+
+  const copy = isArray ? [] : Object.create(Object.getPrototypeOf(data));
+
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      copy[key] = cloneObject(data[key]);
+    }
   }
 
   return copy;
