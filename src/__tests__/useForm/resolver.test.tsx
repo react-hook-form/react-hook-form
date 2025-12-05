@@ -1,8 +1,15 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import type { FieldErrors } from '../../types/errors';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
@@ -297,5 +304,144 @@ describe('resolver', () => {
         timeout: 3000,
       }),
     ).toBeVisible();
+  });
+
+  describe('resolver state batching', () => {
+    const createResolver = () => async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      return {
+        errors: {
+          test: { type: 'required', message: 'Required' },
+        },
+      };
+    };
+
+    const StateTracker = ({
+      control,
+      onEmit,
+    }: {
+      control: any;
+      onEmit: (state: { errors: any; isValidating: boolean }) => void;
+    }) => {
+      const { errors, isValidating } = useFormState({ control });
+
+      React.useEffect(() => {
+        onEmit({ errors: { ...errors }, isValidating });
+      }, [errors, isValidating, onEmit]);
+
+      return null;
+    };
+
+    it('should batch state updates in onChange mode', async () => {
+      const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
+
+      const App = () => {
+        const { register, control } = useForm({
+          resolver: createResolver(),
+          mode: 'onChange',
+        });
+
+        return (
+          <form>
+            <input {...register('test')} />
+            <StateTracker
+              control={control}
+              onEmit={(state) => stateEmissions.push(state)}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+      stateEmissions.length = 0;
+
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+
+      await waitFor(() => {
+        expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
+      });
+
+      // Should be 2 emissions, not 3
+      expect(stateEmissions).toHaveLength(2);
+      expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
+      expect(stateEmissions[1].errors.test).toBeDefined();
+      expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should batch state updates in onBlur mode', async () => {
+      const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
+
+      const App = () => {
+        const { register, control } = useForm({
+          resolver: createResolver(),
+          mode: 'onBlur',
+        });
+
+        return (
+          <form>
+            <input {...register('test')} />
+            <StateTracker
+              control={control}
+              onEmit={(state) => stateEmissions.push(state)}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+      stateEmissions.length = 0;
+
+      fireEvent.focus(screen.getByRole('textbox'));
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+      fireEvent.blur(screen.getByRole('textbox'));
+
+      await waitFor(() => {
+        expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
+      });
+
+      // Should be 2 emissions, not 3
+      expect(stateEmissions).toHaveLength(2);
+      expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
+      expect(stateEmissions[1].errors.test).toBeDefined();
+      expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should batch state updates when using trigger', async () => {
+      const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
+
+      const App = () => {
+        const { register, control, trigger } = useForm({
+          resolver: createResolver(),
+        });
+
+        return (
+          <form>
+            <input {...register('test')} />
+            <StateTracker
+              control={control}
+              onEmit={(state) => stateEmissions.push(state)}
+            />
+            <button type="button" onClick={() => trigger('test')}>
+              Trigger
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+      stateEmissions.length = 0;
+
+      fireEvent.click(screen.getByRole('button', { name: 'Trigger' }));
+
+      await waitFor(() => {
+        expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
+      });
+
+      // Should be 2 emissions, not 3
+      expect(stateEmissions).toHaveLength(2);
+      expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
+      expect(stateEmissions[1].errors.test).toBeDefined();
+      expect(stateEmissions[1].isValidating).toBe(false);
+    });
   });
 });
