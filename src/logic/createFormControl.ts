@@ -15,7 +15,6 @@ import type {
   FieldValues,
   FormState,
   FromSubscribe,
-  GetIsDirty,
   GetValuesConfig,
   InternalFieldName,
   Names,
@@ -162,7 +161,7 @@ export function createFormControl<
     isValid: false,
     errors: false,
   };
-  let _proxySubscribeFormState = {
+  let _proxySub = {
     ..._proxyFormState,
   };
   const _subjects: Subjects<TFieldValues> = {
@@ -183,9 +182,7 @@ export function createFormControl<
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (
       !_options.disabled &&
-      (_proxyFormState.isValid ||
-        _proxySubscribeFormState.isValid ||
-        shouldUpdateValid)
+      (_proxyFormState.isValid || _proxySub.isValid || shouldUpdateValid)
     ) {
       const isValid = _options.resolver
         ? isEmptyObject((await _runSchema()).errors)
@@ -204,8 +201,8 @@ export function createFormControl<
       !_options.disabled &&
       (_proxyFormState.isValidating ||
         _proxyFormState.validatingFields ||
-        _proxySubscribeFormState.isValidating ||
-        _proxySubscribeFormState.validatingFields)
+        _proxySub.isValidating ||
+        _proxySub.validatingFields)
     ) {
       (names || Array.from(_names.mount)).forEach((name) => {
         if (name) {
@@ -251,8 +248,7 @@ export function createFormControl<
       }
 
       if (
-        (_proxyFormState.touchedFields ||
-          _proxySubscribeFormState.touchedFields) &&
+        (_proxyFormState.touchedFields || _proxySub.touchedFields) &&
         shouldUpdateFieldsAndState &&
         Array.isArray(get(_formState.touchedFields, name))
       ) {
@@ -264,13 +260,13 @@ export function createFormControl<
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
-      if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
+      if (_proxyFormState.dirtyFields || _proxySub.dirtyFields) {
         _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
       }
 
       _subjects.state.next({
         name,
-        isDirty: _getDirty(name, values),
+        isDirty: _getDirty(),
         dirtyFields: _formState.dirtyFields,
         errors: _formState.errors,
         isValid: _formState.isValid,
@@ -341,7 +337,7 @@ export function createFormControl<
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+        if (_proxyFormState.isDirty || _proxySub.isDirty) {
           isPreviousDirty = _formState.isDirty;
           _formState.isDirty = output.isDirty = _getDirty();
           shouldUpdateField = isPreviousDirty !== output.isDirty;
@@ -359,8 +355,7 @@ export function createFormControl<
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
-          ((_proxyFormState.dirtyFields ||
-            _proxySubscribeFormState.dirtyFields) &&
+          ((_proxyFormState.dirtyFields || _proxySub.dirtyFields) &&
             isPreviousDirty !== !isCurrentFieldPristine);
       }
 
@@ -372,8 +367,7 @@ export function createFormControl<
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField =
             shouldUpdateField ||
-            ((_proxyFormState.touchedFields ||
-              _proxySubscribeFormState.touchedFields) &&
+            ((_proxyFormState.touchedFields || _proxySub.touchedFields) &&
               isPreviousFieldTouched !== isBlurEvent);
         }
       }
@@ -396,7 +390,7 @@ export function createFormControl<
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
-      (_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
+      (_proxyFormState.isValid || _proxySub.isValid) &&
       isBoolean(isValid) &&
       _formState.isValid !== isValid;
 
@@ -547,10 +541,8 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(getValues(), _defaultValues));
+  const _getDirty = () =>
+    !_options.disabled && !deepEqual(getValues(), _defaultValues);
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -646,6 +638,10 @@ export function createFormControl<
       }
     }
 
+    if (options.shouldDirty === false) {
+      set(_defaultValues, name, cloneObject(fieldValue));
+    }
+
     (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(
         name,
@@ -704,14 +700,14 @@ export function createFormControl<
       if (
         (_proxyFormState.isDirty ||
           _proxyFormState.dirtyFields ||
-          _proxySubscribeFormState.isDirty ||
-          _proxySubscribeFormState.dirtyFields) &&
+          _proxySub.isDirty ||
+          _proxySub.dirtyFields) &&
         options.shouldDirty
       ) {
         _subjects.state.next({
           name,
           dirtyFields: getDirtyFields(_defaultValues, _formValues),
-          isDirty: _getDirty(name, cloneValue),
+          isDirty: _getDirty(),
         });
       }
     } else {
@@ -789,7 +785,7 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
+        if (_proxyFormState.isValid || _proxySub.isValid) {
           if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
               _setValid();
@@ -847,10 +843,7 @@ export function createFormControl<
         if (isFieldValueUpdated) {
           if (error) {
             isValid = false;
-          } else if (
-            _proxyFormState.isValid ||
-            _proxySubscribeFormState.isValid
-          ) {
+          } else if (_proxyFormState.isValid || _proxySub.isValid) {
             isValid = await executeBuiltInValidation(_fields, true);
           }
         }
@@ -909,7 +902,7 @@ export function createFormControl<
 
     _subjects.state.next({
       ...(!isString(name) ||
-      ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
+      ((_proxyFormState.isValid || _proxySub.isValid) &&
         isValid !== _formState.isValid)
         ? {}
         : { name }),
@@ -1053,13 +1046,13 @@ export function createFormControl<
 
   const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
-    _proxySubscribeFormState = {
-      ..._proxySubscribeFormState,
+    _proxySub = {
+      ..._proxySub,
       ...props.formState,
     };
     return _subscribe({
       ...props,
-      formState: _proxySubscribeFormState,
+      formState: _proxySub,
     });
   };
 
@@ -1312,9 +1305,7 @@ export function createFormControl<
 
       if (!options.keepDirty) {
         unset(_formState.dirtyFields, name);
-        _formState.isDirty = options.defaultValue
-          ? _getDirty(name, cloneObject(get(_defaultValues, name)))
-          : _getDirty();
+        _formState.isDirty = _getDirty();
       }
 
       if (!options.keepError) {
