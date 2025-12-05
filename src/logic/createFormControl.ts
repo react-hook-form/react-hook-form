@@ -143,6 +143,7 @@ export function createFormControl<
     action: false,
     mount: false,
     watch: false,
+    keepIsValid: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -181,6 +182,9 @@ export function createFormControl<
     };
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
+    if (_state.keepIsValid) {
+      return;
+    }
     if (
       !_options.disabled &&
       (_proxyFormState.isValid ||
@@ -1417,6 +1421,7 @@ export function createFormControl<
       (!_options.shouldUnregister && !isEmptyObject(values));
 
     _state.watch = !!_options.shouldUnregister;
+    _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
 
     // Clear errors synchronously to prevent validation errors on subsequent submissions
@@ -1469,7 +1474,7 @@ export function createFormControl<
       isFunction(formValues)
         ? (formValues as Function)(_formValues as TFieldValues)
         : formValues,
-      keepStateOptions,
+      { ..._options.resetOptions, ...keepStateOptions },
     );
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
