@@ -23,7 +23,7 @@ export default function cloneObject<T>(data: T): T {
   const copy = isArray ? [] : Object.create(Object.getPrototypeOf(data));
 
   for (const key in data) {
-    if (data.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
       copy[key] = cloneObject(data[key]);
     }
   }
