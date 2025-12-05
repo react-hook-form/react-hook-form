@@ -1515,13 +1515,13 @@ describe('reset', () => {
     });
   });
 
-  it('should return defaultValues in useWatch and watch when using calling reset with empty object', async () => {
+  it('should reset to empty values when reset({}) is called, not default values', async () => {
     const defaultValues = {
       something: 'anything',
     };
 
     function App() {
-      const { control, reset, register, watch } = useForm({
+      const { control, reset, register, watch, getValues } = useForm({
         defaultValues,
       });
       const watchValue = watch('something');
@@ -1543,6 +1543,7 @@ describe('reset', () => {
           </button>
           <p>watch: {watchValue}</p>
           <p>useWatch: {useWatchValue}</p>
+          <p>getValues: {JSON.stringify(getValues())}</p>
         </form>
       );
     }
@@ -1555,11 +1556,93 @@ describe('reset', () => {
 
     expect(screen.getByText('watch: 1')).toBeVisible();
     expect(screen.getByText('useWatch: 1')).toBeVisible();
+    expect(screen.getByText('getValues: {"something":"1"}')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.getByText('watch: anything')).toBeVisible();
-    expect(screen.getByText('useWatch: anything')).toBeVisible();
+    // After reset({}), the values should be empty, not the default values
+    expect(screen.getByText('watch:')).toBeVisible(); // Empty after reset({})
+    expect(screen.getByText('useWatch:')).toBeVisible(); // Empty after reset({})
+    expect(screen.getByText('getValues: {}')).toBeVisible();
+  });
+
+  it('should reset to empty object values when reset({}) is called', async () => {
+    const defaultValues = {
+      something: 'defaultValue',
+      anotherField: 'anotherDefaultValue',
+    };
+
+    function App() {
+      const { control, reset, register, watch, getValues, handleSubmit } =
+        useForm({
+          defaultValues,
+        });
+      const watchValue = watch('something');
+      const watchAnother = watch('anotherField');
+      const useWatchValue = useWatch({
+        control,
+        name: 'something',
+      });
+
+      return (
+        <form>
+          <input {...register('something')} />
+          <input {...register('anotherField')} />
+          <button
+            type="button"
+            onClick={() => {
+              reset({});
+            }}
+          >
+            reset
+          </button>
+          <p>watch something: {watchValue}</p>
+          <p>watch anotherField: {watchAnother}</p>
+          <p>useWatch: {useWatchValue}</p>
+          <p>getValues: {JSON.stringify(getValues())}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    // Initially, watched values should show default values
+    expect(screen.getByText('watch something: defaultValue')).toBeVisible();
+    expect(
+      screen.getByText('watch anotherField: anotherDefaultValue'),
+    ).toBeVisible();
+    expect(screen.getByText('useWatch: defaultValue')).toBeVisible();
+    expect(
+      screen.getByText(
+        'getValues: {"something":"defaultValue","anotherField":"anotherDefaultValue"}',
+      ),
+    ).toBeVisible();
+
+    // Change values
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'changedValue1' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'changedValue2' },
+    });
+
+    expect(screen.getByText('watch something: changedValue1')).toBeVisible();
+    expect(screen.getByText('watch anotherField: changedValue2')).toBeVisible();
+    expect(
+      screen.getByText(
+        'getValues: {"something":"changedValue1","anotherField":"changedValue2"}',
+      ),
+    ).toBeVisible();
+
+    // Reset with empty object - should clear the values, not revert to defaults
+    fireEvent.click(screen.getByRole('button'));
+
+    // After reset({}), watched values should be undefined since {} contains no field values
+    // and getValues should return an empty object
+    expect(screen.getByText('watch something:')).toBeVisible(); // Empty value
+    expect(screen.getByText('watch anotherField:')).toBeVisible(); // Empty value
+    expect(screen.getByText('useWatch:')).toBeVisible(); // Empty value
+    expect(screen.getByText('getValues: {}')).toBeVisible();
   });
 
   it('should keep mounted value after reset with keep dirty values', async () => {
