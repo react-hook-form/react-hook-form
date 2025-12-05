@@ -1514,4 +1514,174 @@ describe('useController', () => {
     rerender({ control: form1Result.current.control });
     expect(result.current.field.value).toBe('form1-value');
   });
+
+  it('should resubscribe onChange/onBlur handlers when control changes (issue #13163)', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    const { result: form1Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          test: '',
+        },
+      }),
+    );
+
+    const { result: form2Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          test: '',
+        },
+      }),
+    );
+
+    // Track watch callbacks to verify writes are going to the correct control
+    const form1WatchValues: string[] = [];
+    const form2WatchValues: string[] = [];
+
+    form1Result.current.watch((data) => {
+      form1WatchValues.push(data.test || '');
+    });
+
+    form2Result.current.watch((data) => {
+      form2WatchValues.push(data.test || '');
+    });
+
+    const { result, rerender } = renderHook(
+      ({ control }: { control: Control<FormValues> }) =>
+        useController({
+          control,
+          name: 'test',
+        }),
+      {
+        initialProps: { control: form1Result.current.control },
+      },
+    );
+
+    // Initial state - using form1
+    expect(result.current.field.value).toBe('');
+
+    // Simulate typing by calling onChange directly
+    result.current.field.onChange('hello-form1');
+
+    await waitFor(() => {
+      expect(form1Result.current.getValues('test')).toBe('hello-form1');
+    });
+
+    expect(form1WatchValues).toContain('hello-form1');
+    expect(form2WatchValues).not.toContain('hello-form1');
+
+    // Switch to form2
+    rerender({ control: form2Result.current.control });
+
+    await waitFor(() => {
+      expect(result.current.field.value).toBe('');
+    });
+
+    // Type into input again (this is the bug - should update form2, not form1)
+    result.current.field.onChange('hello-form2');
+
+    // THE FIX: onChange should now write to form2, not form1
+    await waitFor(() => {
+      expect(form2Result.current.getValues('test')).toBe('hello-form2');
+    });
+
+    expect(form2WatchValues).toContain('hello-form2');
+    // form1 should NOT have received the new value
+    expect(form1Result.current.getValues('test')).toBe('hello-form1');
+  });
+
+  it('should switch between multiple form instances correctly (issue #13163 - full scenario)', async () => {
+    const Component = () => {
+      const form1 = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+      const form2 = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+
+      const [activeForm, setActiveForm] = React.useState<'form1' | 'form2'>(
+        'form1',
+      );
+      const [form1Edits, setForm1Edits] = React.useState(0);
+      const [form2Edits, setForm2Edits] = React.useState(0);
+
+      React.useEffect(() => {
+        const sub1 = form1.watch(() => {
+          setForm1Edits((prev) => prev + 1);
+        });
+        return () => sub1.unsubscribe();
+      }, [form1]);
+
+      React.useEffect(() => {
+        const sub2 = form2.watch(() => {
+          setForm2Edits((prev) => prev + 1);
+        });
+        return () => sub2.unsubscribe();
+      }, [form2]);
+
+      const control = activeForm === 'form1' ? form1.control : form2.control;
+
+      const { field } = useController({
+        name: 'test',
+        control,
+      });
+
+      return (
+        <div>
+          <input data-testid="input" {...field} />
+          <button
+            data-testid="switch"
+            onClick={() =>
+              setActiveForm((prev) => (prev === 'form1' ? 'form2' : 'form1'))
+            }
+          >
+            Switch
+          </button>
+          <span data-testid="form1-edits">{form1Edits}</span>
+          <span data-testid="form2-edits">{form2Edits}</span>
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    const input = screen.getByTestId('input') as HTMLInputElement;
+    const switchButton = screen.getByTestId('switch');
+    const form1EditsSpan = screen.getByTestId('form1-edits');
+    const form2EditsSpan = screen.getByTestId('form2-edits');
+
+    // Type with form1
+    fireEvent.change(input, { target: { value: 'test1' } });
+    expect(input.value).toBe('test1');
+
+    await waitFor(() => {
+      expect(parseInt(form1EditsSpan.textContent || '0')).toBeGreaterThan(0);
+    });
+
+    const form1EditsAfterFirstType = parseInt(
+      form1EditsSpan.textContent || '0',
+    );
+
+    // Switch to form2
+    fireEvent.click(switchButton);
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    // Type with form2 - this should update form2, not form1
+    fireEvent.change(input, { target: { value: 'test2' } });
+    expect(input.value).toBe('test2');
+
+    await waitFor(() => {
+      expect(parseInt(form2EditsSpan.textContent || '0')).toBeGreaterThan(0);
+    });
+
+    // Verify form1 edits didn't increase (bug would make it increase)
+    expect(parseInt(form1EditsSpan.textContent || '0')).toBe(
+      form1EditsAfterFirstType,
+    );
+  });
 });

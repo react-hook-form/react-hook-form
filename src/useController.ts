@@ -132,28 +132,33 @@ export function useController<
   );
 
   const onChange = React.useCallback(
-    (event: any) =>
+    (event: any) => {
+      if (!_registerProps.current) {
+        return;
+      }
       _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
           name: name as InternalFieldName,
         },
         type: EVENTS.CHANGE,
-      }),
+      });
+    },
     [name],
   );
 
-  const onBlur = React.useCallback(
-    () =>
-      _registerProps.current.onBlur({
-        target: {
-          value: get(control._formValues, name),
-          name: name as InternalFieldName,
-        },
-        type: EVENTS.BLUR,
-      }),
-    [name, control._formValues],
-  );
+  const onBlur = React.useCallback(() => {
+    if (!_registerProps.current) {
+      return;
+    }
+    _registerProps.current.onBlur({
+      target: {
+        value: get(control._formValues, name),
+        name: name as InternalFieldName,
+      },
+      type: EVENTS.BLUR,
+    });
+  }, [name, control._formValues]);
 
   const ref = React.useCallback(
     (elm: any) => {
@@ -195,12 +200,14 @@ export function useController<
       control.unregister(previousName as FieldPath<TFieldValues>);
     }
 
-    control.register(name, {
+    const registerResult = control.register(name, {
       ..._props.current.rules,
       ...(isBoolean(_props.current.disabled)
         ? { disabled: _props.current.disabled }
         : {}),
     });
+
+    _registerProps.current = registerResult;
 
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
