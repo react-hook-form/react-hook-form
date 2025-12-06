@@ -338,6 +338,7 @@ export function useFieldArray<
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
+          control._updateIsValidating([name]);
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
 

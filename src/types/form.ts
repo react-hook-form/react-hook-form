@@ -861,6 +861,10 @@ export type Control<
     name: FieldName<any>;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
+  _updateIsValidating: (
+    names?: InternalFieldName[],
+    isValidating?: boolean,
+  ) => void;
   _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
