@@ -66,6 +66,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
+    _updateIsValidating: (names?: InternalFieldName[], isValidating?: boolean) => void;
     _focusError: () => boolean | undefined;
     _disableForm: (disabled?: boolean) => void;
     _subscribe: FromSubscribe<TFieldValues>;
@@ -101,7 +102,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
     onChange: (...event: any[]) => void;
     onBlur: Noop;
-    value: FieldPathValue<TFieldValues, TName> | undefined;
+    value: FieldPathValue<TFieldValues, TName>;
     disabled?: boolean;
     name: TName;
     ref: RefCallBack;

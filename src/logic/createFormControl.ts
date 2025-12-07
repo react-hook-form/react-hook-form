@@ -190,10 +190,13 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
-      const isValid = _options.resolver
-        ? isEmptyObject((await _runSchema()).errors)
-        : await executeBuiltInValidation(_fields, true);
-
+      let isValid: boolean;
+      if (_options.resolver) {
+        isValid = isEmptyObject((await _runSchema()).errors);
+        _updateIsValidating();
+      } else {
+        isValid = await executeBuiltInValidation(_fields, true);
+      }
       if (isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
@@ -447,12 +450,12 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
-    _updateIsValidating(name);
     return result;
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const { errors } = await _runSchema(names);
+    _updateIsValidating(names);
 
     if (names) {
       for (const name of names) {
@@ -812,6 +815,7 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await _runSchema([name]);
+        _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
 
@@ -1257,6 +1261,7 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
+        _updateIsValidating();
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
@@ -1423,6 +1428,14 @@ export function createFormControl<
       (!_options.shouldUnregister && !isEmptyObject(values));
 
     _state.watch = !!_options.shouldUnregister;
+    _state.action = false;
+
+    // Clear errors synchronously to prevent validation errors on subsequent submissions
+    // This fixes the issue where form.reset() causes validation errors on subsequent
+    // submissions in Next.js 16 with Server Actions
+    if (!keepStateOptions.keepErrors) {
+      _formState.errors = {};
+    }
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
@@ -1480,10 +1493,14 @@ export function createFormControl<
         : fieldReference.ref;
 
       if (fieldRef.focus) {
-        fieldRef.focus();
-        options.shouldSelect &&
-          isFunction(fieldRef.select) &&
-          fieldRef.select();
+        // Use setTimeout to ensure focus happens after any pending state updates
+        // This fixes the issue where setFocus doesn't work immediately after setError
+        setTimeout(() => {
+          fieldRef.focus();
+          options.shouldSelect &&
+            isFunction(fieldRef.select) &&
+            fieldRef.select();
+        });
       }
     }
   };
@@ -1515,6 +1532,7 @@ export function createFormControl<
       setError,
       _subscribe,
       _runSchema,
+      _updateIsValidating,
       _focusError,
       _getWatch,
       _getDirty,
