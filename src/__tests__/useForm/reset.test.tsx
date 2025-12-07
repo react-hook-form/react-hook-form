@@ -1875,7 +1875,14 @@ describe('reset', () => {
               reset({ name: '' }, { keepIsValid: true });
             }}
           >
-            reset
+            reset with keepIsValid
+          </button>
+          <button
+            onClick={() => {
+              reset({ name: '' });
+            }}
+          >
+            reset without keepIsValid
           </button>
           <p>is valid: {isValid ? 'true' : 'false'}</p>
         </div>
@@ -1893,8 +1900,11 @@ describe('reset', () => {
     expect(formState).toEqual({ isValid: true });
     expect(input.value).toBe('Mike');
 
+    // Reset with keepIsValid
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'reset with keepIsValid' }),
+      );
     });
 
     await waitFor(() => {
@@ -1907,6 +1917,25 @@ describe('reset', () => {
 
     expect(screen.getByText('is valid: true')).toBeInTheDocument();
     expect(formState).toEqual({ isValid: true });
+
+    // Reset without keepIsValid
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'reset without keepIsValid' }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    // Verify isValid value is false after reset without keepIsValid
+    expect(screen.getByText('is valid: false')).toBeInTheDocument();
+    expect(formState).toEqual({ isValid: false });
   });
 
   it('should keep isValid value when form has resetOptions.keepIsValid configured', async () => {
