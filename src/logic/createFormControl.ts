@@ -187,10 +187,13 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
-      const isValid = _options.resolver
-        ? isEmptyObject((await _runSchema()).errors)
-        : await executeBuiltInValidation(_fields, true);
-
+      let isValid: boolean;
+      if (_options.resolver) {
+        isValid = isEmptyObject((await _runSchema()).errors);
+        _updateIsValidating();
+      } else {
+        isValid = await executeBuiltInValidation(_fields, true);
+      }
       if (isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
@@ -444,12 +447,12 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
-    _updateIsValidating(name);
     return result;
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const { errors } = await _runSchema(names);
+    _updateIsValidating(names);
 
     if (names) {
       for (const name of names) {
@@ -809,6 +812,7 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors } = await _runSchema([name]);
+        _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
 
@@ -1251,6 +1255,7 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
+        _updateIsValidating();
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
@@ -1521,6 +1526,7 @@ export function createFormControl<
       setError,
       _subscribe,
       _runSchema,
+      _updateIsValidating,
       _focusError,
       _getWatch,
       _getDirty,
