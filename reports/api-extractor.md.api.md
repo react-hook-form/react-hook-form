@@ -339,6 +339,14 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
+export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>({ control, disabled, exact, name, render, }: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
+
+// @public (undocumented)
+export type FormStateSubscribeProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = UseFormStateProps<TFieldValues, TTransformedValues> & {
+    render: (values: UseFormStateReturn<TFieldValues>) => ReactNode;
+};
+
+// @public (undocumented)
 export type FormSubmitHandler<TTransformedValues> = (payload: {
     data: TTransformedValues;
     event?: React_2.BaseSyntheticEvent;
@@ -620,6 +628,7 @@ export type UseControllerProps<TFieldValues extends FieldValues = FieldValues, T
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     control?: Control<TFieldValues, any, TTransformedValues>;
     disabled?: boolean;
+    exact?: boolean;
 };
 
 // @public (undocumented)

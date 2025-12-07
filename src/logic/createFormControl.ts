@@ -1417,6 +1417,14 @@ export function createFormControl<
       (!_options.shouldUnregister && !isEmptyObject(values));
 
     _state.watch = !!_options.shouldUnregister;
+    _state.action = false;
+
+    // Clear errors synchronously to prevent validation errors on subsequent submissions
+    // This fixes the issue where form.reset() causes validation errors on subsequent
+    // submissions in Next.js 16 with Server Actions
+    if (!keepStateOptions.keepErrors) {
+      _formState.errors = {};
+    }
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
@@ -1474,10 +1482,14 @@ export function createFormControl<
         : fieldReference.ref;
 
       if (fieldRef.focus) {
-        fieldRef.focus();
-        options.shouldSelect &&
-          isFunction(fieldRef.select) &&
-          fieldRef.select();
+        // Use setTimeout to ensure focus happens after any pending state updates
+        // This fixes the issue where setFocus doesn't work immediately after setError
+        setTimeout(() => {
+          fieldRef.focus();
+          options.shouldSelect &&
+            isFunction(fieldRef.select) &&
+            fieldRef.select();
+        });
       }
     }
   };
