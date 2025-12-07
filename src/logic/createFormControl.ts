@@ -1487,10 +1487,14 @@ export function createFormControl<
         : fieldReference.ref;
 
       if (fieldRef.focus) {
-        fieldRef.focus();
-        options.shouldSelect &&
-          isFunction(fieldRef.select) &&
-          fieldRef.select();
+        // Use setTimeout to ensure focus happens after any pending state updates
+        // This fixes the issue where setFocus doesn't work immediately after setError
+        setTimeout(() => {
+          fieldRef.focus();
+          options.shouldSelect &&
+            isFunction(fieldRef.select) &&
+            fieldRef.select();
+        });
       }
     }
   };
