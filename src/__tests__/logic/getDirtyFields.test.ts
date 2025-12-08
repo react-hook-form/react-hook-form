@@ -376,4 +376,45 @@ describe('getDirtyFields', () => {
       name: true,
     });
   });
+  it('should handle circular references without infinite recursion', () => {
+    // Create circular reference object
+    const circularObj: any = { name: 'test', nested: {} };
+    circularObj.nested.parent = circularObj; // Self reference
+
+    const formValues: any = { name: 'original', nested: {} };
+    formValues.nested.parent = formValues;
+
+    // Should not throw stack overflow error with circular references
+    expect(() => {
+      getDirtyFields(circularObj, formValues);
+    }).not.toThrow();
+
+    const result: any = getDirtyFields(circularObj, formValues);
+    expect(result).toHaveProperty('name');
+    expect(result.name).toBe(true); // Different value, so dirty
+  });
+
+  it('should handle self-referencing arrays without infinite recursion', () => {
+    const circularArray: any = [{ id: 1 }];
+    circularArray.push(circularArray); // Array contains itself
+
+    const formArray: any = [{ id: 2 }];
+    formArray.push(formArray);
+
+    expect(() => {
+      getDirtyFields({ items: circularArray }, { items: formArray });
+    }).not.toThrow();
+  });
+
+  it('should handle deeply nested circular references', () => {
+    const obj1: any = { a: { b: { c: {} } } };
+    obj1.a.b.c.loop = obj1.a;
+
+    const obj2: any = { a: { b: { c: {} } } };
+    obj2.a.b.c.loop = obj2.a;
+
+    expect(() => {
+      getDirtyFields(obj1, obj2);
+    }).not.toThrow();
+  });
 });
