@@ -1368,12 +1368,15 @@ export function createFormControl<
           ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
-          get(_formState.dirtyFields, fieldName)
-            ? set(values, fieldName, get(_formValues, fieldName))
-            : setValue(
-                fieldName as FieldPath<TFieldValues>,
-                get(values, fieldName),
-              );
+          const isDirty = get(_formState.dirtyFields, fieldName);
+          const existingValue = get(_formValues, fieldName);
+          const newValue = get(values, fieldName);
+
+          if (isDirty && existingValue !== undefined) {
+            set(values, fieldName, existingValue);
+          } else if (!isDirty && newValue !== undefined) {
+            setValue(fieldName as FieldPath<TFieldValues>, newValue);
+          }
         }
       } else {
         if (isWeb && isUndefined(formValues)) {
