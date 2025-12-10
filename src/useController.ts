@@ -160,7 +160,7 @@ export function useController<
     (elm: any) => {
       const field = get(control._fields, name);
 
-      if (field?._f && elm) {
+      if (field && field._f && elm) {
         field._f.ref = {
           focus: () => isFunction(elm.focus) && elm.focus(),
           select: () => isFunction(elm.select) && elm.select(),
