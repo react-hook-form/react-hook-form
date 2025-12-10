@@ -5,6 +5,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
+import isFunction from './utils/isFunction';
 import isUndefined from './utils/isUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
@@ -161,11 +162,12 @@ export function useController<
 
       if (field?._f && elm) {
         field._f.ref = {
-          focus: () => elm?.focus?.(),
-          select: () => elm?.select?.(),
+          focus: () => isFunction(elm.focus) && elm.focus(),
+          select: () => isFunction(elm.select) && elm.select(),
           setCustomValidity: (message: string) =>
-            elm?.setCustomValidity?.(message),
-          reportValidity: () => elm?.reportValidity?.(),
+            isFunction(elm.setCustomValidity) && elm.setCustomValidity(message),
+          reportValidity: () =>
+            isFunction(elm.reportValidity) && elm.reportValidity(),
         };
       }
     },
