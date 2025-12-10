@@ -1,6 +1,4 @@
 // @ts-check
-
-import { fixupPluginRules } from '@eslint/compat';
 import pluginCypress from 'eslint-plugin-cypress/flat';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';

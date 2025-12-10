@@ -1,16 +1,16 @@
-import React from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import React from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 export default function UseFieldArraySimpleExample() {
   const { register, control, handleSubmit } = useForm({
     defaultValues: {
-      users: [{ name: "" }]
-    }
+      users: [{ name: '' }],
+    },
   });
 
   const { fields, append } = useFieldArray({
     control,
-    name: "users"
+    name: 'users',
   });
 
   const onSubmit = (data) => console.log(data);
@@ -24,7 +24,7 @@ export default function UseFieldArraySimpleExample() {
           placeholder={`User ${index + 1}`}
         />
       ))}
-      <button type="button" onClick={() => append({ name: "" })}>
+      <button type="button" onClick={() => append({ name: '' })}>
         Add User
       </button>
       <input type="submit" />
