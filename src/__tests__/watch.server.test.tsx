@@ -11,7 +11,7 @@ describe('Watch with SSR', () => {
       return (
         <Watch
           control={control}
-          name={['foo']}
+          names={['foo']}
           render={([foo]) => <span>{foo}</span>}
         />
       );

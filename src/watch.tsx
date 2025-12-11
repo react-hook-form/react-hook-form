@@ -49,7 +49,7 @@ export type WatchProps<
   TComputeValue = undefined,
 > = {
   control?: Control<TFieldValues, TContext, TTransformedValues>;
-  name?: TFieldName;
+  names?: TFieldName;
   disabled?: boolean;
   exact?: boolean;
   defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
@@ -97,6 +97,7 @@ export const Watch = <
   TComputeValue = undefined,
 >({
   render,
+  names,
   ...props
 }: WatchProps<
   TFieldName,
@@ -106,7 +107,7 @@ export const Watch = <
   TComputeValue
 >) =>
   render(
-    useWatch({ ...(props as any) }) as WatchRenderValue<
+    useWatch({ ...(props as any), name: names }) as WatchRenderValue<
       TFieldName,
       TFieldValues,
       TComputeValue

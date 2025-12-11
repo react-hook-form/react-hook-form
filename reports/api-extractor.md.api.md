@@ -945,7 +945,7 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public
-export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>({ render, ...props }: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
+export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>({ render, names, ...props }: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
@@ -960,7 +960,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // @public (undocumented)
 export type WatchProps<TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
     control?: Control<TFieldValues, TContext, TTransformedValues>;
-    name?: TFieldName;
+    names?: TFieldName;
     disabled?: boolean;
     exact?: boolean;
     defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
