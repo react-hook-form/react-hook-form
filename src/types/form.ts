@@ -21,7 +21,7 @@ import type {
 } from './path';
 import type { Resolver } from './resolvers';
 import type { DeepMap, DeepPartial, Noop } from './utils';
-import type { RegisterOptions } from './validator';
+import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
 
@@ -126,6 +126,7 @@ export type UseFormProps<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
   >;
+  validate: ValidateForm<TFieldValues>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<

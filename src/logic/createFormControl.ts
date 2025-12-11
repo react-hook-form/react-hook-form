@@ -76,6 +76,7 @@ import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
+import { hasError } from './getValidateError';
 import getValidationModes from './getValidationModes';
 import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
@@ -480,10 +481,25 @@ export function createFormControl<
     shouldOnlyCheckValid?: boolean,
     context: {
       valid: boolean;
+      hasRunRootValidation?: boolean;
     } = {
       valid: true,
+      hasRunRootValidation: false,
     },
   ) => {
+    if (props.validate) {
+      context.hasRunRootValidation = true;
+
+      const { message, type } = await props.validate(_formValues);
+
+      if (hasError(message)) {
+        setError('root', {
+          message: isString(message) ? message : '',
+          type,
+        });
+      }
+    }
+
     for (const name in fields) {
       const field = fields[name];
 
