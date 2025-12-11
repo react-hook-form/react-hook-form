@@ -28,7 +28,7 @@ export type WatchProps<
   TContext = any,
   TTransformedValues = TFieldValues,
 > = {
-  control: Control<TFieldValues, TContext, TTransformedValues>;
+  control?: Control<TFieldValues, TContext, TTransformedValues>;
   names: TFieldNames;
   render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
 };

@@ -959,7 +959,7 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 
 // @public (undocumented)
 export type WatchProps<TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
-    control: Control<TFieldValues, TContext, TTransformedValues>;
+    control?: Control<TFieldValues, TContext, TTransformedValues>;
     names: TFieldNames;
     render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
 };
