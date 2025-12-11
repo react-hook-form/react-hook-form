@@ -800,7 +800,7 @@ describe('useController', () => {
     ]);
   });
 
-  it('should focus and select the input text', () => {
+  it('should focus and select the input text', async () => {
     const select = jest.fn();
     const focus = jest.fn();
 
@@ -829,8 +829,10 @@ describe('useController', () => {
 
     render(<App />);
 
-    expect(select).toHaveBeenCalled();
-    expect(focus).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(select).toHaveBeenCalled();
+      expect(focus).toHaveBeenCalled();
+    });
   });
 
   it('should update isValid correctly with strict mode', async () => {
