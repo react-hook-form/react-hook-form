@@ -7,11 +7,9 @@ export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends
     FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'key',
   TTransformedValues = TFieldValues,
 > = {
   name: TFieldArrayName;
-  keyName?: TKeyName;
   control?: Control<TFieldValues, any, TTransformedValues>;
   rules?: {
     validate?:

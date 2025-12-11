@@ -639,7 +639,7 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
 };
 
 // @public
-export function useFieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'key', TTransformedValues = TFieldValues>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName, TTransformedValues>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
+export function useFieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TTransformedValues = TFieldValues>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TTransformedValues>): UseFieldArrayReturn<TFieldValues, TFieldArrayName>;
 
 // @public
 export type UseFieldArrayAppend<TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: FieldArray<TFieldValues, TFieldArrayName> | FieldArray<TFieldValues, TFieldArrayName>[], options?: FieldArrayMethodProps) => void;
@@ -654,9 +654,8 @@ export type UseFieldArrayMove = (indexA: number, indexB: number) => void;
 export type UseFieldArrayPrepend<TFieldValues extends FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = (value: FieldArray<TFieldValues, TFieldArrayName> | FieldArray<TFieldValues, TFieldArrayName>[], options?: FieldArrayMethodProps) => void;
 
 // @public (undocumented)
-export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'key', TTransformedValues = TFieldValues> = {
+export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TTransformedValues = TFieldValues> = {
     name: TFieldArrayName;
-    keyName?: TKeyName;
     control?: Control<TFieldValues, any, TTransformedValues>;
     rules?: {
         validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>>;

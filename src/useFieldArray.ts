@@ -82,24 +82,12 @@ export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends
     FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'key',
   TTransformedValues = TFieldValues,
 >(
-  props: UseFieldArrayProps<
-    TFieldValues,
-    TFieldArrayName,
-    TKeyName,
-    TTransformedValues
-  >,
-): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
+  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TTransformedValues>,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName> {
   const methods = useFormContext();
-  const {
-    control = methods.control,
-    name,
-    keyName = 'key',
-    shouldUnregister,
-    rules,
-  } = props;
+  const { control = methods.control, name, shouldUnregister, rules } = props;
   const [fields, setFields] = React.useState(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
@@ -143,11 +131,7 @@ export function useFieldArray<
   );
 
   const updateValues = React.useCallback(
-    <
-      T extends Partial<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >[],
-    >(
+    <T extends Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]>(
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
@@ -202,7 +186,7 @@ export function useFieldArray<
 
   const remove = (index?: number | number[]) => {
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
+      FieldArrayWithId<TFieldValues, TFieldArrayName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
@@ -279,11 +263,11 @@ export function useFieldArray<
   ) => {
     const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
-      control._getFieldArray<
-        FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
-      >(name),
+      control._getFieldArray<FieldArrayWithId<TFieldValues, TFieldArrayName>>(
+        name,
+      ),
       index,
-      updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
+      updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName>,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       !item || i === index ? generateId() : ids.current[i],
@@ -428,7 +412,7 @@ export function useFieldArray<
         ? control.unregister(name as FieldPath<TFieldValues>)
         : updateMounted(name, false);
     };
-  }, [name, control, keyName, shouldUnregister]);
+  }, [name, control, shouldUnregister]);
 
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),
@@ -443,9 +427,9 @@ export function useFieldArray<
       () =>
         fields.map((field, index) => ({
           ...field,
-          [keyName]: ids.current[index] || generateId(),
-        })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName],
+          key: ids.current[index] || generateId(),
+        })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
+      [fields],
     ),
   };
 }
