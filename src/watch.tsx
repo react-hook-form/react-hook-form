@@ -80,7 +80,7 @@ export type WatchProps<
  *
  * <Watch
  *   control={control}
- *   name={['foo', 'bar', 'baz.qux']}
+ *   names={['foo', 'bar', 'baz.qux']}
  *   render={([foo, bar, baz_qux]) => <div>{foo}{bar}{baz_qux}</div>}
  * />
  * ```
