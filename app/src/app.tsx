@@ -36,6 +36,7 @@ import UseWatchUseFieldArrayNested from './useWatchUseFieldArrayNested';
 import Test from './test';
 import Welcome from './welcome';
 import { UseFormState } from './useFormState';
+import { FormStateSubscribeDemo } from './formStateSubscribe';
 import SetValueAsyncStrictMode from './setValueStrictMode';
 import { DelayError } from './delayError';
 import './style.css';
@@ -108,6 +109,10 @@ const App = () => {
         <Route path="/autoUnregister" element={<AutoUnregister />} />
         <Route path="/useWatch" element={<UseWatch />} />
         <Route path="/useFormState" element={<UseFormState />} />
+        <Route
+          path="/formStateSubscribe"
+          element={<FormStateSubscribeDemo />}
+        />
         <Route path="/useFieldArrayNested" element={<UseFieldArrayNested />} />
         <Route
           path="/watchUseFieldArrayNested"
