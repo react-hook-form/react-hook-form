@@ -42,7 +42,7 @@ import './style.css';
 import FormComponent from './form';
 import DisabledFields from './disabledFields';
 import ResetKeepDirty from './resetKeepDirty';
-import MuiDatePickerExample from './mui-date-picker';
+import MuiDatePickerExample from '../../examples/V7/mui-date-picker';
 
 const App = () => {
   return (
