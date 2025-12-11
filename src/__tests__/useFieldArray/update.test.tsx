@@ -511,7 +511,7 @@ describe('update', () => {
         result.current.update(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -540,7 +540,58 @@ describe('update', () => {
         result.current.update(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
+    });
+
+    it('should not invoke resolver per register during update; only array-scoped + final isValid', async () => {
+      const resolver = jest
+        .fn()
+        .mockImplementation((values) => ({ values, errors: {} }));
+
+      const App = () => {
+        const { register, formState, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          mode: VALIDATION_MODE.onTouched,
+          resolver,
+          defaultValues: {
+            test: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
+          },
+        });
+
+        formState.isValid;
+
+        const { fields, update } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            <input {...register('test' as const)} />
+            {fields.map((f, i) => (
+              <input key={f.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button type="button" onClick={() => update(1, { value: 'x' })}>
+              update
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+      );
+      const initialCalls = resolver.mock.calls.length;
+
+      fireEvent.click(screen.getByRole('button', { name: 'update' }));
+
+      await waitFor(async () => {
+        expect((await screen.findAllByRole('textbox')).length).toBe(4);
+      });
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+      );
     });
   });
 

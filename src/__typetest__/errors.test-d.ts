@@ -78,4 +78,16 @@ import { _ } from './__fixtures__';
     expectType<FieldError | undefined>(actual.record?.file);
     expectType<FieldError | undefined>(actual.record?.fileList);
   }
+
+  /** it should handle field name conflicts with FieldError properties correctly */
+  {
+    const actual = _ as FieldErrors<{
+      frequencyInput: {
+        type: 'monthly' | 'yearly';
+      };
+    }>;
+
+    expectType<FieldError | undefined>(actual.frequencyInput?.type);
+    expectType<string | undefined>(actual.frequencyInput?.type?.message);
+  }
 }

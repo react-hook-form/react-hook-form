@@ -758,20 +758,22 @@ describe('register', () => {
 
       render(<App />);
 
-      expect(validate).toBeCalledTimes(0);
+      expect(validate).toHaveBeenCalledTimes(0);
 
       fireEvent.click(screen.getByText('Toggle Edit'));
       fireEvent.click(screen.getByText('Submit'));
 
-      expect(validate).toBeCalledWith(defaultValue, { test: 'Test' });
+      expect(validate).toHaveBeenCalledWith(defaultValue, { test: 'Test' });
       await waitFor(() =>
-        expect(submit).toBeCalledWith({ test: defaultValue }),
+        expect(submit).toHaveBeenCalledWith({ test: defaultValue }),
       );
 
       fireEvent.click(screen.getByText('Toggle Edit'));
       fireEvent.click(screen.getByText('Submit'));
 
-      await waitFor(() => expect(submit).toBeCalledWith({ test: undefined }));
+      await waitFor(() =>
+        expect(submit).toHaveBeenCalledWith({ test: undefined }),
+      );
     });
 
     it('should not throw errors with disabled input', async () => {
@@ -1857,7 +1859,7 @@ describe('register', () => {
       },
     });
 
-    expect(onChange).toBeCalledTimes(0);
+    expect(onChange).toHaveBeenCalledTimes(0);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -1865,8 +1867,8 @@ describe('register', () => {
       },
     });
 
-    expect(onChange).toBeCalledTimes(1);
-    expect(onChange).toBeCalledWith(
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         bubbles: true,
         cancelable: false,
@@ -1897,12 +1899,12 @@ describe('register', () => {
       },
     });
 
-    expect(onBlur).toBeCalledTimes(0);
+    expect(onBlur).toHaveBeenCalledTimes(0);
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(onBlur).toBeCalledTimes(1);
-    expect(onBlur).toBeCalledWith(
+    expect(onBlur).toHaveBeenCalledTimes(1);
+    expect(onBlur).toHaveBeenCalledWith(
       expect.objectContaining({
         bubbles: true,
         cancelable: false,
@@ -1975,7 +1977,7 @@ describe('register', () => {
       target: { value: 'test' },
     });
 
-    expect(test).toBeCalledWith({
+    expect(test).toHaveBeenCalledWith({
       test: 'test',
     });
   });

@@ -95,4 +95,60 @@ describe('deepEqual', () => {
       deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),
     ).toBeTruthy();
   });
+
+  it('should be capable of comparing objects with circular references', () => {
+    const a: any = { test: '123' };
+    const b: any = { test: '123' };
+    a.self = a;
+    b.self = b;
+
+    expect(deepEqual(a, b)).toBeTruthy();
+
+    a.other = { test: '123' };
+    b.other = { test: '456' };
+
+    expect(deepEqual(a, b)).toBeFalsy();
+
+    b.other.test = '123';
+
+    a.other.parent = b;
+    b.other.parent = a;
+
+    expect(deepEqual(a, b)).toBeTruthy();
+
+    b.other.parent = a.other;
+
+    expect(deepEqual(a, b)).toBeFalsy();
+  });
+
+  it('should return true when comparing NaN values', () => {
+    expect(deepEqual(NaN, NaN)).toBeTruthy();
+
+    // Object NaN
+    expect(deepEqual({ value: NaN }, { value: NaN })).toBeTruthy();
+
+    // Array NaN
+    expect(deepEqual([NaN], [NaN])).toBeTruthy();
+
+    // Nested Structures NaN
+    expect(
+      deepEqual(
+        { user: { age: NaN, name: 'test' } },
+        { user: { age: NaN, name: 'test' } },
+      ),
+    ).toBeTruthy();
+
+    // Mixed with other values
+    expect(
+      deepEqual({ a: NaN, b: 1, c: 'test' }, { a: NaN, b: 1, c: 'test' }),
+    ).toBeTruthy();
+  });
+
+  it('should return false when comparing NaN with other values', () => {
+    expect(deepEqual({ value: NaN }, { value: 0 })).toBeFalsy();
+    expect(deepEqual({ value: NaN }, { value: undefined })).toBeFalsy();
+    expect(deepEqual({ value: NaN }, { value: null })).toBeFalsy();
+    expect(deepEqual({ value: NaN }, { value: 'NaN' })).toBeFalsy();
+    expect(deepEqual([NaN], [0])).toBeFalsy();
+  });
 });

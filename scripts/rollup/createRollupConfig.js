@@ -28,9 +28,7 @@ export function createRollupConfig(options, callback) {
     external: Object.keys(pkg.peerDependencies),
     plugins: [
       typescript({
-        tsconfig: options.tsconfig,
         clean: true,
-        exclude: ['**/__tests__', '**/*.test.ts', '**/__typetest__'],
       }),
       options.format === 'umd' &&
         commonjs({
@@ -41,6 +39,12 @@ export function createRollupConfig(options, callback) {
           output: { comments: false },
           compress: {
             drop_console: true,
+            passes: 2,
+            unsafe: false,
+            unsafe_comps: false,
+            unsafe_math: false,
+            unsafe_methods: false,
+            pure_funcs: ['console.log', 'console.info', 'console.debug'],
           },
         }),
     ].filter(Boolean),

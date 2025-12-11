@@ -2,55 +2,23 @@ import 'whatwg-fetch';
 
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 
 import { Form } from '../form';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 
-const server = setupServer(
-  http.post('/success', () => {
-    return HttpResponse.json({ message: 'ok' });
-  }),
-  http.post('/error', () => {
-    return new Response(null, {
-      status: 500,
-    });
-  }),
-  http.post('/status', () => {
-    return new HttpResponse(null, { status: 201 });
-  }),
-  http.post('/get', () => {
-    return new HttpResponse(null, { status: 200 });
-  }),
-  http.post('/json', ({ request }) => {
-    if (request.headers.get('content-type') === 'application/json') {
-      return new HttpResponse(null, { status: 200 });
-    }
-
-    return new HttpResponse(null, { status: 500 });
-  }),
-);
-
 describe('Form', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
 
   it('should support render with both form tag and headless', () => {
-    const WithContext = () => {
-      return (
-        <>
-          <Form />
-          <Form
-            render={() => {
-              return null;
-            }}
-          />
-        </>
-      );
-    };
+    const WithContext = () => (
+      <>
+        <Form />
+        <Form render={() => null} />
+      </>
+    );
 
     const App = () => {
       const methods = useForm();
@@ -77,6 +45,13 @@ describe('Form', () => {
   });
 
   it('should handle success request callback', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'ok' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
     const onSubmit = jest.fn();
     const onError = jest.fn();
 
@@ -118,14 +93,18 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
-      expect(onError).not.toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onError).not.toHaveBeenCalled();
       screen.getByText('submitSuccessful');
       screen.getByText('ok');
     });
   });
 
   it('should handle error request callback', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 500 }));
+
     const onSubmit = jest.fn();
     const onSuccess = jest.fn();
 
@@ -155,8 +134,8 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
-      expect(onSuccess).not.toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
       screen.getByText('This is a server error');
       screen.getByText('500');
       screen.getByText('submitFailed');
@@ -164,6 +143,10 @@ describe('Form', () => {
   });
 
   it('should validate custom status code', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 201 }));
+
     const App = () => {
       const {
         control,
@@ -193,6 +176,10 @@ describe('Form', () => {
   });
 
   it('should support other request type', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
     const App = () => {
       const {
         control,
@@ -217,6 +204,10 @@ describe('Form', () => {
   });
 
   it('should support render props for react native', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
     const App = () => {
       const {
         control,
@@ -250,7 +241,11 @@ describe('Form', () => {
   });
 
   it('should support fetcher prop with external request', async () => {
-    const fetcher = jest.fn();
+    const fetcher = jest.fn().mockResolvedValue({});
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
     const App = () => {
       const {
         control,
@@ -277,12 +272,17 @@ describe('Form', () => {
     await waitFor(() => {
       screen.getByText('submitSuccessful');
 
-      expect(fetcher).toBeCalled();
+      expect(fetcher).toHaveBeenCalled();
     });
   });
 
   it('should include application/json header with encType supplied', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
     const onSuccess = jest.fn();
+
     const App = () => {
       const {
         control,
@@ -307,7 +307,42 @@ describe('Form', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(onSuccess).toBeCalled();
+      expect(onSuccess).toHaveBeenCalled();
+    });
+  });
+
+  it('should support explicit "multipart/form-data" encType', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+    const onSuccess = jest.fn();
+
+    const App = () => {
+      const {
+        control,
+        formState: { isSubmitSuccessful },
+      } = useForm();
+
+      return (
+        <Form
+          encType={'multipart/form-data'}
+          action={'/formData'}
+          control={control}
+          onSuccess={onSuccess}
+        >
+          <button>Submit</button>
+          <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalled();
     });
   });
 });

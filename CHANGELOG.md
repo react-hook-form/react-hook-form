@@ -1434,7 +1434,6 @@ useWatch({
 ### Added
 
 - `register` function with additional options to transform value
-
   - `valueAsDate`
   - `valueAsNumber`
   - `setValueAs`

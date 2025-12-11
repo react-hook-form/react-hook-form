@@ -21,7 +21,7 @@ Pay attention that we use pnpm v9 along with Node.js 20.
 4. If you've added a code that should be tested, ensure the test suite still passes.
 
    ```shellscript
-   pnpm test && pnpm tsd
+   pnpm test && pnpm test:type
    ```
 
 5. Try to write some unit tests to cover as much of your code as possible.

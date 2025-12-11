@@ -1,4 +1,6 @@
 import React from 'react';
+import { render } from '@testing-library/react';
+import { expectType } from 'tsd';
 
 import { Controller } from '../controller';
 import type {
@@ -179,7 +181,10 @@ test('should allow unpackedValue and deep partial unpackValue for reset', () => 
 test('should infer context type into control', () => {
   function App() {
     const [isValid] = React.useState(true);
-    const { control } = useForm<{ test: {}[] }, { isValid: boolean }>({
+    const { control } = useForm<
+      { test: Record<string, unknown>[] },
+      { isValid: boolean }
+    >({
       resolver: (data, context) => {
         return {
           values: context?.isValid ? data : {},
@@ -496,6 +501,121 @@ test('should provide correct type for validate function with useFieldArray', () 
         },
       },
     });
+
+    return null;
+  };
+
+  App;
+});
+
+test('should support compute function via useWatch without name prop', () => {
+  const Form = () => {
+    type FormValue = {
+      test: string;
+    };
+
+    const methods = useForm<FormValue>({
+      defaultValues: { test: 'test' },
+    });
+
+    const test = useWatch({
+      control: methods.control,
+      compute: (data: FormValue) => {
+        return {
+          data: 'test',
+          test: data.test,
+        };
+      },
+    });
+
+    return (
+      <div>
+        {test.test}
+        {test.data}
+      </div>
+    );
+  };
+
+  render(<Form />);
+});
+
+test('should support compute function via useWatch with string name prop', () => {
+  const Form = () => {
+    type FormValue = {
+      test: string;
+    };
+
+    const methods = useForm<FormValue>({
+      defaultValues: { test: 'test' },
+    });
+
+    const test: boolean = useWatch({
+      control: methods.control,
+      name: 'test' as const,
+      compute: (data: string) => {
+        return data === 'test';
+      },
+    });
+
+    return <div>{test}</div>;
+  };
+
+  render(<Form />);
+});
+
+test('should support compute function via useWatch with array name prop', () => {
+  const Form = () => {
+    type FormValue = {
+      test1: string;
+      test2: number;
+      test3: boolean;
+    };
+
+    const methods = useForm<FormValue>({
+      defaultValues: {
+        test1: 'test',
+        test2: 1,
+        test3: true,
+      },
+    });
+
+    const test: string = useWatch({
+      control: methods.control,
+      name: ['test1', 'test2'] as const,
+      compute: ([test1Value, test2Value]: [string, number]) => {
+        return `${test1Value}${test2Value}`;
+      },
+    });
+
+    return <div>{test}</div>;
+  };
+
+  render(<Form />);
+});
+
+test('useWatch should correctly select the name from object like param', () => {
+  const App = () => {
+    const { control } = useForm<{
+      test: {
+        first: { second: string };
+      };
+    }>();
+
+    const obj = {
+      name: 'test.first' as const,
+      control,
+    };
+
+    const resultFromObj = useWatch(obj);
+
+    const resultFromInline = useWatch({
+      name: 'test.first',
+      control,
+    });
+
+    expectType<{ second: string }>(resultFromObj);
+    expectType<{ second: string }>({ ...resultFromObj });
+    expectType<{ second: string }>(resultFromInline);
 
     return null;
   };

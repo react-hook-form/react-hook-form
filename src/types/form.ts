@@ -81,7 +81,7 @@ export type TriggerConfig = Partial<{
   shouldFocus: boolean;
 }>;
 
-export type UseFormResetFieldOptions<
+export type ResetFieldConfig<
   TFieldValues extends FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Partial<{
@@ -177,6 +177,7 @@ export type KeepStateOptions = Partial<{
   keepIsValidating: boolean;
   keepIsValid: boolean;
   keepSubmitCount: boolean;
+  keepFieldsRef: boolean;
 }>;
 
 export type SetFieldValue<TFieldValues extends FieldValues> =
@@ -269,6 +270,17 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   options?: SetFocusOptions,
 ) => void;
 
+type EitherOption<T> = {
+  [K in keyof T]: {
+    [P in K]: T[P];
+  } & Partial<Record<Exclude<keyof T, K>, never>>;
+}[keyof T];
+
+export type GetValuesConfig = EitherOption<{
+  dirtyFields: boolean;
+  touchedFields: boolean;
+}>;
+
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   /**
    * Get the entire form values when no argument is supplied to this function.
@@ -287,7 +299,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * })} />
    * ```
    */
-  (): TFieldValues;
+  (name?: undefined, config?: GetValuesConfig): TFieldValues;
   /**
    * Get a single field value.
    *
@@ -295,6 +307,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
    * @param name - the path name to the form field value.
+   * @param config - return touched or dirty fields
    *
    * @returns the single field value
    *
@@ -309,6 +322,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    */
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
+    config?: GetValuesConfig,
   ): FieldPathValue<TFieldValues, TFieldName>;
   /**
    * Get an array of field values.
@@ -317,6 +331,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
    * @param names - an array of field names
+   * @param config - return touched or dirty fields
    *
    * @returns An array of field values
    *
@@ -331,6 +346,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    */
   <TFieldNames extends FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
+    config?: GetValuesConfig,
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
@@ -391,7 +407,7 @@ useEffect(() => {
 })
  * ```
  */
-export type UseFromSubscribe<TFieldValues extends FieldValues> = <
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <
   TFieldNames extends readonly FieldPath<TFieldValues>[],
 >(payload: {
   name?: readonly [...TFieldNames] | TFieldNames[number];
@@ -400,6 +416,7 @@ export type UseFromSubscribe<TFieldValues extends FieldValues> = <
     data: Partial<FormState<TFieldValues>> & {
       values: TFieldValues;
       name?: InternalFieldName;
+      type?: EventType;
     },
   ) => void;
   exact?: boolean;
@@ -689,7 +706,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   name: TFieldName,
-  options?: UseFormResetFieldOptions<TFieldValues, TFieldName>,
+  options?: ResetFieldConfig<TFieldValues, TFieldName>,
 ) => void;
 
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
@@ -844,6 +861,10 @@ export type Control<
     name: FieldName<any>;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
+  _updateIsValidating: (
+    names?: InternalFieldName[],
+    isValidating?: boolean,
+  ) => void;
   _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
@@ -883,7 +904,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
-  subscribe: UseFromSubscribe<TFieldValues>;
+  subscribe: UseFormSubscribe<TFieldValues>;
 };
 
 export type UseFormStateProps<
@@ -911,6 +932,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     | readonly FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
   exact?: boolean;
+  compute?: (formValues: any) => any;
 };
 
 export type FormProviderProps<

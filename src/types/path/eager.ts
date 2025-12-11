@@ -152,7 +152,9 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = PathValueImpl<
 type PathValueImpl<T, P extends string> = T extends any
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
-      ? PathValueImpl<T[K], R>
+      ? undefined extends T[K]
+        ? PathValueImpl<T[K], R> | undefined
+        : PathValueImpl<T[K], R>
       : K extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
           ? PathValueImpl<V, R>
@@ -163,7 +165,9 @@ type PathValueImpl<T, P extends string> = T extends any
       : P extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
           ? V
-          : never
+          : T extends undefined
+            ? undefined
+            : never
         : never
   : never;
 

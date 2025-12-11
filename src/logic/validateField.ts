@@ -17,7 +17,6 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
-import isMessage from '../utils/isMessage';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
 import isRadioInput from '../utils/isRadioInput';
@@ -106,7 +105,7 @@ export default async <T extends FieldValues>(
           (isCheckBox && !getCheckboxValue(refs).isValid) ||
           (isRadio && !getRadioValue(refs).isValid))
   ) {
-    const { value, message } = isMessage(required)
+    const { value, message } = isString(required)
       ? { value: !!required, message: required }
       : getValueAndMessage(required);
 

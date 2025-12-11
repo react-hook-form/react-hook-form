@@ -522,13 +522,9 @@ describe('watch', () => {
 
     expect(watchedData).toEqual([
       {},
+      {},
       {
         test: '1234',
-        data: '1234',
-      },
-      {
-        test: '1234',
-        data: '1234',
       },
     ]);
   });
@@ -617,10 +613,10 @@ describe('watch', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(4);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 
   it('should remain isReady form state for subscription', () => {
@@ -658,5 +654,35 @@ describe('watch', () => {
 
     screen.getByText('formStateReady');
     screen.getByText('useFormStateReady');
+  });
+
+  it('should return updated value immediately after reset() - issue #13088', () => {
+    const { result } = renderHook(() =>
+      useForm<{ name: string }>({
+        defaultValues: { name: 'John' },
+      }),
+    );
+
+    // Manually set _state.mount to false to simulate the bug scenario
+    // where reset() is called before any field interaction
+    result.current.control._state.mount = false;
+
+    // Verify mount is actually false before reset
+    expect(result.current.control._state.mount).toBe(false);
+
+    act(() => {
+      result.current.reset({ name: 'Mike' });
+
+      // Immediately after reset, SYNCHRONOUSLY within reset(),
+      // mount should be true WITH the fix, false WITHOUT the fix
+      expect(result.current.control._state.mount).toBe(true);
+
+      // And watch() should return 'Mike', not 'John' or undefined
+      const watchValue = result.current.watch('name');
+      const getValue = result.current.getValues('name');
+
+      expect(watchValue).toBe('Mike');
+      expect(getValue).toBe('Mike');
+    });
   });
 });
