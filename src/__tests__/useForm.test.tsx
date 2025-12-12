@@ -2731,6 +2731,25 @@ describe('useForm', () => {
     });
   });
 
+  it('should support form validate', () => {
+    useForm<{ test: string }>({
+      validate: () => {
+        return true;
+      },
+    });
+
+    useForm<{ test: string; test1: string }>({
+      validate: () => {
+        return {
+          test: {
+            message: 'something wrong',
+            type: 'test',
+          },
+        };
+      },
+    });
+  });
+
   describe('When using defaultValues', () => {
     function App() {
       type FormValues = {
@@ -2763,6 +2782,7 @@ describe('useForm', () => {
         </div>
       );
     }
+
     it('formState.defaultValues and useFormState().defaultValues should be equal after reset', () => {
       render(<App />);
 

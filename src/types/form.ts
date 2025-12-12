@@ -560,7 +560,8 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | readonly FieldPath<TFieldValues>[]
     | `root.${string}`
     | 'root'
-    | 'formError',
+    | 'formError'
+    | `formError.${string}`,
 ) => void;
 
 /**
@@ -622,7 +623,12 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues> | `root.${string}` | 'root' | 'formError',
+  name:
+    | FieldPath<TFieldValues>
+    | `root.${string}`
+    | 'root'
+    | 'formError'
+    | `formError.${string}`,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;

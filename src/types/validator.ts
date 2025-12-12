@@ -19,11 +19,17 @@ export type ValidationValueMessage<
 
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
-export type FormValidateResult =
-  | {
-      message: Message | Message[] | boolean | undefined;
-      type: string;
-    }
+export type FormValidateResult<T> =
+  | Partial<
+      Record<
+        keyof T,
+        {
+          message: Message | Message[] | boolean | undefined;
+          type: string;
+        }
+      >
+    >
+  | string
   | boolean;
 
 export type Validate<TFieldValue, TFormValues> = (
@@ -33,7 +39,7 @@ export type Validate<TFieldValue, TFormValues> = (
 
 export type ValidateForm<TFormValues> = (
   formValues: TFormValues,
-) => FormValidateResult | Promise<FormValidateResult>;
+) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
 
 export type RegisterOptions<
   TFieldValues extends FieldValues = FieldValues,

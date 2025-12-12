@@ -1,4 +1,4 @@
-import { EVENTS, VALIDATION_MODE } from '../constants';
+import { EVENTS, INPUT_VALIDATION_RULES, VALIDATION_MODE } from '../constants';
 import type {
   BatchFieldArrayUpdate,
   ChangeHandler,
@@ -480,10 +480,24 @@ export function createFormControl<
     if (props.validate) {
       const result = await props.validate(_formValues);
 
-      if (isObject(result) && hasError(result.message)) {
+      if (isObject(result)) {
+        for (const key in result) {
+          const error = result[key];
+
+          if (error) {
+            setError(`formError.${key}`, {
+              message:
+                hasError(error.message) && isString(result.message)
+                  ? result.message
+                  : '',
+              type: INPUT_VALIDATION_RULES.validate,
+            });
+          }
+        }
+      } else if (isString(result) || !result) {
         setError('formError', {
-          message: isString(result.message) ? result.message : '',
-          type: result.type,
+          message: result || '',
+          type: INPUT_VALIDATION_RULES.validate,
         });
       } else {
         clearErrors('formError');
