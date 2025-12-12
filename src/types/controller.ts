@@ -55,6 +55,7 @@ export type UseControllerProps<
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
+  exact?: boolean;
   mode?: Mode;
   reValidateMode?: Exclude<Mode, 'onTouched' | 'all'>;
 };

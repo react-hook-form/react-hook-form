@@ -1,5 +1,6 @@
 export * from './controller';
 export * from './form';
+export * from './formStateSubscribe';
 export * from './logic';
 export * from './types';
 export * from './useController';

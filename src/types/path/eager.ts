@@ -165,7 +165,7 @@ type PathValueImpl<T, P extends string> = T extends any
       : P extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
           ? V
-          : undefined extends T
+          : T extends undefined
             ? undefined
             : never
         : never

@@ -61,6 +61,7 @@ export function useController<
     control = methods?.control,
     shouldUnregister,
     defaultValue,
+    exact = true,
   } = props;
 
   if (!control) {
@@ -85,13 +86,13 @@ export function useController<
     control,
     name,
     defaultValue: defaultValueMemo,
-    exact: true,
+    exact,
   }) as FieldPathValue<TFieldValues, TName>;
 
   const formState = useFormState({
     control,
     name,
-    exact: true,
+    exact,
   });
 
   const _props = React.useRef(props);
