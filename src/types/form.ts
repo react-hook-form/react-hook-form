@@ -796,8 +796,8 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues extends FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
   updatedFieldArrayValues?: Partial<
