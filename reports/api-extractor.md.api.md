@@ -357,6 +357,12 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 }) => unknown | Promise<unknown>;
 
 // @public (undocumented)
+export type FormValidateResult = {
+    message: Message | Message[] | boolean | undefined;
+    type: string;
+};
+
+// @public (undocumented)
 export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
     name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
@@ -736,6 +742,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     criteriaMode: CriteriaMode;
     delayError: number;
     formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
+    validate: ValidateForm<TFieldValues>;
 }>;
 
 // @public
@@ -916,6 +923,9 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
+export type ValidateForm<TFormValues> = (formValues: TFormValues) => FormValidateResult | Promise<FormValidateResult>;
+
+// @public (undocumented)
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "VALIDATION_MODE" needs to be exported by the entry point index.d.ts
@@ -966,7 +976,7 @@ export type WatchProps<TFieldNames extends readonly FieldPath<TFieldValues>[], T
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:502:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/watch.tsx:33:3 - (ae-forgotten-export) The symbol "GetValues" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
