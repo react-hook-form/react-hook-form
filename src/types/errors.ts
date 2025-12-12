@@ -51,6 +51,8 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
     : FieldErrorsImpl<DeepRequired<T>>
 > & {
   root?: Record<string, GlobalError> & GlobalError;
+} & {
+  formError?: GlobalError;
 };
 
 export type InternalFieldErrors = Partial<

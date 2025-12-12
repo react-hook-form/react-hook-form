@@ -476,6 +476,21 @@ export function createFormControl<
     return errors;
   };
 
+  const validateForm = async () => {
+    if (props.validate) {
+      const result = await props.validate(_formValues);
+
+      if (isObject(result) && hasError(result.message)) {
+        setError('formError', {
+          message: isString(result.message) ? result.message : '',
+          type: result.type,
+        });
+      } else {
+        clearErrors('formError');
+      }
+    }
+  };
+
   const executeBuiltInValidation = async (
     fields: FieldRefs,
     shouldOnlyCheckValid?: boolean,
@@ -489,15 +504,7 @@ export function createFormControl<
   ) => {
     if (props.validate) {
       context.hasRunRootValidation = true;
-
-      const { message, type } = await props.validate(_formValues);
-
-      if (hasError(message)) {
-        setError('root', {
-          message: isString(message) ? message : '',
-          type,
-        });
-      }
+      await validateForm();
     }
 
     for (const name in fields) {
@@ -813,6 +820,10 @@ export function createFormControl<
           type: event.type,
           values: cloneObject(_formValues),
         });
+
+      if (!_options.resolver && props.validate) {
+        await validateForm();
+      }
 
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
