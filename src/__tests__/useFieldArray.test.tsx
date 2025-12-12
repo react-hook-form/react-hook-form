@@ -845,8 +845,10 @@ describe('useFieldArray', () => {
     });
 
     it('should unset field array values correctly on DOM removing', async () => {
-      interface NestedComponentProps
-        extends Pick<UseFormReturn<FormValues>, 'control' | 'register'> {
+      interface NestedComponentProps extends Pick<
+        UseFormReturn<FormValues>,
+        'control' | 'register'
+      > {
         childIndex: number;
       }
 
