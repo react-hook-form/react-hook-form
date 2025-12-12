@@ -1250,6 +1250,39 @@ describe('useFieldArray', () => {
         expect(screen.getAllByRole('textbox')).toHaveLength(4),
       );
     });
+
+    it('should update isDirty after reset when using fieldArray operations with useFormState subscription', () => {
+      const { result } = renderHook(() => {
+        const { control, reset } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const { isDirty } = useFormState({ control });
+
+        return { fields, append, remove, reset, isDirty };
+      });
+
+      expect(result.current.isDirty).toBeFalsy();
+
+      act(() => {
+        result.current.append({ value: 'new' });
+      });
+
+      expect(result.current.isDirty).toBeTruthy();
+      expect(result.current.fields.length).toBe(2);
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.isDirty).toBeFalsy();
+      expect(result.current.fields.length).toBe(1);
+    });
   });
 
   describe('with setValue', () => {
