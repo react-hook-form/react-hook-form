@@ -1,4 +1,10 @@
-import { EVENTS, INPUT_VALIDATION_RULES, VALIDATION_MODE } from '../constants';
+import {
+  EVENTS,
+  FORM_ERROR_TYPE,
+  INPUT_VALIDATION_RULES,
+  ROOT_ERROR_TYPE,
+  VALIDATION_MODE,
+} from '../constants';
 import type {
   BatchFieldArrayUpdate,
   ChangeHandler,
@@ -485,7 +491,7 @@ export function createFormControl<
           const error = result[key];
 
           if (error) {
-            setError(`formError.${key}`, {
+            setError(`${FORM_ERROR_TYPE}.${key}`, {
               message:
                 hasError(error.message) && isString(result.message)
                   ? result.message
@@ -495,12 +501,12 @@ export function createFormControl<
           }
         }
       } else if (isString(result) || !result) {
-        setError('formError', {
+        setError(FORM_ERROR_TYPE, {
           message: result || '',
           type: INPUT_VALIDATION_RULES.validate,
         });
       } else {
-        clearErrors('formError');
+        clearErrors(FORM_ERROR_TYPE);
       }
     }
   };
@@ -1319,7 +1325,7 @@ export function createFormControl<
         }
       }
 
-      unset(_formState.errors, 'root');
+      unset(_formState.errors, ROOT_ERROR_TYPE);
 
       if (isEmptyObject(_formState.errors)) {
         _subjects.state.next({

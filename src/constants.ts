@@ -21,3 +21,7 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 } as const;
+
+export const FORM_ERROR_TYPE = 'formError';
+
+export const ROOT_ERROR_TYPE = 'root';
