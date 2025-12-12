@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import TextField from '@mui/material/TextField';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 type FormValues = {
@@ -14,12 +14,27 @@ export default function MuiDatePickerExample() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: { date: null },
+    defaultValues: {
+      date: null,
+    },
   });
+
+  const onSubmit = (data: FormValues) => {
+    console.log('Submitted:', data);
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          padding: 20,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20,
+          maxWidth: 320,
+        }}
+      >
         <Controller
           name="date"
           control={control}
@@ -30,16 +45,25 @@ export default function MuiDatePickerExample() {
               onChange={field.onChange}
               slotProps={{
                 textField: {
-                  inputRef: field.ref, // fix: ensures proper focus on error
+                  inputRef: field.ref,
                   error: !!fieldState.error,
                   helperText: fieldState.error?.message,
-                },
+                } as any,
               }}
             />
           )}
         />
 
-        <button type="submit" style={{ marginTop: 20 }}>
+        <button
+          type="submit"
+          style={{
+            padding: '10px 20px',
+            background: '#e91e63',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
           Submit
         </button>
       </form>
