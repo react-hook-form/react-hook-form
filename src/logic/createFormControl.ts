@@ -47,6 +47,7 @@ import type {
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
+  ValidateFormEventType,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -206,7 +207,11 @@ export function createFormControl<
         isValid = isEmptyObject((await _runSchema()).errors);
         _updateIsValidating();
       } else {
-        isValid = await executeBuiltInValidation(_fields, true);
+        isValid = await executeBuiltInValidation({
+          fields: _fields,
+          shouldOnlyCheckValid: true,
+          eventType: EVENTS.VALID,
+        });
       }
       if (isValid !== _formState.isValid) {
         _subjects.state.next({
@@ -482,9 +487,20 @@ export function createFormControl<
     return errors;
   };
 
-  const validateForm = async () => {
+  const validateForm = async ({
+    name,
+    eventType,
+  }: {
+    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | undefined;
+    eventType: ValidateFormEventType;
+  }) => {
     if (props.validate) {
-      const result = await props.validate(_formValues);
+      const result = await props.validate({
+        formValues: _formValues,
+        formState: _formState,
+        name,
+        eventType,
+      });
 
       if (isObject(result)) {
         for (const key in result) {
@@ -515,20 +531,31 @@ export function createFormControl<
     return true;
   };
 
-  const executeBuiltInValidation = async (
-    fields: FieldRefs,
-    shouldOnlyCheckValid?: boolean,
-    context: {
-      valid: boolean;
-      hasRunRootValidation?: boolean;
-    } = {
+  const executeBuiltInValidation = async ({
+    fields,
+    shouldOnlyCheckValid,
+    name,
+    eventType,
+    context = {
       valid: true,
       hasRunRootValidation: false,
     },
-  ) => {
+  }: {
+    fields: FieldRefs;
+    shouldOnlyCheckValid?: boolean;
+    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
+    eventType: ValidateFormEventType;
+    context?: {
+      valid: boolean;
+      hasRunRootValidation?: boolean;
+    };
+  }) => {
     if (props.validate) {
       context.hasRunRootValidation = true;
-      const result = await validateForm();
+      const result = await validateForm({
+        name,
+        eventType,
+      });
 
       if (!result) {
         context.valid = false;
@@ -583,11 +610,13 @@ export function createFormControl<
         }
 
         !isEmptyObject(fieldValue) &&
-          (await executeBuiltInValidation(
-            fieldValue,
-            shouldOnlyCheckValid,
+          (await executeBuiltInValidation({
             context,
-          ));
+            shouldOnlyCheckValid,
+            fields: fieldValue,
+            name: name as FieldPath<TFieldValues>,
+            eventType,
+          }));
       }
     }
 
@@ -868,7 +897,10 @@ export function createFormControl<
       }
 
       if (!_options.resolver && props.validate) {
-        await validateForm();
+        await validateForm({
+          name: name as FieldPath<TFieldValues>,
+          eventType: event.type,
+        });
       }
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
@@ -918,7 +950,12 @@ export function createFormControl<
             _proxyFormState.isValid ||
             _proxySubscribeFormState.isValid
           ) {
-            isValid = await executeBuiltInValidation(_fields, true);
+            isValid = await executeBuiltInValidation({
+              fields: _fields,
+              shouldOnlyCheckValid: true,
+              name: name as FieldPath<TFieldValues>,
+              eventType: event.type,
+            });
           }
         }
       }
@@ -963,15 +1000,20 @@ export function createFormControl<
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field = get(_fields, fieldName);
-            return await executeBuiltInValidation(
-              field && field._f ? { [fieldName]: field } : field,
-            );
+            return await executeBuiltInValidation({
+              fields: field && field._f ? { [fieldName]: field } : field,
+              eventType: EVENTS.TRIGGER,
+            });
           }),
         )
       ).every(Boolean);
       !(!validationResult && !_formState.isValid) && _setValid();
     } else {
-      validationResult = isValid = await executeBuiltInValidation(_fields);
+      validationResult = isValid = await executeBuiltInValidation({
+        fields: _fields,
+        name,
+        eventType: EVENTS.TRIGGER,
+      });
     }
 
     _subjects.state.next({
@@ -1325,7 +1367,10 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
-        await executeBuiltInValidation(_fields);
+        await executeBuiltInValidation({
+          fields: _fields,
+          eventType: EVENTS.SUBMIT,
+        });
       }
 
       if (_names.disabled.size) {

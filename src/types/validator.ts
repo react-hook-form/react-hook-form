@@ -1,7 +1,8 @@
-import type { INPUT_VALIDATION_RULES } from '../constants';
+import type { EVENTS, INPUT_VALIDATION_RULES } from '../constants';
 
 import type { Message } from './errors';
 import type { FieldValues } from './fields';
+import type { FormState } from './form';
 import type { FieldPath, FieldPathValue } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
@@ -37,9 +38,19 @@ export type Validate<TFieldValue, TFormValues> = (
   formValues: TFormValues,
 ) => ValidateResult | Promise<ValidateResult>;
 
-export type ValidateForm<TFormValues> = (
-  formValues: TFormValues,
-) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
+export type ValidateFormEventType = (typeof EVENTS)[keyof typeof EVENTS];
+
+export type ValidateForm<
+  TFormValues extends FieldValues,
+  TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>,
+> = (props: {
+  formValues: TFormValues;
+  formState: FormState<TFormValues>;
+  eventType?: ValidateFormEventType;
+  name?: TFieldName | TFieldName[];
+}) =>
+  | FormValidateResult<TFormValues>
+  | Promise<FormValidateResult<TFormValues>>;
 
 export type RegisterOptions<
   TFieldValues extends FieldValues = FieldValues,

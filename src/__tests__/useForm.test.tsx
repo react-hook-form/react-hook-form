@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   act,
   fireEvent,
-  getByRole,
   render,
   renderHook,
   screen,
@@ -2786,7 +2785,7 @@ describe('useForm', () => {
           formState: { errors },
           handleSubmit,
         } = useForm({
-          validate: (formValues) => {
+          validate: ({ formValues }) => {
             if (formValues.firstName) {
               return true;
             }
