@@ -508,7 +508,11 @@ export function createFormControl<
       } else {
         clearErrors(FORM_ERROR_TYPE);
       }
+
+      return result;
     }
+
+    return true;
   };
 
   const executeBuiltInValidation = async (
@@ -524,7 +528,11 @@ export function createFormControl<
   ) => {
     if (props.validate) {
       context.hasRunRootValidation = true;
-      await validateForm();
+      const result = await validateForm();
+
+      if (!result) {
+        context.valid = false;
+      }
     }
 
     for (const name in fields) {
@@ -807,6 +815,7 @@ export function createFormControl<
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
+          !props.validate &&
           !_options.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
@@ -841,10 +850,6 @@ export function createFormControl<
           values: cloneObject(_formValues),
         });
 
-      if (!_options.resolver && props.validate) {
-        await validateForm();
-      }
-
       if (shouldSkipValidation) {
         if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
           if (_options.mode === 'onBlur') {
@@ -860,6 +865,10 @@ export function createFormControl<
           shouldRender &&
           _subjects.state.next({ name, ...(watched ? {} : fieldState) })
         );
+      }
+
+      if (!_options.resolver && props.validate) {
+        await validateForm();
       }
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });

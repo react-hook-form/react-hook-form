@@ -4,6 +4,7 @@ import isString from '../utils/isString';
 
 export function hasError(result: ValidateResult) {
   return (
+    isString(result) ||
     (Array.isArray(result) && result.every(isString)) ||
     (isBoolean(result) && !result)
   );
