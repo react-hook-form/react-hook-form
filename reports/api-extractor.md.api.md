@@ -944,7 +944,7 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public
-export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>({ render, names, ...props }: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
+export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>({ render, name, ...props }: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
@@ -959,7 +959,6 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 // @public (undocumented)
 export type WatchProps<TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
     control?: Control<TFieldValues, TContext, TTransformedValues>;
-    names?: TFieldName;
     name?: TFieldName;
     disabled?: boolean;
     exact?: boolean;
@@ -971,9 +970,9 @@ export type WatchProps<TFieldName extends FieldPath<TFieldValues> | FieldPath<TF
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:60:3 - (ae-forgotten-export) The symbol "WatchDefaultValue" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:61:3 - (ae-forgotten-export) The symbol "WatchValue" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:62:3 - (ae-forgotten-export) The symbol "WatchRenderValue" needs to be exported by the entry point index.d.ts
+// src/watch.tsx:55:3 - (ae-forgotten-export) The symbol "WatchDefaultValue" needs to be exported by the entry point index.d.ts
+// src/watch.tsx:56:3 - (ae-forgotten-export) The symbol "WatchValue" needs to be exported by the entry point index.d.ts
+// src/watch.tsx:57:3 - (ae-forgotten-export) The symbol "WatchRenderValue" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
