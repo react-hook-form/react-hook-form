@@ -2763,6 +2763,7 @@ describe('useForm', () => {
         </div>
       );
     }
+
     it('formState.defaultValues and useFormState().defaultValues should be equal after reset', () => {
       render(<App />);
 
@@ -2773,6 +2774,51 @@ describe('useForm', () => {
       const reactValue = screen.getByTestId('react').textContent;
       expect(screen.getByTestId('form').textContent).toBe(reactValue);
       expect(screen.getByTestId('state').textContent).toBe(reactValue);
+    });
+  });
+
+  describe('form level validation', () => {
+    it('should return form level error', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return 'required';
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p>{errors.formError?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() => expect(screen.getByText('required')).toBeVisible());
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('required')).not.toBeInTheDocument(),
+      );
     });
   });
 });

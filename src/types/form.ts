@@ -21,7 +21,7 @@ import type {
 } from './path';
 import type { Resolver } from './resolvers';
 import type { DeepMap, DeepPartial, Noop } from './utils';
-import type { RegisterOptions } from './validator';
+import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
 
@@ -126,6 +126,7 @@ export type UseFormProps<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
   >;
+  validate: ValidateForm<TFieldValues>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -558,7 +559,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | `root.${string}`
-    | 'root',
+    | 'root'
+    | 'formError'
+    | `formError.${string}`,
 ) => void;
 
 /**
@@ -620,7 +623,12 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
+  name:
+    | FieldPath<TFieldValues>
+    | `root.${string}`
+    | 'root'
+    | 'formError'
+    | `formError.${string}`,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
