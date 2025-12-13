@@ -2778,7 +2778,7 @@ describe('useForm', () => {
     });
   });
 
-  describe.only('form level validation', () => {
+  describe('form level validation', () => {
     it('should return form level error', async () => {
       const App = () => {
         const {
