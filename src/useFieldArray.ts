@@ -80,8 +80,8 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
   TTransformedValues = TFieldValues,
 >(
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TTransformedValues>,
