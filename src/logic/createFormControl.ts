@@ -209,7 +209,7 @@ export function createFormControl<
       } else {
         isValid = await executeBuiltInValidation({
           fields: _fields,
-          shouldOnlyCheckValid: true,
+          onlyCheckValid: true,
           eventType: EVENTS.VALID,
         });
       }
@@ -533,25 +533,25 @@ export function createFormControl<
 
   const executeBuiltInValidation = async ({
     fields,
-    shouldOnlyCheckValid,
+    onlyCheckValid,
     name,
     eventType,
     context = {
       valid: true,
-      hasRunRootValidation: false,
+      runRootValidation: false,
     },
   }: {
     fields: FieldRefs;
-    shouldOnlyCheckValid?: boolean;
+    onlyCheckValid?: boolean;
     name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
     eventType: ValidateFormEventType;
     context?: {
       valid: boolean;
-      hasRunRootValidation?: boolean;
+      runRootValidation?: boolean;
     };
   }) => {
     if (props.validate) {
-      context.hasRunRootValidation = true;
+      context.runRootValidation = true;
       const result = await validateForm({
         name,
         eventType,
@@ -582,7 +582,7 @@ export function createFormControl<
             _names.disabled,
             _formValues,
             shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
+            _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
           );
 
@@ -592,12 +592,12 @@ export function createFormControl<
 
           if (fieldError[_f.name]) {
             context.valid = false;
-            if (shouldOnlyCheckValid) {
+            if (onlyCheckValid) {
               break;
             }
           }
 
-          !shouldOnlyCheckValid &&
+          !onlyCheckValid &&
             (get(fieldError, _f.name)
               ? isFieldArrayRoot
                 ? updateFieldArrayRootError(
@@ -612,7 +612,7 @@ export function createFormControl<
         !isEmptyObject(fieldValue) &&
           (await executeBuiltInValidation({
             context,
-            shouldOnlyCheckValid,
+            onlyCheckValid,
             fields: fieldValue,
             name: name as FieldPath<TFieldValues>,
             eventType,
@@ -952,7 +952,7 @@ export function createFormControl<
           ) {
             isValid = await executeBuiltInValidation({
               fields: _fields,
-              shouldOnlyCheckValid: true,
+              onlyCheckValid: true,
               name: name as FieldPath<TFieldValues>,
               eventType: event.type,
             });
