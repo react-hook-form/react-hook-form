@@ -1,43 +1,78 @@
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import type { Control, FieldPath, FieldPathValue, FieldValues } from './types';
+import type {
+  Control,
+  DeepPartialSkipArrayKey,
+  FieldPath,
+  FieldPathValue,
+  FieldPathValues,
+  FieldValues,
+} from './types';
 import { useWatch } from './useWatch';
 
-type GetValues<
+type WatchDefaultValue<
+  TFieldName,
+  TFieldValues extends FieldValues = FieldValues,
+> =
+  TFieldName extends FieldPath<TFieldValues>
+    ? FieldPathValue<TFieldValues, TFieldName>
+    : DeepPartialSkipArrayKey<TFieldValues>;
+
+type WatchValue<
+  TFieldName,
+  TFieldValues extends FieldValues = FieldValues,
+> = TFieldName extends
+  | FieldPath<TFieldValues>[]
+  | readonly FieldPath<TFieldValues>[]
+  ? FieldPathValues<TFieldValues, TFieldName>
+  : TFieldName extends FieldPath<TFieldValues>
+    ? FieldPathValue<TFieldValues, TFieldName>
+    : TFieldValues;
+
+type WatchRenderValue<
+  TFieldName,
   TFieldValues extends FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly [],
-> = TFieldNames extends readonly [
-  infer Name extends FieldPath<TFieldValues>,
-  ...infer RestFieldNames,
-]
-  ? RestFieldNames extends readonly FieldPath<TFieldValues>[]
-    ? readonly [
-        FieldPathValue<TFieldValues, Name>,
-        ...GetValues<TFieldValues, RestFieldNames>,
-      ]
-    : never
-  : TFieldNames extends readonly [infer Name extends FieldPath<TFieldValues>]
-    ? readonly [FieldPathValue<TFieldValues, Name>]
-    : TFieldNames extends readonly []
-      ? readonly []
-      : never;
+  TComputeValue,
+> = TComputeValue extends undefined
+  ? WatchValue<TFieldName, TFieldValues>
+  : TComputeValue;
 
 export type WatchProps<
-  TFieldNames extends readonly FieldPath<TFieldValues>[],
+  TFieldName extends
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+    | undefined = undefined,
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TComputeValue = undefined,
 > = {
   control?: Control<TFieldValues, TContext, TTransformedValues>;
-  names: TFieldNames;
-  render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
+  /**
+   * @deprecated This prop will be renamed to `name` in the next major release.
+   * Use `name` instead.
+   */
+  names?: TFieldName;
+  name?: TFieldName;
+  disabled?: boolean;
+  exact?: boolean;
+  defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
+  compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
+  render: (
+    value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
+  ) => ReactNode;
 };
 
 /**
  * Watch component that subscribes to form field changes and re-renders when watched fields update.
  *
  * @param control - The form control object from useForm
- * @param names - Array of field names to watch for changes
+ * @param name - Can be field name, array of field names, or undefined to watch the entire form
+ * @param disabled - Disable subscription
+ * @param exact - Whether to watch exact field names or not
+ * @param defaultValue - The default value to use if the field is not yet set
+ * @param compute - Function to compute derived values from watched fields
  * @param render - The function that receives watched values and returns ReactNode
  * @returns The result of calling render function with watched values
  *
@@ -56,15 +91,30 @@ export type WatchProps<
  * ```
  */
 export const Watch = <
-  const TFieldNames extends readonly FieldPath<TFieldValues>[],
   TFieldValues extends FieldValues = FieldValues,
+  const TFieldName extends
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+    | undefined = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
+  TComputeValue = undefined,
 >({
-  control,
-  names,
   render,
-}: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) =>
+  names,
+  ...props
+}: WatchProps<
+  TFieldName,
+  TFieldValues,
+  TContext,
+  TTransformedValues,
+  TComputeValue
+>) =>
   render(
-    useWatch({ control, name: names }) as GetValues<TFieldValues, TFieldNames>,
+    useWatch({ ...(props as any), name: names }) as WatchRenderValue<
+      TFieldName,
+      TFieldValues,
+      TComputeValue
+    >,
   );
