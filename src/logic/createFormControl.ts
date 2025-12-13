@@ -649,7 +649,7 @@ export function createFormControl<
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
-  const setValues = <
+  const setFieldValues = <
     T extends InternalFieldName,
     K extends SetFieldValue<TFieldValues>,
     U extends SetValueConfig,
@@ -667,7 +667,7 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setValues(fieldName, fieldValue, options)
+        ? setFieldValues(fieldName, fieldValue, options)
         : setFieldValue(fieldName, fieldValue, options);
     }
   };
@@ -704,7 +704,7 @@ export function createFormControl<
       }
     } else {
       field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setValues(name, cloneValue, options)
+        ? setFieldValues(name, cloneValue, options)
         : setFieldValue(name, cloneValue, options);
     }
 
@@ -713,6 +713,19 @@ export function createFormControl<
       name: _state.mount ? name : undefined,
       values: cloneObject(_formValues),
     });
+  };
+
+  const setValues: UseFormSetValue<TFieldValues> = (formValues) => {
+    const updatedFormValues = isFunction(formValues)
+      ? (formValues as Function)(_formValues as TFieldValues)
+      : formValues;
+
+    _formValues = {
+      ..._formValues,
+      ...updatedFormValues,
+    };
+
+    _subjects.state.next({ ..._formState, values: _formValues });
   };
 
   const onChange: ChangeHandler = async (event) => {
@@ -1519,6 +1532,7 @@ export function createFormControl<
     handleSubmit,
     watch,
     setValue,
+    setValues,
     getValues,
     reset,
     resetField,
