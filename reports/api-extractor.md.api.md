@@ -924,7 +924,17 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
-export type ValidateForm<TFormValues> = (formValues: TFormValues) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
+export type ValidateForm<TFormValues extends FieldValues, TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>> = (props: {
+    formValues: TFormValues;
+    formState: FormState<TFormValues>;
+    eventType?: ValidateFormEventType;
+    name?: TFieldName | TFieldName[];
+}) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
+
+// Warning: (ae-forgotten-export) The symbol "EVENTS" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ValidateFormEventType = (typeof EVENTS)[keyof typeof EVENTS];
 
 // @public (undocumented)
 export type ValidateResult = Message | Message[] | boolean | undefined;
