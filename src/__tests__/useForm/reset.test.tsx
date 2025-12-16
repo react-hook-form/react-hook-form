@@ -9,11 +9,17 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
-import type { Control, UseFormRegister, UseFormReturn } from '../../types';
+import type {
+  Control,
+  FieldErrors,
+  UseFormRegister,
+  UseFormReturn,
+} from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
+import isEmptyObject from '../../utils/isEmptyObject';
 import noop from '../../utils/noop';
 
 jest.useFakeTimers();
@@ -1728,5 +1734,269 @@ describe('reset', () => {
         test: 'test',
       }),
     );
+  });
+
+  it('should clear validation errors after reset to prevent false errors on subsequent submissions (Next.js 16 Server Actions fix)', async () => {
+    const resolver = jest.fn(
+      async (data: { name: string; description?: string }) => {
+        const errors: FieldErrors<{ name: string; description?: string }> = {};
+
+        if (!data.name || data.name.length < 2) {
+          errors.name = {
+            type: 'min',
+            message: 'Name must be at least 2 characters',
+          };
+        }
+
+        if (data.description && data.description.length < 5) {
+          errors.description = {
+            type: 'min',
+            message: 'Description must be at least 5 characters',
+          };
+        }
+
+        return {
+          values: isEmptyObject(errors) ? data : {},
+          errors,
+        };
+      },
+    );
+
+    const onSubmit = jest.fn();
+    let methods: UseFormReturn<{ name: string; description?: string }>;
+
+    const App = () => {
+      methods = useForm<{ name: string; description?: string }>({
+        resolver,
+        defaultValues: {
+          name: '',
+          description: '',
+        },
+      });
+
+      return (
+        <form
+          onSubmit={methods.handleSubmit(async (data) => {
+            // Simulate Next.js Server Action
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            onSubmit(data);
+            // Call reset after successful submission
+            methods.reset();
+          })}
+        >
+          <input {...methods.register('name')} />
+          {methods.formState.errors.name && (
+            <p>{methods.formState.errors.name.message}</p>
+          )}
+          <input {...methods.register('description')} />
+          {methods.formState.errors.description && (
+            <p>{methods.formState.errors.description.message}</p>
+          )}
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    // First submission with valid data
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'validname' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'validdescription' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: 'validname',
+      description: 'validdescription',
+    });
+
+    // Wait for reset to complete
+    await waitFor(() => {
+      expect(methods.formState.errors).toEqual({});
+    });
+
+    // Second submission with valid data after reset
+    // This should not show validation errors
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'newname' },
+    });
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'newdescription' },
+    });
+
+    // Clear previous calls
+    onSubmit.mockClear();
+    resolver.mockClear();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: 'newname',
+      description: 'newdescription',
+    });
+
+    // Verify no error messages are displayed
+    expect(
+      screen.queryByText('Name must be at least 2 characters'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Description must be at least 5 characters'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should keep isValid value when reset is called with keepIsValid option', async () => {
+    let formState: { isValid: boolean } = { isValid: false };
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { isValid },
+      } = useForm({
+        defaultValues: { name: 'Mike' },
+        mode: 'onChange',
+      });
+
+      formState = { isValid };
+
+      return (
+        <div>
+          <p>
+            <input {...register('name', { required: true })} />
+          </p>
+          <button
+            onClick={() => {
+              reset({ name: '' }, { keepIsValid: true });
+            }}
+          >
+            reset with keepIsValid
+          </button>
+          <button
+            onClick={() => {
+              reset({ name: '' });
+            }}
+          >
+            reset without keepIsValid
+          </button>
+          <p>is valid: {isValid ? 'true' : 'false'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    });
+
+    expect(formState).toEqual({ isValid: true });
+    expect(input.value).toBe('Mike');
+
+    // Reset with keepIsValid
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'reset with keepIsValid' }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    expect(formState).toEqual({ isValid: true });
+
+    // Reset without keepIsValid
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'reset without keepIsValid' }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    // Verify isValid value is false after reset without keepIsValid
+    expect(screen.getByText('is valid: false')).toBeInTheDocument();
+    expect(formState).toEqual({ isValid: false });
+  });
+
+  it('should keep isValid value when form has resetOptions.keepIsValid configured', async () => {
+    let formState: { isValid: boolean } = { isValid: false };
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { isValid },
+      } = useForm({
+        defaultValues: { name: 'Mike' },
+        mode: 'onChange',
+        resetOptions: {
+          keepIsValid: true,
+        },
+      });
+
+      formState = { isValid };
+
+      return (
+        <div>
+          <p>
+            <input {...register('name', { required: true })} />
+          </p>
+          <button
+            onClick={() => {
+              reset({ name: '' });
+            }}
+          >
+            reset
+          </button>
+          <p>is valid: {isValid ? 'true' : 'false'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    });
+
+    expect(formState).toEqual({ isValid: true });
+    expect(input.value).toBe('Mike');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText('is valid: true')).toBeInTheDocument();
+    expect(formState).toEqual({ isValid: true });
   });
 });

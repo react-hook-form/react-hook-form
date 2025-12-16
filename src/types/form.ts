@@ -796,8 +796,8 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues extends FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
   updatedFieldArrayValues?: Partial<
@@ -861,6 +861,10 @@ export type Control<
     name: FieldName<any>;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
+  _updateIsValidating: (
+    names?: InternalFieldName[],
+    isValidating?: boolean,
+  ) => void;
   _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;

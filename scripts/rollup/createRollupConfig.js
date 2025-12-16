@@ -37,7 +37,15 @@ export function createRollupConfig(options, callback) {
       options.format !== 'esm' &&
         terser({
           output: { comments: false },
-          compress: { drop_console: true },
+          compress: {
+            drop_console: true,
+            passes: 2,
+            unsafe: false,
+            unsafe_comps: false,
+            unsafe_math: false,
+            unsafe_methods: false,
+            pure_funcs: ['console.log', 'console.info', 'console.debug'],
+          },
         }),
     ].filter(Boolean),
   };
