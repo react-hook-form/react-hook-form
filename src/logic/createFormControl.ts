@@ -1372,9 +1372,9 @@ export function createFormControl<
           const existingValue = get(_formValues, fieldName);
           const newValue = get(values, fieldName);
 
-          if (isDirty && existingValue !== undefined) {
+          if (isDirty && !isUndefined(existingValue)) {
             set(values, fieldName, existingValue);
-          } else if (!isDirty && newValue !== undefined) {
+          } else if (!isDirty && !isUndefined(newValue)) {
             setValue(fieldName as FieldPath<TFieldValues>, newValue);
           }
         }
