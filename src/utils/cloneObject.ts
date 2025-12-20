@@ -2,8 +2,14 @@ import isObject from './isObject';
 import isPlainObject from './isPlainObject';
 import isWeb from './isWeb';
 
+const constructFromSymbol = Symbol.for('constructDateFrom');
+
 export default function cloneObject<T>(data: T): T {
   if (data instanceof Date) {
+    if (isConstructableDate(data)) {
+      return data[constructFromSymbol](data.getTime()) as any;
+    }
+
     return new Date(data) as any;
   }
 
@@ -29,4 +35,14 @@ export default function cloneObject<T>(data: T): T {
   }
 
   return copy;
+}
+
+interface ConstructableDate extends Date {
+  [constructFromSymbol]: <DateType extends Date = Date>(
+    value: number,
+  ) => DateType;
+}
+
+function isConstructableDate(data: Date): data is ConstructableDate {
+  return data instanceof Date && constructFromSymbol in data;
 }

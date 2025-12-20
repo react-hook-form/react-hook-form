@@ -1,3 +1,5 @@
+import { TZDate } from '@date-fns/tz';
+
 import cloneObject from '../../utils/cloneObject';
 import noop from '../../utils/noop';
 
@@ -186,5 +188,16 @@ describe('clone', () => {
     const dateTime = Object.create(UtcProto);
     const copy = cloneObject(dateTime);
     expect(copy._tag).toBe('Utc');
+  });
+
+  it('should clone TZDate without loosing the timezone', () => {
+    // Test across mute timezones
+    const value = {
+      date: new TZDate('2020-10-15T00:00:00.000Z', 'Europe/Belgrade'),
+      date2: new TZDate('2020-10-15T00:00:00.000Z', 'Asia/Bahrain'),
+    };
+    const copy = cloneObject(value);
+    expect(copy.date.toString()).toBe(value.date.toString());
+    expect(copy.date2.toString()).toBe(value.date2.toString());
   });
 });
