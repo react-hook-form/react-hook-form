@@ -2800,7 +2800,7 @@ describe('useForm', () => {
         return (
           <form onSubmit={handleSubmit(() => {})}>
             <input {...register('firstName')} />
-            <p>{errors.formError?.message}</p>
+            <p>{errors.form?.message}</p>
             <button>submit</button>
           </form>
         );
