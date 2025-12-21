@@ -4,7 +4,7 @@ export const EVENTS = {
   CHANGE: 'change',
   SUBMIT: 'submit',
   TRIGGER: 'trigger',
-  VALID: 'onValid',
+  VALID: 'valid',
 } as const;
 
 export const VALIDATION_MODE = {
