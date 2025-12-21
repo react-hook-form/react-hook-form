@@ -554,6 +554,10 @@ export function createFormControl<
 
       if (!result) {
         context.valid = false;
+
+        if (onlyCheckValid) {
+          return context.valid;
+        }
       }
     }
 
