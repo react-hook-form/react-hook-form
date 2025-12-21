@@ -83,7 +83,6 @@ import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
-import { hasError } from './getValidateError';
 import getValidationModes from './getValidationModes';
 import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
@@ -456,7 +455,7 @@ export function createFormControl<
 
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
-    const result = await _options.resolver!(
+    return _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
@@ -466,7 +465,6 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
-    return result;
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
@@ -508,10 +506,7 @@ export function createFormControl<
 
           if (error) {
             setError(`${FORM_ERROR_TYPE}.${key}`, {
-              message:
-                hasError(error.message) && isString(result.message)
-                  ? result.message
-                  : '',
+              message: isString(result.message) ? result.message : '',
               type: INPUT_VALIDATION_RULES.validate,
             });
           }
