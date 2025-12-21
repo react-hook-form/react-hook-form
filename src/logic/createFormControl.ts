@@ -810,11 +810,18 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    isWatched(name, _names) && _subjects.state.next({ ..._formState, name });
-    _subjects.state.next({
-      name: _state.mount ? name : undefined,
-      values: cloneObject(_formValues),
-    });
+    if (isWatched(name, _names)) {
+      _subjects.state.next({
+        ..._formState,
+        name,
+        values: cloneObject(_formValues),
+      });
+    } else {
+      _subjects.state.next({
+        name: _state.mount ? name : undefined,
+        values: cloneObject(_formValues),
+      });
+    }
   };
 
   const onChange: ChangeHandler = async (event) => {
