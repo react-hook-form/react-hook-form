@@ -455,7 +455,7 @@ export function createFormControl<
 
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
-    return _options.resolver!(
+    return await _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
