@@ -112,7 +112,7 @@ export const Watch = <
   TComputeValue
 >) =>
   render(
-    useWatch({ ...(props as any), name: names }) as WatchRenderValue<
+    useWatch({ name: names, ...(props as any) }) as WatchRenderValue<
       TFieldName,
       TFieldValues,
       TComputeValue
