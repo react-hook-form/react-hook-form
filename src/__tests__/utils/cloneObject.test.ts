@@ -197,7 +197,11 @@ describe('clone', () => {
       date2: new TZDate('2020-10-15T00:00:00.000Z', 'Asia/Bahrain'),
     };
     const copy = cloneObject(value);
-    expect(copy.date.toString()).toBe(value.date.toString());
-    expect(copy.date2.toString()).toBe(value.date2.toString());
+    expect(copy.date.toString()).toBe(
+      'Thu Oct 15 2020 02:00:00 GMT+0200 (Central European Summer Time)',
+    );
+    expect(copy.date2.toString()).toBe(
+      'Thu Oct 15 2020 03:00:00 GMT+0300 (Arabian Standard Time)',
+    );
   });
 });
