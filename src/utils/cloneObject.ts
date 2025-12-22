@@ -7,10 +7,10 @@ const constructFromSymbol = Symbol.for('constructDateFrom');
 export default function cloneObject<T>(data: T): T {
   if (data instanceof Date) {
     if (isConstructableDate(data)) {
-      return data[constructFromSymbol](data.getTime()) as any;
+      return data[constructFromSymbol](data.getTime()) as T;
     }
 
-    return new Date(data) as any;
+    return new Date(data) as T;
   }
 
   const isFileListInstance =
@@ -44,5 +44,5 @@ interface ConstructableDate extends Date {
 }
 
 function isConstructableDate(data: Date): data is ConstructableDate {
-  return data instanceof Date && constructFromSymbol in data;
+  return constructFromSymbol in data;
 }
