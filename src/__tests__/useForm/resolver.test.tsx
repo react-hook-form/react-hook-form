@@ -3,6 +3,7 @@ import {
   act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
@@ -16,6 +17,223 @@ import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
 describe('resolver', () => {
+  it('should update isValid after setValue with shouldValidate and trigger', async () => {
+    type FormValues = {
+      members: { firstName: string | null; lastName: string | null }[];
+    };
+
+    const resolver = async (data: FormValues) => {
+      const errors: FieldErrors<FormValues> = {};
+
+      data.members.forEach((member, index) => {
+        if (!member.firstName && !member.lastName) {
+          if (!errors.members) {
+            errors.members = [];
+          }
+          (errors.members as any)[index] = {
+            firstName: {
+              type: 'validate',
+              message: 'Either first name or last name must be provided.',
+            },
+          };
+        }
+      });
+
+      return {
+        values: Object.keys(errors).length === 0 ? data : {},
+        errors,
+      };
+    };
+
+    let triggerResult: boolean | undefined;
+
+    const App = () => {
+      const {
+        setValue,
+        trigger,
+        formState: { isValid, errors },
+      } = useForm<FormValues>({
+        defaultValues: {
+          members: [{ firstName: null, lastName: null }],
+        },
+        resolver,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <p data-testid="errors">{JSON.stringify(errors)}</p>
+          <button
+            data-testid="setAndTrigger"
+            onClick={async () => {
+              setValue('members', [{ firstName: 'John', lastName: null }], {
+                shouldValidate: true,
+              });
+              triggerResult = await trigger();
+            }}
+          >
+            Set and Trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setAndTrigger'));
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(true);
+      expect(screen.getByTestId('errors')).toHaveTextContent('{}');
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
+  it('should update isValid with renderHook after setValue and trigger (with early subscription)', async () => {
+    type FormValues = {
+      members: { firstName: string | null; lastName: string | null }[];
+    };
+
+    const resolver = async (data: FormValues) => {
+      const errors: FieldErrors<FormValues> = {};
+
+      data.members.forEach((member, index) => {
+        if (!member.firstName && !member.lastName) {
+          if (!errors.members) {
+            errors.members = [];
+          }
+          (errors.members as any)[index] = {
+            firstName: {
+              type: 'validate',
+              message: 'Either first name or last name must be provided.',
+            },
+          };
+        }
+      });
+
+      return {
+        values: Object.keys(errors).length === 0 ? data : {},
+        errors,
+      };
+    };
+
+    const { result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          members: [{ firstName: null, lastName: null }],
+        },
+        resolver,
+        mode: 'onChange',
+      }),
+    );
+
+    // Subscribe to isValid by accessing it BEFORE trigger
+    result.current.formState.isValid;
+
+    // Initial trigger to validate
+    await act(async () => {
+      await result.current.trigger();
+    });
+
+    // Now set valid data
+    await act(async () => {
+      result.current.setValue(
+        'members',
+        [{ firstName: 'John', lastName: null }],
+        {
+          shouldValidate: true,
+        },
+      );
+    });
+
+    // Explicitly trigger validation
+    let triggerResult: boolean;
+    await act(async () => {
+      triggerResult = await result.current.trigger();
+    });
+
+    // These should pass - validation logic works correctly
+    expect(triggerResult!).toBe(true);
+    expect(Object.keys(result.current.formState.errors).length).toBe(0);
+
+    // This passes because we subscribed early
+    expect(result.current.formState.isValid).toBe(true);
+  });
+
+  it('should update isValid with renderHook even when isValid is accessed AFTER trigger (bug reproduction)', async () => {
+    type FormValues = {
+      members: { firstName: string | null; lastName: string | null }[];
+    };
+
+    const resolver = async (data: FormValues) => {
+      const errors: FieldErrors<FormValues> = {};
+
+      data.members.forEach((member, index) => {
+        if (!member.firstName && !member.lastName) {
+          if (!errors.members) {
+            errors.members = [];
+          }
+          (errors.members as any)[index] = {
+            firstName: {
+              type: 'validate',
+              message: 'Either first name or last name must be provided.',
+            },
+          };
+        }
+      });
+
+      return {
+        values: Object.keys(errors).length === 0 ? data : {},
+        errors,
+      };
+    };
+
+    const { result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          members: [{ firstName: null, lastName: null }],
+        },
+        resolver,
+        mode: 'onChange',
+      }),
+    );
+
+    // DO NOT access formState.isValid before trigger - this is the bug scenario
+
+    // Initial trigger to validate
+    await act(async () => {
+      await result.current.trigger();
+    });
+
+    // Now set valid data
+    await act(async () => {
+      result.current.setValue(
+        'members',
+        [{ firstName: 'John', lastName: null }],
+        {
+          shouldValidate: true,
+        },
+      );
+    });
+
+    // Explicitly trigger validation
+    let triggerResult: boolean;
+    await act(async () => {
+      triggerResult = await result.current.trigger();
+    });
+
+    // These pass - validation logic works correctly
+    expect(triggerResult!).toBe(true);
+    expect(Object.keys(result.current.formState.errors).length).toBe(0);
+
+    // BUG: This fails - isValid is false even though trigger returned true and errors is empty
+    // The issue is that isValid was not accessed before trigger(), so the subscription wasn't set up
+    expect(result.current.formState.isValid).toBe(true);
+  });
+
   it('should update context within the resolver', async () => {
     type FormValues = {
       test: string;

@@ -17,12 +17,332 @@ import type {
   UseFormGetFieldState,
 } from '../../types';
 import { useController } from '../../useController';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 
 describe('trigger', () => {
+  it('should update isValid to true after triggering a specific field with built-in validation when form becomes valid', async () => {
+    const App = () => {
+      const {
+        register,
+        setValue,
+        trigger,
+        formState: { isValid, errors },
+      } = useForm<{ firstName: string; lastName: string }>({
+        mode: VALIDATION_MODE.onChange,
+        defaultValues: {
+          firstName: '',
+          lastName: '',
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('firstName', { required: true })} />
+          <input {...register('lastName', { required: true })} />
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <p data-testid="errors">{JSON.stringify(errors)}</p>
+          <button
+            data-testid="setAndTrigger"
+            onClick={async () => {
+              setValue('firstName', 'John');
+              setValue('lastName', 'Doe');
+              await trigger(['firstName', 'lastName']);
+            }}
+          >
+            Set Values and Trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setAndTrigger'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
+  it('should update isValid when setValue with shouldValidate triggers validation', async () => {
+    const App = () => {
+      const {
+        register,
+        setValue,
+        formState: { isValid },
+      } = useForm<{ firstName: string; lastName: string }>({
+        mode: VALIDATION_MODE.onChange,
+        defaultValues: {
+          firstName: '',
+          lastName: '',
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('firstName', { required: true })} />
+          <input {...register('lastName', { required: true })} />
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <button
+            data-testid="setValues"
+            onClick={() => {
+              setValue('firstName', 'John', { shouldValidate: true });
+              setValue('lastName', 'Doe', { shouldValidate: true });
+            }}
+          >
+            Set Values
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setValues'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
+  it('should update isValid after trigger returns true with empty errors', async () => {
+    let triggerResult: boolean | undefined;
+
+    const App = () => {
+      const {
+        register,
+        setValue,
+        trigger,
+        formState: { isValid, errors },
+      } = useForm<{ test: string }>({
+        mode: VALIDATION_MODE.onChange,
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('test', { required: true })} />
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <p data-testid="hasErrors">
+            {Object.keys(errors).length > 0 ? 'hasErrors' : 'noErrors'}
+          </p>
+          <button
+            data-testid="setAndTrigger"
+            onClick={async () => {
+              setValue('test', 'value');
+              triggerResult = await trigger('test');
+            }}
+          >
+            Set and Trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setAndTrigger'));
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(true);
+      expect(screen.getByTestId('hasErrors')).toHaveTextContent('noErrors');
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
+  it('should update isValid correctly with onSubmit mode after trigger', async () => {
+    let triggerResult: boolean | undefined;
+
+    const App = () => {
+      const {
+        register,
+        setValue,
+        trigger,
+        formState: { isValid, errors },
+      } = useForm<{ test: string }>({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('test', { required: true })} />
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <p data-testid="hasErrors">
+            {Object.keys(errors).length > 0 ? 'hasErrors' : 'noErrors'}
+          </p>
+          <button
+            data-testid="setAndTrigger"
+            onClick={async () => {
+              setValue('test', 'value');
+              triggerResult = await trigger('test');
+            }}
+          >
+            Set and Trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setAndTrigger'));
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(true);
+      expect(screen.getByTestId('hasErrors')).toHaveTextContent('noErrors');
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
+  it('should update isValid with useFieldArray after setValue and trigger', async () => {
+    type FormValues = {
+      members: { firstName: string }[];
+    };
+
+    let triggerResult: boolean | undefined;
+
+    const App = () => {
+      const {
+        register,
+        control,
+        setValue,
+        trigger,
+        formState: { isValid, errors },
+      } = useForm<FormValues>({
+        mode: VALIDATION_MODE.onChange,
+        defaultValues: {
+          members: [{ firstName: '' }],
+        },
+      });
+
+      const { fields } = useFieldArray({
+        control,
+        name: 'members',
+      });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <input
+              key={field.id}
+              {...register(`members.${index}.firstName` as const, {
+                required: true,
+              })}
+            />
+          ))}
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <p data-testid="errors">{JSON.stringify(errors)}</p>
+          <button
+            data-testid="setAndTrigger"
+            onClick={async () => {
+              setValue('members.0.firstName', 'John');
+              triggerResult = await trigger('members.0.firstName');
+            }}
+          >
+            Set and Trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setAndTrigger'));
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(true);
+      expect(screen.getByTestId('errors')).toHaveTextContent('{}');
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
+  it('should update isValid with useFieldArray when all members become valid', async () => {
+    type FormValues = {
+      members: { firstName: string }[];
+    };
+
+    let triggerResult: boolean | undefined;
+
+    const App = () => {
+      const {
+        register,
+        control,
+        setValue,
+        trigger,
+        formState: { isValid, errors },
+      } = useForm<FormValues>({
+        mode: VALIDATION_MODE.onChange,
+        defaultValues: {
+          members: [{ firstName: '' }, { firstName: '' }],
+        },
+      });
+
+      const { fields } = useFieldArray({
+        control,
+        name: 'members',
+      });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <input
+              key={field.id}
+              {...register(`members.${index}.firstName` as const, {
+                required: true,
+              })}
+              data-testid={`firstName-${index}`}
+            />
+          ))}
+          <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          <p data-testid="errors">{JSON.stringify(errors)}</p>
+          <button
+            data-testid="setAndTriggerAll"
+            onClick={async () => {
+              setValue('members.0.firstName', 'John');
+              setValue('members.1.firstName', 'Jane');
+              triggerResult = await trigger([
+                'members.0.firstName',
+                'members.1.firstName',
+              ]);
+            }}
+          >
+            Set All and Trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('isValid')).toHaveTextContent('invalid');
+
+    fireEvent.click(screen.getByTestId('setAndTriggerAll'));
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(true);
+      expect(screen.getByTestId('errors')).toHaveTextContent('{}');
+      expect(screen.getByTestId('isValid')).toHaveTextContent('valid');
+    });
+  });
+
   it('should remove all errors before set new errors when trigger entire form', async () => {
     const Component = () => {
       const [show, setShow] = React.useState(true);
