@@ -170,8 +170,8 @@ export function useWatch<
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends
-    readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TFieldNames extends readonly FieldPath<TFieldValues>[] =
+    readonly FieldPath<TFieldValues>[],
   TTransformedValues = TFieldValues,
 >(props: {
   name: readonly [...TFieldNames];
@@ -207,8 +207,8 @@ export function useWatch<
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends
-    readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
+  TFieldNames extends readonly FieldPath<TFieldValues>[] =
+    readonly FieldPath<TFieldValues>[],
   TTransformedValues = TFieldValues,
   TComputeValue = unknown,
 >(props: {
