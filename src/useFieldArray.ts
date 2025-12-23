@@ -80,8 +80,8 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
   TTransformedValues = TFieldValues,
 >(
@@ -338,6 +338,7 @@ export function useFieldArray<
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
+          control._updateIsValidating([name]);
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
 

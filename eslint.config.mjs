@@ -1,6 +1,4 @@
 // @ts-check
-
-import { fixupPluginRules } from '@eslint/compat';
 import pluginCypress from 'eslint-plugin-cypress/flat';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
@@ -85,6 +83,15 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
   {
