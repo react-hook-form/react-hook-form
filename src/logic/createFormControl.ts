@@ -899,7 +899,10 @@ export function createFormControl<
       ) {
         try {
           const error = get(_formState.errors, key);
-          const el = ref as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+          const el = ref as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement;
           el.setCustomValidity(error?.message || '');
           el.reportValidity();
         } catch {
@@ -1250,7 +1253,11 @@ export function createFormControl<
     if (!_options.shouldUseNativeValidation) {
       return;
     }
-    let firstErrorRef: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null = null;
+    let firstErrorRef:
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement
+      | null = null;
     let firstErrorKey: string | null = null;
     let firstErrorMessage = '';
     iterateFieldsByAction(
@@ -1264,7 +1271,10 @@ export function createFormControl<
           'reportValidity' in ref &&
           'setCustomValidity' in ref
         ) {
-          firstErrorRef = ref as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+          firstErrorRef = ref as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement;
           firstErrorKey = key;
           firstErrorMessage = error?.message || '';
           return 1;
@@ -1275,7 +1285,10 @@ export function createFormControl<
     );
     if (firstErrorRef && firstErrorKey !== null) {
       try {
-        const el = firstErrorRef as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+        const el = firstErrorRef as
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement;
         el.setCustomValidity(firstErrorMessage);
         el.reportValidity();
       } catch {
