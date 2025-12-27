@@ -889,31 +889,7 @@ export function createFormControl<
 
   const _focusInput = (ref: Ref, key: string) => {
     if (get(_formState.errors, key) && ref.focus) {
-      // #region agent log
-      fetch(
-        'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            location: 'createFormControl.ts:890',
-            message: '_focusInput: entry',
-            data: {
-              fieldName: key,
-              hasError: !!get(_formState.errors, key),
-              errorMessage: get(_formState.errors, key)?.message,
-            },
-            timestamp: Date.now(),
-            sessionId: 'debug-session',
-            runId: 'run1',
-            hypothesisId: 'H',
-          }),
-        },
-      ).catch(() => {});
-      // #endregion
       ref.focus();
-      // Fix for #13212: Call reportValidity after focusing when shouldUseNativeValidation is enabled
-      // This ensures the browser's native validation UI appears on the first submit
       if (
         _options.shouldUseNativeValidation &&
         ref &&
@@ -923,81 +899,11 @@ export function createFormControl<
       ) {
         try {
           const error = get(_formState.errors, key);
-          const errorMessage = error?.message || '';
-          // #region agent log
-          const currentValidity = (ref as HTMLInputElement).validity?.valid;
-          const currentCustomMessage =
-            (ref as HTMLInputElement).validationMessage || '';
-          fetch(
-            'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                location: 'createFormControl.ts:897',
-                message: '_focusInput: before setCustomValidity',
-                data: {
-                  fieldName: key,
-                  errorMessage,
-                  currentValidity,
-                  currentCustomMessage,
-                  isFocused: document.activeElement === ref,
-                },
-                timestamp: Date.now(),
-                sessionId: 'debug-session',
-                runId: 'run1',
-                hypothesisId: 'H',
-              }),
-            },
-          ).catch(() => {});
-          // #endregion
-          // Ensure setCustomValidity is called with the error message before reportValidity
-          // This is critical because validateField may have cleared it with setCustomValidity(true)
-          (
-            ref as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-          ).setCustomValidity(errorMessage);
-          // #region agent log
-          fetch(
-            'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                location: 'createFormControl.ts:901',
-                message:
-                  '_focusInput: after setCustomValidity, before reportValidity',
-                data: { fieldName: key, errorMessage },
-                timestamp: Date.now(),
-                sessionId: 'debug-session',
-                runId: 'run1',
-                hypothesisId: 'H',
-              }),
-            },
-          ).catch(() => {});
-          // #endregion
-          (
-            ref as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-          ).reportValidity();
-          // #region agent log
-          fetch(
-            'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                location: 'createFormControl.ts:902',
-                message: '_focusInput: after reportValidity',
-                data: { fieldName: key },
-                timestamp: Date.now(),
-                sessionId: 'debug-session',
-                runId: 'run1',
-                hypothesisId: 'H',
-              }),
-            },
-          ).catch(() => {});
-          // #endregion
+          const el = ref as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+          el.setCustomValidity(error?.message || '');
+          el.reportValidity();
         } catch {
-          // Ignore errors if reportValidity is not available or fails
+          // Ignore errors
         }
       }
       return 1;
@@ -1344,34 +1250,9 @@ export function createFormControl<
     if (!_options.shouldUseNativeValidation) {
       return;
     }
-    // #region agent log
-    fetch('http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        location: 'createFormControl.ts:1261',
-        message: '_reportValidityOnErrors: entry',
-        data: {
-          errorCount: Object.keys(_formState.errors).length,
-          errorKeys: Object.keys(_formState.errors),
-        },
-        timestamp: Date.now(),
-        sessionId: 'debug-session',
-        runId: 'run1',
-        hypothesisId: 'J',
-      }),
-    }).catch(() => {});
-    // #endregion
-    // CRITICAL FIX: Only report validity on the FIRST error field (same as _focusError)
-    // Reporting validity on all fields causes browser to show error message on the LAST field,
-    // which is incorrect. We should only show error on the first invalid field.
-    let firstErrorRef:
-      | HTMLInputElement
-      | HTMLSelectElement
-      | HTMLTextAreaElement
-      | null = null;
+    let firstErrorRef: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null = null;
     let firstErrorKey: string | null = null;
-    let firstErrorMessage: string = '';
+    let firstErrorMessage = '';
     iterateFieldsByAction(
       _fields,
       (ref, key) => {
@@ -1383,80 +1264,22 @@ export function createFormControl<
           'reportValidity' in ref &&
           'setCustomValidity' in ref
         ) {
-          firstErrorRef = ref as
-            | HTMLInputElement
-            | HTMLSelectElement
-            | HTMLTextAreaElement;
+          firstErrorRef = ref as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
           firstErrorKey = key;
           firstErrorMessage = error?.message || '';
-          return 1; // Stop iteration after finding first error
+          return 1;
         }
         return;
       },
       _names.mount,
     );
-
     if (firstErrorRef && firstErrorKey !== null) {
       try {
-        const ref = firstErrorRef as
-          | HTMLInputElement
-          | HTMLSelectElement
-          | HTMLTextAreaElement;
-        // #region agent log
-        const currentCustomMessage = ref.validationMessage || '';
-        const currentValidity = ref.validity.valid;
-        fetch(
-          'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'createFormControl.ts:1287',
-              message:
-                '_reportValidityOnErrors: before setCustomValidity (first error field only)',
-              data: {
-                fieldName: firstErrorKey,
-                errorMessage: firstErrorMessage,
-                currentCustomMessage,
-                currentValidity,
-              },
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              runId: 'run1',
-              hypothesisId: 'J',
-            }),
-          },
-        ).catch(() => {});
-        // #endregion
-        // CRITICAL: Ensure setCustomValidity is called with error message before reportValidity
-        // This is needed because validateField calls setCustomValidity(true) at the end,
-        // which clears the error message. We need to restore it here.
-        ref.setCustomValidity(firstErrorMessage);
-        ref.reportValidity();
-        // #region agent log
-        fetch(
-          'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'createFormControl.ts:1294',
-              message:
-                '_reportValidityOnErrors: after reportValidity (first error field only)',
-              data: {
-                fieldName: firstErrorKey,
-                errorMessage: firstErrorMessage,
-              },
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              runId: 'run1',
-              hypothesisId: 'J',
-            }),
-          },
-        ).catch(() => {});
-        // #endregion
+        const el = firstErrorRef as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+        el.setCustomValidity(firstErrorMessage);
+        el.reportValidity();
       } catch {
-        // Ignore errors if reportValidity is not available or fails
+        // Ignore errors
       }
     }
   };
@@ -1532,120 +1355,14 @@ export function createFormControl<
           onValidError = error;
         }
       } else {
-        // #region agent log
-        fetch(
-          'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'createFormControl.ts:1339',
-              message: 'handleSubmit: errors found',
-              data: {
-                errorCount: Object.keys(_formState.errors).length,
-                errorKeys: Object.keys(_formState.errors),
-                submitCount: _formState.submitCount,
-              },
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              runId: 'run1',
-              hypothesisId: 'H',
-            }),
-          },
-        ).catch(() => {});
-        // #endregion
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
         }
-        // #region agent log
-        fetch(
-          'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'createFormControl.ts:1343',
-              message: 'handleSubmit: calling _focusError',
-              data: {},
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              runId: 'run1',
-              hypothesisId: 'H',
-            }),
-          },
-        ).catch(() => {});
-        // #endregion
         _focusError();
-        // #region agent log
-        fetch(
-          'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'createFormControl.ts:1344',
-              message:
-                'handleSubmit: after _focusError, calling _reportValidityOnErrors',
-              data: {},
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              runId: 'run1',
-              hypothesisId: 'H',
-            }),
-          },
-        ).catch(() => {});
-        // #endregion
-        // Fix for #13212: Report validity on all error fields when native validation is enabled
-        // This ensures native validation UI appears consistently on every submit attempt,
-        // even if fields are already focused or focus() doesn't trigger the UI
         _reportValidityOnErrors();
-        // #region agent log
-        fetch(
-          'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'createFormControl.ts:1387',
-              message:
-                'handleSubmit: after _reportValidityOnErrors, calling setTimeout(_focusError)',
-              data: {},
-              timestamp: Date.now(),
-              sessionId: 'debug-session',
-              runId: 'run1',
-              hypothesisId: 'J',
-            }),
-          },
-        ).catch(() => {});
-        // #endregion
-        // CRITICAL FIX: Call _reportValidityOnErrors again after setTimeout(_focusError) completes
-        // This ensures error messages are restored after focus, as browser may clear them during focus
-        // We use a small delay after _focusError to ensure all focus operations complete before restoring error messages
         setTimeout(() => {
           _focusError();
-          // Use requestAnimationFrame to ensure browser has processed all DOM updates before restoring error messages
-          requestAnimationFrame(() => {
-            // #region agent log
-            fetch(
-              'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  location: 'createFormControl.ts:1396',
-                  message:
-                    'handleSubmit: after setTimeout _focusError, calling _reportValidityOnErrors again',
-                  data: {},
-                  timestamp: Date.now(),
-                  sessionId: 'debug-session',
-                  runId: 'run1',
-                  hypothesisId: 'J',
-                }),
-              },
-            ).catch(() => {});
-            // #endregion
-            _reportValidityOnErrors();
-          });
+          _reportValidityOnErrors();
         });
       }
 
