@@ -541,4 +541,82 @@ describe('handleSubmit', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
+
+  it('should show native validation error on first submit when shouldUseNativeValidation is true', async () => {
+    const reportValidity = jest.fn();
+    const setCustomValidity = jest.fn();
+    const focus = jest.fn();
+    const message = 'This field is required';
+
+    const App = () => {
+      const { register, handleSubmit } = useForm<{ test: string }>({
+        shouldUseNativeValidation: true,
+      });
+
+      const { ref, ...rest } = register('test', { required: message });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <input
+            {...rest}
+            ref={(el) => {
+              // Call register's ref first
+              if (isFunction(ref)) {
+                ref(el);
+              }
+              // Then set up mocks
+              if (el) {
+                Object.defineProperty(el, 'reportValidity', {
+                  value: reportValidity,
+                  writable: true,
+                  configurable: true,
+                });
+                Object.defineProperty(el, 'setCustomValidity', {
+                  value: setCustomValidity,
+                  writable: true,
+                  configurable: true,
+                });
+                Object.defineProperty(el, 'focus', {
+                  value: focus,
+                  writable: true,
+                  configurable: true,
+                });
+              }
+            }}
+          />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    // First submit - validation error should appear
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      // setCustomValidity should be called during validation
+      expect(setCustomValidity).toHaveBeenCalledWith(message);
+      // focus should be called to focus the error field
+      expect(focus).toHaveBeenCalled();
+    });
+
+    // The issue: reportValidity is called during validation (before focus),
+    // but browser validation UI only shows when reportValidity is called
+    // on a focused element. We need reportValidity to be called AFTER focus.
+    // This test verifies that reportValidity is called at least once,
+    // and the logs will show us the timing issue.
+    expect(reportValidity).toHaveBeenCalled();
+    
+    // Verify the order: reportValidity should be called after focus
+    // for the browser UI to appear. Currently it's called before focus.
+    const focusCallOrder = focus.mock.invocationCallOrder[0] || 0;
+    const reportValidityAfterFocus = reportValidity.mock.invocationCallOrder.some(
+      (order) => order > focusCallOrder
+    );
+    
+    // This will fail with current implementation - reportValidity is called
+    // during validation (before focus), not after focus
+    expect(reportValidityAfterFocus).toBe(true);
+  });
 });
