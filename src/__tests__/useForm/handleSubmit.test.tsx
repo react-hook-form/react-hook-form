@@ -607,14 +607,15 @@ describe('handleSubmit', () => {
     // This test verifies that reportValidity is called at least once,
     // and the logs will show us the timing issue.
     expect(reportValidity).toHaveBeenCalled();
-    
+
     // Verify the order: reportValidity should be called after focus
     // for the browser UI to appear. Currently it's called before focus.
     const focusCallOrder = focus.mock.invocationCallOrder[0] || 0;
-    const reportValidityAfterFocus = reportValidity.mock.invocationCallOrder.some(
-      (order) => order > focusCallOrder
-    );
-    
+    const reportValidityAfterFocus =
+      reportValidity.mock.invocationCallOrder.some(
+        (order) => order > focusCallOrder,
+      );
+
     // This will fail with current implementation - reportValidity is called
     // during validation (before focus), not after focus
     expect(reportValidityAfterFocus).toBe(true);

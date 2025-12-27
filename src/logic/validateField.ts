@@ -61,7 +61,31 @@ export default async <T extends FieldValues>(
     if (shouldUseNativeValidation && inputRef.reportValidity) {
       // #region agent log
       const hasError = Object.keys(error).length > 0;
-      fetch('http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validateField.ts:60',message:'setCustomValidity called',data:{fieldName:name,message:isBoolean(message)?(message?'true':'false'):message,isEmpty,hasError},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
+      fetch(
+        'http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: 'validateField.ts:60',
+            message: 'setCustomValidity called',
+            data: {
+              fieldName: name,
+              message: isBoolean(message)
+                ? message
+                  ? 'true'
+                  : 'false'
+                : message,
+              isEmpty,
+              hasError,
+            },
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'run1',
+            hypothesisId: 'H',
+          }),
+        },
+      ).catch(() => {});
       // #endregion
       inputRef.setCustomValidity(isBoolean(message) ? '' : message || '');
       inputRef.reportValidity();
@@ -287,7 +311,25 @@ export default async <T extends FieldValues>(
 
   // #region agent log
   const hasError = Object.keys(error).length > 0;
-  fetch('http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validateField.ts:288',message:'validateField: end of validation, checking if should clear custom validity',data:{fieldName:name,hasError,errorMessage:error[name]?.message,isEmpty},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      location: 'validateField.ts:288',
+      message:
+        'validateField: end of validation, checking if should clear custom validity',
+      data: {
+        fieldName: name,
+        hasError,
+        errorMessage: error[name]?.message,
+        isEmpty,
+      },
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'I',
+    }),
+  }).catch(() => {});
   // #endregion
   // CRITICAL FIX: Only call setCustomValidity(true) when there's NO error
   // If there's an error, we should NOT clear it here because _focusInput and _reportValidityOnErrors
@@ -296,7 +338,24 @@ export default async <T extends FieldValues>(
     setCustomValidity(true);
   }
   // #region agent log
-  fetch('http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validateField.ts:295',message:'validateField: returning error',data:{fieldName:name,hasError,errorKeys:Object.keys(error),clearedCustomValidity:!hasError},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7247/ingest/a9ad294b-1556-4185-986a-37898c84eb75', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      location: 'validateField.ts:295',
+      message: 'validateField: returning error',
+      data: {
+        fieldName: name,
+        hasError,
+        errorKeys: Object.keys(error),
+        clearedCustomValidity: !hasError,
+      },
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'I',
+    }),
+  }).catch(() => {});
   // #endregion
   return error;
 };
