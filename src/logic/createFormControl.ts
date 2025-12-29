@@ -514,7 +514,7 @@ export function createFormControl<
 
           if (fieldError[_f.name]) {
             context.valid = false;
-            if (shouldOnlyCheckValid) {
+            if (shouldOnlyCheckValid || props.shouldUseNativeValidation) {
               break;
             }
           }
