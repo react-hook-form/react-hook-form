@@ -39,19 +39,30 @@
 import { useForm } from 'react-hook-form';
 
 function App() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  const onSubmit = data => alert('Form submitted!');
 
   return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <input {...register('firstName')} />
-      <input {...register('lastName', { required: true })} />
-      {errors.lastName && <p>Last name is required.</p>}
-      <input {...register('age', { pattern: /\d+/ })} />
-      {errors.age && <p>Please enter number for age.</p>}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Username input with validate */}
+      <input 
+        {...register('username', {
+          validate: value => value.length >= 5 || 'Username must be at least 5 characters'
+        })}
+        placeholder="Enter username"
+      />
+      {errors.username && <p>{errors.username.message}</p>}
+
+      {/* Age input with validate */}
+      <input 
+        {...register('age', {
+          validate: value => Number(value) >= 18 || 'You must be at least 18 years old'
+        })}
+        placeholder="Enter age"
+      />
+      {errors.age && <p>{errors.age.message}</p>}
+
       <input type="submit" />
     </form>
   );
