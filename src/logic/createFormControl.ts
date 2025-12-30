@@ -42,7 +42,6 @@ import type {
   UseFormUnregister,
   UseFormWatch,
   WatchInternal,
-  WatchObserver,
 } from '../types';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
@@ -1008,30 +1007,14 @@ export function createFormControl<
   };
 
   const watch: UseFormWatch<TFieldValues> = (
-    name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
-      | WatchObserver<TFieldValues>,
+    name?: FieldPath<TFieldValues> | ReadonlyArray<FieldPath<TFieldValues>>,
     defaultValue?: DeepPartial<TFieldValues>,
   ) =>
-    isFunction(name)
-      ? _subjects.state.subscribe({
-          next: (payload) =>
-            'values' in payload &&
-            name(
-              _getWatch(undefined, defaultValue),
-              payload as {
-                name?: FieldPath<TFieldValues>;
-                type?: EventType;
-                value?: unknown;
-              },
-            ),
-        })
-      : _getWatch(
-          name as InternalFieldName | InternalFieldName[],
-          defaultValue,
-          true,
-        );
+    _getWatch(
+      name as InternalFieldName | InternalFieldName[],
+      defaultValue,
+      true,
+    );
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) =>
     _subjects.state.subscribe({
