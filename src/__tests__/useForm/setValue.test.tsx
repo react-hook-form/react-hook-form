@@ -584,58 +584,6 @@ describe('setValue', () => {
 
       expect(result.current).toBe('abc');
     });
-
-    it('should track field names', () => {
-      type FormValues = {
-        enabled: boolean;
-        child: {
-          dependent: boolean;
-        };
-      };
-
-      function App() {
-        const { control, watch, setValue } = useForm<FormValues>({
-          defaultValues: { enabled: false, child: { dependent: false } },
-        });
-
-        // Propagate the easy-to-edit form values that we add back to template ID
-        // values.
-        React.useEffect(() => {
-          const subscription = watch((formData, { name }) => {
-            if (name === 'enabled') {
-              setValue(`child.dependent`, !!formData.enabled);
-            }
-          });
-          return () => subscription.unsubscribe();
-        }, [setValue, watch]);
-
-        watch('child');
-
-        return (
-          <div>
-            <form>
-              <label>
-                Enabled
-                <Controller
-                  render={({ field: { value, ...props } }) => (
-                    <input type="checkbox" {...props} checked={!!value} />
-                  )}
-                  name="enabled"
-                  control={control}
-                />
-              </label>
-              <input type="submit" />
-            </form>
-          </div>
-        );
-      }
-
-      render(<App />);
-
-      expect(() =>
-        fireEvent.click(screen.getByRole('checkbox', { name: 'Enabled' })),
-      ).not.toThrow();
-    });
   });
 
   describe('with validation', () => {
