@@ -28,6 +28,7 @@ import { _ } from './__fixtures__';
         >;
       } & {
         root?: Record<string, GlobalError> & GlobalError;
+        form?: GlobalError;
       }
     >(actual);
   }
@@ -55,6 +56,7 @@ import { _ } from './__fixtures__';
         >;
       } & {
         root?: Record<string, GlobalError> & GlobalError;
+        form?: GlobalError;
       }
     >(actual);
   }
