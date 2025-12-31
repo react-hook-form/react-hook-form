@@ -20,7 +20,12 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type { DeepMap, DeepPartial, Noop } from './utils';
+import type {
+  DeepMap,
+  DeepPartial,
+  DeepPartialSkipArrayKey,
+  Noop,
+} from './utils';
 import type { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -923,17 +928,72 @@ export type UseFormStateProps<
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
 
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  disabled?: boolean;
-  name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
-  exact?: boolean;
-  compute?: (formValues: any) => any;
-};
+export type UseWatchProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+  TComputeValue = unknown,
+  TFieldNames extends readonly FieldPath<TFieldValues>[] =
+    readonly FieldPath<TFieldValues>[],
+> =
+  | {
+      /** Watch the entire form */
+      name?: undefined;
+      defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+      control?: Control<TFieldValues, any, TTransformedValues>;
+      disabled?: boolean;
+      exact?: boolean;
+      compute?: undefined;
+    }
+  | {
+      /** Watch a single field */
+      name: TFieldName;
+      defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+      control?: Control<TFieldValues, any, TTransformedValues>;
+      disabled?: boolean;
+      exact?: boolean;
+      compute?: undefined;
+    }
+  | {
+      /** Watch a single field with compute */
+      name: TFieldName;
+      defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
+      control?: Control<TFieldValues, any, TTransformedValues>;
+      disabled?: boolean;
+      exact?: boolean;
+      compute: (
+        fieldValue: FieldPathValue<TFieldValues, TFieldName>,
+      ) => TComputeValue;
+    }
+  | {
+      /** Watch the entire form with compute */
+      name?: undefined;
+      defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+      control?: Control<TFieldValues, any, TTransformedValues>;
+      disabled?: boolean;
+      exact?: boolean;
+      compute: (formValues: TFieldValues) => TComputeValue;
+    }
+  | {
+      /** Watch multiple fields */
+      name: readonly [...TFieldNames];
+      defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+      control?: Control<TFieldValues, any, TTransformedValues>;
+      disabled?: boolean;
+      exact?: boolean;
+      compute?: undefined;
+    }
+  | {
+      /** Watch multiple fields with compute */
+      name: readonly [...TFieldNames];
+      defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
+      control?: Control<TFieldValues, any, TTransformedValues>;
+      disabled?: boolean;
+      exact?: boolean;
+      compute: (
+        fieldValue: FieldPathValues<TFieldValues, TFieldNames>,
+      ) => TComputeValue;
+    };
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
