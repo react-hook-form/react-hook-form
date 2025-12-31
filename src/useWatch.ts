@@ -3,14 +3,13 @@ import React from 'react';
 import generateWatchOutput from './logic/generateWatchOutput';
 import deepEqual from './utils/deepEqual';
 import type {
-  Control,
   DeepPartialSkipArrayKey,
   FieldPath,
-  FieldPathValue,
-  FieldPathValues,
   FieldValues,
   InternalFieldName,
   UseWatchProps,
+  UseWatchReturn,
+  WatchName,
 } from './types';
 import { useFormContext } from './useFormContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
@@ -35,19 +34,6 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  *   exact: false,
  * })
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TTransformedValues = TFieldValues,
->(props: {
-  name?: undefined;
-  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute?: undefined;
-}): DeepPartialSkipArrayKey<TFieldValues>;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -66,20 +52,6 @@ export function useWatch<
  *   exact: false,
  * })
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  TTransformedValues = TFieldValues,
->(props: {
-  name: TFieldName;
-  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute?: undefined;
-}): FieldPathValue<TFieldValues, TFieldName>;
-/**
  * Custom hook to subscribe to field change and compute function to produce state update
  *
  * @remarks
@@ -96,20 +68,6 @@ export function useWatch<
  *   compute: (formValues) => formValues.fieldA
  * })
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TTransformedValues = TFieldValues,
-  TComputeValue = unknown,
->(props: {
-  name?: undefined;
-  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute: (formValues: TFieldValues) => TComputeValue;
-}): TComputeValue;
-/**
  * Custom hook to subscribe to field change and compute function to produce state update
  *
  * @remarks
@@ -129,23 +87,6 @@ export function useWatch<
  *   compute: (fieldValue) => fieldValue === "data" ? fieldValue : null,
  * })
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  TTransformedValues = TFieldValues,
-  TComputeValue = unknown,
->(props: {
-  name: TFieldName;
-  defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute: (
-    fieldValue: FieldPathValue<TFieldValues, TFieldName>,
-  ) => TComputeValue;
-}): TComputeValue;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -167,21 +108,6 @@ export function useWatch<
  *   exact: false,
  * })
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
-  TTransformedValues = TFieldValues,
->(props: {
-  name: readonly [...TFieldNames];
-  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute?: undefined;
-}): FieldPathValues<TFieldValues, TFieldNames>;
-/**
  * Custom hook to subscribe to field change and compute function to produce state update
  *
  * @remarks
@@ -204,24 +130,6 @@ export function useWatch<
  *   exact: false,
  * })
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
-  TTransformedValues = TFieldValues,
-  TComputeValue = unknown,
->(props: {
-  name: readonly [...TFieldNames];
-  defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-  compute: (
-    fieldValue: FieldPathValues<TFieldValues, TFieldNames>,
-  ) => TComputeValue;
-}): TComputeValue;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -233,11 +141,6 @@ export function useWatch<
  * // can skip passing down the control into useWatch if the form is wrapped with the FormProvider
  * const values = useWatch()
  * ```
- */
-export function useWatch<
-  TFieldValues extends FieldValues = FieldValues,
->(): DeepPartialSkipArrayKey<TFieldValues>;
-/**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
  * @remarks
@@ -253,9 +156,22 @@ export function useWatch<
  * })
  * ```
  */
-export function useWatch<TFieldValues extends FieldValues>(
-  props?: UseWatchProps<TFieldValues>,
-) {
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends WatchName<TFieldValues> = undefined,
+  TFieldNames extends readonly FieldPath<TFieldValues>[] =
+    readonly FieldPath<TFieldValues>[],
+  TTransformedValues = TFieldValues,
+  TComputeValue = unknown,
+>(
+  props?: UseWatchProps<
+    TFieldValues,
+    TFieldName,
+    TFieldNames,
+    TTransformedValues,
+    TComputeValue
+  >,
+): UseWatchReturn<TFieldValues, TFieldName, typeof props> {
   const methods = useFormContext<TFieldValues>();
   const {
     control = methods.control,
@@ -267,7 +183,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   } = props || {};
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
-  const _computeFormValues = React.useRef(undefined);
+  const _computeFormValues = React.useRef<undefined | unknown>(undefined);
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
