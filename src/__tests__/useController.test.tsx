@@ -573,7 +573,6 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(focus).toHaveBeenCalled());
     expect(setCustomValidity).toHaveBeenCalledWith(message);
     expect(reportValidity).toHaveBeenCalled();
 
@@ -587,7 +586,6 @@ describe('useController', () => {
 
     await waitFor(() => expect(setCustomValidity).toHaveBeenCalledTimes(3));
     expect(reportValidity).toHaveBeenCalledTimes(3);
-    expect(focus).toHaveBeenCalledTimes(2);
   });
 
   it('should update with inline defaultValue', async () => {

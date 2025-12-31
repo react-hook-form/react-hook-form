@@ -133,13 +133,15 @@ export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends Browser
     [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue>;
 } : TValue;
 
+// Warning: (ae-forgotten-export) The symbol "IsPrimitiveLike" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue ? T : {
+export type DeepPartial<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue ? T : {
     [K in keyof T]?: ExtractObjects<T[K]> extends never ? T[K] : DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
+export type DeepPartialSkipArrayKey<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
     [K in keyof T]: DeepPartialSkipArrayKey<T[K]>;
 } : {
     [K in keyof T]?: DeepPartialSkipArrayKey<T[K]>;
