@@ -5,10 +5,11 @@ import type { Control } from './form';
 import type { FieldPath, FieldPathValue, FieldPathValues } from './path';
 import type { DeepPartialSkipArrayKey } from './utils';
 
-export type WatchName<T extends FieldValues> =
+export type WatchName<TFieldValues extends FieldValues> =
   | undefined
-  | FieldPath<T>
-  | readonly FieldPath<T>[];
+  | FieldPath<TFieldValues>
+  | FieldPath<TFieldValues>[]
+  | readonly FieldPath<TFieldValues>[];
 
 export type WatchValue<
   TFieldName,
@@ -55,26 +56,37 @@ export type UseWatchReturn<
   ? R
   : WatchValue<TName, TFieldValues>;
 
-export type WatchProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends WatchName<TFieldValues> = undefined,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
-  TTransformedValues = TFieldValues,
-  TComputeValue = unknown,
-> = UseWatchProps<
-  TFieldValues,
+export type WatchRenderValue<
   TFieldName,
-  TFieldNames,
-  TTransformedValues,
-  TComputeValue
-> & {
-  render: (
-    value: UseWatchReturn<TFieldValues, TFieldName, TComputeValue>,
-  ) => ReactNode | ReactNode[];
+  TFieldValues extends FieldValues,
+  TComputeValue,
+> = TComputeValue extends undefined
+  ? WatchValue<TFieldName, TFieldValues>
+  : TComputeValue;
+
+export type WatchProps<
+  TFieldName extends
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+    | undefined = undefined,
+  TFieldValues extends FieldValues = FieldValues,
+  TContext = any,
+  TTransformedValues = TFieldValues,
+  TComputeValue = undefined,
+> = {
+  control?: Control<TFieldValues, TContext, TTransformedValues>;
   /**
    * @deprecated This prop will be renamed to `name` in the next major release.
    * Use `name` instead.
    */
   names?: TFieldName;
+  name?: TFieldName;
+  disabled?: boolean;
+  exact?: boolean;
+  defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
+  compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
+  render: (
+    value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
+  ) => ReactNode;
 };

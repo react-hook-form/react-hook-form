@@ -1,14 +1,13 @@
 import type {
   FieldPath,
   FieldValues,
-  UseWatchReturn,
-  WatchName,
   WatchProps,
+  WatchRenderValue,
 } from './types';
 import { useWatch } from './useWatch';
 
 /**
- * Watch the component that subscribes to form field changes and re-renders when watched fields update.
+ * Watch component that subscribes to form field changes and re-renders when watched fields update.
  *
  * @param control - The form control object from useForm
  * @param name - Can be field name, array of field names, or undefined to watch the entire form
@@ -28,31 +27,34 @@ import { useWatch } from './useWatch';
  *
  * <Watch
  *   control={control}
- *   name={['foo', 'bar', 'baz.qux']}
+ *   names={['foo', 'bar', 'baz.qux']}
  *   render={([foo, bar, baz_qux]) => <div>{foo}{bar}{baz_qux}</div>}
  * />
  * ```
  */
 export const Watch = <
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends WatchName<TFieldValues> = undefined,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
+  const TFieldName extends
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+    | undefined = undefined,
+  TContext = any,
   TTransformedValues = TFieldValues,
-  TComputeValue = unknown,
+  TComputeValue = undefined,
 >(
   props: WatchProps<
-    TFieldValues,
     TFieldName,
-    TFieldNames,
+    TFieldValues,
+    TContext,
     TTransformedValues,
     TComputeValue
   >,
 ) =>
   props.render(
-    useWatch({ name: props.names, ...props }) as UseWatchReturn<
-      TFieldValues,
+    useWatch({ name: props.names, ...props }) as WatchRenderValue<
       TFieldName,
+      TFieldValues,
       TComputeValue
     >,
   );
