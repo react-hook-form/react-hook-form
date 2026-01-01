@@ -14,7 +14,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     | readonly FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
   exact?: boolean;
-  compute?: (formValues: any) => any;
+  compute?: (formValues: TFieldValues) => TFieldValues;
 };
 
 export type WatchDefaultValue<
@@ -24,6 +24,12 @@ export type WatchDefaultValue<
   TFieldName extends FieldPath<TFieldValues>
     ? FieldPathValue<TFieldValues, TFieldName>
     : DeepPartialSkipArrayKey<TFieldValues>;
+
+export type WatchName<TFieldValues extends FieldValues> =
+  | FieldPath<TFieldValues>
+  | FieldPath<TFieldValues>[]
+  | readonly FieldPath<TFieldValues>[]
+  | undefined;
 
 export type WatchValue<
   TFieldName,
@@ -45,11 +51,7 @@ export type WatchRenderValue<
   : TComputeValue;
 
 export type WatchProps<
-  TFieldName extends
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
-    | undefined = undefined,
+  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
