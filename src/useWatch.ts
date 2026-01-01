@@ -4,7 +4,6 @@ import generateWatchOutput from './logic/generateWatchOutput';
 import deepEqual from './utils/deepEqual';
 import type {
   DeepPartialSkipArrayKey,
-  FieldPath,
   FieldValues,
   InternalFieldName,
   UseWatchProps,
@@ -157,17 +156,14 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  * ```
  */
 export function useWatch<
+  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends WatchName<TFieldValues> = undefined,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
   TTransformedValues = TFieldValues,
   TComputeValue = unknown,
 >(
   props?: UseWatchProps<
-    TFieldValues,
     TFieldName,
-    TFieldNames,
+    TFieldValues,
     TTransformedValues,
     TComputeValue
   >,

@@ -31,14 +31,12 @@ export type WatchDefaultValue<
     : DeepPartialSkipArrayKey<TFieldValues>;
 
 export type UseWatchProps<
+  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends WatchName<TFieldValues> = undefined,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
   TTransformedValues = TFieldValues,
   TComputeValue = unknown,
 > = {
-  name?: TFieldName | readonly [...TFieldNames] | undefined;
+  name?: TFieldName;
   defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
