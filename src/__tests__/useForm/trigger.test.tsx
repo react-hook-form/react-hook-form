@@ -353,10 +353,7 @@ describe('trigger', () => {
             if (data.test && data.test1) {
               return {
                 errors: {},
-                values: {
-                  test: '1',
-                  test1: '2',
-                },
+                values: {},
               };
             } else {
               return {
@@ -437,10 +434,7 @@ describe('trigger', () => {
             if (data.test && data.test1) {
               return {
                 errors: {},
-                values: {
-                  test: '1',
-                  test1: '2',
-                },
+                values: {},
               };
             } else {
               return {
@@ -503,17 +497,16 @@ describe('trigger', () => {
   });
 
   it('should return the status of the requested fields with array of fields for validation', async () => {
-    const resolver = async (data: any) => {
-      return {
-        values: data,
-        errors: { test3: 'test3' },
-      };
-    };
-
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string; test3: string }>({
         mode: VALIDATION_MODE.onChange,
-        resolver,
+        // @ts-ignore
+        resolver: async (data) => {
+          return {
+            values: data,
+            errors: { test3: 'test3' },
+          };
+        },
       }),
     );
 
