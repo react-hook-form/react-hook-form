@@ -42,19 +42,17 @@ export const Watch = <
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
->({
-  render,
-  names,
-  ...props
-}: WatchProps<
-  TFieldName,
-  TFieldValues,
-  TContext,
-  TTransformedValues,
-  TComputeValue
->) =>
-  render(
-    useWatch({ name: names, ...(props as any) }) as WatchRenderValue<
+>(
+  props: WatchProps<
+    TFieldName,
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TComputeValue
+  >,
+) =>
+  props.render(
+    useWatch({ name: props.names, ...(props as any) }) as WatchRenderValue<
       TFieldName,
       TFieldValues,
       TComputeValue
