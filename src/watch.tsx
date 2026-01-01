@@ -7,7 +7,7 @@ import type {
 import { useWatch } from './useWatch';
 
 /**
- * Watch component that subscribes to form field changes and re-renders when watched fields update.
+ * Watch the component that subscribes to form field changes and re-renders when watched fields update.
  *
  * @param control - The form control object from useForm
  * @param name - Can be field name, array of field names, or undefined to watch the entire form

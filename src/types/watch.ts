@@ -6,10 +6,10 @@ import type { FieldPath, FieldPathValue, FieldPathValues } from './path';
 import type { DeepPartialSkipArrayKey } from './utils';
 
 export type WatchName<TFieldValues extends FieldValues> =
-  | undefined
   | FieldPath<TFieldValues>
   | FieldPath<TFieldValues>[]
-  | readonly FieldPath<TFieldValues>[];
+  | readonly FieldPath<TFieldValues>[]
+  | undefined;
 
 export type WatchValue<
   TFieldName,
@@ -65,11 +65,7 @@ export type WatchRenderValue<
   : TComputeValue;
 
 export type WatchProps<
-  TFieldName extends
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
-    | undefined = undefined,
+  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
