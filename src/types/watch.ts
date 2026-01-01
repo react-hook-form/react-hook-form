@@ -68,18 +68,18 @@ export type WatchProps<
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
-> = {
+> = UseWatchProps<
+  TFieldName,
+  TFieldValues,
+  TTransformedValues,
+  TComputeValue
+> & {
   control?: Control<TFieldValues, TContext, TTransformedValues>;
   /**
    * @deprecated This prop will be renamed to `name` in the next major release.
    * Use `name` instead.
    */
   names?: TFieldName;
-  name?: TFieldName;
-  disabled?: boolean;
-  exact?: boolean;
-  defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
-  compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
   render: (
     value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
   ) => ReactNode;
