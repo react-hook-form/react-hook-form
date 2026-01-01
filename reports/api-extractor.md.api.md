@@ -7,7 +7,7 @@
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
-import type { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 // @public (undocumented)
 export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: boolean, errors: InternalFieldErrors, type: string, message: ValidateResult) => {};
@@ -842,77 +842,22 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props: {
-    name?: undefined;
-    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute?: undefined;
-}): DeepPartialSkipArrayKey<TFieldValues>;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: {
-    name: TFieldName;
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute?: undefined;
-}): FieldPathValue<TFieldValues, TFieldName>;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues, TComputeValue = unknown>(props: {
-    name?: undefined;
-    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute: (formValues: TFieldValues) => TComputeValue;
-}): TComputeValue;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues, TComputeValue = unknown>(props: {
-    name: TFieldName;
-    defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute: (fieldValue: FieldPathValue<TFieldValues, TFieldName>) => TComputeValue;
-}): TComputeValue;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[], TTransformedValues = TFieldValues>(props: {
-    name: readonly [...TFieldNames];
-    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute?: undefined;
-}): FieldPathValues<TFieldValues, TFieldNames>;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues, TFieldNames extends readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[], TTransformedValues = TFieldValues, TComputeValue = unknown>(props: {
-    name: readonly [...TFieldNames];
-    defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-    control?: Control<TFieldValues, any, TTransformedValues>;
-    disabled?: boolean;
-    exact?: boolean;
-    compute: (fieldValue: FieldPathValues<TFieldValues, TFieldNames>) => TComputeValue;
-}): TComputeValue;
-
-// @public
-export function useWatch<TFieldValues extends FieldValues = FieldValues>(): DeepPartialSkipArrayKey<TFieldValues>;
+export function useWatch<TFieldName extends WatchName<TFieldValues>, TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues, TComputeValue = unknown>(props?: UseWatchProps<TFieldName, TFieldValues, TTransformedValues, TComputeValue>): UseWatchReturn<TFieldValues, TFieldName, typeof props>;
 
 // @public (undocumented)
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-    defaultValue?: unknown;
+export type UseWatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues, TComputeValue = unknown> = {
+    name?: TFieldName;
+    defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
+    control?: Control<TFieldValues, any, TTransformedValues>;
     disabled?: boolean;
-    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[];
-    control?: Control<TFieldValues>;
     exact?: boolean;
-    compute?: (formValues: any) => any;
+    compute?: ((value: WatchValue<TFieldName, TFieldValues>) => TComputeValue) | undefined;
 };
+
+// @public (undocumented)
+export type UseWatchReturn<TFieldValues extends FieldValues, TName extends WatchName<TFieldValues>, TProps> = TProps extends {
+    compute: (formValues: TFieldValues) => infer R;
+} ? R : WatchValue<TName, TFieldValues>;
 
 // @public (undocumented)
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
@@ -947,10 +892,16 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public
-export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>({ render, names, ...props }: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
+export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>(props: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
+
+// @public (undocumented)
+export type WatchDefaultValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : DeepPartialSkipArrayKey<TFieldValues>;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
+
+// @public (undocumented)
+export type WatchName<TFieldValues extends FieldValues> = FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined;
 
 // @public (undocumented)
 export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
@@ -960,23 +911,21 @@ export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartia
 }) => void;
 
 // @public (undocumented)
-export type WatchProps<TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
+export type WatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = UseWatchProps<TFieldName, TFieldValues, TTransformedValues, TComputeValue> & {
     control?: Control<TFieldValues, TContext, TTransformedValues>;
     names?: TFieldName;
-    name?: TFieldName;
-    disabled?: boolean;
-    exact?: boolean;
-    defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
-    compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
     render: (value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>) => ReactNode;
 };
+
+// @public (undocumented)
+export type WatchRenderValue<TFieldName, TFieldValues extends FieldValues, TComputeValue> = TComputeValue extends undefined ? WatchValue<TFieldName, TFieldValues> : TComputeValue;
+
+// @public (undocumented)
+export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
 
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:60:3 - (ae-forgotten-export) The symbol "WatchDefaultValue" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:61:3 - (ae-forgotten-export) The symbol "WatchValue" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:62:3 - (ae-forgotten-export) The symbol "WatchRenderValue" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
