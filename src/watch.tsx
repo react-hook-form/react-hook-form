@@ -1,68 +1,10 @@
-import type { ReactNode } from 'react';
-
 import type {
-  Control,
-  DeepPartialSkipArrayKey,
   FieldPath,
-  FieldPathValue,
-  FieldPathValues,
   FieldValues,
+  WatchProps,
+  WatchRenderValue,
 } from './types';
 import { useWatch } from './useWatch';
-
-type WatchDefaultValue<
-  TFieldName,
-  TFieldValues extends FieldValues = FieldValues,
-> =
-  TFieldName extends FieldPath<TFieldValues>
-    ? FieldPathValue<TFieldValues, TFieldName>
-    : DeepPartialSkipArrayKey<TFieldValues>;
-
-type WatchValue<
-  TFieldName,
-  TFieldValues extends FieldValues = FieldValues,
-> = TFieldName extends
-  | FieldPath<TFieldValues>[]
-  | readonly FieldPath<TFieldValues>[]
-  ? FieldPathValues<TFieldValues, TFieldName>
-  : TFieldName extends FieldPath<TFieldValues>
-    ? FieldPathValue<TFieldValues, TFieldName>
-    : TFieldValues;
-
-type WatchRenderValue<
-  TFieldName,
-  TFieldValues extends FieldValues,
-  TComputeValue,
-> = TComputeValue extends undefined
-  ? WatchValue<TFieldName, TFieldValues>
-  : TComputeValue;
-
-export type WatchProps<
-  TFieldName extends
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
-    | undefined = undefined,
-  TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
-  TTransformedValues = TFieldValues,
-  TComputeValue = undefined,
-> = {
-  control?: Control<TFieldValues, TContext, TTransformedValues>;
-  /**
-   * @deprecated This prop will be renamed to `name` in the next major release.
-   * Use `name` instead.
-   */
-  names?: TFieldName;
-  name?: TFieldName;
-  disabled?: boolean;
-  exact?: boolean;
-  defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
-  compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
-  render: (
-    value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
-  ) => ReactNode;
-};
 
 /**
  * Watch component that subscribes to form field changes and re-renders when watched fields update.
@@ -100,19 +42,17 @@ export const Watch = <
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
->({
-  render,
-  names,
-  ...props
-}: WatchProps<
-  TFieldName,
-  TFieldValues,
-  TContext,
-  TTransformedValues,
-  TComputeValue
->) =>
-  render(
-    useWatch({ name: names, ...(props as any) }) as WatchRenderValue<
+>(
+  props: WatchProps<
+    TFieldName,
+    TFieldValues,
+    TContext,
+    TTransformedValues,
+    TComputeValue
+  >,
+) =>
+  props.render(
+    useWatch({ name: props.names, ...(props as any) }) as WatchRenderValue<
       TFieldName,
       TFieldValues,
       TComputeValue
