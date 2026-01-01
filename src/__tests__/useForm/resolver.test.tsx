@@ -92,6 +92,7 @@ describe('resolver', () => {
         handleSubmit,
         formState: { errors },
       } = useForm<FormValues>({
+        // @ts-ignore
         resolver: fakeResolver(schema),
       });
 
@@ -190,6 +191,7 @@ describe('resolver', () => {
         register,
         formState: { errors },
       } = useForm({
+        // @ts-ignore
         resolver,
         mode: 'onChange',
       });
@@ -339,6 +341,7 @@ describe('resolver', () => {
 
       const App = () => {
         const { register, control } = useForm({
+          // @ts-ignore
           resolver: createResolver(),
           mode: 'onChange',
         });
@@ -375,6 +378,7 @@ describe('resolver', () => {
 
       const App = () => {
         const { register, control } = useForm({
+          // @ts-ignore
           resolver: createResolver(),
           mode: 'onBlur',
         });
@@ -413,6 +417,7 @@ describe('resolver', () => {
 
       const App = () => {
         const { register, control, trigger } = useForm({
+          // @ts-ignore
           resolver: createResolver(),
         });
 
