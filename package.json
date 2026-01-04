@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.69.0",
+  "version": "7.70.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -38,8 +38,8 @@
     "type": "tsc --noEmit",
     "jest-preview": "jest-preview",
     "test": "jest --config ./scripts/jest/jest.config.js",
-    "test:coverage": "pnpm test -- --coverage",
-    "test:watch": "pnpm test -- --onlyChanged --watch",
+    "test:coverage": "pnpm test --coverage",
+    "test:watch": "pnpm test --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",
     "test:type": "tsd src/__typetest__",
     "e2e": "cypress run",
@@ -81,6 +81,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
+    "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "bundlewatch": "^0.4.1",
@@ -114,7 +115,7 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "11.1 kB"
+        "maxSize": "11.2 kB"
       }
     ]
   },
