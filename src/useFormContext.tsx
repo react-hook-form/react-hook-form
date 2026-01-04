@@ -83,9 +83,69 @@ export const FormProvider = <
 >(
   props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
 ) => {
-  const { children, ...data } = props;
+  const {
+    children,
+    watch,
+    getValues,
+    getFieldState,
+    setError,
+    clearErrors,
+    setValue,
+    trigger,
+    formState,
+    resetField,
+    reset,
+    handleSubmit,
+    unregister,
+    control,
+    register,
+    setFocus,
+    subscribe,
+  } = props;
+
   return (
-    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
+    <HookFormContext.Provider
+      value={
+        React.useMemo(
+          () => ({
+            watch,
+            getValues,
+            getFieldState,
+            setError,
+            clearErrors,
+            setValue,
+            trigger,
+            formState,
+            resetField,
+            reset,
+            handleSubmit,
+            unregister,
+            control,
+            register,
+            setFocus,
+            subscribe,
+          }),
+          [
+            clearErrors,
+            control,
+            formState,
+            getFieldState,
+            getValues,
+            handleSubmit,
+            register,
+            reset,
+            resetField,
+            setError,
+            setFocus,
+            setValue,
+            subscribe,
+            trigger,
+            unregister,
+            watch,
+          ],
+        ) as unknown as UseFormReturn
+      }
+    >
       {children}
     </HookFormContext.Provider>
   );
