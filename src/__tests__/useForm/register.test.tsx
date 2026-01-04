@@ -158,6 +158,7 @@ describe('register', () => {
   it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
     const Component = () => {
       const { register, formState } = useForm<{ test: string }>({
+        // @ts-ignore
         resolver: async (data) => {
           return {
             values: data,
@@ -998,6 +999,82 @@ describe('register', () => {
 
       expect(await screen.findByText('{"test":"a"}')).toBeVisible();
     });
+
+    it('should update isValid when toggling disabled state with required field in onChange mode', async () => {
+      let isValidValue = false;
+
+      const App = () => {
+        const [disableFirstName, setDisableFirstName] = React.useState(false);
+        const {
+          register,
+          formState: { isValid },
+          handleSubmit,
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        // Track isValid changes
+        React.useEffect(() => {
+          isValidValue = isValid;
+        }, [isValid]);
+
+        const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+          setDisableFirstName(event.currentTarget.checked);
+        };
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input
+              {...register('firstName', {
+                required: true,
+                disabled: disableFirstName,
+              })}
+              placeholder="First Name"
+              data-testid="firstName"
+            />
+            <input
+              {...register('lastName')}
+              placeholder="Last Name"
+              data-testid="lastName"
+            />
+            <input
+              id="disable"
+              type="checkbox"
+              onChange={handleChange}
+              data-testid="toggle-disabled"
+            />
+            <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      // Initially invalid - firstName is required and empty
+      await waitFor(() => expect(isValidValue).toBe(false));
+
+      // Toggle to disable firstName - should become valid (disabled fields skip validation)
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(true));
+
+      // Toggle back to enable firstName - should become invalid again (field is still empty)
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(false));
+
+      // Fill firstName - should become valid
+      fireEvent.change(screen.getByTestId('firstName'), {
+        target: { value: 'test' },
+      });
+      await waitFor(() => expect(isValidValue).toBe(true));
+
+      // Disable again - should stay valid
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(true));
+    });
   });
 
   describe('register valueAs', () => {
@@ -1335,6 +1412,7 @@ describe('register', () => {
           test1: number;
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (data) => {
             const valid = !(isNaN(data.test) && isNaN(data.test1));
 
@@ -1777,6 +1855,7 @@ describe('register', () => {
         lastName: string;
       }>({
         mode: 'onChange',
+        // @ts-ignore
         resolver: (values) => {
           if (values.firstName === values.lastName) {
             return {
