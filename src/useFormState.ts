@@ -6,7 +6,7 @@ import type {
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
@@ -45,8 +45,12 @@ export function useFormState<
 >(
   props?: UseFormStateProps<TFieldValues, TTransformedValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
-  const { control = methods.control, disabled, name, exact } = props || {};
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
+  const { control = formControl, disabled, name, exact } = props || {};
   const [formState, updateFormState] = React.useState(control._formState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
