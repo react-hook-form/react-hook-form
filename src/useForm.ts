@@ -181,7 +181,10 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  _formControl.current.formState = getProxyFormState(formState, control);
+  _formControl.current.formState = React.useMemo(
+    () => getProxyFormState(formState, control),
+    [control, formState],
+  );
 
   return _formControl.current;
 }
