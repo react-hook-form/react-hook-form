@@ -38,7 +38,7 @@ import type {
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
-import { useFormControlContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**

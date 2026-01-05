@@ -19,7 +19,7 @@ import type {
   UseControllerProps,
   UseControllerReturn,
 } from './types';
-import { useFormControlContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 

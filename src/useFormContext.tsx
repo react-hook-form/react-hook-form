@@ -6,16 +6,10 @@ import type {
   FormProviderProps,
   UseFormReturn,
 } from './types';
+import { HookFormControlContext } from './useFormControlContext';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 HookFormContext.displayName = 'HookFormContext';
-
-/**
- * Separate context for `control` to prevent unnecessary rerenders.
- * Internal hooks that only need control use this instead of full form context.
- */
-const HookFormControlContext = React.createContext<Control | null>(null);
-HookFormControlContext.displayName = 'HookFormControlContext';
 
 /**
  * This custom hook allows you to access the form context. useFormContext is intended to be used in deeply nested structures, where it would become inconvenient to pass the context as a prop. To be used with {@link FormProvider}.
@@ -53,20 +47,6 @@ export const useFormContext = <
   TTransformedValues = TFieldValues,
 >(): UseFormReturn<TFieldValues, TContext, TTransformedValues> =>
   React.useContext(HookFormContext) as UseFormReturn<
-    TFieldValues,
-    TContext,
-    TTransformedValues
-  >;
-
-/**
- * @internal Internal hook to access only control from context.
- */
-export const useFormControlContext = <
-  TFieldValues extends FieldValues,
-  TContext = any,
-  TTransformedValues = TFieldValues,
->(): Control<TFieldValues, TContext, TTransformedValues> =>
-  React.useContext(HookFormControlContext) as Control<
     TFieldValues,
     TContext,
     TTransformedValues

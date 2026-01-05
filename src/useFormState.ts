@@ -6,7 +6,7 @@ import type {
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
-import { useFormControlContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**

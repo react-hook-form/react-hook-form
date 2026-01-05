@@ -12,7 +12,7 @@ import type {
   InternalFieldName,
   UseWatchProps,
 } from './types';
-import { useFormControlContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
