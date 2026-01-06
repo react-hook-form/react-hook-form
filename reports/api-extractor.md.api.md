@@ -7,7 +7,7 @@
 import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
-import type { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 // @public (undocumented)
 export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: boolean, errors: InternalFieldErrors, type: string, message: ValidateResult) => {};
@@ -837,7 +837,6 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     (): TFieldValues;
     <TFieldNames extends readonly FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames], defaultValue?: DeepPartial<TFieldValues>): FieldPathValues<TFieldValues, TFieldNames>;
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, defaultValue?: FieldPathValue<TFieldValues, TFieldName>): FieldPathValue<TFieldValues, TFieldName>;
-    (callback: WatchObserver<TFieldValues>, defaultValues?: DeepPartial<TFieldValues>): Subscription;
 };
 
 // @public
@@ -910,7 +909,7 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[];
     control?: Control<TFieldValues>;
     exact?: boolean;
-    compute?: (formValues: any) => any;
+    compute?: (formValues: TFieldValues) => TFieldValues;
 };
 
 // @public (undocumented)
@@ -946,35 +945,34 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public
-export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>({ render, name, ...props }: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode;
+export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>(props: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode | ReactNode[];
+
+// @public (undocumented)
+export type WatchDefaultValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : DeepPartialSkipArrayKey<TFieldValues>;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
 
 // @public (undocumented)
-export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
-    name?: FieldPath<TFieldValues>;
-    type?: EventType;
-    values?: unknown;
-}) => void;
+export type WatchName<TFieldValues extends FieldValues> = FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined;
 
 // @public (undocumented)
-export type WatchProps<TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
+export type WatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
     control?: Control<TFieldValues, TContext, TTransformedValues>;
+    names?: TFieldName;
     name?: TFieldName;
     disabled?: boolean;
     exact?: boolean;
     defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
     compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
-    render: (value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>) => ReactNode;
+    render: (value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>) => ReactNode | ReactNode[];
 };
 
-// Warnings were encountered during analysis:
-//
-// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:55:3 - (ae-forgotten-export) The symbol "WatchDefaultValue" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:56:3 - (ae-forgotten-export) The symbol "WatchValue" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:57:3 - (ae-forgotten-export) The symbol "WatchRenderValue" needs to be exported by the entry point index.d.ts
+// @public (undocumented)
+export type WatchRenderValue<TFieldName, TFieldValues extends FieldValues, TComputeValue> = TComputeValue extends undefined ? WatchValue<TFieldName, TFieldValues> : TComputeValue;
+
+// @public (undocumented)
+export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
 
 // (No @packageDocumentation comment for this package)
 
