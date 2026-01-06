@@ -850,7 +850,7 @@ describe('insert', () => {
       return (
         <form>
           {fields.map((f, i) => (
-            <input key={f.id} {...register(`test.${i}.value` as const)} />
+            <input key={f.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => insert(1, { value: 'x' })}>
             insert

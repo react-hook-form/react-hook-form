@@ -250,7 +250,7 @@ describe('useForm', () => {
           <>
             {fields.map((field, i) => (
               <input
-                key={field.id}
+                key={field.key}
                 {...register(`test2.${i}.value` as const)}
               />
             ))}
@@ -1729,6 +1729,7 @@ describe('useForm', () => {
         const { register, formState } = useForm({
           defaultValues: { test: 'Test' },
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (values) => {
             if (!values.test) {
               return {

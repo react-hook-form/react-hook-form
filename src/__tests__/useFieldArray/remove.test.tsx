@@ -287,7 +287,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value`)} />
+            <input key={field.key} {...register(`test.${i}.value`)} />
           ))}
           <button type="button" onClick={() => append({ value: 'append' })}>
             append
@@ -345,7 +345,7 @@ describe('remove', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -409,7 +409,7 @@ describe('remove', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -459,7 +459,7 @@ describe('remove', () => {
         <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -529,7 +529,7 @@ describe('remove', () => {
       return (
         <fieldset>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input
                 {...control.register(
                   `test.${index}.nested.${i}.test` as const,
@@ -623,7 +623,7 @@ describe('remove', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -672,7 +672,7 @@ describe('remove', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={`${field.id}`}>
+            <div key={field.key}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -777,7 +777,7 @@ describe('remove', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <Controller
                     render={({ field }) => <input {...field} />}
                     name={`test.${index}.firstName` as const}
@@ -836,7 +836,7 @@ describe('remove', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <Controller
                     name={`test.${index}.lastName` as const}
                     control={control}
@@ -965,7 +965,7 @@ describe('remove', () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             {fields.map((field, index) => {
               return (
-                <div key={field.id}>
+                <div key={field.key}>
                   <input {...register(`test.${index}.firstName` as const)} />
                   <Controller
                     name={`test.${index}.lastName` as const}
@@ -1068,7 +1068,7 @@ describe('remove', () => {
         <form onSubmit={handleSubmit((data) => (output = data))}>
           {fields.map((field, index) => (
             <div
-              key={field.id}
+              key={field.key}
               style={{ display: 'flex', alignItems: 'center' }}
             >
               <Controller
@@ -1130,7 +1130,9 @@ describe('remove', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -1178,7 +1180,9 @@ describe('remove', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -1220,5 +1224,86 @@ describe('remove', () => {
     expect(
       await screen.findByText('{"test":[{"id":"whatever1","test":"12341"}]}'),
     ).toBeVisible();
+  });
+
+  it('should not re-insert removed items when using values prop with keepDirtyValues', async () => {
+    type FormValues = {
+      test: { value?: string }[];
+    };
+
+    function App() {
+      const [record, setRecord] = React.useState<FormValues>({
+        test: [{ value: 'foo' }],
+      });
+      const { register, handleSubmit, control } = useForm<FormValues>({
+        values: record,
+        resetOptions: { keepDirtyValues: true },
+      });
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form onSubmit={handleSubmit((data) => setRecord(data))}>
+          {fields.map((field, index) => (
+            <div key={field.key}>
+              <input {...register(`test.${index}.value`)} />
+              <button type="button" onClick={() => remove(index)}>
+                remove
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={() => append({})}>
+            append
+          </button>
+          <button type="submit">submit</button>
+          <p data-testid="fields-count">{fields.length}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    // Initial state: 1 field
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Step 1: Append and fill
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('2');
+
+    const inputs = screen.getAllByRole('textbox');
+    fireEvent.change(inputs[1], { target: { value: 'bar' } });
+
+    // Step 2: Submit
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('2');
+
+    // Step 3: Delete the appended element
+    fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Step 4: Submit
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Step 5: Delete the only element left
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('0');
+
+    // Step 6: Submit
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('0');
+
+    // Step 7: Append - should add exactly ONE element
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+    expect(screen.getAllByRole('textbox')).toHaveLength(1);
   });
 });

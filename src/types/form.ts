@@ -889,18 +889,6 @@ export type UseFormStateProps<
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
 
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  disabled?: boolean;
-  name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
-  exact?: boolean;
-  compute?: (formValues: any) => any;
-};
-
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,

@@ -12,7 +12,7 @@ export default function deepEqual(
   }
 
   if (isDateObject(object1) && isDateObject(object2)) {
-    return object1.getTime() === object2.getTime();
+    return Object.is(object1.getTime(), object2.getTime());
   }
 
   const keys1 = Object.keys(object1);

@@ -276,7 +276,7 @@ describe('Form', () => {
       );
     };
 
-    render(<App fetcher={fetcher} />);
+    render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -313,7 +313,7 @@ describe('Form', () => {
       );
     };
 
-    render(<App onSuccess={onSuccess} />);
+    render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
 

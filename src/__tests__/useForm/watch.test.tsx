@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   act,
   fireEvent,
@@ -243,7 +243,7 @@ describe('watch', () => {
         <form onSubmit={handleSubmit(noop)}>
           {fields.map((item, index) => {
             return (
-              <div key={item.id}>
+              <div key={item.key}>
                 <Controller
                   control={control}
                   name={`names.${index}.name` as const}

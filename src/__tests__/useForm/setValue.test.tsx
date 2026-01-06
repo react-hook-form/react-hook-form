@@ -1068,7 +1068,7 @@ describe('setValue', () => {
         <>
           {fields.map((item, index) => (
             <Controller
-              key={item.id}
+              key={item.key}
               control={control}
               name={`names.${index}.name` as const}
               render={({ field }) => <input data-testid={inputId} {...field} />}
@@ -1125,7 +1125,7 @@ describe('setValue', () => {
       return (
         <div>
           {fields.map((field, index) => (
-            <Child key={field.id} control={control} index={index} />
+            <Child key={field.key} control={control} index={index} />
           ))}
           <button
             onClick={() => {

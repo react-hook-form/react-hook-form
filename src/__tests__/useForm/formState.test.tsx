@@ -511,7 +511,7 @@ describe('formState', () => {
           />
           {fields.map((field, index) => {
             return (
-              <div key={field.id}>
+              <div key={field.key}>
                 <Controller
                   render={({ field }) => (
                     <input {...field} placeholder={field.name} />
@@ -822,7 +822,7 @@ describe('formState', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <input
                     {...register(`test.${index}.firstName`, { required: true })}
                   />

@@ -38,7 +38,7 @@ import type {
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
@@ -67,7 +67,7 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  *   return (
  *     <form onSubmit={handleSubmit(data => console.log(data))}>
  *       {fields.map((item, index) => (
- *          <input key={item.id} {...register(`test.${index}.firstName`)}  />
+ *          <input key={item.key} {...register(`test.${index}.firstName`)}  />
  *       ))}
  *       <button type="button" onClick={() => append({ firstName: "bill" })}>
  *         append
@@ -86,8 +86,12 @@ export function useFieldArray<
 >(
   props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TTransformedValues>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName> {
-  const methods = useFormContext();
-  const { control = methods.control, name, shouldUnregister, rules } = props;
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
+  const { control = formControl, name, shouldUnregister, rules } = props;
   const [fields, setFields] = React.useState(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),

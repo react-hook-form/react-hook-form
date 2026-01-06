@@ -12,7 +12,7 @@ import type {
   InternalFieldName,
   UseWatchProps,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
@@ -256,9 +256,9 @@ export function useWatch<
 export function useWatch<TFieldValues extends FieldValues>(
   props?: UseWatchProps<TFieldValues>,
 ) {
-  const methods = useFormContext<TFieldValues>();
+  const formControl = useFormControlContext<TFieldValues>();
   const {
-    control = methods.control,
+    control = formControl,
     name,
     defaultValue,
     disabled,
@@ -267,7 +267,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   } = props || {};
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
-  const _computeFormValues = React.useRef(undefined);
+  const _computeFormValues = React.useRef<undefined | unknown>(undefined);
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);

@@ -497,7 +497,7 @@ describe('append', () => {
           <form>
             <input {...register('test' as const)} />
             {fields.map((f, i) => (
-              <input key={f.id} {...register(`test.${i}.value` as const)} />
+              <input key={f.key} {...register(`test.${i}.value` as const)} />
             ))}
             <button
               type="button"
@@ -554,7 +554,9 @@ describe('append', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -606,7 +608,9 @@ describe('append', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}

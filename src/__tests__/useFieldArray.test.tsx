@@ -415,6 +415,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -470,6 +471,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -518,6 +520,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             if (data.test.length > 1) {
               return {
@@ -590,6 +593,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             const errors: { test?: any } = {};
             if (data.test.length > 4) {
@@ -1569,7 +1573,7 @@ describe('useFieldArray', () => {
           <div>
             <input {...register(`fieldArray.${arrayIndex}.value` as const)} />
             {fields.map((nestedField, index) => (
-              <div key={nestedField.id}>
+              <div key={nestedField.key}>
                 <input
                   {...register(
                     `fieldArray.${arrayIndex}.nestedFieldArray.${index}.value` as const,
@@ -3931,7 +3935,7 @@ describe('useFieldArray', () => {
       return (
         <div>
           {fields.map((nestedField, index) => (
-            <div key={nestedField.id}>
+            <div key={nestedField.key}>
               <input
                 {...register(
                   `fieldArray.${arrayIndex}.nestedFieldArray.${index}.value` as const,
@@ -4415,7 +4419,7 @@ describe('useFieldArray with checkbox', () => {
                 <span>{field.label}</span>
                 <input
                   type="checkbox"
-                  id={field.id}
+                  id={field.key}
                   {...register(`checkboxes.${index}.value`)}
                   data-testid={`checkbox-${index}`}
                 />
