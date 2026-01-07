@@ -17,7 +17,9 @@ describe('isFocused', () => {
           <button onClick={() => setHasFocus(isFocused('test'))}>
             check focus
           </button>
-          <span data-testid="result">{hasFocus ? 'focused' : 'not focused'}</span>
+          <span data-testid="result">
+            {hasFocus ? 'focused' : 'not focused'}
+          </span>
         </>
       );
     };
@@ -56,7 +58,9 @@ describe('isFocused', () => {
           <button onClick={() => setHasFocus(isFocused('other'))}>
             check focus
           </button>
-          <span data-testid="result">{hasFocus ? 'focused' : 'not focused'}</span>
+          <span data-testid="result">
+            {hasFocus ? 'focused' : 'not focused'}
+          </span>
         </>
       );
     };
@@ -79,12 +83,24 @@ describe('isFocused', () => {
 
       return (
         <>
-          <input {...register('radio')} type="radio" value="a" data-testid="radio-a" />
-          <input {...register('radio')} type="radio" value="b" data-testid="radio-b" />
+          <input
+            {...register('radio')}
+            type="radio"
+            value="a"
+            data-testid="radio-a"
+          />
+          <input
+            {...register('radio')}
+            type="radio"
+            value="b"
+            data-testid="radio-b"
+          />
           <button onClick={() => setHasFocus(isFocused('radio'))}>
             check focus
           </button>
-          <span data-testid="result">{hasFocus ? 'focused' : 'not focused'}</span>
+          <span data-testid="result">
+            {hasFocus ? 'focused' : 'not focused'}
+          </span>
         </>
       );
     };
@@ -113,7 +129,9 @@ describe('isFocused', () => {
           <button onClick={() => setHasFocus(isFocused('user.name'))}>
             check focus
           </button>
-          <span data-testid="result">{hasFocus ? 'focused' : 'not focused'}</span>
+          <span data-testid="result">
+            {hasFocus ? 'focused' : 'not focused'}
+          </span>
         </>
       );
     };
