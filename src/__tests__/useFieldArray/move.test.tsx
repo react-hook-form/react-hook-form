@@ -1,10 +1,17 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 let i = 0;
 
@@ -67,7 +74,7 @@ describe('move', () => {
       errors = rest.formState.errors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
@@ -296,7 +303,7 @@ describe('move', () => {
         result.current.move(0, 1);
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '2' }, { value: '1' }],
         },
@@ -328,7 +335,7 @@ describe('move', () => {
         result.current.move(0, 1);
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
   });
 

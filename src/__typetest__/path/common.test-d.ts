@@ -1,6 +1,6 @@
 import { expectType } from 'tsd';
 
-import {
+import type {
   ArrayKey,
   AsKey,
   AsPathTuple,
@@ -23,14 +23,14 @@ import {
   UnionToIntersection,
   ValidPathPrefix,
 } from '../../types/path/common';
-import {
-  _,
+import type {
   HundredPathString,
   HundredTuple,
   InfiniteType,
   Nested,
   NullableInfiniteType,
 } from '../__fixtures__';
+import { _ } from '../__fixtures__';
 
 /** {@link IsTuple} */ {
   /** it should evaluate to true if it's a tuple */ {

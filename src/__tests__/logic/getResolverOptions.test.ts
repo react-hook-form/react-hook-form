@@ -1,4 +1,4 @@
-import { InternalFieldName } from '../..';
+import type { InternalFieldName } from '../..';
 import getResolverOptions from '../../logic/getResolverOptions';
 
 describe('getFielfs', () => {

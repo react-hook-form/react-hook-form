@@ -40,8 +40,10 @@ import SetValueAsyncStrictMode from './setValueStrictMode';
 import { DelayError } from './delayError';
 import './style.css';
 import FormComponent from './form';
+import DisabledFields from './disabledFields';
+import ResetKeepDirty from './resetKeepDirty';
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
@@ -73,6 +75,7 @@ const App: React.FC = () => {
           element={<UseFieldArrayUnregister />}
         />
         <Route path="/reset" element={<Reset />} />
+        <Route path="/resetKeepDirty" element={<ResetKeepDirty />} />
         <Route path="/setValue" element={<SetValue />} />
         <Route
           path="/setValueAsyncStrictMode"
@@ -117,6 +120,7 @@ const App: React.FC = () => {
         <Route path="/test" element={<Test />} />
         <Route path="/" element={<Welcome />} />
         <Route path="/form" element={<FormComponent />} />
+        <Route path="/disabled" element={<DisabledFields />} />
       </Routes>
     </BrowserRouter>
   );

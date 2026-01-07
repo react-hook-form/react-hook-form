@@ -1,6 +1,12 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { useForm } from '../../useForm';
 
@@ -208,14 +214,14 @@ describe('clearErrors', () => {
     });
 
     await act(async () => await result.current.handleSubmit(submit)());
-    expect(submit).not.toBeCalled();
+    expect(submit).not.toHaveBeenCalled();
 
     act(() => {
       result.current.clearErrors('whatever');
     });
 
     await act(async () => await result.current.handleSubmit(submit)());
-    expect(submit).toBeCalled();
+    expect(submit).toHaveBeenCalled();
   });
 
   it('should update isValid to true with setError', async () => {

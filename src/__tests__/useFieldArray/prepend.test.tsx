@@ -1,12 +1,19 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control, FieldPath } from '../../types';
+import type { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 let i = 0;
 
@@ -169,7 +176,7 @@ describe('prepend', () => {
       errors = tempErrors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
@@ -468,7 +475,7 @@ describe('prepend', () => {
         result.current.prepend({ value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -497,7 +504,61 @@ describe('prepend', () => {
         result.current.prepend({ value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
+    });
+
+    it('should not invoke resolver per register during prepend; only array-scoped + final isValid', async () => {
+      const resolver = jest
+        .fn()
+        .mockImplementation((values) => ({ values, errors: {} }));
+
+      const App = () => {
+        const { register, formState, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          mode: VALIDATION_MODE.onTouched,
+          resolver,
+          defaultValues: { test: [] },
+        });
+
+        formState.isValid;
+
+        const { fields, prepend } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            <input {...register('test' as const)} />
+            {fields.map((f, i) => (
+              <input key={f.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                prepend([{ value: '1' }, { value: '2' }, { value: '3' }])
+              }
+            >
+              prepend
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+      );
+      const initialCalls = resolver.mock.calls.length;
+
+      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+
+      await waitFor(async () => {
+        expect((await screen.findAllByRole('textbox')).length).toBe(4);
+      });
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+      );
     });
   });
 

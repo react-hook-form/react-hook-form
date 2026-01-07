@@ -102,8 +102,6 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('input[name="data.2.name"]').clear().type('bill');
 
-    cy.get('input[name="data.2.conditional"]').should('has.value', '');
-
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
@@ -129,16 +127,14 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#delete1').click();
 
-    cy.get('input[name="data.1.conditional"]').should('has.value', '');
-
     cy.get('#submit').click();
 
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '5' },
+          { name: '6' },
           { name: 'bill', conditional: '' },
-          { name: '10' },
+          { name: '11' },
           { name: 'test1' },
           { name: 'test2' },
         ],
@@ -152,9 +148,9 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '5' },
+          { name: '6' },
           { name: 'bill', conditional: '' },
-          { name: '10' },
+          { name: '11' },
           { name: 'test1test' },
           { name: 'test2' },
         ],
@@ -168,14 +164,14 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '5' },
+          { name: '6' },
           { name: 'bill', conditional: '' },
-          { name: '10' },
+          { name: '11' },
           { name: 'test2' },
         ],
       }),
     );
 
-    cy.get('#renderCount').contains('32');
+    cy.get('#renderCount').contains('26');
   });
 });

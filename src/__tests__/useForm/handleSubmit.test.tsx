@@ -1,11 +1,18 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
+import noop from '../../utils/noop';
 
 describe('handleSubmit', () => {
   it('should invoke the callback when validation pass', async () => {
@@ -14,11 +21,11 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
-    expect(callback).toBeCalled();
+    expect(callback).toHaveBeenCalled();
   });
 
   it('should pass default value', async () => {
@@ -48,8 +55,8 @@ describe('handleSubmit', () => {
           },
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -76,8 +83,8 @@ describe('handleSubmit', () => {
           },
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -99,8 +106,8 @@ describe('handleSubmit', () => {
       await result.current.handleSubmit((data: any) => {
         data.deep.values = '12';
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -108,8 +115,8 @@ describe('handleSubmit', () => {
       await result.current.handleSubmit((data: any) => {
         expect(data.deep).toEqual({ values: '5' });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -123,11 +130,11 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
-    expect(callback).not.toBeCalled();
+    expect(callback).not.toHaveBeenCalled();
   });
 
   it('should not focus if errors is exist', async () => {
@@ -145,13 +152,13 @@ describe('handleSubmit', () => {
     const callback = jest.fn();
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
-    expect(callback).not.toBeCalled();
-    expect(focus).toBeCalled();
+    expect(callback).not.toHaveBeenCalled();
+    expect(focus).toHaveBeenCalled();
     expect(result.current.control._formState.errors?.test?.type).toBe(
       'required',
     );
@@ -170,13 +177,13 @@ describe('handleSubmit', () => {
     const callback = jest.fn();
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
-    expect(callback).not.toBeCalled();
-    expect(mockFocus).not.toBeCalled();
+    expect(callback).not.toHaveBeenCalled();
+    expect(mockFocus).not.toHaveBeenCalled();
     expect(result.current.control._formState.errors?.test?.type).toBe(
       'required',
     );
@@ -200,8 +207,8 @@ describe('handleSubmit', () => {
           test: 'test',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent),
     );
   });
@@ -234,30 +241,34 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
-    expect(callback).not.toBeCalled();
+    expect(callback).not.toHaveBeenCalled();
 
     result.current.setValue('test.0.firstName', 'test');
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
-    expect(callback).toBeCalled();
+    expect(callback).toHaveBeenCalled();
   });
 
-  it('should bubble the error up when an error occurs in the provided handleSubmit function', async () => {
+  it('should bubble the error up when an error occurs in the provided handleSubmit function by leaving formState flags in a consistent state', async () => {
     const errorMsg = 'this is an error';
     const App = () => {
       const [error, setError] = React.useState('');
-      const { register, handleSubmit } = useForm();
+      const {
+        register,
+        handleSubmit,
+        formState: { isSubmitting, isSubmitted, isSubmitSuccessful },
+      } = useForm();
 
       const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
 
@@ -265,6 +276,9 @@ describe('handleSubmit', () => {
         <form>
           <input {...register('test')} />
           <p>{error}</p>
+          <p>isSubmitting : {isSubmitting ? 'true' : 'false'}</p>
+          <p>isSubmitted : {isSubmitted ? 'true' : 'false'}</p>
+          <p>isSubmitSuccessful : {isSubmitSuccessful ? 'true' : 'false'}</p>
           <button
             type={'button'}
             onClick={() =>
@@ -280,10 +294,16 @@ describe('handleSubmit', () => {
     };
 
     render(<App />);
+    expect(await screen.findByText('isSubmitting : false')).toBeVisible();
+    expect(await screen.findByText('isSubmitted : false')).toBeVisible();
+    expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
     expect(await screen.findByText(errorMsg)).toBeVisible();
+    expect(await screen.findByText('isSubmitting : false')).toBeVisible();
+    expect(await screen.findByText('isSubmitted : true')).toBeVisible();
+    expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
   });
 
   describe('with validationSchema', () => {
@@ -308,11 +328,11 @@ describe('handleSubmit', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
     });
 
     it('should invoke callback with transformed values', async () => {
@@ -336,8 +356,8 @@ describe('handleSubmit', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
       expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
@@ -355,12 +375,12 @@ describe('handleSubmit', () => {
           onValidCallback,
           onInvalidCallback,
         )({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
-      expect(onValidCallback).toBeCalledTimes(1);
-      expect(onInvalidCallback).not.toBeCalledTimes(1);
+      expect(onValidCallback).toHaveBeenCalledTimes(1);
+      expect(onInvalidCallback).not.toHaveBeenCalledTimes(1);
     });
 
     it('should invoke the onInvalid callback when validation failed', async () => {
@@ -378,13 +398,13 @@ describe('handleSubmit', () => {
           onValidCallback,
           onInvalidCallback,
         )({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
-      expect(onValidCallback).not.toBeCalledTimes(1);
-      expect(onInvalidCallback).toBeCalledTimes(1);
+      expect(onValidCallback).not.toHaveBeenCalledTimes(1);
+      expect(onInvalidCallback).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -397,14 +417,11 @@ describe('handleSubmit', () => {
     result.current.register('test', { required: true });
 
     await act(async () => {
-      await result.current.handleSubmit(
-        () => {},
-        (errors) => {
-          Object.freeze(errors);
-        },
-      )({
-        preventDefault: () => {},
-        persist: () => {},
+      await result.current.handleSubmit(noop, (errors) => {
+        Object.freeze(errors);
+      })({
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
 
@@ -462,7 +479,7 @@ describe('handleSubmit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    expect(onSubmit).not.toBeCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   it('should be able to submit correctly when errors contains empty array object and errors state is subscribed', async () => {
@@ -522,6 +539,6 @@ describe('handleSubmit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onSubmit).toBeCalled());
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
 });

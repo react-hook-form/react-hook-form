@@ -1,18 +1,19 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control, DeepMap, FieldError } from '../../types';
+import type { Control, DeepMap, FieldError } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 jest.useFakeTimers();
 
@@ -455,7 +456,7 @@ describe('remove', () => {
       errors = tempErrors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
@@ -772,7 +773,7 @@ describe('remove', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <ul>
             {fields.map((item, index) => {
               return (
@@ -831,7 +832,7 @@ describe('remove', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <ul>
             {fields.map((item, index) => {
               return (
@@ -897,7 +898,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [],
         },
@@ -925,7 +926,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
 
     it('should remove the first index correctly', async () => {
@@ -1087,7 +1088,7 @@ describe('remove', () => {
 
     render(<App />);
 
-    actComponent(() => {
+    act(() => {
       jest.advanceTimersByTime(2000);
     });
 
@@ -1219,5 +1220,86 @@ describe('remove', () => {
     expect(
       await screen.findByText('{"test":[{"id":"whatever1","test":"12341"}]}'),
     ).toBeVisible();
+  });
+
+  it('should not re-insert removed items when using values prop with keepDirtyValues', async () => {
+    type FormValues = {
+      test: { value?: string }[];
+    };
+
+    function App() {
+      const [record, setRecord] = React.useState<FormValues>({
+        test: [{ value: 'foo' }],
+      });
+      const { register, handleSubmit, control } = useForm<FormValues>({
+        values: record,
+        resetOptions: { keepDirtyValues: true },
+      });
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form onSubmit={handleSubmit((data) => setRecord(data))}>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <input {...register(`test.${index}.value`)} />
+              <button type="button" onClick={() => remove(index)}>
+                remove
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={() => append({})}>
+            append
+          </button>
+          <button type="submit">submit</button>
+          <p data-testid="fields-count">{fields.length}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    // Initial state: 1 field
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Step 1: Append and fill
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('2');
+
+    const inputs = screen.getAllByRole('textbox');
+    fireEvent.change(inputs[1], { target: { value: 'bar' } });
+
+    // Step 2: Submit
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('2');
+
+    // Step 3: Delete the appended element
+    fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Step 4: Submit
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Step 5: Delete the only element left
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('0');
+
+    // Step 6: Submit
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('0');
+
+    // Step 7: Append - should add exactly ONE element
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+    expect(screen.getAllByRole('textbox')).toHaveLength(1);
   });
 });

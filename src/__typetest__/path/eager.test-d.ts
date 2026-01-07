@@ -1,11 +1,12 @@
 import { expectType } from 'tsd';
 
-import { ArrayPath, FieldPathValues, Path, PathValue } from '../../types';
-import { _, Depth3Type } from '../__fixtures__';
+import type { ArrayPath, FieldPathValues, Path, PathValue } from '../../types';
+import type { Depth3Type } from '../__fixtures__';
+import { _ } from '../__fixtures__';
 
 /** {@link Path} */ {
   /** it should evaluate to never for an empty object */ {
-    const actual = _ as Path<{}>;
+    const actual = _ as Path<object>;
     expectType<never>(actual);
   }
 
@@ -38,7 +39,7 @@ import { _, Depth3Type } from '../__fixtures__';
             baz: 1;
           };
         }
-      | {};
+      | Record<string, never>;
     const actual = _ as Path<Foo>;
     expectType<'foo' | 'bar' | 'bar.baz'>(actual);
   }
@@ -76,7 +77,7 @@ import { _, Depth3Type } from '../__fixtures__';
             fooArr?: Foo[];
           };
         }
-      | {};
+      | Record<string, never>;
     const actual = _ as ArrayPath<Foo>;
     expectType<'bar.fooArr'>(actual);
   }
@@ -96,6 +97,35 @@ import { _, Depth3Type } from '../__fixtures__';
   /** it should traverse an array */ {
     const actual = _ as PathValue<Depth3Type<boolean>, 'baz.42.value'>;
     expectType<boolean>(actual);
+  }
+
+  /** it should apply optional type for optional arrays */ {
+    const actual = _ as PathValue<Depth3Type<string[] | undefined>, 'value.1'>;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should traverse an object and apply optional type for optional arrays */ {
+    const actual = _ as PathValue<
+      Depth3Type<string[] | undefined>,
+      'foo.foo.value.3'
+    >;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should traverse a tuple and apply optional type for optional arrays */ {
+    const actual = _ as PathValue<
+      Depth3Type<string[] | undefined>,
+      'bar.0.value.3'
+    >;
+    expectType<string | undefined>(actual);
+  }
+
+  /** it should traverse an array and apply optional type for optional arrays */ {
+    const actual = _ as PathValue<
+      Depth3Type<string[] | undefined>,
+      'baz.0.value.3'
+    >;
+    expectType<string | undefined>(actual);
   }
 }
 

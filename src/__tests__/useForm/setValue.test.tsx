@@ -1,15 +1,22 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control } from '../../types';
+import type { Control } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
-import { sleep } from '../../utils/sleep';
+import noop from '../../utils/noop';
+import sleep from '../../utils/sleep';
 
 jest.useFakeTimers();
 
@@ -60,8 +67,8 @@ describe('setValue', () => {
           test: '1',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -71,9 +78,7 @@ describe('setValue', () => {
 
     result.current.register('test');
 
-    // @ts-expect-error
-    const blob = new Blob([''], { type: 'image/png', lastModified: 1 });
-    const file = blob as File;
+    const file = new File([''], '', { type: 'image/png', lastModified: 1 });
     const fileList = {
       0: file,
       1: file,
@@ -88,8 +93,8 @@ describe('setValue', () => {
           test: fileList,
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -126,8 +131,8 @@ describe('setValue', () => {
           test: ['1'],
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -145,8 +150,83 @@ describe('setValue', () => {
           test: '1',
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+  });
+
+  it('should set value of multiple checkbox input correctly as a child', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ parent: { test: string[] } }>(),
+    );
+
+    const { ref } = result.current.register('parent.test');
+
+    const elm = document.createElement('input');
+    elm.type = 'checkbox';
+    elm.name = 'test';
+    elm.value = '2';
+
+    document.body.append(elm);
+    isFunction(ref) && ref(elm);
+
+    const { ref: ref1 } = result.current.register('parent.test');
+
+    const elm1 = document.createElement('input');
+    elm1.type = 'checkbox';
+    elm1.name = 'test';
+    elm1.value = '1';
+
+    document.body.append(elm1);
+
+    isFunction(ref1) && ref1(elm1);
+
+    result.current.setValue('parent', { test: ['1'] });
+    expect(elm1).toBeChecked();
+
+    await act(async () => {
+      await result.current.handleSubmit((data) => {
+        expect(data).toEqual({
+          parent: {
+            test: ['1'],
+          },
+        });
+      })({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+  });
+
+  it('should set value of single checkbox input correctly as a child', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ parent: { test: string } }>(),
+    );
+
+    const { ref } = result.current.register('parent.test');
+
+    const elm = document.createElement('input');
+    elm.type = 'checkbox';
+    elm.name = 'test';
+    elm.value = '1';
+
+    document.body.append(elm);
+    isFunction(ref) && ref(elm);
+
+    result.current.setValue('parent', { test: '1' });
+    expect(elm).toBeChecked();
+
+    await act(async () => {
+      await result.current.handleSubmit((data) => {
+        expect(data).toEqual({
+          parent: {
+            test: '1',
+          },
+        });
+      })({
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -169,8 +249,8 @@ describe('setValue', () => {
           test: ['1'],
         });
       })({
-        preventDefault: () => {},
-        persist: () => {},
+        preventDefault: noop,
+        persist: noop,
       } as React.SyntheticEvent);
     });
   });
@@ -503,6 +583,58 @@ describe('setValue', () => {
       });
 
       expect(result.current).toBe('abc');
+    });
+
+    it('should track field names', () => {
+      type FormValues = {
+        enabled: boolean;
+        child: {
+          dependent: boolean;
+        };
+      };
+
+      function App() {
+        const { control, watch, setValue } = useForm<FormValues>({
+          defaultValues: { enabled: false, child: { dependent: false } },
+        });
+
+        // Propagate the easy-to-edit form values that we add back to template ID
+        // values.
+        React.useEffect(() => {
+          const subscription = watch((formData, { name }) => {
+            if (name === 'enabled') {
+              setValue(`child.dependent`, !!formData.enabled);
+            }
+          });
+          return () => subscription.unsubscribe();
+        }, [setValue, watch]);
+
+        watch('child');
+
+        return (
+          <div>
+            <form>
+              <label>
+                Enabled
+                <Controller
+                  render={({ field: { value, ...props } }) => (
+                    <input type="checkbox" {...props} checked={!!value} />
+                  )}
+                  name="enabled"
+                  control={control}
+                />
+              </label>
+              <input type="submit" />
+            </form>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      expect(() =>
+        fireEvent.click(screen.getByRole('checkbox', { name: 'Enabled' })),
+      ).not.toThrow();
     });
   });
 
@@ -847,11 +979,7 @@ describe('setValue', () => {
         );
       }
 
-      render(
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>,
-      );
+      render(<App />, { reactStrictMode: true });
 
       jest.advanceTimersByTime(10000);
 
@@ -1070,7 +1198,7 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(fieldsValue.length).toEqual(1);
+    expect(fieldsValue.length).toEqual(2);
   });
 
   it('should not register deeply nested inputs', () => {
@@ -1314,6 +1442,10 @@ describe('setValue', () => {
         userId: 'abc',
       },
       {
+        date: new Date('2021-06-15T00:00:00.000Z'),
+        userId: 'abc',
+      },
+      {
         date: new Date('2021-12-17T00:00:00.000Z'),
         userId: '1234',
       },
@@ -1384,5 +1516,20 @@ describe('setValue', () => {
 
     expect(screen.getByText('dirty')).toBeVisible();
     expect(screen.getByText('touched')).toBeVisible();
+  });
+
+  it('should notify observers exactly once when field is watched', async () => {
+    const { result } = renderHook(() => useForm());
+    const control = result.current.control as any;
+
+    control._names.watch.add('test');
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    await act(async () => {
+      result.current.setValue('test', 'value');
+    });
+
+    expect(nextSpy).toHaveBeenCalledTimes(1);
   });
 });

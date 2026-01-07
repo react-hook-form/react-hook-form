@@ -1,6 +1,8 @@
-import { Message } from './errors';
-import { FieldValues, InternalFieldName } from './fields';
-import { FieldPath, FieldPathValue } from './path';
+import type { INPUT_VALIDATION_RULES } from '../constants';
+
+import type { Message } from './errors';
+import type { FieldValues } from './fields';
+import type { FieldPath, FieldPathValue } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
 
@@ -43,7 +45,7 @@ export type RegisterOptions<
   onChange?: (event: any) => void;
   onBlur?: (event: any) => void;
   disabled: boolean;
-  deps: InternalFieldName | InternalFieldName[];
+  deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
 }> &
   (
     | {
@@ -62,3 +64,13 @@ export type RegisterOptions<
         valueAsDate?: false;
       }
   );
+
+export type InputValidationRules = typeof INPUT_VALIDATION_RULES;
+
+export type MaxType =
+  | InputValidationRules['max']
+  | InputValidationRules['maxLength'];
+
+export type MinType =
+  | InputValidationRules['min']
+  | InputValidationRules['minLength'];

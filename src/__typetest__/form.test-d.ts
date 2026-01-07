@@ -1,6 +1,7 @@
 import { expectType } from 'tsd';
+import { z } from 'zod';
 
-import { FieldError } from '../types';
+import type { FieldError, FieldValues, Resolver } from '../types';
 import { useForm } from '../useForm';
 
 /** {@link UseFormHandleSubmit} */ {
@@ -27,6 +28,72 @@ import { useForm } from '../useForm';
   }
 }
 
+/** it should infer the correct TTransformedValues from useForm resolver */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const { handleSubmit } = useForm({
+    resolver: mockZodResolver(
+      z.object({
+        test: z.string(),
+        test1: z.number(),
+      }),
+    ),
+  });
+
+  handleSubmit((data) => {
+    expectType<{
+      test: string;
+      test1: number;
+    }>(data);
+  });
+}
+
+const schema = z.object({
+  id: z.number(),
+});
+
+/** it should correctly infer the output type from a schema */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const form = useForm({
+    resolver: mockZodResolver(schema),
+  });
+
+  expectType<number>(form.watch('id'));
+
+  form.handleSubmit((data) => {
+    expectType<{ id: number }>(data);
+  });
+}
+
+/** it should correctly infer the output type from a zod schema with a transform */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const form = useForm({
+    resolver: mockZodResolver(
+      z.object({ id: z.number().transform((val) => String(val)) }),
+    ),
+  });
+
+  form.handleSubmit((data) => {
+    expectType<{ id: string }>(data);
+  });
+}
+
+/** it should infer the correct TTransformedValues from useForm generic */ {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const { handleSubmit } = useForm<
+    { test: string },
+    unknown,
+    { test: string } | { test1: number }
+  >();
+
+  handleSubmit((data) => {
+    // @ts-expect-error `data` should be union and thus should not be assignable to `{ test: string }`
+    expectType<{ test: string }>(data);
+    // @ts-expect-error `data` should be union and thus should not be assignable to `{ test1: number }`
+    expectType<{ test1: number }>(data);
+    expectType<{ test: string } | { test1: number }>(data);
+  });
+}
+
 /** {@link UseFormGetFieldState} */ {
   /** it should return associated field state */ {
     /* eslint-disable react-hooks/rules-of-hooks */
@@ -40,6 +107,7 @@ import { useForm } from '../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test'));
   }
@@ -56,7 +124,34 @@ import { useForm } from '../useForm';
       invalid: boolean;
       isDirty: boolean;
       isTouched: boolean;
+      isValidating: boolean;
       error?: FieldError;
     }>(getFieldState('test', formState));
   }
+}
+
+export function mockZodResolver<Input extends FieldValues, Context, Output>(
+  schema: z.ZodSchema<Output, any, Input>,
+  schemaOptions?: Partial<z.ParseParams>,
+  resolverOptions?: {
+    mode?: 'async' | 'sync';
+    raw?: false;
+  },
+): Resolver<Input, Context, Output>;
+// passing `resolverOptions.raw: true` you get back the input type
+export function mockZodResolver<Input extends FieldValues, Context, Output>(
+  schema: z.ZodSchema<Output, any, Input>,
+  schemaOptions: Partial<z.ParseParams> | undefined,
+  resolverOptions: {
+    mode?: 'async' | 'sync';
+    raw: true;
+  },
+): Resolver<Input, Context, Input>;
+
+export function mockZodResolver<
+  Input extends FieldValues,
+  Context,
+  Output,
+>(): Resolver<Input, Context, Output | Input> {
+  return {} as any;
 }

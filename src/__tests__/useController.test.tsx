@@ -1,11 +1,19 @@
-import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues } from '../types';
+import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
+import isBoolean from '../utils/isBoolean';
+import noop from '../utils/noop';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -25,6 +33,72 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('component using the hook can be memoized', async () => {
+    function App() {
+      const form = useForm({
+        values: { login: 'john' },
+      });
+
+      return useMemo(() => <LoginField form={form} />, [form]);
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+      });
+
+      return <input {...ctrl.field} />;
+    }
+
+    render(<App />);
+
+    const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'abc' } });
+    expect(input.value).toBe('abc');
+  });
+
+  it("setting values doesn't cause fields to be unregistered", async () => {
+    function App() {
+      const [values, setValues] = useState<{ login: string } | undefined>();
+
+      const form = useForm({
+        values,
+      });
+
+      useEffect(() => {
+        setTimeout(() => {
+          setValues({ login: 'john' });
+        }, 100);
+      }, []);
+
+      return useMemo(
+        () => values?.login && <LoginField form={form} />,
+        [values, form],
+      );
+    }
+
+    function LoginField({ form }: { form: UseFormReturn<{ login: string }> }) {
+      const ctrl = useController({
+        name: 'login',
+        control: form.control,
+        defaultValue: 'john',
+      });
+
+      return <input value={ctrl.field.value} onChange={ctrl.field.onChange} />;
+    }
+
+    render(<App />);
+
+    const input = await screen.findByRole<HTMLInputElement>('textbox');
+    expect(input.value).toBe('john');
+
+    fireEvent.input(input, { target: { value: 'jane' } });
+    expect(input.value).toBe('jane');
   });
 
   it('should only subscribe to formState at each useController level', async () => {
@@ -83,7 +157,7 @@ describe('useController', () => {
 
     render(<Component />);
 
-    expect(renderCounter).toEqual([1, 1]);
+    expect(renderCounter).toEqual([2, 2]);
 
     fireEvent.change(screen.getAllByRole('textbox')[1], {
       target: {
@@ -97,7 +171,7 @@ describe('useController', () => {
 
     expect(screen.getByText('isTouched')).toBeVisible();
 
-    expect(renderCounter).toEqual([1, 3]);
+    expect(renderCounter).toEqual([2, 4]);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -107,7 +181,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([2, 5]);
+    expect(renderCounter).toEqual([4, 4]);
   });
 
   describe('checkbox', () => {
@@ -131,15 +205,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: true }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: true },
+        { test: false },
+      ]);
     });
 
     it('should work for checkbox by assign checked', async () => {
@@ -168,15 +247,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: true }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: true },
+        { test: false },
+      ]);
     });
 
     it('should work for checkbox by assign value manually', async () => {
@@ -208,15 +292,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: 'on' }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: 'on' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: 'on' }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: 'on' },
+        { test: false },
+      ]);
     });
   });
 
@@ -262,7 +351,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(counter).toEqual(1);
+    expect(counter).toEqual(2);
 
     expect(screen.getByText('dirty')).toBeVisible();
     expect(screen.getByText('touched')).toBeVisible();
@@ -325,6 +414,64 @@ describe('useController', () => {
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       'data',
     );
+  });
+
+  it('should not change reference for onChange and onBlur on input value change', () => {
+    let counter = 0;
+
+    const App = () => {
+      const { control } = useForm();
+      const { field } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      useEffect(() => {
+        counter++;
+        field.onBlur;
+        field.onChange;
+        field.ref;
+      }, [field.onChange, field.onBlur, field.ref]);
+
+      return (
+        <div>
+          <input value={field.value} onChange={field.onChange} />
+          <button
+            onClick={() => {
+              field.onChange('data');
+            }}
+          >
+            setValue
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'b',
+      },
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bi',
+      },
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bil',
+      },
+    });
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'bill',
+      },
+    });
+
+    expect(counter).toEqual(1);
   });
 
   it('should be able to setValue after reset', async () => {
@@ -415,7 +562,7 @@ describe('useController', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Input control={control} />
           <input type="submit" />
         </form>
@@ -426,9 +573,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(focus).toBeCalled());
-    expect(setCustomValidity).toBeCalledWith(message);
-    expect(reportValidity).toBeCalled();
+    expect(setCustomValidity).toHaveBeenCalledWith(message);
+    expect(reportValidity).toHaveBeenCalled();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -438,9 +584,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
-    expect(reportValidity).toBeCalledTimes(3);
-    expect(focus).toBeCalledTimes(2);
+    await waitFor(() => expect(setCustomValidity).toHaveBeenCalledTimes(3));
+    expect(reportValidity).toHaveBeenCalledTimes(3);
   });
 
   it('should update with inline defaultValue', async () => {
@@ -465,7 +610,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -640,12 +785,15 @@ describe('useController', () => {
     expect(watchResults).toEqual([
       {},
       {
+        test: '',
+      },
+      {
         test: 'updated value',
       },
     ]);
   });
 
-  it('should focus and select the input text', () => {
+  it('should focus and select the input text', async () => {
     const select = jest.fn();
     const focus = jest.fn();
 
@@ -674,8 +822,10 @@ describe('useController', () => {
 
     render(<App />);
 
-    expect(select).toBeCalled();
-    expect(focus).toBeCalled();
+    await waitFor(() => {
+      expect(select).toHaveBeenCalled();
+      expect(focus).toHaveBeenCalled();
+    });
   });
 
   it('should update isValid correctly with strict mode', async () => {
@@ -689,27 +839,62 @@ describe('useController', () => {
       const { isValid } = form.formState;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...form}>
-            <Controller
-              render={({ field }) => (
-                <input value={field.value} onChange={field.onChange} />
-              )}
-              name="name"
-              rules={{
-                required: true,
-              }}
-            />
-            <p>{isValid ? 'valid' : 'not'}</p>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...form}>
+          <Controller
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            name="name"
+            rules={{
+              required: true,
+            }}
+          />
+          <p>{isValid ? 'valid' : 'not'}</p>
+        </FormProvider>
       );
     };
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     await waitFor(() => {
       screen.getByText('not');
+    });
+  });
+
+  it('should restore defaultValue from Controller with react strict mode double useEffect', async () => {
+    const onSubmit = jest.fn();
+
+    function App() {
+      const { handleSubmit, control } = useForm({
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <Controller
+            control={control}
+            name="firstName"
+            defaultValue={'luo'}
+            render={({ field }) => <input {...field} />}
+          />
+
+          <button>submit</button>
+        </form>
+      );
+    }
+
+    render(<App />, { reactStrictMode: true });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        firstName: 'luo',
+      });
     });
   });
 
@@ -735,18 +920,16 @@ describe('useController', () => {
       } = methods;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...methods}>
-            <form>
-              <Form />
-              {dirtyFields.lastName ? 'dirty' : 'pristine'}
-            </form>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...methods}>
+          <form>
+            <Form />
+            {dirtyFields.lastName ? 'dirty' : 'pristine'}
+          </form>
+        </FormProvider>
       );
     }
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -763,5 +946,572 @@ describe('useController', () => {
     });
 
     screen.getByText('pristine');
+  });
+
+  it('should disable the controller input', async () => {
+    function Form() {
+      const { field } = useController({
+        name: 'lastName',
+      });
+      return <p>{field.disabled ? 'disabled' : ''}</p>;
+    }
+
+    function App() {
+      const methods = useForm({
+        disabled: true,
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            <Form />
+          </form>
+        </FormProvider>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('disabled');
+    });
+  });
+
+  it('should disable form input with disabled prop', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = React.useState(false);
+      const { control, watch } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const {
+        field: { disabled: disabledProps },
+      } = useController({
+        control,
+        name: 'test',
+        disabled,
+      });
+
+      const input = watch('test');
+
+      return (
+        <form>
+          <p>{input}</p>
+          <button
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+            type={'button'}
+          >
+            toggle
+          </button>
+          <p>{disabledProps ? 'disable' : 'notDisabled'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    screen.getByText('test');
+    screen.getByText('notDisabled');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => {
+      screen.getByText('');
+      screen.getByText('disable');
+    });
+  });
+
+  it('should disable form input field with disabled prop', async () => {
+    const App = () => {
+      const { control } = useForm();
+      const {
+        field,
+        fieldState: { invalid, isTouched, isDirty },
+      } = useController({
+        name: 'test',
+        control,
+        disabled: true,
+        rules: { required: true },
+      });
+
+      return (
+        <form>
+          <input {...field} />
+          <button>submit</button>
+          {invalid && <p>invalid</p>}
+          {isTouched && <p>isTouched</p>}
+          {isDirty && <p>isDirty</p>}
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox')).toBeDisabled();
+    });
+  });
+
+  it('should not disable form input field with disabled=false', async () => {
+    const App = () => {
+      const { control } = useForm();
+      const {
+        field,
+        fieldState: { invalid, isTouched, isDirty },
+      } = useController({
+        name: 'test',
+        control,
+        disabled: false,
+        rules: { required: true },
+      });
+
+      return (
+        <form>
+          <input {...field} />
+          <button>submit</button>
+          {invalid && <p>invalid</p>}
+          {isTouched && <p>isTouched</p>}
+          {isDirty && <p>isDirty</p>}
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox')).not.toBeDisabled();
+    });
+  });
+
+  it('should pass validation with disabled to set to true', () => {
+    const callback = jest.fn();
+
+    const App = () => {
+      const { handleSubmit, control } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const { field } = useController({
+        control,
+        rules: {
+          required: true,
+        },
+        name: 'test',
+        disabled: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(callback)}>
+          <input {...field} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    waitFor(() => {
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  it('should not omit form value when disabled is not been presented', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const { handleSubmit, control } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+      });
+      const [toggle, setToggle] = useState<boolean | undefined>(undefined);
+      const { field } = useController({
+        control,
+        name: 'test',
+        disabled: toggle,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <input {...field} />
+          <button>submit</button>
+          <button
+            type={'button'}
+            onClick={() => {
+              setToggle((value) => {
+                if (isBoolean(value)) {
+                  return false;
+                }
+
+                return !value;
+              });
+            }}
+          >
+            toggle
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: 'test',
+      }),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: 'test',
+      }),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: undefined,
+      }),
+    );
+  });
+
+  it('should subscribe to exact form state update', () => {
+    type FormValues = {
+      test: string;
+      test_with_suffix: string;
+    };
+
+    const renderCounter: Record<keyof FormValues, number> = {
+      test: 0,
+      test_with_suffix: 0,
+    };
+
+    const ControlledInput = ({
+      name,
+      control,
+    }: {
+      name: keyof FormValues;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field,
+        fieldState: { error, isDirty },
+      } = useController({
+        name,
+        control,
+        rules: { required: 'is required' },
+      });
+
+      renderCounter[name]++;
+
+      return (
+        <div>
+          <input aria-label={name} {...field} />
+          {error && (
+            <p>
+              {name} {error.message}
+            </p>
+          )}
+          {isDirty && <p>{name} isDirty</p>}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control } = useForm<FormValues>({
+        mode: 'onBlur',
+        defaultValues: {
+          test: '1234',
+          test_with_suffix: '1234',
+        },
+      });
+      return (
+        <form>
+          <ControlledInput name="test" control={control} />
+          <ControlledInput name="test_with_suffix" control={control} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
+    expect(screen.queryByText('test is required')).toBeNull();
+    expect(screen.queryByText('test_with_suffix is required')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
+      target: {
+        value: '',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+
+    expect(screen.getByText('test isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 2 });
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'test_with_suffix' }),
+      {
+        target: {
+          value: '',
+        },
+      },
+    );
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+
+    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+  });
+
+  it('should listen to similar fields with exact - false', () => {
+    type FormValues = {
+      test: string;
+      test_with_suffix: string;
+    };
+
+    const renderCounter: Record<keyof FormValues, number> = {
+      test: 0,
+      test_with_suffix: 0,
+    };
+
+    const ControlledInput = ({
+      name,
+      control,
+    }: {
+      name: keyof FormValues;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field,
+        fieldState: { error, isDirty },
+      } = useController({
+        name,
+        control,
+        rules: { required: 'is required' },
+        exact: false,
+      });
+
+      renderCounter[name]++;
+
+      return (
+        <div>
+          <input aria-label={name} {...field} />
+          {error && (
+            <p>
+              {name} {error.message}
+            </p>
+          )}
+          {isDirty && <p>{name} isDirty</p>}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control } = useForm<FormValues>({
+        mode: 'onBlur',
+        defaultValues: {
+          test: '1234',
+          test_with_suffix: '1234',
+        },
+      });
+      return (
+        <form>
+          <ControlledInput name="test" control={control} />
+          <ControlledInput name="test_with_suffix" control={control} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
+    expect(screen.queryByText('test is required')).toBeNull();
+    expect(screen.queryByText('test_with_suffix is required')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
+      target: {
+        value: '',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+
+    expect(screen.getByText('test isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'test_with_suffix' }),
+      {
+        target: {
+          value: '',
+        },
+      },
+    );
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+
+    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
+  });
+
+  it('should prevent field value leakage when field names change at same position', () => {
+    type FormValues = {
+      type: 'personal' | 'business';
+      personalName: string;
+      businessName: string;
+    };
+
+    const Component = () => {
+      const { control, watch, setValue } = useForm<FormValues>({
+        defaultValues: {
+          type: 'personal',
+          personalName: '',
+          businessName: '',
+        },
+      });
+
+      const type = watch('type');
+
+      return (
+        <div>
+          <select
+            value={type}
+            onChange={(e) => setValue('type', e.target.value as any)}
+          >
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+          </select>
+          {type === 'personal' ? (
+            <Controller
+              name="personalName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          ) : (
+            <Controller
+              name="businessName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          )}
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John Doe' },
+    });
+
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'business' },
+    });
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
+  });
+
+  it('should react to changing field name', () => {
+    type FormValues = {
+      field1: string;
+      field2: string;
+    };
+
+    const { result: formResult } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          field1: 'value1',
+          field2: 'value2',
+        },
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ fieldName }: { fieldName: 'field1' | 'field2' }) =>
+        useController({
+          control: formResult.current.control,
+          name: fieldName,
+        }),
+      {
+        initialProps: { fieldName: 'field1' },
+      },
+    );
+
+    expect(result.current.field.value).toBe('value1');
+    expect(result.current.field.name).toBe('field1');
+
+    rerender({ fieldName: 'field2' });
+    expect(result.current.field.name).toBe('field2');
+    expect(result.current.field.value).toBe('value2');
+
+    rerender({ fieldName: 'field1' });
+    expect(result.current.field.name).toBe('field1');
+    expect(result.current.field.value).toBe('value1');
+  });
+
+  it('should react to changing control', () => {
+    type FormValues = {
+      name: string;
+    };
+
+    const { result: form1Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: 'form1-value',
+        },
+      }),
+    );
+
+    const { result: form2Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: 'form2-value',
+        },
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ control }: { control: Control<FormValues> }) =>
+        useController({
+          control,
+          name: 'name',
+        }),
+      {
+        initialProps: { control: form1Result.current.control },
+      },
+    );
+
+    expect(result.current.field.value).toBe('form1-value');
+
+    rerender({ control: form2Result.current.control });
+    expect(result.current.field.value).toBe('form2-value');
+
+    rerender({ control: form1Result.current.control });
+    expect(result.current.field.value).toBe('form1-value');
   });
 });

@@ -1,7 +1,7 @@
-import { FieldValues } from '../fields';
-import { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
+import type { FieldValues } from '../fields';
+import type { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
 
-import { ArrayKey, IsTuple, TupleKeys } from './common';
+import type { ArrayKey, IsTuple, TupleKeys } from './common';
 
 /**
  * Helper function to break apart T1 and check if any are equal to T2
@@ -26,11 +26,11 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
   | BrowserNativeObject
   ? `${K}`
   : // Check so that we don't recurse into the same type
-  // by ensuring that the types are mutually assignable
-  // mutually required to avoid false positives of subtypes
-  true extends AnyIsEqual<TraversedTypes, V>
-  ? `${K}`
-  : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
+    // by ensuring that the types are mutually assignable
+    // mutually required to avoid false positives of subtypes
+    true extends AnyIsEqual<TraversedTypes, V>
+    ? `${K}`
+    : `${K}` | `${K}.${PathInternal<V, TraversedTypes | V>}`;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -38,15 +38,16 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
  *
  * See {@link Path}
  */
-type PathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
-      }[TupleKeys<T>]
-    : PathImpl<ArrayKey, V, TraversedTypes>
-  : {
-      [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
-    }[keyof T];
+type PathInternal<T, TraversedTypes = T> =
+  T extends ReadonlyArray<infer V>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
+        }[TupleKeys<T>]
+      : PathImpl<ArrayKey, V, TraversedTypes>
+    : {
+        [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
+      }[keyof T];
 
 /**
  * Type which eagerly collects all paths through a type
@@ -79,19 +80,19 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
     ? string
     : never
   : V extends ReadonlyArray<infer U>
-  ? U extends Primitive | BrowserNativeObject
-    ? IsAny<V> extends true
-      ? string
-      : never
-    : // Check so that we don't recurse into the same type
-    // by ensuring that the types are mutually assignable
-    // mutually required to avoid false positives of subtypes
-    true extends AnyIsEqual<TraversedTypes, V>
-    ? never
-    : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
-  : true extends AnyIsEqual<TraversedTypes, V>
-  ? never
-  : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
+    ? U extends Primitive | BrowserNativeObject
+      ? IsAny<V> extends true
+        ? string
+        : never
+      : // Check so that we don't recurse into the same type
+        // by ensuring that the types are mutually assignable
+        // mutually required to avoid false positives of subtypes
+        true extends AnyIsEqual<TraversedTypes, V>
+        ? never
+        : `${K}` | `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`
+    : true extends AnyIsEqual<TraversedTypes, V>
+      ? never
+      : `${K}.${ArrayPathInternal<V, TraversedTypes | V>}`;
 
 /**
  * Helper type for recursively constructing paths through a type.
@@ -99,15 +100,20 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
  *
  * See {@link ArrayPath}
  */
-type ArrayPathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
-      }[TupleKeys<T>]
-    : ArrayPathImpl<ArrayKey, V, TraversedTypes>
-  : {
-      [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
-    }[keyof T];
+type ArrayPathInternal<T, TraversedTypes = T> =
+  T extends ReadonlyArray<infer V>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKeys<T>]-?: ArrayPathImpl<
+            K & string,
+            T[K],
+            TraversedTypes
+          >;
+        }[TupleKeys<T>]
+      : ArrayPathImpl<ArrayKey, V, TraversedTypes>
+    : {
+        [K in keyof T]-?: ArrayPathImpl<K & string, T[K], TraversedTypes>;
+      }[keyof T];
 
 /**
  * Type which eagerly collects all paths through a type which point to an array
@@ -138,24 +144,31 @@ export type FieldArrayPath<TFieldValues extends FieldValues> =
  * PathValue<[number, string], '1'> = string
  * ```
  */
-export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
+export type PathValue<T, P extends Path<T> | ArrayPath<T>> = PathValueImpl<
+  T,
+  P
+>;
+
+type PathValueImpl<T, P extends string> = T extends any
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
-      ? R extends Path<T[K]>
-        ? PathValue<T[K], R>
-        : never
+      ? undefined extends T[K]
+        ? PathValueImpl<T[K], R> | undefined
+        : PathValueImpl<T[K], R>
       : K extends `${ArrayKey}`
-      ? T extends ReadonlyArray<infer V>
-        ? PathValue<V, R & Path<V>>
+        ? T extends ReadonlyArray<infer V>
+          ? PathValueImpl<V, R>
+          : never
         : never
-      : never
     : P extends keyof T
-    ? T[P]
-    : P extends `${ArrayKey}`
-    ? T extends ReadonlyArray<infer V>
-      ? V
-      : never
-    : never
+      ? T[P]
+      : P extends `${ArrayKey}`
+        ? T extends ReadonlyArray<infer V>
+          ? V
+          : T extends undefined
+            ? undefined
+            : never
+        : never
   : never;
 
 /**
@@ -212,3 +225,22 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
     ? Key
     : never;
 }[FieldPath<TFieldValues>];
+
+/**
+ * Type which eagerly collects all array paths through a fieldType that matches a give type
+ * @typeParam TFieldValues - field values which are indexed by the paths
+ * @typeParam TValue       - the value you want to match into each type
+ * @example
+ * ```typescript
+ * FieldArrayPathByValue<{foo: {bar: number}[], baz: number, bar: string}, {bar: number}[]>
+ *   = 'foo'
+ * ```
+ */
+export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
+  [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<
+    TFieldValues,
+    Key
+  > extends TValue
+    ? Key
+    : never;
+}[FieldArrayPath<TFieldValues>];

@@ -1,24 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../constants';
-import {
+import type {
   Control,
+  FieldErrors,
+  FieldValues,
+  FormState,
+  Mode,
   RegisterOptions,
+  SubmitHandler,
+  UseFormGetFieldState,
   UseFormRegister,
   UseFormReturn,
+  UseFormUnregister,
 } from '../types';
 import isFunction from '../utils/isFunction';
-import { sleep } from '../utils/sleep';
-import { Controller, useFieldArray, useForm } from '../';
+import noop from '../utils/noop';
+import sleep from '../utils/sleep';
+import {
+  Controller,
+  createFormControl,
+  useFieldArray,
+  useForm,
+  useFormState,
+} from '../';
+
+jest.useFakeTimers();
 
 describe('useForm', () => {
   describe('when component unMount', () => {
@@ -58,9 +74,9 @@ describe('useForm', () => {
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.handleSubmit(() => {})({
-          preventDefault: () => {},
-          persist: () => {},
+        await result.current.handleSubmit(noop)({
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -82,9 +98,9 @@ describe('useForm', () => {
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.handleSubmit(() => {})({
-          preventDefault: () => {},
-          persist: () => {},
+        await result.current.handleSubmit(noop)({
+          preventDefault: noop,
+          persist: noop,
         } as React.SyntheticEvent);
       });
 
@@ -173,7 +189,7 @@ describe('useForm', () => {
         }>();
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {show && <input {...register('firstName', { required: true })} />}
             {errors.firstName && <p>First name is required.</p>}
 
@@ -549,6 +565,88 @@ describe('useForm', () => {
 
       await waitFor(() => expect(span.textContent).toBe('data'));
     });
+
+    it('should display the latest error message with errors prop', () => {
+      const Form = () => {
+        type FormValues = {
+          test1: string;
+          test2: string;
+        };
+        const [errorsState, setErrorsState] = React.useState<
+          FieldErrors<FormValues>
+        >({
+          test1: { type: 'test1', message: 'test1 error' },
+        });
+        const {
+          register,
+          formState: { errors },
+        } = useForm<FormValues>({
+          errors: errorsState,
+        });
+
+        return (
+          <div>
+            <input {...register('test1')} type="text" />
+            <span role="alert">{errors.test1 && errors.test1.message}</span>
+            <input {...register('test2')} type="text" />
+            <span role="alert">{errors.test2 && errors.test2.message}</span>
+            <button
+              onClick={() =>
+                setErrorsState((errors) => ({
+                  ...errors,
+                  test2: { type: 'test2', message: 'test2 error' },
+                }))
+              }
+            >
+              Set Errors
+            </button>
+          </div>
+        );
+      };
+
+      render(<Form />);
+
+      const alert1 = screen.getAllByRole('alert')[0];
+      expect(alert1.textContent).toBe('test1 error');
+      const test1Input = screen.getAllByRole('textbox')[0];
+      expect(test1Input).toHaveFocus();
+
+      fireEvent.click(screen.getByRole('button'));
+
+      const alert2 = screen.getAllByRole('alert')[1];
+      expect(alert2.textContent).toBe('test2 error');
+      expect(test1Input).toHaveFocus();
+    });
+
+    it("shouldn't focus the input of the error defined in the errors prop if shouldFocusError is false", () => {
+      const formErrors = {
+        test1: { type: 'test1', message: 'test1 error' },
+      };
+      const Form = () => {
+        type FormValues = {
+          test1: string;
+        };
+        const {
+          register,
+          formState: { errors },
+        } = useForm<FormValues>({
+          errors: formErrors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1')} type="text" />
+            <span role="alert">{errors.test1 && errors.test1.message}</span>
+          </div>
+        );
+      };
+
+      const renderRes = render(<Form />);
+      const alert1 = screen.getAllByRole('alert')[0];
+      expect(alert1.textContent).toBe('test1 error');
+      expect(renderRes.baseElement).toHaveFocus();
+    });
   });
 
   describe('handleChangeRef', () => {
@@ -556,7 +654,7 @@ describe('useForm', () => {
       resolver,
       mode,
       rules = { required: 'required' },
-      onSubmit = () => {},
+      onSubmit = noop,
     }: {
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
@@ -864,7 +962,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch();
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test')} />
               <button>button</button>
             </form>
@@ -887,7 +985,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch('test');
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test')} />
               <button>button</button>
             </form>
@@ -910,7 +1008,7 @@ describe('useForm', () => {
           }>();
           watchedField = watch('test');
           return (
-            <form onSubmit={handleSubmit(() => {})}>
+            <form onSubmit={handleSubmit(noop)}>
               <input {...register('test.0')} />
               <input {...register('test.1')} />
               <input {...register('test.2')} />
@@ -1192,6 +1290,84 @@ describe('useForm', () => {
     });
   });
 
+  describe('when mode or reValidateMode changes', () => {
+    it('should use updated mode and reValidateMode inside of onChange handler', async () => {
+      const resolver = jest.fn(async (data: any) => ({
+        values: data,
+        errors: {},
+      }));
+      const Form = () => {
+        const [mode, setMode] = React.useState<Mode>('onChange');
+        const [reValidateMode, setReValidateMode] =
+          React.useState<Exclude<Mode, 'onTouched' | 'all'>>('onBlur');
+        const { register, handleSubmit } = useForm<{ test: string }>({
+          mode,
+          reValidateMode,
+          resolver,
+        });
+        return (
+          <form onSubmit={handleSubmit(noop)}>
+            <input {...register('test')} type="text" />
+            <button
+              type="button"
+              onClick={() => {
+                setMode('onTouched');
+                setReValidateMode('onChange');
+              }}
+            >
+              Update Validation Mode
+            </button>
+            <input type="submit" />
+          </form>
+        );
+      };
+
+      render(<Form />);
+
+      fireEvent.click(
+        screen.getByRole('button', { name: /update validation mode/i }),
+      );
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(0);
+
+      fireEvent.blur(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(1);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test1',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(2);
+
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      await waitFor(() => expect(resolver).toHaveBeenCalledTimes(3));
+
+      fireEvent.blur(screen.getByRole('textbox'), {
+        target: {
+          value: 'test1',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(3);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test12',
+        },
+      });
+      expect(resolver).toHaveBeenCalledTimes(4);
+    });
+  });
+
   describe('updateValid', () => {
     it('should be called resolver with default values if default value is defined', async () => {
       type FormValues = {
@@ -1418,7 +1594,7 @@ describe('useForm', () => {
         errorsObject = errors;
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             {[1, 2, 3].map((value, index) => (
               <div key={`test.${index}`}>
                 <label
@@ -1507,7 +1683,7 @@ describe('useForm', () => {
         errorsObject = errors;
 
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <input type={'checkbox'} {...register(`checkbox.0.test`)} />
 
             <input {...register(`checkbox.1.test1`)} />
@@ -1553,6 +1729,7 @@ describe('useForm', () => {
         const { register, formState } = useForm({
           defaultValues: { test: 'Test' },
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (values) => {
             if (!values.test) {
               return {
@@ -1640,38 +1817,25 @@ describe('useForm', () => {
     });
   });
 
-  it('should unsubscribe to all subject when hook unmounts', () => {
-    let tempControl: any;
-
-    const App = () => {
-      const { control } = useForm();
-      tempControl = control;
-
-      return null;
-    };
-
-    const { unmount } = render(<App />);
-
-    expect(tempControl._subjects.state.observers.length).toBeTruthy();
-
-    unmount();
-
-    expect(tempControl._subjects.state.observers.length).toBeFalsy();
-  });
-
-  it('should update isValidating to true when other validation still running', async () => {
+  it('should update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
-    function App() {
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
+    const App = () => {
       const [stateValidation, setStateValidation] = React.useState(false);
       const {
         register,
-        formState: { isValidating },
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
       } = useForm({ mode: 'all' });
+      formState = tmpFormState;
+      getFieldState = tmpGetFieldState;
+
+      formState.isValidating;
 
       return (
         <div>
-          <p>isValidating: {String(isValidating)}</p>
           <p>stateValidation: {String(stateValidation)}</p>
           <form>
             <input
@@ -1697,7 +1861,7 @@ describe('useForm', () => {
           </form>
         </div>
       );
-    }
+    };
 
     render(<App />);
 
@@ -1708,15 +1872,231 @@ describe('useForm', () => {
       target: { value: 'test' },
     });
 
-    screen.getByText('isValidating: true');
+    expect(formState.isValidating).toBe(true);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: true,
+      firstName: true,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+    expect(getFieldState('firstName').isValidating).toBe(true);
     screen.getByText('stateValidation: true');
 
-    await actComponent(async () => {
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(formState.isValidating).toBe(true);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: true,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+    expect(getFieldState('firstName').isValidating).toBe(false);
+    screen.getByText('stateValidation: true');
+
+    await act(async () => {
+      jest.advanceTimersByTime(4000);
+    });
+
+    expect(formState.isValidating).toBe(false);
+    expect(formState.validatingFields).toStrictEqual({});
+    expect(getFieldState('lastName').isValidating).toBe(false);
+    expect(getFieldState('firstName').isValidating).toBe(false);
+    screen.getByText('stateValidation: false');
+  });
+
+  it('should correctly handle multiple async validation triggers', async () => {
+    jest.useFakeTimers();
+
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
+    const App = () => {
+      const [stateValidation, setStateValidation] = React.useState(false);
+      const {
+        register,
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
+      } = useForm({ mode: 'onChange' });
+      formState = tmpFormState;
+      getFieldState = tmpGetFieldState;
+
+      formState.validatingFields;
+      formState.isDirty;
+
+      return (
+        <div>
+          <p>stateValidation: {String(stateValidation)}</p>
+          <form>
+            <input
+              {...register('lastName', {
+                required: true,
+                validate: () => {
+                  setStateValidation(true);
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      setStateValidation(false);
+                      resolve(true);
+                    }, 2000);
+                  });
+                },
+              })}
+              placeholder="async"
+            />
+          </form>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(formState.validatingFields).toStrictEqual({});
+    expect(formState.isDirty).toStrictEqual(false);
+    expect(formState.dirtyFields).toStrictEqual({});
+    expect(getFieldState('lastName').isDirty).toStrictEqual(false);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+
+    expect(formState.isDirty).toStrictEqual(true);
+    expect(formState.dirtyFields).toStrictEqual({ lastName: true });
+    expect(getFieldState('lastName').isDirty).toStrictEqual(true);
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(formState.validatingFields).toStrictEqual({ lastName: true });
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test1' },
+    });
+
+    expect(formState.validatingFields).toStrictEqual({ lastName: true });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+
+    await act(async () => {
+      jest.advanceTimersByTime(1500);
+    });
+
+    expect(formState.validatingFields).toStrictEqual({});
+    expect(getFieldState('lastName').isValidating).toBe(false);
+  });
+
+  it('should update isValidating to true when using with resolver', async () => {
+    jest.useFakeTimers();
+
+    let formState = {} as FormState<FieldValues>;
+    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
+    const App = () => {
+      const {
+        register,
+        formState: tmpFormState,
+        getFieldState: tmpGetFieldState,
+      } = useForm<{
+        firstName: string;
+        lastName: string;
+      }>({
+        mode: 'all',
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+        resolver: async () => {
+          await sleep(2000);
+
+          return {
+            errors: {},
+            values: {},
+          };
+        },
+      });
+      getFieldState = tmpGetFieldState;
+      formState = tmpFormState;
+
+      formState.isValidating;
+
+      return (
+        <div>
+          <input {...register('lastName')} placeholder="async" />
+          <input {...register('firstName')} placeholder="required" />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('async'), {
+      target: { value: 'test1' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test2' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('required'), {
+      target: { value: 'test3' },
+    });
+
+    expect(formState.isValidating).toBe(true);
+    expect(formState.validatingFields).toStrictEqual({
+      lastName: true,
+      firstName: true,
+    });
+    expect(getFieldState('lastName').isValidating).toBe(true);
+    expect(getFieldState('firstName').isValidating).toBe(true);
+
+    await act(async () => {
       jest.runAllTimers();
     });
 
-    screen.getByText('isValidating: false');
-    screen.getByText('stateValidation: false');
+    expect(formState.isValidating).toBe(false);
+    expect(formState.validatingFields).toStrictEqual({});
+    expect(getFieldState('lastName').isValidating).toBe(false);
+    expect(getFieldState('firstName').isValidating).toBe(false);
+  });
+
+  it('should remove field from validatingFields on unregister', async () => {
+    jest.useFakeTimers();
+    let unregister: UseFormUnregister<FieldValues>;
+    let formState = {} as FormState<FieldValues>;
+    const App = () => {
+      const {
+        register,
+        unregister: tmpUnregister,
+        formState: tmpFormState,
+      } = useForm({ mode: 'all' });
+      unregister = tmpUnregister;
+      formState = tmpFormState;
+
+      formState.validatingFields;
+
+      return (
+        <div>
+          <form>
+            <input
+              {...register('firstName', {
+                required: true,
+              })}
+              placeholder="firstName"
+            />
+          </form>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: { value: 'test' },
+    });
+
+    expect(formState.validatingFields).toEqual({ firstName: true });
+    await act(async () => {
+      unregister('firstName');
+      jest.runAllTimers();
+    });
+    expect(formState.validatingFields).toEqual({});
   });
 
   it('should update defaultValues async', async () => {
@@ -1915,65 +2295,6 @@ describe('useForm', () => {
     expect(result.current.formState.isLoading).toBe(false);
   });
 
-  it('should update isValidating to true when using with resolver', async () => {
-    jest.useFakeTimers();
-
-    function App() {
-      const {
-        register,
-        formState: { isValidating },
-      } = useForm<{
-        firstName: string;
-        lastName: string;
-      }>({
-        mode: 'all',
-        defaultValues: {
-          lastName: '',
-          firstName: '',
-        },
-        resolver: async () => {
-          await sleep(2000);
-
-          return {
-            errors: {},
-            values: {},
-          };
-        },
-      });
-
-      return (
-        <div>
-          <p>isValidating: {String(isValidating)}</p>
-          <input {...register('lastName')} placeholder="async" />
-          <input {...register('firstName')} placeholder="required" />
-        </div>
-      );
-    }
-
-    render(<App />);
-
-    fireEvent.change(screen.getByPlaceholderText('async'), {
-      target: { value: 'test' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('async'), {
-      target: { value: 'test1' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('required'), {
-      target: { value: 'test2' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('required'), {
-      target: { value: 'test3' },
-    });
-
-    screen.getByText('isValidating: true');
-
-    await actComponent(async () => {
-      jest.runAllTimers();
-    });
-
-    screen.getByText('isValidating: false');
-  });
-
   it('should update form values when values updates even with the same values', async () => {
     type FormValues = {
       firstName: string;
@@ -2036,6 +2357,423 @@ describe('useForm', () => {
     await waitFor(() => {
       screen.getByText('C');
       screen.getByText('pristine');
+    });
+  });
+
+  it('should keep defaultValues if set keep default values is true on reset option', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { register, formState } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'Alex',
+        },
+        values: {
+          firstName: 'John',
+        },
+        resetOptions: { keepDefaultValues: true },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <div>{String(formState.isDirty)}</div>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John' },
+    });
+
+    screen.getByText('true');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Alex' },
+    });
+
+    screen.getByText('false');
+  });
+
+  it('should change defaultValues if not reset options presented', async () => {
+    type FormValues = {
+      firstName: string;
+    };
+
+    function App() {
+      const { register, formState } = useForm<FormValues>({
+        defaultValues: {
+          firstName: 'Alex',
+        },
+        values: {
+          firstName: 'John',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <div>{String(formState.isDirty)}</div>
+          <input type="submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Alex' },
+    });
+
+    screen.getByText('true');
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John' },
+    });
+
+    screen.getByText('false');
+  });
+
+  it('should disable the entire form inputs', async () => {
+    function App() {
+      const { register } = useForm({
+        disabled: true,
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="firstName" />
+          <input {...register('lastName')} placeholder="lastName" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
+  });
+
+  it('should disable the entire form', () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { register, control } = useForm({
+        disabled,
+      });
+
+      return (
+        <form>
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+
+          <Controller
+            control={control}
+            render={({ field }) => {
+              return (
+                <input disabled={field.disabled} data-testid={'controller'} />
+              );
+            }}
+            name="test"
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              setDisabled(!disabled);
+            }}
+          >
+            Submit
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('checkbox')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('radio')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('range')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('select')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('textarea')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('controller')).toHaveAttribute('disabled');
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(screen.getByTestId('checkbox')).not.toBeDisabled();
+    expect(screen.getByTestId('radio')).not.toBeDisabled();
+    expect(screen.getByTestId('range')).not.toBeDisabled();
+    expect(screen.getByTestId('select')).not.toBeDisabled();
+    expect(screen.getByTestId('textarea')).not.toBeDisabled();
+    expect(screen.getByTestId('controller')).not.toBeDisabled();
+  });
+
+  it('should disable form inputs separately from its form', async () => {
+    function App() {
+      const { register } = useForm({
+        disabled: false,
+        defaultValues: {
+          lastName: '',
+          firstName: '',
+        },
+      });
+
+      return (
+        <form>
+          <input
+            {...register('firstName', { disabled: true })}
+            placeholder="firstName"
+          />
+          <input
+            {...register('lastName', { disabled: false })}
+            placeholder="lastName"
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+    });
+  });
+
+  it('should be able to disable the entire form', async () => {
+    const App = () => {
+      const [disabled, setDisabled] = useState(false);
+      const { register, handleSubmit } = useForm({
+        disabled,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit(async () => {
+            setDisabled(true);
+            await sleep(100);
+            setDisabled(false);
+          })}
+        >
+          <input
+            type={'checkbox'}
+            {...register('checkbox')}
+            data-testid={'checkbox'}
+          />
+          <input type={'radio'} {...register('radio')} data-testid={'radio'} />
+          <input type={'range'} {...register('range')} data-testid={'range'} />
+          <select {...register('select')} data-testid={'select'} />
+          <textarea {...register('textarea')} data-testid={'textarea'} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(
+      (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('range') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('select') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+    expect(
+      (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+    ).toBeFalsy();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('range') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('select') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+      expect(
+        (screen.getByTestId('textarea') as HTMLInputElement).disabled,
+      ).toBeFalsy();
+    });
+  });
+
+  it('should allow to submit a form with disabled form fields', async () => {
+    function App() {
+      const { register, getFieldState, formState, handleSubmit } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input
+            {...register('firstName', { disabled: true, required: true })}
+            placeholder="firstName"
+          />
+          <p>
+            {getFieldState('firstName', formState).error
+              ? 'has error'
+              : 'no error'}
+          </p>
+          <input type="submit" value="Submit" />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    await act(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(() => {
+      expect(
+        (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
+      ).toBeTruthy();
+      expect(
+        screen.getByText('no error') as HTMLInputElement,
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('when given formControl', () => {
+    it('accepts default values', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const { register, handleSubmit, formControl } =
+        createFormControl<FormValues>();
+
+      function FormComponent({
+        onSubmit,
+        defaultValues,
+      }: {
+        defaultValues: FormValues;
+        onSubmit: SubmitHandler<FormValues>;
+      }) {
+        useForm({
+          formControl,
+          defaultValues,
+        });
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('firstName')} placeholder="First Name" />
+            <input type="submit" />
+          </form>
+        );
+      }
+
+      function App() {
+        const [state, setState] = React.useState('');
+        return (
+          <div>
+            <FormComponent
+              defaultValues={{ firstName: 'Emilia' }}
+              onSubmit={(data) => {
+                setState(JSON.stringify(data));
+              }}
+            />
+            <pre>{state}</pre>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      const input = screen.getAllByRole<HTMLInputElement>('textbox')[0];
+      expect(input.value).toBe('Emilia');
+
+      fireEvent.input(input, { target: { value: 'abc' } });
+      expect(input.value).toBe('abc');
+    });
+  });
+
+  describe('When using defaultValues', () => {
+    function App() {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const [defaults, setDefaults] = React.useState<FormValues>({
+        firstName: '1',
+      });
+
+      const { control, formState, reset, register } = useForm<FormValues>({
+        defaultValues: defaults,
+      });
+
+      const { defaultValues: stateDefaults } = useFormState({ control });
+
+      const handleClick = () => {
+        const next = { firstName: String(Number(defaults.firstName) + 1) };
+        setDefaults(next);
+        reset(next);
+      };
+
+      return (
+        <div>
+          <input {...register('firstName')} />
+          <button onClick={handleClick}>reset</button>
+          <span data-testid="react">{defaults.firstName}</span>
+          <span data-testid="form">{formState.defaultValues?.firstName}</span>
+          <span data-testid="state">{stateDefaults?.firstName}</span>
+        </div>
+      );
+    }
+    it('formState.defaultValues and useFormState().defaultValues should be equal after reset', () => {
+      render(<App />);
+
+      fireEvent.click(screen.getByText('reset'));
+      fireEvent.click(screen.getByText('reset'));
+      fireEvent.click(screen.getByText('reset'));
+
+      const reactValue = screen.getByTestId('react').textContent;
+      expect(screen.getByTestId('form').textContent).toBe(reactValue);
+      expect(screen.getByTestId('state').textContent).toBe(reactValue);
     });
   });
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act as actComponent,
   fireEvent,
   render,
   screen,
@@ -8,11 +9,16 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues } from '../types';
+import type {
+  ControllerRenderProps,
+  FieldValues,
+  ValidateResult,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
+import noop from '../utils/noop';
 
 function Input<TFieldValues extends FieldValues>({
   onChange,
@@ -260,6 +266,61 @@ describe('Controller', () => {
     expect(touched).toEqual({ test: true });
   });
 
+  it('should set field to formState validatingFields and render field isValidating state', async () => {
+    jest.useFakeTimers();
+
+    const getValidateMock: (timeout: number) => Promise<ValidateResult> = (
+      timeout: number,
+    ) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, timeout);
+      });
+    };
+
+    let validatingFields: any;
+    const Component = () => {
+      const { control, formState } = useForm({ mode: 'onBlur' });
+
+      validatingFields = formState.validatingFields;
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={({ field, fieldState }) => (
+            <>
+              <div>isValidating: {String(fieldState.isValidating)}</div>
+              <input {...field} />
+            </>
+          )}
+          control={control}
+          rules={{
+            validate: () => getValidateMock(1000),
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(validatingFields).toEqual({});
+    expect(screen.getByText('isValidating: false')).toBeVisible();
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    expect(validatingFields).toEqual({ test: true });
+    expect(screen.getByText('isValidating: true')).toBeVisible();
+
+    await actComponent(async () => {
+      jest.advanceTimersByTime(1100);
+    });
+
+    expect(validatingFields).toEqual({});
+    expect(screen.getByText('isValidating: false')).toBeVisible();
+  });
+
   it('should call trigger method when re-validate mode is onBlur with blur event', async () => {
     const Component = () => {
       const {
@@ -271,7 +332,7 @@ describe('Controller', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Controller
             defaultValue=""
             name="test"
@@ -375,7 +436,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(onChange).toBeCalled();
+    expect(onChange).toHaveBeenCalled();
   });
 
   it('should invoke custom onBlur method', () => {
@@ -400,7 +461,7 @@ describe('Controller', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(onBlur).toBeCalled();
+    expect(onBlur).toHaveBeenCalled();
   });
 
   it('should update rules when rules gets updated', () => {
@@ -483,15 +544,15 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onInvalid).toBeCalledTimes(1));
-    expect(onValid).toBeCalledTimes(0);
+    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+    expect(onValid).toHaveBeenCalledTimes(0);
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onValid).toBeCalledTimes(1));
-    expect(onInvalid).toBeCalledTimes(1);
+    await waitFor(() => expect(onValid).toHaveBeenCalledTimes(1));
+    expect(onInvalid).toHaveBeenCalledTimes(1);
   });
 
   it('should not set initial state from unmount state when input is part of field array', () => {
@@ -719,7 +780,7 @@ describe('Controller', () => {
           render={({ field: props, fieldState }) => (
             <>
               <input {...props} />
-              {fieldState.isTouched && <p>Input is dirty.</p>}
+              {fieldState.isDirty && <p>Input is dirty.</p>}
             </>
           )}
           control={control}
@@ -736,8 +797,7 @@ describe('Controller', () => {
 
     const input = screen.getByRole('textbox');
 
-    fireEvent.focus(input);
-    fireEvent.blur(input);
+    fireEvent.change(input, { target: { value: 'dirty' } });
 
     expect(await screen.findByText('Input is dirty.')).toBeVisible();
   });
@@ -809,7 +869,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should update Controller value with setValue', () => {
@@ -840,7 +900,7 @@ describe('Controller', () => {
   });
 
   it('should retain default value or defaultValues at Controller', () => {
-    let getValuesMethod = () => {};
+    let getValuesMethod = noop;
     const Component = () => {
       const { control, getValues } = useForm<{
         test: number;
@@ -1019,6 +1079,9 @@ describe('Controller', () => {
       {
         test: 'bill',
       },
+      {
+        test: 'bill',
+      },
       {},
     ]);
   });
@@ -1120,7 +1183,7 @@ describe('Controller', () => {
       });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, index) => {
             return (
               <div key={field.id}>
@@ -1414,7 +1477,7 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(getValueFn).toBeCalledWith({
+    expect(getValueFn).toHaveBeenCalledWith({
       names: [{ firstName: '' }],
       show: true,
     });
@@ -1422,7 +1485,7 @@ describe('Controller', () => {
     fireEvent.click(screen.getByTestId('checkbox'));
     fireEvent.click(screen.getByRole('button'));
 
-    expect(getValueFn).toBeCalledWith({
+    expect(getValueFn).toHaveBeenCalledWith({
       show: false,
     });
   });
@@ -1456,7 +1519,7 @@ describe('Controller', () => {
       const { control, handleSubmit } = useForm<{ numbers: number[] }>();
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Controller
             control={control}
             name="numbers"
@@ -1489,5 +1552,156 @@ describe('Controller', () => {
     fireEvent.click(screen.getByRole('button', { name: '[1]' }));
 
     expect(await screen.findByText('custom')).toBeVisible();
+  });
+
+  it('should not require type coercion', async () => {
+    function App() {
+      class NonCoercible {
+        x: string;
+
+        constructor(x: string) {
+          this.x = x;
+        }
+
+        [Symbol.toPrimitive]() {
+          throw new TypeError();
+        }
+      }
+
+      const { control } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+          value: new NonCoercible('a'),
+        },
+      });
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            name="value"
+            rules={{
+              validate: (field) => {
+                return field.x.length > 0;
+              },
+            }}
+            render={({ field }) => (
+              <input
+                value={field.value.x}
+                onChange={(e) =>
+                  field.onChange(new NonCoercible(e.target.value))
+                }
+              />
+            )}
+          />
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'b',
+      },
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('b');
+  });
+
+  it('should respect disabled state set on the input element', () => {
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={({ field }) => <input disabled {...field} />}
+          control={control}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('textbox')).toBeDisabled();
+  });
+
+  it('should respect disabled state set on the Controller component', () => {
+    const Component = () => {
+      const { control } = useForm();
+
+      const [disabled, setDisabled] = React.useState(true);
+
+      return (
+        <>
+          <Controller
+            defaultValue=""
+            name="test"
+            disabled={disabled}
+            render={({ field }) => <input {...field} />}
+            control={control}
+          />
+          <button onClick={() => setDisabled(false)}>disable</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('textbox')).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByRole('textbox')).toBeEnabled();
+  });
+
+  it('should create error object when the value is Invalid Date during onChange event', async () => {
+    let currentErrors: any = {};
+    const name = 'test';
+    const Component = () => {
+      const {
+        control,
+        formState: { errors },
+      } = useForm({ mode: 'onChange' });
+      const [text, setText] = React.useState('');
+      currentErrors = errors;
+
+      return (
+        <form>
+          <Controller
+            defaultValue=""
+            name={name}
+            control={control}
+            render={({ field: { onChange } }) => (
+              <input
+                type="text"
+                value={text}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setText(e.target.value);
+                  const dateValue = new Date(e.target.value);
+                  onChange(dateValue);
+                }}
+              />
+            )}
+            rules={{
+              validate: (v) => !(v instanceof Date && isNaN(v.getTime())),
+            }}
+          />
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'test' } });
+
+    await waitFor(() => expect(currentErrors).toHaveProperty(name));
+
+    fireEvent.change(input, { target: { value: '2024-10-16' } });
+
+    await waitFor(() => expect(currentErrors).not.toHaveProperty(name));
   });
 });

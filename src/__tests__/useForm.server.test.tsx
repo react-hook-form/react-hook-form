@@ -25,6 +25,32 @@ describe('useForm with SSR', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
+  it('should display error with errors prop', () => {
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{
+        test: string;
+      }>({
+        errors: {
+          test: { type: 'test', message: 'test error' },
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <span role="alert">{errors.test && errors.test.message}</span>
+        </div>
+      );
+    };
+
+    expect(renderToString(<App />)).toEqual(
+      '<div><input name="test"/><span role="alert">test error</span></div>',
+    );
+  });
+
   it('should not pass down constrained API for server side rendering', () => {
     const App = () => {
       const { register } = useForm<{

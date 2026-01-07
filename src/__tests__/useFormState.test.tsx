@@ -2,12 +2,13 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control } from '../types';
+import type { Control } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
+import noop from '../utils/noop';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -57,11 +58,11 @@ describe('useFormState', () => {
 
     expect(screen.getByText('isDirty')).toBeVisible();
     expect(screen.getByText('dirty field')).toBeVisible();
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
 
     fireEvent.blur(screen.getByLabelText('test'));
     expect(screen.getByText('isTouched')).toBeVisible();
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should render correct isolated errors message', async () => {
@@ -115,7 +116,7 @@ describe('useFormState', () => {
     expect(await screen.findByText('valid')).toBeVisible();
     expect(screen.getByText('yes')).toBeVisible();
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should update isValidating correctly', async () => {
@@ -232,16 +233,16 @@ describe('useFormState', () => {
     expect(await screen.findByText('hasDirtyField')).toBeVisible();
     expect(screen.getByText('isDirty')).toBeVisible();
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
-    expect(test1Count).toEqual(1);
+    expect(count).toEqual(2);
+    expect(testCount).toEqual(3);
+    expect(test1Count).toEqual(2);
 
     fireEvent.blur(screen.getByLabelText('test'));
     expect(screen.getByText('isTouched')).toBeVisible();
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
-    expect(test1Count).toEqual(2);
+    expect(count).toEqual(2);
+    expect(testCount).toEqual(3);
+    expect(test1Count).toEqual(3);
 
     fireEvent.input(screen.getByLabelText('test'), {
       target: {
@@ -249,9 +250,9 @@ describe('useFormState', () => {
       },
     });
 
-    expect(count).toEqual(1);
-    expect(testCount).toEqual(2);
-    expect(test1Count).toEqual(2);
+    expect(count).toEqual(2);
+    expect(testCount).toEqual(3);
+    expect(test1Count).toEqual(3);
   });
 
   it('should render correct submit state', async () => {
@@ -275,7 +276,7 @@ describe('useFormState', () => {
       count++;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <Test control={control} />
           <button>Submit</button>
         </form>
@@ -289,7 +290,7 @@ describe('useFormState', () => {
     expect(await screen.findByText('isSubmitted')).toBeVisible();
     expect(screen.getByText('1')).toBeVisible();
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should only re-render when subscribed field name updated', async () => {
@@ -391,7 +392,7 @@ describe('useFormState', () => {
       },
     });
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should only re-render when subscribed field names updated', async () => {
@@ -512,7 +513,7 @@ describe('useFormState', () => {
       },
     });
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should be able to stop the formState subscription', async () => {
@@ -601,14 +602,10 @@ describe('useFormState', () => {
     }
 
     const App = () => {
-      return (
-        <React.StrictMode>
-          <FieldArray />
-        </React.StrictMode>
-      );
+      return <FieldArray />;
     };
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.click(screen.getByRole('button', { name: 'add' }));
 
@@ -755,7 +752,7 @@ describe('useFormState', () => {
       const { errors } = useFormState({ control });
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           <input {...register('firstName', { required: 'Required' })} />
           <p>{errors.firstName?.message}</p>
           <button>Submit</button>
@@ -789,7 +786,7 @@ describe('useFormState', () => {
       return <p>{isValid}</p>;
     }
 
-    function Form({ values }: { values: any }) {
+    function Form({ values }: { values: FormValues }) {
       const { getValues, control } = useForm<FormValues>({
         defaultValues: {
           firstName: '',
@@ -816,6 +813,30 @@ describe('useFormState', () => {
 
     await waitFor(() => {
       screen.getByText('test');
+    });
+  });
+
+  it('should update form state with disabled state', async () => {
+    function Form({ control }: { control: Control }) {
+      const { disabled } = useFormState({
+        control,
+      });
+
+      return <p>{disabled ? 'disabled' : ''}</p>;
+    }
+
+    function App() {
+      const { control } = useForm({
+        disabled: true,
+      });
+
+      return <Form control={control} />;
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      screen.getByText('disabled');
     });
   });
 });

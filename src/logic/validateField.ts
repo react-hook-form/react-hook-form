@@ -1,10 +1,13 @@
 import { INPUT_VALIDATION_RULES } from '../constants';
-import {
+import type {
   Field,
   FieldError,
   FieldValues,
   InternalFieldErrors,
+  InternalNameSet,
+  MaxType,
   Message,
+  MinType,
   NativeFieldValue,
 } from '../types';
 import get from '../utils/get';
@@ -14,7 +17,6 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
-import isMessage from '../utils/isMessage';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
 import isRadioInput from '../utils/isRadioInput';
@@ -30,6 +32,7 @@ import getValueAndMessage from './getValueAndMessage';
 
 export default async <T extends FieldValues>(
   field: Field,
+  disabledFieldNames: InternalNameSet,
   formValues: T,
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
@@ -48,10 +51,9 @@ export default async <T extends FieldValues>(
     name,
     valueAsNumber,
     mount,
-    disabled,
   } = field._f;
   const inputValue: NativeFieldValue = get(formValues, name);
-  if (!mount || disabled) {
+  if (!mount || disabledFieldNames.has(name)) {
     return {};
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
@@ -82,8 +84,8 @@ export default async <T extends FieldValues>(
     exceedMax: boolean,
     maxLengthMessage: Message,
     minLengthMessage: Message,
-    maxType = INPUT_VALIDATION_RULES.maxLength,
-    minType = INPUT_VALIDATION_RULES.minLength,
+    maxType: MaxType = INPUT_VALIDATION_RULES.maxLength,
+    minType: MinType = INPUT_VALIDATION_RULES.minLength,
   ) => {
     const message = exceedMax ? maxLengthMessage : minLengthMessage;
     error[name] = {
@@ -103,7 +105,7 @@ export default async <T extends FieldValues>(
           (isCheckBox && !getCheckboxValue(refs).isValid) ||
           (isRadio && !getRadioValue(refs).isValid))
   ) {
-    const { value, message } = isMessage(required)
+    const { value, message } = isString(required)
       ? { value: !!required, message: required }
       : getValueAndMessage(required);
 
@@ -149,16 +151,16 @@ export default async <T extends FieldValues>(
         exceedMax = isTime
           ? convertTimeToDate(inputValue) > convertTimeToDate(maxOutput.value)
           : isWeek
-          ? inputValue > maxOutput.value
-          : valueDate > new Date(maxOutput.value);
+            ? inputValue > maxOutput.value
+            : valueDate > new Date(maxOutput.value);
       }
 
       if (isString(minOutput.value) && inputValue) {
         exceedMin = isTime
           ? convertTimeToDate(inputValue) < convertTimeToDate(minOutput.value)
           : isWeek
-          ? inputValue < minOutput.value
-          : valueDate < new Date(minOutput.value);
+            ? inputValue < minOutput.value
+            : valueDate < new Date(minOutput.value);
       }
     }
 

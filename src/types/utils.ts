@@ -1,4 +1,4 @@
-import { NestedValue } from './form';
+import type { NestedValue } from './form';
 
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
@@ -41,17 +41,37 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
-  ? T
-  : { [K in keyof T]?: DeepPartial<T[K]> };
+export type ExtractObjects<T> = T extends infer U
+  ? U extends object
+    ? U
+    : never
+  : never;
 
-export type DeepPartialSkipArrayKey<T> = T extends
-  | BrowserNativeObject
-  | NestedValue
-  ? T
-  : T extends ReadonlyArray<any>
-  ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
-  : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+type IsPrimitiveLike<T> = T extends Primitive
+  ? true
+  : T extends Primitive & object
+    ? true
+    : false;
+
+export type DeepPartial<T> =
+  IsPrimitiveLike<T> extends true
+    ? T
+    : T extends BrowserNativeObject | NestedValue
+      ? T
+      : {
+          [K in keyof T]?: ExtractObjects<T[K]> extends never
+            ? T[K]
+            : DeepPartial<T[K]>;
+        };
+
+export type DeepPartialSkipArrayKey<T> =
+  IsPrimitiveLike<T> extends true
+    ? T
+    : T extends BrowserNativeObject | NestedValue
+      ? T
+      : T extends ReadonlyArray<any>
+        ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+        : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
 /**
  * Checks whether the type is any
@@ -94,29 +114,31 @@ export type IsEqual<T1, T2> = T1 extends T2
     : false
   : false;
 
-export type DeepMap<T, TValue> = IsAny<T> extends true
-  ? any
-  : T extends BrowserNativeObject | NestedValue
-  ? TValue
-  : T extends object
-  ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
-  : TValue;
+export type DeepMap<T, TValue> =
+  IsAny<T> extends true
+    ? any
+    : T extends BrowserNativeObject | NestedValue
+      ? TValue
+      : T extends object
+        ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+        : TValue;
 
-export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], NestedValue | Date | FileList>,
-  any[] | object
-> extends never
-  ? true
-  : false;
+export type IsFlatObject<T extends object> =
+  Extract<
+    Exclude<T[keyof T], NestedValue | Date | FileList>,
+    any[] | object
+  > extends never
+    ? true
+    : false;
 
 export type Merge<A, B> = {
   [K in keyof A | keyof B]?: K extends keyof A & keyof B
     ? [A[K], B[K]] extends [object, object]
       ? Merge<A[K], B[K]>
-      : A[K] | B[K]
+      : B[K]
     : K extends keyof A
-    ? A[K]
-    : K extends keyof B
-    ? B[K]
-    : never;
+      ? A[K]
+      : K extends keyof B
+        ? B[K]
+        : never;
 };

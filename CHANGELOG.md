@@ -1,8 +1,111 @@
 # Changelog
 
+## [7.54.0] - 2024-12-09
+
+### Changed
+
+- `useForm` return methods will be memorized based `formState` update
+
+## [7.53.0] - 2024-8-31
+
+### Added
+
+- add support for `onBlur` with formState `isValid`
+
+### Changed
+
+- `validateFields` will only trigger re-render for async validation
+
+## [7.51.0] - 2024-3-2
+
+### Added
+
+- added 'validateFields' to formState
+
+```tsx
+const {
+  formState: { validateFields },
+} = useForm();
+```
+
+## [7.49.0] - 2023-12-10
+
+### Added
+
+- add reactive `errors` prop at `useForm`
+
+```tsx
+useForm({
+  errors, // Server errors
+});
+```
+
+## [7.48.0] - 2023-11-05
+
+### Added
+
+- added new `disabled` prop for `useForm` to disable the entire form
+
+```
+const App = () => {
+  const [disabled, setDisabled] = useState(false);
+  const { handleSubmit } = useForm({ disabled });
+
+  return (
+    <form
+      onSubmit={handleSubmit(async () => {
+        setDisabled(true);
+        await sleep(100);
+        setDisabled(false);
+      })}
+    / >
+  );
+}
+```
+
+## [7.47.0] - 2023-10-02
+
+### Added
+
+- `reset` api with `keepIsSubmitSuccessful` option, keep successfully submitted form state.
+
+```tsx
+<Form
+  onSubmit={() => {
+    reset(formValues, {
+      keepIsSubmitSuccessful: true,
+    });
+  }}
+/>
+```
+
+## [7.46.0] - 2023-09-03
+
+### Added
+
+- Controller `disabled` prop
+
+```jsx
+const [disabled, setDisabled] = useState(false);
+useController({
+  disabled,
+});
+```
+
+- Trigger passed names to construct resolver options
+- Add `exact` option for array name in `useWatch`
+
+### Changed
+
+- Update `isDirty` when setting `disabled` in `register`
+
+## Fixed
+
+- Prevent `reset` argument mutation
+
 ## [7.45.0] - 2023-06-20
 
-## Changed
+### Changed
 
 - Controller with type check on `onChange`
 
@@ -20,7 +123,7 @@
 
 ## [7.44.0] - 2023-06-14
 
-## Added
+### Added
 
 - New `<Form />` component
 
@@ -61,7 +164,7 @@ FormProviderProps<TFieldValues, TContext, TTransformedValues>
 
 ## [7.43.0] - 2023-01-30
 
-## Added
+### Added
 
 - support global error type
 
@@ -87,7 +190,7 @@ return (
 
 ## [7.42.0] - 2023-01-13
 
-## Added
+### Added
 
 - build in validation `validate` support second argument for form values
 
@@ -106,14 +209,14 @@ export function validateNumber(_: number, formValus: FormValues) {
 />;
 ```
 
-## Changed
+### Changed
 
 - `handleSubmit` no longer catch `onSubmit` callback error
 - Remove deprecated for `fieldState.invalid`
 
 ## [7.41.0] - 2022-12-17
 
-## Added
+### Added
 
 - `useForm` added `values` props
 
@@ -136,7 +239,7 @@ const {
 } = useForm();
 ```
 
-## Changed
+### Changed
 
 - `useForm` support async `defaultValues` props
 
@@ -153,25 +256,25 @@ const {
 
 ## [7.40.0] - 2022-11-30
 
-## Changed
+### Changed
 
 - async validation (or combined with sync) will always the take the latest validation result and abort the previous
 
 ## [7.39.5] - 2022-11-21
 
-## Changed
+### Changed
 
 - Conditional render `useFormState` will trigger an extra re-render to reflect the current `formState`
 
 ## [7.39.0] - 2022-11-2
 
-## Changed
+### Changed
 
 - `isValid` formState is no longer only applicable with `onChange`, `onTouched`, and `onBlur` mode.
 
 ## [7.38.0] - 2022-10-19
 
-## Added
+### Added
 
 - support build-in validation with input type week and time
 
@@ -182,7 +285,7 @@ const {
 
 ## [7.37.0] - 2022-10-07
 
-## Added
+### Added
 
 - new formState `defaultValues`
 
@@ -202,13 +305,13 @@ return (
 );
 ```
 
-## Changed
+### Changed
 
 - defaultValues: complex object data contains prototype methods will not be cloned internally
 
 ## [7.36.0] - 2022-9-20
 
-## Added
+### Added
 
 - reset to support callback syntax
 
@@ -223,7 +326,7 @@ reset((formValues) => {
 
 ## [7.35.0] - 2022-9-10
 
-## Added
+### Added
 
 - new type `FieldPathByValue` field path by value generic implementation
 
@@ -247,13 +350,14 @@ function App() {
   return (
     <form>
       <CustomFormComponent control={control} name="foo" /> {/* no error */}
-      <CustomFormComponent control={control} name="baz" /> {/*  throw an error since baz is string */}
+      <CustomFormComponent control={control} name="baz" />{' '}
+      {/*  throw an error since baz is string */}
     </form>
   );
 }
 ```
 
-## Changed
+### Changed
 
 - form context support children prop type
 
@@ -266,7 +370,7 @@ function App() {
 
 ## [7.34.0] - 2022-7-28
 
-## Added
+### Added
 
 - Build in validation support for `useFieldArray` with `rules` prop
 
@@ -302,7 +406,7 @@ const { formState } = useFormContext(); // if generic is missing
 String(formState.errors?.input?.message); // will need to convert to string
 ```
 
-## Changed
+### Changed
 
 - Deprecate `NestedValue` and `UnpackNestedValue` type, will be **removed** in the next major version. **Important**: If you are using them, it may cause TS compile error, so please just remove the type usage.
 
@@ -324,13 +428,13 @@ type Data = UnpackNestedValue<FieldValues>
 
 ## [7.32.0] - 2022-6-10
 
-## Changed
+### Changed
 
 - `UseFormRegisterReturn` name type change from `string` to `TFieldName`
 
 ## [7.31.0] - 2022-5-11
 
-## Added
+### Added
 
 - new: `reset` optional prop: `keepDirtyValues`
 
@@ -344,7 +448,7 @@ reset(
 );
 ```
 
-## Changed
+### Changed
 
 - `useFieldArray` auto-correct field array errors on user action
 
@@ -356,7 +460,7 @@ append({ data: '' }); // will auto correct existing field array errors if any
 
 ## [7.30.0] - 2022-4-17
 
-## Changed
+### Changed
 
 - improve checkboxes value determine by defaultValues
 
@@ -371,13 +475,13 @@ register('checkboxes'); // will return array as value
 
 ## [7.29.0] - 2022-3-30
 
-## Changed
+### Changed
 
 - tsconfig config change from es2017 to es2018
 
 ## [7.28.0] - 2022-3-13
 
-## Changed
+### Changed
 
 - `register` API options `deps` now support string
 
@@ -387,7 +491,7 @@ register('test', { deps: 'test' });
 
 ## [7.27.0] - 2022-2-11
 
-## Added
+### Added
 
 - new option for `setFocus` to select the entire field value
 
@@ -397,13 +501,13 @@ setFocus('fieldName', { shouldSelect: true });
 
 ## [7.25.2] - 2022-1-29
 
-## Changed
+### Changed
 
 - `onTouched` mode will honor `focusout` event
 
 ## [7.25.0] - 2022-1-22
 
-## Added
+### Added
 
 - `getFieldState` get individual field state
 
@@ -441,13 +545,13 @@ export default function App() {
 
 ## [7.24.0] - 2022-1-14
 
-## Changed
+### Changed
 
 - `useController` return prop: `onChange`, `onBlur` and `ref` will be memorized with `useCallback`
 
 ## [7.23.0] - 2022-1-12
 
-## Changed
+### Changed
 
 - `useFieldArray` change `keyName` is no longer required when field value contains `id`
 
@@ -490,7 +594,7 @@ const App = () => {
 
 ## [7.22.0] - 2021-12-14
 
-## Changed
+### Changed
 
 - Browser native reset API will no longer be invoked when `reset` provided with value
 
@@ -519,7 +623,7 @@ handleSubmit(onSubmit);
 
 ## [7.21.0] - 2021-12-06
 
-## Changed
+### Changed
 
 - `shouldUseNativeValidation` will pass down validation props both at client and server render
 
@@ -533,7 +637,7 @@ const { register } = useForm()
 
 ## [7.20.3] - 2021-11-26
 
-## Changed
+### Changed
 
 - register `onChange` will share same logic with `useController` for non standard event payload
 
@@ -546,7 +650,7 @@ onChange('stringIsValid'); // this is only valid use case for JS
 
 ## [7.20.0] - 2021-11-19
 
-## Added
+### Added
 
 - new `exact` prop for `useWatch`
 - new `exact` prop for `useFormState`
@@ -563,13 +667,13 @@ useFormState({
 });
 ```
 
-## Changed
+### Changed
 
 - `useWatch` subscription will occurred at `useEffect` instead before `render`
 
 ## [7.19.0] - 2021-11-05
 
-## Added
+### Added
 
 - new `resetField` API
 
@@ -586,7 +690,7 @@ resetField('test', {
 });
 ```
 
-## Changed
+### Changed
 
 - `useController` will return shallow clone value for the following data type on each rerender
   - object: `{... value}`
@@ -598,7 +702,7 @@ resetField('test', {
 
 ## [7.18.0] - 2021-10-28
 
-## Added
+### Added
 
 - bring back `FieldPathWithValue`
 - schema errors parent object look up
@@ -622,7 +726,7 @@ const validationSchema = object().shape({
 
 ## [7.17.0] - 2021-10-02
 
-## Added
+### Added
 
 - new type `FieldPathWithValue` to improve generic components type support
 
@@ -650,13 +754,13 @@ const Generic = <FormValues extends FieldValues>({
 
 ## [7.16.1] - 2021-09-27
 
-## Changed
+### Changed
 
 - `formState` subscription no longer subscribed at `useEffect` instead the execution of each hook
 
 ## [7.16.0] - 2021-09-25
 
-## Added
+### Added
 
 - `register` allowed pass custom `onChange` and `onBlur`
 
@@ -672,7 +776,7 @@ const Generic = <FormValues extends FieldValues>({
 
 ## [7.15.0] - 2021-09-05
 
-## Added
+### Added
 
 - `useFieldArray` new method `replace()`
 
@@ -713,7 +817,7 @@ const { formState: errors } = useForm<FormValues>({
 
 ## [7.14.0] - 2021-08-27
 
-## Added
+### Added
 
 - `register` add dependent validation
 
@@ -730,7 +834,8 @@ const App = () => {
           },
         })}
       />
-      <input {...register('lastName', { deps: ['firstName'] })} /> // dependant validation
+      <input {...register('lastName', { deps: ['firstName'] })} /> // dependant
+      validation
     </form>
   );
 };
@@ -738,7 +843,7 @@ const App = () => {
 
 ## [7.13.0] - 2021-08-22
 
-## Added
+### Added
 
 `Trigger`
 
@@ -791,7 +896,7 @@ setValue('test', [{ firstName: 'bill' }, {firstName: 'kotaro}, {firstName: 'jori
 
 ## [7.12.0] - 2021-07-24
 
-## Added
+### Added
 
 - new `useForm` config `delayError`
 
@@ -803,7 +908,7 @@ useForm({
 
 ## [7.11.0] - 2021-07-13
 
-## Added
+### Added
 
 - `update` method to update an field array inputs
 
@@ -815,13 +920,13 @@ update(0, data); // update an individual field array node
 
 ## [7.10.0] - 2021-07-02
 
-## Changed
+### Changed
 
 - `defaultValue` is no longer a required prop for register input with `useFieldArray`
 
 ## [7.9.0] - 2021-06-19
 
-## Added
+### Added
 
 - new config at `useForm` to enabled native browser validation
 
@@ -853,7 +958,7 @@ setValue('firstName', 'value', { shouldTouch: true });
 register('firstName', { value: 'value' });
 ```
 
-## Changed
+### Changed
 
 - `isValid` will initialise as `false`
 
@@ -1329,7 +1434,6 @@ useWatch({
 ### Added
 
 - `register` function with additional options to transform value
-
   - `valueAsDate`
   - `valueAsNumber`
   - `setValueAs`

@@ -2,13 +2,14 @@ import React from 'react';
 import {
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
   within,
 } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
 
-import {
+import { Controller } from '../controller';
+import type {
   Control,
   UseFieldArrayReturn,
   UseFormRegister,
@@ -19,6 +20,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
+import noop from '../utils/noop';
 
 let i = 0;
 
@@ -166,10 +168,11 @@ describe('useWatch', () => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
     };
-    const { result } = renderHook(() => useWatch({ name: 'test' }), {
-      wrapper: Provider,
-    });
-    expect(result.error).toBeUndefined();
+    expect(() =>
+      renderHook(() => useWatch({ name: 'test' }), {
+        wrapper: Provider,
+      }),
+    ).not.toThrow();
   });
 
   it('should remove input with shouldUnregister: true and deeply nested', async () => {
@@ -266,6 +269,7 @@ describe('useWatch', () => {
       { test: 'test' },
       { test: 'test' },
       { test: 'test' },
+      { test: 'test' },
     ]);
   });
 
@@ -336,6 +340,48 @@ describe('useWatch', () => {
     });
 
     expect(screen.getByText('345')).toBeVisible();
+  });
+
+  it('should avoid triggering extra callbacks', () => {
+    const onChange = jest.fn();
+    type FormInputs = {
+      firstName: string;
+    };
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+        clearErrors,
+        watch,
+      } = useForm<FormInputs>();
+
+      React.useEffect(() => {
+        const unsubscribe = watch(onChange)?.unsubscribe;
+        return () => unsubscribe?.();
+      }, [watch]);
+
+      return (
+        <form>
+          <label>First Name</label>
+          <input type="text" {...register('firstName', { required: true })} />
+          {errors.firstName && <p>This Field is Required</p>}
+
+          <button type="button" onClick={() => clearErrors('firstName')}>
+            Clear First Name Errors
+          </button>
+          <button type="button" onClick={() => clearErrors()}>
+            Clear All Errors
+          </button>
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Clear All Errors'));
+    expect(onChange).toHaveBeenCalledTimes(0);
   });
 
   describe('when disabled prop is used', () => {
@@ -513,11 +559,11 @@ describe('useWatch', () => {
         } = useForm<FormInputs>();
         parentCount++;
         return (
-          <form onSubmit={handleSubmit(() => {})}>
+          <form onSubmit={handleSubmit(noop)}>
             <>
               <input {...register('parent')} />
               <Child register={register} control={control} />
-              {errors.parent}
+              <p>{String(errors?.parent)}</p>
               <button>submit</button>
             </>
           </form>
@@ -532,8 +578,8 @@ describe('useWatch', () => {
         target: { value: 'test' },
       });
 
-      expect(parentCount).toBe(1);
-      expect(childCount).toBe(2);
+      expect(parentCount).toBe(2);
+      expect(childCount).toBe(3);
 
       parentCount = 0;
       childCount = 0;
@@ -541,7 +587,7 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(1);
+      expect(childCount).toBe(2);
 
       parentCount = 0;
       childCount = 0;
@@ -550,6 +596,99 @@ describe('useWatch', () => {
 
       expect(parentCount).toBe(0);
       expect(childCount).toBe(1);
+    });
+
+    it('should partial re-render with array name and exact option', async () => {
+      type FormInputs = {
+        child: string;
+        childSecond: string;
+        parent: string;
+      };
+
+      let childCount = 0;
+      let childSecondCount = 0;
+      const Child = ({
+        register,
+        control,
+      }: Pick<UseFormReturn<FormInputs>, 'register' | 'control'>) => {
+        useWatch({ name: ['childSecond'], control });
+        childCount++;
+        return <input {...register('child')} />;
+      };
+
+      const ChildSecond = ({
+        register,
+        control,
+      }: Pick<UseFormReturn<FormInputs>, 'register' | 'control'>) => {
+        useWatch({ name: ['childSecond'], control, exact: true });
+        childSecondCount++;
+        return <input {...register('childSecond')} />;
+      };
+
+      let parentCount = 0;
+      const Parent = () => {
+        const {
+          register,
+          handleSubmit,
+          control,
+          formState: { errors },
+        } = useForm<FormInputs>();
+        parentCount++;
+        return (
+          <form onSubmit={handleSubmit(noop)}>
+            <>
+              <input {...register('parent')} />
+              <Child register={register} control={control} />
+              <ChildSecond register={register} control={control} />
+              <p>{String(errors.parent)}</p>
+              <button>submit</button>
+            </>
+          </form>
+        );
+      };
+
+      render(<Parent />);
+
+      const childInput = screen.getAllByRole('textbox')[1];
+      const childSecondInput = screen.getAllByRole('textbox')[2];
+
+      fireEvent.input(childInput, {
+        target: { value: 'test' },
+      });
+
+      expect(parentCount).toBe(2);
+      expect(childCount).toBe(3);
+      expect(childSecondCount).toBe(2);
+
+      parentCount = 0;
+      childCount = 0;
+      childSecondCount = 0;
+
+      fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+
+      await waitFor(() => expect(parentCount).toBe(1));
+      expect(childCount).toBe(2);
+      expect(childSecondCount).toBe(2);
+
+      parentCount = 0;
+      childCount = 0;
+      childSecondCount = 0;
+
+      fireEvent.input(childInput, { target: { value: 'test1' } });
+
+      expect(parentCount).toBe(0);
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(0);
+
+      parentCount = 0;
+      childCount = 0;
+      childSecondCount = 0;
+
+      fireEvent.input(childSecondInput, { target: { value: 'test2' } });
+
+      expect(parentCount).toBe(0);
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(1);
     });
 
     it('should only subscribe change at useWatch level instead of useForm', () => {
@@ -607,8 +746,8 @@ describe('useWatch', () => {
         },
       });
 
-      expect(parentRenderCount).toEqual(1);
-      expect(childRenderCount).toEqual(4);
+      expect(parentRenderCount).toEqual(2);
+      expect(childRenderCount).toEqual(5);
     });
 
     it("should not re-render external component when field name don't match", async () => {
@@ -742,6 +881,84 @@ describe('useWatch', () => {
 
       expect(screen.getByText('yes')).toBeVisible();
     });
+
+    it('should react to changing field name', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: formResult } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            field1: 'value1',
+            field2: 'value2',
+          },
+        }),
+      );
+
+      const { result, rerender } = renderHook(
+        ({ fieldName }: { fieldName: 'field1' | 'field2' }) => {
+          const watchedValue = useWatch({
+            control: formResult.current.control,
+            name: fieldName,
+          });
+          return watchedValue;
+        },
+        {
+          initialProps: { fieldName: 'field1' },
+        },
+      );
+
+      expect(result.current).toBe('value1');
+
+      rerender({ fieldName: 'field2' });
+      expect(result.current).toBe('value2');
+
+      rerender({ fieldName: 'field1' });
+      expect(result.current).toBe('value1');
+    });
+
+    it('should react to changing control', () => {
+      type FormValues = {
+        name: string;
+      };
+
+      const { result: form1Result } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            name: 'form1-value',
+          },
+        }),
+      );
+
+      const { result: form2Result } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            name: 'form2-value',
+          },
+        }),
+      );
+
+      const { result, rerender } = renderHook(
+        ({ control }: { control: Control<FormValues> }) =>
+          useWatch({
+            control,
+            name: 'name',
+          }),
+        {
+          initialProps: { control: form1Result.current.control },
+        },
+      );
+
+      expect(result.current).toBe('form1-value');
+
+      rerender({ control: form2Result.current.control });
+      expect(result.current).toBe('form2-value');
+
+      rerender({ control: form1Result.current.control });
+      expect(result.current).toBe('form1-value');
+    });
   });
 
   describe('fieldArray', () => {
@@ -834,6 +1051,10 @@ describe('useWatch', () => {
         'Number',
         'Totals',
         'Type',
+        'Number',
+        'Totals',
+        'Type',
+        'Number',
         'Totals',
         'Type',
         'Totals',
@@ -1385,6 +1606,69 @@ describe('useWatch', () => {
         expect(await screen.findByText('test')).toBeDefined();
       });
     });
+
+    it('Should update the value immediately after reset when used with Controller', async () => {
+      const getDefaultValue = () => ({
+        test: undefined,
+      });
+
+      const Component = () => {
+        const { reset, control } = useForm({
+          defaultValues: getDefaultValue(),
+        });
+
+        return (
+          <form>
+            <Controller
+              control={control}
+              name="test"
+              render={({ field: { onChange, value } }) => (
+                <select
+                  data-testid="test-select"
+                  value={value ?? ''}
+                  onChange={(e) => {
+                    onChange(e.target.value);
+                  }}
+                >
+                  <option value=""></option>
+                  <option value="test1">test1</option>
+                  <option value="test2">test2</option>
+                </select>
+              )}
+            />
+            <button
+              type="button"
+              data-testid="reset-button"
+              onClick={() => reset(getDefaultValue())}
+            >
+              Reset
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.change(screen.getByTestId('test-select'), {
+        target: { value: 'test1' },
+      });
+
+      expect(screen.getByTestId('test-select')).toHaveValue('test1');
+
+      fireEvent.click(screen.getByTestId('reset-button'));
+
+      expect(screen.getByTestId('test-select')).toHaveValue('');
+
+      fireEvent.change(screen.getByTestId('test-select'), {
+        target: { value: 'test2' },
+      });
+
+      expect(screen.getByTestId('test-select')).toHaveValue('test2');
+
+      fireEvent.click(screen.getByTestId('reset-button'));
+
+      expect(screen.getByTestId('test-select')).toHaveValue('');
+    });
   });
 
   describe('unregister', () => {
@@ -1438,9 +1722,11 @@ describe('useWatch', () => {
           defaultValues: { test: 'test' },
         });
 
+        const { setValue } = methods;
+
         React.useEffect(() => {
-          methods.setValue('test', 'bill');
-        }, [methods]);
+          setValue('test', 'bill');
+        }, [setValue]);
 
         return (
           <>
@@ -1542,6 +1828,70 @@ describe('useWatch', () => {
         '333',
       );
     });
+
+    it('should return field value, not resolver transformed value', async () => {
+      const Form = () => {
+        const { control, setValue } = useForm<
+          { test: string },
+          any,
+          { test: number }
+        >({
+          defaultValues: { test: '3' },
+          resolver: ({ test }) => ({
+            values: { test: parseInt(test, 10) },
+            errors: {},
+          }),
+        });
+        const { field } = useController({
+          control,
+          name: 'test',
+        });
+
+        React.useEffect(() => {
+          setValue('test', '9');
+        }, [setValue]);
+
+        return <>{field.value === '9' ? 'yes' : 'no'}</>;
+      };
+
+      render(<Form />);
+
+      await waitFor(() => {
+        screen.getByText('yes');
+      });
+    });
+
+    it('should return field value when resolver transformed value is a different shape', async () => {
+      const Form = () => {
+        const { control, setValue } = useForm<
+          { alpha: string; beta: string },
+          any,
+          { add: number }
+        >({
+          defaultValues: { alpha: '3', beta: '4' },
+          resolver: ({ alpha, beta }) => ({
+            values: { add: parseInt(alpha, 10) + parseInt(beta, 10) },
+            errors: {},
+          }),
+        });
+        const { field } = useController({
+          control,
+          name: 'alpha',
+        });
+
+        React.useEffect(() => {
+          setValue('alpha', '9');
+        }, [setValue]);
+
+        return <>{field.value === '9' ? 'yes' : 'no'}</>;
+      };
+
+      render(<Form />);
+
+      await waitFor(() => {
+        screen.getByText('yes');
+      });
+    });
   });
 
   describe('formContext', () => {
@@ -1566,6 +1916,71 @@ describe('useWatch', () => {
       render(<Form />);
 
       expect(await screen.findByText('test')).toBeDefined();
+    });
+  });
+
+  describe('compute ', () => {
+    it('should only update when value changed within compute', () => {
+      type FormValue = {
+        test: string;
+      };
+
+      let renderCount = 0;
+
+      const Form = () => {
+        const methods = useForm<FormValue>({
+          defaultValues: { test: '' },
+        });
+
+        const watchedValue = useWatch({
+          control: methods.control,
+          compute: (data: FormValue) => data.test?.length > 2,
+        });
+
+        renderCount++;
+
+        return (
+          <div>
+            <input {...methods.register('test')} />
+            <p>{watchedValue ? 'yes' : 'no'}</p>
+            <p>{renderCount}</p>
+          </div>
+        );
+      };
+
+      render(<Form />);
+
+      screen.getByText('no');
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12' },
+      });
+
+      screen.getByText('no');
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123' },
+      });
+
+      screen.getByText('yes');
+
+      expect(renderCount).toEqual(4);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12' },
+      });
+
+      screen.getByText('no');
+
+      expect(renderCount).toEqual(5);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '1' },
+      });
+
+      screen.getByText('no');
+
+      expect(renderCount).toEqual(5);
     });
   });
 });

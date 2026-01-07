@@ -1,4 +1,4 @@
-import { Noop } from '../types';
+import type { Noop } from '../types';
 
 export type Observer<T> = {
   next: (value: T) => void;
@@ -14,7 +14,7 @@ export type Subject<T> = {
   unsubscribe: Noop;
 } & Observer<T>;
 
-export default function createSubject<T>(): Subject<T> {
+export default <T>(): Subject<T> => {
   let _observers: Observer<T>[] = [];
 
   const next = (value: T) => {
@@ -44,4 +44,4 @@ export default function createSubject<T>(): Subject<T> {
     subscribe,
     unsubscribe,
   };
-}
+};

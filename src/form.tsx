@@ -1,7 +1,7 @@
 import React from 'react';
 
-import get from './utils/get';
-import { FieldValues, FormProps } from './types';
+import { flatten } from './utils/flatten';
+import type { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
 
 const POST_REQUEST = 'post';
@@ -29,10 +29,10 @@ const POST_REQUEST = 'post';
  * ```
  */
 function Form<
-  T extends FieldValues,
-  U extends FieldValues | undefined = undefined,
->(props: FormProps<T, U>) {
-  const methods = useFormContext<T>();
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+>(props: FormProps<TFieldValues, TTransformedValues>) {
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const [mounted, setMounted] = React.useState(false);
   const {
     control = methods.control,
@@ -61,8 +61,10 @@ function Form<
         formDataJson = JSON.stringify(data);
       } catch {}
 
-      for (const name of control._names.mount) {
-        formData.append(name, get(data, name));
+      const flattenFormValues = flatten(control._formValues);
+
+      for (const key in flattenFormValues) {
+        formData.append(key, flattenFormValues[key]);
       }
 
       if (onSubmit) {
@@ -82,11 +84,13 @@ function Form<
             encType,
           ].some((value) => value && value.includes('json'));
 
-          const response = await fetch(action, {
+          const response = await fetch(String(action), {
             method,
             headers: {
               ...headers,
-              ...(encType ? { 'Content-Type': encType } : {}),
+              ...(encType && encType !== 'multipart/form-data'
+                ? { 'Content-Type': encType }
+                : {}),
             },
             body: shouldStringifySubmissionData ? formDataJson : formData,
           });

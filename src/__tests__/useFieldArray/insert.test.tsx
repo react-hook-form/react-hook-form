@@ -1,18 +1,19 @@
 import React from 'react';
 import {
-  act as actComponent,
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
 
 import { VALIDATION_MODE } from '../../constants';
-import { Control, FieldPath } from '../../types';
+import type { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import noop from '../../utils/noop';
 
 jest.useFakeTimers();
 
@@ -45,7 +46,7 @@ describe('insert', () => {
 
     expect(result.current.fields).toEqual([
       { id: '0', test: '1' },
-      { id: '2', test: '3' },
+      { id: '4', test: '3' },
       { id: '1', test: '2' },
     ]);
   });
@@ -70,8 +71,8 @@ describe('insert', () => {
 
     expect(result.current.fields).toEqual([
       { id: '0', test: '1' },
-      { id: '2', test: '3' },
-      { id: '3', test: '4' },
+      { id: '4', test: '3' },
+      { id: '5', test: '4' },
       { id: '1', test: '2' },
     ]);
   });
@@ -255,7 +256,7 @@ describe('insert', () => {
       errors = rest.formState.errors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
@@ -300,7 +301,7 @@ describe('insert', () => {
       errors = rest.formState.errors;
 
       return (
-        <form onSubmit={handleSubmit(() => {})}>
+        <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
               key={field.id}
@@ -601,7 +602,7 @@ describe('insert', () => {
         result.current.insert(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '1' }],
         },
@@ -630,7 +631,7 @@ describe('insert', () => {
         result.current.insert(0, { value: '1' });
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
 
     it('should insert update fields during async submit', () => {
@@ -694,7 +695,7 @@ describe('insert', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      actComponent(() => {
+      act(() => {
         jest.advanceTimersByTime(1000);
       });
 
@@ -710,7 +711,7 @@ describe('insert', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      actComponent(() => {
+      act(() => {
         jest.advanceTimersByTime(1000);
       });
 
@@ -824,5 +825,47 @@ describe('insert', () => {
     expect(
       await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
     ).toBeVisible();
+  });
+
+  it('should not invoke resolver per register during insert; only array-scoped + final isValid', async () => {
+    const resolver = jest
+      .fn()
+      .mockImplementation((values) => ({ values, errors: {} }));
+
+    const App = () => {
+      const { register, formState, control } = useForm<{
+        test: { value: string }[];
+      }>({
+        mode: VALIDATION_MODE.onTouched,
+        resolver,
+        defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+      });
+      formState.isValid;
+      const { fields, insert } = useFieldArray({ control, name: 'test' });
+
+      return (
+        <form>
+          {fields.map((f, i) => (
+            <input key={f.id} {...register(`test.${i}.value` as const)} />
+          ))}
+          <button type="button" onClick={() => insert(1, { value: 'x' })}>
+            insert
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+    );
+    const initialCalls = resolver.mock.calls.length;
+
+    fireEvent.click(screen.getByRole('button', { name: 'insert' }));
+
+    await waitFor(() =>
+      expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+    );
   });
 });

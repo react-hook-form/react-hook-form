@@ -2,7 +2,7 @@ describe('form setValueAsyncStrictMode', () => {
   it('should set async input value correctly', () => {
     cy.visit('http://localhost:3000/setValueAsyncStrictMode');
 
-    cy.wait(10);
+    cy.wait(100);
 
     cy.get('#submit').click();
 

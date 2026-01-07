@@ -1,18 +1,16 @@
 import React from 'react';
 
-import { createFormControl } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
-import shouldRenderFormState from './logic/shouldRenderFormState';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
-import {
+import { createFormControl } from './logic';
+import type {
   FieldValues,
   FormState,
-  InternalFieldName,
   UseFormProps,
   UseFormReturn,
 } from './types';
-import { useSubscribe } from './useSubscribe';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Custom hook to manage the entire form.
@@ -46,14 +44,14 @@ import { useSubscribe } from './useSubscribe';
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
-  >();
-  const _values = React.useRef<typeof props.values>();
+  >(undefined);
+  const _values = React.useRef<typeof props.values>(undefined);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
@@ -65,54 +63,113 @@ export function useForm<
     submitCount: 0,
     dirtyFields: {},
     touchedFields: {},
-    errors: {},
+    validatingFields: {},
+    errors: props.errors || {},
+    disabled: props.disabled || false,
+    isReady: false,
     defaultValues: isFunction(props.defaultValues)
       ? undefined
       : props.defaultValues,
   });
 
   if (!_formControl.current) {
-    _formControl.current = {
-      ...createFormControl(props, () =>
-        updateFormState((formState) => ({ ...formState })),
-      ),
-      formState,
-    };
+    if (props.formControl) {
+      _formControl.current = {
+        ...props.formControl,
+        formState,
+      };
+
+      if (props.defaultValues && !isFunction(props.defaultValues)) {
+        props.formControl.reset(props.defaultValues, props.resetOptions);
+      }
+    } else {
+      const { formControl, ...rest } = createFormControl(props);
+
+      _formControl.current = {
+        ...rest,
+        formState,
+      };
+    }
   }
 
   const control = _formControl.current.control;
   control._options = props;
 
-  useSubscribe({
-    subject: control._subjects.state,
-    next: (
-      value: Partial<FormState<TFieldValues>> & { name?: InternalFieldName },
-    ) => {
-      if (
-        shouldRenderFormState(
-          value,
-          control._proxyFormState,
-          control._updateFormState,
-          true,
-        )
-      ) {
-        updateFormState({ ...control._formState });
+  useIsomorphicLayoutEffect(() => {
+    const sub = control._subscribe({
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
+    });
+
+    updateFormState((data) => ({
+      ...data,
+      isReady: true,
+    }));
+
+    control._formState.isReady = true;
+
+    return sub;
+  }, [control]);
+
+  React.useEffect(
+    () => control._disableForm(props.disabled),
+    [control, props.disabled],
+  );
+
+  React.useEffect(() => {
+    if (props.mode) {
+      control._options.mode = props.mode;
+    }
+    if (props.reValidateMode) {
+      control._options.reValidateMode = props.reValidateMode;
+    }
+  }, [control, props.mode, props.reValidateMode]);
+
+  React.useEffect(() => {
+    if (props.errors) {
+      control._setErrors(props.errors);
+      control._focusError();
+    }
+  }, [control, props.errors]);
+
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.state.next({
+        values: control._getWatch(),
+      });
+  }, [control, props.shouldUnregister]);
+
+  React.useEffect(() => {
+    if (control._proxyFormState.isDirty) {
+      const isDirty = control._getDirty();
+      if (isDirty !== formState.isDirty) {
+        control._subjects.state.next({
+          isDirty,
+        });
       }
-    },
-  });
+    }
+  }, [control, formState.isDirty]);
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
-      control._reset(props.values, control._options.resetOptions);
+      control._reset(props.values, {
+        keepFieldsRef: true,
+        ...control._options.resetOptions,
+      });
+      if (!control._options.resetOptions?.keepIsValid) {
+        control._setValid();
+      }
       _values.current = props.values;
+      updateFormState((state) => ({ ...state }));
     } else {
       control._resetDefaultValues();
     }
-  }, [props.values, control]);
+  }, [control, props.values]);
 
   React.useEffect(() => {
     if (!control._state.mount) {
-      control._updateValid();
+      control._setValid();
       control._state.mount = true;
     }
 
@@ -124,7 +181,10 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  _formControl.current.formState = getProxyFormState(formState, control);
+  _formControl.current.formState = React.useMemo(
+    () => getProxyFormState(formState, control),
+    [control, formState],
+  );
 
   return _formControl.current;
 }

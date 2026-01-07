@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
 const fs = require('fs');
 const path = require('path');
@@ -6,7 +6,7 @@ const path = require('path');
 /**
  * Command which developers need to run to generate an updated API report.
  */
-const API_EXTRACTOR_YARN_COMMAND = 'yarn api-extractor:build';
+const API_EXTRACTOR_YARN_COMMAND = 'pnpm api-extractor:build';
 
 const config = loadExtractorConfig();
 checkReportMatchesApi(config);
