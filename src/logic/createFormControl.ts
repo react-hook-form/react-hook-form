@@ -1461,6 +1461,7 @@ export function createFormControl<
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
+
       isDirty: isEmptyResetValues
         ? false
         : keepStateOptions.keepDirty
@@ -1469,9 +1470,11 @@ export function createFormControl<
               keepStateOptions.keepDefaultValues &&
               !deepEqual(formValues, _defaultValues)
             ),
+
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
+
       dirtyFields: isEmptyResetValues
         ? {}
         : keepStateOptions.keepDirtyValues
@@ -1483,15 +1486,26 @@ export function createFormControl<
             : keepStateOptions.keepDirty
               ? _formState.dirtyFields
               : {},
+
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
+
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
+
       isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
         ? _formState.isSubmitSuccessful
         : false,
+
       isSubmitting: false,
+
       defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
+
+      // ✅ only proxy-aware keys
+      ...(_proxyFormState.isValid && { isValid: _formState.isValid }),
+      ...(_proxyFormState.isValidating && {
+        isValidating: _formState.isValidating,
+      }),
     });
   };
 

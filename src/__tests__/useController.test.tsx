@@ -518,6 +518,50 @@ describe('useController', () => {
     );
     expect(renderCount).toEqual(3);
   });
+  it('should keep controller onChange working after reset when formState is accessed', async () => {
+    type FormValues = {
+      name: string;
+    };
+
+    const App = () => {
+      const { control, reset, formState } = useForm<FormValues>({
+        defaultValues: { name: 'default' },
+      });
+
+      return (
+        <form>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => <input {...field} />}
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              void formState.isDirty;
+              reset({ name: 'reset-value' });
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'before' } });
+    expect(input).toHaveValue('before');
+
+    fireEvent.click(screen.getByText('reset'));
+
+    fireEvent.change(input, { target: { value: 'after' } });
+
+    expect(input).toHaveValue('after');
+  });
 
   it('should invoke native validation with Controller', async () => {
     const setCustomValidity = jest.fn();
