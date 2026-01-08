@@ -1461,6 +1461,7 @@ _subjects.state.next({
   submitCount: keepStateOptions.keepSubmitCount
     ? _formState.submitCount
     : 0,
+
   isDirty: isEmptyResetValues
     ? false
     : keepStateOptions.keepDirty
@@ -1469,9 +1470,11 @@ _subjects.state.next({
           keepStateOptions.keepDefaultValues &&
           !deepEqual(formValues, _defaultValues)
         ),
+
   isSubmitted: keepStateOptions.keepIsSubmitted
     ? _formState.isSubmitted
     : false,
+
   dirtyFields: isEmptyResetValues
     ? {}
     : keepStateOptions.keepDirtyValues
@@ -1483,21 +1486,28 @@ _subjects.state.next({
         : keepStateOptions.keepDirty
           ? _formState.dirtyFields
           : {},
+
   touchedFields: keepStateOptions.keepTouched
     ? _formState.touchedFields
     : {},
+
   errors: keepStateOptions.keepErrors ? _formState.errors : {},
+
   isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
     ? _formState.isSubmitSuccessful
     : false,
+
   isSubmitting: false,
 
-  isValid: _formState.isValid,
-  isValidating: _formState.isValidating,
-  disabled: _formState.disabled,
-
   defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
+
+  // ✅ only proxy-aware keys
+  ...(_proxyFormState.isValid && { isValid: _formState.isValid }),
+  ...(_proxyFormState.isValidating && {
+    isValidating: _formState.isValidating,
+  }),
 });
+
   };
 
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
