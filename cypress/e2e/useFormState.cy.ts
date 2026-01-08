@@ -142,17 +142,18 @@ describe('useFormState', () => {
 
     cy.get('#resetForm').click();
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        isDirty: false,
-        touched: [],
-        dirty: [],
-        isSubmitted: false,
-        isSubmitSuccessful: false,
-        submitCount: 0,
-        isValid: true,
-      }),
-    );
+    cy.get('#state').should(($state) => {
+      const state = JSON.parse($state.text());
+
+      expect(state.isDirty).to.eq(false);
+      expect(state.touched).to.deep.eq([]);
+      expect(state.dirty).to.deep.eq([]);
+      expect(state.isSubmitted).to.eq(false);
+      expect(state.isSubmitSuccessful).to.eq(false);
+      expect(state.submitCount).to.eq(0);
+
+      expect(state.isValid).to.eq(true);
+    });
 
     cy.get('#renderCount').contains('2');
   });
