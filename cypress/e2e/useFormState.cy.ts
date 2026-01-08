@@ -158,10 +158,9 @@ describe('useFormState', () => {
     });
 
     // ✅ Root component should not re-render
-      cy.get('#renderCount').should(($el) => {
-    const count = Number($el.text());
-    expect(count).to.be.at.least(2);
-  });
-
+    cy.get('#renderCount').should(($el) => {
+      const count = Number($el.text());
+      expect(count).to.be.at.least(2);
+    });
   });
 });
