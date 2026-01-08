@@ -1457,42 +1457,47 @@ export function createFormControl<
       _formState.errors = {};
     }
 
-    _subjects.state.next({
-      submitCount: keepStateOptions.keepSubmitCount
-        ? _formState.submitCount
-        : 0,
-      isDirty: isEmptyResetValues
-        ? false
+_subjects.state.next({
+  submitCount: keepStateOptions.keepSubmitCount
+    ? _formState.submitCount
+    : 0,
+  isDirty: isEmptyResetValues
+    ? false
+    : keepStateOptions.keepDirty
+      ? _formState.isDirty
+      : !!(
+          keepStateOptions.keepDefaultValues &&
+          !deepEqual(formValues, _defaultValues)
+        ),
+  isSubmitted: keepStateOptions.keepIsSubmitted
+    ? _formState.isSubmitted
+    : false,
+  dirtyFields: isEmptyResetValues
+    ? {}
+    : keepStateOptions.keepDirtyValues
+      ? keepStateOptions.keepDefaultValues && _formValues
+        ? getDirtyFields(_defaultValues, _formValues)
+        : _formState.dirtyFields
+      : keepStateOptions.keepDefaultValues && formValues
+        ? getDirtyFields(_defaultValues, formValues)
         : keepStateOptions.keepDirty
-          ? _formState.isDirty
-          : !!(
-              keepStateOptions.keepDefaultValues &&
-              !deepEqual(formValues, _defaultValues)
-            ),
-      isSubmitted: keepStateOptions.keepIsSubmitted
-        ? _formState.isSubmitted
-        : false,
-      dirtyFields: isEmptyResetValues
-        ? {}
-        : keepStateOptions.keepDirtyValues
-          ? keepStateOptions.keepDefaultValues && _formValues
-            ? getDirtyFields(_defaultValues, _formValues)
-            : _formState.dirtyFields
-          : keepStateOptions.keepDefaultValues && formValues
-            ? getDirtyFields(_defaultValues, formValues)
-            : keepStateOptions.keepDirty
-              ? _formState.dirtyFields
-              : {},
-      touchedFields: keepStateOptions.keepTouched
-        ? _formState.touchedFields
-        : {},
-      errors: keepStateOptions.keepErrors ? _formState.errors : {},
-      isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
-        ? _formState.isSubmitSuccessful
-        : false,
-      isSubmitting: false,
-      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
-    });
+          ? _formState.dirtyFields
+          : {},
+  touchedFields: keepStateOptions.keepTouched
+    ? _formState.touchedFields
+    : {},
+  errors: keepStateOptions.keepErrors ? _formState.errors : {},
+  isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
+    ? _formState.isSubmitSuccessful
+    : false,
+  isSubmitting: false,
+
+  isValid: _formState.isValid,
+  isValidating: _formState.isValidating,
+  disabled: _formState.disabled,
+
+  defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
+});
   };
 
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
