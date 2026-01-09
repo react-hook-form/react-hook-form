@@ -158,6 +158,7 @@ describe('register', () => {
   it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
     const Component = () => {
       const { register, formState } = useForm<{ test: string }>({
+        // @ts-ignore
         resolver: async (data) => {
           return {
             values: data,
@@ -1335,6 +1336,7 @@ describe('register', () => {
           test1: number;
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (data) => {
             const valid = !(isNaN(data.test) && isNaN(data.test1));
 
@@ -1777,6 +1779,7 @@ describe('register', () => {
         lastName: string;
       }>({
         mode: 'onChange',
+        // @ts-ignore
         resolver: (values) => {
           if (values.firstName === values.lastName) {
             return {

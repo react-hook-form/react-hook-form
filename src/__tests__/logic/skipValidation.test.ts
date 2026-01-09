@@ -16,6 +16,7 @@ describe('should skip validation', () => {
           isOnBlur: true,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeTruthy();
   });
@@ -35,6 +36,7 @@ describe('should skip validation', () => {
           isOnBlur: false,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeTruthy();
   });
@@ -54,6 +56,7 @@ describe('should skip validation', () => {
           isOnBlur: false,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeTruthy();
   });
@@ -73,6 +76,7 @@ describe('should skip validation', () => {
           isOnBlur: true,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeTruthy();
   });
@@ -92,6 +96,7 @@ describe('should skip validation', () => {
           isOnBlur: false,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeTruthy();
   });
@@ -111,6 +116,7 @@ describe('should skip validation', () => {
           isOnBlur: false,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeTruthy();
   });
@@ -174,6 +180,7 @@ describe('should validate the input', () => {
           isOnBlur: false,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeFalsy();
   });
@@ -193,6 +200,7 @@ describe('should validate the input', () => {
           isOnBlur: false,
           isOnAll: true,
         },
+        false,
       ),
     ).toBeFalsy();
   });
@@ -212,6 +220,7 @@ describe('should validate the input', () => {
           isOnBlur: true,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeFalsy();
   });
@@ -231,6 +240,7 @@ describe('should validate the input', () => {
           isOnBlur: true,
           isOnTouch: false,
         },
+        false,
       ),
     ).toBeFalsy();
   });

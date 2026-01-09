@@ -546,7 +546,9 @@ describe('Controller', () => {
             control={control}
           />
           {formState.errors.test && (
-            <span data-testid="error">{formState.errors.test.message}</span>
+            <span data-testid="error">
+              {formState.errors.test.message as string}
+            </span>
           )}
         </div>
       );
@@ -2041,7 +2043,7 @@ describe('Controller', () => {
 
     it('should work with dynamic disabled array changes', async () => {
       const Component = () => {
-        const [disabledFields, setDisabledFields] = React.useState<string[]>([
+        const [disabledFields, setDisabledFields] = React.useState<'test'[]>([
           'test',
         ]);
         const { control } = useForm({

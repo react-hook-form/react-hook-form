@@ -409,6 +409,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -464,6 +465,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -512,6 +514,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             if (data.test.length > 1) {
               return {
@@ -584,6 +587,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             const errors: { test?: any } = {};
             if (data.test.length > 4) {

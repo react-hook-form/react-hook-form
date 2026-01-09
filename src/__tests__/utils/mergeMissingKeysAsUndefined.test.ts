@@ -15,7 +15,10 @@ describe('mergeMissingKeysAsUndefined', () => {
   it('should merge and set missing keys to undefined', () => {
     const oldObject = { a: 1, b: 2, c: 3 };
     const newObject = { a: 10, d: 4 };
-    const result = mergeMissingKeysAsUndefined(oldObject, newObject);
+    const result = mergeMissingKeysAsUndefined(
+      oldObject as Record<string, unknown>,
+      newObject as Record<string, unknown>,
+    );
 
     expect(result).toEqual({
       a: 10,
@@ -38,7 +41,10 @@ describe('mergeMissingKeysAsUndefined', () => {
   it('should preserve all keys from newObject and add undefined for missing keys from oldObject', () => {
     const oldObject = { required: true, minLength: 5, maxLength: 10 };
     const newObject = { required: false, pattern: /test/ };
-    const result = mergeMissingKeysAsUndefined(oldObject, newObject);
+    const result = mergeMissingKeysAsUndefined(
+      oldObject as Record<string, unknown>,
+      newObject as Record<string, unknown>,
+    );
 
     expect(result).toEqual({
       required: false,

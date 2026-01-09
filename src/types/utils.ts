@@ -47,21 +47,31 @@ export type ExtractObjects<T> = T extends infer U
     : never
   : never;
 
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
-  ? T
-  : {
-      [K in keyof T]?: ExtractObjects<T[K]> extends never
-        ? T[K]
-        : DeepPartial<T[K]>;
-    };
+type IsPrimitiveLike<T> = T extends Primitive
+  ? true
+  : T extends Primitive & object
+    ? true
+    : false;
 
-export type DeepPartialSkipArrayKey<T> = T extends
-  | BrowserNativeObject
-  | NestedValue
-  ? T
-  : T extends ReadonlyArray<any>
-    ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
-    : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+export type DeepPartial<T> =
+  IsPrimitiveLike<T> extends true
+    ? T
+    : T extends BrowserNativeObject | NestedValue
+      ? T
+      : {
+          [K in keyof T]?: ExtractObjects<T[K]> extends never
+            ? T[K]
+            : DeepPartial<T[K]>;
+        };
+
+export type DeepPartialSkipArrayKey<T> =
+  IsPrimitiveLike<T> extends true
+    ? T
+    : T extends BrowserNativeObject | NestedValue
+      ? T
+      : T extends ReadonlyArray<any>
+        ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+        : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
 /**
  * Checks whether the type is any

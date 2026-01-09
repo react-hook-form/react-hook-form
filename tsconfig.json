@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["jest", "node", "@testing-library/jest-dom"],
     "sourceMap": true,
     "module": "es2015",
     "target": "es2018",
@@ -19,5 +20,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/__tests__/**/*", "**/__typetest__/**/*"]
+  "exclude": ["**/__typetest__/**/*"]
 }
