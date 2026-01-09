@@ -1729,6 +1729,7 @@ describe('useForm', () => {
         const { register, formState } = useForm({
           defaultValues: { test: 'Test' },
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (values) => {
             if (!values.test) {
               return {
@@ -1984,17 +1985,15 @@ describe('useForm', () => {
   it('should update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 
-    let formState = {} as FormState<FieldValues>;
-    let getFieldState = {} as UseFormGetFieldState<FieldValues>;
+    type FormValues = { firstName: string; lastName: string };
+    let formState = {} as FormState<FormValues>;
+    let getFieldState = {} as UseFormGetFieldState<FormValues>;
     const App = () => {
       const {
         register,
         formState: tmpFormState,
         getFieldState: tmpGetFieldState,
-      } = useForm<{
-        firstName: string;
-        lastName: string;
-      }>({
+      } = useForm<FormValues>({
         mode: 'all',
         defaultValues: {
           lastName: '',
@@ -2789,7 +2788,11 @@ describe('useForm', () => {
     it('should handle non-existent field names gracefully', async () => {
       function App() {
         const { register } = useForm({
-          disabled: ['nonExistentField', 'firstName'],
+          // Using type assertion to test invalid field names at runtime
+          disabled: ['nonExistentField', 'firstName'] as (
+            | 'firstName'
+            | 'lastName'
+          )[],
           defaultValues: {
             firstName: '',
             lastName: '',
@@ -2855,9 +2858,9 @@ describe('useForm', () => {
 
     it('should work with dynamic array changes', async () => {
       function App() {
-        const [disabledFields, setDisabledFields] = useState<string[]>([
-          'firstName',
-        ]);
+        const [disabledFields, setDisabledFields] = useState<
+          ('firstName' | 'lastName')[]
+        >(['firstName']);
         const { register } = useForm({
           disabled: disabledFields,
           defaultValues: {

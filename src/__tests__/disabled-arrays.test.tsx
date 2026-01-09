@@ -159,7 +159,8 @@ describe('Disabled arrays - Edge cases and Integration', () => {
         const [disabledMode, setDisabledMode] = useState<'boolean' | 'array'>(
           'boolean',
         );
-        const disabled = disabledMode === 'boolean' ? true : ['firstName'];
+        const disabled: boolean | ('firstName' | 'lastName')[] =
+          disabledMode === 'boolean' ? true : ['firstName'];
 
         const { register } = useForm({
           disabled,

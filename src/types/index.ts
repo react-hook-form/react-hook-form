@@ -8,3 +8,4 @@ export * from './path';
 export * from './resolvers';
 export * from './utils';
 export * from './validator';
+export * from './watch';

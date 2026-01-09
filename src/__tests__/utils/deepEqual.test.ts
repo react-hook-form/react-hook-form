@@ -96,6 +96,10 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
+  it('should return true when comparing invalid Date objects', () => {
+    expect(deepEqual(new Date('invalid'), new Date('abc'))).toBeTruthy();
+  });
+
   it('should be capable of comparing objects with circular references', () => {
     const a: any = { test: '123' };
     const b: any = { test: '123' };

@@ -6,6 +6,7 @@ describe('isWatched', () => {
       isWatched('', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(),
@@ -18,6 +19,7 @@ describe('isWatched', () => {
       isWatched('test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['test']),
@@ -32,6 +34,7 @@ describe('isWatched', () => {
       isWatched('test.test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['test']),
@@ -44,6 +47,7 @@ describe('isWatched', () => {
       isWatched('test.test.test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['test.test']),
@@ -56,6 +60,7 @@ describe('isWatched', () => {
       isWatched('test.test.test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['testFail.test', 'test.test']),
@@ -68,6 +73,7 @@ describe('isWatched', () => {
       isWatched('test.0', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['test']),
@@ -80,6 +86,7 @@ describe('isWatched', () => {
       isWatched('test.0.test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['test.0']),
@@ -94,6 +101,7 @@ describe('isWatched', () => {
       isWatched('test.test.test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['tesk.test']),
@@ -106,6 +114,7 @@ describe('isWatched', () => {
       isWatched('test.test.test', {
         mount: new Set(),
         disabled: new Set(),
+        readonly: new Set(),
         unMount: new Set(),
         array: new Set(),
         watch: new Set(['testFail.test']),
@@ -122,6 +131,7 @@ describe('isWatched', () => {
         {
           mount: new Set(),
           disabled: new Set(),
+          readonly: new Set(),
           unMount: new Set(),
           array: new Set(),
           watch: new Set(),
