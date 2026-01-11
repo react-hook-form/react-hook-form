@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   act,
   fireEvent,
@@ -213,63 +213,6 @@ describe('watch', () => {
     expect(result.current.watch()).toEqual({ test: 'data1', test1: 'data2' });
   });
 
-  it('should watch the entire field array with callback', () => {
-    const output: any[] = [];
-
-    const Component = () => {
-      const { watch, register } = useForm<{
-        test: string;
-        test1: string;
-      }>();
-
-      React.useEffect(() => {
-        const subscription = watch((data) => {
-          data.test;
-          data.test1;
-          output.push(data);
-        });
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      }, [watch]);
-
-      return <input {...register('test')} />;
-    };
-
-    render(<Component />);
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test',
-      },
-    });
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test1',
-      },
-    });
-
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: {
-        value: 'test2',
-      },
-    });
-
-    expect(output).toEqual([
-      {
-        test: 'test',
-      },
-      {
-        test: 'test1',
-      },
-      {
-        test: 'test2',
-      },
-    ]);
-  });
-
   it('should watch correctly with useFieldArray with action and then fallback to onChange', () => {
     type FormValues = {
       names: {
@@ -300,7 +243,7 @@ describe('watch', () => {
         <form onSubmit={handleSubmit(noop)}>
           {fields.map((item, index) => {
             return (
-              <div key={item.id}>
+              <div key={item.key}>
                 <Controller
                   control={control}
                   name={`names.${index}.name` as const}
@@ -567,56 +510,6 @@ describe('watch', () => {
     });
 
     screen.getByText('bill');
-  });
-
-  it('should call the callback on every append', () => {
-    interface FormValues {
-      names: {
-        firstName: string;
-      }[];
-    }
-    const mockedFn = jest.fn();
-
-    function App() {
-      const { watch, control } = useForm<FormValues>({
-        defaultValues: { names: [] },
-      });
-
-      const { fields, append } = useFieldArray({
-        control,
-        name: 'names',
-      });
-
-      useEffect(() => {
-        const subscription = watch((_value, { name }) => {
-          mockedFn(name, _value);
-        });
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      }, [watch]);
-
-      const addItem = (index: number) => {
-        append({ firstName: '' }, { focusName: `names.${index}.firstName` });
-      };
-
-      return (
-        <form>
-          <button type="button" onClick={() => addItem(fields.length)}>
-            append
-          </button>
-        </form>
-      );
-    }
-
-    render(<App />);
-
-    fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(1);
-
-    fireEvent.click(screen.getByRole('button'));
-    expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 
   it('should remain isReady form state for subscription', () => {

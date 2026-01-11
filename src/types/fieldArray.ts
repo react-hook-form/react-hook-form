@@ -7,11 +7,9 @@ export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
   TTransformedValues = TFieldValues,
 > = {
   name: TFieldArrayName;
-  keyName?: TKeyName;
   control?: Control<TFieldValues, any, TTransformedValues>;
   rules?: {
     validate?:
@@ -34,7 +32,7 @@ export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TKeyName extends string = 'key',
 > = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
 export type FieldArray<
@@ -267,7 +265,7 @@ export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TKeyName extends string = 'key',
 > = {
   swap: UseFieldArraySwap;
   move: UseFieldArrayMove;

@@ -15,13 +15,20 @@ interface DefaultValues {
   test: TestValue[];
 }
 
-let i = 0;
+let mockId = 0;
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../logic/generateId', () => () => String(mockId++));
+
+const ControlledInput = ({ index }: { index: number }) => {
+  const { field } = useController({
+    name: `fieldArray.${index}.firstName`,
+  });
+  return <input {...field} />;
+};
 
 describe('replace', () => {
   beforeEach(() => {
-    i = 0;
+    mockId = 0;
   });
 
   it('should replace fields correctly', () => {
@@ -53,7 +60,10 @@ describe('replace', () => {
         <form>
           {fields.map((field, index) => {
             return (
-              <input key={field.id} {...register(`test.${index}.x` as const)} />
+              <input
+                key={field.key}
+                {...register(`test.${index}.x` as const)}
+              />
             );
           })}
           <button type="button" onClick={handleSingleReplace}>
@@ -70,13 +80,13 @@ describe('replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: labelSingle }));
 
-    expect(currentFields).toEqual([{ id: '6', x: '201' }]);
+    expect(currentFields).toEqual([{ key: '6', x: '201' }]);
 
     fireEvent.click(screen.getByRole('button', { name: labelBatch }));
 
     expect(currentFields).toEqual([
-      { id: '8', x: '301' },
-      { id: '9', x: '302' },
+      { key: '8', x: '301' },
+      { key: '9', x: '302' },
     ]);
   });
   it('should not omit keyName when provided', async () => {
@@ -106,7 +116,9 @@ describe('replace', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -154,7 +166,9 @@ describe('replace', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -227,7 +241,7 @@ describe('replace', () => {
         <form>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.firstName` as const, {
                 required: 'This is required',
               })}
@@ -260,13 +274,6 @@ describe('replace', () => {
   });
 
   it('should not affect other formState during replace action', () => {
-    const ControlledInput = ({ index }: { index: number }) => {
-      const { field } = useController({
-        name: `fieldArray.${index}.firstName`,
-      });
-      return <input {...field} />;
-    };
-
     const defaultValue = {
       firstName: 'test',
     };
@@ -283,7 +290,7 @@ describe('replace', () => {
       return (
         <div>
           {fields.map((field, index) => {
-            return <ControlledInput key={field.id} index={index} />;
+            return <ControlledInput key={field.key} index={index} />;
           })}
 
           <button type="button" onClick={() => replace(defaultValue)}>
@@ -342,7 +349,7 @@ describe('replace', () => {
         return (
           <form>
             {fields.map((f, i) => (
-              <input key={f.id} {...register(`test.${i}.value` as const)} />
+              <input key={f.key} {...register(`test.${i}.value` as const)} />
             ))}
             <button
               type="button"

@@ -21,7 +21,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
+      name: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
       render: (values) => {
         expectType<[string, null, number, { qux: string }, string]>(values);
         return null;
@@ -35,7 +35,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       render: (value) => {
         expectType<string>(value);
         return null;
@@ -62,7 +62,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       compute: (val) => val.length > 2,
       render: (value) => {
         expectType<boolean>(value);
@@ -77,7 +77,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       compute: (val) => {
         expectType<string>(val);
         return val;
@@ -92,7 +92,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: ['baz.qux', 'fie', 'quux'],
+      name: ['baz.qux', 'fie', 'quux'],
       compute: (val) => {
         expectType<[string, null, number]>(val);
         return val;
