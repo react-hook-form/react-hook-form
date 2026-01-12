@@ -116,6 +116,8 @@ export const FormProvider = <
     register,
     setFocus,
     subscribe,
+    id,
+    submit,
   } = props;
 
   return (
@@ -139,6 +141,8 @@ export const FormProvider = <
             register,
             setFocus,
             subscribe,
+            id,
+            submit,
           }),
           [
             clearErrors,
@@ -147,12 +151,14 @@ export const FormProvider = <
             getFieldState,
             getValues,
             handleSubmit,
+            id,
             register,
             reset,
             resetField,
             setError,
             setFocus,
             setValue,
+            submit,
             subscribe,
             trigger,
             unregister,
