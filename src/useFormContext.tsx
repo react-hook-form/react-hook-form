@@ -1,11 +1,13 @@
 import React from 'react';
 
 import type {
+  Control,
   FieldValues,
   FormMetadata,
   FormProviderProps,
   UseFormReturn,
 } from './types';
+import { HookFormControlContext } from './useFormControlContext';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 HookFormContext.displayName = 'HookFormContext';
@@ -96,10 +98,78 @@ export const FormProvider = <
     TMetadata
   >,
 ) => {
-  const { children, ...data } = props;
+  const {
+    children,
+    watch,
+    getValues,
+    getFieldState,
+    setError,
+    clearErrors,
+    setValue,
+    trigger,
+    formState,
+    resetField,
+    reset,
+    handleSubmit,
+    unregister,
+    control,
+    register,
+    setFocus,
+    subscribe,
+    id,
+    submit,
+  } = props;
+
   return (
-    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
-      {children}
+    <HookFormContext.Provider
+      value={
+        React.useMemo(
+          () => ({
+            watch,
+            getValues,
+            getFieldState,
+            setError,
+            clearErrors,
+            setValue,
+            trigger,
+            formState,
+            resetField,
+            reset,
+            handleSubmit,
+            unregister,
+            control,
+            register,
+            setFocus,
+            subscribe,
+            id,
+            submit,
+          }),
+          [
+            clearErrors,
+            control,
+            formState,
+            getFieldState,
+            getValues,
+            handleSubmit,
+            id,
+            register,
+            reset,
+            resetField,
+            setError,
+            setFocus,
+            setValue,
+            submit,
+            subscribe,
+            trigger,
+            unregister,
+            watch,
+          ],
+        ) as unknown as UseFormReturn
+      }
+    >
+      <HookFormControlContext.Provider value={control as Control}>
+        {children}
+      </HookFormControlContext.Provider>
     </HookFormContext.Provider>
   );
 };
