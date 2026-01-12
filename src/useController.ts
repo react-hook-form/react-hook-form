@@ -20,7 +20,7 @@ import type {
   UseControllerProps,
   UseControllerReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
@@ -55,11 +55,15 @@ export function useController<
 >(
   props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
-  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
   const {
     name,
     disabled,
-    control = methods?.control,
+    control = formControl,
     shouldUnregister,
     defaultValue,
     exact = true,

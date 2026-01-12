@@ -1338,7 +1338,12 @@ export function createFormControl<
       !!disabled ||
       _names.disabled.has(name)
     ) {
+      const wasDisabled = _names.disabled.has(name);
+      const isDisabled = !!disabled;
+      const disabledStateChanged = wasDisabled !== isDisabled;
+
       disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
+      disabledStateChanged && _state.mount && !_state.action && _setValid();
     }
   };
 
