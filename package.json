@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.70.0",
+  "version": "7.71.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -116,7 +116,7 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "11.2 kB"
+        "maxSize": "11.25 kB"
       }
     ]
   },

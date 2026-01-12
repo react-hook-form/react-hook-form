@@ -1,6 +1,12 @@
 import React from 'react';
 
-import type { FieldValues, FormProviderProps, UseFormReturn } from './types';
+import type {
+  Control,
+  FieldValues,
+  FormProviderProps,
+  UseFormReturn,
+} from './types';
+import { HookFormControlContext } from './useFormControlContext';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 HookFormContext.displayName = 'HookFormContext';
@@ -146,7 +152,9 @@ export const FormProvider = <
         ) as unknown as UseFormReturn
       }
     >
-      {children}
+      <HookFormControlContext.Provider value={control as Control}>
+        {children}
+      </HookFormControlContext.Provider>
     </HookFormContext.Provider>
   );
 };

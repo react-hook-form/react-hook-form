@@ -11,6 +11,7 @@ import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
+
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
     const mockRegister = jest.fn();
@@ -317,6 +318,53 @@ describe('FormProvider', () => {
       );
       expect(errorFilterValue).toHaveTextContent('1');
     });
+  });
+
+  it('should not rerender unrelated fields when using useController', () => {
+    const onRender = jest.fn();
+
+    const RenderCounter = React.memo(() => {
+      useController({
+        name: 'value2',
+        defaultValue: '',
+      });
+      onRender();
+      return null;
+    });
+
+    const Form = () => {
+      const [, setValues] = useState({ value1: '', value2: '' });
+      const methods = useForm<{ value1: string; value2: string }>();
+      const { subscribe } = methods;
+
+      React.useEffect(() => {
+        subscribe({
+          formState: { values: true },
+          callback: ({ values }) => {
+            setValues(values);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            <input {...methods.register('value1')} data-testid="value1-input" />
+            <RenderCounter />
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<Form />);
+
+    const input = screen.getByTestId('value1-input');
+
+    expect(input).toBeVisible();
+    expect(onRender).toHaveBeenCalledTimes(1);
+    fireEvent.change(input, { target: { value: '1' } });
+    fireEvent.change(input, { target: { value: '2' } });
+    expect(onRender).toHaveBeenCalledTimes(1);
   });
 
   /**
