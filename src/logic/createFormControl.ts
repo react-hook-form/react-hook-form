@@ -900,50 +900,58 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
-    if (_options.resolver) {
-      const errors = await executeSchemaAndUpdateState(
-        isUndefined(name) ? name : fieldNames,
-      );
+    // works for async triggr
+    _updateIsValidating(fieldNames, true);
 
-      isValid = isEmptyObject(errors);
-      validationResult = name
-        ? !fieldNames.some((name) => get(errors, name))
-        : isValid;
-    } else if (name) {
-      validationResult = (
-        await Promise.all(
-          fieldNames.map(async (fieldName) => {
-            const field = get(_fields, fieldName);
-            return await executeBuiltInValidation(
-              field && field._f ? { [fieldName]: field } : field,
-            );
-          }),
-        )
-      ).every(Boolean);
-      !(!validationResult && !_formState.isValid) && _setValid();
-    } else {
-      validationResult = isValid = await executeBuiltInValidation(_fields);
+    try {
+      if (_options.resolver) {
+        const errors = await executeSchemaAndUpdateState(
+          isUndefined(name) ? name : fieldNames,
+        );
+
+        isValid = isEmptyObject(errors);
+        validationResult = name
+          ? !fieldNames.some((n) => get(errors, n))
+          : isValid;
+      } else if (name) {
+        validationResult = (
+          await Promise.all(
+            fieldNames.map(async (fieldName) => {
+              const field = get(_fields, fieldName);
+              return await executeBuiltInValidation(
+                field && field._f ? { [fieldName]: field } : field,
+              );
+            }),
+          )
+        ).every(Boolean);
+
+        !(!validationResult && !_formState.isValid) && _setValid();
+      } else {
+        validationResult = isValid = await executeBuiltInValidation(_fields);
+      }
+
+      _subjects.state.next({
+        ...(!isString(name) ||
+        ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
+          isValid !== _formState.isValid)
+          ? {}
+          : { name }),
+        ...(_options.resolver || !name ? { isValid } : {}),
+        errors: _formState.errors,
+      });
+
+      options.shouldFocus &&
+        !validationResult &&
+        iterateFieldsByAction(
+          _fields,
+          _focusInput,
+          name ? fieldNames : _names.mount,
+        );
+
+      return validationResult;
+    } finally {
+      _updateIsValidating(fieldNames);
     }
-
-    _subjects.state.next({
-      ...(!isString(name) ||
-      ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
-        isValid !== _formState.isValid)
-        ? {}
-        : { name }),
-      ...(_options.resolver || !name ? { isValid } : {}),
-      errors: _formState.errors,
-    });
-
-    options.shouldFocus &&
-      !validationResult &&
-      iterateFieldsByAction(
-        _fields,
-        _focusInput,
-        name ? fieldNames : _names.mount,
-      );
-
-    return validationResult;
   };
 
   const getValues: UseFormGetValues<TFieldValues> = (
