@@ -265,7 +265,7 @@ describe('errorsLookup', () => {
       ),
     ).toEqual({
       error: { message: 'correct-root', type: 'root' },
-      name: 'test.0.nested.root',
+      name: 'test.0.nested',
     });
 
     expect(
