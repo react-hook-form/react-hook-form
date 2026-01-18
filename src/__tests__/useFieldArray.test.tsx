@@ -409,6 +409,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -464,6 +465,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -512,6 +514,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             if (data.test.length > 1) {
               return {
@@ -584,6 +587,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             const errors: { test?: any } = {};
             if (data.test.length > 4) {
@@ -845,8 +849,10 @@ describe('useFieldArray', () => {
     });
 
     it('should unset field array values correctly on DOM removing', async () => {
-      interface NestedComponentProps
-        extends Pick<UseFormReturn<FormValues>, 'control' | 'register'> {
+      interface NestedComponentProps extends Pick<
+        UseFormReturn<FormValues>,
+        'control' | 'register'
+      > {
         childIndex: number;
       }
 
@@ -1249,6 +1255,39 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(screen.getAllByRole('textbox')).toHaveLength(4),
       );
+    });
+
+    it('should update isDirty after reset when using fieldArray operations with useFormState subscription', () => {
+      const { result } = renderHook(() => {
+        const { control, reset } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const { isDirty } = useFormState({ control });
+
+        return { fields, append, remove, reset, isDirty };
+      });
+
+      expect(result.current.isDirty).toBeFalsy();
+
+      act(() => {
+        result.current.append({ value: 'new' });
+      });
+
+      expect(result.current.isDirty).toBeTruthy();
+      expect(result.current.fields.length).toBe(2);
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.isDirty).toBeFalsy();
+      expect(result.current.fields.length).toBe(1);
     });
   });
 

@@ -38,7 +38,7 @@ import type {
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
@@ -80,8 +80,8 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
   TTransformedValues = TFieldValues,
 >(
@@ -92,9 +92,13 @@ export function useFieldArray<
     TTransformedValues
   >,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
-  const methods = useFormContext();
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
   const {
-    control = methods.control,
+    control = formControl,
     name,
     keyName = 'id',
     shouldUnregister,

@@ -796,8 +796,8 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues extends FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
   updatedFieldArrayValues?: Partial<
@@ -922,18 +922,6 @@ export type UseFormStateProps<
 
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
-
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  disabled?: boolean;
-  name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
-  exact?: boolean;
-  compute?: (formValues: any) => any;
-};
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,

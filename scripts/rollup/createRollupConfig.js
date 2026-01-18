@@ -43,7 +43,6 @@ export function createRollupConfig(options, callback) {
             unsafe: false,
             unsafe_comps: false,
             unsafe_math: false,
-            unsafe_methods: false,
             pure_funcs: ['console.log', 'console.info', 'console.debug'],
           },
         }),
