@@ -1,4 +1,4 @@
-import { FieldArrayPath, FieldArrayProps, FieldValues } from './types';
+import type { FieldArrayPath, FieldArrayProps, FieldValues } from './types';
 import { useFieldArray } from './useFieldArray';
 
 /**
