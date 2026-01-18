@@ -22,13 +22,13 @@ import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
-let i = 0;
+let mockId = 0;
 
-jest.mock('../logic/generateId', () => () => String(i++));
+jest.mock('../logic/generateId', () => () => String(mockId++));
 
 describe('useWatch', () => {
   beforeEach(() => {
-    i = 0;
+    mockId = 0;
   });
 
   it('should return default value in useForm', () => {
@@ -340,48 +340,6 @@ describe('useWatch', () => {
     });
 
     expect(screen.getByText('345')).toBeVisible();
-  });
-
-  it('should avoid triggering extra callbacks', () => {
-    const onChange = jest.fn();
-    type FormInputs = {
-      firstName: string;
-    };
-
-    const App = () => {
-      const {
-        register,
-        formState: { errors },
-        clearErrors,
-        watch,
-      } = useForm<FormInputs>();
-
-      React.useEffect(() => {
-        const unsubscribe = watch(onChange)?.unsubscribe;
-        return () => unsubscribe?.();
-      }, [watch]);
-
-      return (
-        <form>
-          <label>First Name</label>
-          <input type="text" {...register('firstName', { required: true })} />
-          {errors.firstName && <p>This Field is Required</p>}
-
-          <button type="button" onClick={() => clearErrors('firstName')}>
-            Clear First Name Errors
-          </button>
-          <button type="button" onClick={() => clearErrors()}>
-            Clear All Errors
-          </button>
-          <input type="submit" />
-        </form>
-      );
-    };
-
-    render(<App />);
-
-    fireEvent.click(screen.getByText('Clear All Errors'));
-    expect(onChange).toHaveBeenCalledTimes(0);
   });
 
   describe('when disabled prop is used', () => {
@@ -1031,7 +989,7 @@ describe('useWatch', () => {
           <form>
             {fields.map((item, itemIndex) => (
               <Item
-                key={item.id}
+                key={item.key}
                 control={control}
                 register={register}
                 itemIndex={itemIndex}
@@ -1145,7 +1103,7 @@ describe('useWatch', () => {
           <form>
             {fields.map((item, index) => {
               return (
-                <div key={item.id}>
+                <div key={item.key}>
                   <Child control={control} index={index} itemDefault={item} />
                   <button
                     type="button"

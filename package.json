@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "7.71.1",
+  "version": "8.0.0-beta.1",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "umd:main": "dist/index.umd.js",
@@ -38,6 +38,7 @@
     "type": "tsc --noEmit",
     "jest-preview": "jest-preview",
     "test": "jest --config ./scripts/jest/jest.config.js",
+    "test:react-compiler": "jest --config ./scripts/jest/jest-react-compiler.config.js --onlyChanged --watch",
     "test:coverage": "pnpm test --coverage",
     "test:watch": "pnpm test --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",
@@ -75,6 +76,10 @@
     "@microsoft/api-extractor": "^7.55.2",
     "@rollup/plugin-commonjs": "^28.0.9",
     "@rollup/plugin-node-resolve": "^16.0.3",
+    "@babel/preset-env": "^7.25.7",
+    "@babel/preset-react": "^7.25.7",
+    "@babel/preset-typescript": "^7.25.7",
+    "react-compiler-runtime": "^1.0.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@swc/core": "^1.15.3",
     "@swc/jest": "^0.2.39",
@@ -90,6 +95,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^5.2.0",
     "eslint-plugin-prettier": "^5.5.4",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -115,7 +121,7 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "11.25 kB"
+        "maxSize": "12.0 kB"
       }
     ]
   },

@@ -50,7 +50,7 @@ import { _ } from '../__fixtures__';
     const actual = _ as ArrayPath<{
       foo: Array<{ bar: string[]; baz: string[] }>;
     }>;
-    expectType<'foo'>(actual);
+    expectType<'foo' | `foo.${number}.bar` | `foo.${number}.baz`>(actual);
   }
 
   /** it should include paths through tuples */ {
@@ -60,7 +60,7 @@ import { _ } from '../__fixtures__';
 
   /** it should include paths through arrays */ {
     const actual = _ as ArrayPath<{ foo: string[][][] }>;
-    expectType<'foo' | `foo.${number}`>(actual);
+    expectType<'foo' | `foo.${number}` | `foo.${number}.${number}`>(actual);
   }
 
   /** it should be able to avoid self-referencing/recursion, not crashing on self-referencing types. */ {
