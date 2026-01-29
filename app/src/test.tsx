@@ -1,6 +1,5 @@
 import React from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { Control } from '../../src/types';
+import { useFieldArray, useForm, Control } from 'react-hook-form';
 
 type FormData = {
   nest: {
@@ -72,7 +71,10 @@ const Component = () => {
         </div>
       ))}
 
-      <button type={'button'} onClick={() => append({ value: 'test' })}>
+      <button
+        type={'button'}
+        onClick={() => append({ value: 'test', nestedArray: [] })}
+      >
         append
       </button>
     </div>

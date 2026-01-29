@@ -158,7 +158,9 @@ export default () => {
       <button
         id="append"
         type="button"
-        onClick={() => append({ firstName: 'append' })}
+        onClick={() =>
+          append({ firstName: 'append', lastName: 'Luo', keyValue: [] })
+        }
       >
         append
       </button>
@@ -166,7 +168,9 @@ export default () => {
       <button
         id="prepend"
         type="button"
-        onClick={() => prepend({ firstName: 'prepend' })}
+        onClick={() =>
+          prepend({ firstName: 'prepend', lastName: 'Luo', keyValue: [] })
+        }
       >
         prepend
       </button>
@@ -174,7 +178,9 @@ export default () => {
       <button
         id="update"
         type="button"
-        onClick={() => update(1, { firstName: 'update' })}
+        onClick={() =>
+          update(1, { firstName: 'update', lastName: 'Luo', keyValue: [] })
+        }
       >
         update
       </button>
@@ -190,7 +196,9 @@ export default () => {
       <button
         id="insert"
         type="button"
-        onClick={() => insert(1, { firstName: 'insert' })}
+        onClick={() =>
+          insert(1, { firstName: 'insert', lastName: 'Luo', keyValue: [] })
+        }
       >
         insert
       </button>
@@ -247,9 +255,9 @@ export default () => {
         onClick={() => {
           reset({
             test: [
-              { firstName: 'test' },
-              { firstName: 'test1' },
-              { firstName: 'test2' },
+              { firstName: 'test', lastName: 'test', keyValue: [] },
+              { firstName: 'test1', lastName: 'test', keyValue: [] },
+              { firstName: 'test2', lastName: 'test', keyValue: [] },
             ],
           });
         }}

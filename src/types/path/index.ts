@@ -1,7 +1,7 @@
 /** Re-export public API */
 
-export { PathString } from './common';
-export {
+export type { PathString } from './common';
+export type {
   ArrayPath,
   FieldArrayPath,
   FieldArrayPathByValue,

@@ -74,7 +74,6 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
-import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -700,19 +699,20 @@ export function createFormControl<
     value,
     options = {},
   ) => {
-    const field = get(_fields, name);
+    const field: Field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
-    const isNestedFieldArray = isNameInFieldArray(_names.array, name);
     const cloneValue = cloneObject(value);
 
     set(_formValues, name, cloneValue);
 
-    if (isFieldArray || isNestedFieldArray) {
-      const fieldArrayName = isFieldArray ? name : getNodeParentName(name);
-
-      _subjects.array.next({
-        name: fieldArrayName,
-        values: cloneObject(_formValues),
+    if (isFieldArray || isNameInFieldArray(_names.array, name)) {
+      _names.array.forEach((fieldArrayName) => {
+        if (name === fieldArrayName || name.startsWith(fieldArrayName + '.')) {
+          _subjects.array.next({
+            name: fieldArrayName,
+            values: cloneObject(_formValues),
+          });
+        }
       });
 
       if (
@@ -728,6 +728,10 @@ export function createFormControl<
           isDirty: _getDirty(name, cloneValue),
         });
       }
+    }
+
+    if (isFieldArray) {
+      _subjects.state.next({ ..._formState });
     } else {
       field && !field._f && !isNullOrUndefined(cloneValue)
         ? setValues(name, cloneValue, options)
