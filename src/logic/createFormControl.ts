@@ -74,6 +74,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -701,13 +702,16 @@ export function createFormControl<
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
+    const isNestedFieldArray = isNameInFieldArray(_names.array, name);
     const cloneValue = cloneObject(value);
 
     set(_formValues, name, cloneValue);
 
-    if (isFieldArray) {
+    if (isFieldArray || isNestedFieldArray) {
+      const fieldArrayName = isFieldArray ? name : getNodeParentName(name);
+
       _subjects.array.next({
-        name,
+        name: fieldArrayName,
         values: cloneObject(_formValues),
       });
 
