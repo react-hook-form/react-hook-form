@@ -707,14 +707,19 @@ export function createFormControl<
 
     if (isFieldArray || isNameInFieldArray(_names.array, name)) {
       const values = cloneObject(_formValues);
-      _names.array.forEach((fieldArrayName) => {
-        if (name === fieldArrayName || name.startsWith(fieldArrayName + '.')) {
-          _subjects.array.next({
-            name: fieldArrayName,
-            values,
-          });
-        }
-      });
+      const [deepestFieldArrayName] = Array.from(_names.array)
+        .filter(
+          (fieldArrayName) =>
+            name === fieldArrayName || name.startsWith(fieldArrayName + '.'),
+        )
+        .sort((a, b) => b.length - a.length);
+
+      if (deepestFieldArrayName) {
+        _subjects.array.next({
+          name: deepestFieldArrayName,
+          values,
+        });
+      }
     }
 
     if (isFieldArray) {
