@@ -722,21 +722,18 @@ export function createFormControl<
           _proxySubscribeFormState.dirtyFields) &&
         options.shouldDirty
       ) {
+        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
         _subjects.state.next({
           name,
-          dirtyFields: getDirtyFields(_defaultValues, _formValues),
+          dirtyFields: _formState.dirtyFields,
           isDirty: _getDirty(name, cloneValue),
         });
       }
     }
 
-    if (isFieldArray) {
-      _subjects.state.next({ ..._formState });
-    } else {
-      field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setValues(name, cloneValue, options)
-        : setFieldValue(name, cloneValue, options);
-    }
+    field && !field._f && !isNullOrUndefined(cloneValue)
+      ? setValues(name, cloneValue, options)
+      : setFieldValue(name, cloneValue, options);
 
     if (isWatched(name, _names)) {
       _subjects.state.next({
