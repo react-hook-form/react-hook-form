@@ -17,3 +17,7 @@ runs:
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
       shell: bash
+
+    - name: Install Cypress Binary
+      run: pnpm exec cypress install
+      shell: bash

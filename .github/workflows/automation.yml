@@ -15,6 +15,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
+          install: false
           start: pnpm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
