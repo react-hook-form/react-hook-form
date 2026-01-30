@@ -1,6 +1,11 @@
 import type { InternalFieldName } from '../types';
 
-import getNodeParentName from './getNodeParentName';
+export default (names: Set<InternalFieldName>, name: InternalFieldName) => {
+  for (const fieldArrayName of names) {
+    if (name.startsWith(fieldArrayName + '.')) {
+      return true;
+    }
+  }
 
-export default (names: Set<InternalFieldName>, name: InternalFieldName) =>
-  names.has(getNodeParentName(name));
+  return false;
+};

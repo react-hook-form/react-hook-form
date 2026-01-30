@@ -706,14 +706,19 @@ export function createFormControl<
     set(_formValues, name, cloneValue);
 
     if (isFieldArray || isNameInFieldArray(_names.array, name)) {
+      const values = cloneObject(_formValues);
       _names.array.forEach((fieldArrayName) => {
         if (name === fieldArrayName || name.startsWith(fieldArrayName + '.')) {
           _subjects.array.next({
             name: fieldArrayName,
-            values: cloneObject(_formValues),
+            values,
           });
         }
       });
+    }
+
+    if (isFieldArray) {
+      _subjects.state.next({ ..._formState });
 
       if (
         (_proxyFormState.isDirty ||
@@ -722,18 +727,17 @@ export function createFormControl<
           _proxySubscribeFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
         _subjects.state.next({
           name,
-          dirtyFields: _formState.dirtyFields,
+          dirtyFields: getDirtyFields(_defaultValues, _formValues),
           isDirty: _getDirty(name, cloneValue),
         });
       }
+    } else {
+      field && !field._f && !isNullOrUndefined(cloneValue)
+        ? setValues(name, cloneValue, options)
+        : setFieldValue(name, cloneValue, options);
     }
-
-    field && !field._f && !isNullOrUndefined(cloneValue)
-      ? setValues(name, cloneValue, options)
-      : setFieldValue(name, cloneValue, options);
 
     if (isWatched(name, _names)) {
       _subjects.state.next({
