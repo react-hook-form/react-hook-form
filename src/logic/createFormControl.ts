@@ -702,10 +702,11 @@ export function createFormControl<
     const field: Field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
+    const isArrayField = isFieldArray || isNameInFieldArray(_names.array, name);
 
     set(_formValues, name, cloneValue);
 
-    if (isFieldArray || isNameInFieldArray(_names.array, name)) {
+    if (isArrayField) {
       const values = cloneObject(_formValues);
       const [deepestFieldArrayName] = Array.from(_names.array)
         .filter(
@@ -748,7 +749,7 @@ export function createFormControl<
         name,
         values: cloneObject(_formValues),
       });
-    } else if (!isNameInFieldArray(_names.array, name) && !isFieldArray) {
+    } else if (!isArrayField) {
       _subjects.state.next({
         name: _state.mount ? name : undefined,
         values: cloneObject(_formValues),
