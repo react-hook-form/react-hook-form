@@ -723,8 +723,6 @@ export function createFormControl<
     }
 
     if (isFieldArray) {
-      _subjects.state.next({ ..._formState });
-
       if (
         (_proxyFormState.isDirty ||
           _proxyFormState.dirtyFields ||
@@ -750,7 +748,7 @@ export function createFormControl<
         name,
         values: cloneObject(_formValues),
       });
-    } else if (!isNameInFieldArray(_names.array, name)) {
+    } else if (!isNameInFieldArray(_names.array, name) && !isFieldArray) {
       _subjects.state.next({
         name: _state.mount ? name : undefined,
         values: cloneObject(_formValues),
