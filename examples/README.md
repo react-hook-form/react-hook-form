@@ -64,3 +64,11 @@ The following table contains a list of support Types in this library.
 | Resolver      | https://codesandbox.io/s/react-hook-form-resolver-rvspp           |
 | UseFormReturn | https://codesandbox.io/s/react-hook-form-useformmethods-e3411     |
 | Control       | https://codesandbox.io/s/react-hook-form-control-forked-giq0e     |
+
+## Form Generator
+
+The following table contains a complete usage of react-hook-form inside a form generator.
+
+| Type Name        | Link                                                                        |
+| ---------------- | --------------------------------------------------------------------------- |
+| Form Generator   | https://codesandbox.io/p/sandbox/react-hook-form-full-automated-form-ws27yr |
