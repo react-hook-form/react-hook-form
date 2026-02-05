@@ -270,6 +270,31 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
   options?: SetFocusOptions,
 ) => void;
 
+/**
+ * Check whether a registered field has focus. You can start to invoke this method after all fields are mounted to the DOM.
+ *
+ * @remarks
+ * [API](https://react-hook-form.com/docs/useform/isfocused)
+ *
+ * @param name - the path name to the form field value.
+ *
+ * @returns `true` if the field has focus, `false` otherwise.
+ *
+ * @example
+ * ```tsx
+ * const hasFocus = isFocused("name");
+ * // Use in conditional logic
+ * if (isFocused("email")) {
+ *   // field is currently focused
+ * }
+ * ```
+ */
+export type UseFormIsFocused<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+) => boolean;
+
 type EitherOption<T> = {
   [K in keyof T]: {
     [P in K]: T[P];
@@ -904,6 +929,7 @@ export type UseFormReturn<
   control: Control<TFieldValues, TContext, TTransformedValues>;
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
+  isFocused: UseFormIsFocused<TFieldValues>;
   subscribe: UseFormSubscribe<TFieldValues>;
 };
 

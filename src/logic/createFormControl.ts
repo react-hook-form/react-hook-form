@@ -29,6 +29,7 @@ import type {
   UseFormGetFieldState,
   UseFormGetValues,
   UseFormHandleSubmit,
+  UseFormIsFocused,
   UseFormProps,
   UseFormRegister,
   UseFormReset,
@@ -1525,6 +1526,25 @@ export function createFormControl<
     }
   };
 
+  const isFocused: UseFormIsFocused<TFieldValues> = (name) => {
+    if (typeof document === 'undefined') {
+      return false;
+    }
+
+    const field = get(_fields, name);
+    const fieldReference = field && field._f;
+
+    if (fieldReference) {
+      const fieldRef = fieldReference.refs
+        ? fieldReference.refs[0]
+        : fieldReference.ref;
+
+      return document.activeElement === fieldRef;
+    }
+
+    return false;
+  };
+
   const _setFormState = (
     updatedFormState: Partial<FormState<TFieldValues>>,
   ) => {
@@ -1614,6 +1634,7 @@ export function createFormControl<
     unregister,
     setError,
     setFocus,
+    isFocused,
     getFieldState,
   };
 
