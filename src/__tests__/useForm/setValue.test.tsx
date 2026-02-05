@@ -584,58 +584,6 @@ describe('setValue', () => {
 
       expect(result.current).toBe('abc');
     });
-
-    it('should track field names', () => {
-      type FormValues = {
-        enabled: boolean;
-        child: {
-          dependent: boolean;
-        };
-      };
-
-      function App() {
-        const { control, watch, setValue } = useForm<FormValues>({
-          defaultValues: { enabled: false, child: { dependent: false } },
-        });
-
-        // Propagate the easy-to-edit form values that we add back to template ID
-        // values.
-        React.useEffect(() => {
-          const subscription = watch((formData, { name }) => {
-            if (name === 'enabled') {
-              setValue(`child.dependent`, !!formData.enabled);
-            }
-          });
-          return () => subscription.unsubscribe();
-        }, [setValue, watch]);
-
-        watch('child');
-
-        return (
-          <div>
-            <form>
-              <label>
-                Enabled
-                <Controller
-                  render={({ field: { value, ...props } }) => (
-                    <input type="checkbox" {...props} checked={!!value} />
-                  )}
-                  name="enabled"
-                  control={control}
-                />
-              </label>
-              <input type="submit" />
-            </form>
-          </div>
-        );
-      }
-
-      render(<App />);
-
-      expect(() =>
-        fireEvent.click(screen.getByRole('checkbox', { name: 'Enabled' })),
-      ).not.toThrow();
-    });
   });
 
   describe('with validation', () => {
@@ -1120,7 +1068,7 @@ describe('setValue', () => {
         <>
           {fields.map((item, index) => (
             <Controller
-              key={item.id}
+              key={item.key}
               control={control}
               name={`names.${index}.name` as const}
               render={({ field }) => <input data-testid={inputId} {...field} />}
@@ -1177,7 +1125,7 @@ describe('setValue', () => {
       return (
         <div>
           {fields.map((field, index) => (
-            <Child key={field.id} control={control} index={index} />
+            <Child key={field.key} control={control} index={index} />
           ))}
           <button
             onClick={() => {

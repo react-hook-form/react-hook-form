@@ -19,7 +19,7 @@ export default function UseFieldArraySimpleExample() {
     <form onSubmit={handleSubmit(onSubmit)}>
       {fields.map((field, index) => (
         <input
-          key={field.id}
+          key={field.key}
           {...register(`users.${index}.name`)}
           placeholder={`User ${index + 1}`}
         />

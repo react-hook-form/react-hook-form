@@ -84,7 +84,11 @@ describe('resolver', () => {
           };
     };
 
-    const App = () => {
+    type AppProps = {
+      fakeResolver: typeof fakeResolver;
+    };
+
+    const App = ({ fakeResolver }: AppProps) => {
       const [schema, setSchema] = React.useState(false);
       const [submit, setSubmit] = React.useState(false);
       const {
@@ -111,7 +115,7 @@ describe('resolver', () => {
       );
     };
 
-    render(<App />);
+    render(<App fakeResolver={fakeResolver} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -134,7 +138,11 @@ describe('resolver', () => {
       };
     };
 
-    const App = () => {
+    type AppProps = {
+      resolver: typeof resolver;
+    };
+
+    const App = ({ resolver }: AppProps) => {
       const { register, handleSubmit } = useForm({
         resolver: async (data, context, options) =>
           resolver(data, context, options),
@@ -149,7 +157,7 @@ describe('resolver', () => {
       );
     };
 
-    render(<App />);
+    render(<App resolver={resolver} />);
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -515,7 +523,7 @@ describe('resolver', () => {
             <div data-testid="fieldsCount">{fields.length}</div>
             {fields.map((field, index) => (
               <FormInput
-                key={field.id}
+                key={field.key}
                 control={control}
                 name={`parts.${index}.name`}
               />

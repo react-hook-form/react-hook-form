@@ -268,7 +268,7 @@ describe('FormProvider', () => {
             }}
           >
             {fields.map((field, index) => (
-              <option key={field.id} value={index}></option>
+              <option key={field.key} value={index}></option>
             ))}
           </select>
           {selected !== undefined && (
