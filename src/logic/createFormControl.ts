@@ -982,14 +982,30 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name &&
-      convertToArrayPayload(name).forEach((inputName) =>
-        unset(_formState.errors, inputName),
-      );
+    if (name) {
+      const names = convertToArrayPayload(name);
+      names.forEach((inputName) => {
+        unset(_formState.errors, inputName);
+      });
 
-    _subjects.state.next({
-      errors: name ? _formState.errors : {},
-    });
+      // Emit notification for each cleared field when array is provided,
+      // or single notification when a single field name is provided
+      if (names.length === 1) {
+        _subjects.state.next({
+          name: names[0],
+          errors: _formState.errors,
+        });
+      } else {
+        // For multiple names, emit without name to notify all subscribers
+        _subjects.state.next({
+          errors: _formState.errors,
+        });
+      }
+    } else {
+      _subjects.state.next({
+        errors: {},
+      });
+    }
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
