@@ -982,14 +982,25 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name &&
-      convertToArrayPayload(name).forEach((inputName) =>
-        unset(_formState.errors, inputName),
-      );
+    const names = name ? convertToArrayPayload(name) : undefined;
 
-    _subjects.state.next({
-      errors: name ? _formState.errors : {},
-    });
+    names?.forEach((inputName) => unset(_formState.errors, inputName));
+
+    if (names) {
+      // Emit for each cleared field with the field name so that
+      // shouldSubscribeByName can filter and avoid broad re-renders
+      names.forEach((inputName) => {
+        _subjects.state.next({
+          name: inputName,
+          errors: _formState.errors,
+        });
+      });
+    } else {
+      // Clear all errors - emit without name to notify all subscribers
+      _subjects.state.next({
+        errors: {},
+      });
+    }
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
