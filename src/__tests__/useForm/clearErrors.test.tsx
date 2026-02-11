@@ -8,7 +8,9 @@ import {
   waitFor,
 } from '@testing-library/react';
 
+import type { Control } from '../../types';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 
 describe('clearErrors', () => {
   it('should remove error', () => {
@@ -282,5 +284,92 @@ describe('clearErrors', () => {
     };
 
     render(<App />);
+  });
+
+  it('should only notify subscribers for the cleared field when using exact: true', async () => {
+    let renderCountA = 0;
+    let renderCountB = 0;
+
+    const FieldA = ({
+      control,
+    }: {
+      control: Control<{ a: string; b: string }>;
+    }) => {
+      const { errors } = useFormState({
+        control,
+        name: 'a',
+        exact: true,
+      });
+      renderCountA++;
+      return <div data-testid="error-a">{errors.a?.message || ''}</div>;
+    };
+
+    const FieldB = ({
+      control,
+    }: {
+      control: Control<{ a: string; b: string }>;
+    }) => {
+      const { errors } = useFormState({
+        control,
+        name: 'b',
+        exact: true,
+      });
+      renderCountB++;
+      return <div data-testid="error-b">{errors.b?.message || ''}</div>;
+    };
+
+    const App = () => {
+      const { control, setError, clearErrors } = useForm<{
+        a: string;
+        b: string;
+      }>();
+
+      return (
+        <div>
+          <FieldA control={control} />
+          <FieldB control={control} />
+          <button onClick={() => setError('a', { message: 'error a' })}>
+            Set Error A
+          </button>
+          <button onClick={() => clearErrors('a')}>Clear Error A</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Initial render
+    const initialRenderA = renderCountA;
+    const initialRenderB = renderCountB;
+
+    // Set error on field 'a'
+    fireEvent.click(screen.getByRole('button', { name: 'Set Error A' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error-a')).toHaveTextContent('error a');
+    });
+
+    const afterSetErrorRenderA = renderCountA;
+    const afterSetErrorRenderB = renderCountB;
+
+    // FieldA should have re-rendered for setError('a')
+    expect(afterSetErrorRenderA).toBeGreaterThan(initialRenderA);
+    // FieldB should NOT have re-rendered for setError('a')
+    expect(afterSetErrorRenderB).toBe(initialRenderB);
+
+    // Clear error on field 'a'
+    fireEvent.click(screen.getByRole('button', { name: 'Clear Error A' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error-a')).toHaveTextContent('');
+    });
+
+    const afterClearErrorRenderA = renderCountA;
+    const afterClearErrorRenderB = renderCountB;
+
+    // FieldA should have re-rendered for clearErrors('a')
+    expect(afterClearErrorRenderA).toBeGreaterThan(afterSetErrorRenderA);
+    // FieldB should NOT have re-rendered for clearErrors('a') - this is the bug fix!
+    expect(afterClearErrorRenderB).toBe(afterSetErrorRenderB);
   });
 });
