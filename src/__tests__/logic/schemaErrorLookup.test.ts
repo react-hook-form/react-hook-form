@@ -265,7 +265,7 @@ describe('errorsLookup', () => {
       ),
     ).toEqual({
       error: { message: 'correct-root', type: 'root' },
-      name: 'test.0.nested.root',
+      name: 'test.0.nested',
     });
 
     expect(
@@ -278,5 +278,105 @@ describe('errorsLookup', () => {
       error: { message: 'error', type: 'deepNested' },
       name: 'test.0.nested.0.deepNested',
     });
+  });
+
+  it('should return consistent error path for field array validation (issue #13258)', () => {
+    const fieldArrayError = {
+      type: 'custom',
+      message: 'at_least_1_item',
+      ref: {},
+    };
+
+    expect(
+      schemaErrorLookup(
+        {
+          items: fieldArrayError as any,
+        },
+        {
+          items: [],
+        },
+        'items',
+      ),
+    ).toEqual({
+      error: fieldArrayError,
+      name: 'items',
+    });
+
+    expect(
+      schemaErrorLookup(
+        {
+          items: fieldArrayError as any,
+        },
+        {
+          items: [],
+        },
+        'items.field',
+      ),
+    ).toEqual({
+      error: fieldArrayError,
+      name: 'items',
+    });
+
+    expect(
+      schemaErrorLookup(
+        {
+          items: fieldArrayError as any,
+        },
+        {
+          items: [],
+        },
+        'items.0.field',
+      ),
+    ).toEqual({
+      error: fieldArrayError,
+      name: 'items',
+    });
+  });
+
+  it('should handle field array errors consistently with trigger() and handleSubmit()', () => {
+    const itemsError = {
+      type: 'custom',
+      message: 'at_least_1_item',
+      ref: {},
+    };
+
+    const errors = {
+      items: itemsError as any,
+    };
+
+    const fields = {
+      items: [],
+    };
+
+    const result1 = schemaErrorLookup(errors, fields, 'items');
+    const result2 = schemaErrorLookup(errors, fields, 'items.0');
+
+    expect(result1.error?.message).toBe('at_least_1_item');
+    expect(result2.error?.message).toBe('at_least_1_item');
+
+    expect(result1.error?.root).toBeUndefined();
+    expect(result2.error?.root).toBeUndefined();
+  });
+
+  it('should not wrap field array errors in root property', () => {
+    const itemsValidationError = {
+      type: 'validate',
+      message: 'Minimum 1 item required',
+      ref: {},
+    };
+
+    const result = schemaErrorLookup(
+      {
+        items: itemsValidationError as any,
+      },
+      {
+        items: [],
+      },
+      'items',
+    );
+
+    expect(result.error).toEqual(itemsValidationError);
+    expect(result.error?.root).toBeUndefined();
+    expect(result.name).toBe('items');
   });
 });
