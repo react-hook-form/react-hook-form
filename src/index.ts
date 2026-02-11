@@ -7,6 +7,7 @@ export * from './useController';
 export * from './useFieldArray';
 export * from './useForm';
 export * from './useFormContext';
+export * from './useFormDebug';
 export * from './useFormState';
 export * from './useWatch';
 export * from './utils';
