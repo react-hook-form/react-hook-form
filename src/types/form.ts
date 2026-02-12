@@ -118,6 +118,12 @@ export type UseFormProps<
   defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
   values: TFieldValues;
   errors: FieldErrors<TFieldValues>;
+  /**
+   * External pending/submission state (for example from React 19 useActionState).
+   * When provided, react-hook-form will sync `formState.isSubmitting` with this
+   * value so external action state and RHF's internal state stay consistent.
+   */
+  isPending?: boolean;
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
   resolver: Resolver<TFieldValues, TContext, TTransformedValues>;
   context: TContext;
@@ -140,6 +146,7 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
+  isSubmitting: boolean;
   isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
