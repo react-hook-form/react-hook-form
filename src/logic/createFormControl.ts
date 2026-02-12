@@ -349,7 +349,9 @@ export function createFormControl<
       name,
     };
 
-    if (!_options.disabled) {
+    // Check if this is a programmatic update (like from setValue) or user interaction
+    const isProgrammaticUpdate = shouldDirty === true;
+    if (!_options.disabled || isProgrammaticUpdate) {
       if (!isBlurEvent || shouldDirty) {
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
           isPreviousDirty = _formState.isDirty;
@@ -557,10 +559,10 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(getValues(), _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => (
+    name && data && set(_formValues, name, data),
+    !deepEqual(getValues(), _defaultValues)
+  );
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -1368,10 +1370,12 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
-    const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
+    const isUndefinedResetValues = isUndefined(formValues);
+    const updatedValues = isUndefinedResetValues
+      ? _defaultValues
+      : cloneObject(formValues);
     const cloneUpdatedValues = cloneObject(updatedValues);
-    const isEmptyResetValues = isEmptyObject(formValues);
-    const values = isEmptyResetValues ? _defaultValues : cloneUpdatedValues;
+    const values = isUndefinedResetValues ? _defaultValues : cloneUpdatedValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1468,32 +1472,38 @@ export function createFormControl<
       _formState.errors = {};
     }
 
+    // Calculate isDirty based on whether formValues is undefined (reset to defaults) or not
+    const isDirty = isUndefinedResetValues
+      ? false
+      : keepStateOptions.keepDirty
+        ? _formState.isDirty
+        : !!(
+            keepStateOptions.keepDefaultValues &&
+            !deepEqual(formValues, _defaultValues)
+          );
+
+    // Calculate dirtyFields based on whether formValues is undefined (reset to defaults) or not
+    const dirtyFields = isUndefinedResetValues
+      ? {}
+      : keepStateOptions.keepDirtyValues
+        ? keepStateOptions.keepDefaultValues && _formValues
+          ? getDirtyFields(_defaultValues, _formValues)
+          : _formState.dirtyFields
+        : keepStateOptions.keepDefaultValues && formValues
+          ? getDirtyFields(_defaultValues, formValues)
+          : keepStateOptions.keepDirty
+            ? _formState.dirtyFields
+            : {};
+
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
-      isDirty: isEmptyResetValues
-        ? false
-        : keepStateOptions.keepDirty
-          ? _formState.isDirty
-          : !!(
-              keepStateOptions.keepDefaultValues &&
-              !deepEqual(formValues, _defaultValues)
-            ),
+      isDirty,
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields: isEmptyResetValues
-        ? {}
-        : keepStateOptions.keepDirtyValues
-          ? keepStateOptions.keepDefaultValues && _formValues
-            ? getDirtyFields(_defaultValues, _formValues)
-            : _formState.dirtyFields
-          : keepStateOptions.keepDefaultValues && formValues
-            ? getDirtyFields(_defaultValues, formValues)
-            : keepStateOptions.keepDirty
-              ? _formState.dirtyFields
-              : {},
+      dirtyFields,
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
