@@ -872,6 +872,7 @@ export type Control<
   ) => void;
   _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean) => void;
+  _controllerCount: Map<InternalFieldName, number>;
   _subscribe: FromSubscribe<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
