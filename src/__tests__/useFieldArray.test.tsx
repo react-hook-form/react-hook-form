@@ -22,9 +22,9 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import noop from '../utils/noop';
+import { useWatch } from '../useWatch';
 
 let i = 0;
-
 jest.mock('../logic/generateId', () => () => String(i++));
 
 describe('useFieldArray', () => {
@@ -4531,4 +4531,64 @@ describe('useFieldArray with checkbox', () => {
       expect(checkboxes[3]).not.toBeChecked(); // Option 2
     });
   });
+});
+
+describe('useWatch with useFieldArray', () => {
+  it('should not cause unnecessary rerenders', () => {
+    // track rerenders
+    let renderCount = 0;
+
+    const Component = () => {
+      renderCount++;
+      const { control } = useForm({
+        defaultValues: {
+          test: [{ name: 'test' }],
+        },
+      });
+
+      useWatch({ control, name: 'test' }); // This is causing rerenders
+      useFieldArray({ control, name: 'test' });
+
+      return <div>Test</div>;
+    };
+
+    render(<Component />);
+    expect(renderCount).toBe(1); // if > 1, we have a problem
+  });
+});
+
+it('should not rerender unrelated components when appending field', () => {
+  let renderCount = 0;
+
+  const Child = () => {
+    renderCount++;
+    useWatch({ name: 'test' });
+    return <p>child</p>;
+  };
+
+  const App = () => {
+    const { control } = useForm({
+      defaultValues: {
+        test: [{ value: '' }],
+      },
+    });
+
+    const { append } = useFieldArray({
+      control,
+      name: 'test',
+    });
+
+    return (
+      <>
+        <Child />
+        <button onClick={() => append({ value: '' })}>Add</button>
+      </>
+    );
+  };
+
+  const { getByText } = render(<App />);
+  expect(renderCount).toBe(1); 
+
+  fireEvent.click(getByText('Add'));
+  expect(renderCount).toBe(1); 
 });
