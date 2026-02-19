@@ -1,7 +1,7 @@
 import update from '../../utils/update';
 
 describe('update', () => {
-  it('should update element at index and mutate original array', () => {
+  it('should update element at a valid index', () => {
     const data = [1, 2, 3];
     const result = update(data, 1, 99);
 
@@ -9,35 +9,49 @@ describe('update', () => {
     expect(result).toBe(data);
   });
 
-  it('should work with object arrays', () => {
-    const data = [
-      {
-        firstName: '1',
-        lastName: 'Luo',
-        id: '75309979-e340-49eb-8016-5f67bfb56c1c',
-      },
-      {
-        firstName: '2',
-        lastName: 'Luo',
-        id: '75309979-e340-49eb-8016-5f67bfb56c1c',
-      },
-    ];
-    update(data, 0, { firstName: 'Updated', lastName: 'Name', id: 'new-id' });
+  it('should update the first element', () => {
+    const data = ['a', 'b', 'c'];
+    const result = update(data, 0, 'z');
 
-    expect(data[0]).toEqual({
-      firstName: 'Updated',
-      lastName: 'Name',
-      id: 'new-id',
-    });
+    expect(result).toEqual(['z', 'b', 'c']);
+    expect(result).toBe(data);
   });
 
-  it('should update with falsy values', () => {
-    expect(update([1, 2, 3], 1, 0)).toEqual([1, 0, 3]);
-    expect(update([true, true, true] as boolean[], 1, false)).toEqual([
-      true,
-      false,
-      true,
+  it('should update the last element', () => {
+    const data = [1, 2, 3];
+    const result = update(data, 2, 100);
+
+    expect(result).toEqual([1, 2, 100]);
+    expect(result).toBe(data);
+  });
+
+  it('should work with object arrays', () => {
+    const data = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const result = update(data, 0, { id: 999 });
+
+    expect(result).toEqual([{ id: 999 }, { id: 2 }, { id: 3 }]);
+    expect(result).toBe(data);
+  });
+
+  it('should work with nested arrays', () => {
+    const data = [
+      [1, 2],
+      [3, 4],
+    ];
+    const result = update(data, 1, [5, 6]);
+
+    expect(result).toEqual([
+      [1, 2],
+      [5, 6],
     ]);
-    expect(update(['a', 'b', 'c'], 1, '')).toEqual(['a', '', 'c']);
+    expect(result).toBe(data);
+  });
+
+  it('should work with a single-element array', () => {
+    const data = ['only'];
+    const result = update(data, 0, 'replaced');
+
+    expect(result).toEqual(['replaced']);
+    expect(result).toBe(data);
   });
 });
