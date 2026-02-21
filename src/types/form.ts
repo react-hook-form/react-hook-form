@@ -20,7 +20,12 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type { DeepMap, DeepPartial, Noop } from './utils';
+import type {
+  DeepMap,
+  DeepPartial,
+  DeepPartialSkipArrayKey,
+  Noop,
+} from './utils';
 import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -884,7 +889,7 @@ export type Control<
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: DeepPartial<TFieldValues>,
+  value: DeepPartialSkipArrayKey<TFieldValues>,
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
@@ -930,18 +935,6 @@ export type UseFormStateProps<
 
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
-
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  disabled?: boolean;
-  name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
-  exact?: boolean;
-  compute?: (formValues: any) => any;
-};
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,

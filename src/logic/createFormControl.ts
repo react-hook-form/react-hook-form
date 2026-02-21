@@ -1080,14 +1080,25 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name &&
-      convertToArrayPayload(name).forEach((inputName) =>
-        unset(_formState.errors, inputName),
-      );
+    const names = name ? convertToArrayPayload(name) : undefined;
 
-    _subjects.state.next({
-      errors: name ? _formState.errors : {},
-    });
+    names?.forEach((inputName) => unset(_formState.errors, inputName));
+
+    if (names) {
+      // Emit for each cleared field with the field name so that
+      // shouldSubscribeByName can filter and avoid broad re-renders
+      names.forEach((inputName) => {
+        _subjects.state.next({
+          name: inputName,
+          errors: _formState.errors,
+        });
+      });
+    } else {
+      // Clear all errors - emit without name to notify all subscribers
+      _subjects.state.next({
+        errors: {},
+      });
+    }
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
@@ -1223,7 +1234,12 @@ export function createFormControl<
       !!disabled ||
       _names.disabled.has(name)
     ) {
+      const wasDisabled = _names.disabled.has(name);
+      const isDisabled = !!disabled;
+      const disabledStateChanged = wasDisabled !== isDisabled;
+
       disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
+      disabledStateChanged && _state.mount && !_state.action && _setValid();
     }
   };
 
@@ -1469,12 +1485,15 @@ export function createFormControl<
           ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
-          get(_formState.dirtyFields, fieldName)
-            ? set(values, fieldName, get(_formValues, fieldName))
-            : setValue(
-                fieldName as FieldPath<TFieldValues>,
-                get(values, fieldName),
-              );
+          const isDirty = get(_formState.dirtyFields, fieldName);
+          const existingValue = get(_formValues, fieldName);
+          const newValue = get(values, fieldName);
+
+          if (isDirty && !isUndefined(existingValue)) {
+            set(values, fieldName, existingValue);
+          } else if (!isDirty && !isUndefined(newValue)) {
+            setValue(fieldName as FieldPath<TFieldValues>, newValue);
+          }
         }
       } else {
         if (isWeb && isUndefined(formValues)) {

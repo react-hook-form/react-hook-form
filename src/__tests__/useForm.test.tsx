@@ -1729,6 +1729,7 @@ describe('useForm', () => {
         const { register, formState } = useForm({
           defaultValues: { test: 'Test' },
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (values) => {
             if (!values.test) {
               return {
