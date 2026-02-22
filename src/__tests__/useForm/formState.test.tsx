@@ -270,6 +270,45 @@ describe('formState', () => {
     });
   });
 
+  //added
+  it('should toggle isValidating when trigger is called asynchronously', async () => {
+    jest.useFakeTimers();
+
+    const resolver = jest.fn(async () => ({
+      values: {},
+      errors: {},
+    }));
+
+    const { result } = renderHook(() =>
+      useForm({
+        resolver,
+      }),
+    );
+
+    expect(result.current.formState.isValidating).toBe(false);
+
+    act(() => {
+      setTimeout(() => {
+        result.current.trigger();
+      }, 100);
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(100);
+    });
+
+    // wait until validation completes
+    await waitFor(() =>
+      expect(result.current.formState.isValidating).toBe(false),
+    );
+
+    // resolver must have been called
+    expect(resolver).toHaveBeenCalled();
+
+    jest.useRealTimers();
+  });
+
+  //here
   it('should be a proxy object that returns undefined for unknown properties', () => {
     const { result } = renderHook(() => useForm());
 
