@@ -1,5 +1,5 @@
 import isCheckBoxInput from '../utils/isCheckBoxInput';
-import isFileInput from '../utils/isFileInput'
+import isFileInput from '../utils/isFileInput';
 import isObject from '../utils/isObject';
 
 type Event = { target: any };
