@@ -1,6 +1,6 @@
 import type { FieldValues } from '../types';
 
-import { isObjectType } from './isObject';
+import { isObjectType } from './isObjectType';
 
 export const flatten = (obj: FieldValues) => {
   const output: FieldValues = {};
