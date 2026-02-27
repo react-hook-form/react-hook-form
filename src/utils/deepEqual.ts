@@ -1,3 +1,4 @@
+import hasValueEquals from './hasValueEquals';
 import isDateObject from './isDateObject';
 import isObject from './isObject';
 import isPrimitive from './isPrimitive';
@@ -13,6 +14,10 @@ export default function deepEqual(
 
   if (isDateObject(object1) && isDateObject(object2)) {
     return Object.is(object1.getTime(), object2.getTime());
+  }
+
+  if (hasValueEquals(object1) && hasValueEquals(object2)) {
+    return object1.equals(object2);
   }
 
   const keys1 = Object.keys(object1);
@@ -41,6 +46,7 @@ export default function deepEqual(
       if (
         (isDateObject(val1) && isDateObject(val2)) ||
         (isObject(val1) && isObject(val2)) ||
+        (hasValueEquals(val1) && hasValueEquals(val2)) ||
         (Array.isArray(val1) && Array.isArray(val2))
           ? !deepEqual(val1, val2, _internal_visited)
           : !Object.is(val1, val2)
