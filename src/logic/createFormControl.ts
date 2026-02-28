@@ -1135,7 +1135,8 @@ export function createFormControl<
           next: (payload) =>
             'values' in payload &&
             name(
-              _getWatch(undefined, defaultValue),
+              (payload as { values?: TFieldValues }).values ||
+                _getWatch(undefined, defaultValue),
               payload as {
                 name?: FieldPath<TFieldValues>;
                 type?: EventType;
