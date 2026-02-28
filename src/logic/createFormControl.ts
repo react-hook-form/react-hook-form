@@ -159,6 +159,7 @@ export function createFormControl<
     array: new Set(),
     watch: new Set(),
   };
+  const _controllerCount = new Map<InternalFieldName, number>();
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
   const defaultProxyFormState: ReadFormState = {
@@ -1679,6 +1680,7 @@ export function createFormControl<
       _disableForm,
       _subjects,
       _proxyFormState,
+      _controllerCount,
       get _fields() {
         return _fields;
       },

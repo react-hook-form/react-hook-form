@@ -749,6 +749,55 @@ describe('useController', () => {
     expect(data).toBeUndefined();
   });
 
+  it('should not unregister field when one of multiple controllers with the same name unmounts and shouldUnregister is true', async () => {
+    let data: unknown;
+
+    function Input<T extends FieldValues>({
+      control,
+      name,
+    }: {
+      control: Control<T>;
+      name: FieldPath<T>;
+    }) {
+      useController({
+        control,
+        name,
+      });
+
+      return null;
+    }
+
+    const App = () => {
+      const { control, getValues } = useForm<{
+        test: string;
+      }>({
+        defaultValues: {
+          test: 'test',
+        },
+        shouldUnregister: true,
+      });
+      const [showDuplicate, setShowDuplicate] = React.useState(true);
+
+      data = getValues('test');
+
+      return (
+        <div>
+          <Input control={control} name={'test'} />
+          {showDuplicate && <Input control={control} name={'test'} />}
+          <button onClick={() => setShowDuplicate(false)}>remove</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(data).toEqual('test');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(data).toEqual('test');
+  });
+
   it('should always get the latest value for onBlur event', async () => {
     const watchResults: unknown[] = [];
 
