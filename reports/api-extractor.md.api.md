@@ -227,6 +227,7 @@ export type FieldError = {
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
+    form?: GlobalError;
 };
 
 // @public (undocumented)
@@ -357,6 +358,12 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
     formDataJson: string;
     method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
+
+// @public (undocumented)
+export type FormValidateResult<T> = Partial<Record<keyof T, {
+    message: Message | Message[] | boolean | undefined;
+    type: string;
+}>> | string | boolean;
 
 // @public (undocumented)
 export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
@@ -696,7 +703,7 @@ export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayNam
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root' | 'form' | `form.${string}`) => void;
 
 // @public
 export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
@@ -738,6 +745,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     criteriaMode: CriteriaMode;
     delayError: number;
     formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
+    validate: ValidateForm<TFieldValues>;
 }>;
 
 // @public
@@ -787,7 +795,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 };
 
 // @public
-export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root', error: ErrorOption, options?: {
+export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root' | 'form' | `form.${string}`, error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
@@ -918,6 +926,19 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
+export type ValidateForm<TFormValues extends FieldValues, TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>> = (props: {
+    formValues: TFormValues;
+    formState: FormState<TFormValues>;
+    eventType?: ValidateFormEventType;
+    name?: TFieldName | TFieldName[];
+}) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
+
+// Warning: (ae-forgotten-export) The symbol "EVENTS" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ValidateFormEventType = (typeof EVENTS)[keyof typeof EVENTS];
+
+// @public (undocumented)
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "VALIDATION_MODE" needs to be exported by the entry point index.d.ts
@@ -985,7 +1006,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:506:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:507:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
