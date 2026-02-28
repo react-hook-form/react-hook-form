@@ -7,11 +7,13 @@ export default function cloneObject<T>(data: T): T {
     return new Date(data) as any;
   }
 
-  const isFileListInstance =
-    typeof FileList !== 'undefined' && data instanceof FileList;
-
-  if (isWeb && (data instanceof Blob || isFileListInstance)) {
-    return data;
+  if (isWeb) {
+    const isBlobInstance = typeof Blob !== 'undefined' && data instanceof Blob;
+    const isFileListInstance =
+      typeof FileList !== 'undefined' && data instanceof FileList;
+    if (isBlobInstance || isFileListInstance) {
+      return data;
+    }
   }
 
   const isArray = Array.isArray(data);
