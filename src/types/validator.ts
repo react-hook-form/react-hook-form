@@ -14,7 +14,7 @@ export type ValidationRule<
 export type ValidationValueMessage<
   TValidationValue extends ValidationValue = ValidationValue,
 > = {
-  value: TValidationValue;
+  value: TValidationValue | undefined;
   message: Message;
 };
 

@@ -963,7 +963,7 @@ export type ValidationValue = boolean | number | string | RegExp;
 
 // @public (undocumented)
 export type ValidationValueMessage<TValidationValue extends ValidationValue = ValidationValue> = {
-    value: TValidationValue;
+    value: TValidationValue | undefined;
     message: Message;
 };
 
