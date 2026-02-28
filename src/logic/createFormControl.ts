@@ -81,6 +81,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -863,6 +864,25 @@ export function createFormControl<
           validationModeBeforeSubmit,
         );
       const watched = isWatched(name, _names, isBlurEvent);
+
+      // Check if field is part of a field array and validate index
+      if (isNameInFieldArray(_names.array, name)) {
+        const arrayName = getNodeParentName(name);
+        // Extract index from the name after the parent array name
+        const indexMatch = name
+          .substring(arrayName.length)
+          .match(/^\.(\d+)($|\.)/);
+
+        if (indexMatch) {
+          const index = parseInt(indexMatch[1], 10);
+          const arrayValues = get(_formValues, arrayName);
+
+          // Only update if index is within bounds
+          if (!Array.isArray(arrayValues) || index >= arrayValues.length) {
+            return;
+          }
+        }
+      }
 
       set(_formValues, name, fieldValue);
 
