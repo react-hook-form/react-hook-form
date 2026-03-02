@@ -97,6 +97,10 @@ Thank you to our previous sponsors for your generous support!
 <a target="_blank" href='https://wantedlyinc.com'><img width="24" src="https://images.opencollective.com/wantedly/d94e44e/logo/256.png" /></a>
 <a target="_blank" href="https://www.casinoreviews.net/"><img width="24" src="https://images.opencollective.com/casinoreviews/f0877d1/logo/256.png" /></a>
 
+<a target="_blank" href="https://fabform.io/">
+    <img width="94" src="https://fabform.io/img/256.png" />
+</a>
+
 ### Backers
 
 Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
