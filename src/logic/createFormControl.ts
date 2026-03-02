@@ -51,6 +51,7 @@ import type {
   WatchInternal,
   WatchObserver,
 } from '../types';
+import { isIOSSafari } from '../utils/browser';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
@@ -981,11 +982,39 @@ export function createFormControl<
   };
 
   const _focusInput = (ref: Ref, key: string) => {
-    if (get(_formState.errors, key) && ref.focus) {
-      ref.focus();
-      return 1;
+    if (
+      !get(_formState.errors, key) ||
+      !ref ||
+      typeof ref.focus !== 'function'
+    ) {
+      return;
     }
-    return;
+
+    if (
+      typeof document !== 'undefined' &&
+      isIOSSafari() &&
+      document.activeElement === ref
+    ) {
+      const el = ref as any;
+
+      if (el.blur) {
+        el.blur();
+      }
+
+      setTimeout(() => {
+        if (el.scrollIntoView) {
+          el.scrollIntoView();
+        }
+
+        setTimeout(() => {
+          el.focus();
+        }, 0);
+      }, 0);
+    } else {
+      ref.focus();
+    }
+
+    return 1;
   };
 
   const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
