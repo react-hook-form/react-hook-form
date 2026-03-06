@@ -152,7 +152,9 @@ export const FormProvider = <
         ) as unknown as UseFormReturn
       }
     >
-      <HookFormControlContext.Provider value={control as Control}>
+      <HookFormControlContext.Provider
+        value={React.useMemo(() => control, [control]) as Control}
+      >
         {children}
       </HookFormControlContext.Provider>
     </HookFormContext.Provider>
