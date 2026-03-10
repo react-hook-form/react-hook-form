@@ -86,6 +86,57 @@ describe('append', () => {
     });
   });
 
+  it('should not mark unrelated fields as dirty when appending to field array', async () => {
+    let dirtyInputs = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { dirtyFields },
+      } = useForm<{
+        name: string;
+        age: number;
+        items: { value: string }[];
+      }>({
+        defaultValues: {
+          name: 'John',
+          age: 30,
+          items: [],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      dirtyInputs = dirtyFields;
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <input {...register('age')} />
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`items.${i}.value` as const)} />
+          ))}
+          <button type="button" onClick={() => append({ value: 'new' })}>
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    // Append without touching name or age
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(dirtyInputs).toEqual({
+        items: [{ value: true }],
+      });
+    });
+  });
+
   it('should append data into the fields', () => {
     let currentFields: unknown[] = [];
     const Component = () => {
