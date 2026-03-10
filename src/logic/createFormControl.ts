@@ -81,6 +81,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -287,7 +288,7 @@ export function createFormControl<
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
         const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-        const rootName = name.split('.')[0];
+        const rootName = getNodeParentName(name);
         set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
       }
 
