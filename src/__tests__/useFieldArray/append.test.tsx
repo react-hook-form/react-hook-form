@@ -127,7 +127,6 @@ describe('append', () => {
 
     render(<Component />);
 
-    // Append without touching name or age
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {

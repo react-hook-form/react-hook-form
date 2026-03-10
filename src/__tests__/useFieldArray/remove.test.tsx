@@ -127,7 +127,6 @@ describe('remove', () => {
     fireEvent.click(screen.getByRole('button', { name: /remove0/i }));
 
     await waitFor(() => {
-      // name should NOT be in dirtyFields - only items should be affected
       expect(dirtyInputs).not.toHaveProperty('name');
       expect(dirtyInputs).toHaveProperty('items');
     });
