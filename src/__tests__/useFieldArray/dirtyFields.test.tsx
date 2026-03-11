@@ -619,4 +619,92 @@ describe('useFieldArray dirtyFields isolation', () => {
       expect(dirtyResult).toHaveProperty('todos');
     });
   });
+
+  it('should only update root branch when nested useFieldArray with indexed name is appended', async () => {
+    let dirtyResult = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { dirtyFields },
+      } = useForm<{
+        title: string;
+        test: {
+          firstName: string;
+          lastName: string;
+          keyValue: { name: string }[];
+        }[];
+      }>({
+        defaultValues: {
+          title: 'My Form',
+          test: [
+            {
+              firstName: 'Bill',
+              lastName: 'Luo',
+              keyValue: [{ name: '1a' }],
+            },
+          ],
+        },
+      });
+      const { fields: testFields } = useFieldArray({
+        control,
+        name: 'test',
+      });
+      const {
+        fields: keyValueFields,
+        append,
+        remove,
+      } = useFieldArray({
+        control,
+        name: 'test.0.keyValue',
+      });
+
+      dirtyResult = dirtyFields;
+
+      return (
+        <form>
+          <input {...register('title')} />
+          {testFields.map((field, i) => (
+            <div key={field.id}>
+              <input {...register(`test.${i}.firstName` as const)} />
+              <input {...register(`test.${i}.lastName` as const)} />
+            </div>
+          ))}
+          {keyValueFields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.0.keyValue.${i}.name` as const)}
+            />
+          ))}
+          <button type="button" onClick={() => append({ name: 'new' })}>
+            nestAppend
+          </button>
+          <button
+            type="button"
+            onClick={() => remove(keyValueFields.length - 1)}
+          >
+            nestRemove
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /nestAppend/ }));
+
+    await waitFor(() => {
+      expect(dirtyResult).not.toHaveProperty('title');
+      expect(dirtyResult).toHaveProperty('test');
+      const testArray = (dirtyResult as any).test;
+      expect(testArray[0]).toHaveProperty('keyValue');
+      expect(testArray[0].keyValue).toEqual([{ name: false }, { name: true }]);
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /nestRemove/ }));
+
+    await waitFor(() => {
+      expect(dirtyResult).not.toHaveProperty('title');
+    });
+  });
 });
