@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -18,7 +18,7 @@ jobs:
           ./node_modules/cypress/bin/cypress install
 
       - name: Cypress run
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           start: pnpm start
           wait-on: 'http://localhost:3000'
