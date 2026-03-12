@@ -57,8 +57,11 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Update npm for trusted publishing
+        run: npm install -g npm@latest
+
       - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
+        run: npm publish --access public --provenance
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
