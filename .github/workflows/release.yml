@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -57,12 +57,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Set registry
-        run: 'echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc'
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
-      - name: Publish to npm (real)
+      - name: Publish to npm
         run: pnpm publish --access public --no-git-checks
 
       - name: Create GitHub Release
