@@ -61,7 +61,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Publish to npm
-        run: npm publish --access public --provenance
+        run: npm publish --access public --provenance --tag latest
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
