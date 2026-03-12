@@ -1008,7 +1008,7 @@ export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | Inte
 export type WatchName<TFieldValues extends FieldValues> = FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined;
 
 // @public (undocumented)
-export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
+export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartialSkipArrayKey<TFieldValues>, info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
     values?: unknown;
@@ -1034,8 +1034,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:36:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:528:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:41:30 - (ae-forgotten-export) The symbol "MetadataValue" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:533:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -20,7 +20,12 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type { DeepMap, DeepPartial, Noop } from './utils';
+import type {
+  DeepMap,
+  DeepPartial,
+  DeepPartialSkipArrayKey,
+  Noop,
+} from './utils';
 import type { RegisterOptions } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -956,7 +961,7 @@ export type Control<
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: DeepPartial<TFieldValues>,
+  value: DeepPartialSkipArrayKey<TFieldValues>,
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
