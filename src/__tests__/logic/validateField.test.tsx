@@ -2283,6 +2283,86 @@ describe('validateField', () => {
         ),
       ).toEqual({});
     });
+
+    it('should invoke setCustomValidity with error message for required unchecked checkbox', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      (getCheckboxValue as jest.Mock).mockImplementation(() => ({
+        value: false,
+        isValid: false,
+      }));
+
+      const checkboxRef = {
+        setCustomValidity,
+        reportValidity,
+        name: 'test',
+        type: 'checkbox',
+        checked: false,
+        value: 'on',
+      };
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: checkboxRef,
+            refs: [checkboxRef as unknown as HTMLInputElement],
+            required: 'checkbox is required',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: false,
+        },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenCalledWith('checkbox is required');
+      expect(reportValidity).toHaveBeenCalled();
+    });
+
+    it('should clear native validation error for required checked checkbox', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      (getCheckboxValue as jest.Mock).mockImplementation(() => ({
+        value: true,
+        isValid: true,
+      }));
+
+      const checkboxRef = {
+        setCustomValidity,
+        reportValidity,
+        name: 'test',
+        type: 'checkbox',
+        checked: true,
+        value: 'on',
+      };
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: checkboxRef,
+            refs: [checkboxRef as unknown as HTMLInputElement],
+            required: 'checkbox is required',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: true,
+        },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenCalledWith('');
+      expect(reportValidity).toHaveBeenCalled();
+    });
   });
 
   it('should validate field array with required attribute', async () => {

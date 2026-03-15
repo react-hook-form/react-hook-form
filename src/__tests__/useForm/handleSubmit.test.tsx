@@ -541,4 +541,63 @@ describe('handleSubmit', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
+
+  it('should not submit when required checkbox is unchecked with shouldUseNativeValidation', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm({
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input
+            type="checkbox"
+            {...register('checkbox', { required: true })}
+          />
+          {errors.checkbox && <p>checkbox error</p>}
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
+  });
+
+  it('should submit when required checkbox is checked with shouldUseNativeValidation', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit } = useForm({
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input
+            type="checkbox"
+            {...register('checkbox', { required: true })}
+          />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+  });
 });
