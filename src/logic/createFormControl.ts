@@ -871,6 +871,25 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
+      // Check if field is part of a field array and validate index
+      if (isNameInFieldArray(_names.array, name)) {
+        const arrayName = getNodeParentName(name);
+        // Extract index from the name after the parent array name
+        const indexMatch = name
+          .substring(arrayName.length)
+          .match(/^\.(\d+)($|\.)/);
+
+        if (indexMatch) {
+          const index = parseInt(indexMatch[1], 10);
+          const arrayValues = get(_formValues, arrayName);
+
+          // Only update if index is within bounds
+          if (!Array.isArray(arrayValues) || index >= arrayValues.length) {
+            return;
+          }
+        }
+      }
+
       set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
