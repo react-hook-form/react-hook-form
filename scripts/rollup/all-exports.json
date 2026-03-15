@@ -12,6 +12,7 @@
   "useFieldArray",
   "useForm",
   "useFormContext",
+  "useFormDebug",
   "useFormState",
   "useWatch"
 ]
