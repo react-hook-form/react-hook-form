@@ -595,7 +595,7 @@ export function createFormControl<
           if (fieldError[_f.name]) {
             context.valid = false;
 
-            if (onlyCheckValid || props.shouldUseNativeValidation) {
+            if (onlyCheckValid) {
               break;
             }
           }
@@ -610,6 +610,10 @@ export function createFormControl<
                   )
                 : set(_formState.errors, _f.name, fieldError[_f.name])
               : unset(_formState.errors, _f.name));
+
+          if (props.shouldUseNativeValidation && fieldError[_f.name]) {
+            break;
+          }
         }
 
         !isEmptyObject(fieldValue) &&
