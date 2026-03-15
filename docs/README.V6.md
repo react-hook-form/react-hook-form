@@ -36,6 +36,19 @@ English | <a href="./README.zh-TW.md">繁中</a> | <a href="./README.zh-CN.md">�
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
 - [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) or custom
 
+> ⚠️ **Native validation note**
+>
+> React Hook Form disables the browser’s native HTML validation by default
+> in order to fully control the validation lifecycle.
+>
+> To enable native HTML validation, you must explicitly opt in:
+>
+> ```ts
+> useForm({ shouldUseNativeValidation: true })
+> ```
+>
+> This behavior is intentional.
+
 ## Install
 
     npm install react-hook-form
