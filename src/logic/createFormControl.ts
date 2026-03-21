@@ -1250,10 +1250,13 @@ export function createFormControl<
     }
   };
 
+  let _registerFromRef = false;
+
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
+    const isRemount = field && field._f && !field._f.mount && !_registerFromRef;
 
     set(_fields, name, {
       ...(field || {}),
@@ -1273,6 +1276,9 @@ export function createFormControl<
           : _options.disabled,
         name,
       });
+      if (isRemount && _state.mount && !_state.action) {
+        _setValid();
+      }
     } else {
       updateValidAndValue(name, true, options.value);
     }
@@ -1296,7 +1302,12 @@ export function createFormControl<
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
-          register(name, options);
+          _registerFromRef = true;
+          try {
+            register(name, options);
+          } finally {
+            _registerFromRef = false;
+          }
           field = get(_fields, name);
 
           const fieldRef = isUndefined(ref.value)
