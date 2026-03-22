@@ -1,8 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
+import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
@@ -151,7 +157,7 @@ describe('useController', () => {
 
     render(<Component />);
 
-    expect(renderCounter).toEqual([1, 1]);
+    expect(renderCounter).toEqual([2, 2]);
 
     fireEvent.change(screen.getAllByRole('textbox')[1], {
       target: {
@@ -165,7 +171,7 @@ describe('useController', () => {
 
     expect(screen.getByText('isTouched')).toBeVisible();
 
-    expect(renderCounter).toEqual([1, 3]);
+    expect(renderCounter).toEqual([2, 4]);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -175,7 +181,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([3, 3]);
+    expect(renderCounter).toEqual([4, 4]);
   });
 
   describe('checkbox', () => {
@@ -199,15 +205,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: true }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: true },
+        { test: false },
+      ]);
     });
 
     it('should work for checkbox by assign checked', async () => {
@@ -236,15 +247,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: true }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: true }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: true },
+        { test: false },
+      ]);
     });
 
     it('should work for checkbox by assign value manually', async () => {
@@ -276,15 +292,20 @@ describe('useController', () => {
 
       render(<Component />);
 
-      expect(watchResult).toEqual([{}]);
+      expect(watchResult).toEqual([{}, { test: '' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: 'on' }]);
+      expect(watchResult).toEqual([{}, { test: '' }, { test: 'on' }]);
 
       fireEvent.click(screen.getByRole('checkbox'));
 
-      expect(watchResult).toEqual([{}, { test: 'on' }, { test: false }]);
+      expect(watchResult).toEqual([
+        {},
+        { test: '' },
+        { test: 'on' },
+        { test: false },
+      ]);
     });
   });
 
@@ -330,7 +351,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(counter).toEqual(1);
+    expect(counter).toEqual(2);
 
     expect(screen.getByText('dirty')).toBeVisible();
     expect(screen.getByText('touched')).toBeVisible();
@@ -552,9 +573,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(focus).toBeCalled());
-    expect(setCustomValidity).toBeCalledWith(message);
-    expect(reportValidity).toBeCalled();
+    expect(setCustomValidity).toHaveBeenCalledWith(message);
+    expect(reportValidity).toHaveBeenCalled();
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -564,9 +584,8 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toBeCalledTimes(3));
-    expect(reportValidity).toBeCalledTimes(3);
-    expect(focus).toBeCalledTimes(2);
+    await waitFor(() => expect(setCustomValidity).toHaveBeenCalledTimes(3));
+    expect(reportValidity).toHaveBeenCalledTimes(3);
   });
 
   it('should update with inline defaultValue', async () => {
@@ -591,7 +610,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -766,12 +785,15 @@ describe('useController', () => {
     expect(watchResults).toEqual([
       {},
       {
+        test: '',
+      },
+      {
         test: 'updated value',
       },
     ]);
   });
 
-  it('should focus and select the input text', () => {
+  it('should focus and select the input text', async () => {
     const select = jest.fn();
     const focus = jest.fn();
 
@@ -800,8 +822,10 @@ describe('useController', () => {
 
     render(<App />);
 
-    expect(select).toBeCalled();
-    expect(focus).toBeCalled();
+    await waitFor(() => {
+      expect(select).toHaveBeenCalled();
+      expect(focus).toHaveBeenCalled();
+    });
   });
 
   it('should update isValid correctly with strict mode', async () => {
@@ -815,27 +839,62 @@ describe('useController', () => {
       const { isValid } = form.formState;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...form}>
-            <Controller
-              render={({ field }) => (
-                <input value={field.value} onChange={field.onChange} />
-              )}
-              name="name"
-              rules={{
-                required: true,
-              }}
-            />
-            <p>{isValid ? 'valid' : 'not'}</p>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...form}>
+          <Controller
+            render={({ field }) => (
+              <input value={field.value} onChange={field.onChange} />
+            )}
+            name="name"
+            rules={{
+              required: true,
+            }}
+          />
+          <p>{isValid ? 'valid' : 'not'}</p>
+        </FormProvider>
       );
     };
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     await waitFor(() => {
       screen.getByText('not');
+    });
+  });
+
+  it('should restore defaultValue from Controller with react strict mode double useEffect', async () => {
+    const onSubmit = jest.fn();
+
+    function App() {
+      const { handleSubmit, control } = useForm({
+        shouldUnregister: true,
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            onSubmit(data);
+          })}
+        >
+          <Controller
+            control={control}
+            name="firstName"
+            defaultValue={'luo'}
+            render={({ field }) => <input {...field} />}
+          />
+
+          <button>submit</button>
+        </form>
+      );
+    }
+
+    render(<App />, { reactStrictMode: true });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        firstName: 'luo',
+      });
     });
   });
 
@@ -861,18 +920,16 @@ describe('useController', () => {
       } = methods;
 
       return (
-        <React.StrictMode>
-          <FormProvider {...methods}>
-            <form>
-              <Form />
-              {dirtyFields.lastName ? 'dirty' : 'pristine'}
-            </form>
-          </FormProvider>
-        </React.StrictMode>
+        <FormProvider {...methods}>
+          <form>
+            <Form />
+            {dirtyFields.lastName ? 'dirty' : 'pristine'}
+          </form>
+        </FormProvider>
       );
     }
 
-    render(<App />);
+    render(<App />, { reactStrictMode: true });
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -1060,7 +1117,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button'));
 
     waitFor(() => {
-      expect(callback).toBeCalled();
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -1111,7 +1168,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -1121,7 +1178,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
     );
@@ -1131,7 +1188,7 @@ describe('useController', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() =>
-      expect(onSubmit).toBeCalledWith({
+      expect(onSubmit).toHaveBeenCalledWith({
         test: undefined,
       }),
     );
@@ -1197,7 +1254,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    expect(renderCounter).toEqual({ test: 1, test_with_suffix: 1 });
+    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
     expect(screen.queryByText('test is required')).toBeNull();
     expect(screen.queryByText('test_with_suffix is required')).toBeNull();
 
@@ -1211,7 +1268,7 @@ describe('useController', () => {
 
     expect(screen.getByText('test isDirty')).toBeVisible();
 
-    expect(renderCounter).toEqual({ test: 2, test_with_suffix: 1 });
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 2 });
 
     fireEvent.change(
       screen.getByRole('textbox', { name: 'test_with_suffix' }),
@@ -1226,6 +1283,309 @@ describe('useController', () => {
 
     expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
 
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+  });
+
+  it('should listen to similar fields with exact - false', () => {
+    type FormValues = {
+      test: string;
+      test_with_suffix: string;
+    };
+
+    const renderCounter: Record<keyof FormValues, number> = {
+      test: 0,
+      test_with_suffix: 0,
+    };
+
+    const ControlledInput = ({
+      name,
+      control,
+    }: {
+      name: keyof FormValues;
+      control: Control<FormValues>;
+    }) => {
+      const {
+        field,
+        fieldState: { error, isDirty },
+      } = useController({
+        name,
+        control,
+        rules: { required: 'is required' },
+        exact: false,
+      });
+
+      renderCounter[name]++;
+
+      return (
+        <div>
+          <input aria-label={name} {...field} />
+          {error && (
+            <p>
+              {name} {error.message}
+            </p>
+          )}
+          {isDirty && <p>{name} isDirty</p>}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control } = useForm<FormValues>({
+        mode: 'onBlur',
+        defaultValues: {
+          test: '1234',
+          test_with_suffix: '1234',
+        },
+      });
+      return (
+        <form>
+          <ControlledInput name="test" control={control} />
+          <ControlledInput name="test_with_suffix" control={control} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
     expect(renderCounter).toEqual({ test: 2, test_with_suffix: 2 });
+    expect(screen.queryByText('test is required')).toBeNull();
+    expect(screen.queryByText('test_with_suffix is required')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
+      target: {
+        value: '',
+      },
+    });
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+
+    expect(screen.getByText('test isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'test_with_suffix' }),
+      {
+        target: {
+          value: '',
+        },
+      },
+    );
+
+    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+
+    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
+  });
+
+  it('should prevent field value leakage when field names change at same position', () => {
+    type FormValues = {
+      type: 'personal' | 'business';
+      personalName: string;
+      businessName: string;
+    };
+
+    const Component = () => {
+      const { control, watch, setValue } = useForm<FormValues>({
+        defaultValues: {
+          type: 'personal',
+          personalName: '',
+          businessName: '',
+        },
+      });
+
+      const type = watch('type');
+
+      return (
+        <div>
+          <select
+            value={type}
+            onChange={(e) => setValue('type', e.target.value as any)}
+          >
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+          </select>
+          {type === 'personal' ? (
+            <Controller
+              name="personalName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          ) : (
+            <Controller
+              name="businessName"
+              control={control}
+              render={({ field }) => <input {...field} />}
+            />
+          )}
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'John Doe' },
+    });
+
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'business' },
+    });
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
+  });
+
+  it('should react to changing field name', () => {
+    type FormValues = {
+      field1: string;
+      field2: string;
+    };
+
+    const { result: formResult } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          field1: 'value1',
+          field2: 'value2',
+        },
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ fieldName }: { fieldName: 'field1' | 'field2' }) =>
+        useController({
+          control: formResult.current.control,
+          name: fieldName,
+        }),
+      {
+        initialProps: { fieldName: 'field1' },
+      },
+    );
+
+    expect(result.current.field.value).toBe('value1');
+    expect(result.current.field.name).toBe('field1');
+
+    rerender({ fieldName: 'field2' });
+    expect(result.current.field.name).toBe('field2');
+    expect(result.current.field.value).toBe('value2');
+
+    rerender({ fieldName: 'field1' });
+    expect(result.current.field.name).toBe('field1');
+    expect(result.current.field.value).toBe('value1');
+  });
+
+  it('should react to changing control', () => {
+    type FormValues = {
+      name: string;
+    };
+
+    const { result: form1Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: 'form1-value',
+        },
+      }),
+    );
+
+    const { result: form2Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: 'form2-value',
+        },
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ control }: { control: Control<FormValues> }) =>
+        useController({
+          control,
+          name: 'name',
+        }),
+      {
+        initialProps: { control: form1Result.current.control },
+      },
+    );
+
+    expect(result.current.field.value).toBe('form1-value');
+
+    rerender({ control: form2Result.current.control });
+    expect(result.current.field.value).toBe('form2-value');
+
+    rerender({ control: form1Result.current.control });
+    expect(result.current.field.value).toBe('form1-value');
+  });
+
+  it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
+    type FormValues = {
+      items: { checked: boolean; input: string }[];
+    };
+
+    const InputField = ({
+      control,
+      index,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+    }) => (
+      <Controller
+        control={control}
+        rules={{ required: 'Input is required' }}
+        name={`items.${index}.input`}
+        render={({ field }) => <input placeholder="Enter" {...field} />}
+      />
+    );
+
+    const App = () => {
+      const { control, formState, handleSubmit } = useForm({
+        mode: 'all',
+        defaultValues: {
+          items: [{ checked: false, input: '' }],
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <Controller
+            name="items.0.checked"
+            control={control}
+            render={({ field }) => (
+              <>
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+                {field.value && <InputField control={control} index={0} />}
+              </>
+            )}
+          />
+          <p>{formState.isValid ? 'valid' : 'invalid'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('invalid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('invalid')).toBeVisible();
+    });
   });
 });

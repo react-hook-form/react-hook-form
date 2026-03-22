@@ -1,4 +1,4 @@
-import { Field, Validate } from '../types';
+import type { Field, Validate } from '../types';
 import isFunction from '../utils/isFunction';
 import isObject from '../utils/isObject';
 

@@ -1,4 +1,4 @@
-import { FieldRefs, InternalFieldName, Ref } from '../types';
+import type { FieldRefs, InternalFieldName, Ref } from '../types';
 import { get } from '../utils';
 import isObject from '../utils/isObject';
 

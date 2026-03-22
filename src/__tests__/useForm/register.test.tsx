@@ -11,7 +11,7 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { UseFormRegister } from '../../types';
+import type { UseFormRegister } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
@@ -158,6 +158,7 @@ describe('register', () => {
   it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
     const Component = () => {
       const { register, formState } = useForm<{ test: string }>({
+        // @ts-ignore
         resolver: async (data) => {
           return {
             values: data,
@@ -512,6 +513,9 @@ describe('register', () => {
       {
         test: 'bill',
       },
+      {
+        test: 'bill',
+      },
       {},
     ]);
   });
@@ -705,6 +709,13 @@ describe('register', () => {
           test1: false,
           test2: null,
           test3: '',
+          test4: '',
+        },
+        {
+          test: '',
+          test1: false,
+          test2: null,
+          test3: '',
           test4: '1234',
         },
       ]);
@@ -748,20 +759,22 @@ describe('register', () => {
 
       render(<App />);
 
-      expect(validate).toBeCalledTimes(0);
+      expect(validate).toHaveBeenCalledTimes(0);
 
       fireEvent.click(screen.getByText('Toggle Edit'));
       fireEvent.click(screen.getByText('Submit'));
 
-      expect(validate).toBeCalledWith(defaultValue, { test: 'Test' });
+      expect(validate).toHaveBeenCalledWith(defaultValue, { test: 'Test' });
       await waitFor(() =>
-        expect(submit).toBeCalledWith({ test: defaultValue }),
+        expect(submit).toHaveBeenCalledWith({ test: defaultValue }),
       );
 
       fireEvent.click(screen.getByText('Toggle Edit'));
       fireEvent.click(screen.getByText('Submit'));
 
-      await waitFor(() => expect(submit).toBeCalledWith({ test: undefined }));
+      await waitFor(() =>
+        expect(submit).toHaveBeenCalledWith({ test: undefined }),
+      );
     });
 
     it('should not throw errors with disabled input', async () => {
@@ -985,6 +998,82 @@ describe('register', () => {
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
       expect(await screen.findByText('{"test":"a"}')).toBeVisible();
+    });
+
+    it('should update isValid when toggling disabled state with required field in onChange mode', async () => {
+      let isValidValue = false;
+
+      const App = () => {
+        const [disableFirstName, setDisableFirstName] = React.useState(false);
+        const {
+          register,
+          formState: { isValid },
+          handleSubmit,
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        // Track isValid changes
+        React.useEffect(() => {
+          isValidValue = isValid;
+        }, [isValid]);
+
+        const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+          setDisableFirstName(event.currentTarget.checked);
+        };
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input
+              {...register('firstName', {
+                required: true,
+                disabled: disableFirstName,
+              })}
+              placeholder="First Name"
+              data-testid="firstName"
+            />
+            <input
+              {...register('lastName')}
+              placeholder="Last Name"
+              data-testid="lastName"
+            />
+            <input
+              id="disable"
+              type="checkbox"
+              onChange={handleChange}
+              data-testid="toggle-disabled"
+            />
+            <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      // Initially invalid - firstName is required and empty
+      await waitFor(() => expect(isValidValue).toBe(false));
+
+      // Toggle to disable firstName - should become valid (disabled fields skip validation)
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(true));
+
+      // Toggle back to enable firstName - should become invalid again (field is still empty)
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(false));
+
+      // Fill firstName - should become valid
+      fireEvent.change(screen.getByTestId('firstName'), {
+        target: { value: 'test' },
+      });
+      await waitFor(() => expect(isValidValue).toBe(true));
+
+      // Disable again - should stay valid
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(true));
     });
   });
 
@@ -1323,6 +1412,7 @@ describe('register', () => {
           test1: number;
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: async (data) => {
             const valid = !(isNaN(data.test) && isNaN(data.test1));
 
@@ -1510,6 +1600,7 @@ describe('register', () => {
     fireEvent.click(screen.getAllByRole('checkbox')[0]);
 
     expect(watchedValue).toEqual([
+      { test: [true, false, false] },
       { test: [true, false, false] },
       { test: [false, false, false] },
     ]);
@@ -1764,6 +1855,7 @@ describe('register', () => {
         lastName: string;
       }>({
         mode: 'onChange',
+        // @ts-ignore
         resolver: (values) => {
           if (values.firstName === values.lastName) {
             return {
@@ -1846,7 +1938,7 @@ describe('register', () => {
       },
     });
 
-    expect(onChange).toBeCalledTimes(0);
+    expect(onChange).toHaveBeenCalledTimes(0);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: {
@@ -1854,8 +1946,8 @@ describe('register', () => {
       },
     });
 
-    expect(onChange).toBeCalledTimes(1);
-    expect(onChange).toBeCalledWith(
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         bubbles: true,
         cancelable: false,
@@ -1886,12 +1978,12 @@ describe('register', () => {
       },
     });
 
-    expect(onBlur).toBeCalledTimes(0);
+    expect(onBlur).toHaveBeenCalledTimes(0);
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(onBlur).toBeCalledTimes(1);
-    expect(onBlur).toBeCalledWith(
+    expect(onBlur).toHaveBeenCalledTimes(1);
+    expect(onBlur).toHaveBeenCalledWith(
       expect.objectContaining({
         bubbles: true,
         cancelable: false,
@@ -1964,7 +2056,7 @@ describe('register', () => {
       target: { value: 'test' },
     });
 
-    expect(test).toBeCalledWith({
+    expect(test).toHaveBeenCalledWith({
       test: 'test',
     });
   });

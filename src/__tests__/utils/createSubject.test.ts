@@ -17,8 +17,8 @@ describe('createSubject', () => {
 
     subject.next(2);
 
-    expect(next).toBeCalledTimes(2);
-    expect(next).toBeCalledWith(2);
+    expect(next).toHaveBeenCalledTimes(2);
+    expect(next).toHaveBeenCalledWith(2);
   });
 
   it('should unsubscribe observers', () => {
@@ -42,8 +42,8 @@ describe('createSubject', () => {
 
     subject.next(2);
 
-    expect(next1).not.toBeCalled();
-    expect(next2).toBeCalledWith(2);
+    expect(next1).not.toHaveBeenCalled();
+    expect(next2).toHaveBeenCalledWith(2);
   });
 
   it('should unsubscribe all observers', () => {
@@ -67,6 +67,6 @@ describe('createSubject', () => {
     subject.next(2);
     subject.next(2);
 
-    expect(next).not.toBeCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 });

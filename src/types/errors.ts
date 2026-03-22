@@ -1,6 +1,6 @@
-import { FieldValues, InternalFieldName, Ref } from './fields';
-import { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
-import { RegisterOptions, ValidateResult } from './validator';
+import type { FieldValues, InternalFieldName, Ref } from './fields';
+import type { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
+import type { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
 
@@ -51,6 +51,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
     : FieldErrorsImpl<DeepRequired<T>>
 > & {
   root?: Record<string, GlobalError> & GlobalError;
+  form?: GlobalError;
 };
 
 export type InternalFieldErrors = Partial<

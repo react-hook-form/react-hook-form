@@ -1,6 +1,6 @@
 import { expectAssignable, expectType } from 'tsd';
 
-import { DeepPartial, ExtractObjects, IsAny, IsNever } from '../types';
+import type { DeepPartial, ExtractObjects, IsAny, IsNever } from '../types';
 
 import { _ } from './__fixtures__';
 
@@ -92,5 +92,26 @@ import { _ } from './__fixtures__';
   /** it should be assignable for types containing unknown */ {
     const actual = _ as { x: unknown };
     expectAssignable<DeepPartial<{ x: unknown }>>(actual);
+  }
+
+  /** it should preserve branded types as-is */ {
+    type UserId = string & { __brand: 'UserId' };
+    type ProductId = number & { __brand: 'ProductId' };
+
+    const actual = _ as DeepPartial<{
+      userId: UserId;
+      productId: ProductId;
+      nested: {
+        brandedField: UserId;
+      };
+    }>;
+
+    expectType<{
+      userId?: UserId;
+      productId?: ProductId;
+      nested?: {
+        brandedField?: UserId;
+      };
+    }>(actual);
   }
 }

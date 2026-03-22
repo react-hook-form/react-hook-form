@@ -5,10 +5,11 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
+import isFunction from './utils/isFunction';
 import isUndefined from './utils/isUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
-import {
+import type {
   ControllerFieldState,
   Field,
   FieldPath,
@@ -18,7 +19,7 @@ import {
   UseControllerProps,
   UseControllerReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
@@ -49,29 +50,52 @@ import { useWatch } from './useWatch';
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseControllerProps<TFieldValues, TName>,
+  props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
-  const methods = useFormContext<TFieldValues>();
-  const { name, disabled, control = methods.control, shouldUnregister } = props;
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
+  const {
+    name,
+    disabled,
+    control = formControl,
+    shouldUnregister,
+    defaultValue,
+    exact = true,
+  } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
+
+  const defaultValueMemo = React.useMemo(
+    () =>
+      get(
+        control._formValues,
+        name,
+        get(control._defaultValues, name, defaultValue),
+      ),
+    [control, name, defaultValue],
+  );
+
   const value = useWatch({
     control,
     name,
-    defaultValue: get(
-      control._formValues,
-      name,
-      get(control._defaultValues, name, props.defaultValue),
-    ),
-    exact: true,
+    defaultValue: defaultValueMemo,
+    exact,
   }) as FieldPathValue<TFieldValues, TName>;
+
   const formState = useFormState({
     control,
     name,
-    exact: true,
+    exact,
   });
 
   const _props = React.useRef(props);
+
+  const _previousNameRef = React.useRef<string | undefined>(undefined);
+
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
@@ -79,6 +103,8 @@ export function useController<
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }),
   );
+
+  _props.current = props;
 
   const fieldState = React.useMemo(
     () =>
@@ -138,13 +164,14 @@ export function useController<
     (elm: any) => {
       const field = get(control._fields, name);
 
-      if (field && elm) {
+      if (field && field._f && elm) {
         field._f.ref = {
-          focus: () => elm.focus(),
-          select: () => elm.select(),
+          focus: () => isFunction(elm.focus) && elm.focus(),
+          select: () => isFunction(elm.select) && elm.select(),
           setCustomValidity: (message: string) =>
-            elm.setCustomValidity(message),
-          reportValidity: () => elm.reportValidity(),
+            isFunction(elm.setCustomValidity) && elm.setCustomValidity(message),
+          reportValidity: () =>
+            isFunction(elm.reportValidity) && elm.reportValidity(),
         };
       }
     },
@@ -168,6 +195,11 @@ export function useController<
   React.useEffect(() => {
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
+    const previousName = _previousNameRef.current;
+
+    if (previousName && previousName !== name && !isArrayField) {
+      control.unregister(previousName as FieldPath<TFieldValues>);
+    }
 
     control.register(name, {
       ..._props.current.rules,
@@ -187,7 +219,9 @@ export function useController<
     updateMounted(name, true);
 
     if (_shouldUnregisterField) {
-      const value = cloneObject(get(control._options.defaultValues, name));
+      const value = cloneObject(
+        get(control._options.defaultValues, name, _props.current.defaultValue),
+      );
       set(control._defaultValues, name, value);
       if (isUndefined(get(control._formValues, name))) {
         set(control._formValues, name, value);
@@ -195,6 +229,8 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    _previousNameRef.current = name;
 
     return () => {
       (

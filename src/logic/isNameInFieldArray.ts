@@ -1,4 +1,4 @@
-import { InternalFieldName } from '../types';
+import type { InternalFieldName } from '../types';
 
 import getNodeParentName from './getNodeParentName';
 

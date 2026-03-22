@@ -1,7 +1,7 @@
-import { FieldValues } from '../fields';
-import { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
+import type { FieldValues } from '../fields';
+import type { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
 
-import { ArrayKey, IsTuple, TupleKeys } from './common';
+import type { ArrayKey, IsTuple, TupleKeys } from './common';
 
 /**
  * Helper function to break apart T1 and check if any are equal to T2
@@ -152,7 +152,9 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = PathValueImpl<
 type PathValueImpl<T, P extends string> = T extends any
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
-      ? PathValueImpl<T[K], R>
+      ? undefined extends T[K]
+        ? PathValueImpl<T[K], R> | undefined
+        : PathValueImpl<T[K], R>
       : K extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
           ? PathValueImpl<V, R>
@@ -163,7 +165,9 @@ type PathValueImpl<T, P extends string> = T extends any
       : P extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
           ? V
-          : never
+          : T extends undefined
+            ? undefined
+            : never
         : never
   : never;
 
@@ -221,3 +225,22 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
     ? Key
     : never;
 }[FieldPath<TFieldValues>];
+
+/**
+ * Type which eagerly collects all array paths through a fieldType that matches a give type
+ * @typeParam TFieldValues - field values which are indexed by the paths
+ * @typeParam TValue       - the value you want to match into each type
+ * @example
+ * ```typescript
+ * FieldArrayPathByValue<{foo: {bar: number}[], baz: number, bar: string}, {bar: number}[]>
+ *   = 'foo'
+ * ```
+ */
+export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
+  [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<
+    TFieldValues,
+    Key
+  > extends TValue
+    ? Key
+    : never;
+}[FieldArrayPath<TFieldValues>];

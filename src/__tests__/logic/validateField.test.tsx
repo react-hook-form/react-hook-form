@@ -2194,8 +2194,8 @@ describe('validateField', () => {
         true,
       );
 
-      expect(setCustomValidity).toBeCalledWith('');
-      expect(reportValidity).toBeCalled();
+      expect(setCustomValidity).toHaveBeenCalledWith('');
+      expect(reportValidity).toHaveBeenCalled();
     });
 
     it('should invoke setCustomValidity for invalid input with its message', () => {
@@ -2225,8 +2225,8 @@ describe('validateField', () => {
         true,
       );
 
-      expect(setCustomValidity).toBeCalledWith('something is wrong');
-      expect(reportValidity).toBeCalled();
+      expect(setCustomValidity).toHaveBeenCalledWith('something is wrong');
+      expect(reportValidity).toHaveBeenCalled();
     });
 
     it('should invoke setCustomValidity with empty string for a valid input', () => {
@@ -2256,8 +2256,8 @@ describe('validateField', () => {
         true,
       );
 
-      expect(setCustomValidity).toBeCalledWith('');
-      expect(reportValidity).toBeCalled();
+      expect(setCustomValidity).toHaveBeenCalledWith('');
+      expect(reportValidity).toHaveBeenCalled();
     });
 
     it('should abort validation early when input is disabled', async () => {

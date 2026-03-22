@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
 [

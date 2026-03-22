@@ -1,4 +1,5 @@
-import {
+import { ROOT_ERROR_TYPE } from '../constants';
+import type {
   FieldError,
   FieldErrors,
   FieldValues,
@@ -14,7 +15,7 @@ export default <T extends FieldValues = FieldValues>(
   name: InternalFieldName,
 ): FieldErrors<T> => {
   const fieldArrayErrors = convertToArrayPayload(get(errors, name));
-  set(fieldArrayErrors, 'root', error[name]);
+  set(fieldArrayErrors, ROOT_ERROR_TYPE, error[name]);
   set(errors, name, fieldArrayErrors);
   return errors;
 };

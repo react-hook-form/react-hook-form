@@ -9,7 +9,11 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { ControllerRenderProps, FieldValues, ValidateResult } from '../types';
+import type {
+  ControllerRenderProps,
+  FieldValues,
+  ValidateResult,
+} from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -432,7 +436,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(onChange).toBeCalled();
+    expect(onChange).toHaveBeenCalled();
   });
 
   it('should invoke custom onBlur method', () => {
@@ -457,7 +461,7 @@ describe('Controller', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(onBlur).toBeCalled();
+    expect(onBlur).toHaveBeenCalled();
   });
 
   it('should update rules when rules gets updated', () => {
@@ -540,15 +544,15 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onInvalid).toBeCalledTimes(1));
-    expect(onValid).toBeCalledTimes(0);
+    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+    expect(onValid).toHaveBeenCalledTimes(0);
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onValid).toBeCalledTimes(1));
-    expect(onInvalid).toBeCalledTimes(1);
+    await waitFor(() => expect(onValid).toHaveBeenCalledTimes(1));
+    expect(onInvalid).toHaveBeenCalledTimes(1);
   });
 
   it('should not set initial state from unmount state when input is part of field array', () => {
@@ -865,7 +869,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(count).toEqual(1);
+    expect(count).toEqual(2);
   });
 
   it('should update Controller value with setValue', () => {
@@ -1069,6 +1073,9 @@ describe('Controller', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(watchedValue).toEqual([
+      {
+        test: 'bill',
+      },
       {
         test: 'bill',
       },
@@ -1470,7 +1477,7 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(getValueFn).toBeCalledWith({
+    expect(getValueFn).toHaveBeenCalledWith({
       names: [{ firstName: '' }],
       show: true,
     });
@@ -1478,7 +1485,7 @@ describe('Controller', () => {
     fireEvent.click(screen.getByTestId('checkbox'));
     fireEvent.click(screen.getByRole('button'));
 
-    expect(getValueFn).toBeCalledWith({
+    expect(getValueFn).toHaveBeenCalledWith({
       show: false,
     });
   });

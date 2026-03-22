@@ -1,4 +1,4 @@
-import { Primitive } from '../types';
+import type { Primitive } from '../types';
 
 import isNullOrUndefined from './isNullOrUndefined';
 import { isObjectType } from './isObject';

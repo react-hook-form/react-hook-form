@@ -1,4 +1,4 @@
-import { EmptyObject } from '../types';
+import type { EmptyObject } from '../types';
 
 import isObject from './isObject';
 

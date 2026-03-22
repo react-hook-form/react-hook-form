@@ -1,4 +1,4 @@
-import { FieldValues } from '../types';
+import type { FieldValues } from '../types';
 
 import { isObjectType } from './isObject';
 

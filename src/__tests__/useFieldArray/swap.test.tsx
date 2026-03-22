@@ -44,7 +44,7 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '1', value: '2' },
+      { id: '2', value: '2' },
       { id: '0', value: '1' },
     ]);
   });
@@ -71,7 +71,7 @@ describe('swap', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '1', value: '2' },
+      { id: '2', value: '2' },
       { id: '0', value: '1' },
     ]);
   });
@@ -324,7 +324,7 @@ describe('swap', () => {
         result.current.swap(0, 1);
       });
 
-      expect(resolver).toBeCalledWith(
+      expect(resolver).toHaveBeenCalledWith(
         {
           test: [{ value: '2' }, { value: '1' }],
         },
@@ -356,7 +356,7 @@ describe('swap', () => {
         result.current.swap(0, 1);
       });
 
-      expect(resolver).toBeCalled();
+      expect(resolver).toHaveBeenCalled();
     });
   });
 

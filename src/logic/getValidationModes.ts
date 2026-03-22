@@ -1,5 +1,5 @@
 import { VALIDATION_MODE } from '../constants';
-import { Mode, ValidationModeFlags } from '../types';
+import type { Mode, ValidationModeFlags } from '../types';
 
 export default (mode?: Mode): ValidationModeFlags => ({
   isOnSubmit: !mode || mode === VALIDATION_MODE.onSubmit,

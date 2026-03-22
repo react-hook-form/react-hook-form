@@ -1,5 +1,5 @@
 import getFieldValue from '../../logic/getFieldValue';
-import { Field } from '../../types';
+import type { Field } from '../../types';
 
 jest.mock('../../logic/getRadioValue', () => ({
   __esModule: true,

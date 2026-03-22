@@ -17,4 +17,8 @@ describe('isString', () => {
     expect(isString(new String('test'))).toBeFalsy();
     expect(isString(() => null)).toBeFalsy();
   });
+
+  it('should return true when value is a Message', () => {
+    expect(isString('test')).toBeTruthy();
+  });
 });

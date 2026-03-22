@@ -22,7 +22,7 @@ import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
 import updateAt from './utils/update';
 import { VALIDATION_MODE } from './constants';
-import {
+import type {
   Control,
   Field,
   FieldArray,
@@ -38,7 +38,8 @@ import {
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -79,15 +80,25 @@ import { useFormContext } from './useFormContext';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>,
+  props: UseFieldArrayProps<
+    TFieldValues,
+    TFieldArrayName,
+    TKeyName,
+    TTransformedValues
+  >,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
-  const methods = useFormContext();
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
   const {
-    control = methods.control,
+    control = formControl,
     name,
     keyName = 'id',
     shouldUnregister,
@@ -97,21 +108,23 @@ export function useFieldArray<
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
   );
-  const _fieldIds = React.useRef(fields);
-  const _name = React.useRef(name);
+
   const _actioned = React.useRef(false);
 
-  _name.current = name;
-  _fieldIds.current = fields;
   control._names.array.add(name);
 
-  rules &&
-    (control as Control<TFieldValues>).register(
-      name as FieldPath<TFieldValues>,
-      rules as RegisterOptions<TFieldValues>,
-    );
+  React.useMemo(
+    () =>
+      rules &&
+      fields.length >= 0 &&
+      (control as Control<TFieldValues, any, TTransformedValues>).register(
+        name as FieldPath<TFieldValues>,
+        rules as RegisterOptions<TFieldValues>,
+      ),
+    [control, name, fields.length, rules],
+  );
 
-  React.useEffect(
+  useIsomorphicLayoutEffect(
     () =>
       control._subjects.array.subscribe({
         next: ({
@@ -121,8 +134,8 @@ export function useFieldArray<
           values?: FieldValues;
           name?: InternalFieldName;
         }) => {
-          if (fieldArrayName === _name.current || !fieldArrayName) {
-            const fieldValues = get(values, _name.current);
+          if (fieldArrayName === name || !fieldArrayName) {
+            const fieldValues = get(values, name);
             if (Array.isArray(fieldValues)) {
               setFields(fieldValues);
               ids.current = fieldValues.map(generateId);
@@ -130,7 +143,7 @@ export function useFieldArray<
           }
         },
       }).unsubscribe,
-    [control],
+    [control, name],
   );
 
   const updateValues = React.useCallback(
@@ -329,6 +342,7 @@ export function useFieldArray<
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
+          control._updateIsValidating([name]);
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
 
@@ -408,8 +422,16 @@ export function useFieldArray<
     !get(control._formValues, name) && control._setFieldArray(name);
 
     return () => {
-      (control._options.shouldUnregister || shouldUnregister) &&
-        control.unregister(name as FieldPath<TFieldValues>);
+      const updateMounted = (name: InternalFieldName, value: boolean) => {
+        const field: Field = get(control._fields, name);
+        if (field && field._f) {
+          field._f.mount = value;
+        }
+      };
+
+      control._options.shouldUnregister || shouldUnregister
+        ? control.unregister(name as FieldPath<TFieldValues>)
+        : updateMounted(name, false);
     };
   }, [name, control, keyName, shouldUnregister]);
 

@@ -1,4 +1,4 @@
-import { Ref } from '../types';
+import type { Ref } from '../types';
 
 import isHTMLElement from './isHTMLElement';
 

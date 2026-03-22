@@ -220,11 +220,11 @@ describe('resetField', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
 
-    expect(getValuesFn).toBeCalledWith({ test: '' });
+    expect(getValuesFn).toHaveBeenCalledWith({ test: '' });
 
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
-    expect(getValuesFn).toBeCalledWith({ test: '' });
+    expect(getValuesFn).toHaveBeenCalledWith({ test: '' });
   });
 
   describe('when provided with options', () => {

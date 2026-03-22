@@ -1,5 +1,11 @@
-import { EVENTS, VALIDATION_MODE } from '../constants';
 import {
+  EVENTS,
+  FORM_ERROR_TYPE,
+  INPUT_VALIDATION_RULES,
+  ROOT_ERROR_TYPE,
+  VALIDATION_MODE,
+} from '../constants';
+import type {
   BatchFieldArrayUpdate,
   ChangeHandler,
   Control,
@@ -16,6 +22,7 @@ import {
   FormState,
   FromSubscribe,
   GetIsDirty,
+  GetValuesConfig,
   InternalFieldName,
   Names,
   Path,
@@ -36,10 +43,11 @@ import {
   UseFormSetError,
   UseFormSetFocus,
   UseFormSetValue,
+  UseFormSubscribe,
   UseFormTrigger,
   UseFormUnregister,
   UseFormWatch,
-  UseFromSubscribe,
+  ValidateFormEventType,
   WatchInternal,
   WatchObserver,
 } from '../types';
@@ -48,6 +56,7 @@ import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
+import extractFormValues from '../utils/extractFormValues';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -72,6 +81,7 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
+import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -97,10 +107,17 @@ const defaultOptions = {
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
+  TTransformedValues = TFieldValues,
 >(
-  props: UseFormProps<TFieldValues, TContext> = {},
-): Omit<UseFormReturn<TFieldValues, TContext>, 'formState'> & {
-  formControl: Omit<UseFormReturn<TFieldValues, TContext>, 'formState'>;
+  props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
+): Omit<
+  UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  'formState'
+> & {
+  formControl: Omit<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+    'formState'
+  >;
 } {
   let _options = {
     ...defaultOptions,
@@ -109,6 +126,7 @@ export function createFormControl<
   let _formState: FormState<TFieldValues> = {
     submitCount: 0,
     isDirty: false,
+    isReady: false,
     isLoading: isFunction(_options.defaultValues),
     isValidating: false,
     isSubmitted: false,
@@ -121,10 +139,10 @@ export function createFormControl<
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
-  const _fields: FieldRefs = {};
+  let _fields: FieldRefs = {};
   let _defaultValues =
     isObject(_options.defaultValues) || isObject(_options.values)
-      ? cloneObject(_options.values || _options.defaultValues) || {}
+      ? cloneObject(_options.defaultValues || _options.values) || {}
       : {};
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
@@ -133,6 +151,7 @@ export function createFormControl<
     action: false,
     mount: false,
     watch: false,
+    keepIsValid: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -140,10 +159,11 @@ export function createFormControl<
     unMount: new Set(),
     array: new Set(),
     watch: new Set(),
+    registerName: new Set(),
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  const _proxyFormState: ReadFormState = {
+  const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
     validatingFields: false,
@@ -152,6 +172,9 @@ export function createFormControl<
     isValid: false,
     errors: false,
   };
+  const _proxyFormState: ReadFormState = {
+    ...defaultProxyFormState,
+  };
   let _proxySubscribeFormState = {
     ..._proxyFormState,
   };
@@ -159,8 +182,7 @@ export function createFormControl<
     array: createSubject(),
     state: createSubject(),
   };
-  const validationModeBeforeSubmit = getValidationModes(_options.mode);
-  const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
+
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
@@ -172,16 +194,26 @@ export function createFormControl<
     };
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
+    if (_state.keepIsValid) {
+      return;
+    }
     if (
       !_options.disabled &&
       (_proxyFormState.isValid ||
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
-      const isValid = _options.resolver
-        ? isEmptyObject((await _runSchema()).errors)
-        : await executeBuiltInValidation(_fields, true);
-
+      let isValid: boolean;
+      if (_options.resolver) {
+        isValid = isEmptyObject((await _runSchema()).errors);
+        _updateIsValidating();
+      } else {
+        isValid = await executeBuiltInValidation({
+          fields: _fields,
+          onlyCheckValid: true,
+          eventType: EVENTS.VALID,
+        });
+      }
       if (isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
@@ -256,7 +288,9 @@ export function createFormControl<
       }
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
-        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+        const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
+        const rootName = getNodeParentName(name);
+        set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
       }
 
       _subjects.state.next({
@@ -311,7 +345,7 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && _setValid();
+      _state.mount && !_state.action && _setValid();
     }
   };
 
@@ -425,7 +459,7 @@ export function createFormControl<
 
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
-    const result = await _options.resolver!(
+    return await _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
@@ -435,12 +469,11 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
-    _updateIsValidating(name);
-    return result;
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const { errors } = await _runSchema(names);
+    _updateIsValidating(names);
 
     if (names) {
       for (const name of names) {
@@ -456,15 +489,82 @@ export function createFormControl<
     return errors;
   };
 
-  const executeBuiltInValidation = async (
-    fields: FieldRefs,
-    shouldOnlyCheckValid?: boolean,
-    context: {
-      valid: boolean;
-    } = {
+  const validateForm = async ({
+    name,
+    eventType,
+  }: {
+    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | undefined;
+    eventType: ValidateFormEventType;
+  }) => {
+    if (props.validate) {
+      const result = await props.validate({
+        formValues: _formValues,
+        formState: _formState,
+        name,
+        eventType,
+      });
+
+      if (isObject(result)) {
+        for (const key in result) {
+          const error = result[key];
+
+          if (error) {
+            setError(`${FORM_ERROR_TYPE}.${key}`, {
+              message: isString(result.message) ? result.message : '',
+              type: INPUT_VALIDATION_RULES.validate,
+            });
+          }
+        }
+      } else if (isString(result) || !result) {
+        setError(FORM_ERROR_TYPE, {
+          message: result || '',
+          type: INPUT_VALIDATION_RULES.validate,
+        });
+      } else {
+        clearErrors(FORM_ERROR_TYPE);
+      }
+
+      return result;
+    }
+
+    return true;
+  };
+
+  const executeBuiltInValidation = async ({
+    fields,
+    onlyCheckValid,
+    name,
+    eventType,
+    context = {
       valid: true,
+      runRootValidation: false,
     },
-  ) => {
+  }: {
+    fields: FieldRefs;
+    onlyCheckValid?: boolean;
+    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
+    eventType: ValidateFormEventType;
+    context?: {
+      valid: boolean;
+      runRootValidation?: boolean;
+    };
+  }) => {
+    if (props.validate) {
+      context.runRootValidation = true;
+      const result = await validateForm({
+        name,
+        eventType,
+      });
+
+      if (!result) {
+        context.valid = false;
+
+        if (onlyCheckValid) {
+          return context.valid;
+        }
+      }
+    }
+
     for (const name in fields) {
       const field = fields[name];
 
@@ -477,7 +577,7 @@ export function createFormControl<
             field._f && hasPromiseValidation((field as Field)._f);
 
           if (isPromiseFunction && _proxyFormState.validatingFields) {
-            _updateIsValidating([name], true);
+            _updateIsValidating([_f.name], true);
           }
 
           const fieldError = await validateField(
@@ -485,22 +585,23 @@ export function createFormControl<
             _names.disabled,
             _formValues,
             shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation && !shouldOnlyCheckValid,
+            _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
           );
 
           if (isPromiseFunction && _proxyFormState.validatingFields) {
-            _updateIsValidating([name]);
+            _updateIsValidating([_f.name]);
           }
 
           if (fieldError[_f.name]) {
             context.valid = false;
-            if (shouldOnlyCheckValid) {
+
+            if (onlyCheckValid) {
               break;
             }
           }
 
-          !shouldOnlyCheckValid &&
+          !onlyCheckValid &&
             (get(fieldError, _f.name)
               ? isFieldArrayRoot
                 ? updateFieldArrayRootError(
@@ -510,14 +611,20 @@ export function createFormControl<
                   )
                 : set(_formState.errors, _f.name, fieldError[_f.name])
               : unset(_formState.errors, _f.name));
+
+          if (props.shouldUseNativeValidation && fieldError[_f.name]) {
+            break;
+          }
         }
 
         !isEmptyObject(fieldValue) &&
-          (await executeBuiltInValidation(
-            fieldValue,
-            shouldOnlyCheckValid,
+          (await executeBuiltInValidation({
             context,
-          ));
+            onlyCheckValid,
+            fields: fieldValue,
+            name: name as FieldPath<TFieldValues>,
+            eventType,
+          }));
       }
     }
 
@@ -604,18 +711,18 @@ export function createFormControl<
           );
         } else if (fieldReference.refs) {
           if (isCheckBoxInput(fieldReference.ref)) {
-            fieldReference.refs.length > 1
-              ? fieldReference.refs.forEach(
-                  (checkboxRef) =>
-                    (!checkboxRef.defaultChecked || !checkboxRef.disabled) &&
-                    (checkboxRef.checked = Array.isArray(fieldValue)
-                      ? !!(fieldValue as []).find(
-                          (data: string) => data === checkboxRef.value,
-                        )
-                      : fieldValue === checkboxRef.value),
-                )
-              : fieldReference.refs[0] &&
-                (fieldReference.refs[0].checked = !!fieldValue);
+            fieldReference.refs.forEach((checkboxRef) => {
+              if (!checkboxRef.defaultChecked || !checkboxRef.disabled) {
+                if (Array.isArray(fieldValue)) {
+                  checkboxRef.checked = !!fieldValue.find(
+                    (data: string) => data === checkboxRef.value,
+                  );
+                } else {
+                  checkboxRef.checked =
+                    fieldValue === checkboxRef.value || !!fieldValue;
+                }
+              }
+            });
           } else {
             fieldReference.refs.forEach(
               (radioRef: HTMLInputElement) =>
@@ -659,8 +766,11 @@ export function createFormControl<
     options: U,
   ) => {
     for (const fieldKey in value) {
+      if (!value.hasOwnProperty(fieldKey)) {
+        return;
+      }
       const fieldValue = value[fieldKey];
-      const fieldName = `${name}.${fieldKey}`;
+      const fieldName = name + '.' + fieldKey;
       const field = get(_fields, fieldName);
 
       (_names.array.has(name) ||
@@ -708,11 +818,18 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    isWatched(name, _names) && _subjects.state.next({ ..._formState });
-    _subjects.state.next({
-      name: _state.mount ? name : undefined,
-      values: cloneObject(_formValues),
-    });
+    if (isWatched(name, _names)) {
+      _subjects.state.next({
+        ..._formState,
+        name,
+        values: cloneObject(_formValues),
+      });
+    } else {
+      _subjects.state.next({
+        name: _state.mount ? name : undefined,
+        values: cloneObject(_formValues),
+      });
+    }
   };
 
   const setValues: UseFormSetValue<TFieldValues> = (formValues) => {
@@ -740,6 +857,10 @@ export function createFormControl<
         (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
+    const validationModeBeforeSubmit = getValidationModes(_options.mode);
+    const validationModeAfterSubmit = getValidationModes(
+      _options.reValidateMode,
+    );
 
     if (field) {
       let error;
@@ -751,6 +872,7 @@ export function createFormControl<
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
+          !props.validate &&
           !_options.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
@@ -766,8 +888,10 @@ export function createFormControl<
       set(_formValues, name, fieldValue);
 
       if (isBlurEvent) {
-        field._f.onBlur && field._f.onBlur(event);
-        delayErrorCallback && delayErrorCallback(0);
+        if (!target || !target.readOnly) {
+          field._f.onBlur && field._f.onBlur(event);
+          delayErrorCallback && delayErrorCallback(0);
+        }
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
@@ -800,10 +924,18 @@ export function createFormControl<
         );
       }
 
+      if (!_options.resolver && props.validate) {
+        await validateForm({
+          name: name as FieldPath<TFieldValues>,
+          eventType: event.type,
+        });
+      }
+
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
       if (_options.resolver) {
         const { errors } = await _runSchema([name]);
+        _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
 
@@ -846,13 +978,19 @@ export function createFormControl<
             _proxyFormState.isValid ||
             _proxySubscribeFormState.isValid
           ) {
-            isValid = await executeBuiltInValidation(_fields, true);
+            isValid = await executeBuiltInValidation({
+              fields: _fields,
+              onlyCheckValid: true,
+              name: name as FieldPath<TFieldValues>,
+              eventType: event.type,
+            });
           }
         }
       }
 
       if (isFieldValueUpdated) {
         field._f.deps &&
+          (!Array.isArray(field._f.deps) || field._f.deps.length > 0) &&
           trigger(
             field._f.deps as
               | FieldPath<TFieldValues>
@@ -890,15 +1028,20 @@ export function createFormControl<
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field = get(_fields, fieldName);
-            return await executeBuiltInValidation(
-              field && field._f ? { [fieldName]: field } : field,
-            );
+            return await executeBuiltInValidation({
+              fields: field && field._f ? { [fieldName]: field } : field,
+              eventType: EVENTS.TRIGGER,
+            });
           }),
         )
       ).every(Boolean);
       !(!validationResult && !_formState.isValid) && _setValid();
     } else {
-      validationResult = isValid = await executeBuiltInValidation(_fields);
+      validationResult = isValid = await executeBuiltInValidation({
+        fields: _fields,
+        name,
+        eventType: EVENTS.TRIGGER,
+      });
     }
 
     _subjects.state.next({
@@ -926,10 +1069,18 @@ export function createFormControl<
     fieldNames?:
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
+    config?: GetValuesConfig,
   ) => {
-    const values = {
+    let values = {
       ...(_state.mount ? _formValues : _defaultValues),
     };
+
+    if (config) {
+      values = extractFormValues(
+        config.dirtyFields ? _formState.dirtyFields : _formState.touchedFields,
+        values,
+      );
+    }
 
     return isUndefined(fieldNames)
       ? values
@@ -950,14 +1101,25 @@ export function createFormControl<
   });
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name &&
-      convertToArrayPayload(name).forEach((inputName) =>
-        unset(_formState.errors, inputName),
-      );
+    const names = name ? convertToArrayPayload(name) : undefined;
 
-    _subjects.state.next({
-      errors: name ? _formState.errors : {},
-    });
+    names?.forEach((inputName) => unset(_formState.errors, inputName));
+
+    if (names) {
+      // Emit for each cleared field with the field name so that
+      // shouldSubscribeByName can filter and avoid broad re-renders
+      names.forEach((inputName) => {
+        _subjects.state.next({
+          name: inputName,
+          errors: _formState.errors,
+        });
+      });
+    } else {
+      // Clear all errors - emit without name to notify all subscribers
+      _subjects.state.next({
+        errors: {},
+      });
+    }
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
@@ -992,6 +1154,7 @@ export function createFormControl<
     isFunction(name)
       ? _subjects.state.subscribe({
           next: (payload) =>
+            'values' in payload &&
             name(
               _getWatch(undefined, defaultValue),
               payload as {
@@ -1013,6 +1176,7 @@ export function createFormControl<
         formState: Partial<FormState<TFieldValues>> & {
           name?: InternalFieldName;
           values?: TFieldValues | undefined;
+          type?: EventType;
         },
       ) => {
         if (
@@ -1028,12 +1192,14 @@ export function createFormControl<
             values: { ..._formValues } as TFieldValues,
             ..._formState,
             ...formState,
+            defaultValues:
+              _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
         }
       },
     }).unsubscribe;
 
-  const subscribe: UseFromSubscribe<TFieldValues> = (props) => {
+  const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
     _proxySubscribeFormState = {
       ..._proxySubscribeFormState,
@@ -1041,7 +1207,10 @@ export function createFormControl<
     };
     return _subscribe({
       ...props,
-      formState: _proxySubscribeFormState,
+      formState: {
+        ...defaultProxyFormState,
+        ...props.formState,
+      },
     });
   };
 
@@ -1086,7 +1255,12 @@ export function createFormControl<
       !!disabled ||
       _names.disabled.has(name)
     ) {
+      const wasDisabled = _names.disabled.has(name);
+      const isDisabled = !!disabled;
+      const disabledStateChanged = wasDisabled !== isDisabled;
+
       disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
+      disabledStateChanged && _state.mount && !_state.action && _setValid();
     }
   };
 
@@ -1094,6 +1268,8 @@ export function createFormControl<
     let field = get(_fields, name);
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
+    const shouldRevalidateRemount =
+      !_names.registerName.has(name) && field && !field._f.mount;
 
     set(_fields, name, {
       ...(field || {}),
@@ -1106,7 +1282,7 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
-    if (field) {
+    if (field && !shouldRevalidateRemount) {
       _setDisabledField({
         disabled: isBoolean(options.disabled)
           ? options.disabled
@@ -1136,7 +1312,9 @@ export function createFormControl<
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
+          _names.registerName.add(name);
           register(name, options);
+          _names.registerName.delete(name);
           field = get(_fields, name);
 
           const fieldRef = isUndefined(ref.value)
@@ -1214,7 +1392,7 @@ export function createFormControl<
     }
   };
 
-  const handleSubmit: UseFormHandleSubmit<TFieldValues> =
+  const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
       let onValidError = undefined;
       if (e) {
@@ -1222,8 +1400,10 @@ export function createFormControl<
         (e as React.BaseSyntheticEvent).persist &&
           (e as React.BaseSyntheticEvent).persist();
       }
-
-      let fieldValues = cloneObject(_formValues);
+      let fieldValues:
+        | TFieldValues
+        | TTransformedValues
+        | Record<string, never> = cloneObject(_formValues);
 
       _subjects.state.next({
         isSubmitting: true,
@@ -1231,26 +1411,30 @@ export function createFormControl<
 
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
+        _updateIsValidating();
         _formState.errors = errors;
-        fieldValues = values as TFieldValues;
+        fieldValues = cloneObject(values);
       } else {
-        await executeBuiltInValidation(_fields);
+        await executeBuiltInValidation({
+          fields: _fields,
+          eventType: EVENTS.SUBMIT,
+        });
       }
 
       if (_names.disabled.size) {
         for (const name of _names.disabled) {
-          set(fieldValues, name, undefined);
+          unset(fieldValues, name);
         }
       }
 
-      unset(_formState.errors, 'root');
+      unset(_formState.errors, ROOT_ERROR_TYPE);
 
       if (isEmptyObject(_formState.errors)) {
         _subjects.state.next({
           errors: {},
         });
         try {
-          await onValid(fieldValues as TFieldValues, e);
+          await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }
@@ -1326,12 +1510,15 @@ export function createFormControl<
           ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
-          get(_formState.dirtyFields, fieldName)
-            ? set(values, fieldName, get(_formValues, fieldName))
-            : setValue(
-                fieldName as FieldPath<TFieldValues>,
-                get(values, fieldName),
-              );
+          const isDirty = get(_formState.dirtyFields, fieldName);
+          const existingValue = get(_formValues, fieldName);
+          const newValue = get(values, fieldName);
+
+          if (isDirty && !isUndefined(existingValue)) {
+            set(values, fieldName, existingValue);
+          } else if (!isDirty && !isUndefined(newValue)) {
+            setValue(fieldName as FieldPath<TFieldValues>, newValue);
+          }
         }
       } else {
         if (isWeb && isUndefined(formValues)) {
@@ -1353,15 +1540,23 @@ export function createFormControl<
           }
         }
 
-        for (const fieldName of _names.mount) {
-          setValue(
-            fieldName as FieldPath<TFieldValues>,
-            get(values, fieldName),
-          );
+        if (keepStateOptions.keepFieldsRef) {
+          for (const fieldName of _names.mount) {
+            setValue(
+              fieldName as FieldPath<TFieldValues>,
+              get(values, fieldName),
+            );
+          }
+        } else {
+          _fields = {};
         }
       }
 
-      _formValues = cloneObject(values) as TFieldValues;
+      _formValues = _options.shouldUnregister
+        ? keepStateOptions.keepDefaultValues
+          ? (cloneObject(_defaultValues) as TFieldValues)
+          : ({} as TFieldValues)
+        : (cloneObject(values) as TFieldValues);
 
       _subjects.array.next({
         values: { ...values },
@@ -1376,6 +1571,7 @@ export function createFormControl<
       mount: keepStateOptions.keepDirtyValues ? _names.mount : new Set(),
       unMount: new Set(),
       array: new Set(),
+      registerName: new Set(),
       disabled: new Set(),
       watch: new Set(),
       watchAll: false,
@@ -1385,9 +1581,19 @@ export function createFormControl<
     _state.mount =
       !_proxyFormState.isValid ||
       !!keepStateOptions.keepIsValid ||
-      !!keepStateOptions.keepDirtyValues;
+      !!keepStateOptions.keepDirtyValues ||
+      (!_options.shouldUnregister && !isEmptyObject(values));
 
     _state.watch = !!_options.shouldUnregister;
+    _state.keepIsValid = !!keepStateOptions.keepIsValid;
+    _state.action = false;
+
+    // Clear errors synchronously to prevent validation errors on subsequent submissions
+    // This fixes the issue where form.reset() causes validation errors on subsequent
+    // submissions in Next.js 16 with Server Actions
+    if (!keepStateOptions.keepErrors) {
+      _formState.errors = {};
+    }
 
     _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
@@ -1423,6 +1629,7 @@ export function createFormControl<
         ? _formState.isSubmitSuccessful
         : false,
       isSubmitting: false,
+      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
     });
   };
 
@@ -1431,7 +1638,7 @@ export function createFormControl<
       isFunction(formValues)
         ? (formValues as Function)(_formValues as TFieldValues)
         : formValues,
-      keepStateOptions,
+      { ..._options.resetOptions, ...keepStateOptions },
     );
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
@@ -1444,10 +1651,14 @@ export function createFormControl<
         : fieldReference.ref;
 
       if (fieldRef.focus) {
-        fieldRef.focus();
-        options.shouldSelect &&
-          isFunction(fieldRef.select) &&
-          fieldRef.select();
+        // Use setTimeout to ensure focus happens after any pending state updates
+        // This fixes the issue where setFocus doesn't work immediately after setError
+        setTimeout(() => {
+          fieldRef.focus();
+          options.shouldSelect &&
+            isFunction(fieldRef.select) &&
+            fieldRef.select();
+        });
       }
     }
   };
@@ -1479,6 +1690,8 @@ export function createFormControl<
       setError,
       _subscribe,
       _runSchema,
+      _updateIsValidating,
+      _focusError,
       _getWatch,
       _getDirty,
       _setValid,

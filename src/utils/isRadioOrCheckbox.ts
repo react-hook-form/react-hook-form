@@ -1,4 +1,4 @@
-import { FieldElement } from '../types';
+import type { FieldElement } from '../types';
 
 import isCheckBoxInput from './isCheckBoxInput';
 import isRadioInput from './isRadioInput';

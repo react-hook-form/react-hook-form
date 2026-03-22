@@ -166,4 +166,25 @@ describe('clone', () => {
       delete Array.prototype.somePolyfill;
     });
   });
+
+  it('should not override prototype of nested object', () => {
+    const UtcProto = {
+      _tag: 'Utc',
+    };
+    const formValues = {
+      dateTime: Object.create(UtcProto),
+    };
+    const copy = cloneObject(formValues);
+    expect(Object.getPrototypeOf(copy.dateTime)).toEqual(UtcProto);
+    expect(copy.dateTime._tag).toBe('Utc');
+  });
+
+  it('should not override prototype of nested object', () => {
+    const UtcProto = {
+      _tag: 'Utc',
+    };
+    const dateTime = Object.create(UtcProto);
+    const copy = cloneObject(dateTime);
+    expect(copy._tag).toBe('Utc');
+  });
 });

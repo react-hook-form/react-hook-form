@@ -10,7 +10,7 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import { Control } from '../../types';
+import type { Control } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import get from '../../utils/get';
@@ -584,6 +584,58 @@ describe('setValue', () => {
 
       expect(result.current).toBe('abc');
     });
+
+    it('should track field names', () => {
+      type FormValues = {
+        enabled: boolean;
+        child: {
+          dependent: boolean;
+        };
+      };
+
+      function App() {
+        const { control, watch, setValue } = useForm<FormValues>({
+          defaultValues: { enabled: false, child: { dependent: false } },
+        });
+
+        // Propagate the easy-to-edit form values that we add back to template ID
+        // values.
+        React.useEffect(() => {
+          const subscription = watch((formData, { name }) => {
+            if (name === 'enabled') {
+              setValue(`child.dependent`, !!formData.enabled);
+            }
+          });
+          return () => subscription.unsubscribe();
+        }, [setValue, watch]);
+
+        watch('child');
+
+        return (
+          <div>
+            <form>
+              <label>
+                Enabled
+                <Controller
+                  render={({ field: { value, ...props } }) => (
+                    <input type="checkbox" {...props} checked={!!value} />
+                  )}
+                  name="enabled"
+                  control={control}
+                />
+              </label>
+              <input type="submit" />
+            </form>
+          </div>
+        );
+      }
+
+      render(<App />);
+
+      expect(() =>
+        fireEvent.click(screen.getByRole('checkbox', { name: 'Enabled' })),
+      ).not.toThrow();
+    });
   });
 
   describe('with validation', () => {
@@ -927,11 +979,7 @@ describe('setValue', () => {
         );
       }
 
-      render(
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>,
-      );
+      render(<App />, { reactStrictMode: true });
 
       jest.advanceTimersByTime(10000);
 
@@ -1150,7 +1198,7 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(fieldsValue.length).toEqual(1);
+    expect(fieldsValue.length).toEqual(2);
   });
 
   it('should not register deeply nested inputs', () => {
@@ -1394,6 +1442,10 @@ describe('setValue', () => {
         userId: 'abc',
       },
       {
+        date: new Date('2021-06-15T00:00:00.000Z'),
+        userId: 'abc',
+      },
+      {
         date: new Date('2021-12-17T00:00:00.000Z'),
         userId: '1234',
       },
@@ -1464,5 +1516,20 @@ describe('setValue', () => {
 
     expect(screen.getByText('dirty')).toBeVisible();
     expect(screen.getByText('touched')).toBeVisible();
+  });
+
+  it('should notify observers exactly once when field is watched', async () => {
+    const { result } = renderHook(() => useForm());
+    const control = result.current.control as any;
+
+    control._names.watch.add('test');
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    await act(async () => {
+      result.current.setValue('test', 'value');
+    });
+
+    expect(nextSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -8,7 +8,12 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import { DeepMap, ErrorOption, FieldError, GlobalError } from '../../types';
+import type {
+  DeepMap,
+  ErrorOption,
+  FieldError,
+  GlobalError,
+} from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 
@@ -163,7 +168,7 @@ describe('setError', () => {
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
     await waitFor(() => {
-      expect(onSubmit).toBeCalled();
+      expect(onSubmit).toHaveBeenCalled();
       expect(screen.queryByText('custom error')).not.toBeInTheDocument();
     });
 
