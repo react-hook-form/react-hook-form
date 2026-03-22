@@ -475,6 +475,7 @@ export type Names = {
     disabled: InternalNameSet;
     array: InternalNameSet;
     watch: InternalNameSet;
+    registerName: InternalNameSet;
     focus?: InternalFieldName;
     watchAll?: boolean;
 };
