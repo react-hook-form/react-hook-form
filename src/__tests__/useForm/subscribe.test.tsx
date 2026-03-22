@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
@@ -119,5 +119,42 @@ describe('subscribe', () => {
     });
 
     expect(callbackFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('should allow subscribing to submit state updates', async () => {
+    const callbackFn = jest.fn();
+
+    const App = () => {
+      const { handleSubmit, subscribe } = useForm();
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+            submitCount: true,
+          },
+          callback: callbackFn,
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => undefined)}>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() =>
+      expect(callbackFn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isSubmitted: true,
+          submitCount: 1,
+        }),
+      ),
+    );
   });
 });
