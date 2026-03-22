@@ -71,6 +71,7 @@
   "author": "Beier(Bill) Luo <bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@date-fns/tz": "^1.4.1",
     "@eslint/compat": "^1.4.1",
     "@microsoft/api-extractor": "^7.55.2",
     "@rollup/plugin-commonjs": "^28.0.9",
