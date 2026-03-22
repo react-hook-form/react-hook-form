@@ -486,7 +486,7 @@ describe('FormProvider', () => {
     consoleSpy.mockRestore();
   });
 
-  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProvider props', async () => {
+  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProvider props', () => {
     const consoleSpy = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
