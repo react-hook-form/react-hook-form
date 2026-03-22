@@ -159,6 +159,7 @@ export function createFormControl<
     unMount: new Set(),
     array: new Set(),
     watch: new Set(),
+    registerName: new Set(),
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
@@ -1254,7 +1255,8 @@ export function createFormControl<
     let field = get(_fields, name);
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
-    const shouldRevalidateRemount = field && !field._f.mount;
+    const shouldRevalidateRemount =
+      !_names.registerName.has(name) && field && !field._f.mount;
 
     set(_fields, name, {
       ...(field || {}),
@@ -1297,7 +1299,9 @@ export function createFormControl<
       onBlur: onChange,
       ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
+          _names.registerName.add(name);
           register(name, options);
+          _names.registerName.delete(name);
           field = get(_fields, name);
 
           const fieldRef = isUndefined(ref.value)
@@ -1554,6 +1558,7 @@ export function createFormControl<
       mount: keepStateOptions.keepDirtyValues ? _names.mount : new Set(),
       unMount: new Set(),
       array: new Set(),
+      registerName: new Set(),
       disabled: new Set(),
       watch: new Set(),
       watchAll: false,

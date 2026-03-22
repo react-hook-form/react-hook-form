@@ -937,7 +937,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(count).toEqual(3);
+    expect(count).toEqual(2);
   });
 
   it('should update validatingFields form states correctly when trigger() called', async () => {
