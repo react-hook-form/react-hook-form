@@ -21,7 +21,7 @@ import type {
 } from './path';
 import type { Resolver } from './resolvers';
 import type { DeepMap, DeepPartial, Noop } from './utils';
-import type { RegisterOptions } from './validator';
+import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
 
@@ -126,6 +126,7 @@ export type UseFormProps<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
   >;
+  validate: ValidateForm<TFieldValues>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -145,6 +146,8 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   values?: boolean;
+  isSubmitted?: boolean | 'all';
+  submitCount?: boolean | 'all';
 };
 
 export type FormState<TFieldValues extends FieldValues> = {
@@ -533,7 +536,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | `root.${string}`
-    | 'root',
+    | 'root'
+    | 'form'
+    | `form.${string}`,
 ) => void;
 
 /**
@@ -595,7 +600,12 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
+  name:
+    | FieldPath<TFieldValues>
+    | `root.${string}`
+    | 'root'
+    | 'form'
+    | `form.${string}`,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -764,6 +774,7 @@ export type Names = {
   disabled: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
+  registerName: InternalNameSet;
   focus?: InternalFieldName;
   watchAll?: boolean;
 };

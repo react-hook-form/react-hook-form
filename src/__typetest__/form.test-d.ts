@@ -130,6 +130,26 @@ const schema = z.object({
   }
 }
 
+/** {@link UseFormSubscribe} */ {
+  /** it should allow subscribing to submit state fields */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { subscribe } = useForm<{
+      test: string;
+    }>();
+
+    subscribe({
+      formState: {
+        isSubmitted: true,
+        submitCount: true,
+      },
+      callback: (state) => {
+        expectType<boolean | undefined>(state.isSubmitted);
+        expectType<number | undefined>(state.submitCount);
+      },
+    });
+  }
+}
+
 export function mockZodResolver<Input extends FieldValues, Context, Output>(
   schema: z.ZodSchema<Output, any, Input>,
   schemaOptions?: Partial<z.ParseParams>,
