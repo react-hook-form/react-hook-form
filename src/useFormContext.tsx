@@ -109,52 +109,48 @@ export const FormProvider = <
     subscribe,
   } = props;
 
+  const memoizedValue = React.useMemo(
+    () => ({
+      watch,
+      getValues,
+      getFieldState,
+      setError,
+      clearErrors,
+      setValue,
+      trigger,
+      formState,
+      resetField,
+      reset,
+      handleSubmit,
+      unregister,
+      control,
+      register,
+      setFocus,
+      subscribe,
+    }),
+    [
+      clearErrors,
+      control,
+      formState,
+      getFieldState,
+      getValues,
+      handleSubmit,
+      register,
+      reset,
+      resetField,
+      setError,
+      setFocus,
+      setValue,
+      subscribe,
+      trigger,
+      unregister,
+      watch,
+    ],
+  );
+
   return (
-    <HookFormContext.Provider
-      value={
-        React.useMemo(
-          () => ({
-            watch,
-            getValues,
-            getFieldState,
-            setError,
-            clearErrors,
-            setValue,
-            trigger,
-            formState,
-            resetField,
-            reset,
-            handleSubmit,
-            unregister,
-            control,
-            register,
-            setFocus,
-            subscribe,
-          }),
-          [
-            clearErrors,
-            control,
-            formState,
-            getFieldState,
-            getValues,
-            handleSubmit,
-            register,
-            reset,
-            resetField,
-            setError,
-            setFocus,
-            setValue,
-            subscribe,
-            trigger,
-            unregister,
-            watch,
-          ],
-        ) as unknown as UseFormReturn
-      }
-    >
-      <HookFormControlContext.Provider
-        value={React.useMemo(() => control, [control]) as Control}
-      >
+    <HookFormContext.Provider value={memoizedValue as unknown as UseFormReturn}>
+      <HookFormControlContext.Provider value={memoizedValue.control as Control}>
         {children}
       </HookFormControlContext.Provider>
     </HookFormContext.Provider>

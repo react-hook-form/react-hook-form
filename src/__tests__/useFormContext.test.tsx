@@ -453,16 +453,22 @@ describe('FormProvider', () => {
       return (
         <div>
           <button onClick={() => setShowA(!showA)}>Toggle</button>
-          <FormProvider {...(showA ? methodsA : methodsB)}>
-            <Child />
-          </FormProvider>
+          {showA ? (
+            <FormProvider {...methodsA}>
+              <Child />
+            </FormProvider>
+          ) : (
+            <FormProvider {...methodsB}>
+              <Child />
+            </FormProvider>
+          )}
         </div>
       );
     };
 
     render(<App />);
 
-    // Toggle to swap FormProvider
+    // Toggle to swap between two distinct FormProvider instances
     act(() => {
       fireEvent.click(screen.getByText('Toggle'));
     });
@@ -472,7 +478,52 @@ describe('FormProvider', () => {
 
     // Check if the specific warning was logged
     const wasWarningLogged = consoleSpy.mock.calls.some((call) =>
-      call[0].includes('Cannot update a component'),
+      call[0]?.includes?.('Cannot update a component'),
+    );
+
+    expect(wasWarningLogged).toBe(false);
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProvider props', async () => {
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    const Child = () => {
+      useController({ name: 'test' });
+      return <input data-testid="test-input" />;
+    };
+
+    const App = () => {
+      const [showA, setShowA] = React.useState(true);
+      const methodsA = useForm({ defaultValues: { test: 'A' } });
+      const methodsB = useForm({ defaultValues: { test: 'B' } });
+
+      return (
+        <div>
+          <button onClick={() => setShowA(!showA)}>Toggle</button>
+          <FormProvider {...(showA ? methodsA : methodsB)}>
+            <Child />
+          </FormProvider>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Toggle to swap FormProvider props
+    act(() => {
+      fireEvent.click(screen.getByText('Toggle'));
+    });
+
+    // If it doesn't throw, it passes
+    expect(screen.getByTestId('test-input')).toBeVisible();
+
+    // Check if the specific warning was logged
+    const wasWarningLogged = consoleSpy.mock.calls.some((call) =>
+      call[0]?.includes?.('Cannot update a component'),
     );
 
     expect(wasWarningLogged).toBe(false);
