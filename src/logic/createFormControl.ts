@@ -1254,7 +1254,7 @@ export function createFormControl<
     let field = get(_fields, name);
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
-    const shouldRevalidateRemount = !field || !field._f.mount;
+    const shouldRevalidateRemount = field && !field._f.mount;
 
     set(_fields, name, {
       ...(field || {}),
