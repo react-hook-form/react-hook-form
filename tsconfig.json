@@ -3,7 +3,7 @@
     "types": ["jest", "node", "@testing-library/jest-dom"],
     "sourceMap": true,
     "module": "es2015",
-    "target": "es2018",
+    "target": "es2020",
     "moduleResolution": "node",
     "outDir": "./dist",
     "jsx": "react",
