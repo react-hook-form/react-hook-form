@@ -435,7 +435,7 @@ describe('FormProvider', () => {
     expect(onRender).toHaveBeenCalledTimes(rerendersCount + 1);
   });
 
-  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProviders', async () => {
+  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProviders', () => {
     const consoleSpy = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
