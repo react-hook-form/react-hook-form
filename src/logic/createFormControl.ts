@@ -806,9 +806,13 @@ export function createFormControl<
           _proxySubscribeFormState.dirtyFields) &&
         options.shouldDirty
       ) {
+        const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
+        const rootName = getNodeParentName(name);
+        set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+
         _subjects.state.next({
           name,
-          dirtyFields: getDirtyFields(_defaultValues, _formValues),
+          dirtyFields: _formState.dirtyFields,
           isDirty: _getDirty(name, cloneValue),
         });
       }
