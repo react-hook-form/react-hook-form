@@ -245,6 +245,12 @@ export function createFormControl<
     }
   };
 
+  const _updateDirtyFields = (name: InternalFieldName) => {
+    const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
+    const rootName = getNodeParentName(name);
+    set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+  };
+
   const _setFieldArray: BatchFieldArrayUpdate = (
     name,
     values = [],
@@ -288,9 +294,7 @@ export function createFormControl<
       }
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
-        const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-        const rootName = getNodeParentName(name);
-        set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+        _updateDirtyFields(name);
       }
 
       _subjects.state.next({
@@ -806,9 +810,7 @@ export function createFormControl<
           _proxySubscribeFormState.dirtyFields) &&
         options.shouldDirty
       ) {
-        const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-        const rootName = getNodeParentName(name);
-        set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+        _updateDirtyFields(name);
 
         _subjects.state.next({
           name,
