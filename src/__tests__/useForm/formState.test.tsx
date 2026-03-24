@@ -1052,6 +1052,109 @@ describe('formState', () => {
 
         expect(await screen.findByText(message)).toBeVisible();
       });
+
+      it('should only show error after delay when using setValue with shouldValidate', async () => {
+        jest.useFakeTimers();
+
+        const message = 'too long.';
+
+        const App = () => {
+          const {
+            register,
+            setValue,
+            formState: { errors },
+          } = useForm<{
+            test: string;
+          }>({
+            delayError: 500,
+          });
+
+          return (
+            <div>
+              <input {...register('test', { maxLength: 4 })} />
+              <button
+                onClick={() =>
+                  setValue('test', '123456', { shouldValidate: true })
+                }
+              >
+                set
+              </button>
+              {errors.test && <p>{message}</p>}
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        act(() => {
+          jest.advanceTimersByTime(500);
+        });
+
+        expect(await screen.findByText(message)).toBeVisible();
+      });
+
+      it('should clear delayed error immediately when setValue sets a valid value', async () => {
+        jest.useFakeTimers();
+
+        const message = 'too long.';
+
+        const App = () => {
+          const {
+            register,
+            setValue,
+            formState: { errors },
+          } = useForm<{
+            test: string;
+          }>({
+            delayError: 500,
+          });
+
+          return (
+            <div>
+              <input {...register('test', { maxLength: 4 })} />
+              <button
+                data-testid="invalid"
+                onClick={() =>
+                  setValue('test', '123456', { shouldValidate: true })
+                }
+              >
+                set invalid
+              </button>
+              <button
+                data-testid="valid"
+                onClick={() => setValue('test', '12', { shouldValidate: true })}
+              >
+                set valid
+              </button>
+              {errors.test && <p>{message}</p>}
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('invalid'));
+        });
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('valid'));
+        });
+
+        act(() => {
+          jest.advanceTimersByTime(500);
+        });
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+      });
     });
   });
 

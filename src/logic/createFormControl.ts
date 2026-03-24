@@ -1030,6 +1030,20 @@ export function createFormControl<
       });
     }
 
+    if (_options.delayError && name) {
+      for (const fieldName of fieldNames) {
+        const error = get(_formState.errors, fieldName);
+        if (error) {
+          unset(_formState.errors, fieldName);
+          delayErrorCallback = debounce(() => updateErrors(fieldName, error));
+          delayErrorCallback(_options.delayError);
+        } else {
+          clearTimeout(timer);
+          delayErrorCallback = null;
+        }
+      }
+    }
+
     _subjects.state.next({
       ...(!isString(name) ||
       ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
