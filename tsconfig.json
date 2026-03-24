@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "types": ["jest", "node", "@testing-library/jest-dom"],
+    "rootDir": "./src",
     "sourceMap": true,
     "module": "es2015",
     "target": "es2018",
