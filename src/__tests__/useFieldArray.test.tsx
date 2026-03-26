@@ -3889,6 +3889,75 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByAltText('Please enter some data')).toBeNull();
     });
+
+    it('should skip validation for field array operations when mode is onBlur', async () => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+          register,
+        } = useForm({
+          mode: 'onBlur',
+          defaultValues: {
+            test: [{ name: '' }],
+          },
+        });
+
+        const { append, remove } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            minLength: {
+              value: 2,
+              message: 'Min length should be 2',
+            },
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(noop)}>
+            {errors.test?.root?.message && (
+              <p data-testid="error">{errors.test.root.message}</p>
+            )}
+            {control._fields.test?.map((_, index) => (
+              <input
+                key={index}
+                {...register(`test.${index}.name` as const, {
+                  required: 'Name is required',
+                })}
+                data-testid={`input-${index}`}
+              />
+            ))}
+            <button type="button" onClick={() => append({ name: '' })}>
+              append
+            </button>
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+            <button type="submit">submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      // Append a field - validation should be skipped since mode is onBlur
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      // No error should be shown since we haven't blurred anything
+      expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+
+      // Remove a field - validation should also be skipped
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      // Still no error since mode is onBlur
+      expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+    });
   });
 
   describe('with nested field array ', () => {
