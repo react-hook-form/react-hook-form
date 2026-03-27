@@ -863,19 +863,28 @@ export function createFormControl<
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+      // When a field already has an error (e.g. set by trigger()), allow
+      // revalidation based on reValidateMode so the error can be cleared
+      // by user input even if the form hasn't been submitted yet.
+      const shouldRevalidateExistingError =
+        !!get(_formState.errors, name) &&
+        !_formState.isSubmitted &&
+        ((validationModeAfterSubmit.isOnChange && !isBlurEvent) ||
+          (validationModeAfterSubmit.isOnBlur && isBlurEvent));
       const shouldSkipValidation =
         (!hasValidation(field._f) &&
           !props.validate &&
           !_options.resolver &&
           !get(_formState.errors, name) &&
           !field._f.deps) ||
-        skipValidation(
+        (skipValidation(
           isBlurEvent,
           get(_formState.touchedFields, name),
           _formState.isSubmitted,
           validationModeAfterSubmit,
           validationModeBeforeSubmit,
-        );
+        ) &&
+          !shouldRevalidateExistingError);
       const watched = isWatched(name, _names, isBlurEvent);
 
       set(_formValues, name, fieldValue);
