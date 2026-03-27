@@ -940,6 +940,90 @@ describe('trigger', () => {
     expect(count).toEqual(2);
   });
 
+  it('should clear error on user input after trigger() sets it when form is not submitted', async () => {
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('test', { required: 'This field is required' })}
+            placeholder="test"
+          />
+          <button type="button" onClick={() => trigger('test')}>
+            trigger
+          </button>
+          {errors.test && <span>{errors.test.message}</span>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+
+    expect(await screen.findByText('This field is required')).toBeVisible();
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: 'filled' },
+    });
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText('This field is required'),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should clear error on blur after trigger() sets it when reValidateMode is onBlur', async () => {
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onSubmit',
+        reValidateMode: 'onBlur',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('test', { required: 'required' })}
+            placeholder="test"
+          />
+          <button type="button" onClick={() => trigger('test')}>
+            trigger
+          </button>
+          {errors.test && <span>{errors.test.message}</span>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+
+    expect(await screen.findByText('required')).toBeVisible();
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: 'filled' },
+    });
+
+    fireEvent.blur(screen.getByPlaceholderText('test'));
+
+    await waitFor(() =>
+      expect(screen.queryByText('required')).not.toBeInTheDocument(),
+    );
+  });
+
   it('should update validatingFields form states correctly when trigger() called', async () => {
     jest.useFakeTimers();
 
