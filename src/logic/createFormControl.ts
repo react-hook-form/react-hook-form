@@ -863,12 +863,15 @@ export function createFormControl<
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
-      // When a field already has an error (e.g. set by trigger()), allow
-      // revalidation based on reValidateMode so the error can be cleared
-      // by user input even if the form hasn't been submitted yet.
+      // When mode is onSubmit and a field already has an error (e.g. set
+      // by trigger()), allow revalidation based on reValidateMode so the
+      // error can be cleared by user input even if the form hasn't been
+      // submitted yet. Other modes (onBlur, onChange) already revalidate
+      // on their respective events, so this only applies to onSubmit.
       const shouldRevalidateExistingError =
         !!get(_formState.errors, name) &&
         !_formState.isSubmitted &&
+        validationModeBeforeSubmit.isOnSubmit &&
         ((validationModeAfterSubmit.isOnChange && !isBlurEvent) ||
           (validationModeAfterSubmit.isOnBlur && isBlurEvent));
       const shouldSkipValidation =
