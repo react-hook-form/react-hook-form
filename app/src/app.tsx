@@ -28,6 +28,7 @@ import UseFieldArray from './useFieldArray';
 import UseFieldArrayNested from './useFieldArrayNested';
 import CustomSchemaValidation from './customSchemaValidation';
 import WatchFieldArray from './watchUseFieldArray';
+import FieldArrayIsDirty from './fieldArrayIsDirty';
 import UseWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
 import UseFieldArrayUnregister from './useFieldArrayUnregister';
@@ -74,6 +75,7 @@ const App = () => {
           path="/UseFieldArrayUnregister"
           element={<UseFieldArrayUnregister />}
         />
+        <Route path="/fieldArrayIsDirty" element={<FieldArrayIsDirty />} />
         <Route path="/reset" element={<Reset />} />
         <Route path="/resetKeepDirty" element={<ResetKeepDirty />} />
         <Route path="/setValue" element={<SetValue />} />

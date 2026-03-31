@@ -132,6 +132,50 @@ describe('remove', () => {
     });
   });
 
+  it('should set isDirty to true when removing the only default item', () => {
+    let formState: any;
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: tempFormState,
+      } = useForm({
+        defaultValues: {
+          test: [{ name: 'default' }],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      formState = tempFormState;
+      formState.isDirty;
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <input {...register(`test.${i}.name` as const)} />
+              <button type={'button'} onClick={() => remove(i)}>
+                remove
+              </button>
+            </div>
+          ))}
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    expect(formState.isDirty).toBeFalsy();
+
+    // Remove the only default item - form should now be dirty
+    fireEvent.click(screen.getByRole('button', { name: /remove/i }));
+
+    expect(formState.isDirty).toBeTruthy();
+  });
+
   it('should update isValid formState when item removed', async () => {
     let formState: any;
     const Component = () => {
