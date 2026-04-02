@@ -548,4 +548,72 @@ describe('resolver', () => {
       consoleError.mockRestore();
     });
   });
+
+  describe('dot-notation resolver errors', () => {
+    it('should clear fieldState error when resolver returns errors using dot-notation keys', async () => {
+      // Regression test for https://github.com/react-hook-form/react-hook-form/issues/13298
+      // Resolver errors returned with literal dot-notation keys (e.g. 'items.0.name')
+      // were stored as literal object keys and not cleaned up properly on onChange.
+      type FormValues = {
+        items: { name: string }[];
+      };
+
+      let resolverShouldReturnError = true;
+
+      const App = () => {
+        const { handleSubmit, control } = useForm<FormValues>({
+          defaultValues: { items: [{ name: '' }] },
+          resolver: () => {
+            if (resolverShouldReturnError) {
+              return {
+                // Dot-notation key – the bug path
+                errors: {
+                  'items.0.name': { type: 'required', message: 'Required' },
+                } as FieldErrors<FormValues>,
+                values: {} as never,
+              };
+            }
+            return { errors: {}, values: { items: [{ name: 'filled' }] } };
+          },
+        });
+
+        const { field, fieldState } = useController({
+          name: 'items.0.name',
+          control,
+        });
+
+        return (
+          <div>
+            <input {...field} data-testid="input" />
+            <span data-testid="error">{fieldState.error?.message ?? ''}</span>
+            <button type="button" onClick={handleSubmit(noop)}>
+              Submit
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      // Trigger initial validation via submit
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('error')).toHaveTextContent('Required');
+      });
+
+      // Now let the resolver return no errors (field is "valid")
+      resolverShouldReturnError = false;
+
+      // Simulate the user editing the field
+      fireEvent.change(screen.getByTestId('input'), {
+        target: { value: 'filled' },
+      });
+
+      // The error should be cleared
+      await waitFor(() => {
+        expect(screen.getByTestId('error')).toHaveTextContent('');
+      });
+    });
+  });
 });

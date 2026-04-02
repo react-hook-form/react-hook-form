@@ -65,6 +65,7 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
+import isKey from '../utils/isKey';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
@@ -435,9 +436,20 @@ export function createFormControl<
     } else {
       clearTimeout(timer);
       delayErrorCallback = null;
-      error
-        ? set(_formState.errors, name, error)
-        : unset(_formState.errors, name);
+      if (error) {
+        set(_formState.errors, name, error);
+      } else {
+        unset(_formState.errors, name);
+        // Resolvers may return errors with literal dot-notation keys (e.g.
+        // {'items.0.name': error}). These bypass path-based `unset`, so we
+        // also delete the literal key when the name contains non-word chars.
+        if (
+          !isKey(name) &&
+          name in (_formState.errors as Record<string, unknown>)
+        ) {
+          delete (_formState.errors as Record<string, unknown>)[name];
+        }
+      }
     }
 
     if (
