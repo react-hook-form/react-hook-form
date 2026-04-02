@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { useForm } from '../useForm';
 
-function TestComponent() {
+function TestComponent({ onSubmit }: { onSubmit: (data: any) => void }) {
   const { register, handleSubmit } = useForm<{
     example: { inner?: string } | null;
   }>({
@@ -11,9 +11,6 @@ function TestComponent() {
       example: null,
     },
   });
-  const onSubmit = (data: any) => {
-    (window as any).submittedData = data;
-  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -25,16 +22,16 @@ function TestComponent() {
 
 describe('nested null bug', () => {
   it('should not keep parent as null and allow nested value', async () => {
-    render(<TestComponent />);
+    const onSubmit = jest.fn();
+    render(<TestComponent onSubmit={onSubmit} />);
 
     fireEvent.click(screen.getByText('Submit'));
 
     await waitFor(() => {
-      const result = (window as any).submittedData;
-
-      expect(result).toEqual({
-        example: { inner: '' },
-      });
+      expect(onSubmit).toHaveBeenCalledWith(
+        { example: { inner: '' } },
+        expect.anything(),
+      );
     });
   });
 });

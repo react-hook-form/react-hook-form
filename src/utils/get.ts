@@ -13,13 +13,16 @@ export default <T>(
     return defaultValue;
   }
 
-  const result = (isKey(path) ? [path] : stringToPath(path)).reduce(
-    (result, key) =>
-      isNullOrUndefined(result) ? result : result[key as keyof T & object],
-    object,
-  );
+  const paths = isKey(path) ? [path] : stringToPath(path);
 
-  return isUndefined(result) || result === object || result === null
+  const result = paths.reduce<any>((result, key, index) => {
+    if (result === null && index < paths.length) {
+      return undefined;
+    }
+    return isNullOrUndefined(result) ? result : result[key];
+  }, object);
+
+  return isUndefined(result) || result === object
     ? isUndefined(object[path as keyof T])
       ? defaultValue
       : object[path as keyof T]
