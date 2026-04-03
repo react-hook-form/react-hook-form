@@ -707,4 +707,126 @@ describe('useFieldArray dirtyFields isolation', () => {
       expect(dirtyResult).not.toHaveProperty('title');
     });
   });
+
+  it('should not mark unrelated fields dirty when using setValue with shouldDirty on a field array', async () => {
+    let dirtyResult = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        setValue,
+        formState: { dirtyFields },
+      } = useForm<{
+        name: string;
+        age: number;
+        items: { value: string }[];
+      }>({
+        defaultValues: {
+          name: 'John',
+          age: 30,
+          items: [],
+        },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      dirtyResult = dirtyFields;
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <input {...register('age')} />
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`items.${i}.value` as const)} />
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setValue('items', [{ value: 'new' }], { shouldDirty: true })
+            }
+          >
+            setItems
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /setItems/ }));
+
+    await waitFor(() => {
+      expect(dirtyResult).toEqual({
+        items: [{ value: true }],
+      });
+      expect(dirtyResult).not.toHaveProperty('name');
+      expect(dirtyResult).not.toHaveProperty('age');
+    });
+  });
+
+  it('should preserve other dirty fields when using setValue with shouldDirty on a field array', async () => {
+    let dirtyResult = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        setValue,
+        formState: { dirtyFields },
+      } = useForm<{
+        name: string;
+        age: number;
+        items: { value: string }[];
+      }>({
+        defaultValues: {
+          name: 'John',
+          age: 30,
+          items: [],
+        },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      dirtyResult = dirtyFields;
+
+      return (
+        <form>
+          <input {...register('name')} data-testid="name" />
+          <input {...register('age')} />
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`items.${i}.value` as const)} />
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setValue('items', [{ value: 'new' }], { shouldDirty: true })
+            }
+          >
+            setItems
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.input(screen.getByTestId('name'), {
+      target: { value: 'Changed' },
+    });
+
+    await waitFor(() => {
+      expect(dirtyResult).toHaveProperty('name', true);
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /setItems/ }));
+
+    await waitFor(() => {
+      expect(dirtyResult).toHaveProperty('name', true);
+      expect(dirtyResult).toHaveProperty('items');
+      expect(dirtyResult).not.toHaveProperty('age');
+    });
+  });
 });
