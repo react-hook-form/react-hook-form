@@ -1532,32 +1532,4 @@ describe('setValue', () => {
 
     expect(nextSpy).toHaveBeenCalledTimes(1);
   });
-
-  it('should not notify subscribers when setValue is called with an unchanged value', async () => {
-    const { result } = renderHook(() =>
-      useForm<{ test: string }>({ defaultValues: { test: 'initial' } }),
-    );
-    const control = result.current.control as any;
-
-    // Set the initial value first
-    await act(async () => {
-      result.current.setValue('test', 'initial');
-    });
-
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
-
-    // Call setValue again with the same value
-    await act(async () => {
-      result.current.setValue('test', 'initial');
-    });
-
-    // Should not have notified subscribers with values since value is unchanged
-    const valueNotifications = nextSpy.mock.calls.filter(
-      (call) =>
-        call[0] != null &&
-        typeof call[0] === 'object' &&
-        'values' in (call[0] as Record<string, unknown>),
-    );
-    expect(valueNotifications).toHaveLength(0);
-  });
 });

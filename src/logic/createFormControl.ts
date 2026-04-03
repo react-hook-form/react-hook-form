@@ -795,12 +795,6 @@ export function createFormControl<
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
-    const previousValue = get(_formValues, name);
-    const isValueUnchanged =
-      !options.shouldDirty &&
-      !options.shouldTouch &&
-      !options.shouldValidate &&
-      deepEqual(previousValue, cloneValue);
 
     set(_formValues, name, cloneValue);
 
@@ -831,19 +825,17 @@ export function createFormControl<
         : setFieldValue(name, cloneValue, options);
     }
 
-    if (!isValueUnchanged) {
-      if (isWatched(name, _names)) {
-        _subjects.state.next({
-          ..._formState,
-          name,
-          values: cloneObject(_formValues),
-        });
-      } else {
-        _subjects.state.next({
-          name: _state.mount ? name : undefined,
-          values: cloneObject(_formValues),
-        });
-      }
+    if (isWatched(name, _names)) {
+      _subjects.state.next({
+        ..._formState,
+        name,
+        values: cloneObject(_formValues),
+      });
+    } else {
+      _subjects.state.next({
+        name: _state.mount ? name : undefined,
+        values: cloneObject(_formValues),
+      });
     }
   };
 
