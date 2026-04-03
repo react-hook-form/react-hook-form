@@ -1,3 +1,4 @@
+import { passthrough } from './utils/passthrough';
 import type {
   FieldPath,
   FieldValues,
@@ -42,19 +43,28 @@ export const Watch = <
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
+  TRenderValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
 >(
   props: WatchProps<
     TFieldName,
     TFieldValues,
     TContext,
     TTransformedValues,
-    TComputeValue
+    TComputeValue,
+    TRenderValue
   >,
-) =>
-  props.render(
-    useWatch({ name: props.names, ...(props as any) }) as WatchRenderValue<
-      TFieldName,
-      TFieldValues,
-      TComputeValue
-    >,
-  );
+) => {
+  const watched = useWatch({ name: props.names, ...(props as any) });
+
+  type WatchedRenderValue = WatchRenderValue<
+    TFieldName,
+    TFieldValues,
+    TComputeValue
+  >;
+
+  const render = props.render ?? passthrough;
+
+  const rendered = render(watched as WatchedRenderValue);
+
+  return rendered as TRenderValue;
+};

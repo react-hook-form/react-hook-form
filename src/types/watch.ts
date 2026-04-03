@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 import type { FieldValues } from './fields';
 import type { Control } from './form';
 import type { FieldPath, FieldPathValue, FieldPathValues } from './path';
@@ -56,6 +54,7 @@ export type WatchProps<
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
+  TRenderValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
 > = {
   control?: Control<TFieldValues, TContext, TTransformedValues>;
   /**
@@ -68,7 +67,7 @@ export type WatchProps<
   exact?: boolean;
   defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
   compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
-  render: (
+  render?: (
     value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
-  ) => ReactNode | ReactNode[];
+  ) => TRenderValue;
 };
