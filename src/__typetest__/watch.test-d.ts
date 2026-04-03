@@ -1,4 +1,4 @@
-import { expectType } from 'tsd';
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd';
 
 import { useForm } from '../useForm';
 import { Watch } from '../watch';
@@ -113,5 +113,102 @@ type FormData = {
       },
       render: () => null,
     });
+  }
+
+  /** It should not be valid node if form values are not a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+    });
+
+    expectNotAssignable<React.ReactNode>(result);
+  }
+
+  /** It should not be valid node if default value is not a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      defaultValue: {},
+    });
+
+    expectNotAssignable<React.ReactNode>(result);
+  }
+
+  /** It should be be valid node if named default value is a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      name: 'foo',
+      defaultValue: '',
+    });
+
+    expectAssignable<React.ReactNode>(result);
+  }
+
+  /** It should be not be valid node if named default value is not a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      name: 'baz',
+      defaultValue: { qux: '' },
+    });
+
+    expectNotAssignable<React.ReactNode>(result);
+  }
+
+  /** It should be not be valid node if computed value is not a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      compute: () => {
+        return {};
+      },
+    });
+
+    expectNotAssignable<React.ReactNode>(result);
+  }
+
+  /** It should be be valid node if computed value is a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      compute: () => {
+        return '';
+      },
+    });
+
+    expectAssignable<React.ReactNode>(result);
+  }
+
+  /** It should be not be valid node if rendered value is not a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      render: () => {
+        return {};
+      },
+    });
+
+    expectNotAssignable<React.ReactNode>(result);
+  }
+
+  /** It should be be valid node if rendered value is a valid node. */ {
+    const { control } = useForm<FormData>();
+
+    const result = Watch({
+      control,
+      render: () => {
+        return '';
+      },
+    });
+
+    expectAssignable<React.ReactNode>(result);
   }
 }
