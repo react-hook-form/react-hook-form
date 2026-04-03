@@ -739,7 +739,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -797,7 +797,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} data-testid="name" />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button
             type="button"
