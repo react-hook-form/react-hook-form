@@ -15,11 +15,8 @@ export default <T>(
 
   const paths = isKey(path) ? [path] : stringToPath(path);
 
-  const result = paths.reduce<any>((result, key, index) => {
-    if (result === null && index < paths.length) {
-      return undefined;
-    }
-    return isNullOrUndefined(result) ? result : result[key];
+  const result = paths.reduce<any>((result, key) => {
+    return isNullOrUndefined(result) ? undefined : result[key];
   }, object);
 
   return isUndefined(result) || result === object
