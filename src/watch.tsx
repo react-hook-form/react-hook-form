@@ -53,7 +53,7 @@ export const Watch = <
     TComputeValue,
     TRenderValue
   >,
-) => {
+): TRenderValue => {
   const watched = useWatch({ name: props.names, ...(props as any) });
 
   type WatchedRenderValue = WatchRenderValue<
