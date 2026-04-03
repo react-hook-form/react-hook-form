@@ -147,6 +147,7 @@ export function createFormControl<
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
     : (cloneObject(_defaultValues) as TFieldValues);
+  let _previousFormValues: TFieldValues;
   let _state = {
     action: false,
     mount: false,
@@ -1187,10 +1188,13 @@ export function createFormControl<
             (props.formState as ReadFormState) || _proxyFormState,
             _setFormState,
             props.reRenderRoot,
-          )
+          ) &&
+          !deepEqual(_previousFormValues, _formValues)
         ) {
+          _previousFormValues = { ..._formValues } as TFieldValues;
+
           props.callback({
-            values: { ..._formValues } as TFieldValues,
+            values: _previousFormValues,
             ..._formState,
             ...formState,
             defaultValues:
