@@ -650,4 +650,29 @@ describe('Watch', () => {
     expect(barCallback).toHaveBeenCalledTimes(3);
     expect(bazQuxCallback).toHaveBeenCalledTimes(3);
   });
+
+  it('should render watched value when no render prop is provided', () => {
+    const App = () => {
+      const { control, register } = useForm();
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <Watch control={control} names="test" />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const value = '1234';
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value,
+      },
+    });
+
+    expect(screen.getByText(value)).toBeVisible();
+  });
 });
