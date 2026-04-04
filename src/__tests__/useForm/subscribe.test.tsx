@@ -182,9 +182,7 @@ describe('subscribe', () => {
           <input {...register('test')} />
           <button
             type="button"
-            onClick={() =>
-              setValue('test', 'initial', { shouldDirty: true })
-            }
+            onClick={() => setValue('test', 'initial', { shouldDirty: true })}
           >
             Set same
           </button>
@@ -269,10 +267,7 @@ describe('subscribe', () => {
       return (
         <form>
           <input {...register('test')} />
-          <button
-            type="button"
-            onClick={() => setValue('test', 'hello')}
-          >
+          <button type="button" onClick={() => setValue('test', 'hello')}>
             Update
           </button>
         </form>
