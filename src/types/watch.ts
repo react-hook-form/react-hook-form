@@ -49,12 +49,11 @@ export type WatchRenderValue<
   : TComputeValue;
 
 export type WatchProps<
-  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends WatchName<TFieldValues> = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
-  TRenderValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
 > = {
   control?: Control<TFieldValues, TContext, TTransformedValues>;
   /**
@@ -69,5 +68,5 @@ export type WatchProps<
   compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
   render?: (
     value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
-  ) => TRenderValue;
+  ) => React.ReactNode | React.ReactNode[];
 };

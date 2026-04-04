@@ -1,7 +1,7 @@
-import { passthrough } from './utils/passthrough';
+import { identity } from './utils/identity';
 import type {
-  FieldPath,
   FieldValues,
+  WatchName,
   WatchProps,
   WatchRenderValue,
 } from './types';
@@ -35,36 +35,26 @@ import { useWatch } from './useWatch';
  */
 export const Watch = <
   TFieldValues extends FieldValues = FieldValues,
-  const TFieldName extends
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
-    | undefined = undefined,
+  const TFieldName extends WatchName<TFieldValues> = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
-  TRenderValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
 >(
   props: WatchProps<
-    TFieldName,
     TFieldValues,
+    TFieldName,
     TContext,
     TTransformedValues,
-    TComputeValue,
-    TRenderValue
+    TComputeValue
   >,
-): TRenderValue => {
+): React.ReactNode => {
   const watched = useWatch({ name: props.names, ...(props as any) });
 
-  type WatchedRenderValue = WatchRenderValue<
-    TFieldName,
-    TFieldValues,
-    TComputeValue
-  >;
+  const render = props.render ?? identity;
 
-  const render = props.render ?? passthrough;
+  type WatchedValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>;
 
-  const rendered = render(watched as WatchedRenderValue);
+  const rendered = render(watched as WatchedValue);
 
-  return rendered as TRenderValue;
+  return rendered as any;
 };
