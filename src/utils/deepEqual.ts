@@ -7,6 +7,10 @@ export default function deepEqual(
   object2: any,
   _internal_visited = new WeakSet(),
 ) {
+  if (object1 === object2) {
+    return true;
+  }
+
   if (isPrimitive(object1) || isPrimitive(object2)) {
     return Object.is(object1, object2);
   }
@@ -25,13 +29,14 @@ export default function deepEqual(
   if (_internal_visited.has(object1) || _internal_visited.has(object2)) {
     return true;
   }
+
   _internal_visited.add(object1);
   _internal_visited.add(object2);
 
   for (const key of keys1) {
     const val1 = object1[key];
 
-    if (!keys2.includes(key)) {
+    if (!(key in object2)) {
       return false;
     }
 
