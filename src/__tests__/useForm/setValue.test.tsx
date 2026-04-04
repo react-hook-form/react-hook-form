@@ -915,6 +915,31 @@ describe('setValue', () => {
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       },
     );
+
+    it('should set isDirty to true when setting nested object to empty object with shouldDirty', () => {
+      const { result } = renderHook(() =>
+        useForm<{
+          test: { name: string };
+        }>({
+          defaultValues: {
+            test: { name: 'default' },
+          },
+        }),
+      );
+
+      result.current.formState.isDirty;
+      result.current.formState.dirtyFields;
+
+      result.current.register('test.name');
+
+      act(() =>
+        result.current.setValue('test', {} as { name: string }, {
+          shouldDirty: true,
+        }),
+      );
+
+      expect(result.current.formState.isDirty).toBeTruthy();
+    });
   });
 
   describe('with touched', () => {

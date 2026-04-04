@@ -84,6 +84,49 @@ describe('remove', () => {
     expect(formState.isDirty).toBeFalsy();
   });
 
+  it('should set isDirty to true when removing the only default item', () => {
+    let formState: any;
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: tempFormState,
+      } = useForm({
+        defaultValues: {
+          test: [{ name: 'default' }],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      formState = tempFormState;
+      formState.isDirty;
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <input {...register(`test.${i}.name` as const)} />
+              <button type={'button'} onClick={() => remove(i)}>
+                remove
+              </button>
+            </div>
+          ))}
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    expect(formState.isDirty).toBeFalsy();
+
+    fireEvent.click(screen.getByRole('button', { name: /remove/i }));
+
+    expect(formState.isDirty).toBeTruthy();
+  });
+
   it('should not mark unrelated fields as dirty when removing from field array', async () => {
     let dirtyInputs = {};
     const Component = () => {
