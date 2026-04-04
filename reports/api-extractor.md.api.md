@@ -66,6 +66,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
     }>;
+    _updateIsValidating: (names?: InternalFieldName[], isValidating?: boolean) => void;
     _focusError: () => boolean | undefined;
     _disableForm: (disabled?: boolean) => void;
     _subscribe: FromSubscribe<TFieldValues>;
@@ -90,7 +91,7 @@ export type ControllerFieldState = {
 
 // @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = {
-    render: ({ field, fieldState, formState, }: {
+    render: (input: {
         field: ControllerRenderProps<TFieldValues, TName>;
         fieldState: ControllerFieldState;
         formState: UseFormStateReturn<TFieldValues>;
@@ -132,13 +133,15 @@ export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends Browser
     [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue>;
 } : TValue;
 
+// Warning: (ae-forgotten-export) The symbol "IsPrimitiveLike" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue ? T : {
+export type DeepPartial<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue ? T : {
     [K in keyof T]?: ExtractObjects<T[K]> extends never ? T[K] : DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepPartialSkipArrayKey<T> = T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
+export type DeepPartialSkipArrayKey<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
     [K in keyof T]: DeepPartialSkipArrayKey<T[K]>;
 } : {
     [K in keyof T]?: DeepPartialSkipArrayKey<T[K]>;
@@ -224,6 +227,7 @@ export type FieldError = {
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
+    form?: GlobalError;
 };
 
 // @public (undocumented)
@@ -272,14 +276,14 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues = TFi
     control: Control<TFieldValues, any, TTransformedValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
-    onError: ({ response, error, }: {
+    onError: (input: {
         response: Response;
         error?: undefined;
     } | {
         response?: undefined;
         error: unknown;
     }) => void;
-    onSuccess: ({ response }: {
+    onSuccess: (input: {
         response: Response;
     }) => void;
     onSubmit: FormSubmitHandler<TTransformedValues>;
@@ -339,7 +343,7 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
-export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>({ control, disabled, exact, name, render, }: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
+export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
 
 // @public (undocumented)
 export type FormStateSubscribeProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = UseFormStateProps<TFieldValues, TTransformedValues> & {
@@ -354,6 +358,12 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
     formDataJson: string;
     method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
+
+// @public (undocumented)
+export type FormValidateResult<T> = Partial<Record<keyof T, {
+    message: Message | Message[] | boolean | undefined;
+    type: string;
+}>> | string | boolean;
 
 // @public (undocumented)
 export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
@@ -465,6 +475,7 @@ export type Names = {
     disabled: InternalNameSet;
     array: InternalNameSet;
     watch: InternalNameSet;
+    registerName: InternalNameSet;
     focus?: InternalFieldName;
     watchAll?: boolean;
 };
@@ -504,6 +515,8 @@ export type ReadFormState = {
     [K in keyof FormStateProxy]: boolean | 'all';
 } & {
     values?: boolean;
+    isSubmitted?: boolean | 'all';
+    submitCount?: boolean | 'all';
 };
 
 // @public (undocumented)
@@ -693,7 +706,7 @@ export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayNam
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root' | 'form' | `form.${string}`) => void;
 
 // @public
 export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
@@ -735,6 +748,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     criteriaMode: CriteriaMode;
     delayError: number;
     formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
+    validate: ValidateForm<TFieldValues>;
 }>;
 
 // @public
@@ -784,7 +798,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 };
 
 // @public
-export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root', error: ErrorOption, options?: {
+export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root' | 'form' | `form.${string}`, error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
@@ -908,11 +922,24 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
     name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[];
     control?: Control<TFieldValues>;
     exact?: boolean;
-    compute?: (formValues: any) => any;
+    compute?: (formValues: TFieldValues) => TFieldValues;
 };
 
 // @public (undocumented)
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
+
+// @public (undocumented)
+export type ValidateForm<TFormValues extends FieldValues, TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>> = (props: {
+    formValues: TFormValues;
+    formState: FormState<TFormValues>;
+    eventType?: ValidateFormEventType;
+    name?: TFieldName | TFieldName[];
+}) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
+
+// Warning: (ae-forgotten-export) The symbol "EVENTS" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ValidateFormEventType = (typeof EVENTS)[keyof typeof EVENTS];
 
 // @public (undocumented)
 export type ValidateResult = Message | Message[] | boolean | undefined;
@@ -944,29 +971,45 @@ export type ValidationValueMessage<TValidationValue extends ValidationValue = Va
 };
 
 // @public
-export const Watch: <const TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>({ control, names, render, }: WatchProps<TFieldNames, TFieldValues, TContext, TTransformedValues>) => ReactNode;
+export const Watch: <TFieldValues extends FieldValues = FieldValues, const TFieldName extends FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined = undefined, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined>(props: WatchProps<TFieldName, TFieldValues, TContext, TTransformedValues, TComputeValue>) => ReactNode | ReactNode[];
+
+// @public (undocumented)
+export type WatchDefaultValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : DeepPartialSkipArrayKey<TFieldValues>;
 
 // @public (undocumented)
 export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | InternalFieldName[], defaultValue?: DeepPartial<TFieldValues>, isMounted?: boolean, isGlobal?: boolean) => FieldPathValue<FieldValues, InternalFieldName> | FieldPathValues<FieldValues, InternalFieldName[]>;
 
 // @public (undocumented)
-export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
+export type WatchName<TFieldValues extends FieldValues> = FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined;
+
+// @public (undocumented)
+export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartialSkipArrayKey<TFieldValues>, info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
     values?: unknown;
 }) => void;
 
 // @public (undocumented)
-export type WatchProps<TFieldNames extends readonly FieldPath<TFieldValues>[], TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
-    control: Control<TFieldValues, TContext, TTransformedValues>;
-    names: TFieldNames;
-    render: (values: GetValues<TFieldValues, TFieldNames>) => ReactNode;
+export type WatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
+    control?: Control<TFieldValues, TContext, TTransformedValues>;
+    names?: TFieldName;
+    name?: TFieldName;
+    disabled?: boolean;
+    exact?: boolean;
+    defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
+    compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
+    render: (value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>) => ReactNode | ReactNode[];
 };
+
+// @public (undocumented)
+export type WatchRenderValue<TFieldName, TFieldValues extends FieldValues, TComputeValue> = TComputeValue extends undefined ? WatchValue<TFieldName, TFieldValues> : TComputeValue;
+
+// @public (undocumented)
+export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/watch.tsx:33:3 - (ae-forgotten-export) The symbol "GetValues" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:509:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

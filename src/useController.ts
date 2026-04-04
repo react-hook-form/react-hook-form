@@ -5,6 +5,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
+import isFunction from './utils/isFunction';
 import isUndefined from './utils/isUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
@@ -18,7 +19,7 @@ import type {
   UseControllerProps,
   UseControllerReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
@@ -53,11 +54,15 @@ export function useController<
 >(
   props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
 ): UseControllerReturn<TFieldValues, TName> {
-  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
   const {
     name,
     disabled,
-    control = methods.control,
+    control = formControl,
     shouldUnregister,
     defaultValue,
     exact = true,
@@ -159,13 +164,14 @@ export function useController<
     (elm: any) => {
       const field = get(control._fields, name);
 
-      if (field && elm) {
+      if (field && field._f && elm) {
         field._f.ref = {
-          focus: () => elm.focus && elm.focus(),
-          select: () => elm.select && elm.select(),
+          focus: () => isFunction(elm.focus) && elm.focus(),
+          select: () => isFunction(elm.select) && elm.select(),
           setCustomValidity: (message: string) =>
-            elm.setCustomValidity(message),
-          reportValidity: () => elm.reportValidity(),
+            isFunction(elm.setCustomValidity) && elm.setCustomValidity(message),
+          reportValidity: () =>
+            isFunction(elm.reportValidity) && elm.reportValidity(),
         };
       }
     },

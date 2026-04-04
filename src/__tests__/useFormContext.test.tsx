@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { useController } from '../useController';
@@ -11,6 +17,7 @@ import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
+
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
     const mockRegister = jest.fn();
@@ -317,5 +324,210 @@ describe('FormProvider', () => {
       );
       expect(errorFilterValue).toHaveTextContent('1');
     });
+  });
+
+  it('should not rerender unrelated fields when using useController', () => {
+    const onRender = jest.fn();
+
+    const RenderCounter = React.memo(() => {
+      useController({
+        name: 'value2',
+        defaultValue: '',
+      });
+      onRender();
+      return null;
+    });
+
+    const Form = () => {
+      const [, setValues] = useState({ value1: '', value2: '' });
+      const methods = useForm<{ value1: string; value2: string }>();
+      const { subscribe } = methods;
+
+      React.useEffect(() => {
+        subscribe({
+          formState: { values: true },
+          callback: ({ values }) => {
+            setValues(values);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            <input {...methods.register('value1')} data-testid="value1-input" />
+            <RenderCounter />
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<Form />);
+
+    const input = screen.getByTestId('value1-input');
+
+    expect(input).toBeVisible();
+    expect(onRender).toHaveBeenCalledTimes(1);
+    fireEvent.change(input, { target: { value: '1' } });
+    fireEvent.change(input, { target: { value: '2' } });
+    expect(onRender).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * Verifies that external state changes in the parent component
+   * do not cause unnecessary rerenders of children consuming useFormContext.
+   * This ensures FormProvider's context value is properly memoized.
+   */
+  it('should not do unnecessary rerenders by useFormContext', () => {
+    const onRender = jest.fn();
+
+    const RenderCounter = React.memo(() => {
+      const {
+        formState: { dirtyFields },
+      } = useFormContext();
+      onRender();
+      return <span>{JSON.stringify(dirtyFields, null, 2)}</span>;
+    });
+
+    const Form = () => {
+      const [, setValues] = useState({ value1: '' });
+      const methods = useForm<{ value1: string }>();
+      const { subscribe } = methods;
+
+      React.useEffect(() => {
+        subscribe({
+          formState: { values: true },
+          callback: ({ values }) => {
+            setValues(values);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <FormProvider {...methods}>
+          <form>
+            <input {...methods.register('value1')} data-testid="value1-input" />
+            <button
+              type="button"
+              data-testid="set-values-button"
+              onClick={() => setValues({ value1: 'manual' })}
+            >
+              Set Values
+            </button>
+            <RenderCounter />
+          </form>
+        </FormProvider>
+      );
+    };
+
+    render(<Form />);
+
+    const input = screen.getByTestId('value1-input');
+
+    expect(input).toBeVisible();
+    const rerendersCount = onRender.mock.calls.length;
+    expect(onRender).toHaveBeenCalledTimes(rerendersCount);
+    fireEvent.change(input, { target: { value: '1' } });
+    expect(onRender).toHaveBeenCalledTimes(rerendersCount + 1);
+
+    // after external change, we should not trigger the context recreation
+    fireEvent.click(screen.getByTestId('set-values-button'));
+    expect(onRender).toHaveBeenCalledTimes(rerendersCount + 1);
+  });
+
+  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProviders', () => {
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    const Child = () => {
+      useController({ name: 'test' });
+      return <input data-testid="test-input" />;
+    };
+
+    const App = () => {
+      const [showA, setShowA] = React.useState(true);
+      const methodsA = useForm({ defaultValues: { test: 'A' } });
+      const methodsB = useForm({ defaultValues: { test: 'B' } });
+
+      return (
+        <div>
+          <button onClick={() => setShowA(!showA)}>Toggle</button>
+          {showA ? (
+            <FormProvider {...methodsA}>
+              <Child />
+            </FormProvider>
+          ) : (
+            <FormProvider {...methodsB}>
+              <Child />
+            </FormProvider>
+          )}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Toggle to swap between two distinct FormProvider instances
+    act(() => {
+      fireEvent.click(screen.getByText('Toggle'));
+    });
+
+    // If it doesn't throw, it passes
+    expect(screen.getByTestId('test-input')).toBeVisible();
+
+    // Check if the specific warning was logged
+    const wasWarningLogged = consoleSpy.mock.calls.some((call) =>
+      call[0]?.includes?.('Cannot update a component'),
+    );
+
+    expect(wasWarningLogged).toBe(false);
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should not throw "Cannot update a component while rendering a different component" when swapping FormProvider props', () => {
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    const Child = () => {
+      useController({ name: 'test' });
+      return <input data-testid="test-input" />;
+    };
+
+    const App = () => {
+      const [showA, setShowA] = React.useState(true);
+      const methodsA = useForm({ defaultValues: { test: 'A' } });
+      const methodsB = useForm({ defaultValues: { test: 'B' } });
+
+      return (
+        <div>
+          <button onClick={() => setShowA(!showA)}>Toggle</button>
+          <FormProvider {...(showA ? methodsA : methodsB)}>
+            <Child />
+          </FormProvider>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Toggle to swap FormProvider props
+    act(() => {
+      fireEvent.click(screen.getByText('Toggle'));
+    });
+
+    // If it doesn't throw, it passes
+    expect(screen.getByTestId('test-input')).toBeVisible();
+
+    // Check if the specific warning was logged
+    const wasWarningLogged = consoleSpy.mock.calls.some((call) =>
+      call[0]?.includes?.('Cannot update a component'),
+    );
+
+    expect(wasWarningLogged).toBe(false);
+
+    consoleSpy.mockRestore();
   });
 });

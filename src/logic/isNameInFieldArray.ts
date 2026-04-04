@@ -1,6 +1,9 @@
 import type { InternalFieldName } from '../types';
 
-import getNodeParentName from './getNodeParentName';
-
 export default (names: Set<InternalFieldName>, name: InternalFieldName) =>
-  names.has(getNodeParentName(name));
+  name
+    .split('.')
+    .some(
+      (part, index, arr) =>
+        !isNaN(Number(part)) && names.has(arr.slice(0, index).join('.')),
+    );

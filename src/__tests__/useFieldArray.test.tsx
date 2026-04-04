@@ -409,6 +409,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -464,6 +465,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             return {
               values: data,
@@ -512,6 +514,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             if (data.test.length > 1) {
               return {
@@ -584,6 +587,7 @@ describe('useFieldArray', () => {
           test: { value: string }[];
         }>({
           mode: 'onChange',
+          // @ts-ignore
           resolver: (data) => {
             const errors: { test?: any } = {};
             if (data.test.length > 4) {
@@ -845,8 +849,10 @@ describe('useFieldArray', () => {
     });
 
     it('should unset field array values correctly on DOM removing', async () => {
-      interface NestedComponentProps
-        extends Pick<UseFormReturn<FormValues>, 'control' | 'register'> {
+      interface NestedComponentProps extends Pick<
+        UseFormReturn<FormValues>,
+        'control' | 'register'
+      > {
         childIndex: number;
       }
 
@@ -1249,6 +1255,39 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(screen.getAllByRole('textbox')).toHaveLength(4),
       );
+    });
+
+    it('should update isDirty after reset when using fieldArray operations with useFormState subscription', () => {
+      const { result } = renderHook(() => {
+        const { control, reset } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const { isDirty } = useFormState({ control });
+
+        return { fields, append, remove, reset, isDirty };
+      });
+
+      expect(result.current.isDirty).toBeFalsy();
+
+      act(() => {
+        result.current.append({ value: 'new' });
+      });
+
+      expect(result.current.isDirty).toBeTruthy();
+      expect(result.current.fields.length).toBe(2);
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.isDirty).toBeFalsy();
+      expect(result.current.fields.length).toBe(1);
     });
   });
 
@@ -4491,5 +4530,72 @@ describe('useFieldArray with checkbox', () => {
       expect(checkboxes[2]).not.toBeChecked(); // Option 1 (copy) (copy)
       expect(checkboxes[3]).not.toBeChecked(); // Option 2
     });
+  });
+
+  it('should skip validation for field array operations when mode is onBlur', async () => {
+    const App = () => {
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        register,
+      } = useForm({
+        mode: 'onBlur',
+        defaultValues: {
+          test: [{ name: '' }],
+        },
+      });
+
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'test',
+        rules: {
+          minLength: {
+            value: 2,
+            message: 'Min length should be 2',
+          },
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {errors.test?.root?.message && (
+            <p data-testid="error">{errors.test.root.message}</p>
+          )}
+
+          {fields.map((field, index) => (
+            <input
+              key={field.id}
+              {...register(`test.${index}.name` as const, {
+                required: 'Name is required',
+              })}
+              data-testid={`input-${index}`}
+            />
+          ))}
+
+          <button type="button" onClick={() => append({ name: '' })}>
+            append
+          </button>
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+          <button type="submit">submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    });
+
+    expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    });
+
+    expect(screen.queryByTestId('error')).not.toBeInTheDocument();
   });
 });

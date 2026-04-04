@@ -20,8 +20,13 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type { DeepMap, DeepPartial, Noop } from './utils';
-import type { RegisterOptions } from './validator';
+import type {
+  DeepMap,
+  DeepPartial,
+  DeepPartialSkipArrayKey,
+  Noop,
+} from './utils';
+import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
 
@@ -126,6 +131,7 @@ export type UseFormProps<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
   >;
+  validate: ValidateForm<TFieldValues>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -145,6 +151,8 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   values?: boolean;
+  isSubmitted?: boolean | 'all';
+  submitCount?: boolean | 'all';
 };
 
 export type FormState<TFieldValues extends FieldValues> = {
@@ -558,7 +566,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | `root.${string}`
-    | 'root',
+    | 'root'
+    | 'form'
+    | `form.${string}`,
 ) => void;
 
 /**
@@ -620,7 +630,12 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
+  name:
+    | FieldPath<TFieldValues>
+    | `root.${string}`
+    | 'root'
+    | 'form'
+    | `form.${string}`,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -789,6 +804,7 @@ export type Names = {
   disabled: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
+  registerName: InternalNameSet;
   focus?: InternalFieldName;
   watchAll?: boolean;
 };
@@ -796,8 +812,8 @@ export type Names = {
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues extends FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
   updatedFieldArrayValues?: Partial<
@@ -861,6 +877,10 @@ export type Control<
     name: FieldName<any>;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
+  _updateIsValidating: (
+    names?: InternalFieldName[],
+    isValidating?: boolean,
+  ) => void;
   _focusError: () => boolean | undefined;
   _disableForm: (disabled?: boolean) => void;
   _subscribe: FromSubscribe<TFieldValues>;
@@ -872,7 +892,7 @@ export type Control<
 };
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: DeepPartial<TFieldValues>,
+  value: DeepPartialSkipArrayKey<TFieldValues>,
   info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
@@ -918,18 +938,6 @@ export type UseFormStateProps<
 
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
   FormState<TFieldValues>;
-
-export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  disabled?: boolean;
-  name?:
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  control?: Control<TFieldValues>;
-  exact?: boolean;
-  compute?: (formValues: any) => any;
-};
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
