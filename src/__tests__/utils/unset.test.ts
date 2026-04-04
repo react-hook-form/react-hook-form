@@ -34,6 +34,21 @@ describe('unset', () => {
     expect(unset(test, 'testDummy.test1')).toEqual({ test: { test1: 'test' } });
   });
 
+  it('should allow to unset flat keep', () => {
+    const test = {
+      'test.is.flat': 'test',
+      test: {
+        'test.is.flat': 'test',
+      },
+    };
+
+    expect(unset(test, 'test.is.flat')).toEqual({
+      test: {
+        'test.is.flat': 'test',
+      },
+    });
+  });
+
   it('should unset the nest object', () => {
     const test = {
       test: {
