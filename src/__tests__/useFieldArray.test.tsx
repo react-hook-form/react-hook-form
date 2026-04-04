@@ -4570,7 +4570,6 @@ describe('useFieldArray with checkbox', () => {
                 required: 'Name is required',
               })}
               data-testid={`input-${index}`}
-              defaultValue={field.name} // Important for controlled inputs
             />
           ))}
 
