@@ -24,6 +24,39 @@ function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
   return fields;
 }
 
+function pruneDirtyFields<T>(value: T): T {
+  if (value === false) {
+    return undefined as T;
+  }
+
+  if (value === true) {
+    return true as T;
+  }
+
+  if (Array.isArray(value)) {
+    const result = value.map((value) => pruneDirtyFields(value));
+    return (
+      result.some((value) => value !== undefined) ? result : undefined
+    ) as T;
+  }
+
+  if (isObject(value)) {
+    const result: Record<string, unknown> = {};
+
+    for (const key in value) {
+      const pruned = pruneDirtyFields(value[key]);
+
+      if (!isUndefined(pruned)) {
+        result[key] = pruned;
+      }
+    }
+
+    return (Object.keys(result).length ? result : undefined) as T;
+  }
+
+  return undefined as T;
+}
+
 export default function getDirtyFields<T>(
   data: T,
   formValues: T,
@@ -58,5 +91,5 @@ export default function getDirtyFields<T>(
     }
   }
 
-  return dirtyFieldsFromValues;
+  return pruneDirtyFields(dirtyFieldsFromValues) || {};
 }
