@@ -263,14 +263,7 @@ describe('useWatch', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(output).toEqual([
-      { test: 'test' },
-      { test: 'test' },
-      { test: 'test' },
-      { test: 'test' },
-      { test: 'test' },
-      { test: 'test' },
-    ]);
+    expect(output).toEqual([{ test: 'test' }, { test: 'test' }]);
   });
 
   it('should subscribe to exact input change', () => {

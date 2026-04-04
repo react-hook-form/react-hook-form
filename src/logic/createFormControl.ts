@@ -123,7 +123,7 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let _formState: FormState<TFieldValues> = {
+  let _formState: FormState<TFieldValues> & { values?: TFieldValues } = {
     submitCount: 0,
     isDirty: false,
     isReady: false,
@@ -138,6 +138,7 @@ export function createFormControl<
     validatingFields: {},
     errors: _options.errors || {},
     disabled: _options.disabled || false,
+    values: undefined,
   };
   let _fields: FieldRefs = {};
   let _defaultValues =
@@ -1510,6 +1511,10 @@ export function createFormControl<
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = isEmptyResetValues ? _defaultValues : cloneUpdatedValues;
+    const isValueUnchanged =
+      formValues &&
+      !isEmptyObject(formValues) &&
+      deepEqual(_formValues, cloneUpdatedValues);
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1570,13 +1575,15 @@ export function createFormControl<
           : ({} as TFieldValues)
         : (cloneObject(values) as TFieldValues);
 
-      _subjects.array.next({
-        values: { ...values },
-      });
+      if (!isValueUnchanged) {
+        _subjects.array.next({
+          values: { ...values },
+        });
 
-      _subjects.state.next({
-        values: { ...values } as TFieldValues,
-      });
+        _subjects.state.next({
+          values: { ...values } as TFieldValues,
+        });
+      }
     }
 
     _names = {
@@ -1607,7 +1614,7 @@ export function createFormControl<
       _formState.errors = {};
     }
 
-    _subjects.state.next({
+    const updatedFormState = {
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
@@ -1642,7 +1649,24 @@ export function createFormControl<
         : false,
       isSubmitting: false,
       defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
-    });
+    };
+
+    const {
+      values: _,
+      isReady,
+      isLoading,
+      isValidating,
+      disabled,
+      isValid,
+      validatingFields,
+      ...rest
+    } = _formState;
+
+    if (deepEqual(rest, updatedFormState)) {
+      return;
+    }
+
+    _subjects.state.next(updatedFormState);
   };
 
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
