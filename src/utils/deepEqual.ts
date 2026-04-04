@@ -5,7 +5,7 @@ import isPrimitive from './isPrimitive';
 export default function deepEqual(
   object1: any,
   object2: any,
-  _internal_visited = new WeakSet(),
+  visited = new WeakSet(),
 ) {
   if (object1 === object2) {
     return true;
@@ -16,7 +16,7 @@ export default function deepEqual(
   }
 
   if (isDateObject(object1) && isDateObject(object2)) {
-    return Object.is(object1.getTime(), object2.getTime());
+    return object1.getTime() === object2.getTime();
   }
 
   const keys1 = Object.keys(object1);
@@ -26,12 +26,12 @@ export default function deepEqual(
     return false;
   }
 
-  if (_internal_visited.has(object1) || _internal_visited.has(object2)) {
+  if (visited.has(object1) || visited.has(object2)) {
     return true;
   }
 
-  _internal_visited.add(object1);
-  _internal_visited.add(object2);
+  visited.add(object1);
+  visited.add(object2);
 
   for (const key of keys1) {
     const val1 = object1[key];
@@ -47,7 +47,7 @@ export default function deepEqual(
         (isDateObject(val1) && isDateObject(val2)) ||
         ((isObject(val1) || Array.isArray(val1)) &&
           (isObject(val2) || Array.isArray(val2)))
-          ? !deepEqual(val1, val2, _internal_visited)
+          ? !deepEqual(val1, val2, visited)
           : !Object.is(val1, val2)
       ) {
         return false;
