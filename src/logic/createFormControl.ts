@@ -822,9 +822,15 @@ export function createFormControl<
         });
       }
     } else {
-      field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setValues(name, cloneValue, options)
-        : setFieldValue(name, cloneValue, options);
+      const isEmpty =
+        (Array.isArray(cloneValue) && !cloneValue.length) ||
+        isEmptyObject(cloneValue);
+
+      if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
+        setFieldValue(name, cloneValue, options);
+      } else {
+        setValues(name, cloneValue, options);
+      }
     }
 
     if (!isValueUnchanged) {
