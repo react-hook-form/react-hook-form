@@ -791,7 +791,7 @@ describe('remove', () => {
 
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [{ value: false }, { value: true }] },
+      test: { data: [undefined, { value: true }] },
     });
 
     act(() => {
@@ -800,7 +800,7 @@ describe('remove', () => {
 
     expect(result.current.formState.isDirty).toBeFalsy();
     expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [{ value: false }] },
+      test: { data: undefined },
     });
   });
 
