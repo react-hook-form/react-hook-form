@@ -1560,4 +1560,33 @@ describe('setValue', () => {
     );
     expect(valueNotifications).toHaveLength(0);
   });
+
+  it('should mark field as dirty when updating array of objects with shouldDirty true', () => {
+    type IData = {
+      data: { id: number; name: string }[];
+    };
+
+    const defaultValues: IData = {
+      data: [{ id: 1, name: 'a' }],
+    };
+
+    const { result } = renderHook(() =>
+      useForm<IData>({
+        defaultValues,
+      }),
+    );
+
+    result.current.register('data.0.name');
+    result.current.formState.isDirty;
+    result.current.formState.dirtyFields;
+
+    act(() => {
+      result.current.setValue('data', [], { shouldDirty: true });
+    });
+
+    expect(result.current.formState.isDirty).toBeTruthy();
+    expect(result.current.formState.dirtyFields).toEqual({
+      data: true,
+    });
+  });
 });
