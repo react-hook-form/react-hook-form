@@ -23,7 +23,7 @@ describe('controller basic form validation', () => {
     cy.get('#renderCount').contains('9');
   });
 
-  it.only('should validate the form with onBlur mode and reset the form', () => {
+  it('should validate the form with onBlur mode and reset the form', () => {
     cy.visit('http://localhost:3000/controller/onBlur');
 
     cy.get('p').should('have.length', 0);
