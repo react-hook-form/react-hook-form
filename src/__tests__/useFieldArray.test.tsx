@@ -4531,7 +4531,7 @@ describe('useFieldArray with checkbox', () => {
       expect(checkboxes[3]).not.toBeChecked(); // Option 2
     });
   });
-  
+
   it('should skip validation for field array operations when mode is onBlur', async () => {
     const App = () => {
       const {
