@@ -147,6 +147,7 @@ export function createFormControl<
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
     : (cloneObject(_defaultValues) as TFieldValues);
+  let _previousFormValues: TFieldValues;
   let _state = {
     action: false,
     mount: false,
@@ -795,11 +796,7 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
     const previousValue = get(_formValues, name);
-    const isValueUnchanged =
-      !options.shouldDirty &&
-      !options.shouldTouch &&
-      !options.shouldValidate &&
-      deepEqual(previousValue, cloneValue);
+    const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
     set(_formValues, name, cloneValue);
 
@@ -1187,15 +1184,19 @@ export function createFormControl<
             (props.formState as ReadFormState) || _proxyFormState,
             _setFormState,
             props.reRenderRoot,
-          )
+          ) &&
+          (!_previousFormValues || _previousFormValues !== _formValues)
         ) {
+          const snapshot = { ..._formValues } as TFieldValues;
+
           props.callback({
-            values: { ..._formValues } as TFieldValues,
+            values: snapshot,
             ..._formState,
             ...formState,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
+          _previousFormValues = snapshot;
         }
       },
     }).unsubscribe;
