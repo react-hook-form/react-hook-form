@@ -1181,17 +1181,18 @@ export function createFormControl<
             _setFormState,
             props.reRenderRoot,
           ) &&
-          !deepEqual(_previousFormValues, _formValues)
+          (!_previousFormValues || _previousFormValues !== _formValues)
         ) {
-          _previousFormValues = { ..._formValues } as TFieldValues;
+          const snapshot = { ..._formValues } as TFieldValues;
 
           props.callback({
-            values: _previousFormValues,
+            values: snapshot,
             ..._formState,
             ...formState,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
+          _previousFormValues = snapshot;
         }
       },
     }).unsubscribe;
