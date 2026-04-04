@@ -5,7 +5,7 @@ import isPrimitive from '../utils/isPrimitive';
 import isUndefined from '../utils/isUndefined';
 import objectHasFunction from '../utils/objectHasFunction';
 
-function isTraversable(value: any): boolean {
+function isTraversable<T>(value: T): boolean {
   return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
 }
 
