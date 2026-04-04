@@ -822,7 +822,10 @@ export function createFormControl<
         });
       }
     } else {
-      field && !field._f && !isNullOrUndefined(cloneValue)
+      field &&
+      !field._f &&
+      !isNullOrUndefined(cloneValue) &&
+      !isEmptyObject(cloneValue)
         ? setValues(name, cloneValue, options)
         : setFieldValue(name, cloneValue, options);
     }
