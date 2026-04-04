@@ -355,6 +355,15 @@ describe('getDirtyFields', () => {
     });
   });
 
+  it('should prune empty array', () => {
+    expect(
+      getDirtyFields(
+        { test: { data: [{ value: 'default' }] } },
+        { test: { data: [{ value: 'default' }] } },
+      ),
+    ).toEqual({});
+  });
+
   it('should mark null values as dirty when comparing with defaultValues', () => {
     expect(
       getDirtyFields(

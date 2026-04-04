@@ -288,9 +288,7 @@ export function createFormControl<
       }
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
-        const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-        const rootName = getNodeParentName(name);
-        set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+        _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
       }
 
       _subjects.state.next({
