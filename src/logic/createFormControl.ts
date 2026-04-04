@@ -843,6 +843,10 @@ export function createFormControl<
       ? (formValues as Function)(_formValues as TFieldValues)
       : formValues;
 
+    if (deepEqual(_formValues, updatedFormValues)) {
+      return;
+    }
+
     _formValues = {
       ..._formValues,
       ...updatedFormValues,
