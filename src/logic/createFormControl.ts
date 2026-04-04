@@ -796,11 +796,7 @@ export function createFormControl<
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
     const previousValue = get(_formValues, name);
-    const isValueUnchanged =
-      !options.shouldDirty &&
-      !options.shouldTouch &&
-      !options.shouldValidate &&
-      deepEqual(previousValue, cloneValue);
+    const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
     set(_formValues, name, cloneValue);
 
