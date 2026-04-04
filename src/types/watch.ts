@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import type { FieldValues } from './fields';
 import type { Control } from './form';
 import type { FieldPath, FieldPathValue, FieldPathValues } from './path';
@@ -68,5 +70,5 @@ export type WatchProps<
   compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
   render?: (
     value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
-  ) => React.ReactNode | React.ReactNode[];
+  ) => ReactNode | ReactNode[];
 };
