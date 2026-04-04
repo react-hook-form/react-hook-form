@@ -798,6 +798,10 @@ export function createFormControl<
     const previousValue = get(_formValues, name);
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
+    if (isValueUnchanged) {
+      return;
+    }
+
     set(_formValues, name, cloneValue);
 
     if (isFieldArray) {
