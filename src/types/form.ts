@@ -58,10 +58,10 @@ export type ValidationModeFlags = {
 
 export type CriteriaMode = 'firstError' | 'all';
 
-export type SubmitHandler<T> = (
+export type SubmitHandler<T, TResult = unknown> = (
   data: T,
   event?: React.BaseSyntheticEvent,
-) => unknown | Promise<unknown>;
+) => TResult;
 
 export type FormSubmitHandler<TTransformedValues> = (payload: {
   data: TTransformedValues;
@@ -697,10 +697,10 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 export type UseFormHandleSubmit<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
-> = (
-  onValid: SubmitHandler<TTransformedValues>,
+> = <TResult>(
+  onValid: SubmitHandler<TTransformedValues, TResult>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
-) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+) => (e?: React.BaseSyntheticEvent) => Promise<TResult | undefined>;
 
 /**
  * Reset a field state and reference.
