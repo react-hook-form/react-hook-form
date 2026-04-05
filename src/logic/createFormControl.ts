@@ -385,6 +385,11 @@ export function createFormControl<
         isCurrentFieldPristine
           ? unset(_formState.dirtyFields, name)
           : set(_formState.dirtyFields, name, true);
+
+        if (isCurrentFieldPristine !== _formState.isDirty) {
+          _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+        }
+
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
