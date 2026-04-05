@@ -1594,7 +1594,7 @@ export function createFormControl<
       _formState.errors = {};
     }
 
-    const updatedFormState = {
+    _subjects.state.next({
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
@@ -1629,11 +1629,6 @@ export function createFormControl<
         : false,
       isSubmitting: false,
       defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
-      values: { ...values } as TFieldValues,
-    };
-
-    _subjects.state.next({
-      ...updatedFormState,
       values: { ...values } as TFieldValues,
     });
   };
