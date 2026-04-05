@@ -831,18 +831,13 @@ export function createFormControl<
     }
 
     if (!isValueUnchanged) {
-      if (isWatched(name, _names)) {
-        _subjects.state.next({
-          ..._formState,
-          name,
-          values: cloneObject(_formValues),
-        });
-      } else {
-        _subjects.state.next({
-          name: _state.mount ? name : undefined,
-          values: cloneObject(_formValues),
-        });
-      }
+      const watched = isWatched(name, _names);
+
+      _subjects.state.next({
+        ...(watched && _formState),
+        ...(watched && { name }),
+        values: cloneObject(_formValues),
+      });
     }
   };
 
