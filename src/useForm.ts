@@ -73,22 +73,21 @@ export function useForm<
   });
 
   if (!_formControl.current) {
-    if (props.formControl) {
-      _formControl.current = {
-        ...props.formControl,
-        formState,
-      };
+    const base = props.formControl
+      ? props.formControl
+      : createFormControl(props);
 
-      if (props.defaultValues && !isFunction(props.defaultValues)) {
-        props.formControl.reset(props.defaultValues, props.resetOptions);
-      }
-    } else {
-      const { formControl, ...rest } = createFormControl(props);
+    _formControl.current = {
+      ...(props.formControl ? base : base),
+      formState,
+    };
 
-      _formControl.current = {
-        ...rest,
-        formState,
-      };
+    if (
+      props.formControl &&
+      props.defaultValues &&
+      !isFunction(props.defaultValues)
+    ) {
+      base.reset(props.defaultValues, props.resetOptions);
     }
   }
 
@@ -118,12 +117,12 @@ export function useForm<
   );
 
   React.useEffect(() => {
-    if (props.mode) {
-      control._options.mode = props.mode;
-    }
-    if (props.reValidateMode) {
-      control._options.reValidateMode = props.reValidateMode;
-    }
+    Object.assign(control._options, {
+      ...(props.mode && { mode: props.mode }),
+      ...(props.reValidateMode && {
+        reValidateMode: props.reValidateMode,
+      }),
+    });
   }, [control, props.mode, props.reValidateMode]);
 
   React.useEffect(() => {
