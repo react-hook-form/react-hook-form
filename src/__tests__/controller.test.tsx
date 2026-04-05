@@ -1035,7 +1035,7 @@ describe('Controller', () => {
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
 
-    expect(screen.getByText('{}')).toBeVisible();
+    expect(screen.getByText('{"test":false}')).toBeVisible();
     expect(screen.getByText('false')).toBeVisible();
   });
 

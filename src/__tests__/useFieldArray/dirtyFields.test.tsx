@@ -829,4 +829,64 @@ describe('useFieldArray dirtyFields isolation', () => {
       expect(dirtyResult).not.toHaveProperty('age');
     });
   });
+
+  it('dirtyFields is empty but isDirty is true after reverting lastName', async () => {
+    function App() {
+      const { register, handleSubmit, formState, setValue } = useForm({
+        defaultValues: {
+          firstName: '',
+          lastName: '',
+        },
+      });
+
+      return (
+        <div>
+          <form onSubmit={handleSubmit(() => {})}>
+            <div>Dirty Fields:</div>
+            {Object.keys(formState.dirtyFields ?? {}).map((field) => (
+              <div key={field}>{field}</div>
+            ))}
+            <div>isDirty: {String(formState.isDirty)}</div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setValue('firstName', 'temp', { shouldDirty: false })
+              }
+            >
+              Set First Name
+            </button>
+
+            <input {...register('firstName')} placeholder="First Name" />
+            <input {...register('lastName')} placeholder="Last Name" />
+
+            <input type="submit" />
+          </form>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /set first name/i }));
+
+    const lastNameInput = screen.getByPlaceholderText(/last name/i);
+    fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('lastName')).toBeInTheDocument();
+    });
+
+    fireEvent.change(lastNameInput, { target: { value: '' } });
+
+    await waitFor(() => {
+      expect(screen.queryByText('lastName')).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/isDirty:/i)).toHaveTextContent('true');
+
+    await waitFor(() => {
+      expect(screen.queryByText('firstName')).toBeInTheDocument();
+    });
+  });
 });

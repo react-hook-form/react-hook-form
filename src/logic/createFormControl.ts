@@ -382,12 +382,13 @@ export function createFormControl<
         );
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
-        isCurrentFieldPristine
-          ? unset(_formState.dirtyFields, name)
-          : set(_formState.dirtyFields, name, true);
 
         if (isCurrentFieldPristine !== _formState.isDirty) {
           _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+        } else {
+          isCurrentFieldPristine
+            ? unset(_formState.dirtyFields, name)
+            : set(_formState.dirtyFields, name, true);
         }
 
         output.dirtyFields = _formState.dirtyFields;
