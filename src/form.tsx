@@ -137,11 +137,13 @@ function Form<
     setMounted(true);
   }, []);
 
-  if (render) {
-    return render({ submit });
-  }
-
-  return (
+  return render ? (
+    <>
+      {render({
+        submit,
+      })}
+    </>
+  ) : (
     <form
       noValidate={mounted}
       action={action}
