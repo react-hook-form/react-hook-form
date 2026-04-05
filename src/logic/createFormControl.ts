@@ -805,13 +805,7 @@ export function createFormControl<
         values: cloneObject(_formValues),
       });
 
-      if (
-        (_proxyFormState.isDirty ||
-          _proxyFormState.dirtyFields ||
-          _proxySubscribeFormState.isDirty ||
-          _proxySubscribeFormState.dirtyFields) &&
-        options.shouldDirty
-      ) {
+      if (options.shouldDirty) {
         _updateDirtyFields(name);
 
         _subjects.state.next({
