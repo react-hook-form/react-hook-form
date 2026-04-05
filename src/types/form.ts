@@ -916,6 +916,7 @@ export type UseFormReturn<
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;
+  setValues: UseFormSetValues<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
   formState: FormState<TFieldValues>;
   resetField: UseFormResetField<TFieldValues>;

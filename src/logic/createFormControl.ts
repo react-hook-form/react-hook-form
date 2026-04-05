@@ -43,6 +43,7 @@ import type {
   UseFormSetError,
   UseFormSetFocus,
   UseFormSetValue,
+  UseFormSetValues,
   UseFormSubscribe,
   UseFormTrigger,
   UseFormUnregister,
@@ -829,7 +830,7 @@ export function createFormControl<
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
         setFieldValue(name, cloneValue, options);
       } else {
-        setValues(name, cloneValue, options);
+        setFieldValues(name, cloneValue, options);
       }
     }
 
@@ -849,21 +850,19 @@ export function createFormControl<
     }
   };
 
-  const setValues: UseFormSetValue<TFieldValues> = (formValues) => {
+  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
     const updatedFormValues = isFunction(formValues)
       ? (formValues as Function)(_formValues as TFieldValues)
       : formValues;
 
-    if (deepEqual(_formValues, updatedFormValues)) {
-      return;
+    if (!deepEqual(_formValues, updatedFormValues)) {
+      _formValues = {
+        ..._formValues,
+        ...updatedFormValues,
+      };
+
+      _subjects.state.next({ ..._formState, values: _formValues });
     }
-
-    _formValues = {
-      ..._formValues,
-      ...updatedFormValues,
-    };
-
-    _subjects.state.next({ ..._formState, values: _formValues });
   };
 
   const onChange: ChangeHandler = async (event) => {
