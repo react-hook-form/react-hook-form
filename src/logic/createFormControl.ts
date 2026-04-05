@@ -1399,7 +1399,7 @@ export function createFormControl<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
-      let result: Awaited<ReturnType<typeof onValid>> | undefined = undefined;
+      let result: ReturnType<typeof onValid> | undefined = undefined;
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
