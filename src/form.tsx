@@ -33,7 +33,7 @@ const POST_REQUEST = 'post';
 function Form<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
->(props: FormProps<TFieldValues, TTransformedValues>) {
+>(props: FormProps<TFieldValues, TTransformedValues>): React.ReactNode {
   const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const [mounted, setMounted] = React.useState(false);
   const {
