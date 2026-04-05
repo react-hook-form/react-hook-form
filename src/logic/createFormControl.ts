@@ -147,6 +147,7 @@ export function createFormControl<
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
     : (cloneObject(_defaultValues) as TFieldValues);
+  let _previousFormValues: TFieldValues;
   let _state = {
     action: false,
     mount: false,
@@ -794,6 +795,8 @@ export function createFormControl<
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
     const cloneValue = cloneObject(value);
+    const previousValue = get(_formValues, name);
+    const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
     set(_formValues, name, cloneValue);
 
@@ -819,22 +822,30 @@ export function createFormControl<
         });
       }
     } else {
-      field && !field._f && !isNullOrUndefined(cloneValue)
-        ? setFieldValues(name, cloneValue, options)
-        : setFieldValue(name, cloneValue, options);
+      const isEmpty =
+        (Array.isArray(cloneValue) && !cloneValue.length) ||
+        isEmptyObject(cloneValue);
+
+      if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
+        setFieldValue(name, cloneValue, options);
+      } else {
+        setValues(name, cloneValue, options);
+      }
     }
 
-    if (isWatched(name, _names)) {
-      _subjects.state.next({
-        ..._formState,
-        name,
-        values: cloneObject(_formValues),
-      });
-    } else {
-      _subjects.state.next({
-        name: _state.mount ? name : undefined,
-        values: cloneObject(_formValues),
-      });
+    if (!isValueUnchanged) {
+      if (isWatched(name, _names)) {
+        _subjects.state.next({
+          ..._formState,
+          name,
+          values: cloneObject(_formValues),
+        });
+      } else {
+        _subjects.state.next({
+          name: _state.mount ? name : undefined,
+          values: cloneObject(_formValues),
+        });
+      }
     }
   };
 
@@ -1166,7 +1177,7 @@ export function createFormControl<
           next: (payload) =>
             'values' in payload &&
             name(
-              _getWatch(undefined, defaultValue),
+              payload.values || _getWatch(undefined, defaultValue),
               payload as {
                 name?: FieldPath<TFieldValues>;
                 type?: EventType;
@@ -1196,15 +1207,19 @@ export function createFormControl<
             (props.formState as ReadFormState) || _proxyFormState,
             _setFormState,
             props.reRenderRoot,
-          )
+          ) &&
+          (!_previousFormValues || _previousFormValues !== _formValues)
         ) {
+          const snapshot = { ..._formValues } as TFieldValues;
+
           props.callback({
-            values: { ..._formValues } as TFieldValues,
+            values: snapshot,
             ..._formState,
             ...formState,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
+          _previousFormValues = snapshot;
         }
       },
     }).unsubscribe;
@@ -1279,7 +1294,7 @@ export function createFormControl<
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
     const shouldRevalidateRemount =
-      !_names.registerName.has(name) && field && !field._f.mount;
+      !_names.registerName.has(name) && field && field._f && !field._f.mount;
 
     set(_fields, name, {
       ...(field || {}),

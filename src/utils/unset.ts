@@ -1,6 +1,7 @@
 import isEmptyObject from './isEmptyObject';
 import isKey from './isKey';
 import isObject from './isObject';
+import isString from './isString';
 import isUndefined from './isUndefined';
 import stringToPath from './stringToPath';
 
@@ -25,6 +26,11 @@ function isEmptyArray(obj: unknown[]) {
 }
 
 export default function unset(object: any, path: string | (string | number)[]) {
+  if (isString(path) && Object.prototype.hasOwnProperty.call(object, path)) {
+    delete object[path];
+    return object;
+  }
+
   const paths = Array.isArray(path)
     ? path
     : isKey(path)
