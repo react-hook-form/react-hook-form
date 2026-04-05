@@ -85,13 +85,13 @@ function Form<
 
         if (response && !validateStatus(response.status)) {
           onError && onError({ response });
-          return { hasError: true, type: String(response.status) };
+          return { type: String(response.status) };
         } else {
           onSuccess && onSuccess({ response });
         }
       } catch (error: unknown) {
         onError && onError({ error });
-        return { hasError: true, type: '' };
+        return { type: '' };
       }
     }
 
@@ -99,11 +99,11 @@ function Form<
   });
 
   const submit = async (event?: React.BaseSyntheticEvent) => {
-    const result = await handleSubmit(event);
+    const hasError = await handleSubmit(event);
 
-    if (result && result.hasError && control) {
+    if (hasError && control) {
       control._subjects.state.next({ isSubmitSuccessful: false });
-      control.setError('root.server', { type: result && result.type });
+      control.setError('root.server', { type: hasError.type });
     }
   };
 
