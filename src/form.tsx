@@ -114,11 +114,11 @@ function Form<
 
   const submit = React.useCallback(
     async (event?: React.BaseSyntheticEvent) => {
-      const hasError = await handleSubmit(event);
+      const err = await handleSubmit(event);
 
-      if (hasError && control) {
+      if (err && control) {
         control._subjects.state.next({ isSubmitSuccessful: false });
-        control.setError('root.server', { type: hasError.type });
+        control.setError('root.server', { type: err.type });
       }
     },
     [handleSubmit, control],
