@@ -830,7 +830,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('dirtyFields is empty but isDirty is true after reverting lastName', async () => {
+  it('should revalidate dirty fields when dirty flag is not match field level dirty', async () => {
     function App() {
       const { register, handleSubmit, formState, setValue } = useForm({
         defaultValues: {
