@@ -48,13 +48,11 @@ export const Watch = <
     TComputeValue
   >,
 ): React.ReactNode => {
-  const watched = useWatch({ name: props.names, ...(props as any) });
-
-  const render = props.render ?? identity;
-
   type WatchedValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>;
 
-  const rendered = render(watched as WatchedValue);
+  const render = props.render || identity;
 
-  return rendered as any;
+  return render(
+    useWatch({ name: props.names, ...(props as any) }) as WatchedValue,
+  ) as any;
 };
