@@ -51,61 +51,78 @@ function Form<
     ...rest
   } = props;
 
-  const handleSubmit = control.handleSubmit(async (data, event) => {
-    const formData = jsonToFormData(data);
-    const formDataJson = safeJSONStringify(data);
+  const handleSubmit = React.useMemo(
+    () =>
+      control.handleSubmit(async (data, event) => {
+        const formData = jsonToFormData(data);
+        const formDataJson = safeJSONStringify(data);
 
-    if (onSubmit) {
-      await onSubmit({
-        data,
-        event,
-        method,
-        formData,
-        formDataJson,
-      });
-    }
-
-    if (isString(action)) {
-      try {
-        const shouldStringifySubmissionData =
-          (headers && headers['Content-Type'].includes('json')) ||
-          (encType && encType.includes('json'));
-
-        const response = await fetch(action, {
-          method,
-          headers: {
-            ...headers,
-            ...(encType &&
-              encType !== 'multipart/form-data' && {
-                'Content-Type': encType,
-              }),
-          },
-          body: shouldStringifySubmissionData ? formDataJson : formData,
-        });
-
-        if (response && !validateStatus(response.status)) {
-          onError && onError({ response });
-          return { type: String(response.status) };
-        } else {
-          onSuccess && onSuccess({ response });
+        if (onSubmit) {
+          await onSubmit({
+            data,
+            event,
+            method,
+            formData,
+            formDataJson,
+          });
         }
-      } catch (error: unknown) {
-        onError && onError({ error });
-        return { type: '' };
+
+        if (isString(action)) {
+          try {
+            const shouldStringifySubmissionData =
+              (headers && headers['Content-Type'].includes('json')) ||
+              (encType && encType.includes('json'));
+
+            const response = await fetch(action, {
+              method,
+              headers: {
+                ...headers,
+                ...(encType &&
+                  encType !== 'multipart/form-data' && {
+                    'Content-Type': encType,
+                  }),
+              },
+              body: shouldStringifySubmissionData ? formDataJson : formData,
+            });
+
+            if (response && !validateStatus(response.status)) {
+              onError && onError({ response });
+              return { type: String(response.status) };
+            } else {
+              onSuccess && onSuccess({ response });
+            }
+          } catch (error: unknown) {
+            onError && onError({ error });
+            return { type: '' };
+          }
+        }
+
+        return;
+      }),
+    [
+      control,
+      onSubmit,
+      validateStatus,
+      action,
+      headers,
+      encType,
+      onError,
+      onSuccess,
+      method,
+    ],
+  );
+
+  const submit = React.useCallback(
+    async (event?: React.BaseSyntheticEvent) => {
+      const hasError = await handleSubmit(event);
+
+      if (hasError && control) {
+        control._subjects.state.next({ isSubmitSuccessful: false });
+        control.setError('root.server', { type: hasError.type });
       }
-    }
-
-    return;
-  });
-
-  const submit = async (event?: React.BaseSyntheticEvent) => {
-    const hasError = await handleSubmit(event);
-
-    if (hasError && control) {
-      control._subjects.state.next({ isSubmitSuccessful: false });
-      control.setError('root.server', { type: hasError.type });
-    }
-  };
+    },
+    [handleSubmit, control],
+  );
 
   React.useEffect(() => {
     setMounted(true);
