@@ -43,15 +43,15 @@ function Form<
   const [mounted, setMounted] = React.useState(false);
   const {
     control = methods.control,
-    onSubmit,
+    onSubmit = noop,
     children,
     action,
     method = POST_REQUEST,
     headers,
     encType,
-    onError,
+    onError = noop,
     render,
-    onSuccess,
+    onSuccess = noop,
     validateStatus = defaultValidateStatus,
     ...rest
   } = props;
@@ -89,13 +89,13 @@ function Form<
         });
 
         if (response && !validateStatus(response.status)) {
-          onError && onError({ response });
+          onError({ response });
           return { type: String(response.status) };
         } else {
-          onSuccess && onSuccess({ response });
+          onSuccess({ response });
         }
       } catch (error: unknown) {
-        onError && onError({ error });
+        onError({ error });
         return { type: '' };
       }
     }
@@ -109,7 +109,7 @@ function Form<
 
     if (err && control) {
       control._subjects.state.next({ isSubmitSuccessful: false });
-      control.setError('root.server', { type: err.type });
+      control.setError('root.server', err);
     }
   };
 
