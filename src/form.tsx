@@ -42,7 +42,7 @@ function Form<
   const [mounted, setMounted] = React.useState(false);
   const {
     control = methods.control,
-    onSubmit: onSubmitProp,
+    onSubmit,
     children,
     action,
     method = POST_REQUEST,
@@ -51,7 +51,7 @@ function Form<
     onError,
     render,
     onSuccess,
-    validateStatus: validateStatusProp,
+    validateStatus = defaultValidateStatus,
     ...rest
   } = props;
 
@@ -63,8 +63,8 @@ function Form<
         const formData = jsonToFormData(data as any);
         const formDataJson = safeJSONStringify(data) || '';
 
-        if (onSubmitProp) {
-          await onSubmitProp({
+        if (onSubmit) {
+          await onSubmit({
             data,
             event,
             method,
@@ -91,8 +91,6 @@ function Form<
               body: shouldStringifySubmissionData ? formDataJson : formData,
             });
 
-            const validateStatus = validateStatusProp ?? defaultValidateStatus;
-
             if (response && !validateStatus(response.status)) {
               hasError = true;
               onError && onError({ response });
@@ -113,11 +111,11 @@ function Form<
       encType,
       onError,
       onSuccess,
-      validateStatusProp,
+      validateStatus,
       headers,
       control,
       method,
-      onSubmitProp,
+      onSubmit,
     ],
   );
 
