@@ -1559,6 +1559,10 @@ export function createFormControl<
       _subjects.array.next({
         values: { ...values },
       });
+
+      _subjects.state.next({
+        values: { ...values } as TFieldValues,
+      });
     }
 
     _names = {
@@ -1624,7 +1628,6 @@ export function createFormControl<
         : false,
       isSubmitting: false,
       defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
-      values: { ...values } as TFieldValues,
     });
   };
 
