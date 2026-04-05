@@ -1282,7 +1282,7 @@ export function createFormControl<
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
     const shouldRevalidateRemount =
-      !_names.registerName.has(name) && field && !field._f.mount;
+      !_names.registerName.has(name) && field && field._f && !field._f.mount;
 
     set(_fields, name, {
       ...(field || {}),

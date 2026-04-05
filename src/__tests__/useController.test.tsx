@@ -1588,4 +1588,27 @@ describe('useController', () => {
       expect(screen.getByText('invalid')).toBeVisible();
     });
   });
+
+  it('can register field array property before field array root', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        test1: { test: string }[];
+      }>();
+
+      useController({
+        name: 'test1.0.test',
+        control,
+      });
+
+      useController({
+        name: 'test1',
+        control,
+      });
+
+      return null;
+    };
+
+    render(<Component />);
+  });
 });
