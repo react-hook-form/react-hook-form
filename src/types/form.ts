@@ -979,5 +979,4 @@ export type FormProps<
       | 'multipart/form-data'
       | 'text/plain'
       | 'application/json';
-    fetch?: typeof fetch;
   }>;

@@ -52,7 +52,6 @@ function Form<
     render,
     onSuccess,
     validateStatus: validateStatusProp,
-    fetch: fetchProp,
     ...rest
   } = props;
 
@@ -80,9 +79,7 @@ function Form<
               (headers && headers['Content-Type'].includes('json')) ||
               (encType && encType.includes('json'));
 
-            const fetchImpl = fetchProp || fetch;
-
-            const response = await fetchImpl(action, {
+            const response = await fetch(action, {
               method,
               headers: {
                 ...headers,
@@ -117,7 +114,6 @@ function Form<
       onError,
       onSuccess,
       validateStatusProp,
-      fetchProp,
       headers,
       control,
       method,
