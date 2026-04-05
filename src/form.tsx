@@ -3,12 +3,13 @@ import React from 'react';
 import { jsonToFormData } from './utils/formData';
 import isString from './utils/isString';
 import { safeJSONStringify } from './utils/json';
+import noop from './utils/noop';
 import type { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
 
 const POST_REQUEST = 'post';
 
-function defaultValidateResponse(status: number) {
+function defaultValidateStatus(status: number) {
   return status >= 200 && status < 300;
 }
 
@@ -51,7 +52,7 @@ function Form<
     onError,
     render,
     onSuccess,
-    validateStatus = defaultValidateResponse,
+    validateStatus = defaultValidateStatus,
     ...rest
   } = props;
 
