@@ -8,10 +8,6 @@ import { useFormContext } from './useFormContext';
 
 const POST_REQUEST = 'post';
 
-function defaultValidateStatus(status: number) {
-  return status >= 200 && status < 300;
-}
-
 /**
  * Form component to manage submission.
  *
@@ -51,7 +47,7 @@ function Form<
     onError,
     render,
     onSuccess,
-    validateStatus = defaultValidateStatus,
+    validateStatus = (status) => status >= 200 && status < 300,
     ...rest
   } = props;
 
