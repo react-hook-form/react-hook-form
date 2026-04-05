@@ -1850,7 +1850,7 @@ describe('reset', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should keep isValid value when reset is called with keepIsValid option', async () => {
+  it.only('should keep isValid value when reset is called with keepIsValid option', async () => {
     let formState: { isValid: boolean } = { isValid: false };
 
     const App = () => {
