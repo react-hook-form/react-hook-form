@@ -1,8 +1,8 @@
-function safeJSONStringify(value?: unknown) {
+function safeJSONStringify(value?: any) {
   try {
     return JSON.stringify(value);
   } catch (_err) {
-    return;
+    return '';
   }
 }
 

@@ -1,6 +1,6 @@
 import { flatten } from './flatten';
 
-function jsonToFormData(json: object) {
+function jsonToFormData(json: any) {
   const result = new FormData();
 
   const flattenFormValues = flatten(json);

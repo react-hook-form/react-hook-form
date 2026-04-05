@@ -60,8 +60,8 @@ function Form<
       control.handleSubmit(async (data, event) => {
         let hasError = false;
         let type = '';
-        const formData = jsonToFormData(data as any);
-        const formDataJson = safeJSONStringify(data) || '';
+        const formData = jsonToFormData(data);
+        const formDataJson = safeJSONStringify(data);
 
         if (onSubmit) {
           await onSubmit({
