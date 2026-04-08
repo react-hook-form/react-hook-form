@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { flatten } from './utils/flatten';
-import isString from './utils/isString';
 import type { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
 
@@ -79,14 +78,14 @@ function Form<
           });
         }
 
-        if (isString(action)) {
+        if (action) {
           try {
             const shouldStringifySubmissionData = [
               headers && headers['Content-Type'],
               encType,
             ].some((value) => value && value.includes('json'));
 
-            const response = await fetch(action, {
+            const response = await fetch(String(action), {
               method,
               headers: {
                 ...headers,
