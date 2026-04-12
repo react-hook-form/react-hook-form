@@ -1514,6 +1514,53 @@ describe('useController', () => {
     rerender({ control: form1Result.current.control });
     expect(result.current.field.value).toBe('form1-value');
   });
+  it('should reflect updated value when parent visibility is toggled (Activity pattern)', async () => {
+    const Component = () => {
+      const { control, setValue } = useForm({
+        defaultValues: { test: '' },
+      });
+      const [activeTab, setActiveTab] = React.useState(0);
+
+      return (
+        <div>
+          {/* Tab 1: visible initially */}
+          <div style={{ display: activeTab === 0 ? 'block' : 'none' }}>
+            <Controller
+              name="test"
+              control={control}
+              render={({ field }) => (
+                <input data-testid="tab1-input" {...field} />
+              )}
+            />
+          </div>
+
+          {/* Tab 2: hidden initially — stays MOUNTED the whole time (Activity pattern) */}
+          <div style={{ display: activeTab === 1 ? 'block' : 'none' }}>
+            <Controller
+              name="test"
+              control={control}
+              render={({ field }) => (
+                <span data-testid="tab2-controller">{field.value}</span>
+              )}
+            />
+          </div>
+
+          <button onClick={() => setActiveTab(1)}>Go to Tab 2</button>
+          <button onClick={() => setValue('test', 'hello')}>Set Value</button>
+        </div>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByText('Set Value'));
+
+    fireEvent.click(screen.getByText('Go to Tab 2'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tab2-controller').textContent).toBe('hello');
+    });
+  });
 
   it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
     type FormValues = {
