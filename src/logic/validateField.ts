@@ -62,11 +62,11 @@ export default async <T extends FieldValues>(
       const customMessage = isBoolean(message) ? '' : message || '';
       if (refs) {
         refs.forEach((ref) => {
-          if ((ref as HTMLInputElement).setCustomValidity) {
+          if (ref && (ref as HTMLInputElement).setCustomValidity) {
             (ref as HTMLInputElement).setCustomValidity(customMessage);
           }
         });
-      } else {
+      } else if (inputRef && inputRef.setCustomValidity) {
         inputRef.setCustomValidity(customMessage);
       }
       inputRef.reportValidity();
