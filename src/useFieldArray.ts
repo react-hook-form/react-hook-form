@@ -424,6 +424,9 @@ export function useFieldArray<
     !get(control._formValues, name) && control._setFieldArray(name);
 
     return () => {
+      const shouldKeepFieldArrayValues = !(
+        control._options.shouldUnregister || shouldUnregister
+      );
       const updateMounted = (name: InternalFieldName, value: boolean) => {
         const field: Field = get(control._fields, name);
         if (field && field._f) {
@@ -431,7 +434,14 @@ export function useFieldArray<
         }
       };
 
-      control._options.shouldUnregister || shouldUnregister
+      if (_actioned.current && shouldKeepFieldArrayValues) {
+        control._subjects.state.next({
+          name,
+          values: cloneObject(control._formValues) as TFieldValues,
+        });
+      }
+
+      !shouldKeepFieldArrayValues
         ? control.unregister(name as FieldPath<TFieldValues>)
         : updateMounted(name, false);
     };
