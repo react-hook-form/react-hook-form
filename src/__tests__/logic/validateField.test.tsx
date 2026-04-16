@@ -2198,6 +2198,55 @@ describe('validateField', () => {
       expect(reportValidity).toHaveBeenCalled();
     });
 
+    it('should invoke setCustomValidity on all refs for invalid input', () => {
+      const setCustomValidity1 = jest.fn();
+      const setCustomValidity2 = jest.fn();
+      const reportValidity1 = jest.fn();
+      const reportValidity2 = jest.fn();
+
+      validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity: setCustomValidity1,
+              reportValidity: reportValidity1,
+              name: 'test',
+              value: '',
+            },
+            refs: [
+              {
+                setCustomValidity: setCustomValidity1,
+                reportValidity: reportValidity1,
+                name: 'test',
+                value: '',
+              } as any,
+              {
+                setCustomValidity: setCustomValidity2,
+                reportValidity: reportValidity2,
+                name: 'test',
+                value: '',
+              } as any,
+            ],
+            value: '',
+            required: true,
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: '',
+        },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity1).toHaveBeenCalledWith('');
+      expect(setCustomValidity2).toHaveBeenCalledWith('');
+      expect(reportValidity1).toHaveBeenCalled();
+      expect(reportValidity2).not.toHaveBeenCalled();
+    });
+
     it('should invoke setCustomValidity for invalid input with its message', () => {
       const setCustomValidity = jest.fn();
       const reportValidity = jest.fn();

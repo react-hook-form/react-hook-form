@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <form id="f">
+    <input type="radio" name="x" value="1" required id="r1">
+    <input type="radio" name="x" value="2" required id="r2">
+    <button type="submit">Submit</button>
+  </form>
+  <button id="test" type="button">Test</button>
+  <script>
+    document.getElementById('test').addEventListener('click', () => {
+      document.getElementById('r1').setCustomValidity('error');
+      // document.getElementById('r1').reportValidity();
+      document.getElementById('r2').setCustomValidity('error');
+      document.getElementById('r1').reportValidity();
+      document.getElementById('r2').reportValidity();
+    });
+  </script>
+</body>
+</html>
