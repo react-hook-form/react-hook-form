@@ -43,7 +43,6 @@ import type {
   UseFormSetError,
   UseFormSetFocus,
   UseFormSetValue,
-  UseFormSetValues,
   UseFormSubscribe,
   UseFormTrigger,
   UseFormUnregister,
@@ -761,7 +760,7 @@ export function createFormControl<
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
-  const setFieldValues = <
+  const setValues = <
     T extends InternalFieldName,
     K extends SetFieldValue<TFieldValues>,
     U extends SetValueConfig,
@@ -782,7 +781,7 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options)
+        ? setValues(fieldName, fieldValue, options)
         : setFieldValue(fieldName, fieldValue, options);
     }
   };
@@ -823,7 +822,7 @@ export function createFormControl<
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
         setFieldValue(name, cloneValue, options);
       } else {
-        setFieldValues(name, cloneValue, options);
+        setValues(name, cloneValue, options);
       }
     }
 
@@ -840,21 +839,6 @@ export function createFormControl<
           values: cloneObject(_formValues),
         });
       }
-    }
-  };
-
-  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
-    const updatedFormValues = isFunction(formValues)
-      ? (formValues as Function)(_formValues as TFieldValues)
-      : formValues;
-
-    if (!deepEqual(_formValues, updatedFormValues)) {
-      _formValues = {
-        ..._formValues,
-        ...updatedFormValues,
-      };
-
-      _subjects.state.next({ ..._formState, values: _formValues });
     }
   };
 
@@ -1760,7 +1744,6 @@ export function createFormControl<
     handleSubmit,
     watch,
     setValue,
-    setValues,
     getValues,
     reset,
     resetField,
