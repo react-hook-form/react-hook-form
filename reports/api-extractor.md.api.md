@@ -91,7 +91,7 @@ export type ControllerFieldState = {
 
 // @public
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues> = {
-    render: ({ field, fieldState, formState, }: {
+    render: (input: {
         field: ControllerRenderProps<TFieldValues, TName>;
         fieldState: ControllerFieldState;
         formState: UseFormStateReturn<TFieldValues>;
@@ -232,6 +232,7 @@ export type FieldError = {
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
+    form?: GlobalError;
 };
 
 // @public (undocumented)
@@ -280,14 +281,14 @@ export type FormProps<TFieldValues extends FieldValues, TTransformedValues = TFi
     control: Control<TFieldValues, any, TTransformedValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
-    onError: ({ response, error, }: {
+    onError: (input: {
         response: Response;
         error?: undefined;
     } | {
         response?: undefined;
         error: unknown;
     }) => void;
-    onSuccess: ({ response }: {
+    onSuccess: (input: {
         response: Response;
     }) => void;
     onSubmit: FormSubmitHandler<TTransformedValues>;
@@ -347,7 +348,7 @@ export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Part
 }>;
 
 // @public (undocumented)
-export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>({ control, disabled, exact, name, render, }: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
+export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
 
 // @public (undocumented)
 export type FormStateSubscribeProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = UseFormStateProps<TFieldValues, TTransformedValues> & {
@@ -362,6 +363,12 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
     formDataJson: string;
     method?: 'post' | 'put' | 'delete';
 }) => unknown | Promise<unknown>;
+
+// @public (undocumented)
+export type FormValidateResult<T> = Partial<Record<keyof T, {
+    message: Message | Message[] | boolean | undefined;
+    type: string;
+}>> | string | boolean;
 
 // @public (undocumented)
 export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
@@ -473,6 +480,7 @@ export type Names = {
     disabled: InternalNameSet;
     array: InternalNameSet;
     watch: InternalNameSet;
+    registerName: InternalNameSet;
     focus?: InternalFieldName;
     watchAll?: boolean;
 };
@@ -512,6 +520,8 @@ export type ReadFormState = {
     [K in keyof FormStateProxy]: boolean | 'all';
 } & {
     values?: boolean;
+    isSubmitted?: boolean | 'all';
+    submitCount?: boolean | 'all';
 };
 
 // @public (undocumented)
@@ -701,7 +711,7 @@ export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayNam
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root') => void;
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root' | 'form' | `form.${string}`) => void;
 
 // @public
 export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
@@ -743,6 +753,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     criteriaMode: CriteriaMode;
     delayError: number;
     formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
+    validate: ValidateForm<TFieldValues>;
 }>;
 
 // @public
@@ -779,6 +790,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     setError: UseFormSetError<TFieldValues>;
     clearErrors: UseFormClearErrors<TFieldValues>;
     setValue: UseFormSetValue<TFieldValues>;
+    setValues: UseFormSetValues<TFieldValues>;
     trigger: UseFormTrigger<TFieldValues>;
     formState: FormState<TFieldValues>;
     resetField: UseFormResetField<TFieldValues>;
@@ -792,7 +804,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 };
 
 // @public
-export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root', error: ErrorOption, options?: {
+export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root' | 'form' | `form.${string}`, error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
@@ -801,6 +813,9 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName exte
 
 // @public
 export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, value: FieldPathValue<TFieldValues, TFieldName>, options?: SetValueConfig) => void;
+
+// @public (undocumented)
+export type UseFormSetValues<TFieldValues extends FieldValues> = (value: Partial<TFieldValues> | ResetAction<TFieldValues>, options?: SetValueConfig) => void;
 
 // @public
 export function useFormState<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props?: UseFormStateProps<TFieldValues, TTransformedValues>): UseFormStateReturn<TFieldValues>;
@@ -923,6 +938,19 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues: TFormValues) => ValidateResult | Promise<ValidateResult>;
 
 // @public (undocumented)
+export type ValidateForm<TFormValues extends FieldValues, TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>> = (props: {
+    formValues: TFormValues;
+    formState: FormState<TFormValues>;
+    eventType?: ValidateFormEventType;
+    name?: TFieldName | TFieldName[];
+}) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
+
+// Warning: (ae-forgotten-export) The symbol "EVENTS" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ValidateFormEventType = (typeof EVENTS)[keyof typeof EVENTS];
+
+// @public (undocumented)
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "VALIDATION_MODE" needs to be exported by the entry point index.d.ts
@@ -964,7 +992,7 @@ export type WatchInternal<TFieldValues> = (fieldNames?: InternalFieldName | Inte
 export type WatchName<TFieldValues extends FieldValues> = FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | undefined;
 
 // @public (undocumented)
-export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartial<TFieldValues>, info: {
+export type WatchObserver<TFieldValues extends FieldValues> = (value: DeepPartialSkipArrayKey<TFieldValues>, info: {
     name?: FieldPath<TFieldValues>;
     type?: EventType;
     values?: unknown;
@@ -990,7 +1018,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:501:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:509:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
