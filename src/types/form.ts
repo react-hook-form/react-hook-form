@@ -26,7 +26,7 @@ import type {
   DeepPartialSkipArrayKey,
   Noop,
 } from './utils';
-import type { RegisterOptions } from './validator';
+import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
 
@@ -131,6 +131,7 @@ export type UseFormProps<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
   >;
+  validate: ValidateForm<TFieldValues>;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
@@ -150,6 +151,8 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   values?: boolean;
+  isSubmitted?: boolean | 'all';
+  submitCount?: boolean | 'all';
 };
 
 export type FormState<TFieldValues extends FieldValues> = {
@@ -563,7 +566,9 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | `root.${string}`
-    | 'root',
+    | 'root'
+    | 'form'
+    | `form.${string}`,
 ) => void;
 
 /**
@@ -603,6 +608,11 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   options?: SetValueConfig,
 ) => void;
 
+export type UseFormSetValues<TFieldValues extends FieldValues> = (
+  value: Partial<TFieldValues> | ResetAction<TFieldValues>,
+  options?: SetValueConfig,
+) => void;
+
 /**
  * Set an error for the field. When set an error which is not associated to a field then manual `clearErrors` invoke is required.
  *
@@ -625,7 +635,12 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name: FieldPath<TFieldValues> | `root.${string}` | 'root',
+  name:
+    | FieldPath<TFieldValues>
+    | `root.${string}`
+    | 'root'
+    | 'form'
+    | `form.${string}`,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;
@@ -794,6 +809,7 @@ export type Names = {
   disabled: InternalNameSet;
   array: InternalNameSet;
   watch: InternalNameSet;
+  registerName: InternalNameSet;
   focus?: InternalFieldName;
   watchAll?: boolean;
 };
@@ -900,6 +916,7 @@ export type UseFormReturn<
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;
+  setValues: UseFormSetValues<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
   formState: FormState<TFieldValues>;
   resetField: UseFormResetField<TFieldValues>;

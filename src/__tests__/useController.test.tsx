@@ -1514,4 +1514,101 @@ describe('useController', () => {
     rerender({ control: form1Result.current.control });
     expect(result.current.field.value).toBe('form1-value');
   });
+
+  it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
+    type FormValues = {
+      items: { checked: boolean; input: string }[];
+    };
+
+    const InputField = ({
+      control,
+      index,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+    }) => (
+      <Controller
+        control={control}
+        rules={{ required: 'Input is required' }}
+        name={`items.${index}.input`}
+        render={({ field }) => <input placeholder="Enter" {...field} />}
+      />
+    );
+
+    const App = () => {
+      const { control, formState, handleSubmit } = useForm({
+        mode: 'all',
+        defaultValues: {
+          items: [{ checked: false, input: '' }],
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <Controller
+            name="items.0.checked"
+            control={control}
+            render={({ field }) => (
+              <>
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+                {field.value && <InputField control={control} index={0} />}
+              </>
+            )}
+          />
+          <p>{formState.isValid ? 'valid' : 'invalid'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('invalid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('invalid')).toBeVisible();
+    });
+  });
+
+  it('can register field array property before field array root', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        test1: { test: string }[];
+      }>();
+
+      useController({
+        name: 'test1.0.test',
+        control,
+      });
+
+      useController({
+        name: 'test1',
+        control,
+      });
+
+      return null;
+    };
+
+    render(<Component />);
+  });
 });
