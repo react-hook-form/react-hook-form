@@ -20,10 +20,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "**/__typetest__/**/*",
-    "**/__tests__",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["**/__typetest__/**/*"]
 }
