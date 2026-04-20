@@ -300,8 +300,8 @@ export type UseFieldArrayReturn<
  */
 export type FieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends
-    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 > = {
   render: (
