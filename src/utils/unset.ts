@@ -1,5 +1,6 @@
 import isEmptyObject from './isEmptyObject';
 import isKey from './isKey';
+import isNullOrUndefined from './isNullOrUndefined';
 import isObject from './isObject';
 import isString from './isString';
 import isUndefined from './isUndefined';
@@ -10,7 +11,7 @@ function baseGet(object: any, updatePath: (string | number)[]) {
   let index = 0;
 
   while (index < length) {
-    object = isUndefined(object) ? index++ : object[updatePath[index++]];
+    object = isNullOrUndefined(object) ? index++ : object[updatePath[index++]];
   }
 
   return object;
