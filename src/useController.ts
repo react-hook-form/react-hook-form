@@ -198,8 +198,19 @@ export function useController<
     const previousName = _previousNameRef.current;
 
     if (previousName && previousName !== name && !isArrayField) {
-      control.unregister(previousName as FieldPath<TFieldValues>);
+      const prevCount = (control._controllerCount.get(previousName) || 0) - 1;
+      if (prevCount <= 0) {
+        control._controllerCount.delete(previousName);
+        control.unregister(previousName as FieldPath<TFieldValues>);
+      } else {
+        control._controllerCount.set(previousName, prevCount);
+      }
     }
+
+    control._controllerCount.set(
+      name,
+      (control._controllerCount.get(name) || 0) + 1,
+    );
 
     control.register(name, {
       ..._props.current.rules,
@@ -233,13 +244,19 @@ export function useController<
     _previousNameRef.current = name;
 
     return () => {
-      (
-        isArrayField
-          ? _shouldUnregisterField && !control._state.action
-          : _shouldUnregisterField
-      )
-        ? control.unregister(name)
-        : updateMounted(name, false);
+      const currentCount = (control._controllerCount.get(name) || 0) - 1;
+      if (currentCount <= 0) {
+        control._controllerCount.delete(name);
+        (
+          isArrayField
+            ? _shouldUnregisterField && !control._state.action
+            : _shouldUnregisterField
+        )
+          ? control.unregister(name)
+          : updateMounted(name, false);
+      } else {
+        control._controllerCount.set(name, currentCount);
+      }
     };
   }, [name, control, isArrayField, shouldUnregister]);
 
