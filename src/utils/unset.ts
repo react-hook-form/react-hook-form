@@ -11,7 +11,12 @@ function baseGet(object: any, updatePath: (string | number)[]) {
   let index = 0;
 
   while (index < length) {
-    object = isNullOrUndefined(object) ? index++ : object[updatePath[index++]];
+    if (isNullOrUndefined(object)) {
+      object = undefined;
+      break;
+    }
+    object = object[updatePath[index]];
+    index++;
   }
 
   return object;
