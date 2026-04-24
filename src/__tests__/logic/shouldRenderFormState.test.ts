@@ -16,14 +16,24 @@ describe('shouldRenderFormState', () => {
     expect(result).toBe(true);
   });
 
-  it('should return true when changed keys are more', () => {
+  it('should return matched key when incoming state contains subscribed key among others', () => {
     const proxy = { isValid: true } as ReadFormState;
     const result = shouldRenderFormState(
       { isValid: false, isDirty: true },
       proxy,
       updateFormState,
     );
-    expect(result).toBe(true);
+    expect(result).toBeTruthy();
+  });
+
+  it('should not notify when incoming state keys do not overlap with subscribed keys', () => {
+    const proxy = { values: true } as ReadFormState;
+    const result = shouldRenderFormState(
+      { name: 'secondName', errors: {} },
+      proxy,
+      updateFormState,
+    );
+    expect(result).toBeUndefined();
   });
 
   it('should return true when changed state key is subscribed', () => {

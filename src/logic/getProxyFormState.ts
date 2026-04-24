@@ -11,9 +11,7 @@ export default <
   localProxyFormState?: ReadFormState,
   isRoot = true,
 ) => {
-  const result = {
-    defaultValues: control._defaultValues,
-  } as typeof formState;
+  const result = {} as typeof formState;
 
   for (const key in formState) {
     Object.defineProperty(result, key, {
@@ -26,6 +24,22 @@ export default <
 
         localProxyFormState && (localProxyFormState[_key] = true);
         return formState[_key];
+      },
+    });
+  }
+
+  if (!('defaultValues' in formState)) {
+    Object.defineProperty(result, 'defaultValues', {
+      get: () => {
+        const _key = 'defaultValues' as keyof FormState<TFieldValues> &
+          keyof ReadFormState;
+
+        if (control._proxyFormState[_key] !== VALIDATION_MODE.all) {
+          control._proxyFormState[_key] = !isRoot || VALIDATION_MODE.all;
+        }
+
+        localProxyFormState && (localProxyFormState[_key] = true);
+        return control._defaultValues;
       },
     });
   }
