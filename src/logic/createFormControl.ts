@@ -342,6 +342,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
+      const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
         name,
@@ -358,7 +359,27 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && !_state.action && _setValid();
+      if (_state.mount && !_state.action) {
+        _setValid();
+
+        // Re-registering a field after a prior unregister puts its key back
+        // into _formValues, which can flip isDirty back to false (#13397).
+        // Only run when we are currently dirty, otherwise an initial register
+        // for a field with no defaultValue would flip isDirty to true. Reset
+        // paths repopulate _formValues before re-register, so the key is
+        // present then and this branch is skipped (preserves keepDirty).
+        if (
+          wasUnsetInFormValues &&
+          _formState.isDirty &&
+          (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty)
+        ) {
+          const isDirty = _getDirty();
+          if (!isDirty) {
+            _formState.isDirty = false;
+            _subjects.state.next({ ..._formState });
+          }
+        }
+      }
     }
   };
 
