@@ -23,7 +23,7 @@ describe('shouldRenderFormState', () => {
       proxy,
       updateFormState,
     );
-    expect(result).toBeTruthy();
+    expect(result).toBe('isValid');
   });
 
   it('should not notify when incoming state keys do not overlap with subscribed keys', () => {
