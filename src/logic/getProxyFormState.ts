@@ -28,19 +28,5 @@ export default <
     });
   }
 
-  if (!('defaultValues' in formState)) {
-    Object.defineProperty(result, 'defaultValues', {
-      get: () => {
-        if (control._proxyFormState.defaultValues !== VALIDATION_MODE.all) {
-          control._proxyFormState.defaultValues =
-            !isRoot || VALIDATION_MODE.all;
-        }
-
-        localProxyFormState && (localProxyFormState.defaultValues = true);
-        return control._defaultValues;
-      },
-    });
-  }
-
   return result;
 };
