@@ -43,6 +43,7 @@ import type {
   UseFormSetError,
   UseFormSetFocus,
   UseFormSetValue,
+  UseFormSetValues,
   UseFormSubscribe,
   UseFormTrigger,
   UseFormUnregister,
@@ -103,6 +104,20 @@ const defaultOptions = {
   shouldFocusError: true,
 } as const;
 
+export const DEFAULT_FORM_STATE = {
+  submitCount: 0,
+  isDirty: false,
+  isReady: false,
+  isValidating: false,
+  isSubmitted: false,
+  isSubmitting: false,
+  isSubmitSuccessful: false,
+  isValid: false,
+  touchedFields: {},
+  dirtyFields: {},
+  validatingFields: {},
+};
+
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
@@ -122,19 +137,13 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let _formState: FormState<TFieldValues> = {
-    submitCount: 0,
-    isDirty: false,
-    isReady: false,
+  let _formState: FormState<TFieldValues> & {
+    values?: TFieldValues;
+    name?: string;
+    type?: EventType;
+  } = {
+    ...cloneObject(DEFAULT_FORM_STATE),
     isLoading: isFunction(_options.defaultValues),
-    isValidating: false,
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    touchedFields: {},
-    dirtyFields: {},
-    validatingFields: {},
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
@@ -146,7 +155,6 @@ export function createFormControl<
   let _formValues = _options.shouldUnregister
     ? ({} as TFieldValues)
     : (cloneObject(_defaultValues) as TFieldValues);
-  let _previousFormValues: TFieldValues;
   let _state = {
     action: false,
     mount: false,
@@ -331,6 +339,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
+      const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
         name,
@@ -347,7 +356,27 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && !_state.action && _setValid();
+      if (_state.mount && !_state.action) {
+        _setValid();
+
+        // Re-registering a field after a prior unregister puts its key back
+        // into _formValues, which can flip isDirty back to false (#13397).
+        // Only run when we are currently dirty, otherwise an initial register
+        // for a field with no defaultValue would flip isDirty to true. Reset
+        // paths repopulate _formValues before re-register, so the key is
+        // present then and this branch is skipped (preserves keepDirty).
+        if (
+          wasUnsetInFormValues &&
+          _formState.isDirty &&
+          (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty)
+        ) {
+          const isDirty = _getDirty();
+          if (!isDirty) {
+            _formState.isDirty = false;
+            _subjects.state.next({ ..._formState });
+          }
+        }
+      }
     }
   };
 
@@ -758,7 +787,7 @@ export function createFormControl<
     options.shouldValidate && trigger(name as Path<TFieldValues>);
   };
 
-  const setValues = <
+  const setFieldValues = <
     T extends InternalFieldName,
     K extends SetFieldValue<TFieldValues>,
     U extends SetValueConfig,
@@ -779,7 +808,7 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setValues(fieldName, fieldValue, options)
+        ? setFieldValues(fieldName, fieldValue, options)
         : setFieldValue(fieldName, fieldValue, options);
     }
   };
@@ -826,23 +855,33 @@ export function createFormControl<
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
         setFieldValue(name, cloneValue, options);
       } else {
-        setValues(name, cloneValue, options);
+        setFieldValues(name, cloneValue, options);
       }
     }
 
     if (!isValueUnchanged) {
-      if (isWatched(name, _names)) {
-        _subjects.state.next({
-          ..._formState,
-          name,
-          values: cloneObject(_formValues),
-        });
-      } else {
-        _subjects.state.next({
-          name: _state.mount ? name : undefined,
-          values: cloneObject(_formValues),
-        });
-      }
+      const watched = isWatched(name, _names);
+
+      _subjects.state.next({
+        ...(watched && _formState),
+        name: _state.mount || watched ? name : undefined,
+        values: cloneObject(_formValues),
+      });
+    }
+  };
+
+  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
+    const updatedFormValues = isFunction(formValues)
+      ? (formValues as Function)(_formValues as TFieldValues)
+      : formValues;
+
+    if (!deepEqual(_formValues, updatedFormValues)) {
+      _formValues = {
+        ..._formValues,
+        ...updatedFormValues,
+      };
+
+      _subjects.state.next({ ..._formState, values: _formValues });
     }
   };
 
@@ -1187,8 +1226,7 @@ export function createFormControl<
             (props.formState as ReadFormState) || _proxyFormState,
             _setFormState,
             props.reRenderRoot,
-          ) &&
-          (!_previousFormValues || _previousFormValues !== _formValues)
+          )
         ) {
           const snapshot = { ..._formValues } as TFieldValues;
 
@@ -1199,7 +1237,6 @@ export function createFormControl<
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
-          _previousFormValues = snapshot;
         }
       },
     }).unsubscribe;
@@ -1750,6 +1787,7 @@ export function createFormControl<
     handleSubmit,
     watch,
     setValue,
+    setValues,
     getValues,
     reset,
     resetField,
