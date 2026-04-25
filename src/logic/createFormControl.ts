@@ -105,6 +105,20 @@ const defaultOptions = {
   shouldFocusError: true,
 } as const;
 
+export const DEFAULT_FORM_STATE = {
+  submitCount: 0,
+  isDirty: false,
+  isReady: false,
+  isValidating: false,
+  isSubmitted: false,
+  isSubmitting: false,
+  isSubmitSuccessful: false,
+  isValid: false,
+  touchedFields: {},
+  dirtyFields: {},
+  validatingFields: {},
+};
+
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
@@ -124,19 +138,13 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let _formState: FormState<TFieldValues> = {
-    submitCount: 0,
-    isDirty: false,
-    isReady: false,
+  let _formState: FormState<TFieldValues> & {
+    values?: TFieldValues;
+    name?: string;
+    type?: EventType;
+  } = {
+    ...cloneObject(DEFAULT_FORM_STATE),
     isLoading: isFunction(_options.defaultValues),
-    isValidating: false,
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    touchedFields: {},
-    dirtyFields: {},
-    validatingFields: {},
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
@@ -828,18 +836,13 @@ export function createFormControl<
     }
 
     if (!isValueUnchanged) {
-      if (isWatched(name, _names)) {
-        _subjects.state.next({
-          ..._formState,
-          name,
-          values: cloneObject(_formValues),
-        });
-      } else {
-        _subjects.state.next({
-          name: _state.mount ? name : undefined,
-          values: cloneObject(_formValues),
-        });
-      }
+      const watched = isWatched(name, _names);
+
+      _subjects.state.next({
+        ...(watched && _formState),
+        name: _state.mount || watched ? name : undefined,
+        values: cloneObject(_formValues),
+      });
     }
   };
 
