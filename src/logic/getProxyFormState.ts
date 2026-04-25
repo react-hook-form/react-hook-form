@@ -31,14 +31,12 @@ export default <
   if (!('defaultValues' in formState)) {
     Object.defineProperty(result, 'defaultValues', {
       get: () => {
-        const _key = 'defaultValues' as keyof FormState<TFieldValues> &
-          keyof ReadFormState;
-
-        if (control._proxyFormState[_key] !== VALIDATION_MODE.all) {
-          control._proxyFormState[_key] = !isRoot || VALIDATION_MODE.all;
+        if (control._proxyFormState.defaultValues !== VALIDATION_MODE.all) {
+          control._proxyFormState.defaultValues =
+            !isRoot || VALIDATION_MODE.all;
         }
 
-        localProxyFormState && (localProxyFormState[_key] = true);
+        localProxyFormState && (localProxyFormState.defaultValues = true);
         return control._defaultValues;
       },
     });
