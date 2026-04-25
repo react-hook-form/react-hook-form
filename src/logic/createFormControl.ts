@@ -840,7 +840,7 @@ export function createFormControl<
 
       _subjects.state.next({
         ...(watched && _formState),
-        ...(watched && { name }),
+        name: _state.mount ? name : undefined,
         values: cloneObject(_formValues),
       });
     }
