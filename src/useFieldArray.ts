@@ -441,9 +441,9 @@ export function useFieldArray<
         });
       }
 
-      !shouldKeepFieldArrayValues
-        ? control.unregister(name as FieldPath<TFieldValues>)
-        : updateMounted(name, false);
+      shouldKeepFieldArrayValues
+        ? updateMounted(name, false)
+        : control.unregister(name as FieldPath<TFieldValues>);
     };
   }, [name, control, keyName, shouldUnregister]);
 
