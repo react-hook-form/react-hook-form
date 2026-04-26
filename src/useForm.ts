@@ -1,6 +1,8 @@
 import React from 'react';
 
+import { DEFAULT_FORM_STATE } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
+import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
 import { createFormControl } from './logic';
@@ -52,25 +54,17 @@ export function useForm<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>({
-    isDirty: false,
-    isValidating: false,
-    isLoading: isFunction(props.defaultValues),
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    submitCount: 0,
-    dirtyFields: {},
-    touchedFields: {},
-    validatingFields: {},
-    errors: props.errors || {},
-    disabled: props.disabled || false,
-    isReady: false,
-    defaultValues: isFunction(props.defaultValues)
-      ? undefined
-      : props.defaultValues,
-  });
+  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
+    () => ({
+      ...cloneObject(DEFAULT_FORM_STATE),
+      isLoading: isFunction(props.defaultValues),
+      errors: props.errors || {},
+      disabled: props.disabled || false,
+      defaultValues: isFunction(props.defaultValues)
+        ? undefined
+        : props.defaultValues,
+    }),
+  );
 
   if (!_formControl.current) {
     if (props.formControl) {
