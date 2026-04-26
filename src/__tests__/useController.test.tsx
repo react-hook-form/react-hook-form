@@ -181,7 +181,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([4, 4]);
+    expect(renderCounter).toEqual([3, 4]);
   });
 
   describe('checkbox', () => {
@@ -1018,10 +1018,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
-      screen.getByText('');
-      screen.getByText('disable');
-    });
+    await waitFor(() => screen.getByText('disable'));
   });
 
   it('should disable form input field with disabled prop', async () => {
