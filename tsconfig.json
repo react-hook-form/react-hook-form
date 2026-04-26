@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "types": ["jest", "node", "@testing-library/jest-dom"],
+    "rootDir": "./src",
     "sourceMap": true,
     "module": "es2015",
     "target": "es2018",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "jsx": "react",
     "skipLibCheck": true,
@@ -17,7 +18,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*"],
   "exclude": [
