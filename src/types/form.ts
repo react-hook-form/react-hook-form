@@ -151,6 +151,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   values?: boolean;
+  defaultValues?: boolean | 'all';
   isSubmitted?: boolean | 'all';
   submitCount?: boolean | 'all';
 };
@@ -608,6 +609,11 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   options?: SetValueConfig,
 ) => void;
 
+export type UseFormSetValues<TFieldValues extends FieldValues> = (
+  value: Partial<TFieldValues> | ResetAction<TFieldValues>,
+  options?: SetValueConfig,
+) => void;
+
 /**
  * Set an error for the field. When set an error which is not associated to a field then manual `clearErrors` invoke is required.
  *
@@ -911,6 +917,7 @@ export type UseFormReturn<
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;
   setValue: UseFormSetValue<TFieldValues>;
+  setValues: UseFormSetValues<TFieldValues>;
   trigger: UseFormTrigger<TFieldValues>;
   formState: FormState<TFieldValues>;
   resetField: UseFormResetField<TFieldValues>;

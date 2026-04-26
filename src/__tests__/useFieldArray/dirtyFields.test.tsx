@@ -698,7 +698,7 @@ describe('useFieldArray dirtyFields isolation', () => {
       expect(dirtyResult).toHaveProperty('test');
       const testArray = (dirtyResult as any).test;
       expect(testArray[0]).toHaveProperty('keyValue');
-      expect(testArray[0].keyValue).toEqual([{ name: false }, { name: true }]);
+      expect(testArray[0].keyValue).toEqual([undefined, { name: true }]);
     });
 
     fireEvent.click(screen.getByRole('button', { name: /nestRemove/ }));

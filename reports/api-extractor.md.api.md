@@ -515,6 +515,7 @@ export type ReadFormState = {
     [K in keyof FormStateProxy]: boolean | 'all';
 } & {
     values?: boolean;
+    defaultValues?: boolean | 'all';
     isSubmitted?: boolean | 'all';
     submitCount?: boolean | 'all';
 };
@@ -785,6 +786,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     setError: UseFormSetError<TFieldValues>;
     clearErrors: UseFormClearErrors<TFieldValues>;
     setValue: UseFormSetValue<TFieldValues>;
+    setValues: UseFormSetValues<TFieldValues>;
     trigger: UseFormTrigger<TFieldValues>;
     formState: FormState<TFieldValues>;
     resetField: UseFormResetField<TFieldValues>;
@@ -807,6 +809,9 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <TFieldName exte
 
 // @public
 export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(name: TFieldName, value: FieldPathValue<TFieldValues, TFieldName>, options?: SetValueConfig) => void;
+
+// @public (undocumented)
+export type UseFormSetValues<TFieldValues extends FieldValues> = (value: Partial<TFieldValues> | ResetAction<TFieldValues>, options?: SetValueConfig) => void;
 
 // @public
 export function useFormState<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props?: UseFormStateProps<TFieldValues, TTransformedValues>): UseFormStateReturn<TFieldValues>;
@@ -1009,7 +1014,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:509:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:510:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
