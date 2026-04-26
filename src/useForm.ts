@@ -160,7 +160,6 @@ export function useForm<
     }
   }, [control, props.values, props.shouldUnregister]);
 
-  // Per-render housekeeping (no deps array on purpose — runs every render, like the original).
   React.useEffect(() => {
     if (!control._state.mount) {
       control._setValid();
