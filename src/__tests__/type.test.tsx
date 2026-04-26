@@ -611,9 +611,9 @@ test('useWatch should correctly select the name from object like param', () => {
       control,
     });
 
-    const _a: { second: string } = resultFromObj;
-    const _b: { second: string } = { ...resultFromObj };
-    const _c: { second: string } = resultFromInline;
+    void (resultFromObj satisfies { second: string });
+    void ({ ...resultFromObj } satisfies { second: string });
+    void (resultFromInline satisfies { second: string });
 
     return null;
   };
