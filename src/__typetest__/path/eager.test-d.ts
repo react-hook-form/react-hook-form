@@ -49,7 +49,9 @@ import { _ } from '../__fixtures__';
     const actual = _ as ArrayPath<{
       foo: Array<{ bar: string[]; baz: string[] }>;
     }>;
-    type _t = Expect<Equal<typeof actual, 'foo'>>;
+    type _t = Expect<
+      Equal<typeof actual, 'foo' | `foo.${number}.bar` | `foo.${number}.baz`>
+    >;
   }
 
   /** it should include paths through tuples */ {
@@ -59,7 +61,9 @@ import { _ } from '../__fixtures__';
 
   /** it should include paths through arrays */ {
     const actual = _ as ArrayPath<{ foo: string[][][] }>;
-    type _t = Expect<Equal<typeof actual, 'foo' | `foo.${number}`>>;
+    type _t = Expect<
+      Equal<typeof actual, 'foo' | `foo.${number}` | `foo.${number}.${number}`>
+    >;
   }
 
   /** it should be able to avoid self-referencing/recursion, not crashing on self-referencing types. */ {

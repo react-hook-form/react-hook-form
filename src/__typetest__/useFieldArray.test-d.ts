@@ -1,7 +1,15 @@
-import { expectType } from 'tsd';
-
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+
+// --- Native TypeScript type-test helpers ---------------------------------
+// `Equal` does a strict, invariant equality check between two types.
+// `Expect<T extends true>` forces `T` to be `true`, otherwise it errors at compile time.
+type Equal<X, Y> =
+  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+    ? true
+    : false;
+type Expect<T extends true> = T;
+// -------------------------------------------------------------------------
 
 /** {@link useFieldArray} flat field array */ {
   /** it should work with multi-dimensional arrays */ {
@@ -23,7 +31,9 @@ import { useForm } from '../useForm';
       name: 'items',
     });
 
-    expectType<(string[][] & { key: string })[]>(fields1);
+    type _fields1 = Expect<
+      Equal<typeof fields1, (string[][] & { key: string })[]>
+    >;
 
     append1([['a', 'b'], ['c']]);
     append1([[['a', 'b'], ['c']]]);
@@ -42,7 +52,9 @@ import { useForm } from '../useForm';
       name: 'items.0',
     });
 
-    expectType<(string[] & { key: string })[]>(fields2);
+    type _fields2 = Expect<
+      Equal<typeof fields2, (string[] & { key: string })[]>
+    >;
 
     append2(['a', 'b']);
     append2([['a', 'b'], ['c']]);
@@ -60,7 +72,7 @@ import { useForm } from '../useForm';
       name: 'items.0.0',
     });
 
-    expectType<(string & { key: string })[]>(fields3);
+    type _fields3 = Expect<Equal<typeof fields3, (string & { key: string })[]>>;
 
     append3('a');
     append3(['a', 'b']);
@@ -91,11 +103,14 @@ import { useForm } from '../useForm';
       name: 'items',
     });
 
-    expectType<
-      ({ name: string; tags: string[]; categories: number[] } & {
-        key: string;
-      })[]
-    >(itemFields);
+    type _itemFields = Expect<
+      Equal<
+        typeof itemFields,
+        ({ name: string; tags: string[]; categories: number[] } & {
+          key: string;
+        })[]
+      >
+    >;
 
     appendItem({
       name: 'Item 1',
@@ -130,7 +145,9 @@ import { useForm } from '../useForm';
       name: 'items.0.tags',
     });
 
-    expectType<(string & { key: string })[]>(tagFields);
+    type _tagFields = Expect<
+      Equal<typeof tagFields, (string & { key: string })[]>
+    >;
 
     appendTag('newTag');
     appendTag(['tag1', 'tag2']);
@@ -148,7 +165,9 @@ import { useForm } from '../useForm';
       name: 'items.0.categories',
     });
 
-    expectType<(number & { key: string })[]>(categoryFields);
+    type _categoryFields = Expect<
+      Equal<typeof categoryFields, (number & { key: string })[]>
+    >;
 
     appendCategory(5);
     appendCategory([5, 6]);
@@ -177,12 +196,15 @@ import { useForm } from '../useForm';
       name: 'groups',
     });
 
-    expectType<
-      ({
-        name: string;
-        users: { username: string; permissions: string[] }[];
-      } & { key: string })[]
-    >(groupFields);
+    type _groupFields = Expect<
+      Equal<
+        typeof groupFields,
+        ({
+          name: string;
+          users: { username: string; permissions: string[] }[];
+        } & { key: string })[]
+      >
+    >;
 
     appendGroup({
       name: 'Group 1',
@@ -200,9 +222,12 @@ import { useForm } from '../useForm';
       name: 'groups.0.users',
     });
 
-    expectType<
-      ({ username: string; permissions: string[] } & { key: string })[]
-    >(userFields);
+    type _userFields = Expect<
+      Equal<
+        typeof userFields,
+        ({ username: string; permissions: string[] } & { key: string })[]
+      >
+    >;
 
     appendUser({
       username: 'newUser',
@@ -228,7 +253,9 @@ import { useForm } from '../useForm';
       name: 'groups.0.users.0.permissions',
     });
 
-    expectType<(string & { key: string })[]>(permissionFields);
+    type _permissionFields = Expect<
+      Equal<typeof permissionFields, (string & { key: string })[]>
+    >;
 
     appendPermission('delete');
     appendPermission(['delete', 'admin']);
@@ -319,7 +346,12 @@ import { useForm } from '../useForm';
       name: 'items',
     });
 
-    expectType<({ name: string; tags: string[] } & { key: string })[]>(items);
+    type _items = Expect<
+      Equal<
+        typeof items,
+        ({ name: string; tags: string[] } & { key: string })[]
+      >
+    >;
 
     appendItem({ name: 'Item', tags: ['tag1'] });
 
@@ -332,7 +364,9 @@ import { useForm } from '../useForm';
       name: `items.${0}.tags`,
     });
 
-    expectType<(string & { key: string })[]>(tagFields);
+    type _tagFields = Expect<
+      Equal<typeof tagFields, (string & { key: string })[]>
+    >;
 
     appendTag('newTag');
     appendTag(['tag1', 'tag2']);
@@ -359,12 +393,15 @@ import { useForm } from '../useForm';
       name: 'groups',
     });
 
-    expectType<
-      ({
-        name: string;
-        users: { username: string; roles: string[] }[];
-      } & { key: string })[]
-    >(groups);
+    type _groups = Expect<
+      Equal<
+        typeof groups,
+        ({
+          name: string;
+          users: { username: string; roles: string[] }[];
+        } & { key: string })[]
+      >
+    >;
 
     appendGroup({
       name: 'Group 1',
@@ -376,9 +413,12 @@ import { useForm } from '../useForm';
       name: `groups.${0}.users`,
     });
 
-    expectType<({ username: string; roles: string[] } & { key: string })[]>(
-      userFields,
-    );
+    type _userFields = Expect<
+      Equal<
+        typeof userFields,
+        ({ username: string; roles: string[] } & { key: string })[]
+      >
+    >;
 
     appendUser({ username: 'newUser', roles: ['user'] });
 
@@ -387,7 +427,9 @@ import { useForm } from '../useForm';
       name: `groups.${0}.users.${0}.roles`,
     });
 
-    expectType<(string & { key: string })[]>(roleFields);
+    type _roleFields = Expect<
+      Equal<typeof roleFields, (string & { key: string })[]>
+    >;
 
     appendRole('moderator');
     appendRole(['admin', 'moderator']);
@@ -413,12 +455,15 @@ import { useForm } from '../useForm';
       name: 'projects',
     });
 
-    expectType<
-      ({
-        title: string;
-        tasks: { description: string; tags: string[] }[];
-      } & { key: string })[]
-    >(projects);
+    type _projects = Expect<
+      Equal<
+        typeof projects,
+        ({
+          title: string;
+          tasks: { description: string; tags: string[] }[];
+        } & { key: string })[]
+      >
+    >;
 
     appendProject({
       title: 'Project 1',
@@ -430,9 +475,12 @@ import { useForm } from '../useForm';
       name: `projects.${0}.tasks`,
     });
 
-    expectType<({ description: string; tags: string[] } & { key: string })[]>(
-      taskFields,
-    );
+    type _taskFields = Expect<
+      Equal<
+        typeof taskFields,
+        ({ description: string; tags: string[] } & { key: string })[]
+      >
+    >;
 
     appendTask({ description: 'New Task', tags: ['normal'] });
 
@@ -441,7 +489,9 @@ import { useForm } from '../useForm';
       name: `projects.${0}.tasks.${0}.tags`,
     });
 
-    expectType<(string & { key: string })[]>(tagFields1);
+    type _tagFields1 = Expect<
+      Equal<typeof tagFields1, (string & { key: string })[]>
+    >;
 
     appendTag1('tag1');
 
@@ -450,7 +500,9 @@ import { useForm } from '../useForm';
       name: 'projects.0.tasks.0.tags',
     });
 
-    expectType<(string & { key: string })[]>(tagFields2);
+    type _tagFields2 = Expect<
+      Equal<typeof tagFields2, (string & { key: string })[]>
+    >;
 
     appendTag2('tag2');
   }
