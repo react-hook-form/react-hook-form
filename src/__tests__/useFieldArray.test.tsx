@@ -21,6 +21,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
+import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
 let mockId = 0;
@@ -1354,7 +1355,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }, { name: false }, { name: false }],
+            test: [{ name: true }, undefined, undefined],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1416,7 +1417,7 @@ describe('useFieldArray', () => {
 
         if (property === 'dirtyFields') {
           expect(formState.dirtyFields).toEqual({
-            test: [{ name: true }, { name: false }, { name: false }],
+            test: [{ name: true }, undefined, undefined],
           });
         } else {
           expect(formState.isDirty).toBeTruthy();
@@ -1431,17 +1432,7 @@ describe('useFieldArray', () => {
         });
 
         expect(formState.dirtyFields).toEqual({
-          test: [
-            {
-              name: false,
-            },
-            {
-              name: false,
-            },
-            {
-              name: false,
-            },
-          ],
+          test: undefined,
         });
         expect(formState.isDirty).toBeFalsy();
       },
@@ -2930,6 +2921,110 @@ describe('useFieldArray', () => {
 
     expect(screen.getAllByRole('textbox').length).toEqual(2);
   });
+
+  type Methods = {
+    append: (value: { value: string }) => void;
+    prepend: (value: { value: string }) => void;
+    insert: (index: number, value: { value: string }) => void;
+  };
+
+  it.each([
+    {
+      action: 'append',
+      expectedValues: ['firstItem', 'newItem'],
+      mutate: (methods: Methods) => methods.append({ value: 'newItem' }),
+    },
+    {
+      action: 'prepend',
+      expectedValues: ['newItem', 'firstItem'],
+      mutate: (methods: Methods) => methods.prepend({ value: 'newItem' }),
+    },
+    {
+      action: 'insert',
+      expectedValues: ['newItem', 'firstItem'],
+      mutate: (methods: Methods) => methods.insert(0, { value: 'newItem' }),
+    },
+  ])(
+    'should update watched field array when $action and unmount happen in one event',
+    ({ action, expectedValues, mutate }) => {
+      type FormValues = {
+        list: {
+          value: string;
+        }[];
+      };
+
+      const Display = ({ control }: { control: Control<FormValues> }) => {
+        const list = useWatch({ control, name: 'list' }) || [];
+
+        return (
+          <div data-testid="list-display">
+            {list.map((item, index) => (
+              <p key={index}>{item.value}</p>
+            ))}
+          </div>
+        );
+      };
+
+      const Dialog = ({
+        control,
+        onClose,
+      }: {
+        control: Control<FormValues>;
+        onClose: () => void;
+      }) => {
+        const { append, prepend, insert } = useFieldArray({
+          control,
+          name: 'list',
+        });
+
+        return (
+          <button
+            type="button"
+            onClick={() => {
+              mutate({ append, prepend, insert });
+              onClose();
+            }}
+          >
+            {action}
+          </button>
+        );
+      };
+
+      const App = () => {
+        const { control } = useForm<FormValues>({
+          defaultValues: {
+            list: [{ value: 'firstItem' }],
+          },
+        });
+        const [open, setOpen] = React.useState(true);
+
+        return (
+          <>
+            <Display control={control} />
+            {open ? (
+              <Dialog control={control} onClose={() => setOpen(false)} />
+            ) : (
+              <button type="button" onClick={() => setOpen(true)}>
+                open
+              </button>
+            )}
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: action }));
+
+      const renderedValues = screen
+        .getByTestId('list-display')
+        .querySelectorAll('p');
+
+      expect(
+        Array.from(renderedValues, (element) => element.textContent),
+      ).toEqual(expectedValues);
+    },
+  );
 
   it('should append deep nested field array correctly with strict mode', async () => {
     function App() {
@@ -4548,5 +4643,72 @@ describe('useFieldArray with checkbox', () => {
       expect(checkboxes[2]).not.toBeChecked(); // Option 1 (copy) (copy)
       expect(checkboxes[3]).not.toBeChecked(); // Option 2
     });
+  });
+
+  it('should skip validation for field array operations when mode is onBlur', async () => {
+    const App = () => {
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        register,
+      } = useForm({
+        mode: 'onBlur',
+        defaultValues: {
+          test: [{ name: '' }],
+        },
+      });
+
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'test',
+        rules: {
+          minLength: {
+            value: 2,
+            message: 'Min length should be 2',
+          },
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {errors.test?.root?.message && (
+            <p data-testid="error">{errors.test.root.message}</p>
+          )}
+
+          {fields.map((field, index) => (
+            <input
+              key={field.id}
+              {...register(`test.${index}.name` as const, {
+                required: 'Name is required',
+              })}
+              data-testid={`input-${index}`}
+            />
+          ))}
+
+          <button type="button" onClick={() => append({ name: '' })}>
+            append
+          </button>
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+          <button type="submit">submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    });
+
+    expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    });
+
+    expect(screen.queryByTestId('error')).not.toBeInTheDocument();
   });
 });

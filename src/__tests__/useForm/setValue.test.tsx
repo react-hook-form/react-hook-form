@@ -1480,4 +1480,61 @@ describe('setValue', () => {
 
     expect(nextSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('should not notify subscribers when setValue is called with an unchanged value', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({ defaultValues: { test: 'initial' } }),
+    );
+    const control = result.current.control as any;
+
+    // Set the initial value first
+    await act(async () => {
+      result.current.setValue('test', 'initial');
+    });
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    // Call setValue again with the same value
+    await act(async () => {
+      result.current.setValue('test', 'initial');
+    });
+
+    // Should not have notified subscribers with values since value is unchanged
+    const valueNotifications = nextSpy.mock.calls.filter(
+      (call) =>
+        call[0] != null &&
+        typeof call[0] === 'object' &&
+        'values' in (call[0] as Record<string, unknown>),
+    );
+    expect(valueNotifications).toHaveLength(0);
+  });
+
+  it('should mark field as dirty when updating array of objects with shouldDirty true', () => {
+    type IData = {
+      data: { id: number; name: string }[];
+    };
+
+    const defaultValues: IData = {
+      data: [{ id: 1, name: 'a' }],
+    };
+
+    const { result } = renderHook(() =>
+      useForm<IData>({
+        defaultValues,
+      }),
+    );
+
+    result.current.register('data.0.name');
+    result.current.formState.isDirty;
+    result.current.formState.dirtyFields;
+
+    act(() => {
+      result.current.setValue('data', [], { shouldDirty: true });
+    });
+
+    expect(result.current.formState.isDirty).toBeTruthy();
+    expect(result.current.formState.dirtyFields).toEqual({
+      data: true,
+    });
+  });
 });

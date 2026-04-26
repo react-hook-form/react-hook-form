@@ -545,7 +545,7 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(2);
+      expect(childCount).toBe(1);
 
       parentCount = 0;
       childCount = 0;
@@ -625,8 +625,8 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(2);
-      expect(childSecondCount).toBe(2);
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(1);
 
       parentCount = 0;
       childCount = 0;

@@ -1,50 +1,49 @@
-import { expectAssignable, expectType } from 'tsd';
-
 import type { DeepPartial, ExtractObjects, IsAny, IsNever } from '../types';
 
+import type { Equal, Expect } from './__fixtures__';
 import { _ } from './__fixtures__';
 
 /** {@link IsAny} */ {
   /** it should evaluate to true for any */ {
     const actual = _ as IsAny<any>;
-    expectType<true>(actual);
+    type _t = Expect<Equal<typeof actual, true>>;
   }
 
   /** it should evaluate to false for never */ {
     const actual = _ as IsAny<never>;
-    expectType<false>(actual);
+    type _t = Expect<Equal<typeof actual, false>>;
   }
 
   /** it should evaluate to false for unknown */ {
     const actual = _ as IsAny<unknown>;
-    expectType<false>(actual);
+    type _t = Expect<Equal<typeof actual, false>>;
   }
 
   /** it should evaluate to false for string */ {
     const actual = _ as IsAny<string>;
-    expectType<false>(actual);
+    type _t = Expect<Equal<typeof actual, false>>;
   }
 }
 
 /** {@link IsNever} */ {
   /** it should evaluate to false for any */ {
     const actual = _ as IsNever<any>;
-    expectType<false>(actual);
+    type _t = Expect<Equal<typeof actual, false>>;
   }
 
   /** it should evaluate to true for never */ {
     const actual = _ as IsNever<never>;
-    expectType<true>(actual);
+    type _t = Expect<Equal<typeof actual, true>>;
   }
 
   /** it should evaluate to false for unknown */ {
     const actual = _ as IsNever<unknown>;
-    expectType<false>(actual);
+    type _t = Expect<Equal<typeof actual, false>>;
   }
 
   /** it should evaluate to false for string */ {
     const actual = _ as IsNever<string>;
-    expectType<false>(actual);
+    type _t = Expect<Equal<typeof actual, false>>;
   }
 }
 
@@ -53,7 +52,9 @@ import { _ } from './__fixtures__';
     const actual = _ as ExtractObjects<
       { x: string } | { y: number; z: { w: number } } | number | string | null
     >;
-    expectType<{ x: string } | { y: number; z: { w: number } }>(actual);
+    type _t = Expect<
+      Equal<typeof actual, { x: string } | { y: number; z: { w: number } }>
+    >;
   }
 }
 
@@ -64,7 +65,9 @@ import { _ } from './__fixtures__';
       y: number;
       z: { w: boolean };
     }>;
-    expectType<{ x?: string; y?: number; z?: { w?: boolean } }>(actual);
+    type _t = Expect<
+      Equal<typeof actual, { x?: string; y?: number; z?: { w?: boolean } }>
+    >;
   }
 
   /** it should make all nested properties optional for union types */ {
@@ -72,10 +75,15 @@ import { _ } from './__fixtures__';
       x: string | number;
       y: { a: string | null } | null;
     }>;
-    expectType<{
-      x?: string | number;
-      y?: { a?: string | null } | null;
-    }>(actual);
+    type _t = Expect<
+      Equal<
+        typeof actual,
+        {
+          x?: string | number;
+          y?: { a?: string | null } | null;
+        }
+      >
+    >;
   }
 
   /** it should make all nested properties optional for intersection types */ {
@@ -83,15 +91,22 @@ import { _ } from './__fixtures__';
       x: string;
       y: { a: string } & { b: number };
     }>;
-    expectType<{
-      x?: string;
-      y?: { a?: string; b?: number };
-    }>(actual);
+    type _t = Expect<
+      Equal<
+        typeof actual,
+        {
+          x?: string;
+          y?: { a?: string; b?: number };
+        }
+      >
+    >;
   }
 
   /** it should be assignable for types containing unknown */ {
     const actual = _ as { x: unknown };
-    expectAssignable<DeepPartial<{ x: unknown }>>(actual);
+    type _t = Expect<
+      typeof actual extends DeepPartial<{ x: unknown }> ? true : false
+    >;
   }
 
   /** it should preserve branded types as-is */ {
@@ -106,12 +121,17 @@ import { _ } from './__fixtures__';
       };
     }>;
 
-    expectType<{
-      userId?: UserId;
-      productId?: ProductId;
-      nested?: {
-        brandedField?: UserId;
-      };
-    }>(actual);
+    type _t = Expect<
+      Equal<
+        typeof actual,
+        {
+          userId?: UserId;
+          productId?: ProductId;
+          nested?: {
+            brandedField?: UserId;
+          };
+        }
+      >
+    >;
   }
 }

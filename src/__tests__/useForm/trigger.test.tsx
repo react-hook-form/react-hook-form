@@ -500,13 +500,12 @@ describe('trigger', () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string; test3: string }>({
         mode: VALIDATION_MODE.onChange,
-        // @ts-ignore
-        resolver: async (data) => {
-          return {
-            values: data,
-            errors: { test3: 'test3' },
-          };
-        },
+        resolver: async () => ({
+          values: {},
+          errors: {
+            test3: { type: 'required', message: 'test3' },
+          },
+        }),
       }),
     );
 

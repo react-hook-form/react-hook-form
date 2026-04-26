@@ -181,7 +181,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([4, 4]);
+    expect(renderCounter).toEqual([3, 4]);
   });
 
   describe('checkbox', () => {
@@ -1023,10 +1023,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
-      screen.getByText('');
-      screen.getByText('disable');
-    });
+    await waitFor(() => screen.getByText('disable'));
   });
 
   it('should disable form input field with disabled prop', async () => {
@@ -1386,7 +1383,7 @@ describe('useController', () => {
     expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
   });
 
-  it('should prevent field value leakage when field names change at same position', () => {
+  it('should prevent value leakage and preserve previous field value when name changes', () => {
     type FormValues = {
       type: 'personal' | 'business';
       personalName: string;
@@ -1426,6 +1423,7 @@ describe('useController', () => {
               render={({ field }) => <input {...field} />}
             />
           )}
+          <span data-testid="personal-name-value">{watch('personalName')}</span>
         </div>
       );
     };
@@ -1441,6 +1439,9 @@ describe('useController', () => {
     });
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
+    expect(screen.getByTestId('personal-name-value').textContent).toBe(
+      'John Doe',
+    );
   });
 
   it('should react to changing field name', () => {
@@ -1594,5 +1595,28 @@ describe('useController', () => {
     await waitFor(() => {
       expect(screen.getByText('invalid')).toBeVisible();
     });
+  });
+
+  it('can register field array property before field array root', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        test1: { test: string }[];
+      }>();
+
+      useController({
+        name: 'test1.0.test',
+        control,
+      });
+
+      useController({
+        name: 'test1',
+        control,
+      });
+
+      return null;
+    };
+
+    render(<Component />);
   });
 });
