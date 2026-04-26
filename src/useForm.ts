@@ -112,29 +112,22 @@ export function useForm<
   );
 
   React.useEffect(() => {
+    control._disableForm(props.disabled);
+
     if (props.mode) {
       control._options.mode = props.mode;
     }
     if (props.reValidateMode) {
       control._options.reValidateMode = props.reValidateMode;
     }
-  }, [control, props.mode, props.reValidateMode]);
+  }, [control, props.disabled, props.mode, props.reValidateMode]);
 
   React.useEffect(() => {
     if (props.errors) {
       control._setErrors(props.errors);
       control._focusError();
     }
-  }, [control, props.errors]);
 
-  React.useEffect(() => {
-    props.shouldUnregister &&
-      control._subjects.state.next({
-        values: control._getWatch(),
-      });
-  }, [control, props.shouldUnregister]);
-
-  React.useEffect(() => {
     if (control._proxyFormState.isDirty) {
       const isDirty = control._getDirty();
       if (isDirty !== formState.isDirty) {
@@ -143,7 +136,7 @@ export function useForm<
         });
       }
     }
-  }, [control, formState.isDirty]);
+  }, [control, props.errors, formState.isDirty]);
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
@@ -159,8 +152,15 @@ export function useForm<
     } else {
       control._resetDefaultValues();
     }
-  }, [control, props.values]);
 
+    if (props.shouldUnregister) {
+      control._subjects.state.next({
+        values: control._getWatch(),
+      });
+    }
+  }, [control, props.values, props.shouldUnregister]);
+
+  // Per-render housekeeping (no deps array on purpose — runs every render, like the original).
   React.useEffect(() => {
     if (!control._state.mount) {
       control._setValid();
