@@ -11,7 +11,7 @@
     "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
-    "noEmit": false,
+    "noEmit": true,
     "esModuleInterop": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
