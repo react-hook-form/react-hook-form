@@ -21,6 +21,7 @@ import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
+import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
 let i = 0;
@@ -2911,6 +2912,110 @@ describe('useFieldArray', () => {
 
     expect(screen.getAllByRole('textbox').length).toEqual(2);
   });
+
+  type Methods = {
+    append: (value: { value: string }) => void;
+    prepend: (value: { value: string }) => void;
+    insert: (index: number, value: { value: string }) => void;
+  };
+
+  it.each([
+    {
+      action: 'append',
+      expectedValues: ['firstItem', 'newItem'],
+      mutate: (methods: Methods) => methods.append({ value: 'newItem' }),
+    },
+    {
+      action: 'prepend',
+      expectedValues: ['newItem', 'firstItem'],
+      mutate: (methods: Methods) => methods.prepend({ value: 'newItem' }),
+    },
+    {
+      action: 'insert',
+      expectedValues: ['newItem', 'firstItem'],
+      mutate: (methods: Methods) => methods.insert(0, { value: 'newItem' }),
+    },
+  ])(
+    'should update watched field array when $action and unmount happen in one event',
+    ({ action, expectedValues, mutate }) => {
+      type FormValues = {
+        list: {
+          value: string;
+        }[];
+      };
+
+      const Display = ({ control }: { control: Control<FormValues> }) => {
+        const list = useWatch({ control, name: 'list' }) || [];
+
+        return (
+          <div data-testid="list-display">
+            {list.map((item, index) => (
+              <p key={index}>{item.value}</p>
+            ))}
+          </div>
+        );
+      };
+
+      const Dialog = ({
+        control,
+        onClose,
+      }: {
+        control: Control<FormValues>;
+        onClose: () => void;
+      }) => {
+        const { append, prepend, insert } = useFieldArray({
+          control,
+          name: 'list',
+        });
+
+        return (
+          <button
+            type="button"
+            onClick={() => {
+              mutate({ append, prepend, insert });
+              onClose();
+            }}
+          >
+            {action}
+          </button>
+        );
+      };
+
+      const App = () => {
+        const { control } = useForm<FormValues>({
+          defaultValues: {
+            list: [{ value: 'firstItem' }],
+          },
+        });
+        const [open, setOpen] = React.useState(true);
+
+        return (
+          <>
+            <Display control={control} />
+            {open ? (
+              <Dialog control={control} onClose={() => setOpen(false)} />
+            ) : (
+              <button type="button" onClick={() => setOpen(true)}>
+                open
+              </button>
+            )}
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: action }));
+
+      const renderedValues = screen
+        .getByTestId('list-display')
+        .querySelectorAll('p');
+
+      expect(
+        Array.from(renderedValues, (element) => element.textContent),
+      ).toEqual(expectedValues);
+    },
+  );
 
   it('should append deep nested field array correctly with strict mode', async () => {
     function App() {
