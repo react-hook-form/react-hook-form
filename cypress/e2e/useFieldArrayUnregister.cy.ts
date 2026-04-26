@@ -54,7 +54,7 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: true },
-          { name: false },
+          null,
           { name: true, conditional: true },
           { name: true },
         ],

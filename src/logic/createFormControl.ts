@@ -82,7 +82,6 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
-import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -254,10 +253,8 @@ export function createFormControl<
     }
   };
 
-  const _updateDirtyFields = (name: InternalFieldName) => {
-    const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-    const rootName = getNodeParentName(name);
-    set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+  const _updateDirtyFields = () => {
+    _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -303,7 +300,7 @@ export function createFormControl<
       }
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
-        _updateDirtyFields(name);
+        _updateDirtyFields();
       }
 
       _subjects.state.next({
@@ -835,8 +832,14 @@ export function createFormControl<
         values: cloneObject(_formValues),
       });
 
-      if (options.shouldDirty) {
-        _updateDirtyFields(name);
+      if (
+        (_proxyFormState.isDirty ||
+          _proxyFormState.dirtyFields ||
+          _proxySubscribeFormState.isDirty ||
+          _proxySubscribeFormState.dirtyFields) &&
+        options.shouldDirty
+      ) {
+        _updateDirtyFields();
 
         _subjects.state.next({
           name,
