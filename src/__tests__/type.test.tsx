@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { expectType } from 'tsd';
 
 import { Controller } from '../controller';
 import type {
@@ -607,15 +606,14 @@ test('useWatch should correctly select the name from object like param', () => {
     };
 
     const resultFromObj = useWatch(obj);
-
     const resultFromInline = useWatch({
       name: 'test.first',
       control,
     });
 
-    expectType<{ second: string }>(resultFromObj);
-    expectType<{ second: string }>({ ...resultFromObj });
-    expectType<{ second: string }>(resultFromInline);
+    const _a: { second: string } = resultFromObj;
+    const _b: { second: string } = { ...resultFromObj };
+    const _c: { second: string } = resultFromInline;
 
     return null;
   };
