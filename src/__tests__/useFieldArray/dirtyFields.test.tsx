@@ -43,7 +43,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: 'new' })}>
             append
@@ -95,7 +95,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: 'new' })}>
             append
@@ -149,10 +149,10 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {itemsArray.fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           {itemsCopyArray.fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`items_copy.${i}.value` as const)} />
               <input {...register(`items_copy.${i}.value2` as const)} />
             </div>
@@ -213,10 +213,10 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {itemsArray.fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           {itemsCopyArray.fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`items_copy.${i}.value` as const)} />
               <input {...register(`items_copy.${i}.value2` as const)} />
             </div>
@@ -282,10 +282,10 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} data-testid="name" />
           <input {...register('age')} />
           {itemsArray.fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           {itemsCopyArray.fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`items_copy.${i}.value` as const)} />
               <input {...register(`items_copy.${i}.value2` as const)} />
             </div>
@@ -352,7 +352,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input
                 {...register(`nonusservices.VATFiling_list.${i}.id` as const)}
               />
@@ -414,7 +414,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('title')} />
           <input {...register('description')} />
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`tags.${i}.label` as const)} />
               <button type="button" onClick={() => remove(i)}>
                 remove{i}
@@ -463,7 +463,7 @@ describe('useFieldArray dirtyFields isolation', () => {
         <form>
           <input {...register('name')} data-testid="name" />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: 'new' })}>
             append
@@ -529,7 +529,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('email')} />
           <input {...register('phone')} />
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`addresses.${i}.street` as const)} />
               <input {...register(`addresses.${i}.city` as const)} />
             </div>
@@ -597,7 +597,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('phone')} />
           <input {...register('company')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`todos.${i}.task` as const)} />
+            <input key={field.key} {...register(`todos.${i}.task` as const)} />
           ))}
           <button type="button" onClick={() => append({ task: 'New todo' })}>
             addTodo
@@ -665,14 +665,14 @@ describe('useFieldArray dirtyFields isolation', () => {
         <form>
           <input {...register('title')} />
           {testFields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <input {...register(`test.${i}.firstName` as const)} />
               <input {...register(`test.${i}.lastName` as const)} />
             </div>
           ))}
           {keyValueFields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.0.keyValue.${i}.name` as const)}
             />
           ))}
@@ -739,7 +739,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button
             type="button"
@@ -797,7 +797,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           <input {...register('name')} data-testid="name" />
           <input {...register('age')} />
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`items.${i}.value` as const)} />
+            <input key={field.key} {...register(`items.${i}.value` as const)} />
           ))}
           <button
             type="button"

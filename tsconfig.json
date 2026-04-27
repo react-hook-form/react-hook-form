@@ -4,7 +4,7 @@
     "rootDir": "./src",
     "sourceMap": true,
     "module": "es2015",
-    "target": "es2018",
+    "target": "es2020",
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "jsx": "react",

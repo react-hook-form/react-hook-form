@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import { updateMethodsReference } from './utils/updateMethodsReference';
 import { createFormControl } from './logic';
 import type {
   FieldValues,
@@ -147,6 +148,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
+      updateMethodsReference(_formControl);
       control._reset(props.values, {
         keepFieldsRef: true,
         ...control._options.resetOptions,
@@ -175,10 +177,24 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  _formControl.current.formState = React.useMemo(
-    () => getProxyFormState(formState, control),
-    [control, formState],
-  );
+  React.useEffect(() => {
+    props.shouldUnregister &&
+      control._subjects.state.next({
+        values: control._getWatch(),
+      });
+  }, [props.shouldUnregister, control]);
 
-  return _formControl.current;
+  return React.useMemo(() => {
+    updateMethodsReference(_formControl);
+
+    if (_formControl.current) {
+      _formControl.current.formState = getProxyFormState(formState, control);
+    }
+
+    return _formControl.current as UseFormReturn<
+      TFieldValues,
+      TContext,
+      TTransformedValues
+    >;
+  }, [formState, control]);
 }

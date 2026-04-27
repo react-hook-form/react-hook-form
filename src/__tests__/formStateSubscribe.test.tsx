@@ -484,7 +484,7 @@ describe('FormStateSubscribe', () => {
           {/* We include FormState to ensure it doesn't cause early subscribe */}
           <FormStateSubscribe control={control} render={() => null} />
           {fields.map((field, index) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <Controller
                 control={control}
                 name={`test.${index}.data` as const}

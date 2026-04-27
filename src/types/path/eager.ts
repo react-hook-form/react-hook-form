@@ -80,7 +80,7 @@ type ArrayPathImpl<K extends string | number, V, TraversedTypes> = V extends
     ? string
     : never
   : V extends ReadonlyArray<infer U>
-    ? U extends Primitive | BrowserNativeObject
+    ? U extends BrowserNativeObject
       ? IsAny<V> extends true
         ? string
         : never
