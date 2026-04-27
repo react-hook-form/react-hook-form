@@ -12,6 +12,7 @@ import { Controller } from '../controller';
 import type {
   Control,
   FieldValues,
+  ResolverResult,
   SubmitHandler,
   UseFieldArrayProps,
   UseFormRegister,
@@ -407,19 +408,20 @@ describe('useFieldArray', () => {
     });
 
     it('should report field array error during user action', async () => {
+      type FormValues = {
+        test: { value: string }[];
+      };
+
       const App = () => {
         const {
           register,
           control,
           formState: { errors },
-        } = useForm<{
-          test: { value: string }[];
-        }>({
+        } = useForm<FormValues>({
           mode: 'onChange',
-          // @ts-ignore
-          resolver: (data) => {
+          resolver: async (): Promise<ResolverResult<FormValues>> => {
             return {
-              values: data,
+              values: {},
               errors: {
                 test: {
                   type: 'test',
@@ -463,19 +465,20 @@ describe('useFieldArray', () => {
     });
 
     it('should not return schema error without user action', () => {
+      type FormValues = {
+        test: { value: string }[];
+      };
+
       const App = () => {
         const {
           register,
           control,
           formState: { errors },
-        } = useForm<{
-          test: { value: string }[];
-        }>({
+        } = useForm<FormValues>({
           mode: 'onChange',
-          // @ts-ignore
-          resolver: (data) => {
+          resolver: async (): Promise<ResolverResult<FormValues>> => {
             return {
-              values: data,
+              values: {},
               errors: {
                 test: {
                   type: 'test',
@@ -512,17 +515,18 @@ describe('useFieldArray', () => {
     });
 
     it('should update error when user action corrects it', async () => {
+      type FormValues = {
+        test: { value: string }[];
+      };
+
       const App = () => {
         const {
           register,
           control,
           formState: { errors },
-        } = useForm<{
-          test: { value: string }[];
-        }>({
+        } = useForm<FormValues>({
           mode: 'onChange',
-          // @ts-ignore
-          resolver: (data) => {
+          resolver: async (data): Promise<ResolverResult<FormValues>> => {
             if (data.test.length > 1) {
               return {
                 values: data,
@@ -530,7 +534,7 @@ describe('useFieldArray', () => {
               };
             } else {
               return {
-                values: data,
+                values: {},
                 errors: {
                   test: {
                     type: 'test',
@@ -585,35 +589,46 @@ describe('useFieldArray', () => {
     });
 
     it('should update error when array is changed', async () => {
+      type FormValues = {
+        test: { value: string }[];
+      };
+
       const App = () => {
         const {
           register,
           control,
           formState: { errors },
-        } = useForm<{
-          test: { value: string }[];
-        }>({
+        } = useForm<FormValues>({
           mode: 'onChange',
-          // @ts-ignore
-          resolver: (data) => {
-            const errors: { test?: any } = {};
+          resolver: async (data): Promise<ResolverResult<FormValues>> => {
+            const fieldErrors: { test?: any } = {};
             if (data.test.length > 4) {
-              errors.test = { type: 'toobig', message: 'WAY too many items' };
+              fieldErrors.test = {
+                type: 'toobig',
+                message: 'WAY too many items',
+              };
             } else if (data.test.length > 3) {
-              errors.test = { type: 'toobig', message: 'Too many items' };
+              fieldErrors.test = { type: 'toobig', message: 'Too many items' };
             }
             for (const [index, item] of data.test.entries()) {
               if (item.value === '') {
-                errors.test = errors.test || [];
-                errors.test[index] = {
+                fieldErrors.test = fieldErrors.test || [];
+                fieldErrors.test[index] = {
                   value: { type: 'required', message: 'Required' },
                 };
               }
             }
 
+            if (Object.keys(fieldErrors).length === 0) {
+              return {
+                values: data,
+                errors: {},
+              };
+            }
+
             return {
-              values: data,
-              errors,
+              values: {},
+              errors: fieldErrors,
             };
           },
           defaultValues: {
@@ -2235,11 +2250,11 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      expect(watchValue.at(-1)).toEqual({ test: [] });
+      expect(watchValue[watchValue.length - 1]).toEqual({ test: [] });
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      expect(watchValue.at(-1)).toEqual({
+      expect(watchValue[watchValue.length - 1]).toEqual({
         test: [
           {
             yourDetails: {
@@ -2424,7 +2439,7 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(watchValues.at(-1)).toEqual([
+    expect(watchValues[watchValues.length - 1]).toEqual([
       {
         test: 'append',
         test1: 'append',
@@ -2434,7 +2449,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-    expect(watchValues.at(-1)).toEqual([
+    expect(watchValues[watchValues.length - 1]).toEqual([
       { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'append',
@@ -2445,7 +2460,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
-    expect(watchValues.at(-1)).toEqual([
+    expect(watchValues[watchValues.length - 1]).toEqual([
       { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'insert',
@@ -2461,7 +2476,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'deep append' }));
 
-    expect(watchValues.at(-1)).toEqual([
+    expect(watchValues[watchValues.length - 1]).toEqual([
       { test: 'prepend', test1: 'prepend', test2: [] },
       {
         test: 'insert',
@@ -2486,7 +2501,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'deep prepend' }));
 
-    expect(watchValues.at(-1)).toEqual([
+    expect(watchValues[watchValues.length - 1]).toEqual([
       {
         test: 'prepend',
         test1: '',
@@ -2520,7 +2535,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'deep insert' }));
 
-    expect(watchValues.at(-1)).toEqual([
+    expect(watchValues[watchValues.length - 1]).toEqual([
       {
         test: 'prepend',
         test1: '',
@@ -2610,7 +2625,7 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(watchedValue.at(-1)).toEqual({
+    expect(watchedValue[watchedValue.length - 1]).toEqual({
       test: [
         {
           value: 'data',
@@ -2620,7 +2635,7 @@ describe('useFieldArray', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValue.at(-1)).toEqual({
+    expect(watchedValue[watchedValue.length - 1]).toEqual({
       test: [
         {
           value: 'data',
@@ -2687,7 +2702,7 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(result.at(-1)).toEqual({
+    expect(result[result.length - 1]).toEqual({
       names: [
         {
           name: 'will',
@@ -2712,7 +2727,7 @@ describe('useFieldArray', () => {
 
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
-    expect(result.at(-1)).toEqual({ names: [] });
+    expect(result[result.length - 1]).toEqual({ names: [] });
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(result).toEqual([
@@ -2812,13 +2827,13 @@ describe('useFieldArray', () => {
 
     render(<Component />);
 
-    expect(watchedValues.at(-1)).toEqual({
+    expect(watchedValues[watchedValues.length - 1]).toEqual({
       test: [{ value: 'test' }, { value: 'test1' }],
     });
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(watchedValues.at(-1)).toEqual({});
+    expect(watchedValues[watchedValues.length - 1]).toEqual({});
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(watchedValues).toEqual([
