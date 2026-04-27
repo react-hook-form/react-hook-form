@@ -17,6 +17,7 @@ import type {
   FormState,
   Mode,
   RegisterOptions,
+  ResolverResult,
   SubmitHandler,
   UseFormGetFieldState,
   UseFormRegister,
@@ -1729,7 +1730,9 @@ describe('useForm', () => {
         const { register, formState } = useForm({
           defaultValues: { test: 'Test' },
           mode: 'onChange',
-          resolver: async (values) => {
+          resolver: async (
+            values,
+          ): Promise<ResolverResult<{ test: string }>> => {
             if (!values.test) {
               return {
                 values: {},
