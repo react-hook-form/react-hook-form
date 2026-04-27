@@ -1137,6 +1137,36 @@ describe('formState', () => {
     });
   });
 
+  it('should report isDirty as false on mount when defaultValues contain numeric string keys (issue #13346)', async () => {
+    function App() {
+      const {
+        register,
+        formState: { isDirty },
+      } = useForm({
+        defaultValues: {
+          items: {
+            '123': { name: 'Alice' },
+            '456': { name: 'Bob' },
+          },
+        },
+      });
+
+      return (
+        <div>
+          <input {...register('items.123.name')} />
+          <input {...register('items.456.name')} />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('pristine')).toBeInTheDocument();
+    });
+  });
+
   it('should not update valid with onBlur mode', async () => {
     function App() {
       const {

@@ -1,7 +1,7 @@
-import { expectType } from 'tsd';
-
 import { useForm } from '../useForm';
 import { Watch } from '../watch';
+
+import type { Equal, Expect } from './__fixtures__';
 
 type FormData = {
   foo: string;
@@ -23,7 +23,9 @@ type FormData = {
       control,
       names: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
       render: (values) => {
-        expectType<[string, null, number, { qux: string }, string]>(values);
+        type _t = Expect<
+          Equal<typeof values, [string, null, number, { qux: string }, string]>
+        >;
         return null;
       },
     });
@@ -37,7 +39,7 @@ type FormData = {
       control,
       names: 'baz.qux',
       render: (value) => {
-        expectType<string>(value);
+        type _t = Expect<Equal<typeof value, string>>;
         return null;
       },
     });
@@ -50,7 +52,7 @@ type FormData = {
     void Watch({
       control,
       render: (value) => {
-        expectType<FormData>(value);
+        type _t = Expect<Equal<typeof value, FormData>>;
         return null;
       },
     });
@@ -65,7 +67,7 @@ type FormData = {
       names: 'baz.qux',
       compute: (val) => val.length > 2,
       render: (value) => {
-        expectType<boolean>(value);
+        type _t = Expect<Equal<typeof value, boolean>>;
         return null;
       },
     });
@@ -79,7 +81,7 @@ type FormData = {
       control,
       names: 'baz.qux',
       compute: (val) => {
-        expectType<string>(val);
+        type _t = Expect<Equal<typeof val, string>>;
         return val;
       },
       render: () => null,
@@ -94,7 +96,7 @@ type FormData = {
       control,
       names: ['baz.qux', 'fie', 'quux'],
       compute: (val) => {
-        expectType<[string, null, number]>(val);
+        type _t = Expect<Equal<typeof val, [string, null, number]>>;
         return val;
       },
       render: () => null,
@@ -108,7 +110,7 @@ type FormData = {
     void Watch({
       control,
       compute: (val) => {
-        expectType<FormData>(val);
+        type _t = Expect<Equal<typeof val, FormData>>;
         return val;
       },
       render: () => null,

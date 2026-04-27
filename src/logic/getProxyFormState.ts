@@ -11,9 +11,7 @@ export default <
   localProxyFormState?: ReadFormState,
   isRoot = true,
 ) => {
-  const result = {
-    defaultValues: control._defaultValues,
-  } as typeof formState;
+  const result = {} as typeof formState;
 
   for (const key in formState) {
     Object.defineProperty(result, key, {

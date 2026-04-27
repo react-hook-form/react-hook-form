@@ -84,6 +84,54 @@ describe('remove', () => {
     expect(formState.isDirty).toBeFalsy();
   });
 
+  it('should not mark unrelated fields as dirty when removing from field array', async () => {
+    let dirtyInputs = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { dirtyFields },
+      } = useForm<{
+        name: string;
+        items: { value: string }[];
+      }>({
+        defaultValues: {
+          name: 'John',
+          items: [{ value: 'first' }, { value: 'second' }],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      dirtyInputs = dirtyFields;
+
+      return (
+        <form>
+          <input {...register('name')} />
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <input {...register(`items.${i}.value` as const)} />
+              <button type="button" onClick={() => remove(i)}>
+                remove{i}
+              </button>
+            </div>
+          ))}
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /remove0/i }));
+
+    await waitFor(() => {
+      expect(dirtyInputs).not.toHaveProperty('name');
+      expect(dirtyInputs).toHaveProperty('items');
+    });
+  });
+
   it('should update isValid formState when item removed', async () => {
     let formState: any;
     const Component = () => {
@@ -743,7 +791,7 @@ describe('remove', () => {
 
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [{ value: false }, { value: true }] },
+      test: { data: [undefined, { value: true }] },
     });
 
     act(() => {
@@ -751,9 +799,7 @@ describe('remove', () => {
     });
 
     expect(result.current.formState.isDirty).toBeFalsy();
-    expect(result.current.formState.dirtyFields).toEqual({
-      test: { data: [{ value: false }] },
-    });
+    expect(result.current.formState.dirtyFields).toEqual({});
   });
 
   it('should remove Controller by index without error', () => {

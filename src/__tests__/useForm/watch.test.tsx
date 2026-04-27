@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   act,
   fireEvent,
@@ -684,5 +684,170 @@ describe('watch', () => {
       expect(watchValue).toBe('Mike');
       expect(getValue).toBe('Mike');
     });
+  });
+
+  it('should update state correctly in watch callback with Controller, trigger, and reset - issue #13178', () => {
+    const logSpy = jest.fn();
+
+    function TestComponent() {
+      const { control, watch, trigger, reset } = useForm({
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      const [nameLength, setNameLengthState] = useState(0);
+
+      useEffect(() => {
+        const subscription = watch((formData, { name: fieldName }) => {
+          if (fieldName === 'name') {
+            const length = formData.name?.length || 0;
+            logSpy(length);
+            setNameLengthState(length);
+          }
+        });
+        return () => subscription.unsubscribe();
+      }, [watch]);
+
+      useEffect(() => {
+        reset({ name: '' });
+      }, [reset]);
+
+      return (
+        <div>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  trigger('name');
+                }}
+              />
+            )}
+          />
+          <div data-testid="length">{nameLength}</div>
+        </div>
+      );
+    }
+
+    render(<TestComponent />);
+
+    const input = screen.getByRole('textbox');
+    const lengthDisplay = screen.getByTestId('length');
+
+    // Type "1" into the name input
+    act(() => {
+      fireEvent.change(input, { target: { value: '1' } });
+    });
+
+    // The length should be 1, not 0
+    expect(lengthDisplay.textContent).toBe('1');
+
+    // Check console logs - should see 1, not 1, 1, 0, 0
+    const logs = logSpy.mock.calls.map((call) => call[0]);
+    // After fix: should only see 1 (or maybe 1, 1 if trigger causes another update)
+    // Before fix: would see 1, 1, 0, 0
+    expect(logs[logs.length - 1]).toBe(1); // Last log should be 1
+
+    logSpy.mockClear();
+
+    // Type "12" into the name input
+    act(() => {
+      fireEvent.change(input, { target: { value: '12' } });
+    });
+
+    // The length should be 2, not 1
+    expect(lengthDisplay.textContent).toBe('2');
+
+    // Check console logs - should see 2, not 2, 2, 1, 1
+    const logs2 = logSpy.mock.calls.map((call) => call[0]);
+    expect(logs2[logs2.length - 1]).toBe(2); // Last log should be 2
+  });
+
+  it('should update nameLength correctly using setValue in watch callback - CodeSandbox scenario', () => {
+    const logSpy = jest.fn();
+
+    function TestComponent() {
+      const form = useForm<{ name: string; nameLength: number }>({
+        mode: 'onBlur',
+        defaultValues: {
+          name: '',
+          nameLength: 0,
+        },
+      });
+
+      const { reset, watch, getValues, setValue, trigger, control } = form;
+
+      useEffect(() => {
+        reset({ name: '', nameLength: 0 });
+      }, [reset]);
+
+      useEffect(() => {
+        const subscription = watch((_value, { type }) => {
+          if (type !== 'change') {
+            return;
+          }
+
+          setValue('nameLength', getValues().name.length);
+          void trigger('nameLength');
+        });
+
+        return () => subscription.unsubscribe();
+      }, [watch, getValues, setValue, trigger]);
+
+      return (
+        <div>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <input type="text" {...field} data-testid="name-input" />
+            )}
+          />
+          <Controller
+            control={control}
+            name="nameLength"
+            render={({ field }) => {
+              logSpy(field.value);
+              return (
+                <input type="text" {...field} data-testid="nameLength-input" />
+              );
+            }}
+          />
+        </div>
+      );
+    }
+
+    render(<TestComponent />);
+
+    const nameInput = screen.getByTestId('name-input');
+    const nameLengthInput = screen.getByTestId('nameLength-input');
+
+    // Type "1" into the name input
+    act(() => {
+      fireEvent.change(nameInput, { target: { value: '1' } });
+    });
+
+    // The nameLength should be 1, not 0
+    expect((nameLengthInput as HTMLInputElement).value).toBe('1');
+    // Check that the last logged value is 1 (not 0)
+    const logs = logSpy.mock.calls.map((call) => call[0]);
+    expect(logs[logs.length - 1]).toBe(1);
+
+    logSpy.mockClear();
+
+    // Type "12" into the name input
+    act(() => {
+      fireEvent.change(nameInput, { target: { value: '12' } });
+    });
+
+    // The nameLength should be 2, not 1
+    expect((nameLengthInput as HTMLInputElement).value).toBe('2');
+    // Check that the last logged value is 2 (not 1)
+    const logs2 = logSpy.mock.calls.map((call) => call[0]);
+    expect(logs2[logs2.length - 1]).toBe(2);
   });
 });

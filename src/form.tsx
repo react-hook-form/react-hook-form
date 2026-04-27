@@ -49,80 +49,93 @@ function Form<
     ...rest
   } = props;
 
-  const submit = async (event?: React.BaseSyntheticEvent) => {
-    let hasError = false;
-    let type = '';
+  const submit = React.useCallback(
+    async (event?: React.BaseSyntheticEvent) => {
+      let hasError = false;
+      let type = '';
 
-    await control.handleSubmit(async (data) => {
-      const formData = new FormData();
-      let formDataJson = '';
+      await control.handleSubmit(async (data) => {
+        const formData = new FormData();
+        let formDataJson = '';
 
-      try {
-        formDataJson = JSON.stringify(data);
-      } catch {}
+        try {
+          formDataJson = JSON.stringify(data);
+        } catch {}
 
-      const flattenFormValues = flatten(control._formValues);
+        const flattenFormValues = flatten(data as FieldValues);
 
-      for (const key in flattenFormValues) {
-        formData.append(key, flattenFormValues[key]);
-      }
+        for (const key in flattenFormValues) {
+          formData.append(key, flattenFormValues[key]);
+        }
 
-      if (onSubmit) {
-        await onSubmit({
-          data,
-          event,
-          method,
-          formData,
-          formDataJson,
+        if (onSubmit) {
+          await onSubmit({
+            data,
+            event,
+            method,
+            formData,
+            formDataJson,
+          });
+        }
+
+        if (action) {
+          try {
+            const shouldStringifySubmissionData = [
+              headers && headers['Content-Type'],
+              encType,
+            ].some((value) => value && value.includes('json'));
+
+            const response = await fetch(String(action), {
+              method,
+              headers: {
+                ...headers,
+                ...(encType && encType !== 'multipart/form-data'
+                  ? { 'Content-Type': encType }
+                  : {}),
+              },
+              body: shouldStringifySubmissionData ? formDataJson : formData,
+            });
+
+            if (
+              response &&
+              (validateStatus
+                ? !validateStatus(response.status)
+                : response.status < 200 || response.status >= 300)
+            ) {
+              hasError = true;
+              onError && onError({ response });
+              type = String(response.status);
+            } else {
+              onSuccess && onSuccess({ response });
+            }
+          } catch (error: unknown) {
+            hasError = true;
+            onError && onError({ error });
+          }
+        }
+      })(event);
+
+      if (hasError && control) {
+        control._subjects.state.next({
+          isSubmitSuccessful: false,
+        });
+        control.setError('root.server', {
+          type,
         });
       }
-
-      if (action) {
-        try {
-          const shouldStringifySubmissionData = [
-            headers && headers['Content-Type'],
-            encType,
-          ].some((value) => value && value.includes('json'));
-
-          const response = await fetch(String(action), {
-            method,
-            headers: {
-              ...headers,
-              ...(encType && encType !== 'multipart/form-data'
-                ? { 'Content-Type': encType }
-                : {}),
-            },
-            body: shouldStringifySubmissionData ? formDataJson : formData,
-          });
-
-          if (
-            response &&
-            (validateStatus
-              ? !validateStatus(response.status)
-              : response.status < 200 || response.status >= 300)
-          ) {
-            hasError = true;
-            onError && onError({ response });
-            type = String(response.status);
-          } else {
-            onSuccess && onSuccess({ response });
-          }
-        } catch (error: unknown) {
-          hasError = true;
-          onError && onError({ error });
-        }
-      }
-    })(event);
-
-    if (hasError && props.control) {
-      props.control._subjects.state.next({
-        isSubmitSuccessful: false,
-      });
-      props.control.setError('root.server', {
-        type,
-      });
-    }
-  };
+    },
+    [
+      control,
+      onSubmit,
+      method,
+      action,
+      headers,
+      encType,
+      validateStatus,
+      onError,
+      onSuccess,
+    ],
+  );
 
   React.useEffect(() => {
     setMounted(true);

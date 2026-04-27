@@ -1,6 +1,6 @@
-import { expectNotType, expectType } from 'tsd';
-
 import { useController } from '../useController';
+
+import type { Equal, Expect, NotEqual } from './__fixtures__';
 
 /** {@link useController} */ {
   /** it should NOT infer never[] when defaultValue is empty array without explicit types */ {
@@ -11,8 +11,8 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectNotType<never>(field.name);
-    expectNotType<never[]>(field.value);
+    type _t1 = Expect<NotEqual<typeof field.name, never>>;
+    type _t2 = Expect<NotEqual<typeof field.value, never[]>>;
 
     if (Array.isArray(field.value)) {
       field.value.includes('test');
@@ -32,8 +32,8 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectType<string[]>(field.value);
-    expectType<'items'>(field.name);
+    type _t1 = Expect<Equal<typeof field.value, string[]>>;
+    type _t2 = Expect<Equal<typeof field.name, 'items'>>;
   }
 
   /** it should work with optional array fields */ {
@@ -48,7 +48,7 @@ import { useController } from '../useController';
       defaultValue: undefined,
     });
 
-    expectType<string[] | undefined>(field.value);
+    type _t = Expect<Equal<typeof field.value, string[] | undefined>>;
   }
 
   /** it should work with nested array access */ {
@@ -65,7 +65,7 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectType<number[]>(field.value);
+    type _t = Expect<Equal<typeof field.value, number[]>>;
   }
 
   /** it should handle array of objects */ {
@@ -80,6 +80,8 @@ import { useController } from '../useController';
       defaultValue: [],
     });
 
-    expectType<Array<{ id: string; name: string }>>(field.value);
+    type _t = Expect<
+      Equal<typeof field.value, Array<{ id: string; name: string }>>
+    >;
   }
 }

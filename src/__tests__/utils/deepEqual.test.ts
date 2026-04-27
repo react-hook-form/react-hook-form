@@ -90,6 +90,27 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
+  it('should return true when comparing sparse array against plain object with numeric string keys (issue #13346)', () => {
+    const sparseArray: any[] = [];
+    sparseArray[123] = { name: 'Alice' };
+    sparseArray[456] = { name: 'Bob' };
+
+    const plainObject: any = {
+      '123': { name: 'Alice' },
+      '456': { name: 'Bob' },
+    };
+
+    expect(deepEqual(sparseArray, plainObject)).toBeTruthy();
+    expect(deepEqual(plainObject, sparseArray)).toBeTruthy();
+
+    expect(
+      deepEqual({ items: sparseArray }, { items: plainObject }),
+    ).toBeTruthy();
+    expect(
+      deepEqual({ items: plainObject }, { items: sparseArray }),
+    ).toBeTruthy();
+  });
+
   it('should compare date time object valueOf', () => {
     expect(
       deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),

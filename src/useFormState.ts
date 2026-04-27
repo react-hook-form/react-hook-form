@@ -3,6 +3,7 @@ import React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import type {
   FieldValues,
+  FormState,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
@@ -51,7 +52,13 @@ export function useFormState<
     TTransformedValues
   >();
   const { control = formControl, disabled, name, exact } = props || {};
-  const [formState, updateFormState] = React.useState(control._formState);
+  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
+    () => ({
+      ...control._formState,
+      defaultValues:
+        control._defaultValues as FormState<TFieldValues>['defaultValues'],
+    }),
+  );
   const _localProxyFormState = React.useRef({
     isDirty: false,
     isLoading: false,
@@ -74,6 +81,8 @@ export function useFormState<
             updateFormState({
               ...control._formState,
               ...formState,
+              defaultValues:
+                control._defaultValues as FormState<TFieldValues>['defaultValues'],
             });
         },
       }),

@@ -34,8 +34,6 @@ describe('useFieldArrayNested', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         test: [
           {
-            firstName: false,
-            lastName: false,
             keyValue: [
               { name: true },
               { name: true },
@@ -129,7 +127,7 @@ describe('useFieldArrayNested', () => {
             lastName: true,
           },
           { firstName: true },
-          { firstName: true, keyValue: [] },
+          { firstName: true },
           {
             firstName: true,
             lastName: true,
@@ -194,8 +192,8 @@ describe('useFieldArrayNested', () => {
             keyValue: [{ name: true }, { name: true }, { name: true }],
             lastName: true,
           },
-          { firstName: true, keyValue: [] },
-          { firstName: true, keyValue: [] },
+          { firstName: true },
+          { firstName: true },
           {
             firstName: true,
             lastName: true,
@@ -253,9 +251,9 @@ describe('useFieldArrayNested', () => {
             keyValue: [{ name: true }, { name: true }],
             lastName: true,
           },
-          { firstName: true, keyValue: [] },
-          { firstName: true, keyValue: [] },
-          { firstName: true, lastName: true, keyValue: [] },
+          { firstName: true },
+          { firstName: true },
+          { firstName: true, lastName: true },
         ],
       }),
     );
