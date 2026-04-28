@@ -79,12 +79,22 @@ export function useController<
     [control, name, defaultValue],
   );
 
-  const value = useWatch({
+  const watchedValue = useWatch({
     control,
     name,
     defaultValue: defaultValueMemo,
     exact,
   }) as FieldPathValue<TFieldValues, TName>;
+
+  const liveValue = get(control._formValues, name) as
+    | FieldPathValue<TFieldValues, TName>
+    | undefined;
+
+  const value = (
+    liveValue !== undefined && liveValue !== watchedValue
+      ? liveValue
+      : watchedValue
+  ) as FieldPathValue<TFieldValues, TName>;
 
   const formState = useFormState({
     control,
