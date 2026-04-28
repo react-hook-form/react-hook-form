@@ -102,6 +102,7 @@ const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
+  isPending: false,
 } as const;
 
 export const DEFAULT_FORM_STATE = {
@@ -173,6 +174,7 @@ export function createFormControl<
   let timer = 0;
   const defaultProxyFormState: ReadFormState = {
     isDirty: false,
+    isSubmitting: false,
     dirtyFields: false,
     validatingFields: false,
     touchedFields: false,
