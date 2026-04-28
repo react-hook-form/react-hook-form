@@ -148,6 +148,79 @@ describe('clone', () => {
     });
   });
 
+  describe('Blob not defined', () => {
+    const blob = globalThis.Blob;
+
+    beforeAll(() => {
+      // @ts-expect-error we want to test that clone does not throw if Blob is not defined.
+      delete globalThis.Blob;
+    });
+
+    afterAll(() => {
+      globalThis.Blob = blob;
+    });
+
+    it('should not throw if Blob is not defined', () => {
+      const data = {
+        a: {
+          b: 1,
+        },
+      };
+
+      expect(() => cloneObject(data)).not.toThrow();
+
+      const copy = cloneObject(data);
+      expect(copy).toEqual(data);
+      expect(copy).not.toBe(data);
+      expect(copy.a).not.toBe(data.a);
+    });
+  });
+
+  describe('isWeb false', () => {
+    const originalBlob = globalThis.Blob;
+
+    beforeAll(() => {
+      if (typeof globalThis.Blob === 'undefined') {
+        class BlobMock {}
+        // @ts-expect-error we want to test behaviour when Blob exists.
+        globalThis.Blob = BlobMock;
+      }
+    });
+
+    afterAll(() => {
+      globalThis.Blob = originalBlob;
+    });
+
+    it('should still clone plain objects even when they contain a Blob', async () => {
+      jest.resetModules();
+
+      jest.doMock('../../utils/isWeb', () => ({
+        __esModule: true,
+        default: false,
+      }));
+
+      const { default: cloneObjectWithIsWebFalse } =
+        (await import('../../utils/cloneObject')) as {
+          default: typeof cloneObject;
+        };
+
+      const blob = new Blob(['x']);
+      const data = {
+        nested: {
+          blob,
+          value: 1,
+        },
+      };
+
+      const copy = cloneObjectWithIsWebFalse(data);
+
+      expect(copy).toEqual(data);
+      expect(copy).not.toBe(data);
+      expect(copy.nested).not.toBe(data.nested);
+      expect(copy.nested.blob).toBe(blob);
+    });
+  });
+
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips polyfill
