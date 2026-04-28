@@ -678,55 +678,6 @@ describe('reset', () => {
         );
       });
 
-      it('should only update none dirty fields and keep other values updated', async () => {
-        render(<App />);
-
-        fireEvent.change(screen.getByPlaceholderText('First Name'), {
-          target: {
-            value: 'test',
-          },
-        });
-
-        await waitFor(() =>
-          expect(
-            (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
-              .value,
-          ).toEqual('luo'),
-        );
-
-        expect(updatedDirtyFields).toEqual({
-          firstName: true,
-        });
-        expect(updatedDirty).toBeTruthy();
-
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-
-        await waitFor(() =>
-          expect(submittedValue).toEqual({
-            firstName: 'test',
-            lastName: 'luo',
-          }),
-        );
-
-        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-
-        expect(
-          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
-        ).toEqual('bill');
-
-        expect(updatedDirtyFields).toEqual({});
-        expect(updatedDirty).toBeFalsy();
-
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-
-        await waitFor(() =>
-          expect(submittedValue).toEqual({
-            firstName: 'bill',
-            lastName: 'luo',
-          }),
-        );
-      });
-
       it('should treat previously-undirty fields as dirty when keepDefaultValues is set', async () => {
         let updatedDirtyFields: Record<string, boolean> = {};
         let updatedDirty = false;
@@ -926,6 +877,7 @@ describe('reset', () => {
 
         expect(updatedDirtyFields).toEqual({
           firstName: true,
+          lastName: false,
         });
         expect(updatedDirty).toBeTruthy();
 

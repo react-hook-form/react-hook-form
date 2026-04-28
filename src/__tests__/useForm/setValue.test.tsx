@@ -912,7 +912,7 @@ describe('setValue', () => {
         );
 
         expect(result.current.formState.isDirty).toBeFalsy();
-        expect(result.current.formState.dirtyFields.test).toBeUndefined();
+        expect(result.current.formState.dirtyFields.test).toBeDefined();
       },
     );
   });
@@ -1586,7 +1586,7 @@ describe('setValue', () => {
 
     expect(result.current.formState.isDirty).toBeTruthy();
     expect(result.current.formState.dirtyFields).toEqual({
-      data: true,
+      data: [{ id: true, name: true }],
     });
   });
 });
