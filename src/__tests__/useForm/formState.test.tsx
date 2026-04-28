@@ -1052,6 +1052,124 @@ describe('formState', () => {
 
         expect(await screen.findByText(message)).toBeVisible();
       });
+
+      it('should delay, show immediately, or cancel error via setValue depending on delayError option', async () => {
+        jest.useFakeTimers();
+
+        const message = 'required.';
+
+        const App = () => {
+          const {
+            register,
+            setValue,
+            formState: { errors },
+          } = useForm<{ test: string }>({
+            delayError: 500,
+          });
+
+          return (
+            <div>
+              <input {...register('test', { maxLength: 4 })} />
+              {errors.test && <p>{message}</p>}
+              <button
+                data-testid="delayed"
+                onClick={() =>
+                  setValue('test', '123456', {
+                    shouldValidate: true,
+                    delayError: true,
+                  })
+                }
+              />
+              <button
+                data-testid="immediate"
+                onClick={() =>
+                  setValue('test', '123456', { shouldValidate: true })
+                }
+              />
+              <button
+                data-testid="valid"
+                onClick={() =>
+                  setValue('test', '12', {
+                    shouldValidate: true,
+                    delayError: true,
+                  })
+                }
+              />
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('delayed'));
+        });
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        await act(async () => {
+          jest.advanceTimersByTime(500);
+        });
+        expect(await screen.findByText(message)).toBeVisible();
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('delayed'));
+        });
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('valid'));
+        });
+        await act(async () => {
+          jest.advanceTimersByTime(500);
+        });
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('immediate'));
+        });
+        expect(await screen.findByText(message)).toBeVisible();
+
+        jest.useRealTimers();
+      });
+
+      it('should show error immediately when form-level delayError is not configured', async () => {
+        jest.useFakeTimers();
+
+        const message = 'required.';
+
+        const App = () => {
+          const {
+            register,
+            setValue,
+            formState: { errors },
+          } = useForm<{ test: string }>();
+
+          return (
+            <div>
+              <input {...register('test', { maxLength: 4 })} />
+              {errors.test && <p>{message}</p>}
+              <button
+                data-testid="trigger"
+                onClick={() =>
+                  setValue('test', '123456', {
+                    shouldValidate: true,
+                    delayError: true,
+                  })
+                }
+              />
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('trigger'));
+        });
+        expect(await screen.findByText(message)).toBeVisible();
+
+        jest.useRealTimers();
+      });
     });
   });
 
