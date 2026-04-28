@@ -1289,6 +1289,21 @@ export function createFormControl<
     }
   };
 
+  const _unregisterField = (
+    name: InternalFieldName,
+    shouldUnregister?: boolean,
+  ) => {
+    const field = get(_fields, name, {});
+
+    if (field._f) {
+      field._f.mount = false;
+    }
+
+    (_options.shouldUnregister || shouldUnregister) &&
+      !(isNameInFieldArray(_names.array, name) && _state.action) &&
+      _names.unMount.add(name);
+  };
+
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
     let field = get(_fields, name);
     const disabledIsDefined =
@@ -1335,7 +1350,7 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
-      ref: (ref: HTMLInputElement | null): void => {
+      ref: (ref: HTMLInputElement | null) => {
         if (ref) {
           _names.registerName.add(name);
           register(name, options);
@@ -1376,16 +1391,11 @@ export function createFormControl<
 
           updateValidAndValue(name, false, undefined, fieldRef);
         } else {
-          field = get(_fields, name, {});
-
-          if (field._f) {
-            field._f.mount = false;
-          }
-
-          (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _state.action) &&
-            _names.unMount.add(name);
+          _unregisterField(name, options.shouldUnregister);
         }
+
+        return () =>
+          ref && _unregisterField(ref.name, options.shouldUnregister);
       },
     };
   };
