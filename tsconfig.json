@@ -5,7 +5,7 @@
     "sourceMap": true,
     "module": "es2015",
     "target": "es2018",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "jsx": "react",
     "skipLibCheck": true,
