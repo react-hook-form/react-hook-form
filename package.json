@@ -136,5 +136,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "picomatch": "2.3.1"
+    }
   }
 }
