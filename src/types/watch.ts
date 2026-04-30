@@ -51,8 +51,8 @@ export type WatchRenderValue<
   : TComputeValue;
 
 export type WatchProps<
-  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends WatchName<TFieldValues> = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
@@ -68,7 +68,7 @@ export type WatchProps<
   exact?: boolean;
   defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
   compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
-  render: (
+  render?: (
     value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
   ) => ReactNode | ReactNode[];
 };

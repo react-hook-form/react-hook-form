@@ -1,6 +1,7 @@
+import { identity } from './utils/identity';
 import type {
-  FieldPath,
   FieldValues,
+  WatchName,
   WatchProps,
   WatchRenderValue,
 } from './types';
@@ -34,27 +35,24 @@ import { useWatch } from './useWatch';
  */
 export const Watch = <
   TFieldValues extends FieldValues = FieldValues,
-  const TFieldName extends
-    | FieldPath<TFieldValues>
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
-    | undefined = undefined,
+  const TFieldName extends WatchName<TFieldValues> = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
 >(
   props: WatchProps<
-    TFieldName,
     TFieldValues,
+    TFieldName,
     TContext,
     TTransformedValues,
     TComputeValue
   >,
-) =>
-  props.render(
-    useWatch({ name: props.names, ...(props as any) }) as WatchRenderValue<
-      TFieldName,
-      TFieldValues,
-      TComputeValue
-    >,
-  );
+): React.ReactNode => {
+  type WatchedValue = WatchRenderValue<TFieldName, TFieldValues, TComputeValue>;
+
+  const render = props.render || identity;
+
+  return render(
+    useWatch({ name: props.names, ...(props as any) }) as WatchedValue,
+  ) as any;
+};
