@@ -191,8 +191,14 @@ export function useController<
   );
 
   React.useEffect(() => {
+    // Field-level shouldUnregister takes precedence over the global option.
+    // Using ?? (nullish coalescing) ensures an explicit `shouldUnregister={false}`
+    // on the Controller prop can override a global `shouldUnregister: true` in
+    // useForm options. Previously the `||` operator meant the global option always
+    // won, causing values to be lost on remount even when the field explicitly
+    // opted out of unregistering (fixes #12884).
     const _shouldUnregisterField =
-      control._options.shouldUnregister || shouldUnregister;
+      shouldUnregister ?? control._options.shouldUnregister;
 
     control.register(name, {
       ..._props.current.rules,
@@ -230,7 +236,12 @@ export function useController<
           : _shouldUnregisterField
       )
         ? control.unregister(name)
-        : updateMounted(name, false);
+        : // Only mark as unmounted if the field hasn't already been re-mounted
+          // by a new Controller instance (e.g. during multi-step wizard remounts).
+          // This prevents the cleanup of a stale instance from undoing the mount
+          // state set by the newly mounted instance when they share the same name.
+          get(control._fields, name)?._f?.mount !== true &&
+          updateMounted(name, false);
     };
   }, [name, control, isArrayField, shouldUnregister]);
 
