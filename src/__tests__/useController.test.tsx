@@ -181,7 +181,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([4, 4]);
+    expect(renderCounter).toEqual([3, 4]);
   });
 
   describe('checkbox', () => {

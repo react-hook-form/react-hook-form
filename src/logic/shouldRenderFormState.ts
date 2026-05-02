@@ -21,7 +21,8 @@ export default <T extends FieldValues, K extends ReadFormState>(
 
   return (
     isEmptyObject(formState) ||
-    Object.keys(formState).length >= Object.keys(_proxyFormState).length ||
+    (isRoot &&
+      Object.keys(formState).length >= Object.keys(_proxyFormState).length) ||
     Object.keys(formState).find(
       (key) =>
         _proxyFormState[key as keyof ReadFormState] ===
