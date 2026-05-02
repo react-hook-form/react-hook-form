@@ -530,4 +530,41 @@ describe('FormProvider', () => {
 
     consoleSpy.mockRestore();
   });
+
+  it('should expose setValues from useFormContext', async () => {
+    const Child = () => {
+      const { setValues, getValues } = useFormContext<{
+        a: string;
+        b: string;
+      }>();
+
+      return (
+        <button
+          data-testid="set-values"
+          onClick={() => setValues({ a: 'foo', b: 'bar' })}
+        >
+          {getValues('a')}
+        </button>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm<{ a: string; b: string }>({
+        defaultValues: { a: '', b: '' },
+      });
+      return (
+        <FormProvider {...methods}>
+          <Child />
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('set-values'));
+    });
+
+    expect(screen.getByTestId('set-values').textContent).toBe('foo');
+  });
 });
