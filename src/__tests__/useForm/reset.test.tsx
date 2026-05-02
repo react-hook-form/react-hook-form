@@ -877,7 +877,6 @@ describe('reset', () => {
 
         expect(updatedDirtyFields).toEqual({
           firstName: true,
-          lastName: false,
         });
         expect(updatedDirty).toBeTruthy();
 

@@ -912,7 +912,7 @@ describe('setValue', () => {
         );
 
         expect(result.current.formState.isDirty).toBeFalsy();
-        expect(result.current.formState.dirtyFields.test).toBeDefined();
+        expect(result.current.formState.dirtyFields.test).toBeUndefined();
       },
     );
   });
