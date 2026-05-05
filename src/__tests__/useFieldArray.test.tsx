@@ -4719,7 +4719,7 @@ it('should not lose defaultValues when useFieldArray and watch are used together
     pets: [],
   };
 
-  const capturedDefaultValues: unknown[] = [];
+  const defaultValuesSnapshots: unknown[] = [];
 
   const App = () => {
     const {
@@ -4732,7 +4732,7 @@ it('should not lose defaultValues when useFieldArray and watch are used together
 
     watch();
 
-    capturedDefaultValues.push(formDefaultValues);
+    defaultValuesSnapshots.push(formDefaultValues);
 
     return (
       <ul>
@@ -4746,10 +4746,10 @@ it('should not lose defaultValues when useFieldArray and watch are used together
   render(<App />);
 
   await waitFor(() => {
-    expect(capturedDefaultValues.length).toBeGreaterThan(0);
+    expect(defaultValuesSnapshots.length).toBeGreaterThan(0);
   });
 
-  for (const val of capturedDefaultValues) {
+  for (const val of defaultValuesSnapshots) {
     expect(val).toEqual(defaultValues);
   }
 });
