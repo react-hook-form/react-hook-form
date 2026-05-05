@@ -219,7 +219,7 @@ export type UseFormRegisterReturn<
  * @param name - the path name to the form field value, name is required and unique
  * @param options - register options include validation, disabled, unregister, value as and dependent validation
  *
- * @returns onChange, onBlur, name, ref, and native contribute attribute if browser validation is enabled.
+ * @returns onChange, onBlur, name, ref, and native HTML validation attributes if browser validation is enabled.
  *
  * @example
  * ```tsx
@@ -367,7 +367,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
  *
  * @param name - the path name to the form field value.
  *
- * @returns invalid, isDirty, isTouched and error object
+ * @returns invalid, isDirty, isTouched, isValidating, and error object
  *
  * @example
  * ```tsx
