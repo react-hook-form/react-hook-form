@@ -92,7 +92,12 @@ export function useForm<
   useIsomorphicLayoutEffect(() => {
     const sub = control._subscribe({
       formState: control._proxyFormState,
-      callback: () => updateFormState({ ...control._formState }),
+      callback: () =>
+        updateFormState({
+          ...control._formState,
+          defaultValues:
+            control._defaultValues as FormState<TFieldValues>['defaultValues'],
+        }),
       reRenderRoot: true,
     });
 

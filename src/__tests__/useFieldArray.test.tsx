@@ -4709,3 +4709,47 @@ describe('useFieldArray with checkbox', () => {
     expect(screen.queryByTestId('error')).not.toBeInTheDocument();
   });
 });
+
+it('should not lose defaultValues when useFieldArray and watch are used together', async () => {
+  type FormValues = {
+    pets: { name: string }[];
+  };
+
+  const defaultValues: FormValues = {
+    pets: [],
+  };
+
+  const capturedDefaultValues: unknown[] = [];
+
+  const App = () => {
+    const {
+      control,
+      watch,
+      formState: { defaultValues: formDefaultValues },
+    } = useForm<FormValues>({ defaultValues });
+
+    const { fields } = useFieldArray({ control, name: 'pets' });
+
+    watch();
+
+    capturedDefaultValues.push(formDefaultValues);
+
+    return (
+      <ul>
+        {fields.map((field, index) => (
+          <li key={field.id}>{index}</li>
+        ))}
+      </ul>
+    );
+  };
+
+  render(<App />);
+
+  await waitFor(() => {
+    expect(capturedDefaultValues.length).toBeGreaterThan(0);
+  });
+
+  for (const val of capturedDefaultValues) {
+    expect(val).toEqual(defaultValues);
+  }
+});
