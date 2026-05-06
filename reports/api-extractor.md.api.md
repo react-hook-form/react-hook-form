@@ -729,7 +729,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 // @public
-export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = <TResult>(onValid: SubmitHandler<TTransformedValues, TResult>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<TResult | undefined>;
+export type UseFormHandleSubmit<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = <TResult>(onValid: SubmitHandler<TTransformedValues, TResult>, onInvalid?: SubmitErrorHandler<TFieldValues>) => (e?: React_2.BaseSyntheticEvent) => Promise<Awaited<TResult> | undefined>;
 
 // @public (undocumented)
 export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = Partial<{
