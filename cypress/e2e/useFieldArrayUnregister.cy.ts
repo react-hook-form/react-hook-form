@@ -8,7 +8,7 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true, conditional: true }],
+        data: [{ name: true, conditional: true }, null, null],
       }),
     );
 
@@ -54,7 +54,7 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: true },
-          { name: false },
+          null,
           { name: true, conditional: true },
           { name: true },
         ],

@@ -1,8 +1,9 @@
-import { expectType } from 'tsd';
 import { z } from 'zod';
 
 import type { FieldError, FieldValues, Resolver } from '../types';
 import { useForm } from '../useForm';
+
+import type { Equal, Expect } from './__fixtures__';
 
 /** {@link UseFormHandleSubmit} */ {
   /** it should infer the correct defaultValues from useForm */ {
@@ -14,7 +15,9 @@ import { useForm } from '../useForm';
       },
     });
 
-    handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
+    handleSubmit((data) => {
+      type _t = Expect<Equal<typeof data, { test: string; test1: number }>>;
+    });
   }
 
   /** it should infer the correct defaultValues from useForm generic */ {
@@ -24,7 +27,9 @@ import { useForm } from '../useForm';
       test1: number;
     }>();
 
-    handleSubmit((data) => expectType<{ test: string; test1: number }>(data));
+    handleSubmit((data) => {
+      type _t = Expect<Equal<typeof data, { test: string; test1: number }>>;
+    });
   }
 }
 
@@ -40,10 +45,15 @@ import { useForm } from '../useForm';
   });
 
   handleSubmit((data) => {
-    expectType<{
-      test: string;
-      test1: number;
-    }>(data);
+    type _t = Expect<
+      Equal<
+        typeof data,
+        {
+          test: string;
+          test1: number;
+        }
+      >
+    >;
   });
 }
 
@@ -57,10 +67,11 @@ const schema = z.object({
     resolver: mockZodResolver(schema),
   });
 
-  expectType<number>(form.watch('id'));
+  const watchedId = form.watch('id');
+  type _t1 = Expect<Equal<typeof watchedId, number>>;
 
   form.handleSubmit((data) => {
-    expectType<{ id: number }>(data);
+    type _t = Expect<Equal<typeof data, { id: number }>>;
   });
 }
 
@@ -73,7 +84,7 @@ const schema = z.object({
   });
 
   form.handleSubmit((data) => {
-    expectType<{ id: string }>(data);
+    type _t = Expect<Equal<typeof data, { id: string }>>;
   });
 }
 
@@ -87,10 +98,10 @@ const schema = z.object({
 
   handleSubmit((data) => {
     // @ts-expect-error `data` should be union and thus should not be assignable to `{ test: string }`
-    expectType<{ test: string }>(data);
+    type _t1 = Expect<Equal<typeof data, { test: string }>>;
     // @ts-expect-error `data` should be union and thus should not be assignable to `{ test1: number }`
-    expectType<{ test1: number }>(data);
-    expectType<{ test: string } | { test1: number }>(data);
+    type _t2 = Expect<Equal<typeof data, { test1: number }>>;
+    type _t3 = Expect<Equal<typeof data, { test: string } | { test1: number }>>;
   });
 }
 
@@ -103,13 +114,19 @@ const schema = z.object({
       },
     });
 
-    expectType<{
-      invalid: boolean;
-      isDirty: boolean;
-      isTouched: boolean;
-      isValidating: boolean;
-      error?: FieldError;
-    }>(getFieldState('test'));
+    const state = getFieldState('test');
+    type _t = Expect<
+      Equal<
+        typeof state,
+        {
+          invalid: boolean;
+          isDirty: boolean;
+          isTouched: boolean;
+          isValidating: boolean;
+          error?: FieldError;
+        }
+      >
+    >;
   }
 
   /** it should return associated field state when formState is supplied */ {
@@ -120,13 +137,19 @@ const schema = z.object({
       },
     });
 
-    expectType<{
-      invalid: boolean;
-      isDirty: boolean;
-      isTouched: boolean;
-      isValidating: boolean;
-      error?: FieldError;
-    }>(getFieldState('test', formState));
+    const state = getFieldState('test', formState);
+    type _t = Expect<
+      Equal<
+        typeof state,
+        {
+          invalid: boolean;
+          isDirty: boolean;
+          isTouched: boolean;
+          isValidating: boolean;
+          error?: FieldError;
+        }
+      >
+    >;
   }
 }
 
@@ -143,8 +166,8 @@ const schema = z.object({
         submitCount: true,
       },
       callback: (state) => {
-        expectType<boolean | undefined>(state.isSubmitted);
-        expectType<number | undefined>(state.submitCount);
+        type _t1 = Expect<Equal<typeof state.isSubmitted, boolean | undefined>>;
+        type _t2 = Expect<Equal<typeof state.submitCount, number | undefined>>;
       },
     });
   }
