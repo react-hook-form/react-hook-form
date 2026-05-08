@@ -155,4 +155,33 @@ describe('deepEqual', () => {
     expect(deepEqual({ value: NaN }, { value: 'NaN' })).toBeFalsy();
     expect(deepEqual([NaN], [0])).toBeFalsy();
   });
+
+  it('should treat React elements as opaque and not recurse into internals', () => {
+    const REACT_ELEMENT_TYPE = Symbol.for ? Symbol.for('react.element') : 0xeac7;
+
+    const element1 = {
+      $$typeof: REACT_ELEMENT_TYPE,
+      type: 'div',
+      key: null,
+      ref: null,
+      props: { children: 'Hello' },
+      _owner: { memoizedProps: { params: new Proxy({}, {}) } },
+    };
+
+    const element2 = {
+      $$typeof: REACT_ELEMENT_TYPE,
+      type: 'div',
+      key: null,
+      ref: null,
+      props: { children: 'World' },
+      _owner: { memoizedProps: { params: new Proxy({}, {}) } },
+    };
+
+    expect(deepEqual(element1, element2)).toBeFalsy();
+    expect(deepEqual(element1, element1)).toBeTruthy();
+
+    const formA = { label: element1, value: 'opt1' };
+    const formB = { label: element2, value: 'opt1' };
+    expect(deepEqual(formA, formB)).toBeFalsy();
+  });
 });
