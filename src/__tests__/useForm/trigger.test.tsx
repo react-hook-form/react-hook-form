@@ -17,6 +17,7 @@ import type {
   UseFormGetFieldState,
 } from '../../types';
 import { useController } from '../../useController';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
@@ -1029,6 +1030,59 @@ describe('trigger', () => {
       expect(getFieldState('test1').isValidating).toBe(false);
       expect(getFieldState('test2.sub').isValidating).toBe(false);
       expect(formState.validatingFields).toStrictEqual({});
+    });
+  });
+
+  it('should put resolver errors for a registered field array under root - issue #13104', async () => {
+    type FormValues = { items: { name: string }[] };
+
+    const resolver = async (values: FormValues) => {
+      if (!values.items || values.items.length < 1) {
+        return {
+          values: {},
+          errors: {
+            items: {
+              type: 'min',
+              message: 'at_least_1_item',
+            },
+          },
+        };
+      }
+      return { values, errors: {} };
+    };
+
+    let triggerErrors: any;
+
+    const App = () => {
+      const {
+        control,
+        trigger,
+        formState: { errors },
+      } = useForm<FormValues>({
+        defaultValues: { items: [] },
+        resolver: resolver as any,
+      });
+
+      // Registers `items` in `_names.array` so RHF treats it as a field array root.
+      useFieldArray({ control, name: 'items' });
+
+      triggerErrors = errors;
+
+      return (
+        <button type="button" onClick={() => trigger('items')}>
+          trigger
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(triggerErrors.items?.root?.message).toBe('at_least_1_item');
     });
   });
 });
