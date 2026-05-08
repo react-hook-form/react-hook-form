@@ -868,6 +868,19 @@ export function createFormControl<
     if (!isValueUnchanged) {
       const watched = isWatched(name, _names);
 
+      if (!isFieldArray && isNameInFieldArray(_names.array, name)) {
+        const arrayName = [..._names.array].find(
+          (arrName) =>
+            name.startsWith(arrName + '.') &&
+            !isNaN(Number(name.slice(arrName.length + 1).split('.')[0])),
+        );
+        arrayName &&
+          _subjects.array.next({
+            name: arrayName,
+            values: cloneObject(_formValues),
+          });
+      }
+
       _subjects.state.next({
         ...(watched && _formState),
         name: _state.mount || watched ? name : undefined,

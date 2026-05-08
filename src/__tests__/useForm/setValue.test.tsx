@@ -1589,4 +1589,45 @@ describe('setValue', () => {
       data: [{ id: true, name: true }],
     });
   });
+
+  it('should re-render useFieldArray fields when setValue targets a nested array path - issue #13260', () => {
+    type FormValues = {
+      items: { value: number }[];
+    };
+
+    const App = () => {
+      const { control, setValue } = useForm<FormValues>({
+        defaultValues: {
+          items: [{ value: 0 }, { value: 0 }, { value: 0 }],
+        },
+      });
+      const { fields } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <span key={field.id} data-testid={`item-${index}`}>
+              {field.value}
+            </span>
+          ))}
+          <button
+            type="button"
+            onClick={() => setValue('items.1.value', 42, { shouldDirty: true })}
+          >
+            update
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('item-1').textContent).toBe('0');
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /update/i }));
+    });
+
+    expect(screen.getByTestId('item-1').textContent).toBe('42');
+  });
 });
