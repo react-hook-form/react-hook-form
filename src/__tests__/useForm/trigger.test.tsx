@@ -11,9 +11,11 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 import type {
   Control,
+  FieldErrors,
   FieldPath,
   FieldValues,
   FormState,
+  Resolver,
   UseFormGetFieldState,
 } from '../../types';
 import { useController } from '../../useController';
@@ -1036,7 +1038,7 @@ describe('trigger', () => {
   it('should put resolver errors for a registered field array under root - issue #13104', async () => {
     type FormValues = { items: { name: string }[] };
 
-    const resolver = async (values: FormValues) => {
+    const resolver: Resolver<FormValues> = async (values) => {
       if (!values.items || values.items.length < 1) {
         return {
           values: {},
@@ -1051,7 +1053,7 @@ describe('trigger', () => {
       return { values, errors: {} };
     };
 
-    let triggerErrors: any;
+    let triggerErrors: FieldErrors<FormValues> | undefined;
 
     const App = () => {
       const {
@@ -1060,7 +1062,7 @@ describe('trigger', () => {
         formState: { errors },
       } = useForm<FormValues>({
         defaultValues: { items: [] },
-        resolver: resolver as any,
+        resolver,
       });
 
       // Registers `items` in `_names.array` so RHF treats it as a field array root.
