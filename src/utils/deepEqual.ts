@@ -5,7 +5,11 @@ import isPrimitive from './isPrimitive';
 const REACT_ELEMENT_TYPE = Symbol.for ? Symbol.for('react.element') : 0xeac7;
 
 function isReactElement(obj: any): boolean {
-  return obj != null && typeof obj === 'object' && obj.$$typeof === REACT_ELEMENT_TYPE;
+  return (
+    obj != null &&
+    typeof obj === 'object' &&
+    obj.$$typeof === REACT_ELEMENT_TYPE
+  );
 }
 
 export default function deepEqual(
