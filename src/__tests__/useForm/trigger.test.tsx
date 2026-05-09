@@ -11,12 +11,15 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 import type {
   Control,
+  FieldErrors,
   FieldPath,
   FieldValues,
   FormState,
+  Resolver,
   UseFormGetFieldState,
 } from '../../types';
 import { useController } from '../../useController';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
@@ -1029,6 +1032,109 @@ describe('trigger', () => {
       expect(getFieldState('test1').isValidating).toBe(false);
       expect(getFieldState('test2.sub').isValidating).toBe(false);
       expect(formState.validatingFields).toStrictEqual({});
+    });
+  });
+
+  it('should put resolver field-array root errors under root - issue #13104', async () => {
+    type FormValues = { items: { name: string }[] };
+
+    const resolver: Resolver<FormValues> = async (values) => {
+      if (!values.items || values.items.length < 1) {
+        return {
+          values: {},
+          errors: {
+            items: {
+              type: 'min',
+              message: 'at_least_1_item',
+            },
+          },
+        };
+      }
+
+      return { values, errors: {} };
+    };
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+
+    const App = () => {
+      const {
+        control,
+        trigger,
+        formState: { errors },
+      } = useForm<FormValues>({
+        defaultValues: { items: [] },
+        resolver,
+      });
+
+      useFieldArray({ control, name: 'items' });
+      triggerErrors = errors;
+
+      return (
+        <button type="button" onClick={() => trigger('items')}>
+          trigger
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(triggerErrors?.items?.root?.message).toBe('at_least_1_item');
+    });
+  });
+
+  it('should preserve resolver nested field-array item errors on trigger', async () => {
+    type FormValues = { items: { name: string }[] };
+
+    const resolver: Resolver<FormValues> = async () => ({
+      values: {},
+      errors: {
+        items: [
+          {
+            name: {
+              type: 'required',
+              message: 'name_required',
+            },
+          },
+        ] as FieldErrors<FormValues>['items'],
+      },
+    });
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+
+    const App = () => {
+      const {
+        control,
+        trigger,
+        formState: { errors },
+      } = useForm<FormValues>({
+        defaultValues: { items: [{ name: '' }] },
+        resolver,
+      });
+
+      useFieldArray({ control, name: 'items' });
+      triggerErrors = errors;
+
+      return (
+        <button type="button" onClick={() => trigger('items')}>
+          trigger
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(triggerErrors?.items?.[0]?.name?.message).toBe('name_required');
+      expect(triggerErrors?.items?.root).toBeUndefined();
     });
   });
 });

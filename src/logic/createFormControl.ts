@@ -516,7 +516,16 @@ export function createFormControl<
       for (const name of names) {
         const error = get(errors, name);
         error
-          ? set(_formState.errors, name, error)
+          ? _names.array.has(name) &&
+            isObject(error) &&
+            !Array.isArray(error) &&
+            'type' in error
+            ? updateFieldArrayRootError(
+                _formState.errors,
+                { [name]: error as FieldError },
+                name,
+              )
+            : set(_formState.errors, name, error)
           : unset(_formState.errors, name);
       }
     } else {
