@@ -80,6 +80,7 @@ import unset from '../utils/unset';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
+import getFieldArrayParentNames from './getFieldArrayParentNames';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -87,7 +88,6 @@ import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
 import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
-import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
@@ -875,26 +875,9 @@ export function createFormControl<
       const watched = isWatched(name, _names);
       const values = cloneObject(_formValues);
 
-      if (!isFieldArray && isNameInFieldArray(_names.array, name)) {
-        const nameParts = name.split('.');
-        let arrayName = nameParts[0];
-
-        for (
-          let segmentIndex = 1;
-          segmentIndex < nameParts.length;
-          segmentIndex++
-        ) {
-          if (
-            _names.array.has(arrayName) &&
-            !isNaN(Number(nameParts[segmentIndex]))
-          ) {
-            _subjects.array.next({
-              name: arrayName,
-              values,
-            });
-          }
-
-          arrayName += `.${nameParts[segmentIndex]}`;
+      if (!isFieldArray) {
+        for (const arrayName of getFieldArrayParentNames(_names.array, name)) {
+          _subjects.array.next({ name: arrayName, values });
         }
       }
 
@@ -1436,7 +1419,10 @@ export function createFormControl<
           }
 
           (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _state.action) &&
+            !(
+              getFieldArrayParentNames(_names.array, name).length &&
+              _state.action
+            ) &&
             _names.unMount.add(name);
         }
       },
