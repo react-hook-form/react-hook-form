@@ -512,17 +512,17 @@ export function createFormControl<
     const { errors } = await _runSchema(names);
     _updateIsValidating(names);
 
+    const isFieldArrayRootError = (error: unknown): error is FieldError =>
+      isObject(error) && !Array.isArray(error) && 'type' in error;
+
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
         error
-          ? _names.array.has(name) &&
-            isObject(error) &&
-            !Array.isArray(error) &&
-            'type' in error
+          ? _names.array.has(name) && isFieldArrayRootError(error)
             ? updateFieldArrayRootError(
                 _formState.errors,
-                { [name]: error as FieldError },
+                { [name]: error },
                 name,
               )
             : set(_formState.errors, name, error)

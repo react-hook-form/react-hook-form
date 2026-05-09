@@ -1090,18 +1090,20 @@ describe('trigger', () => {
   it('should preserve resolver nested field-array item errors on trigger', async () => {
     type FormValues = { items: { name: string }[] };
 
+    const nestedItemErrors: FieldErrors<FormValues> = {
+      items: [
+        {
+          name: {
+            type: 'required',
+            message: 'name_required',
+          },
+        },
+      ],
+    };
+
     const resolver: Resolver<FormValues> = async () => ({
       values: {},
-      errors: {
-        items: [
-          {
-            name: {
-              type: 'required',
-              message: 'name_required',
-            },
-          },
-        ] as FieldErrors<FormValues>['items'],
-      },
+      errors: nestedItemErrors,
     });
 
     let triggerErrors: FieldErrors<FormValues> | undefined;
