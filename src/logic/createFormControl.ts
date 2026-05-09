@@ -876,16 +876,18 @@ export function createFormControl<
       const values = cloneObject(_formValues);
 
       if (!isFieldArray && isNameInFieldArray(_names.array, name)) {
-        for (const arrayName of _names.array) {
-          if (
-            name.startsWith(arrayName + '.') &&
-            !isNaN(Number(name.slice(arrayName.length + 1).split('.')[0]))
-          ) {
+        const nameParts = name.split('.');
+        let arrayName = nameParts[0];
+
+        for (let index = 1; index < nameParts.length; index++) {
+          if (!isNaN(Number(nameParts[index])) && _names.array.has(arrayName)) {
             _subjects.array.next({
               name: arrayName,
               values,
             });
           }
+
+          arrayName += `.${nameParts[index]}`;
         }
       }
 
