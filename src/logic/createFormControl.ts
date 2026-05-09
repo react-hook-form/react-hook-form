@@ -879,15 +879,18 @@ export function createFormControl<
         const nameParts = name.split('.');
         let arrayName = nameParts[0];
 
-        for (let index = 1; index < nameParts.length; index++) {
-          if (!isNaN(Number(nameParts[index])) && _names.array.has(arrayName)) {
+        for (let partIndex = 1; partIndex < nameParts.length; partIndex++) {
+          if (
+            _names.array.has(arrayName) &&
+            !isNaN(Number(nameParts[partIndex]))
+          ) {
             _subjects.array.next({
               name: arrayName,
               values,
             });
           }
 
-          arrayName += `.${nameParts[index]}`;
+          arrayName += `.${nameParts[partIndex]}`;
         }
       }
 
