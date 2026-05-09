@@ -1561,6 +1561,95 @@ describe('setValue', () => {
     expect(valueNotifications).toHaveLength(0);
   });
 
+  it('should re-render useFieldArray fields when setValue targets a nested array path - issue #13260', () => {
+    type FormValues = {
+      items: { value: number }[];
+    };
+
+    const App = () => {
+      const { control, setValue } = useForm<FormValues>({
+        defaultValues: {
+          items: [{ value: 0 }, { value: 0 }, { value: 0 }],
+        },
+      });
+      const { fields } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <span key={field.id} data-testid={`item-${index}`}>
+              {field.value}
+            </span>
+          ))}
+          <button
+            type="button"
+            onClick={() => setValue('items.1.value', 42, { shouldDirty: true })}
+          >
+            update
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('item-1').textContent).toBe('0');
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /update/i }));
+    });
+
+    expect(screen.getByTestId('item-1').textContent).toBe('42');
+  });
+
+  it('should re-render all matching field arrays when setValue targets nested field-array path', () => {
+    type FormValues = {
+      items: { subitems: { value: number }[] }[];
+    };
+
+    const App = () => {
+      const { control, setValue } = useForm<FormValues>({
+        defaultValues: {
+          items: [{ subitems: [{ value: 0 }, { value: 0 }] }],
+        },
+      });
+      const { fields: itemFields } = useFieldArray({ control, name: 'items' });
+      const { fields: subItemFields } = useFieldArray({
+        control,
+        name: 'items.0.subitems',
+      });
+
+      return (
+        <div>
+          <span data-testid="item-nested-value">
+            {itemFields[0]?.subitems?.[1]?.value}
+          </span>
+          <span data-testid="subitem-value">{subItemFields[1]?.value}</span>
+          <button
+            type="button"
+            onClick={() =>
+              setValue('items.0.subitems.1.value', 7, { shouldDirty: true })
+            }
+          >
+            update nested
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('item-nested-value').textContent).toBe('0');
+    expect(screen.getByTestId('subitem-value').textContent).toBe('0');
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /update nested/i }));
+    });
+
+    expect(screen.getByTestId('item-nested-value').textContent).toBe('7');
+    expect(screen.getByTestId('subitem-value').textContent).toBe('7');
+  });
+
   it('should mark field as dirty when updating array of objects with shouldDirty true', () => {
     type IData = {
       data: { id: number; name: string }[];
