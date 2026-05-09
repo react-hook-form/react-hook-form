@@ -873,11 +873,26 @@ export function createFormControl<
 
     if (!isValueUnchanged) {
       const watched = isWatched(name, _names);
+      const values = cloneObject(_formValues);
+
+      if (!isFieldArray && isNameInFieldArray(_names.array, name)) {
+        for (const arrayName of _names.array) {
+          if (
+            name.startsWith(arrayName + '.') &&
+            !isNaN(Number(name.slice(arrayName.length + 1).split('.')[0]))
+          ) {
+            _subjects.array.next({
+              name: arrayName,
+              values,
+            });
+          }
+        }
+      }
 
       _subjects.state.next({
         ...(watched && _formState),
         name: _state.mount || watched ? name : undefined,
-        values: cloneObject(_formValues),
+        values,
       });
     }
   };
