@@ -836,7 +836,9 @@ export function createFormControl<
     const previousValue = get(_formValues, name);
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
-    set(_formValues, name, cloneValue);
+    if (!isValueUnchanged) {
+      set(_formValues, name, cloneValue);
+    }
 
     if (isFieldArray) {
       _subjects.array.next({

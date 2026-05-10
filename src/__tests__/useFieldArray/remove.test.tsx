@@ -1268,6 +1268,118 @@ describe('remove', () => {
     ).toBeVisible();
   });
 
+  it('should not leave empty objects in watched values when removing from field array with values prop', async () => {
+    type FormValues = {
+      items: { name: string; text: string }[];
+    };
+
+    const onUpdate = jest.fn();
+
+    function App() {
+      const [model, setModel] = React.useState<FormValues>({ items: [] });
+
+      const {
+        formState: { isValid, isDirty },
+        control,
+        watch,
+      } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: { items: [] },
+        values: model,
+      });
+
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      const watchedValues = watch();
+
+      React.useEffect(() => {
+        if (isValid && isDirty) {
+          onUpdate(watchedValues);
+          setModel(watchedValues);
+        }
+      }, [watchedValues, isValid, isDirty]);
+
+      return (
+        <form>
+          {fields.map((item, index) => (
+            <div key={item.id}>
+              <Controller
+                control={control}
+                name={`items.${index}.name`}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <input data-testid={`name-${index}`} {...field} />
+                )}
+              />
+              <Controller
+                control={control}
+                name={`items.${index}.text`}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <input data-testid={`text-${index}`} {...field} />
+                )}
+              />
+              <button type="button" onClick={() => remove(index)}>
+                remove {index}
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={() => append({ name: '', text: '' })}>
+            add
+          </button>
+          <p data-testid="fields-count">{fields.length}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    // Add first item
+    fireEvent.click(screen.getByRole('button', { name: 'add' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Fill first item
+    fireEvent.change(screen.getByTestId('name-0'), {
+      target: { value: 'foo' },
+    });
+    fireEvent.change(screen.getByTestId('text-0'), {
+      target: { value: 'bar' },
+    });
+
+    // Add second item
+    fireEvent.click(screen.getByRole('button', { name: 'add' }));
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('2');
+
+    // Fill second item
+    fireEvent.change(screen.getByTestId('name-1'), {
+      target: { value: 'baz' },
+    });
+    fireEvent.change(screen.getByTestId('text-1'), {
+      target: { value: 'qux' },
+    });
+
+    // Clear the mock so we can check post-remove calls
+    onUpdate.mockClear();
+
+    // Remove first item
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove 0' }));
+    });
+
+    expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
+
+    // Every call to onUpdate should have exactly 1 item
+    for (const call of onUpdate.mock.calls) {
+      const watchedVal = call[0] as FormValues;
+      expect(watchedVal.items).toHaveLength(1);
+      expect(watchedVal.items[0].name).toBeDefined();
+      expect(watchedVal.items[0].text).toBeDefined();
+    }
+  });
+
   it('should not re-insert removed items when using values prop with keepDirtyValues', async () => {
     type FormValues = {
       test: { value?: string }[];
