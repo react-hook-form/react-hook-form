@@ -1163,7 +1163,7 @@ export function createFormControl<
           }
         }
         values = mountedValues;
-      } else {
+      } else if (resolvedConfig.dirtyFields || resolvedConfig.touchedFields) {
         values = extractFormValues(
           resolvedConfig.dirtyFields
             ? _formState.dirtyFields
