@@ -88,8 +88,8 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
  * Checks whether the type is never
  * @typeParam T - type which may be never
  * ```
- * IsAny<never> = true
- * IsAny<string> = false
+ * IsNever<never> = true
+ * IsNever<string> = false
  * ```
  */
 export type IsNever<T> = [T] extends [never] ? true : false;

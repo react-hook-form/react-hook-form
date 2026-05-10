@@ -62,15 +62,19 @@ function App() {
 
 We’re incredibly grateful to these kind and generous sponsors for their support!
 
-<a target="_blank" href="https://thanks.dev/"><img width="120" src="https://avatars.githubusercontent.com/u/72539280?s=200&v=4" /></a>
-<a target="_blank" href="https://www.follower24.de/"><img width="120" src="https://images.opencollective.com/follower24/00297f8/avatar/256.png?height=256" /></a>
-<a target="_blank" href='https://workleap.com/'><img width="120" src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" /></a>
-<a target="_blank" href="https://kinsta.com/"><img width="120" src="https://images.opencollective.com/kinsta/55912d7/logo/256.png?height=256" /></a>
-<a target="_blank" href='https://www.sent.dm'><img width="120" src="https://avatars.githubusercontent.com/u/153308555?s=200&v=4" /></a>
-<a target="_blank" href='https://niche.com'><img width="120" src="https://avatars.githubusercontent.com/u/8988784?s=200&v=4" /></a>
-<a target="_blank" href='https://toss.im'><img width="120" src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" /></a>
-<a target="_blank" href='https://principal.com/about-us'><img width="120" src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" /></a>
-<a target="_blank" href="https://hygraph.com"><img width="120" src="https://avatars.githubusercontent.com/u/31031438" /></a>
+## Major Sponsors
+
+| Follower24 | BuyFans |
+|---|---|
+| <a href="https://www.follower24.de/"><img src="https://images.opencollective.com/follower24/00297f8/avatar/256.png?height=256" width="120"/></a> | <a href="https://buy.fans/"><img src="https://images.opencollective.com/buy-instagram-followers-buyfans/2b97c05/logo/256.png?height=256" width="120"/></a> |
+
+## Supporting Sponsors
+
+| Thanks.dev | Workleap | Kinsta | Sent | Niche |
+|---|---|---|---|---|
+| <a href="https://thanks.dev/"><img src="https://avatars.githubusercontent.com/u/72539280?s=200&v=4" width="60"/></a> | <a href="https://workleap.com/"><img src="https://images.opencollective.com/workleap/db82f38/logo/256.png?height=256" width="60"/></a> | <a href="https://kinsta.com/"><img src="https://images.opencollective.com/kinsta/55912d7/logo/256.png?height=256" width="60"/></a> | <a href="https://www.sent.dm"><img src="https://avatars.githubusercontent.com/u/153308555?s=200&v=4" width="60"/></a> | <a href="https://niche.com"><img src="https://avatars.githubusercontent.com/u/8988784?s=200&v=4" width="60"/></a> |
+| Toss | Principal | Hygraph |  |  |
+| <a href="https://toss.im"><img src="https://images.opencollective.com/toss/3ed69b3/logo/256.png" width="60"/></a> | <a href="https://principal.com/about-us"><img src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" width="60"/></a> | <a href="https://hygraph.com"><img src="https://avatars.githubusercontent.com/u/31031438" width="60"/></a> |  |  |
 
 ### Past Sponsors
 

@@ -34,8 +34,9 @@ import { useWatch } from './useWatch';
  */
 export const Watch = <
   TFieldValues extends FieldValues = FieldValues,
-  const TFieldName extends
+  TFieldName extends
     | FieldPath<TFieldValues>
+    | readonly [FieldPath<TFieldValues>, ...FieldPath<TFieldValues>[]]
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | undefined = undefined,

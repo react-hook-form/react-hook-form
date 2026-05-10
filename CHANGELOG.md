@@ -1,5 +1,322 @@
 # Changelog
 
+## [7.75.0] - 2026-05-02
+
+### Added
+
+- Improve `getDirtyFields` to prune empty fields
+- TypeScript 6.0 support
+
+### Fixed
+
+- Include `setValues` in `FormProvider` context value
+- Preserve watch updates on field array unmount
+- Prevent `useWatch` re-render when unrelated field validation occurs
+- Recompute `isDirty` after re-registering a previously unregistered field
+
+## [7.74.0] - 2026-04-26
+
+### Added
+
+- `setValues` API
+
+### Fixed
+
+- Preserve previous field value when `useController` name changes
+- Handle null parent when unregistering nested field
+- Treat `NaN` as empty when `valueAsNumber` is `true` in `validateField`
+
+## [7.73.1] - 2026-04-21
+
+### Fixed
+
+- Reverted `setValues` that was accidentally included in patch; fix build to exclude test files
+
+## [7.73.0] - 2026-04-18
+
+### Added
+
+- Improve `subscribe` API performance
+
+### Performance
+
+- Memoize submit handler
+- Improve `deepEqual` performance
+
+### Fixed
+
+- Safely access `field._f` during register
+- Improve `fieldState` errors when resolver uses dot-notation string keys
+- Update state correctly in watch callback with `Controller`, `trigger`, and `reset`
+- Skip field array validation when mode is `onBlur`
+- `isDirty` remains false after deleting an item with `shouldDirty: true`
+- Handle nested field when parent `defaultValue` is null
+- Skip re-render in `setValue` when value is unchanged
+
+## [7.72.1] - 2026-04-03
+
+### Fixed
+
+- Prevent `setValue` with `shouldDirty` from polluting unrelated dirty fields
+- Memoize control in `HookFormControlContext` to prevent render conflicts
+- `isNameInFieldArray` should check all ancestor paths for nested field arrays
+- `formState.isValid` incorrect on `Controller` re-mount
+
+## [7.72.0] - 2026-03-22
+
+### Added
+
+- Built-in form-level `validate` option
+- Subscribe `formState` to track submit state
+
+### Fixed
+
+- Checkbox form validation ignored with native validation
+- Prevent `useFieldArray` from marking unrelated fields as dirty
+
+## [7.71.2] - 2026-02-21
+
+### Fixed
+
+- `clearErrors` emit name signal for targeted field updates
+- Use `DeepPartialSkipArrayKey` for `WatchObserver` value parameter
+
+## [7.71.1] - 2026-01-14
+
+### Fixed
+
+- Issue with `booleans_as_integers` value handling
+
+## [7.71.0] - 2026-01-11
+
+### Changed
+
+- Separate control context to prevent unnecessary rerenders
+- Memoize `FormProvider` context value to prevent unnecessary rerenders
+
+### Fixed
+
+- Update `isValid` when field `disabled` state changes
+
+## [7.70.0] - 2026-01-04
+
+### Fixed
+
+- Prevent field array ghost elements with `keepDirtyValues`
+- Improve `watch` return types
+- Improve invalid date handling in `deepEqual` and validation
+- Handle branded types correctly in `DeepPartial`
+- Fix native validation focus issue
+- Prevent duplicate subscription trigger in `setValue`
+
+## [7.69.0] - 2025-12-20
+
+### Added
+
+- Align `<Watch />` API with `useWatch`
+
+### Fixed
+
+- Security: CVE-2025-67779, CVE-2025-55184, CVE-2025-55183, CVE-2025-55182
+- Preserve `isValid` state when `keepIsValid` option is used
+- Ensure `createFormControl.subscribe` subscription listens only to subscribed changes
+- Batch `isValidating` state updates with validation result
+- Resolve race condition between `setError` and `setFocus`
+
+## [7.68.0] - 2025-12-04
+
+### Added
+
+- `<FormStateSubscribe />` component
+
+### Fixed
+
+- Clear validation errors synchronously in `reset()` to fix Next.js 16 Server Actions issue
+
+## [7.67.0] - 2025-11-29
+
+### Added
+
+- `exact` option for `useController` props
+
+### Fixed
+
+- Allow `undefined` value with async `defaultValues` in `Controller`
+- Correct `PathValueImpl` type inference
+
+## [7.66.1] - 2025-11-18
+
+### Performance
+
+- Reduce redundant property access in `getDirtyFields`
+
+### Fixed
+
+- Skip `setValid()` during batch array updates
+- Recompute `isValid` after `reset` when values update asynchronously
+- Handle NaN comparison correctly using `Object.is` in `deepEqual`
+
+## [7.66.0] - 2025-11-01
+
+### Added
+
+- `useWatch` and `useController` now react to `name` prop changes
+
+### Fixed
+
+- `watch()` returning `undefined` immediately after `reset()`
+- Correct render function parameter typing for `<Watch />` component
+
+## [7.65.0] - 2025-10-11
+
+### Added
+
+- `<Watch />` component
+
+### Fixed
+
+- Respect parent-provided `useFieldArray` rules
+- `getDirtyFields` submit fields with `null` values when using `useForm`
+
+## [7.64.0] - 2025-10-04
+
+### Added
+
+- Support optional array fields in `PathValueImpl` type
+
+### Fixed
+
+- Preserve `Controller`'s `defaultValue` with `shouldUnregister` prop
+
+## [7.63.0] - 2025-09-20
+
+### Added
+
+- Improve get dirty fields logic
+- Extra form values accessible via `formState`
+
+### Fixed
+
+- Only execute trigger function when deps has a valid array
+- Unregister previous field when switching conditional Controllers
+- Use field name to update `isValidating` fields
+
+## [7.62.0] - 2025-08-02
+
+### Fixed
+
+- Sync two `defaultValues` after `reset` with new `defaultValues`
+- Field name type conflict in nested `FieldErrors`
+- Prevent `onBlur` for `readOnly` fields
+- Do not override prototype of `data` in `cloneObject`
+
+## [7.61.1] - 2025-07-24
+
+### Fixed
+
+- Reverted `watch` return type change based on `defaultValue` (caused regressions)
+
+## [7.61.0] - 2025-07-24
+
+### Added
+
+- `compute` prop for `useWatch` subscription
+
+### Fixed
+
+- Subscribe with latest `defaultValues`
+- Trigger watch callbacks only in response to value changes
+- Track name with `setValue` subscription callbacks
+- Handle explicit `"multipart/form-data"` encType in `<Form />` component
+- Remove React wildcard import to resolve ESM build issues
+
+## [7.60.0] - 2025-07-05
+
+### Added
+
+- `reset` with `keepFieldsRef` option to keep fields reference
+
+### Fixed
+
+- Remove `Set` from clone object
+
+## [7.59.0] - 2025-06-28
+
+### Added
+
+- Support deep equality checking with circular references
+
+### Fixed
+
+- Issue with `formData` reference clone
+- Issue with `undefined` value for submit data
+- `useWatch` object variable param handling
+
+## [7.58.0] - 2025-06-15
+
+### Added
+
+- `FieldArrayPathByValue` type
+- Use `stringToPath` to prevent errors at field names containing quotes
+
+### Fixed
+
+- Incorrect `formControl` return from `useForm`
+- Initial `useFieldArray` fields population
+
+## [7.57.0] - 2025-06-02
+
+### Added
+
+- Focus form field for errors supplied via `errors` prop
+- Export `UseFormResetFieldOptions` type for `resetField` API
+- Root errors count in schema error lookup
+
+### Fixed
+
+- Type info for callback args in `subscribe`
+- Proper types for `form.subscribe`
+- `useController` focus function runtime issue
+- `setValue` skips values not in own properties (prevents infinite call stack with self-referencing proto)
+- Checkbox duplication handling in `useFieldArray`
+- `mode` and `reValidateMode` reactivity
+- Default value being overwritten by `values` prop regression
+
+## [7.56.0] - 2025-04-20
+
+### Added
+
+- Reactive `mode` and `reValidateMode` support
+- `isReady` state for subscription
+
+### Fixed
+
+- Regression on move/swap in `useFieldArray` input update
+- Use `useIsomorphicLayoutEffect` to address SSR warning
+
+## [7.55.0] - 2025-03-29
+
+### Added
+
+- `createFormControl` and `subscribe` function
+- Infer resolver output types
+- Allow components with `useController` hook to be memoized
+- Track disabled fields and only omit data on submit
+- Stable reference for `useWatch` `defaultValue`
+- `handleSubmit` with native events support
+
+### Fixed
+
+- Type inference for `useFormContext`
+- `values` and `defaultValues` work correctly with `createFormControl` and `useMemo`
+- Prevent infinite render with condition check
+- Valid state update with `onBlur` mode
+- `disabled` field value not returned as `undefined` in resolver
+- `revalidateMode` issue with `useFieldArray` validation
+- `useController` unregister issue with strict mode
+- `setError` in `useEffect` not working inside `FormProvider` context
+- `useController` return props reference stability
+
 ## [7.54.0] - 2024-12-09
 
 ### Changed
