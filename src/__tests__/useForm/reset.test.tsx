@@ -1080,6 +1080,83 @@ describe('reset', () => {
     ).toEqual('control');
   });
 
+  it('should keep reset value for conditionally mounted controlled fields with shouldUnregister', async () => {
+    let submittedData = {};
+
+    const App = () => {
+      const { control, watch, handleSubmit, reset } = useForm<{
+        name: string;
+        age: string;
+      }>({
+        shouldUnregister: true,
+        defaultValues: {
+          name: '',
+        },
+      });
+      const showAge = !!watch('name');
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submittedData = data;
+          })}
+        >
+          <Controller
+            name="name"
+            control={control}
+            render={({ field: { onChange, name, ref, value } }) => (
+              <input
+                ref={ref}
+                name={name}
+                value={value || ''}
+                onChange={onChange}
+              />
+            )}
+          />
+          {showAge && (
+            <Controller
+              name="age"
+              control={control}
+              render={({ field: { onChange, name, ref, value } }) => (
+                <input
+                  ref={ref}
+                  name={name}
+                  value={value || ''}
+                  onChange={onChange}
+                />
+              )}
+            />
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              reset({ name: 'name', age: '3' });
+            }}
+          >
+            reset with values
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset with values' }));
+
+    await waitFor(() =>
+      expect(
+        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+      ).toBe('3'),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(submittedData).toEqual({ name: 'name', age: '3' }),
+    );
+  });
+
   it('should keep input values when keepValues is set to true', () => {
     function App() {
       const { register, handleSubmit, reset } = useForm();
