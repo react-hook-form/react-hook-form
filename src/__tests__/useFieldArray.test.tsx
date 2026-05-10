@@ -4753,3 +4753,124 @@ it('should not lose defaultValues when useFieldArray and watch are used together
     expect(val).toEqual(defaultValues);
   }
 });
+
+it('should not corrupt parent state when remove is called with values prop', async () => {
+  type Item = { name: string; text: string };
+  type FormValues = { myfield: Item[] };
+
+  const onUpdateCalls: FormValues[] = [];
+
+  const App = () => {
+    const [model, setModel] = useState<FormValues>({ myfield: [] });
+
+    const onUpdate = (updated: FormValues) => {
+      onUpdateCalls.push(JSON.parse(JSON.stringify(updated)));
+      setModel(updated);
+    };
+
+    const {
+      control,
+      watch,
+      formState: { isValid, isDirty },
+    } = useForm<FormValues>({
+      mode: 'onChange',
+      defaultValues: { myfield: model.myfield ? [...model.myfield] : [] },
+      values: model,
+    });
+
+    const { fields, append, remove } = useFieldArray({
+      control,
+      name: 'myfield',
+    });
+
+    const watchedValues = watch();
+
+    React.useEffect(() => {
+      if (isValid && isDirty) {
+        onUpdate(watchedValues);
+      }
+    }, [watchedValues, isValid, isDirty]);
+
+    return (
+      <div>
+        {fields.map((item, index) => (
+          <div key={item.id}>
+            <Controller
+              control={control}
+              name={`myfield.${index}.name` as const}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <input data-testid={`name-${index}`} {...field} />
+              )}
+            />
+            <Controller
+              control={control}
+              name={`myfield.${index}.text` as const}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <input data-testid={`text-${index}`} {...field} />
+              )}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              remove-{index}
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={() => append({ name: '', text: '' })}>
+          add
+        </button>
+      </div>
+    );
+  };
+
+  render(<App />);
+
+  fireEvent.click(screen.getByText('add'));
+
+  await waitFor(() => screen.getByTestId('name-0'));
+
+  fireEvent.change(screen.getByTestId('name-0'), {
+    target: { value: 'Alice' },
+  });
+  fireEvent.change(screen.getByTestId('text-0'), {
+    target: { value: 'hello' },
+  });
+
+  await waitFor(() =>
+    expect(onUpdateCalls.some((c) => c.myfield[0]?.name === 'Alice')).toBe(
+      true,
+    ),
+  );
+
+  fireEvent.click(screen.getByText('add'));
+
+  await waitFor(() => screen.getByTestId('name-1'));
+
+  fireEvent.change(screen.getByTestId('name-1'), {
+    target: { value: 'Bob' },
+  });
+  fireEvent.change(screen.getByTestId('text-1'), {
+    target: { value: 'world' },
+  });
+
+  await waitFor(() =>
+    expect(onUpdateCalls.some((c) => c.myfield[1]?.name === 'Bob')).toBe(true),
+  );
+
+  onUpdateCalls.length = 0;
+
+  fireEvent.click(screen.getByText('remove-0'));
+
+  await waitFor(() => {
+    const lastUpdate = onUpdateCalls[onUpdateCalls.length - 1];
+    if (lastUpdate) {
+      expect(lastUpdate.myfield).toHaveLength(1);
+      expect(lastUpdate.myfield[0].name).toBe('Bob');
+      expect(lastUpdate.myfield[0].text).toBe('world');
+    }
+  });
+
+  for (const call of onUpdateCalls) {
+    expect(call.myfield).toHaveLength(1);
+  }
+});
