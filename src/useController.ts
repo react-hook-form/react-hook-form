@@ -214,7 +214,15 @@ export function useController<
 
     if (_shouldUnregisterField) {
       const value = cloneObject(
-        get(control._options.defaultValues, name, _props.current.defaultValue),
+        get(
+          control._defaultValues,
+          name,
+          get(
+            control._options.defaultValues,
+            name,
+            _props.current.defaultValue,
+          ),
+        ),
       );
       set(control._defaultValues, name, value);
       if (isUndefined(get(control._formValues, name))) {
