@@ -342,4 +342,72 @@ describe('getValues', () => {
 
     expect(screen.getByRole('button', { name: 'submit' })).not.toBeDisabled();
   });
+
+  it('should return only mounted field values when shouldUnregister config is true', () => {
+    const { result } = renderHook(() =>
+      useForm<{ registered: string; unregistered: string }>({
+        defaultValues: {
+          registered: 'registeredValue',
+          unregistered: 'unregisteredValue',
+        },
+      }),
+    );
+
+    result.current.register('registered');
+
+    expect(result.current.getValues({ shouldUnregister: true })).toEqual({
+      registered: 'registeredValue',
+    });
+  });
+
+  it('should return only mounted field values when shouldUnregister config is true with conditional fields', () => {
+    type FormValues = {
+      type: string;
+      fieldA: string;
+      fieldB: string;
+    };
+
+    let capturedGetValues: () => Record<string, unknown>;
+
+    const Component = () => {
+      const { register, watch, getValues } = useForm<FormValues>({
+        defaultValues: {
+          type: 'a',
+          fieldA: 'valueA',
+          fieldB: 'valueB',
+        },
+      });
+
+      capturedGetValues = () => getValues({ shouldUnregister: true });
+
+      const type = watch('type');
+
+      return (
+        <>
+          <input {...register('type')} />
+          {type === 'a' && <input {...register('fieldA')} />}
+          {type === 'b' && <input {...register('fieldB')} />}
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    // Initially type=a, so fieldA is mounted but fieldB is not
+    expect(capturedGetValues!()).toEqual({
+      type: 'a',
+      fieldA: 'valueA',
+    });
+
+    // Switch to type=b
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'b' },
+    });
+
+    // Now fieldB is mounted, fieldA is not
+    expect(capturedGetValues!()).toEqual({
+      type: 'b',
+      fieldB: 'valueB',
+    });
+  });
 });

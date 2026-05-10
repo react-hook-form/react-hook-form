@@ -288,6 +288,7 @@ type EitherOption<T> = {
 export type GetValuesConfig = EitherOption<{
   dirtyFields: boolean;
   touchedFields: boolean;
+  shouldUnregister: boolean;
 }>;
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
@@ -309,6 +310,23 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * ```
    */
   (name?: undefined, config?: GetValuesConfig): TFieldValues;
+  /**
+   * Get the entire form values filtered by config options.
+   *
+   * @remarks
+   * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
+   *
+   * @param config - filter options (e.g. shouldUnregister, dirtyFields, touchedFields)
+   *
+   * @returns filtered form values
+   *
+   * @example
+   * ```tsx
+   * // Only return values from currently mounted/registered fields
+   * <button onClick={() => getValues({ shouldUnregister: true })}>getValues</button>
+   * ```
+   */
+  (config: GetValuesConfig): TFieldValues;
   /**
    * Get a single field value.
    *

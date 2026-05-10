@@ -1129,25 +1129,55 @@ export function createFormControl<
   const getValues: UseFormGetValues<TFieldValues> = (
     fieldNames?:
       | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>,
+      | ReadonlyArray<FieldPath<TFieldValues>>
+      | GetValuesConfig,
     config?: GetValuesConfig,
   ) => {
+    // Detect if first argument is a config object (not a field name string or array)
+    let resolvedConfig = config;
+    let resolvedFieldNames:
+      | FieldPath<TFieldValues>
+      | ReadonlyArray<FieldPath<TFieldValues>>
+      | undefined;
+
+    if (isObject(fieldNames) && !Array.isArray(fieldNames)) {
+      resolvedConfig = fieldNames as GetValuesConfig;
+    } else {
+      resolvedFieldNames = fieldNames as
+        | FieldPath<TFieldValues>
+        | ReadonlyArray<FieldPath<TFieldValues>>
+        | undefined;
+    }
+
     let values = {
       ...(_state.mount ? _formValues : _defaultValues),
     };
 
-    if (config) {
-      values = extractFormValues(
-        config.dirtyFields ? _formState.dirtyFields : _formState.touchedFields,
-        values,
-      );
+    if (resolvedConfig) {
+      if (resolvedConfig.shouldUnregister) {
+        const mountedValues = {} as typeof values;
+        for (const name of _names.mount) {
+          const field: Field = get(_fields, name);
+          if (field && field._f && field._f.mount) {
+            set(mountedValues, name, get(values, name));
+          }
+        }
+        values = mountedValues;
+      } else {
+        values = extractFormValues(
+          resolvedConfig.dirtyFields
+            ? _formState.dirtyFields
+            : _formState.touchedFields,
+          values,
+        );
+      }
     }
 
-    return isUndefined(fieldNames)
+    return isUndefined(resolvedFieldNames)
       ? values
-      : isString(fieldNames)
-        ? get(values, fieldNames)
-        : fieldNames.map((name) => get(values, name));
+      : isString(resolvedFieldNames)
+        ? get(values, resolvedFieldNames)
+        : resolvedFieldNames.map((name) => get(values, name));
   };
 
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
