@@ -157,7 +157,9 @@ describe('deepEqual', () => {
   });
 
   it('should treat React elements as opaque and not recurse into internals', () => {
-    const REACT_ELEMENT_TYPE = Symbol.for ? Symbol.for('react.element') : 0xeac7;
+    const REACT_ELEMENT_TYPE = Symbol.for
+      ? Symbol.for('react.element')
+      : 0xeac7;
 
     const element1 = {
       $$typeof: REACT_ELEMENT_TYPE,
