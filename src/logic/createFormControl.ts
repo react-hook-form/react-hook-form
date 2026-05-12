@@ -75,6 +75,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
+import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
@@ -339,22 +340,42 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
+      let formValueParent: unknown = _formValues;
+
+      for (const key of stringToPath(name).slice(0, -1)) {
+        if (isNullOrUndefined(formValueParent)) {
+          break;
+        }
+        formValueParent = (formValueParent as Record<string, unknown>)[key];
+      }
+
+      const shouldSkipDefaultValue = formValueParent === null && _state.action;
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
         name,
-        isUndefined(value) ? get(_defaultValues, name) : value,
+        isUndefined(value)
+          ? shouldSkipDefaultValue
+            ? undefined
+            : get(_defaultValues, name)
+          : value,
       );
 
-      isUndefined(defaultValue) ||
-      (ref && (ref as HTMLInputElement).defaultChecked) ||
-      shouldSkipSetValueAs
-        ? set(
+      if (!(isUndefined(defaultValue) && shouldSkipDefaultValue)) {
+        if (
+          isUndefined(defaultValue) ||
+          (ref && (ref as HTMLInputElement).defaultChecked) ||
+          shouldSkipSetValueAs
+        ) {
+          set(
             _formValues,
             name,
             shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
-          )
-        : setFieldValue(name, defaultValue);
+          );
+        } else {
+          setFieldValue(name, defaultValue);
+        }
+      }
 
       if (_state.mount && !_state.action) {
         _setValid();

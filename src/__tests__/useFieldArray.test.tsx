@@ -4754,6 +4754,70 @@ it('should not lose defaultValues when useFieldArray and watch are used together
   }
 });
 
+it('should not restore defaultValues when appending null after remove in same action', async () => {
+  type FormValues = {
+    items: { obj: { value: string } | null }[];
+  };
+
+  const watchedValues: FormValues['items'][] = [];
+
+  const App = () => {
+    const { control, register } = useForm<FormValues>({
+      defaultValues: { items: [{ obj: { value: 'A' } }] },
+    });
+    const { fields, append, remove } = useFieldArray({
+      control,
+      name: 'items',
+    });
+    const watchedItems = useWatch({ control, name: 'items' });
+
+    watchedValues.push(watchedItems);
+
+    return (
+      <>
+        {fields.map((field, index) => (
+          <div key={field.id}>
+            <label>
+              A
+              <input
+                type="radio"
+                value="A"
+                {...register(`items.${index}.obj.value` as const)}
+              />
+            </label>
+            <label>
+              C
+              <input
+                type="radio"
+                value="C"
+                {...register(`items.${index}.obj.value` as const)}
+              />
+            </label>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => {
+            remove(0);
+            append({ obj: null });
+          }}
+        >
+          remove and append
+        </button>
+      </>
+    );
+  };
+
+  render(<App />);
+
+  fireEvent.click(screen.getByRole('radio', { name: 'C' }));
+  fireEvent.click(screen.getByRole('button', { name: 'remove and append' }));
+
+  await waitFor(() => {
+    expect(watchedValues[watchedValues.length - 1]).toEqual([{ obj: null }]);
+  });
+});
+
 it('should not corrupt parent state when remove is called with values prop', async () => {
   type Item = { name: string; text: string };
   type FormValues = { myfield: Item[] };
