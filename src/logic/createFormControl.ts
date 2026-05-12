@@ -1440,6 +1440,7 @@ export function createFormControl<
 
   const _focusError = () =>
     _options.shouldFocusError &&
+    !_options.shouldUseNativeValidation &&
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
   const _disableForm = (disabled?: boolean) => {
@@ -1515,6 +1516,7 @@ export function createFormControl<
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
         }
+
         _focusError();
         setTimeout(_focusError);
       }
