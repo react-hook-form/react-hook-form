@@ -1509,7 +1509,7 @@ export function createFormControl<
           await onInvalid({ ..._formState.errors }, e);
         }
         _focusError();
-        setTimeout(_focusError);
+        !_options.shouldUseNativeValidation && setTimeout(_focusError);
       }
 
       _subjects.state.next({
