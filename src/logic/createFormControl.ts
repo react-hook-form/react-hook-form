@@ -902,6 +902,13 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
+      for (const fieldName of _names.mount) {
+        setValue(
+          fieldName as FieldPath<TFieldValues>,
+          get(updatedFormValues, fieldName),
+        );
+      }
+
       _subjects.state.next({ ..._formState, values: _formValues });
     }
   };
