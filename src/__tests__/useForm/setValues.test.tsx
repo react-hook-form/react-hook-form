@@ -142,4 +142,85 @@ describe('setValues', () => {
 
     expect(screen.getByRole('textbox')).toHaveValue('111');
   });
+
+  it('should update registered input value when setValues is called', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+
+      return (
+        <>
+          <input {...register('firstName')} />
+          <button
+            type="button"
+            onClick={() =>
+              setValues({
+                firstName: '111',
+              })
+            }
+          >
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('111');
+  });
+
+  it('should update deep nested registered input values when setValues is called', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm({
+        defaultValues: {
+          user: {
+            profile: { firstName: 'Jane', lastName: 'Doe' },
+            address: { city: 'Boston' },
+          },
+        },
+      });
+
+      return (
+        <>
+          <input
+            {...register('user.profile.firstName')}
+            aria-label="firstName"
+          />
+          <input {...register('user.profile.lastName')} aria-label="lastName" />
+          <input {...register('user.address.city')} aria-label="city" />
+          <button
+            type="button"
+            onClick={() =>
+              setValues({
+                user: {
+                  profile: { firstName: 'John', lastName: 'Smith' },
+                  address: { city: 'New York' },
+                },
+              })
+            }
+          >
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    expect(screen.getByLabelText('firstName')).toHaveValue('John');
+    expect(screen.getByLabelText('lastName')).toHaveValue('Smith');
+    expect(screen.getByLabelText('city')).toHaveValue('New York');
+  });
 });
