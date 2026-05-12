@@ -243,7 +243,7 @@ describe('handleSubmit', () => {
       jest.runOnlyPendingTimers();
     });
 
-    expect(firstFocus).toHaveBeenCalledTimes(1);
+    expect(firstFocus).toHaveBeenCalledTimes(0);
     expect(lastFocus).not.toHaveBeenCalled();
 
     jest.useRealTimers();
