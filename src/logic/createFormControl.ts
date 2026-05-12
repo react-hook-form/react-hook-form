@@ -905,13 +905,7 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
-      for (const fieldName in updatedFormValues) {
-        if (
-          !Object.prototype.hasOwnProperty.call(updatedFormValues, fieldName)
-        ) {
-          continue;
-        }
-
+      for (const fieldName of Object.keys(updatedFormValues)) {
         setValue(
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),

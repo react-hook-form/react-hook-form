@@ -136,7 +136,7 @@ describe('setValues', () => {
 
     render(<Component />);
 
-    await act(async () => {
+    act(() => {
       fireEvent.click(screen.getByRole('button', { name: 'set' }));
     });
 
