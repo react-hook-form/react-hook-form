@@ -891,7 +891,10 @@ export function createFormControl<
     }
   };
 
-  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
+  const setValues: UseFormSetValues<TFieldValues> = (
+    formValues,
+    options = {},
+  ) => {
     const updatedFormValues = isFunction(formValues)
       ? (formValues as Function)(_formValues as TFieldValues)
       : formValues;
@@ -901,6 +904,18 @@ export function createFormControl<
         ..._formValues,
         ...updatedFormValues,
       };
+
+      for (const fieldName in updatedFormValues) {
+        if (!updatedFormValues.hasOwnProperty(fieldName)) {
+          continue;
+        }
+
+        setValue(
+          fieldName as FieldPath<TFieldValues>,
+          get(_formValues, fieldName),
+          options,
+        );
+      }
 
       _subjects.state.next({ ..._formState, values: _formValues });
     }

@@ -1,5 +1,13 @@
-import { act, renderHook } from '@testing-library/react';
+import React from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
 
+import { Controller } from '../../controller';
 import { useForm } from '../../useForm';
 
 describe('setValues', () => {
@@ -95,5 +103,43 @@ describe('setValues', () => {
     );
 
     expect(valueNotifications).toHaveLength(1);
+  });
+
+  it('should update controlled input value when setValues is called', async () => {
+    const Component = () => {
+      const { control, setValues } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+
+      return (
+        <>
+          <Controller
+            name="firstName"
+            control={control}
+            render={({ field }) => <input {...field} />}
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setValues({
+                firstName: '111',
+              })
+            }
+          >
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('111');
   });
 });

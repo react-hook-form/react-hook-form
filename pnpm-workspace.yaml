@@ -1,4 +1,0 @@
-allowBuilds:
-  '@swc/core': true
-  cypress: true
-  unrs-resolver: true
