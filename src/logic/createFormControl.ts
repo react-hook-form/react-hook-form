@@ -902,7 +902,7 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
-      for (const fieldName of Object.keys(updatedFormValues)) {
+      for (const fieldName of _names.mount) {
         setValue(
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),
