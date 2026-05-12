@@ -5,9 +5,11 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import { useController } from '../../useController';
 import { useForm } from '../../useForm';
 
 describe('setValues', () => {
@@ -222,5 +224,98 @@ describe('setValues', () => {
     expect(screen.getByLabelText('firstName')).toHaveValue('John');
     expect(screen.getByLabelText('lastName')).toHaveValue('Smith');
     expect(screen.getByLabelText('city')).toHaveValue('New York');
+  });
+
+  it('should trigger re-render in useController components when using setValues', async () => {
+    function TestField({ control, name }: { control: any; name: string }) {
+      const { field } = useController({ name, control });
+
+      return (
+        <input
+          data-testid={name}
+          value={field.value ?? ''}
+          onChange={(e) => field.onChange(e.target.value)}
+        />
+      );
+    }
+
+    function App() {
+      const methods = useForm<{ field1: string; field2: string }>({
+        defaultValues: {
+          field1: 'initial1',
+          field2: 'initial2',
+        },
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <form>
+            <TestField control={methods.control} name="field1" />
+            <TestField control={methods.control} name="field2" />
+            <button
+              data-testid="submit"
+              disabled={!methods.formState.isValid}
+              type="button"
+            >
+              Submit
+            </button>
+          </form>
+          <button
+            data-testid="set-values"
+            type="button"
+            onClick={() => {
+              methods.setValues(
+                { field1: 'updated1', field2: 'updated2' },
+                { shouldValidate: true, shouldDirty: true },
+              );
+            }}
+          >
+            Set Values
+          </button>
+          <div data-testid="form-state">
+            isValid: {String(methods.formState.isValid)}
+          </div>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    const field1 = screen.getByTestId('field1');
+    const field2 = screen.getByTestId('field2');
+    const setValuesBtn = screen.getByTestId('set-values');
+    const submitBtn = screen.getByTestId('submit');
+    const formState = screen.getByTestId('form-state');
+
+    // Initial state
+    expect(field1).toHaveValue('initial1');
+    expect(field2).toHaveValue('initial2');
+
+    // Clear fields to make form invalid
+    fireEvent.change(field1, { target: { value: '' } });
+    fireEvent.change(field2, { target: { value: '' } });
+
+    await waitFor(() => {
+      expect(field1).toHaveValue('');
+      expect(field2).toHaveValue('');
+      expect(submitBtn).toBeDisabled();
+    });
+
+    // Click setValues button
+    fireEvent.click(setValuesBtn);
+
+    // Form state should be updated (this works)
+    await waitFor(() => {
+      expect(formState.textContent).toContain('isValid: true');
+    });
+
+    // BUG: DOM inputs are NOT updated even though form state is correct
+    // This demonstrates the bug where useController components don't re-render
+    await waitFor(() => {
+      expect(field1).toHaveValue('updated1');
+      expect(field2).toHaveValue('updated2');
+      expect(submitBtn).toBeEnabled();
+    });
   });
 });
