@@ -345,31 +345,31 @@ export function createFormControl<
       // Walk ancestor paths to detect a null intermediate in _formValues.
       // With the reverted get.ts, a null intermediate returns null (not the
       // defaultValue fallback).  We compare each ancestor against _defaultValues
-      // to decide what to do:
-      //   - ancestor is null in _formValues AND in _defaultValues
-      //       → null originates from defaultValues (e.g. defaultValues:{x:null});
-      //         expand the null by writing the real field value once the DOM ref
-      //         is available (skip on the virtual-ref initial-register pass).
-      //   - ancestor is null in _formValues but NOT in _defaultValues
-      //       → null was explicitly set (e.g. via append({obj:null})); preserve it.
+      // to decide how to initialise the field:
+      //   'preserve' – ancestor is null only in _formValues (e.g. append({obj:null}));
+      //                the null was set intentionally, skip initialisation.
+      //   'expand'   – ancestor is null in both _formValues and _defaultValues
+      //                (e.g. defaultValues:{x:null}); write the real field value
+      //                once the DOM ref is available (skip the virtual-ref pass).
+      //   undefined  – no null ancestor; proceed normally.
+      // Ancestor paths are joined with '.' which get() handles via stringToPath.
       const nameParts = stringToPath(name);
-      let shouldSkip = false;
-      let shouldExpandNull = false;
+      let nullAncestorAction: 'preserve' | 'expand' | undefined;
 
       for (let i = 1; i < nameParts.length; i++) {
         const ancestorPath = nameParts.slice(0, i).join('.');
         if (get(_formValues, ancestorPath) === null) {
-          shouldSkip = get(_defaultValues, ancestorPath) !== null;
-          shouldExpandNull = !shouldSkip;
+          nullAncestorAction =
+            get(_defaultValues, ancestorPath) !== null ? 'preserve' : 'expand';
           break;
         }
       }
 
-      if (!shouldSkip) {
-        if (shouldExpandNull) {
-          // Only expand when the real DOM ref is attached so we can read the
-          // actual field value; the first (virtual-ref) pass is skipped and the
-          // null is left intact until the ref callback fires.
+      if (nullAncestorAction !== 'preserve') {
+        if (nullAncestorAction === 'expand') {
+          // Only expand once the real DOM ref is attached so getFieldValue()
+          // can read the actual element value; the virtual-ref initial pass
+          // leaves the null in place until the ref callback fires.
           if (ref) {
             set(_formValues, name, getFieldValue(field._f));
           }
