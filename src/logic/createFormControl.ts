@@ -340,28 +340,45 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      let formValueParent: unknown = _formValues;
+      // Walk the path comparing _formValues against _defaultValues to detect
+      // an intermediate segment that is explicitly null in the current form
+      // values but non-null in the default values. This happens when the user
+      // calls e.g. append({ obj: null }) — the null is intentional and must
+      // not be overwritten when a nested field (items.0.obj.value) registers.
+      // When both sides are null (e.g. defaultValues: { example: null } with
+      // register('example.inner')), the null should be expanded normally so
+      // the nested field can be initialized — that is handled below.
+      const namePaths = stringToPath(name);
+      let fv: unknown = _formValues;
+      let dv: unknown = _defaultValues;
+      let hasExplicitNullParent = false;
 
-      for (const key of stringToPath(name).slice(0, -1)) {
-        if (isNullOrUndefined(formValueParent)) {
+      for (let i = 0; i < namePaths.length - 1; i++) {
+        fv = isNullOrUndefined(fv)
+          ? undefined
+          : (fv as Record<string, unknown>)[namePaths[i]];
+        dv = isNullOrUndefined(dv)
+          ? undefined
+          : (dv as Record<string, unknown>)[namePaths[i]];
+
+        if (fv === null) {
+          hasExplicitNullParent = dv !== null;
           break;
         }
-        formValueParent = (formValueParent as Record<string, unknown>)[key];
       }
 
-      const shouldSkipDefaultValue = formValueParent === null && _state.action;
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
         name,
         isUndefined(value)
-          ? shouldSkipDefaultValue
+          ? hasExplicitNullParent
             ? undefined
             : get(_defaultValues, name)
           : value,
       );
 
-      if (!(isUndefined(defaultValue) && shouldSkipDefaultValue)) {
+      if (!hasExplicitNullParent) {
         if (
           isUndefined(defaultValue) ||
           (ref && (ref as HTMLInputElement).defaultChecked) ||
