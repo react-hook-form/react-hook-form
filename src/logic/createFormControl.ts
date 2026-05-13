@@ -75,6 +75,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
+import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
@@ -340,21 +341,56 @@ export function createFormControl<
 
     if (field) {
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
-      const defaultValue = get(
-        _formValues,
-        name,
-        isUndefined(value) ? get(_defaultValues, name) : value,
-      );
 
-      isUndefined(defaultValue) ||
-      (ref && (ref as HTMLInputElement).defaultChecked) ||
-      shouldSkipSetValueAs
-        ? set(
+      // Walk ancestor paths to detect a null intermediate in _formValues.
+      // With the reverted get.ts, a null intermediate returns null (not the
+      // defaultValue fallback).  We compare each ancestor against _defaultValues
+      // to decide what to do:
+      //   - ancestor is null in _formValues AND in _defaultValues
+      //       → null originates from defaultValues (e.g. defaultValues:{x:null});
+      //         expand the null by writing the real field value once the DOM ref
+      //         is available (skip on the virtual-ref initial-register pass).
+      //   - ancestor is null in _formValues but NOT in _defaultValues
+      //       → null was explicitly set (e.g. via append({obj:null})); preserve it.
+      const nameParts = stringToPath(name);
+      let shouldSkip = false;
+      let shouldExpandNull = false;
+
+      for (let i = 1; i < nameParts.length; i++) {
+        const ancestorPath = nameParts.slice(0, i).join('.');
+        if (get(_formValues, ancestorPath) === null) {
+          shouldSkip = get(_defaultValues, ancestorPath) !== null;
+          shouldExpandNull = !shouldSkip;
+          break;
+        }
+      }
+
+      if (!shouldSkip) {
+        if (shouldExpandNull) {
+          // Only expand when the real DOM ref is attached so we can read the
+          // actual field value; the first (virtual-ref) pass is skipped and the
+          // null is left intact until the ref callback fires.
+          if (ref) {
+            set(_formValues, name, getFieldValue(field._f));
+          }
+        } else {
+          const defaultValue = get(
             _formValues,
             name,
-            shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
-          )
-        : setFieldValue(name, defaultValue);
+            isUndefined(value) ? get(_defaultValues, name) : value,
+          );
+
+          isUndefined(defaultValue) ||
+          (ref && (ref as HTMLInputElement).defaultChecked) ||
+          shouldSkipSetValueAs
+            ? set(
+                _formValues,
+                name,
+                shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
+              )
+            : setFieldValue(name, defaultValue);
+        }
+      }
 
       if (_state.mount && !_state.action) {
         _setValid();
