@@ -75,7 +75,6 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
-import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
@@ -340,59 +339,22 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      // Walk the path comparing _formValues against _defaultValues to detect
-      // an intermediate segment that is explicitly null in the current form
-      // values but non-null in the default values. This happens when the user
-      // calls e.g. append({ obj: null }) — the null is intentional and must
-      // not be overwritten when a nested field (items.0.obj.value) registers.
-      // When both sides are null (e.g. defaultValues: { example: null } with
-      // register('example.inner')), the null should be expanded normally so
-      // the nested field can be initialized — that is handled below.
-      const namePaths = stringToPath(name);
-      let fv: unknown = _formValues;
-      let dv: unknown = _defaultValues;
-      let hasExplicitNullParent = false;
-
-      for (let i = 0; i < namePaths.length - 1; i++) {
-        fv = isNullOrUndefined(fv)
-          ? undefined
-          : (fv as Record<string, unknown>)[namePaths[i]];
-        dv = isNullOrUndefined(dv)
-          ? undefined
-          : (dv as Record<string, unknown>)[namePaths[i]];
-
-        if (fv === null) {
-          hasExplicitNullParent = dv !== null;
-          break;
-        }
-      }
-
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
         name,
-        isUndefined(value)
-          ? hasExplicitNullParent
-            ? undefined
-            : get(_defaultValues, name)
-          : value,
+        isUndefined(value) ? get(_defaultValues, name) : value,
       );
 
-      if (!hasExplicitNullParent) {
-        if (
-          isUndefined(defaultValue) ||
-          (ref && (ref as HTMLInputElement).defaultChecked) ||
-          shouldSkipSetValueAs
-        ) {
-          set(
+      isUndefined(defaultValue) ||
+      (ref && (ref as HTMLInputElement).defaultChecked) ||
+      shouldSkipSetValueAs
+        ? set(
             _formValues,
             name,
             shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
-          );
-        } else {
-          setFieldValue(name, defaultValue);
-        }
-      }
+          )
+        : setFieldValue(name, defaultValue);
 
       if (_state.mount && !_state.action) {
         _setValid();
