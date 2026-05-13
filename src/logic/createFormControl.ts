@@ -352,15 +352,23 @@ export function createFormControl<
       //                (e.g. defaultValues:{x:null}); write the real field value
       //                once the DOM ref is available (skip the virtual-ref pass).
       //   undefined  – no null ancestor; proceed normally.
-      // Ancestor paths are joined with '.' which get() handles via stringToPath.
+      // We walk the objects directly (rather than rejoining path segments and
+      // calling get() repeatedly) to stay O(depth) and avoid path-format issues.
       const nameParts = stringToPath(name);
       let nullAncestorAction: 'preserve' | 'expand' | undefined;
+      let fvNode: unknown = _formValues;
+      let dvNode: unknown = _defaultValues;
 
-      for (let i = 1; i < nameParts.length; i++) {
-        const ancestorPath = nameParts.slice(0, i).join('.');
-        if (get(_formValues, ancestorPath) === null) {
-          nullAncestorAction =
-            get(_defaultValues, ancestorPath) !== null ? 'preserve' : 'expand';
+      for (let i = 0; i < nameParts.length - 1; i++) {
+        fvNode = isNullOrUndefined(fvNode)
+          ? undefined
+          : (fvNode as Record<string, unknown>)[nameParts[i]];
+        dvNode = isNullOrUndefined(dvNode)
+          ? undefined
+          : (dvNode as Record<string, unknown>)[nameParts[i]];
+
+        if (fvNode === null) {
+          nullAncestorAction = dvNode !== null ? 'preserve' : 'expand';
           break;
         }
       }
