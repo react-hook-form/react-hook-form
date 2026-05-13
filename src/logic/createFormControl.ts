@@ -66,6 +66,7 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
+import isKey from '../utils/isKey';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
@@ -75,6 +76,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
+import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
@@ -330,6 +332,28 @@ export function createFormControl<
     });
   };
 
+  const hasExplicitNullIntermediate = (name: InternalFieldName) => {
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let formValues = _formValues;
+    let defaultValues = _defaultValues;
+
+    for (let i = 0; i < segments.length - 1; i++) {
+      const key = segments[i];
+
+      formValues = isNullOrUndefined(formValues) ? formValues : formValues[key];
+
+      defaultValues = isNullOrUndefined(defaultValues)
+        ? defaultValues
+        : defaultValues[key as keyof typeof defaultValues];
+
+      if (formValues === null && defaultValues !== null) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -339,6 +363,10 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
+      if (hasExplicitNullIntermediate(name)) {
+        return;
+      }
+
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,

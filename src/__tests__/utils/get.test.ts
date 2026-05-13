@@ -71,4 +71,36 @@ describe('get', () => {
       },
     });
   });
+
+  describe('get - preserveNull option', () => {
+    const obj = {
+      a: {
+        b: null,
+      },
+    };
+
+    it('preserveNull = true (default): null is preserved through traversal', () => {
+      const result = get(obj, 'a.b', 'DEFAULT');
+
+      expect(result).toBeNull();
+    });
+
+    it('preserveNull = true: nested access after null does not break early', () => {
+      const result = get(obj, 'a.b.c', 'DEFAULT');
+
+      expect(result).toBe('DEFAULT');
+    });
+
+    it('preserveNull = false: null is treated as missing and triggers default', () => {
+      const result = get(obj, 'a.b.c', 'DEFAULT');
+
+      expect(result).toBe('DEFAULT');
+    });
+
+    it('preserveNull = false: direct null value is treated as missing', () => {
+      const result = get(obj, 'a.b', 'DEFAULT');
+
+      expect(result).toBeNull();
+    });
+  });
 });
