@@ -1810,7 +1810,7 @@ describe('register', () => {
     ).toEqual('textarea');
   });
 
-  it('should should trigger deps validation', async () => {
+  it('should trigger deps validation', async () => {
     const App = () => {
       const { register, getValues, formState } = useForm<{
         firstName: string;
@@ -1853,7 +1853,7 @@ describe('register', () => {
     await waitForElementToBeRemoved(screen.queryByText('error'));
   });
 
-  it('should should trigger deps validation with schema validation', async () => {
+  it('should trigger deps validation with schema validation', async () => {
     const App = () => {
       type Form = {
         firstName: string;
