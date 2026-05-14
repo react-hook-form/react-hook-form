@@ -2823,5 +2823,140 @@ describe('useForm', () => {
         expect(screen.queryByText('required')).not.toBeInTheDocument(),
       );
     });
+
+    it('should use error message from object return value', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return {
+              firstName: {
+                message: 'first name is required',
+                type: 'required',
+              },
+            };
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{(errors as any).form?.firstName?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(
+          'first name is required',
+        ),
+      );
+    });
+
+    it('should preserve custom error type from object return value', async () => {
+      let capturedErrors: any;
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return { firstName: { message: 'err', type: 'customType' } };
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        capturedErrors = errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect((capturedErrors as any).form?.firstName?.type).toBe(
+          'customType',
+        ),
+      );
+    });
+
+    it('should clear object return errors when form becomes valid', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return { firstName: { message: 'first name is required' } };
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{(errors as any).form?.firstName?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(
+          'first name is required',
+        ),
+      );
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(''),
+      );
+    });
   });
 });

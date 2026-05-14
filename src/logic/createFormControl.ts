@@ -581,8 +581,8 @@ export function createFormControl<
 
           if (error) {
             setError(`${FORM_ERROR_TYPE}.${key}`, {
-              message: isString(result.message) ? result.message : '',
-              type: INPUT_VALIDATION_RULES.validate,
+              message: isString(error.message) ? error.message : '',
+              type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
