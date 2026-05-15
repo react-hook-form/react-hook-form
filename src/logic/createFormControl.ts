@@ -646,8 +646,13 @@ export function createFormControl<
           const isFieldArrayRoot = _names.array.has(_f.name);
           const isPromiseFunction =
             field._f && hasPromiseValidation((field as Field)._f);
+          const shouldTrackIsValidatingState =
+            _proxyFormState.validatingFields ||
+            _proxyFormState.isValidating ||
+            _proxySubscribeFormState.validatingFields ||
+            _proxySubscribeFormState.isValidating;
 
-          if (isPromiseFunction && _proxyFormState.validatingFields) {
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name], true);
           }
 
@@ -660,7 +665,7 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (isPromiseFunction && _proxyFormState.validatingFields) {
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
           }
 
