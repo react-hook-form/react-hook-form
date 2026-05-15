@@ -1906,6 +1906,55 @@ describe('useForm', () => {
     screen.getByText('stateValidation: false');
   });
 
+  it('should update isValidating without subscribing to validatingFields', async () => {
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { isValidating },
+      } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          {isValidating && <p>is validating</p>}
+          <input
+            {...register('firstName', {
+              validate: {
+                asyncMinLengthValidator: async (value) => {
+                  await sleep(2000);
+                  return value.length > 3;
+                },
+                customMinLength: (value) => value.length > 1,
+              },
+              required: true,
+            })}
+            placeholder="First name"
+          />
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getByPlaceholderText('First name'), {
+      target: { value: 'test' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(screen.getByText('is validating')).toBeVisible();
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('is validating')).not.toBeInTheDocument();
+    });
+  });
+
   it('should correctly handle multiple async validation triggers', async () => {
     jest.useFakeTimers();
 
