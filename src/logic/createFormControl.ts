@@ -17,6 +17,7 @@ import type {
   FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
+  FieldPathValue,
   FieldRefs,
   FieldValues,
   FormState,
@@ -858,14 +859,17 @@ export function createFormControl<
     }
   };
 
-  const setValue: UseFormSetValue<TFieldValues> = (
-    name,
-    value,
-    options = {},
+  const _setValue = <
+    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  >(
+    name: TFieldName,
+    value: FieldPathValue<TFieldValues, TFieldName>,
+    options: SetValueConfig,
+    skipClone: boolean,
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
-    const cloneValue = cloneObject(value);
+    const cloneValue = skipClone ? value : cloneObject(value);
     const previousValue = get(_formValues, name);
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
@@ -876,7 +880,7 @@ export function createFormControl<
     if (isFieldArray) {
       _subjects.array.next({
         name,
-        values: cloneObject(_formValues),
+        values: skipClone ? _formValues : cloneObject(_formValues),
       });
 
       if (
@@ -908,7 +912,7 @@ export function createFormControl<
 
     if (!isValueUnchanged) {
       const watched = isWatched(name, _names);
-      const values = cloneObject(_formValues);
+      const values = skipClone ? _formValues : cloneObject(_formValues);
 
       if (!isFieldArray) {
         for (const arrayName of getFieldArrayParentNames(_names.array, name)) {
@@ -924,6 +928,9 @@ export function createFormControl<
     }
   };
 
+  const setValue: UseFormSetValue<TFieldValues> = (name, value, options = {}) =>
+    _setValue(name, value, options, false);
+
   const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
     const updatedFormValues = isFunction(formValues)
       ? (formValues as Function)(_formValues as TFieldValues)
@@ -936,9 +943,11 @@ export function createFormControl<
       };
 
       for (const fieldName of _names.mount) {
-        setValue(
+        _setValue(
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),
+          {},
+          true,
         );
       }
 

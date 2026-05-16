@@ -223,4 +223,35 @@ describe('setValues', () => {
     expect(screen.getByLabelText('lastName')).toHaveValue('Smith');
     expect(screen.getByLabelText('city')).toHaveValue('New York');
   });
+
+  it('should preserve object references for untouched values instead of deep cloning per field', async () => {
+    type FormValues = {
+      a: { nested: string };
+      b: { nested: string };
+    };
+
+    const { result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          a: { nested: '1' },
+          b: { nested: '2' },
+        },
+      }),
+    );
+
+    const nextA = { nested: '10' };
+    const nextB = { nested: '20' };
+
+    await act(async () => {
+      result.current.setValues({ a: nextA, b: nextB });
+    });
+
+    const values = result.current.getValues();
+
+    expect(values).toEqual({ a: { nested: '10' }, b: { nested: '20' } });
+    // setValues must not deep-clone each field via the internal setValue call,
+    // so the exact objects passed in are kept by reference.
+    expect(values.a).toBe(nextA);
+    expect(values.b).toBe(nextB);
+  });
 });
