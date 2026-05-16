@@ -189,6 +189,66 @@ describe('handleSubmit', () => {
     );
   });
 
+  it('should avoid re-focusing with native validation on submit', async () => {
+    jest.useFakeTimers();
+
+    const firstFocus = jest.fn();
+    const lastFocus = jest.fn();
+
+    const { result } = renderHook(() =>
+      useForm<{ firstName: string; lastName: string }>({
+        shouldUseNativeValidation: true,
+        resolver: (_, __, options) => {
+          for (const key of ['firstName', 'lastName'] as const) {
+            const ref = options.fields[key].ref;
+            ref.setCustomValidity?.('required');
+            ref.reportValidity?.();
+          }
+
+          return {
+            values: {},
+            errors: {
+              firstName: { type: 'required' },
+              lastName: { type: 'required' },
+            },
+          };
+        },
+      }),
+    );
+
+    const first = result.current.register('firstName');
+    const last = result.current.register('lastName');
+
+    first.ref({
+      name: 'firstName',
+      focus: firstFocus,
+      setCustomValidity: noop,
+      reportValidity: noop,
+    });
+    last.ref({
+      name: 'lastName',
+      focus: lastFocus,
+      setCustomValidity: noop,
+      reportValidity: noop,
+    });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(firstFocus).toHaveBeenCalledTimes(0);
+    expect(lastFocus).not.toHaveBeenCalled();
+
+    jest.useRealTimers();
+  });
+
   it('should submit form data when inputs are removed', async () => {
     const { result, unmount } = renderHook(() =>
       useForm<{

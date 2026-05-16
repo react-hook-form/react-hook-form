@@ -65,6 +65,7 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
+import isKey from '../utils/isKey';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
@@ -74,6 +75,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
+import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
@@ -329,6 +331,28 @@ export function createFormControl<
     });
   };
 
+  const hasExplicitNullIntermediate = (name: InternalFieldName) => {
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let formValues = _formValues;
+    let defaultValues = _defaultValues;
+
+    for (let i = 0; i < segments.length - 1; i++) {
+      const key = segments[i];
+
+      formValues = isNullOrUndefined(formValues) ? formValues : formValues[key];
+
+      defaultValues = isNullOrUndefined(defaultValues)
+        ? defaultValues
+        : defaultValues[key as keyof typeof defaultValues];
+
+      if (formValues === null && defaultValues !== null) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -338,6 +362,10 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
+      if (hasExplicitNullIntermediate(name)) {
+        return;
+      }
+
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
@@ -552,8 +580,8 @@ export function createFormControl<
 
           if (error) {
             setError(`${FORM_ERROR_TYPE}.${key}`, {
-              message: isString(result.message) ? result.message : '',
-              type: INPUT_VALIDATION_RULES.validate,
+              message: isString(error.message) ? error.message : '',
+              type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
@@ -617,8 +645,13 @@ export function createFormControl<
           const isFieldArrayRoot = _names.array.has(_f.name);
           const isPromiseFunction =
             field._f && hasPromiseValidation((field as Field)._f);
+          const shouldTrackIsValidatingState =
+            _proxyFormState.validatingFields ||
+            _proxyFormState.isValidating ||
+            _proxySubscribeFormState.validatingFields ||
+            _proxySubscribeFormState.isValidating;
 
-          if (isPromiseFunction && _proxyFormState.validatingFields) {
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name], true);
           }
 
@@ -631,7 +664,7 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (isPromiseFunction && _proxyFormState.validatingFields) {
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
           }
 
@@ -835,7 +868,9 @@ export function createFormControl<
     const previousValue = get(_formValues, name);
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
-    set(_formValues, name, cloneValue);
+    if (!isValueUnchanged) {
+      set(_formValues, name, cloneValue);
+    }
 
     if (isFieldArray) {
       _subjects.array.next({
@@ -898,6 +933,13 @@ export function createFormControl<
         ..._formValues,
         ...updatedFormValues,
       };
+
+      for (const fieldName of _names.mount) {
+        setValue(
+          fieldName as FieldPath<TFieldValues>,
+          get(updatedFormValues, fieldName),
+        );
+      }
 
       _subjects.state.next({ ..._formState, values: _formValues });
     }
@@ -1414,6 +1456,7 @@ export function createFormControl<
 
   const _focusError = () =>
     _options.shouldFocusError &&
+    !_options.shouldUseNativeValidation &&
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
   const _disableForm = (disabled?: boolean) => {
@@ -1489,6 +1532,7 @@ export function createFormControl<
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
         }
+
         _focusError();
         setTimeout(_focusError);
       }
