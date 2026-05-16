@@ -188,6 +188,69 @@ describe('Controller', () => {
     expect(fieldValues).toEqual({ test: 'test' });
   });
 
+  it.each([
+    'isSubmitted',
+    'submitCount',
+    'isSubmitting',
+    'isSubmitSuccessful',
+    'disabled',
+    'defaultValues',
+  ] as const)(
+    'should update submitted values when controller render accesses formState.%s',
+    async (formStateProp) => {
+      const onSubmit = jest.fn();
+
+      const Component = () => {
+        const { control, handleSubmit } = useForm({
+          defaultValues: {
+            name: 'foo',
+            type: 'bar',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field, formState }) => (
+                <>
+                  <input {...field} />
+                  <p>{String(formState[formStateProp])}</p>
+                </>
+              )}
+            />
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <button type="button" onClick={() => field.onChange('test')}>
+                  Change Name
+                </button>
+              )}
+            />
+            <button type="submit">Submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Change Name' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith(
+          {
+            name: 'test',
+            type: 'bar',
+          },
+          expect.anything(),
+        ),
+      );
+    },
+  );
+
   it("should trigger component's onChange method and invoke trigger method", async () => {
     let errors: any;
     const Component = () => {
