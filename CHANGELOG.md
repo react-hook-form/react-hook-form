@@ -1,5 +1,24 @@
 # Changelog
 
+## [7.76.0] - 2026-05-16
+
+### Added
+
+- Improve `isDirty` sync with `dirtyFields` state
+
+### Fixed
+
+- Preserve `formState.defaultValues` when `useFieldArray` and `watch` are used together
+- Preserve nested resolver field-array errors in `trigger()`
+- Notify all matching field-array roots on nested `setValue` updates
+- `useFieldArray` `remove` leaves array with empty object when using `values` prop
+- Preserve reset values for conditionally mounted `Controller` fields with `shouldUnregister`
+- Propagate `setValues` updates to mounted `Controller` fields
+- Native validation tooltip suppression caused by duplicate submit-error focus
+- `append({ obj: null })` silently replaced by `defaultValues` after `remove()`
+- Errors state when using form-level validation
+- `isValidating` reactivity when `validatingFields` is not subscribed
+
 ## [7.75.0] - 2026-05-02
 
 ### Added
