@@ -1541,6 +1541,58 @@ describe('useFieldArray', () => {
         (screen.getByLabelText('test.0.firstName') as HTMLInputElement).value,
       ).toEqual('Bill');
     });
+
+    it('should not regenerate keys of untouched rows when a mutation is followed by a field array setValue', () => {
+      const rowMounts: Record<string, number> = {};
+
+      function Row({ rowKey, label }: { rowKey: string; label: string }) {
+        React.useEffect(() => {
+          rowMounts[rowKey] = (rowMounts[rowKey] || 0) + 1;
+        }, [rowKey]);
+
+        return <span>{label}</span>;
+      }
+
+      function Component() {
+        const { control, setValue, getValues } = useForm<{
+          test: { value: string }[];
+        }>({
+          defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+        });
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <Row key={field.id} rowKey={field.id} label={`row-${index}`} />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                append({ value: 'c' });
+                setValue('test', getValues('test'));
+              }}
+            >
+              append and sync
+            </button>
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      const initialKeys = Object.keys(rowMounts);
+      expect(initialKeys).toHaveLength(2);
+      expect(Object.values(rowMounts)).toEqual([1, 1]);
+
+      fireEvent.click(screen.getByRole('button', { name: 'append and sync' }));
+
+      // The two pre-existing rows keep their keys (no remount); only the
+      // appended row mounts. Without preserving ids in the array
+      // subscriber, all three rows would mount with fresh keys.
+      expect(initialKeys.every((key) => rowMounts[key] === 1)).toBe(true);
+      expect(Object.keys(rowMounts)).toHaveLength(3);
+    });
   });
 
   describe('array of array fields', () => {
