@@ -138,9 +138,7 @@ export function useFieldArray<
             const fieldValues = get(values, name);
             if (Array.isArray(fieldValues)) {
               setFields(fieldValues);
-              if (!_actioned.current) {
-                ids.current = fieldValues.map(generateId);
-              }
+              ids.current = fieldValues.map(generateId);
             }
           }
         },
