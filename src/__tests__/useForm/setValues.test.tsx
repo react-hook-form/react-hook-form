@@ -105,6 +105,46 @@ describe('setValues', () => {
     expect(valueNotifications).toHaveLength(1);
   });
 
+  it('should notify the batch update as a whole-form change (no stale name/type)', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ a: string; b: string }>({
+        defaultValues: { a: '1', b: '2' },
+      }),
+    );
+
+    // Drive a single-field change first so `_formState.name`/`type` are
+    // polluted with a stale field label from the prior emit.
+    await act(async () => {
+      result.current.register('a');
+      result.current.setValue('a', 'changed', { shouldValidate: true });
+    });
+
+    const control = result.current.control as any;
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    await act(async () => {
+      result.current.setValues({
+        a: '10',
+        b: '20',
+      });
+    });
+
+    const valueNotifications = nextSpy.mock.calls.filter(
+      (call) =>
+        call[0] != null &&
+        typeof call[0] === 'object' &&
+        'values' in (call[0] as Record<string, unknown>),
+    );
+
+    // The terminal bulk emit must announce a whole-form change. Before the
+    // fix it spread the stale `_formState.name`/`type` left over from the
+    // prior single-field change, causing name-gated subscribers to skip it.
+    const terminal = valueNotifications.at(-1)![0] as Record<string, unknown>;
+    expect(terminal.name).toBeUndefined();
+    expect(terminal.type).toBeUndefined();
+    expect(terminal.values).toEqual({ a: '10', b: '20' });
+  });
+
   it('should update controlled input value when setValues is called', async () => {
     const Component = () => {
       const { control, setValues } = useForm({
