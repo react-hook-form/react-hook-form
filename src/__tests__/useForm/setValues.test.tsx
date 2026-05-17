@@ -254,4 +254,44 @@ describe('setValues', () => {
     expect(values.a).toBe(nextA);
     expect(values.b).toBe(nextB);
   });
+
+  it('should not deep clone the form tree per field in setFieldValue broadcasts during setValues', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ a: { nested: string } }>({
+        defaultValues: { a: { nested: '1' } },
+      }),
+    );
+
+    // Registering on a non-input element gives the field a ref with no `type`,
+    // which is the setFieldValue branch that broadcasts the form tree. The
+    // value stored in _formValues is reference-preserved regardless of
+    // skipClone, so this optimization is only observable at the broadcast
+    // boundary: the per-field snapshot must be the live tree, not an
+    // O(formSize) deep clone produced once per mounted field.
+    const ref = document.createElement('div');
+    act(() => {
+      result.current.register('a').ref(ref);
+    });
+
+    const deliveredValues: object[] = [];
+    const unsubscribe = result.current.subscribe({
+      formState: { values: true },
+      callback: (data) => deliveredValues.push(data.values),
+    });
+
+    await act(async () => {
+      result.current.setValues({ a: { nested: '10' } });
+    });
+    unsubscribe();
+
+    // The setFieldValue !ref.type branch and the _setValue broadcast both fire
+    // for this field, so a batch produces multiple notifications.
+    expect(deliveredValues.length).toBeGreaterThan(1);
+    // skipClone must be threaded through setFieldValue: every per-field
+    // broadcast reuses the one live form tree. A per-field deep clone would
+    // instead hand subscribers distinct object identities.
+    for (const values of deliveredValues) {
+      expect(values).toBe(deliveredValues[0]);
+    }
+  });
 });

@@ -763,6 +763,7 @@ export function createFormControl<
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
+    skipClone = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -814,7 +815,7 @@ export function createFormControl<
           if (!fieldReference.ref.type) {
             _subjects.state.next({
               name,
-              values: cloneObject(_formValues),
+              values: skipClone ? _formValues : cloneObject(_formValues),
             });
           }
         }
@@ -841,6 +842,7 @@ export function createFormControl<
     name: T,
     value: K,
     options: U,
+    skipClone = false,
   ) => {
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
@@ -854,8 +856,8 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options)
-        : setFieldValue(fieldName, fieldValue, options);
+        ? setFieldValues(fieldName, fieldValue, options, skipClone)
+        : setFieldValue(fieldName, fieldValue, options, skipClone);
     }
   };
 
@@ -904,9 +906,9 @@ export function createFormControl<
         isEmptyObject(cloneValue);
 
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options);
+        setFieldValue(name, cloneValue, options, skipClone);
       } else {
-        setFieldValues(name, cloneValue, options);
+        setFieldValues(name, cloneValue, options, skipClone);
       }
     }
 
