@@ -7,6 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 
+import { Controller } from '../../controller';
 import type { FieldErrors, ResolverResult } from '../../types';
 import type { Resolver } from '../../types';
 import { useController } from '../../useController';
@@ -470,6 +471,51 @@ describe('resolver', () => {
       expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
       expect(stateEmissions[1].errors.test).toBeDefined();
       expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should not throw render phase update warning with conditional Controller', () => {
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        const { control } = useForm({
+          mode: 'onChange',
+          resolver: async (values) => ({ values, errors: {} }),
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <>
+            <button onClick={() => setShow((value) => !value)}>Toggle</button>
+            {show && (
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => <input {...field} />}
+              />
+            )}
+          </>
+        );
+      };
+
+      render(<App />);
+
+      act(() => {
+        fireEvent.click(screen.getByText('Toggle'));
+      });
+
+      const reactErrors = consoleError.mock.calls.filter((call) =>
+        call[0]?.toString().includes('Cannot update a component'),
+      );
+
+      expect(reactErrors).toHaveLength(0);
+
+      consoleError.mockRestore();
     });
 
     it('should not cause "Cannot update component while rendering" error with fieldArray and async validation', async () => {

@@ -93,16 +93,27 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _isResolver = !!control._options.resolver;
 
-  const _registerProps = React.useRef(
-    control.register(name, {
-      ...props.rules,
-      value,
-      ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
-    }),
+  const _registerProps = React.useRef<ReturnType<typeof control.register>>(
+    _isResolver
+      ? {
+          name,
+          onChange: async () => undefined,
+          onBlur: async () => undefined,
+          ref: () => {},
+        }
+      : control.register(name, {
+          ...props.rules,
+          value,
+          ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
+        }),
   );
 
+  const _value = React.useRef(value);
+
   _props.current = props;
+  _value.current = value;
 
   const fieldState = React.useMemo(
     () =>
@@ -187,12 +198,22 @@ export function useController<
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
-    control.register(name, {
-      ..._props.current.rules,
-      ...(isBoolean(_props.current.disabled)
-        ? { disabled: _props.current.disabled }
-        : {}),
-    });
+    if (_isResolver) {
+      _registerProps.current = control.register(name, {
+        ..._props.current.rules,
+        value: _value.current,
+        ...(isBoolean(_props.current.disabled)
+          ? { disabled: _props.current.disabled }
+          : {}),
+      });
+    } else {
+      control.register(name, {
+        ..._props.current.rules,
+        ...(isBoolean(_props.current.disabled)
+          ? { disabled: _props.current.disabled }
+          : {}),
+      });
+    }
 
     const updateMounted = (name: InternalFieldName, value: boolean) => {
       const field: Field = get(control._fields, name);
@@ -233,7 +254,7 @@ export function useController<
         ? control.unregister(name)
         : updateMounted(name, false);
     };
-  }, [name, control, isArrayField, shouldUnregister]);
+  }, [name, control, isArrayField, shouldUnregister, _isResolver]);
 
   React.useEffect(() => {
     control._setDisabledField({
