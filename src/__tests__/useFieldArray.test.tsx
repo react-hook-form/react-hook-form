@@ -1372,6 +1372,77 @@ describe('useFieldArray', () => {
       },
     );
 
+    it('should not remount field-array rows on consecutive descendant setValue calls (key thrashing regression, #13420)', async () => {
+      const mountCounts: number[] = [0, 0, 0];
+
+      const Row = ({
+        index,
+        register,
+      }: {
+        index: number;
+        register: UseFormReturn<{
+          test: { name: string }[];
+        }>['register'];
+      }) => {
+        React.useEffect(() => {
+          mountCounts[index] += 1;
+        }, [index]);
+
+        return <input {...register(`test.${index}.name` as const)} />;
+      };
+
+      let setValue: UseFormReturn<{
+        test: { name: string }[];
+      }>['setValue'];
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+          },
+        });
+        const { fields } = useFieldArray({ name: 'test', control });
+
+        setValue = tempSetValue;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <Row key={field.id} index={i} register={register} />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      // Each row mounts exactly once on initial render.
+      expect(mountCounts).toEqual([1, 1, 1]);
+
+      // These are sibling-field writes on the same rows. useFieldArray is
+      // supposed to decouple row rendering from descendant value changes, so
+      // none of the rows should unmount/remount.
+      await act(async () => {
+        setValue('test.0.name', 'a1');
+      });
+      await act(async () => {
+        setValue('test.1.name', 'b1');
+      });
+      await act(async () => {
+        setValue('test.2.name', 'c1');
+      });
+
+      // When useFieldArray receives an array notification for the `test` root
+      // on a descendant setValue, it regenerates every field id, so React
+      // unmounts and remounts every row on each call -> mount counts climb
+      // (key thrashing, the regression introduced by #13420).
+      expect(mountCounts).toEqual([1, 1, 1]);
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
