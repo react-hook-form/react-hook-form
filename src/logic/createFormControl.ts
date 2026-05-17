@@ -951,7 +951,12 @@ export function createFormControl<
         );
       }
 
-      _subjects.state.next({ ..._formState, values: _formValues });
+      _subjects.state.next({
+        ..._formState,
+        name: undefined,
+        type: undefined,
+        values: _formValues,
+      });
     }
   };
 
