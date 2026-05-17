@@ -1376,7 +1376,11 @@ describe('useFieldArray', () => {
       let setValue: any;
       let ids: string[] = [];
       const Component = () => {
-        const { register, control, setValue: tempSetValue } = useForm({
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
           defaultValues: {
             test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
           },
