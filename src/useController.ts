@@ -22,6 +22,9 @@ import { useFormControlContext } from './useFormControlContext';
 import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
+const RESOLVER_PLACEHOLDER_HANDLER = async () => undefined;
+const RESOLVER_PLACEHOLDER_REF = () => {};
+
 /**
  * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
  *
@@ -93,15 +96,14 @@ export function useController<
   });
 
   const _props = React.useRef(props);
-  const _isResolver = !!control._options.resolver;
 
   const _registerProps = React.useRef<ReturnType<typeof control.register>>(
-    _isResolver
+    control._options.resolver
       ? {
           name,
-          onChange: async () => undefined,
-          onBlur: async () => undefined,
-          ref: () => {},
+          onChange: RESOLVER_PLACEHOLDER_HANDLER,
+          onBlur: RESOLVER_PLACEHOLDER_HANDLER,
+          ref: RESOLVER_PLACEHOLDER_REF,
         }
       : control.register(name, {
           ...props.rules,
@@ -198,7 +200,7 @@ export function useController<
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
-    if (_isResolver) {
+    if (control._options.resolver) {
       _registerProps.current = control.register(name, {
         ..._props.current.rules,
         value: _value.current,
@@ -254,7 +256,7 @@ export function useController<
         ? control.unregister(name)
         : updateMounted(name, false);
     };
-  }, [name, control, isArrayField, shouldUnregister, _isResolver]);
+  }, [name, control, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
     control._setDisabledField({
