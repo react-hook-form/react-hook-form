@@ -1418,6 +1418,60 @@ describe('useFieldArray', () => {
       expect(ids).not.toEqual(initialIds);
     });
 
+    it('should keep ids aligned and stable when a descendant write extends the array', async () => {
+      let setValue: any;
+      let ids: string[] = [];
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+          },
+        });
+        const { fields } = useFieldArray({ name: 'test', control });
+
+        setValue = tempSetValue;
+        ids = fields.map((field) => field.id);
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.name` as const)} />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const initialIds = [...ids];
+
+      // Descendant write to a NEW numeric index extends the array. ids must
+      // stay aligned with rows: existing ids preserved, the new row gets an
+      // id (regression: before the length reconciliation this row had no
+      // stored id and ids.current desynced from fields).
+      await act(async () => {
+        setValue('test.3.name', 'd');
+      });
+      expect(ids).toHaveLength(4);
+      expect(ids.slice(0, 3)).toEqual(initialIds);
+      expect(ids[3]).toBeTruthy();
+
+      const idForNewRow = ids[3];
+
+      // A further descendant write re-renders; the new row's id must be
+      // stable, not regenerated on every render.
+      await act(async () => {
+        setValue('test.0.name', 'a-changed');
+      });
+      expect(ids).toHaveLength(4);
+      expect(ids[3]).toBe(idForNewRow);
+      expect(ids.slice(0, 3)).toEqual(initialIds);
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {

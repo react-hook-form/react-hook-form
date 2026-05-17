@@ -140,11 +140,21 @@ export function useFieldArray<
             const fieldValues = get(values, name);
             if (Array.isArray(fieldValues)) {
               setFields(fieldValues);
-              // Regenerate ids only when the array itself may have changed
-              // shape: mutation methods manage ids themselves (_actioned),
-              // and a descendant write leaves length/order intact, so in
-              // both cases the existing ids must be preserved.
-              if (!_actioned.current && !isDescendantUpdate) {
+              if (_actioned.current) {
+                // Mutation methods (append/remove/move/...) manage ids
+                // themselves, so the existing ids must be preserved.
+              } else if (isDescendantUpdate) {
+                // A descendant write (e.g. setValue('rows.0.x', ...)) leaves
+                // length/order intact, so existing ids are preserved. But a
+                // write to a new numeric index (e.g. setValue('rows.3.x', ...)
+                // on a 3-item array) extends the array, so reconcile length:
+                // reuse existing ids and generate stable ones for new rows.
+                if (fieldValues.length !== ids.current.length) {
+                  ids.current = fieldValues.map(
+                    (_, i: number) => ids.current[i] || generateId(),
+                  );
+                }
+              } else {
                 ids.current = fieldValues.map(generateId);
               }
             }
