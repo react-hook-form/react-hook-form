@@ -130,15 +130,21 @@ export function useFieldArray<
         next: ({
           values,
           name: fieldArrayName,
+          isDescendantUpdate,
         }: {
           values?: FieldValues;
           name?: InternalFieldName;
+          isDescendantUpdate?: boolean;
         }) => {
           if (fieldArrayName === name || !fieldArrayName) {
             const fieldValues = get(values, name);
             if (Array.isArray(fieldValues)) {
               setFields(fieldValues);
-              if (!_actioned.current) {
+              // Regenerate ids only when the array itself may have changed
+              // shape: mutation methods manage ids themselves (_actioned),
+              // and a descendant write leaves length/order intact, so in
+              // both cases the existing ids must be preserved.
+              if (!_actioned.current && !isDescendantUpdate) {
                 ids.current = fieldValues.map(generateId);
               }
             }

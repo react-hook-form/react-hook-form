@@ -1372,6 +1372,48 @@ describe('useFieldArray', () => {
       },
     );
 
+    it('should preserve field ids when a descendant value is set, but regenerate them on a whole-array set', async () => {
+      let setValue: any;
+      let ids: string[] = [];
+      const Component = () => {
+        const { register, control, setValue: tempSetValue } = useForm({
+          defaultValues: {
+            test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+          },
+        });
+        const { fields } = useFieldArray({ name: 'test', control });
+
+        setValue = tempSetValue;
+        ids = fields.map((field) => field.id);
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.name` as const)} />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const initialIds = [...ids];
+
+      // Descendant write: array length/order provably unchanged -> ids stable
+      // (regression for the field-array remount loop, #12665-style).
+      await act(async () => {
+        setValue('test.1.name', 'b-changed');
+      });
+      expect(ids).toEqual(initialIds);
+
+      // Whole-array set: no element-identity guarantee -> ids regenerate,
+      // preserving upstream behavior.
+      await act(async () => {
+        setValue('test', [{ name: 'x' }, { name: 'y' }, { name: 'z' }]);
+      });
+      expect(ids).not.toEqual(initialIds);
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {

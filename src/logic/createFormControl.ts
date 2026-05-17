@@ -916,7 +916,14 @@ export function createFormControl<
 
       if (!isFieldArray) {
         for (const arrayName of getFieldArrayParentNames(_names.array, name)) {
-          _subjects.array.next({ name: arrayName, values });
+          // A descendant of the field array changed (e.g.
+          // setValue('rows.3.isLoading', ...)); the array's length and order
+          // are provably unchanged, so its managed ids must be preserved.
+          _subjects.array.next({
+            name: arrayName,
+            values,
+            isDescendantUpdate: true,
+          });
         }
       }
 
