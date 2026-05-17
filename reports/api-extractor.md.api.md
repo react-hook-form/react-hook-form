@@ -616,6 +616,7 @@ export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
     array: Subject<{
         name?: InternalFieldName;
         values?: FieldValues;
+        isDescendantUpdate?: boolean;
     }>;
     state: FormStateSubjectRef<TFieldValues>;
 };
