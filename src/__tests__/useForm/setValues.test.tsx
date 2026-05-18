@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 describe('setValues', () => {
@@ -333,5 +334,83 @@ describe('setValues', () => {
     for (const values of deliveredValues) {
       expect(values).toBe(deliveredValues[0]);
     }
+  });
+
+  it('should not leave a stale element behind when setValues removes a field-array item', async () => {
+    let getValues: ReturnType<
+      typeof useForm<{ test: { name: string }[] }>
+    >['getValues'];
+
+    let setValues: ReturnType<
+      typeof useForm<{ test: { name: string }[] }>
+    >['setValues'];
+
+    const Component = () => {
+      const {
+        register,
+        control,
+        getValues: tempGetValues,
+        setValues: tempSetValues,
+      } = useForm({
+        defaultValues: {
+          test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+        },
+      });
+      const { fields } = useFieldArray({ name: 'test', control });
+
+      getValues = tempGetValues;
+      setValues = tempSetValues;
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`test.${i}.name` as const)} />
+          ))}
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    // Shrink the array via the batch API. The removed row's input is still
+    // mounted when setValues iterates _names.mount, so its leaf path must not
+    // be written back and re-grow the array with a phantom { name: undefined }.
+    await act(async () => {
+      setValues({ test: [{ name: 'a' }, { name: 'b' }] });
+    });
+
+    expect(getValues('test')).toEqual([{ name: 'a' }, { name: 'b' }]);
+  });
+
+  it('should still propagate an explicitly set undefined value to a mounted field', async () => {
+    let getValues: ReturnType<typeof useForm<{ name?: string }>>['getValues'];
+
+    let setValues: ReturnType<typeof useForm<{ name?: string }>>['setValues'];
+
+    const Component = () => {
+      const {
+        register,
+        getValues: tempGetValues,
+        setValues: tempSetValues,
+      } = useForm<{ name?: string }>({
+        defaultValues: { name: 'a' },
+      });
+
+      getValues = tempGetValues;
+      setValues = tempSetValues;
+
+      return <input {...register('name')} />;
+    };
+
+    render(<Component />);
+
+    // undefined is a valid field value: an explicitly provided undefined leaf
+    // is present in the tree (own key) and must clear the mounted input.
+    await act(async () => {
+      setValues({ name: undefined });
+    });
+
+    expect(getValues('name')).toBeUndefined();
+    expect(screen.getByRole('textbox')).toHaveValue('');
   });
 });

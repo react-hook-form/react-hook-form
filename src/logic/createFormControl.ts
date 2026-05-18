@@ -939,12 +939,35 @@ export function createFormControl<
       };
 
       for (const fieldName of _names.mount) {
-        _setValue(
-          fieldName as FieldPath<TFieldValues>,
-          get(updatedFormValues, fieldName),
-          {},
-          true,
-        );
+        const segments = isKey(fieldName)
+          ? [fieldName]
+          : stringToPath(fieldName);
+        let container: any = _formValues;
+        let pathExists = true;
+
+        // Walk the merged tree by own keys so a present-but-undefined leaf
+        // (a legitimate value) is still synced, while a path that no longer
+        // resolves -- e.g. a field-array element removed by shrinking the
+        // array -- is skipped. Pushing the latter through _setValue would let
+        // setFieldValue re-create the path and re-grow the array with a
+        // phantom { ...: undefined } entry.
+        for (const segment of segments) {
+          if (
+            container === null ||
+            typeof container !== 'object' ||
+            !Object.prototype.hasOwnProperty.call(container, segment)
+          ) {
+            pathExists = false;
+            break;
+          }
+          container = container[segment];
+        }
+
+        if (!pathExists) {
+          continue;
+        }
+
+        _setValue(fieldName as FieldPath<TFieldValues>, container, {}, true);
       }
 
       _subjects.state.next({
