@@ -392,4 +392,147 @@ describe('setValues', () => {
       lastName: true,
     });
   });
+
+  it('should clear errors and update isValid when revalidating with setValues', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ email: string }>({
+        defaultValues: { email: '' },
+        mode: 'onChange',
+      }),
+    );
+
+    // Register the field with required and email validation
+    act(() => {
+      result.current.register('email', {
+        required: 'Email is required',
+        pattern: {
+          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+          message: 'Invalid email address',
+        },
+      });
+    });
+
+    // Initially form should be invalid
+    expect(result.current.formState.isValid).toBe(false);
+    expect(result.current.formState.errors.email).toBeUndefined();
+
+    // Trigger validation by touching the field (should show error)
+    await act(async () => {
+      result.current.trigger('email');
+    });
+
+    // Should have error after validation
+    expect(result.current.formState.errors.email).toBeDefined();
+    expect(result.current.formState.isValid).toBe(false);
+
+    // Set invalid value with validation - should still be invalid
+    await act(async () => {
+      result.current.setValues({ email: 'invalid' }, { shouldValidate: true });
+    });
+
+    expect(result.current.formState.isValid).toBe(false);
+    expect(result.current.formState.errors.email).toBeDefined();
+
+    // Set valid value with validation - should become valid and clear error
+    await act(async () => {
+      result.current.setValues(
+        { email: 'test@example.com' },
+        { shouldValidate: true },
+      );
+    });
+
+    expect(result.current.formState.isValid).toBe(true);
+    expect(result.current.formState.errors.email).toBeUndefined();
+    expect(result.current.getValues().email).toBe('test@example.com');
+  });
+
+  it('should validate multiple fields and update isValid correctly', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ username: string; email: string; age: number }>({
+        defaultValues: { username: '', email: '', age: 0 },
+        mode: 'onChange',
+      }),
+    );
+
+    // Register fields with validation
+    act(() => {
+      result.current.register('username', {
+        required: 'Username is required',
+        minLength: {
+          value: 3,
+          message: 'Username must be at least 3 characters',
+        },
+      });
+      result.current.register('email', {
+        required: 'Email is required',
+        pattern: {
+          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+          message: 'Invalid email',
+        },
+      });
+      result.current.register('age', {
+        required: 'Age is required',
+        min: { value: 18, message: 'Must be at least 18' },
+      });
+    });
+
+    // Initially all fields are invalid
+    expect(result.current.formState.isValid).toBe(false);
+
+    // Set all values with validation at once
+    await act(async () => {
+      result.current.setValues(
+        {
+          username: 'john',
+          email: 'john@example.com',
+          age: 25,
+        },
+        { shouldValidate: true },
+      );
+    });
+
+    // All fields should be valid now
+    expect(result.current.formState.isValid).toBe(true);
+    expect(result.current.formState.errors).toEqual({});
+    expect(result.current.getValues()).toEqual({
+      username: 'john',
+      email: 'john@example.com',
+      age: 25,
+    });
+
+    // Now set one invalid value - should become invalid
+    await act(async () => {
+      result.current.setValues({ username: 'ab' }, { shouldValidate: true });
+    });
+
+    expect(result.current.formState.isValid).toBe(false);
+    expect(result.current.formState.errors.username).toBeDefined();
+  });
+
+  it('should not validate when shouldValidate is not provided', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ firstName: string }>({
+        defaultValues: { firstName: '' },
+        mode: 'onChange',
+      }),
+    );
+
+    // Register the field with required validation
+    act(() => {
+      result.current.register('firstName', { required: true });
+    });
+
+    // Initially form should be invalid
+    expect(result.current.formState.isValid).toBe(false);
+
+    // Set value without shouldValidate - should not trigger validation
+    await act(async () => {
+      result.current.setValues({ firstName: 'John' });
+    });
+
+    // Value is set but validation is not triggered
+    expect(result.current.getValues().firstName).toBe('John');
+    // isValid might still be false because validation wasn't re-run
+    expect(result.current.formState.isValid).toBe(false);
+  });
 });
