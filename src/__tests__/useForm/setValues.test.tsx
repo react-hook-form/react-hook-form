@@ -334,4 +334,62 @@ describe('setValues', () => {
       expect(values).toBe(deliveredValues[0]);
     }
   });
+
+  it('should propagate shouldValidate option to trigger validation and update isValid', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ firstName: string }>({
+        defaultValues: { firstName: '' },
+        mode: 'onChange',
+      }),
+    );
+
+    // Register the field with required validation
+    act(() => {
+      result.current.register('firstName', { required: true });
+    });
+
+    // Initially form should be invalid (empty required field)
+    expect(result.current.formState.isValid).toBe(false);
+
+    // Set value with shouldValidate to trigger validation
+    await act(async () => {
+      result.current.setValues({ firstName: 'John' }, { shouldValidate: true });
+    });
+
+    // Form should now be valid
+    expect(result.current.formState.isValid).toBe(true);
+    expect(result.current.getValues().firstName).toBe('John');
+  });
+
+  it('should propagate shouldDirty and shouldTouch options', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ firstName: string; lastName: string }>({
+        defaultValues: { firstName: '', lastName: '' },
+      }),
+    );
+
+    // Register fields
+    act(() => {
+      result.current.register('firstName');
+      result.current.register('lastName');
+    });
+
+    // Set values with shouldDirty and shouldTouch
+    await act(async () => {
+      result.current.setValues(
+        { firstName: 'John', lastName: 'Doe' },
+        { shouldDirty: true, shouldTouch: true },
+      );
+    });
+
+    // Check that fields are marked as dirty and touched
+    expect(result.current.formState.dirtyFields).toEqual({
+      firstName: true,
+      lastName: true,
+    });
+    expect(result.current.formState.touchedFields).toEqual({
+      firstName: true,
+      lastName: true,
+    });
+  });
 });
