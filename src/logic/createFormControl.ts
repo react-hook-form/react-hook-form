@@ -927,7 +927,10 @@ export function createFormControl<
   const setValue: UseFormSetValue<TFieldValues> = (name, value, options = {}) =>
     _setValue(name, value, options, false);
 
-  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
+  const setValues: UseFormSetValues<TFieldValues> = (
+    formValues,
+    options = {},
+  ) => {
     const updatedFormValues = isFunction(formValues)
       ? (formValues as Function)(_formValues as TFieldValues)
       : formValues;
@@ -942,7 +945,7 @@ export function createFormControl<
         _setValue(
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),
-          {},
+          options,
           true,
         );
       }
@@ -953,6 +956,10 @@ export function createFormControl<
         type: undefined,
         values: _formValues,
       });
+
+      if (options.shouldValidate) {
+        _setValid();
+      }
     }
   };
 
