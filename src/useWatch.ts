@@ -271,6 +271,7 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
+  const _subscriptionSetup = React.useRef(false);
 
   _compute.current = compute;
 
@@ -326,9 +327,11 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   useIsomorphicLayoutEffect(() => {
     if (
+      !_subscriptionSetup.current ||
       _prevControl.current !== control ||
       !deepEqual(_prevName.current, name)
     ) {
+      _subscriptionSetup.current = true;
       _prevControl.current = control;
       _prevName.current = name;
       refreshValue();
