@@ -135,15 +135,28 @@ export function useController<
   );
 
   const onChange = React.useCallback(
-    (event: any) =>
+    (event: any) => {
+      const value = getEventValue(event);
+
+      if (!get(control._fields, name)?._f) {
+        _registerProps.current = control.register(name, {
+          ..._props.current.rules,
+          value,
+          ...(isBoolean(_props.current.disabled)
+            ? { disabled: _props.current.disabled }
+            : {}),
+        });
+      }
+
       _registerProps.current.onChange({
         target: {
-          value: getEventValue(event),
+          value,
           name: name as InternalFieldName,
         },
         type: EVENTS.CHANGE,
-      }),
-    [name],
+      });
+    },
+    [name, control],
   );
 
   const onBlur = React.useCallback(

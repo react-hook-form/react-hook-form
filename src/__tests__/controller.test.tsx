@@ -16,7 +16,7 @@ import type {
 } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
-import { FormProvider } from '../useFormContext';
+import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
@@ -137,6 +137,67 @@ describe('Controller', () => {
     render(<Component />);
 
     expect(screen.getByRole('textbox')).toHaveValue('default');
+  });
+
+  it('should recover controlled fields after reset with unchanged values', async () => {
+    type FormValues = {
+      first_name: string;
+      last_name: string;
+    };
+
+    const ControlledInput = ({ name }: { name: keyof FormValues }) => {
+      const { control } = useFormContext<FormValues>();
+
+      return (
+        <Controller
+          control={control}
+          name={name}
+          render={({ field }) => (
+            <>
+              <button
+                type="button"
+                onClick={() => field.onChange(`${name}-value`)}
+              >
+                {name}
+              </button>
+              <p>{`${name}:${field.value}`}</p>
+            </>
+          )}
+        />
+      );
+    };
+
+    const App = () => {
+      const form = useForm<FormValues>({
+        defaultValues: {
+          first_name: '',
+          last_name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        form.reset({
+          first_name: '',
+          last_name: '',
+        });
+      }, [form]);
+
+      return (
+        <FormProvider {...form}>
+          <ControlledInput name="first_name" />
+          <ControlledInput name="last_name" />
+          <button disabled={!form.formState.isDirty}>save</button>
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'first_name' }));
+
+    await waitFor(() =>
+      expect(screen.getByText('first_name:first_name-value')).toBeVisible(),
+    );
   });
 
   it('should render when registered field values are updated', () => {
