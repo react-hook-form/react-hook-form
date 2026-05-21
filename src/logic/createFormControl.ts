@@ -1312,6 +1312,10 @@ export function createFormControl<
             values: snapshot,
             ..._formState,
             ...formState,
+            // `_formState.isDirty` is only recomputed when a consumer subscribes
+            // to `isDirty`, so deliver the canonical value to keep the subscribe
+            // path consistent with `formState.isDirty`/`useFormState`.
+            isDirty: _getDirty(),
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
