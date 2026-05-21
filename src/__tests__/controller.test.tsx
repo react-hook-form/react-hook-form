@@ -174,13 +174,14 @@ describe('Controller', () => {
           last_name: '',
         },
       });
+      const { reset } = form;
 
       React.useEffect(() => {
-        form.reset({
+        reset({
           first_name: '',
           last_name: '',
         });
-      }, [form]);
+      }, [reset]);
 
       return (
         <FormProvider {...form}>
@@ -194,10 +195,13 @@ describe('Controller', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: 'first_name' }));
+    fireEvent.click(screen.getByRole('button', { name: 'last_name' }));
 
-    await waitFor(() =>
-      expect(screen.getByText('first_name:first_name-value')).toBeVisible(),
-    );
+    await waitFor(() => {
+      expect(screen.getByText('first_name:first_name-value')).toBeVisible();
+      expect(screen.getByText('last_name:last_name-value')).toBeVisible();
+      expect(screen.getByRole('button', { name: 'save' })).toBeEnabled();
+    });
   });
 
   it('should render when registered field values are updated', () => {
