@@ -12,12 +12,9 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Build
-        run: pnpm build:esm
-
       - name: Cypress run
         uses: cypress-io/github-action@v7
         with:
-          start: pnpm --dir ./app run dev
+          start: pnpm start
           wait-on: 'http://ip6-localhost:3000'
           wait-on-timeout: 120
