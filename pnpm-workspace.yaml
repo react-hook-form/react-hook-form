@@ -1,6 +1,3 @@
-packages:
-  - 'app'
-
 allowBuilds:
   '@swc/core': true
   cypress: true
