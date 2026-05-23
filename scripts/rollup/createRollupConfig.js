@@ -33,7 +33,7 @@ export function createRollupConfig(options, callback) {
         // syntax that picomatch v2 (used by @rollup/pluginutils@4.x) does not support —
         // picomatch v2 treats +(|x) as literal characters, so those patterns never match.
         // Override with plain globs that picomatch v2 handles correctly.
-        include: ['**/*.ts', '**/*.tsx'],
+        include: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
       }),
       options.format === 'umd' &&
         commonjs({
