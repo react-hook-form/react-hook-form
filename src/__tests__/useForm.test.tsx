@@ -2273,6 +2273,47 @@ describe('useForm', () => {
     });
   });
 
+  it('should submit mounted values from values prop when shouldUnregister is true', async () => {
+    const onSubmit = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit } = useForm<{
+        firstName: string;
+        age: string;
+      }>({
+        values: {
+          firstName: 'test',
+          age: '',
+        },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
+          <input {...register('firstName', { required: true })} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByRole('textbox')).toHaveValue('test');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        {
+          firstName: 'test',
+        },
+        expect.anything(),
+      ),
+    );
+    expect(onInvalid).not.toHaveBeenCalled();
+  });
+
   it('should only update async form values which are not interacted', async () => {
     type FormValues = {
       test: string;
