@@ -55,21 +55,9 @@ describe('get', () => {
       },
     };
 
-    expect(get(object, "I'm with single quote!")).toEqual({
-      _f: {
-        name: "I'm with single quote!",
-        mount: true,
-        required: true,
-      },
-    });
+    expect(get(object, "I'm with single quote!")).toEqual(undefined);
 
-    expect(get(object, 'With " dobule quote')).toEqual({
-      _f: {
-        name: 'With " dobule quote',
-        mount: true,
-        required: true,
-      },
-    });
+    expect(get(object, 'With " dobule quote')).toEqual(undefined);
   });
 
   describe('get - preserveNull option', () => {

@@ -1,5 +1,19 @@
 # Changelog
 
+## [7.76.1] - 2026-05-23
+
+### Fixed
+
+- Revert notify all matching field-array roots on nested `setValue` updates
+- Revert treat `NaN` as empty when `valueAsNumber` is `true` in `validateField`
+- `setValues` pass `options` parameter through to enable validation
+- `setValues` emit whole-form change without stale `name`/`type`
+
+### Performance
+
+- `setValues` skip redundant per-field deep clones
+- `setValues` thread `skipClone` through `setFieldValue`
+
 ## [7.76.0] - 2026-05-16
 
 ### Added
