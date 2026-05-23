@@ -281,4 +281,50 @@ describe('subscribe', () => {
     expect(callbackFn).toHaveBeenCalledTimes(1);
     expect(capturedValues).toEqual({ test: 'hello' });
   });
+
+  it('should report isDirty as true when subscribed values differ from defaultValues', async () => {
+    let capturedIsDirty: boolean | undefined;
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        defaultValues: {
+          name: '',
+          description: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            values: true,
+          },
+          callback: (data) => {
+            capturedIsDirty = data.isDirty;
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <input {...register('description')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    // Make the form dirty through one field, then blur it.
+    fireEvent.input(screen.getAllByRole('textbox')[1], {
+      target: { name: 'description', value: 'a description' },
+    });
+    fireEvent.blur(screen.getAllByRole('textbox')[1]);
+
+    // Editing another field must keep isDirty true as values still differ.
+    fireEvent.input(screen.getAllByRole('textbox')[0], {
+      target: { name: 'name', value: 'a name' },
+    });
+
+    expect(capturedIsDirty).toBe(true);
+  });
 });
