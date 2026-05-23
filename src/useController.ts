@@ -1,7 +1,7 @@
 import React from 'react';
 
 import getEventValue from './logic/getEventValue';
-import getFieldArrayParentNames from './logic/getFieldArrayParentNames';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
@@ -67,8 +67,7 @@ export function useController<
     defaultValue,
     exact = true,
   } = props;
-  const isArrayField = !!getFieldArrayParentNames(control._names.array, name)
-    .length;
+  const isArrayField = isNameInFieldArray(control._names.array, name);
 
   const defaultValueMemo = React.useMemo(
     () =>

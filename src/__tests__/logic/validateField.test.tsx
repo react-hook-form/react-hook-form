@@ -390,16 +390,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({
-      test: {
-        type: 'required',
-        message: '',
-        ref: {
-          name: 'test',
-          value: 'e',
-        },
-      },
-    });
+    ).toEqual({});
 
     expect(
       await validateField(

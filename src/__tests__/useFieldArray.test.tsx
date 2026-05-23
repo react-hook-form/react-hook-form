@@ -1372,6 +1372,131 @@ describe('useFieldArray', () => {
       },
     );
 
+    it('should not remount field-array rows on consecutive descendant setValue calls (key thrashing regression, #13420)', async () => {
+      const mountCounts: number[] = [0, 0, 0];
+
+      const Row = ({
+        index,
+        register,
+      }: {
+        index: number;
+        register: UseFormReturn<{
+          test: { name: string }[];
+        }>['register'];
+      }) => {
+        React.useEffect(() => {
+          mountCounts[index] += 1;
+        }, [index]);
+
+        return <input {...register(`test.${index}.name` as const)} />;
+      };
+
+      let setValue: UseFormReturn<{
+        test: { name: string }[];
+      }>['setValue'];
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+          },
+        });
+        const { fields } = useFieldArray({ name: 'test', control });
+
+        setValue = tempSetValue;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <Row key={field.id} index={i} register={register} />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      // Each row mounts exactly once on initial render.
+      expect(mountCounts).toEqual([1, 1, 1]);
+
+      // These are sibling-field writes on the same rows. useFieldArray is
+      // supposed to decouple row rendering from descendant value changes, so
+      // none of the rows should unmount/remount.
+      await act(async () => {
+        setValue('test.0.name', 'a1');
+      });
+      await act(async () => {
+        setValue('test.1.name', 'b1');
+      });
+      await act(async () => {
+        setValue('test.2.name', 'c1');
+      });
+
+      // When useFieldArray receives an array notification for the `test` root
+      // on a descendant setValue, it regenerates every field id, so React
+      // unmounts and remounts every row on each call -> mount counts climb
+      // (key thrashing, the regression introduced by #13420).
+      expect(mountCounts).toEqual([1, 1, 1]);
+    });
+
+    it('should not re-render the useFieldArray host on a descendant setValue (#13420)', async () => {
+      let renderCount = 0;
+
+      let setValue: UseFormReturn<{
+        test: { name: string }[];
+      }>['setValue'];
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+          },
+        });
+        const { fields } = useFieldArray({ name: 'test', control });
+
+        setValue = tempSetValue;
+        renderCount += 1;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.name` as const)} />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      const rendersAfterMount = renderCount;
+
+      // A descendant write only changes a single leaf value; it must not push
+      // a new array snapshot into useFieldArray, so the component owning the
+      // field array should not re-render.
+      await act(async () => {
+        setValue('test.0.name', 'a1');
+      });
+      await act(async () => {
+        setValue('test.1.name', 'b1');
+      });
+      await act(async () => {
+        setValue('test.2.name', 'c1');
+      });
+
+      // #13420 emitted an array notification for the `test` root on every
+      // descendant setValue, which called setFields and re-rendered the host
+      // on every keystroke-equivalent write.
+      expect(renderCount).toBe(rendersAfterMount);
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
@@ -1540,58 +1665,6 @@ describe('useFieldArray', () => {
       expect(
         (screen.getByLabelText('test.0.firstName') as HTMLInputElement).value,
       ).toEqual('Bill');
-    });
-
-    it('should not regenerate keys of untouched rows when a mutation is followed by a field array setValue', () => {
-      const rowMounts: Record<string, number> = {};
-
-      function Row({ rowKey, label }: { rowKey: string; label: string }) {
-        React.useEffect(() => {
-          rowMounts[rowKey] = (rowMounts[rowKey] || 0) + 1;
-        }, [rowKey]);
-
-        return <span>{label}</span>;
-      }
-
-      function Component() {
-        const { control, setValue, getValues } = useForm<{
-          test: { value: string }[];
-        }>({
-          defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
-        });
-        const { fields, append } = useFieldArray({ control, name: 'test' });
-
-        return (
-          <form>
-            {fields.map((field, index) => (
-              <Row key={field.id} rowKey={field.id} label={`row-${index}`} />
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                append({ value: 'c' });
-                setValue('test', getValues('test'));
-              }}
-            >
-              append and sync
-            </button>
-          </form>
-        );
-      }
-
-      render(<Component />);
-
-      const initialKeys = Object.keys(rowMounts);
-      expect(initialKeys).toHaveLength(2);
-      expect(Object.values(rowMounts)).toEqual([1, 1]);
-
-      fireEvent.click(screen.getByRole('button', { name: 'append and sync' }));
-
-      // The two pre-existing rows keep their keys (no remount); only the
-      // appended row mounts. Without preserving ids in the array
-      // subscriber, all three rows would mount with fresh keys.
-      expect(initialKeys.every((key) => rowMounts[key] === 1)).toBe(true);
-      expect(Object.keys(rowMounts)).toHaveLength(3);
     });
   });
 

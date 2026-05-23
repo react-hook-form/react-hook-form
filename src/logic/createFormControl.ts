@@ -84,7 +84,6 @@ import unset from '../utils/unset';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
-import getFieldArrayParentNames from './getFieldArrayParentNames';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -92,6 +91,7 @@ import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
 import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
+import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
@@ -764,6 +764,7 @@ export function createFormControl<
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
+    skipClone = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -815,7 +816,7 @@ export function createFormControl<
           if (!fieldReference.ref.type) {
             _subjects.state.next({
               name,
-              values: cloneObject(_formValues),
+              values: skipClone ? _formValues : cloneObject(_formValues),
             });
           }
         }
@@ -842,6 +843,7 @@ export function createFormControl<
     name: T,
     value: K,
     options: U,
+    skipClone = false,
   ) => {
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
@@ -855,8 +857,8 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options)
-        : setFieldValue(fieldName, fieldValue, options);
+        ? setFieldValues(fieldName, fieldValue, options, skipClone)
+        : setFieldValue(fieldName, fieldValue, options, skipClone);
     }
   };
 
@@ -905,21 +907,15 @@ export function createFormControl<
         isEmptyObject(cloneValue);
 
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options);
+        setFieldValue(name, cloneValue, options, skipClone);
       } else {
-        setFieldValues(name, cloneValue, options);
+        setFieldValues(name, cloneValue, options, skipClone);
       }
     }
 
     if (!isValueUnchanged) {
       const watched = isWatched(name, _names);
       const values = skipClone ? _formValues : cloneObject(_formValues);
-
-      if (!isFieldArray) {
-        for (const arrayName of getFieldArrayParentNames(_names.array, name)) {
-          _subjects.array.next({ name: arrayName, values });
-        }
-      }
 
       _subjects.state.next({
         ...(watched && _formState),
@@ -932,7 +928,10 @@ export function createFormControl<
   const setValue: UseFormSetValue<TFieldValues> = (name, value, options = {}) =>
     _setValue(name, value, options, false);
 
-  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
+  const setValues: UseFormSetValues<TFieldValues> = (
+    formValues,
+    options = {},
+  ) => {
     const updatedFormValues = isFunction(formValues)
       ? (formValues as Function)(_formValues as TFieldValues)
       : formValues;
@@ -947,12 +946,21 @@ export function createFormControl<
         _setValue(
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),
-          {},
+          options,
           true,
         );
       }
 
-      _subjects.state.next({ ..._formState, values: _formValues });
+      _subjects.state.next({
+        ..._formState,
+        name: undefined,
+        type: undefined,
+        values: _formValues,
+      });
+
+      if (options.shouldValidate) {
+        _setValid();
+      }
     }
   };
 
@@ -1471,10 +1479,7 @@ export function createFormControl<
           }
 
           (_options.shouldUnregister || options.shouldUnregister) &&
-            !(
-              getFieldArrayParentNames(_names.array, name).length &&
-              _state.action
-            ) &&
+            !(isNameInFieldArray(_names.array, name) && _state.action) &&
             _names.unMount.add(name);
         }
       },

@@ -73,8 +73,7 @@ export default async <T extends FieldValues>(
       isUndefined(inputValue)) ||
     (isHTMLElement(ref) && ref.value === '') ||
     inputValue === '' ||
-    (Array.isArray(inputValue) && !inputValue.length) ||
-    (valueAsNumber && typeof inputValue === 'number' && isNaN(inputValue));
+    (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
