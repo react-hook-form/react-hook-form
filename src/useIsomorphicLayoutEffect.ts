@@ -1,4 +1,7 @@
 import React from 'react';
 
-export const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+import isWeb from './utils/isWeb';
+
+export const useIsomorphicLayoutEffect = isWeb
+  ? React.useLayoutEffect
+  : React.useEffect;
