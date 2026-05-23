@@ -1,4 +1,8 @@
+packages:
+  - 'app'
+
 allowBuilds:
   '@swc/core': true
   cypress: true
+  esbuild: true
   unrs-resolver: true
