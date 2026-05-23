@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - '@swc/core'
+  - cypress
+  - unrs-resolver
