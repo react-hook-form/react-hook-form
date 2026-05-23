@@ -79,7 +79,7 @@ importers:
         version: 9.1.7
       jest:
         specifier: ^30.3.0
-        version: 30.3.0(@types/node@25.5.0)(babel-plugin-macros@3.1.0)
+        version: 30.3.0(@types/node@25.5.0)
       jest-environment-jsdom:
         specifier: ^30.3.0
         version: 30.3.0
