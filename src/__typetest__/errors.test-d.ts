@@ -1,7 +1,6 @@
-import { expectType } from 'tsd';
-
 import type { FieldError, FieldErrors, GlobalError, Merge } from '../types';
 
+import type { Equal, Expect } from './__fixtures__';
 import { _ } from './__fixtures__';
 
 /** {@link FieldErrors} */ {
@@ -15,22 +14,25 @@ import { _ } from './__fixtures__';
         data1: string;
       };
     }>;
-    expectType<
-      {
-        test?: FieldError;
-        test1?: FieldError;
-        attachment?: Merge<
-          FieldError,
-          {
-            data?: FieldError;
-            data1?: FieldError;
-          }
-        >;
-      } & {
-        root?: Record<string, GlobalError> & GlobalError;
-        form?: GlobalError;
-      }
-    >(actual);
+    type _t = Expect<
+      Equal<
+        typeof actual,
+        {
+          test?: FieldError;
+          test1?: FieldError;
+          attachment?: Merge<
+            FieldError,
+            {
+              data?: FieldError;
+              data1?: FieldError;
+            }
+          >;
+        } & {
+          root?: Record<string, GlobalError> & GlobalError;
+          form?: GlobalError;
+        }
+      >
+    >;
   }
 
   /** it should support nullable record fields */
@@ -43,22 +45,25 @@ import { _ } from './__fixtures__';
         data1: string;
       } | null;
     }>;
-    expectType<
-      {
-        test?: FieldError;
-        test1?: FieldError;
-        attachment?: Merge<
-          FieldError,
-          {
-            data?: FieldError;
-            data1?: FieldError;
-          }
-        >;
-      } & {
-        root?: Record<string, GlobalError> & GlobalError;
-        form?: GlobalError;
-      }
-    >(actual);
+    type _t = Expect<
+      Equal<
+        typeof actual,
+        {
+          test?: FieldError;
+          test1?: FieldError;
+          attachment?: Merge<
+            FieldError,
+            {
+              data?: FieldError;
+              data1?: FieldError;
+            }
+          >;
+        } & {
+          root?: Record<string, GlobalError> & GlobalError;
+          form?: GlobalError;
+        }
+      >
+    >;
   }
 
   /** it should not treat Date, File, FileList or Blob as record fields */
@@ -73,12 +78,15 @@ import { _ } from './__fixtures__';
         fileList: FileList;
       };
     }>;
-    expectType<FieldError | undefined>(actual.date);
-    expectType<FieldError | undefined>(actual.file);
-    expectType<FieldError | undefined>(actual.fileList);
-    expectType<FieldError | undefined>(actual.record?.date);
-    expectType<FieldError | undefined>(actual.record?.file);
-    expectType<FieldError | undefined>(actual.record?.fileList);
+    const recordDate = actual.record?.date;
+    const recordFile = actual.record?.file;
+    const recordFileList = actual.record?.fileList;
+    type _t1 = Expect<Equal<typeof actual.date, FieldError | undefined>>;
+    type _t2 = Expect<Equal<typeof actual.file, FieldError | undefined>>;
+    type _t3 = Expect<Equal<typeof actual.fileList, FieldError | undefined>>;
+    type _t4 = Expect<Equal<typeof recordDate, FieldError | undefined>>;
+    type _t5 = Expect<Equal<typeof recordFile, FieldError | undefined>>;
+    type _t6 = Expect<Equal<typeof recordFileList, FieldError | undefined>>;
   }
 
   /** it should handle field name conflicts with FieldError properties correctly */
@@ -89,7 +97,9 @@ import { _ } from './__fixtures__';
       };
     }>;
 
-    expectType<FieldError | undefined>(actual.frequencyInput?.type);
-    expectType<string | undefined>(actual.frequencyInput?.type?.message);
+    const fiType = actual.frequencyInput?.type;
+    const fiTypeMessage = actual.frequencyInput?.type?.message;
+    type _t1 = Expect<Equal<typeof fiType, FieldError | undefined>>;
+    type _t2 = Expect<Equal<typeof fiTypeMessage, string | undefined>>;
   }
 }

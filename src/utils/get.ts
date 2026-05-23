@@ -13,11 +13,11 @@ export default <T>(
     return defaultValue;
   }
 
-  const result = (isKey(path) ? [path] : stringToPath(path)).reduce(
-    (result, key) =>
-      isNullOrUndefined(result) ? result : result[key as keyof T & object],
-    object,
-  );
+  const paths = isKey(path) ? [path] : stringToPath(path);
+
+  const result = paths.reduce<any>((result, key) => {
+    return isNullOrUndefined(result) ? undefined : result[key];
+  }, object);
 
   return isUndefined(result) || result === object
     ? isUndefined(object[path as keyof T])

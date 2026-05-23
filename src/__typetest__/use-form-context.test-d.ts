@@ -1,6 +1,6 @@
-import { expectType } from 'tsd';
-
 import { useFormContext } from '../useFormContext';
+
+import type { Equal, Expect } from './__fixtures__';
 
 /** it should correctly infer the output type from useFormContext */ {
   type Input = {
@@ -11,7 +11,7 @@ import { useFormContext } from '../useFormContext';
   const { handleSubmit } = useFormContext<Input>();
 
   handleSubmit((data) => {
-    expectType<Input>(data);
+    type _t = Expect<Equal<typeof data, Input>>;
   });
 }
 
@@ -28,6 +28,6 @@ import { useFormContext } from '../useFormContext';
   const { handleSubmit } = useFormContext<Input, any, Output>();
 
   handleSubmit((data) => {
-    expectType<Output>(data);
+    type _t = Expect<Equal<typeof data, Output>>;
   });
 }

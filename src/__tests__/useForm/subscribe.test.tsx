@@ -157,4 +157,198 @@ describe('subscribe', () => {
       ),
     );
   });
+
+  it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
+    const callbackFn = jest.fn();
+
+    const App = () => {
+      const { register, setValue, subscribe } = useForm({
+        defaultValues: {
+          test: 'initial',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            values: true,
+          },
+          callback: callbackFn,
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <button
+            type="button"
+            onClick={() => setValue('test', 'initial', { shouldDirty: true })}
+          >
+            Set same
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Set same' }));
+
+    expect(callbackFn).not.toHaveBeenCalled();
+  });
+
+  it('should not call subscribe callback when setValue is called with the same value and shouldTouch/shouldValidate options', async () => {
+    const callbackFn = jest.fn();
+
+    const App = () => {
+      const { register, setValue, subscribe } = useForm({
+        defaultValues: {
+          test: 'initial',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            values: true,
+          },
+          callback: callbackFn,
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <button
+            type="button"
+            onClick={() =>
+              setValue('test', 'initial', {
+                shouldTouch: true,
+                shouldValidate: true,
+              })
+            }
+          >
+            Set same
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Set same' }));
+
+    expect(callbackFn).not.toHaveBeenCalled();
+  });
+
+  it('should call subscribe callback with a values snapshot', async () => {
+    const callbackFn = jest.fn();
+    let capturedValues: Record<string, unknown> | undefined;
+
+    const App = () => {
+      const { register, setValue, subscribe } = useForm({
+        defaultValues: {
+          test: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            values: true,
+          },
+          callback: (data) => {
+            capturedValues = data.values as Record<string, unknown>;
+            callbackFn(data);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('test')} />
+          <button type="button" onClick={() => setValue('test', 'hello')}>
+            Update
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+    expect(callbackFn).toHaveBeenCalledTimes(1);
+    expect(capturedValues).toEqual({ test: 'hello' });
+  });
+
+  it('should keep isDirty true when reset keeps values and updates defaultValues', async () => {
+    const callbackFn = jest.fn();
+
+    const App = () => {
+      const { register, reset, subscribe } = useForm({
+        defaultValues: {
+          name: 'name',
+          description: 'a',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isDirty: true,
+            values: true,
+          },
+          callback: callbackFn,
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <input {...register('description')} />
+          <button
+            type="button"
+            onClick={() =>
+              reset(
+                {
+                  name: 'server-name',
+                  description: 'a',
+                },
+                {
+                  keepValues: true,
+                },
+              )
+            }
+          >
+            sync defaults
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getAllByRole('textbox')[0], {
+      target: { value: 'client-name' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'sync defaults' }));
+
+    await waitFor(() =>
+      expect(callbackFn).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          isDirty: true,
+          defaultValues: {
+            name: 'server-name',
+            description: 'a',
+          },
+          values: {
+            name: 'client-name',
+            description: 'a',
+          },
+        }),
+      ),
+    );
+  });
 });

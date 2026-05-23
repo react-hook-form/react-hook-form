@@ -31,13 +31,13 @@
 
 ## Caratteristiche
 
-- Sviluppata puntando l'attenzione su peformance ed esperienza di sviluppo
-- Validazione form di tipo 'uncontrolled'
-- Migliora le prestazioni della forma controllata
-- [Leggera](https://bundlephobia.com/result?p=react-hook-form@latest), senza nessuna dipendenza
+- Focus su performance ed esperienza di sviluppo
+- Validazione dei form di tipo 'uncontrolled'
+- Migliora le prestazioni rispetto ai form controllati
+- [Leggera](https://bundlephobia.com/result?p=react-hook-form@latest) e senza dipendenze esterne
 - Segue gli standard HTML per la validazione
 - Compatibile con React Native
-- Supporta [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) o personalizzati
+- Supporta [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) o validazioni personalizzate
 - Supporta la validazione nativa del browser
 - Sviluppa form velocemente grazie al [form builder](https://react-hook-form.com/form-builder)
 

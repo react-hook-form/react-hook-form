@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
     "strict": true,
-    "baseUrl": "../node_modules",
-    "target": "es5",
-    "lib": ["es5", "dom"],
-    "types": ["cypress"]
+    "target": "ES2018",
+    "lib": ["ES2018", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["cypress"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": ["**/*.ts"]
 }
