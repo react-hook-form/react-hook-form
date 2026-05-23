@@ -379,6 +379,25 @@ describe('validateField', () => {
           _f: {
             mount: true,
             name: 'test',
+            valueAsNumber: true,
+            ref: { name: 'test', value: 'e' },
+            required: true,
+          },
+        },
+        new Set(),
+        {
+          test: NaN,
+        },
+        false,
+      ),
+    ).toEqual({});
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
             ref: { name: 'test', type: 'file', value: '' },
             required: true,
             value: {},
