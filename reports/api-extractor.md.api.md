@@ -170,7 +170,7 @@ export const ErrorMessage: <TFieldValues extends FieldValues = FieldValues>(inpu
 
 // @public (undocumented)
 export type ErrorMessageProps<TFieldValues extends FieldValues = FieldValues> = {
-    as?: React_2.ElementType | React_2.ReactElement;
+    as?: React_2.ElementType;
     control?: Control<TFieldValues>;
     name: FieldPath<TFieldValues> | `root.${string}` | 'root';
     render?: (data: {
