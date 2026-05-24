@@ -82,10 +82,9 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
   }
 
   const message = error.message || '';
-  const types = error.types;
 
   if (render) {
-    return render({ message, messages: types }) as React.ReactElement;
+    return render({ message, messages: error.types }) as React.ReactElement;
   }
 
   return React.createElement(as || React.Fragment, null, message);
