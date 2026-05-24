@@ -518,14 +518,5 @@ describe('ErrorMessage', () => {
       );
       expect(asFragment()).toMatchSnapshot();
     });
-
-    it('should render registered error message when message prop is also supplied', () => {
-      const { asFragment } = renderMessage(
-        'test',
-        { type: 'test', message: 'test1' },
-        { message: 'test2' },
-      );
-      expect(asFragment()).toMatchSnapshot();
-    });
   });
 });

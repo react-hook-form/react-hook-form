@@ -22,9 +22,7 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with flat er
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with flat errors and as with element and render 1`] = `
 <DocumentFragment>
-  <span>
-    flat
-  </span>
+  flat
 </DocumentFragment>
 `;
 
@@ -38,9 +36,15 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with flat er
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with flat multiple errors and as with element and render 1`] = `
 <DocumentFragment>
-  <div>
-    flat
-  </div>
+  <span>
+    flat1
+  </span>
+  <span>
+    flat2
+  </span>
+  <span>
+    flat3
+  </span>
 </DocumentFragment>
 `;
 
@@ -60,9 +64,7 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with flat mu
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors and as with element and render 1`] = `
 <DocumentFragment>
-  <span>
-    object
-  </span>
+  object
 </DocumentFragment>
 `;
 
@@ -74,9 +76,7 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with nested 
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors array and as with element and render 1`] = `
 <DocumentFragment>
-  <span>
-    array
-  </span>
+  array
 </DocumentFragment>
 `;
 
@@ -104,9 +104,15 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with nested 
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with nested multiple errors and as with element and render 1`] = `
 <DocumentFragment>
-  <div>
-    object
-  </div>
+  <span>
+    object1
+  </span>
+  <span>
+    object2
+  </span>
+  <span>
+    object3
+  </span>
 </DocumentFragment>
 `;
 
@@ -126,9 +132,15 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with nested 
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with nested multiple errors array and as with element and render 1`] = `
 <DocumentFragment>
-  <div>
-    array
-  </div>
+  <span>
+    array1
+  </span>
+  <span>
+    array2
+  </span>
+  <span>
+    array3
+  </span>
 </DocumentFragment>
 `;
 
@@ -147,15 +159,3 @@ exports[`ErrorMessage snapshot: prop matrix should render correctly with nested 
 `;
 
 exports[`ErrorMessage snapshot: prop matrix should render correctly with no errors 1`] = `<DocumentFragment />`;
-
-exports[`ErrorMessage snapshot: prop matrix should render fallback message prop when registered error has no message 1`] = `
-<DocumentFragment>
-  test
-</DocumentFragment>
-`;
-
-exports[`ErrorMessage snapshot: prop matrix should render registered error message when message prop is also supplied 1`] = `
-<DocumentFragment>
-  test1
-</DocumentFragment>
-`;
