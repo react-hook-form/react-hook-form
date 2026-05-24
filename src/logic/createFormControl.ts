@@ -1619,7 +1619,7 @@ export function createFormControl<
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
-    const values = isEmptyResetValues ? _defaultValues : cloneUpdatedValues;
+    const values = cloneUpdatedValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
