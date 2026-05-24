@@ -22,46 +22,17 @@ export type ErrorMessageProps<TFieldValues extends FieldValues = FieldValues> =
   };
 
 /**
- * Renders the validation error message for a single form field.
+ * Displays the validation error for a single field.
+ * Reads from `control` when provided, otherwise from the nearest `FormProvider`.
  *
- * Works in two modes, in priority order:
- * 1. **`control` prop** — subscribes reactively to the field's error without
- *    a wrapping `FormProvider`. Preferred for co-located forms.
- * 2. **Context** — reads from the nearest `FormProvider` automatically.
- *
- * @remarks
- * [API](https://react-hook-form.com/docs/useformstate/errormessage)
+ * @see [API](https://react-hook-form.com/docs/useformstate/errormessage)
  *
  * @example
  * ```tsx
- * // ① control prop — no FormProvider required
- * function LoginForm() {
- *   const { register, control } = useForm<{ email: string }>();
- *   return (
- *     <form>
- *       <input {...register('email', { required: 'Email is required' })} />
- *       <ErrorMessage control={control} name="email" as="p" />
- *     </form>
- *   );
- * }
- *
- * // ② Inside FormProvider
- * function EmailField() {
- *   const { register } = useFormContext<{ email: string }>();
- *   return (
- *     <>
- *       <input {...register('email', { required: 'Email is required' })} />
- *       <ErrorMessage name="email" as="span" />
- *     </>
- *   );
- * }
- *
- * // ③ render prop for full control
- * <ErrorMessage
- *   control={control}
- *   name="email"
- *   render={({ message }) => <Alert severity="error">{message}</Alert>}
- * />
+ * <ErrorMessage control={control} name="email" as="p" />
+ * <ErrorMessage name="email" as="span" />
+ * <ErrorMessage control={control} name="email"
+ *   render={({ message }) => <Alert>{message}</Alert>} />
  * ```
  */
 export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({

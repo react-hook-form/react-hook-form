@@ -15,32 +15,17 @@ import type {
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
- * Custom hook to manage the entire form.
+ * Core hook for managing a form. Returns all methods and state for
+ * registration, validation, and submission.
  *
- * @remarks
- * [API](https://react-hook-form.com/docs/useform) • [Demo](https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm) • [Video](https://www.youtube.com/watch?v=RkXv4AXXC_4)
- *
- * @param props - form configuration and validation parameters.
- *
- * @returns methods - individual functions to manage the form state. {@link UseFormReturn}
+ * @see [API](https://react-hook-form.com/docs/useform)
  *
  * @example
  * ```tsx
- * function App() {
- *   const { register, handleSubmit, watch, formState: { errors } } = useForm();
- *   const onSubmit = data => console.log(data);
- *
- *   console.log(watch("example"));
- *
- *   return (
- *     <form onSubmit={handleSubmit(onSubmit)}>
- *       <input defaultValue="test" {...register("example")} />
- *       <input {...register("exampleRequired", { required: true })} />
- *       {errors.exampleRequired && <span>This field is required</span>}
- *       <button>Submit</button>
- *     </form>
- *   );
- * }
+ * const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+ * <form onSubmit={handleSubmit(onSubmit)}>
+ *   <input {...register("email", { required: true })} />
+ * </form>
  * ```
  */
 export function useForm<
