@@ -117,28 +117,6 @@ describe('ErrorMessage', () => {
       expect(el.tagName).toBe('P');
     });
 
-    it('renders with `as` React element (cloneElement path)', async () => {
-      const App = () => {
-        const { register, control, handleSubmit } = useForm<SimpleForm>();
-        return (
-          <form onSubmit={handleSubmit(() => {})}>
-            <input {...register('name', { required: 'Required' })} />
-            <ErrorMessage
-              control={control}
-              name="name"
-              as={<span data-testid="errspan" />}
-            />
-            <button type="submit">Submit</button>
-          </form>
-        );
-      };
-
-      render(<App />);
-      fireEvent.click(screen.getByRole('button'));
-      const el = await screen.findByTestId('errspan');
-      expect(el).toHaveTextContent('Required');
-    });
-
     it('renders via render prop', async () => {
       const App = () => {
         const { register, control, handleSubmit } = useForm<SimpleForm>();
@@ -294,7 +272,7 @@ describe('ErrorMessage', () => {
       const { asFragment } = renderMessage(
         'flat',
         { type: 'flat', message: 'flat' },
-        { as: <span />, render: ({ message }: { message: string }) => message },
+        { render: ({ message }: { message: string }) => message },
       );
       expect(asFragment()).toMatchSnapshot();
     });
@@ -358,7 +336,6 @@ describe('ErrorMessage', () => {
           types: { flat1: 'flat1', flat2: 'flat2', flat3: 'flat3' },
         },
         {
-          as: <div />,
           render: ({
             messages,
           }: {
@@ -394,7 +371,7 @@ describe('ErrorMessage', () => {
       const { asFragment } = renderMessage(
         'nested.object',
         { type: 'object', message: 'object' },
-        { as: <span />, render: ({ message }: { message: string }) => message },
+        { render: ({ message }: { message: string }) => message },
       );
       expect(asFragment()).toMatchSnapshot();
     });
@@ -431,7 +408,6 @@ describe('ErrorMessage', () => {
           types: { object1: 'object1', object2: 'object2', object3: 'object3' },
         },
         {
-          as: <div />,
           render: ({
             messages,
           }: {
@@ -467,7 +443,7 @@ describe('ErrorMessage', () => {
       const { asFragment } = renderMessage(
         'nested.0.array',
         { type: 'array', message: 'array' },
-        { as: <span />, render: ({ message }: { message: string }) => message },
+        { render: ({ message }: { message: string }) => message },
       );
       expect(asFragment()).toMatchSnapshot();
     });
@@ -504,7 +480,6 @@ describe('ErrorMessage', () => {
           types: { array1: 'array1', array2: 'array2', array3: 'array3' },
         },
         {
-          as: <div />,
           render: ({
             messages,
           }: {

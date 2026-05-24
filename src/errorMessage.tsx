@@ -12,7 +12,7 @@ import { get } from './utils';
 
 export type ErrorMessageProps<TFieldValues extends FieldValues = FieldValues> =
   {
-    as?: React.ElementType | React.ReactElement;
+    as?: React.ElementType;
     control?: Control<TFieldValues>;
     name: FieldPath<TFieldValues> | `root.${string}` | 'root';
     render?: (data: {
@@ -88,13 +88,5 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
     return render({ message, messages: types }) as React.ReactElement;
   }
 
-  if (React.isValidElement(as)) {
-    return React.cloneElement(as, {}, message);
-  }
-
-  return React.createElement(
-    (as as React.ElementType) || React.Fragment,
-    null,
-    message,
-  );
+  return React.createElement(as || React.Fragment, null, message);
 };
