@@ -800,9 +800,7 @@ describe('useFieldArray', () => {
 
         return (
           <form>
-            {errors.test?.type && (
-              <p>Array error: {errors.test.message}</p>
-            )}
+            {errors.test?.type && <p>Array error: {errors.test.message}</p>}
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input {...register(`test.${i}.value` as const)} />
