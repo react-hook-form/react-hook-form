@@ -283,6 +283,9 @@ export function useWatch<TFieldValues extends FieldValues>(
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
   });
 
+  const _prevValue = React.useRef(value);
+  _prevValue.current = value;
+
   const getCurrentOutput = React.useCallback(
     (values?: TFieldValues) => {
       const formValues = generateWatchOutput(
@@ -317,7 +320,10 @@ export function useWatch<TFieldValues extends FieldValues>(
             _computeFormValues.current = computedFormValues;
           }
         } else {
-          updateValue(formValues);
+          if (!deepEqual(formValues, _prevValue.current)) {
+            _prevValue.current = formValues;
+            updateValue(formValues);
+          }
         }
       }
     },
