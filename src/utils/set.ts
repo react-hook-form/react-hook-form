@@ -1,3 +1,4 @@
+import { PROTOTYPE_KEYWORDS } from '../constants';
 import type { FieldPath, FieldValues } from '../types';
 
 import isKey from './isKey';
@@ -28,7 +29,7 @@ export default (
             : {};
     }
 
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+    if (PROTOTYPE_KEYWORDS.includes(key)) {
       return;
     }
 
