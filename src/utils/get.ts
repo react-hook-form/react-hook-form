@@ -16,6 +16,9 @@ export default <T>(
   const paths = isKey(path) ? [path] : stringToPath(path);
 
   const result = paths.reduce<any>((result, key) => {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      return undefined;
+    }
     return isNullOrUndefined(result) ? undefined : result[key];
   }, object);
 
