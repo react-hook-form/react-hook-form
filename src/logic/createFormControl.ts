@@ -39,6 +39,7 @@ import type {
   UseFormProps,
   UseFormRegister,
   UseFormReset,
+  UseFormResetDefaultValues,
   UseFormResetField,
   UseFormReturn,
   UseFormSetError,
@@ -1815,6 +1816,28 @@ export function createFormControl<
       });
     });
 
+  const resetDefaultValues: UseFormResetDefaultValues<TFieldValues> = (
+    values,
+    options = {},
+  ) => {
+    _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+
+    if (!options.keepDirty) {
+      const newDirtyFields = getDirtyFields(_defaultValues, _formValues);
+      _formState.dirtyFields = newDirtyFields as typeof _formState.dirtyFields;
+      _formState.isDirty = !isEmptyObject(newDirtyFields);
+    }
+
+    if (!options.keepIsValid) {
+      _setValid();
+    }
+
+    _subjects.state.next({
+      ..._formState,
+      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
+    });
+  };
+
   const methods = {
     control: {
       register,
@@ -1883,6 +1906,7 @@ export function createFormControl<
     getValues,
     reset,
     resetField,
+    resetDefaultValues,
     clearErrors,
     unregister,
     setError,
