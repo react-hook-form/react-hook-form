@@ -22,7 +22,7 @@
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Validación de formularios de reacción simple">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/example.gif" alt="React Hook Form video - React hook personalizado para la validacion de de formularios" width="100%" />
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/example.gif" alt="React Hook Form video - React hook personalizado para la validacion de formularios" width="100%" />
         </a>
     </p>
 </div>
