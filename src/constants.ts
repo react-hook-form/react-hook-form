@@ -28,3 +28,5 @@ export const INPUT_VALIDATION_RULES = {
 export const FORM_ERROR_TYPE = 'form';
 
 export const ROOT_ERROR_TYPE = 'root';
+
+export const PROTOTYPE_KEYWORDS = ['__proto__', 'constructor', 'prototype'];

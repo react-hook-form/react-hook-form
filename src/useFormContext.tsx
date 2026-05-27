@@ -86,30 +86,26 @@ export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
->(
-  props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
-) => {
-  const {
-    children,
-    watch,
-    getValues,
-    getFieldState,
-    setError,
-    clearErrors,
-    setValue,
-    setValues,
-    trigger,
-    formState,
-    resetField,
-    reset,
-    handleSubmit,
-    unregister,
-    control,
-    register,
-    setFocus,
-    subscribe,
-  } = props;
-
+>({
+  children,
+  watch,
+  getValues,
+  getFieldState,
+  setError,
+  clearErrors,
+  setValue,
+  setValues,
+  trigger,
+  formState,
+  resetField,
+  reset,
+  handleSubmit,
+  unregister,
+  control,
+  register,
+  setFocus,
+  subscribe,
+}: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
   const memoizedValue = React.useMemo(
     () => ({
       watch,
