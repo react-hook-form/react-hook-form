@@ -26,6 +26,16 @@ export default function deepEqual(
     return false;
   }
 
+  if (
+    keys1.length === 0 &&
+    !Array.isArray(object1) &&
+    !Array.isArray(object2) &&
+    (Object.getPrototypeOf(object1) !== Object.prototype ||
+      Object.getPrototypeOf(object2) !== Object.prototype)
+  ) {
+    return Object.is(object1, object2);
+  }
+
   if (visited.has(object1) || visited.has(object2)) {
     return true;
   }
