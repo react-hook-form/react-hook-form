@@ -2314,6 +2314,39 @@ describe('useForm', () => {
     expect(onInvalid).not.toHaveBeenCalled();
   });
 
+  it('should use values prop over defaultValues with shouldUnregister and Controller (#12697)', async () => {
+    const App = () => {
+      const { control, handleSubmit } = useForm<{
+        firstName: string;
+      }>({
+        shouldUnregister: true,
+        defaultValues: {
+          firstName: '1',
+        },
+        values: {
+          firstName: '2',
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <Controller
+            name="firstName"
+            control={control}
+            render={({ field }) => <input {...field} />}
+          />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox')).toHaveValue('2');
+    });
+  });
+
   it('should only update async form values which are not interacted', async () => {
     type FormValues = {
       test: string;
