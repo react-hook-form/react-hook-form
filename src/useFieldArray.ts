@@ -424,7 +424,13 @@ export function useFieldArray<
   }, [fields, name, control]);
 
   React.useEffect(() => {
-    !get(control._formValues, name) && control._setFieldArray(name);
+    if (get(control._formValues, name) === undefined) {
+      const parentName = name.substring(0, name.lastIndexOf('.'));
+      const shouldSkipFieldArrayInitialization =
+        parentName && get(control._formValues, parentName) !== undefined;
+
+      !shouldSkipFieldArrayInitialization && control._setFieldArray(name);
+    }
 
     return () => {
       const shouldKeepFieldArrayValues = !(

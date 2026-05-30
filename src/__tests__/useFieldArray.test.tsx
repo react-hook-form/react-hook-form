@@ -94,6 +94,35 @@ describe('useFieldArray', () => {
         }),
       ).not.toThrow();
     });
+
+    it('should not initialize missing nested field array values', () => {
+      const { result } = renderHook(() => {
+        const methods = useForm({
+          defaultValues: {
+            name: '',
+            union: {
+              type: 'empty',
+            },
+          },
+        });
+
+        return {
+          ...methods,
+          fieldArray: useFieldArray({
+            control: methods.control,
+            name: 'union.values' as const,
+          }),
+        };
+      });
+
+      expect(result.current.fieldArray.fields).toEqual([]);
+      expect(result.current.getValues()).toEqual({
+        name: '',
+        union: {
+          type: 'empty',
+        },
+      });
+    });
   });
 
   describe('with should unregister false', () => {
