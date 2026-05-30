@@ -425,7 +425,8 @@ export function useFieldArray<
 
   React.useEffect(() => {
     if (get(control._formValues, name) === undefined) {
-      const parentName = name.substring(0, name.lastIndexOf('.'));
+      const dotIndex = name.lastIndexOf('.');
+      const parentName = dotIndex > -1 ? name.substring(0, dotIndex) : '';
       const shouldSkipFieldArrayInitialization =
         parentName && get(control._formValues, parentName) !== undefined;
 

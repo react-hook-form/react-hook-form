@@ -110,7 +110,7 @@ describe('useFieldArray', () => {
           ...methods,
           fieldArray: useFieldArray({
             control: methods.control,
-            name: 'union.values' as const,
+            name: 'union.values',
           }),
         };
       });
