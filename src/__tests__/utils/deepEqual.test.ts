@@ -169,6 +169,34 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
+  it('should distinguish distinct File/Blob instances with no own enumerable keys (issue #13483)', () => {
+    const a = new File(['a'], 'a.svg', { type: 'image/svg+xml' });
+    const b = new File(['b'], 'b.jpg', { type: 'image/jpeg' });
+
+    expect(deepEqual(a, b)).toBeFalsy();
+    expect(deepEqual(a, a)).toBeTruthy();
+
+    const blobA = new Blob(['a'], { type: 'text/plain' });
+    const blobB = new Blob(['b'], { type: 'text/plain' });
+
+    expect(deepEqual(blobA, blobB)).toBeFalsy();
+    expect(deepEqual(blobA, blobA)).toBeTruthy();
+  });
+
+  it('should distinguish distinct Map/Set instances with no own enumerable keys', () => {
+    const m1 = new Map([['k', 1]]);
+    const m2 = new Map([['k', 2]]);
+
+    expect(deepEqual(m1, m2)).toBeFalsy();
+    expect(deepEqual(m1, m1)).toBeTruthy();
+
+    const s1 = new Set([1]);
+    const s2 = new Set([2]);
+
+    expect(deepEqual(s1, s2)).toBeFalsy();
+    expect(deepEqual(s1, s1)).toBeTruthy();
+  });
+
   it('should return false when comparing NaN with other values', () => {
     expect(deepEqual({ value: NaN }, { value: 0 })).toBeFalsy();
     expect(deepEqual({ value: NaN }, { value: undefined })).toBeFalsy();
