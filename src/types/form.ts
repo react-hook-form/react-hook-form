@@ -438,7 +438,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * @remarks
    * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
-   * @returns return the entire form values
+   * @returns the entire form values
    *
    * @example
    * ```tsx
@@ -455,7 +455,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * @param names - an array of field names
    * @param defaultValue - defaultValues for the entire form
    *
-   * @returns return an array of field values
+   * @returns an array of field values
    *
    * @example
    * ```tsx
@@ -475,7 +475,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * @param name - the path name to the form field value.
    * @param defaultValue - defaultValues for the entire form
    *
-   * @returns return the single field value
+   * @returns the single field value
    *
    * @example
    * ```tsx

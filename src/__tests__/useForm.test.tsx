@@ -30,6 +30,7 @@ import sleep from '../utils/sleep';
 import {
   Controller,
   createFormControl,
+  useController,
   useFieldArray,
   useForm,
   useFormState,
@@ -2854,6 +2855,89 @@ describe('useForm', () => {
 
       fireEvent.input(input, { target: { value: 'abc' } });
       expect(input.value).toBe('abc');
+    });
+
+    it('should reset useController value on remount with defaultValues', async () => {
+      type FormValues = {
+        firstName: string;
+        lastName: string;
+      };
+
+      const { register, handleSubmit, formControl, control } =
+        createFormControl<FormValues>();
+      const onSubmit = jest.fn();
+
+      function LastName() {
+        const { field } = useController({
+          control,
+          name: 'lastName',
+          rules: { required: true },
+        });
+
+        return <input {...field} placeholder="lastName" />;
+      }
+
+      function Form({
+        onFormSubmit,
+      }: {
+        onFormSubmit: SubmitHandler<FormValues>;
+      }) {
+        useForm({
+          formControl,
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onFormSubmit)}>
+            <input {...register('firstName')} placeholder="firstName" />
+            <LastName />
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      function App() {
+        const [showForm, setShowForm] = React.useState(true);
+
+        return showForm ? (
+          <Form
+            onFormSubmit={(data) => {
+              onSubmit(data);
+              setShowForm(false);
+            }}
+          />
+        ) : (
+          <button onClick={() => setShowForm(true)}>back</button>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.input(screen.getByPlaceholderText('firstName'), {
+        target: { value: 'John' },
+      });
+      fireEvent.input(screen.getByPlaceholderText('lastName'), {
+        target: { value: 'Doe' },
+      });
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenNthCalledWith(1, {
+          firstName: 'John',
+          lastName: 'Doe',
+        });
+      });
+
+      fireEvent.click(screen.getByText('back'));
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).value,
+      ).toBe('');
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     });
   });
 
