@@ -425,8 +425,10 @@ export function useFieldArray<
 
   React.useEffect(() => {
     if (get(control._formValues, name) === undefined) {
-      const parentName = name.includes('.') ? name.slice(0, name.lastIndexOf('.')) : '';
-    
+      const parentName = name.includes('.')
+        ? name.slice(0, name.lastIndexOf('.'))
+        : '';
+
       if (!parentName || get(control._formValues, parentName) === undefined) {
         control._setFieldArray(name);
       }
