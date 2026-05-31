@@ -30,14 +30,25 @@ export type DeepRequired<T> = T extends BrowserNativeObject | Blob
       [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
     };
 
+type Keys<T> = T extends T ? keyof T : never;
+type RootFieldName = 'root' | `root.${string}`;
+
+type FieldType<T extends FieldValues, K extends Keys<T>> = K extends keyof T
+  ? T[K]
+  : T extends T
+    ? K extends keyof T
+      ? T[K]
+      : never
+    : never;
+
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
+  [K in Exclude<Keys<T>, RootFieldName>]?: FieldType<T, K> extends
+    | BrowserNativeObject
+    | Blob
     ? FieldError
-    : K extends 'root' | `root.${string}`
-      ? GlobalError
-      : T[K] extends object
-        ? Merge<FieldError, FieldErrorsImpl<T[K]>>
-        : FieldError;
+    : FieldType<T, K> extends object
+      ? Merge<FieldError, FieldErrorsImpl<FieldType<T, K>>>
+      : FieldError;
 };
 
 export type GlobalError = Partial<{
