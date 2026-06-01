@@ -14,6 +14,7 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
 import isEmptyObject from './utils/isEmptyObject';
+import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
@@ -424,12 +425,12 @@ export function useFieldArray<
   }, [fields, name, control]);
 
   React.useEffect(() => {
-    if (get(control._formValues, name) === undefined) {
+    if (isUndefined(get(control._formValues, name))) {
       const parentName = name.includes('.')
         ? name.slice(0, name.lastIndexOf('.'))
         : '';
 
-      if (!parentName || get(control._formValues, parentName) === undefined) {
+      if (!parentName || isUndefined(get(control._formValues, parentName))) {
         control._setFieldArray(name);
       }
     }
