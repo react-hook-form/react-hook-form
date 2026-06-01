@@ -1,5 +1,26 @@
 # Changelog
 
+## [7.77.0] - 2026-05-31
+
+### Added
+
+- `resetDefaultValues` API
+
+### Fixed
+
+- Stale `isDirty` in `subscribe` payload after `reset(..., { keepValues: true })`
+- Preserve values with `shouldUnregister`
+- Inconsistent `reset({})` behavior requiring double-call to take effect
+- `FieldArray` errors overriding nested fields
+
+### Security
+
+- Harden `get()` against prototype-path traversal (`__proto__` / `constructor` / `prototype`)
+
+### Performance
+
+- Bundle size reduction
+
 ## [7.76.1] - 2026-05-23
 
 ### Fixed
