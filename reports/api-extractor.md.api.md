@@ -129,7 +129,7 @@ export type CustomElement<TFieldValues extends FieldValues> = Partial<HTMLElemen
 };
 
 // @public (undocumented)
-export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends BrowserNativeObject | NestedValue ? TValue : T extends object ? {
+export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends BrowserNativeObject | NestedValue ? TValue : T extends ReadonlyArray<infer U> ? Array<DeepMap<NonUndefined<U>, TValue> | undefined> : T extends object ? {
     [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue>;
 } : TValue;
 
