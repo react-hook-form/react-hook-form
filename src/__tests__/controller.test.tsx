@@ -10,6 +10,7 @@ import {
 
 import { Controller } from '../controller';
 import type {
+  Control,
   ControllerRenderProps,
   FieldValues,
   ValidateResult,
@@ -137,6 +138,42 @@ describe('Controller', () => {
     render(<Component />);
 
     expect(screen.getByRole('textbox')).toHaveValue('default');
+  });
+
+  it('should recover memoized Controller field after reset without rerender', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    const MemoField = React.memo(({ control }: { control: Control<FormValues> }) => (
+      <Controller
+        control={control}
+        name="test"
+        render={({ field }) => <input value={field.value} onChange={field.onChange} />}
+      />
+    ));
+
+    const App = () => {
+      const { control, reset } = useForm<FormValues>({
+        defaultValues: { test: '' },
+      });
+
+      React.useEffect(() => {
+        reset({ test: '' });
+      }, [reset]);
+
+      return <MemoField control={control} />;
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: { value: 'a' },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox')).toHaveValue('a'),
+    );
   });
 
   it('should render when registered field values are updated', () => {
