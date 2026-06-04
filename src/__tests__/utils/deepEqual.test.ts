@@ -176,4 +176,22 @@ describe('deepEqual', () => {
     expect(deepEqual({ value: NaN }, { value: 'NaN' })).toBeFalsy();
     expect(deepEqual([NaN], [0])).toBeFalsy();
   });
+
+  it('should compare empty non-plain objects by reference', () => {
+    class EmptyObject {}
+
+    const file = new File(['a'], 'a.svg', { type: 'image/svg+xml' });
+
+    expect(deepEqual(file, file)).toBeTruthy();
+    expect(
+      deepEqual(file, new File(['b'], 'b.jpg', { type: 'image/jpeg' })),
+    ).toBeFalsy();
+    expect(deepEqual(new Blob(['a']), new Blob(['a']))).toBeFalsy();
+    expect(deepEqual(new FormData(), new FormData())).toBeFalsy();
+    expect(
+      deepEqual(new Map([['test', '1']]), new Map([['test', '1']])),
+    ).toBeFalsy();
+    expect(deepEqual(new Set(['test']), new Set(['test']))).toBeFalsy();
+    expect(deepEqual(new EmptyObject(), new EmptyObject())).toBeFalsy();
+  });
 });

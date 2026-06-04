@@ -119,9 +119,11 @@ export type DeepMap<T, TValue> =
     ? any
     : T extends BrowserNativeObject | NestedValue
       ? TValue
-      : T extends object
-        ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
-        : TValue;
+      : T extends ReadonlyArray<infer U>
+        ? Array<DeepMap<NonUndefined<U>, TValue> | undefined>
+        : T extends object
+          ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+          : TValue;
 
 export type IsFlatObject<T extends object> =
   Extract<

@@ -227,7 +227,9 @@ export function useController<
     if (_shouldUnregisterField) {
       const value = cloneObject(
         get(
-          control._defaultValues,
+          shouldUnregister
+            ? control._defaultValues
+            : control._options.values || control._defaultValues,
           name,
           get(
             control._options.defaultValues,

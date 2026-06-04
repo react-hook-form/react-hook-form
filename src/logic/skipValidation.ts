@@ -4,10 +4,7 @@ export default (
   isBlurEvent: boolean,
   isTouched: boolean,
   isSubmitted: boolean,
-  reValidateMode: {
-    isOnBlur: boolean;
-    isOnChange: boolean;
-  },
+  reValidateMode: Pick<ValidationModeFlags, 'isOnBlur' | 'isOnChange'>,
   mode: Partial<ValidationModeFlags>,
 ) => {
   if (mode.isOnAll) {

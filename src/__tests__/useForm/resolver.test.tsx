@@ -388,6 +388,41 @@ describe('resolver', () => {
       expect(stateEmissions[1].isValidating).toBe(false);
     });
 
+    it('should update isDirty after rapid changes with async resolver', async () => {
+      type DirtyState = { isDirty: boolean };
+      const dirtyStateEmissions: DirtyState[] = [];
+
+      const App = () => {
+        const { register, control } = useForm<FormValues>({
+          resolver: createResolver(),
+          mode: 'onChange',
+          defaultValues: { test: '' },
+        });
+        const { isDirty } = useFormState({ control });
+
+        React.useEffect(() => {
+          dirtyStateEmissions.push({ isDirty });
+        }, [isDirty]);
+
+        return <input {...register('test')} />;
+      };
+
+      render(<App />);
+      dirtyStateEmissions.length = 0;
+
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'ab' },
+      });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'abc' },
+      });
+
+      await waitFor(() => {
+        expect(dirtyStateEmissions.some(({ isDirty }) => isDirty)).toBe(true);
+      });
+    });
+
     it('should batch state updates in onBlur mode', async () => {
       const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
 
