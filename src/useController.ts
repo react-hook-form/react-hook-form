@@ -138,13 +138,10 @@ export function useController<
     (event: any) => {
       const value = getEventValue(event);
 
-      if (!get(control._fields, name)?._f) {
+      if (!get(control._fields, name)) {
         _registerProps.current = control.register(name, {
           ..._props.current.rules,
           value,
-          ...(isBoolean(_props.current.disabled)
-            ? { disabled: _props.current.disabled }
-            : {}),
         });
       }
 

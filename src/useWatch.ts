@@ -268,10 +268,8 @@ export function useWatch<TFieldValues extends FieldValues>(
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
   const _computeFormValues = React.useRef<undefined | unknown>(undefined);
-
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
-  const _subscriptionSetup = React.useRef(false);
 
   _compute.current = compute;
 
@@ -326,16 +324,8 @@ export function useWatch<TFieldValues extends FieldValues>(
   );
 
   useIsomorphicLayoutEffect(() => {
-    if (
-      !_subscriptionSetup.current ||
-      _prevControl.current !== control ||
-      !deepEqual(_prevName.current, name)
-    ) {
-      _subscriptionSetup.current = true;
-      _prevControl.current = control;
-      _prevName.current = name;
-      refreshValue();
-    }
+    _prevControl.current = control;
+    _prevName.current = name;
 
     return control._subscribe({
       name,
@@ -351,16 +341,9 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   React.useEffect(() => control._removeUnmounted());
 
-  // If name or control changed for this render, synchronously reflect the
-  // latest value so callers (like useController) see the correct value
-  // immediately on the same render.
-
-  // Optimize: Check control reference first before expensive deepEqual
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
 
-  // Cache the computed output to avoid duplicate calls within the same render
-  // We include shouldReturnImmediate in deps to ensure proper recomputation
   const computedOutput = React.useMemo(() => {
     if (disabled) {
       return null;
