@@ -1747,6 +1747,69 @@ describe('reset', () => {
     });
   });
 
+  it('should keep dirty fields for dynamic controller name when keepDirty and keepDirtyValues are true', async () => {
+    type FormValues = {
+      name_es: string;
+      name_en: string;
+    };
+
+    const defaultValues: FormValues = {
+      name_es: 'Espanol',
+      name_en: 'English',
+    };
+
+    function App() {
+      const {
+        control,
+        reset,
+        formState: { dirtyFields },
+      } = useForm<FormValues>({
+        defaultValues,
+      });
+      const [language, setLanguage] = React.useState<'es' | 'en'>('en');
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            name={`name_${language}`}
+            render={({ field }) => <input {...field} />}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setLanguage((prev) => (prev === 'en' ? 'es' : 'en'));
+              reset(defaultValues, { keepDirty: true, keepDirtyValues: true });
+            }}
+          >
+            toggle
+          </button>
+          <p data-testid="dirtyFields">{JSON.stringify(dirtyFields)}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'Test 1',
+      },
+    });
+
+    expect(screen.getByTestId('dirtyFields').textContent).toBe(
+      '{"name_en":true}',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('dirtyFields').textContent).toBe(
+        '{"name_en":true}',
+      ),
+    );
+  });
+
   it('should not mutate data outside of library', () => {
     const defaultValues = {
       test: 'ok',
