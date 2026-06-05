@@ -910,7 +910,7 @@ describe('reset', () => {
     });
   });
 
-  it('should allow to reset unmounted field array', () => {
+  it('should allow resetting unmounted field array', () => {
     type FormValues = {
       test: { name: string }[];
     };
