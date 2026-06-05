@@ -691,6 +691,50 @@ describe('useWatch', () => {
       expect(childSecondCount).toBe(1);
     });
 
+    it('should not re-render useWatch when submit does not change watched values', async () => {
+      type FormInputs = {
+        firstName: string;
+      };
+
+      let watchCount = 0;
+      let isSubmitted = false;
+      const FirstNameWatched = ({
+        control,
+      }: Pick<UseFormReturn<FormInputs>, 'control'>) => {
+        useWatch({ name: ['firstName'], control, exact: true });
+        watchCount++;
+        return null;
+      };
+
+      const Parent = () => {
+        const { register, control, handleSubmit } = useForm<FormInputs>();
+        return (
+          <form
+            onSubmit={handleSubmit(() => {
+              isSubmitted = true;
+            })}
+          >
+            <input {...register('firstName')} />
+            <FirstNameWatched control={control} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Parent />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      watchCount = 0;
+
+      fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+
+      await waitFor(() => expect(isSubmitted).toBe(true));
+      expect(watchCount).toBe(0);
+    });
+
     it('should only subscribe change at useWatch level instead of useForm', () => {
       type FormValues = {
         test: string;
