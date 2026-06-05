@@ -85,6 +85,13 @@ function Form<
               encType,
             ].some((value) => value && value.includes('json'));
 
+            const csrfToken =
+              typeof document !== 'undefined'
+                ? document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute('content')
+                : undefined;
+
             const response = await fetch(String(action), {
               method,
               headers: {
@@ -92,6 +99,7 @@ function Form<
                 ...(encType && encType !== 'multipart/form-data'
                   ? { 'Content-Type': encType }
                   : {}),
+                ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
               },
               body: shouldStringifySubmissionData ? formDataJson : formData,
             });
