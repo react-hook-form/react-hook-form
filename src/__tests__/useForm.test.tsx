@@ -2769,7 +2769,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should allow to submit a form with disabled form fields', async () => {
+  it('should allow submitting a form with disabled form fields', async () => {
     function App() {
       const { register, getFieldState, formState, handleSubmit } = useForm();
 
