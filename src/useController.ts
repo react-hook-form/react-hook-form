@@ -93,6 +93,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _proxyRef = React.useRef<any>(null);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -170,10 +171,8 @@ export function useController<
 
   const ref = React.useCallback(
     (elm: any) => {
-      const field = get(control._fields, name);
-
-      if (field && field._f && elm) {
-        field._f.ref = {
+      if (elm) {
+        _proxyRef.current = {
           focus: () => isFunction(elm.focus) && elm.focus(),
           select: () => isFunction(elm.select) && elm.select(),
           setCustomValidity: (message: string) =>
@@ -181,6 +180,12 @@ export function useController<
           reportValidity: () =>
             isFunction(elm.reportValidity) && elm.reportValidity(),
         };
+      }
+
+      const field = get(control._fields, name);
+
+      if (field && field._f && elm) {
+        field._f.ref = _proxyRef.current;
       }
     },
     [control._fields, name],
@@ -242,6 +247,13 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    if (_proxyRef.current) {
+      const field: Field = get(control._fields, name);
+      if (field && field._f) {
+        field._f.ref = _proxyRef.current;
+      }
+    }
 
     return () => {
       (
