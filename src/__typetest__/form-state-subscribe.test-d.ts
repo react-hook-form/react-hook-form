@@ -14,6 +14,7 @@ import type { Equal, Expect } from './__fixtures__';
     quux: number;
     fie: null;
     foe: { qux: number[] };
+    items: { myField: string; myOtherField: string }[];
   };
 
   /** it should type the render function parameter as UseFormStateReturn<TFieldValues> */ {
@@ -47,6 +48,19 @@ import type { Equal, Expect } from './__fixtures__';
         >;
         const dirtyBazQux = state.dirtyFields.baz?.qux;
         type _t11 = Expect<Equal<typeof dirtyBazQux, boolean | undefined>>;
+        type _t11b = Expect<
+          Equal<
+            typeof state.dirtyFields.items,
+            | (
+                | {
+                    myField?: boolean | undefined;
+                    myOtherField?: boolean | undefined;
+                  }
+                | undefined
+              )[]
+            | undefined
+          >
+        >;
 
         // Touched fields map (nested booleans)
         type _t12 = Expect<

@@ -104,7 +104,7 @@ describe('setError', () => {
     expect(await screen.findByText('no')).toBeVisible();
   });
 
-  it('should allow to set global error', async () => {
+  it('should allow setting global error', async () => {
     const onSubmit = jest.fn();
 
     type Errors = {

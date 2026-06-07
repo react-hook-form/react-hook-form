@@ -10,6 +10,7 @@ import {
 
 import { Controller } from '../controller';
 import type {
+  Control,
   ControllerRenderProps,
   FieldValues,
   ValidateResult,
@@ -1776,5 +1777,43 @@ describe('Controller', () => {
     fireEvent.change(input, { target: { value: '2024-10-16' } });
 
     await waitFor(() => expect(currentErrors).not.toHaveProperty(name));
+  });
+
+  it('should recover memoized Controller field after reset without rerender', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    const MemoField = React.memo(
+      ({ control }: { control: Control<FormValues> }) => (
+        <Controller
+          control={control}
+          name="test"
+          render={({ field }) => (
+            <input value={field.value} onChange={field.onChange} />
+          )}
+        />
+      ),
+    );
+
+    const App = () => {
+      const { control, reset } = useForm<FormValues>({
+        defaultValues: { test: '' },
+      });
+
+      React.useEffect(() => {
+        reset({ test: '' });
+      }, [reset]);
+
+      return <MemoField control={control} />;
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: { value: 'a' },
+    });
+
+    await waitFor(() => expect(screen.getByRole('textbox')).toHaveValue('a'));
   });
 });

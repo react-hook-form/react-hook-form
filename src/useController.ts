@@ -1,7 +1,7 @@
 import React from 'react';
 
 import getEventValue from './logic/getEventValue';
-import getFieldArrayParentNames from './logic/getFieldArrayParentNames';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
@@ -66,8 +66,7 @@ export function useController<
     defaultValue,
     exact = true,
   } = props;
-  const isArrayField = !!getFieldArrayParentNames(control._names.array, name)
-    .length;
+  const isArrayField = isNameInFieldArray(control._names.array, name);
 
   const defaultValueMemo = React.useMemo(
     () =>
@@ -135,15 +134,25 @@ export function useController<
   );
 
   const onChange = React.useCallback(
-    (event: any) =>
+    (event: any) => {
+      const value = getEventValue(event);
+
+      if (!get(control._fields, name)) {
+        _registerProps.current = control.register(name, {
+          ..._props.current.rules,
+          value,
+        });
+      }
+
       _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
           name: name as InternalFieldName,
         },
         type: EVENTS.CHANGE,
-      }),
-    [name],
+      });
+    },
+    [name, control],
   );
 
   const onBlur = React.useCallback(
@@ -207,7 +216,9 @@ export function useController<
     if (_shouldUnregisterField) {
       const value = cloneObject(
         get(
-          control._defaultValues,
+          shouldUnregister
+            ? control._defaultValues
+            : control._options.values || control._defaultValues,
           name,
           get(
             control._options.defaultValues,

@@ -7,7 +7,8 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import type { FieldErrors, ResolverResult } from '../../types';
+import { Controller } from '../../controller';
+import type { Control, FieldErrors, ResolverResult } from '../../types';
 import type { Resolver } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
@@ -394,6 +395,88 @@ describe('resolver', () => {
       expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
       expect(stateEmissions[1].errors.test).toBeDefined();
       expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should update isDirty after rapid changes with async resolver', async () => {
+      type DirtyState = { isDirty: boolean };
+      const dirtyStateEmissions: DirtyState[] = [];
+
+      const App = () => {
+        const { register, control } = useForm<FormValues>({
+          resolver: createResolver(),
+          mode: 'onChange',
+          defaultValues: { test: '' },
+        });
+        const { isDirty } = useFormState({ control });
+
+        React.useEffect(() => {
+          dirtyStateEmissions.push({ isDirty });
+        }, [isDirty]);
+
+        return <input {...register('test')} />;
+      };
+
+      render(<App />);
+      dirtyStateEmissions.length = 0;
+
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'ab' },
+      });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'abc' },
+      });
+
+      await waitFor(() => {
+        expect(dirtyStateEmissions.some(({ isDirty }) => isDirty)).toBe(true);
+      });
+    });
+
+    it('should propagate isDirty to a separate useFormState subscriber when Controller field.onChange is called twice in the same tick', async () => {
+      type FieldValues = { field: string };
+
+      function DirtyStatus({ control }: { control: Control<FieldValues> }) {
+        const { isDirty } = useFormState({ control });
+        return <p data-testid="dirty">{String(isDirty)}</p>;
+      }
+
+      const App = () => {
+        const { control } = useForm<FieldValues>({
+          resolver: async (data) => ({ values: data, errors: {} }),
+          mode: 'onChange',
+          defaultValues: { field: 'initial' },
+        });
+
+        return (
+          <>
+            <Controller
+              name="field"
+              control={control}
+              render={({ field }) => (
+                <button
+                  data-testid="double-change"
+                  onClick={() => {
+                    field.onChange('value-A');
+                    field.onChange('value-B');
+                  }}
+                >
+                  Two Changes
+                </button>
+              )}
+            />
+            <DirtyStatus control={control} />
+          </>
+        );
+      };
+
+      render(<App />);
+      expect(screen.getByTestId('dirty')).toHaveTextContent('false');
+
+      fireEvent.click(screen.getByTestId('double-change'));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('dirty')).toHaveTextContent('true'),
+      );
     });
 
     it('should batch state updates in onBlur mode', async () => {
