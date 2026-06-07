@@ -7,7 +7,8 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import type { FieldErrors, ResolverResult } from '../../types';
+import { Controller } from '../../controller';
+import type { Control, FieldErrors, ResolverResult } from '../../types';
 import type { Resolver } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
@@ -421,6 +422,53 @@ describe('resolver', () => {
       await waitFor(() => {
         expect(dirtyStateEmissions.some(({ isDirty }) => isDirty)).toBe(true);
       });
+    });
+
+    it('should propagate isDirty to a separate useFormState subscriber when Controller field.onChange is called twice in the same tick', async () => {
+      type FieldValues = { field: string };
+
+      function DirtyStatus({ control }: { control: Control<FieldValues> }) {
+        const { isDirty } = useFormState({ control });
+        return <p data-testid="dirty">{String(isDirty)}</p>;
+      }
+
+      const App = () => {
+        const { control } = useForm<FieldValues>({
+          resolver: async (data) => ({ values: data, errors: {} }),
+          mode: 'onChange',
+          defaultValues: { field: 'initial' },
+        });
+
+        return (
+          <>
+            <Controller
+              name="field"
+              control={control}
+              render={({ field }) => (
+                <button
+                  data-testid="double-change"
+                  onClick={() => {
+                    field.onChange('value-A');
+                    field.onChange('value-B');
+                  }}
+                >
+                  Two Changes
+                </button>
+              )}
+            />
+            <DirtyStatus control={control} />
+          </>
+        );
+      };
+
+      render(<App />);
+      expect(screen.getByTestId('dirty')).toHaveTextContent('false');
+
+      fireEvent.click(screen.getByTestId('double-change'));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('dirty')).toHaveTextContent('true'),
+      );
     });
 
     it('should batch state updates in onBlur mode', async () => {
