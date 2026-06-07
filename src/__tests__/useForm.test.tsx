@@ -1068,6 +1068,58 @@ describe('useForm', () => {
         expect(methods.formState.isValid).toBeFalsy();
       });
 
+      it('should update errors when the resolver returns an error for a different field', async () => {
+        const resolver = jest.fn((values: any) => {
+          const errors =
+            values.brand === 'adidas' && values.country === 'usa'
+              ? {
+                  country: {
+                    message: 'country is not supported',
+                  },
+                }
+              : {};
+
+          return {
+            values,
+            errors,
+          };
+        });
+
+        const App = () => {
+          const {
+            register,
+            formState: { errors },
+          } = useForm({
+            mode: 'onChange',
+            defaultValues: {
+              brand: 'nike',
+              country: 'usa',
+            },
+            resolver,
+          });
+
+          return (
+            <form>
+              <input {...register('brand')} placeholder="brand" />
+              <input {...register('country')} placeholder="country" />
+              <p>{errors.country?.message}</p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.input(screen.getByPlaceholderText('brand'), {
+          target: {
+            value: 'adidas',
+          },
+        });
+
+        expect(
+          await screen.findByText('country is not supported'),
+        ).toBeVisible();
+      });
+
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
         const resolver = jest.fn((data: any) => {
           if (data.test) {
