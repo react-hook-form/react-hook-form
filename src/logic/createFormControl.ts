@@ -321,6 +321,7 @@ export function createFormControl<
 
   const updateErrors = (name: InternalFieldName, error: FieldError) => {
     set(_formState.errors, name, error);
+    _formState.errors = { ..._formState.errors };
     _subjects.state.next({
       errors: _formState.errors,
     });
@@ -513,6 +514,7 @@ export function createFormControl<
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
+      _formState.errors = { ..._formState.errors };
     }
 
     if (
@@ -569,6 +571,7 @@ export function createFormControl<
             : set(_formState.errors, name, error)
           : unset(_formState.errors, name);
       }
+      _formState.errors = { ..._formState.errors };
     } else {
       _formState.errors = errors;
     }
