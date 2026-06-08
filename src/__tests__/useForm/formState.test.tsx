@@ -1195,4 +1195,65 @@ describe('formState', () => {
       expect(screen.getByText('no')).toBeInTheDocument();
     });
   });
+
+  it('should produce a new errors reference on each mutation so memoized child components re-render', async () => {
+    type FormValues = { test: string };
+    const errorRefs: object[] = [];
+
+    function ErrorDisplay({
+      errors,
+    }: {
+      errors: FormState<FormValues>['errors'];
+    }) {
+      errorRefs.push(errors);
+      return <p data-testid="error">{errors.test?.message ?? ''}</p>;
+    }
+
+    function App() {
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<FormValues>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+      });
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <input {...register('test', { required: 'required' })} />
+          <ErrorDisplay errors={errors} />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'valid' } });
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent(''),
+    );
+
+    fireEvent.change(input, { target: { value: '' } });
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent('required'),
+    );
+    const refAfterFirstError = errorRefs.at(-1);
+
+    fireEvent.change(input, { target: { value: 'valid' } });
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent(''),
+    );
+    const refAfterCleared = errorRefs.at(-1);
+
+    fireEvent.change(input, { target: { value: '' } });
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent('required'),
+    );
+    const refAfterSecondError = errorRefs.at(-1);
+
+    expect(refAfterFirstError).not.toBe(refAfterCleared);
+    expect(refAfterCleared).not.toBe(refAfterSecondError);
+  });
 });
