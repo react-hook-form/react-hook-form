@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  act,
   fireEvent,
   render,
   renderHook,
@@ -947,6 +948,48 @@ describe('useController', () => {
     });
 
     screen.getByText('pristine');
+  });
+
+  it('should preserve ref proxy methods on error when shouldUnregister is true in StrictMode', async () => {
+    let capturedError: any;
+
+    function Input() {
+      const { control, handleSubmit, formState } = useForm();
+      capturedError = formState.errors.myInput;
+
+      const { field, fieldState } = useController({
+        name: 'myInput',
+        control,
+        rules: { required: 'This field is required' },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <input
+            ref={field.ref}
+            value={field.value ?? ''}
+            onChange={field.onChange}
+          />
+          {fieldState.error && <p>{fieldState.error.message}</p>}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<Input />, { reactStrictMode: true });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(() => screen.getByText('This field is required'));
+
+    expect(capturedError).toBeDefined();
+    expect(typeof capturedError.ref.focus).toBe('function');
+    expect(typeof capturedError.ref.select).toBe('function');
+    expect(typeof capturedError.ref.reportValidity).toBe('function');
+    expect(typeof capturedError.ref.setCustomValidity).toBe('function');
   });
 
   it('should disable the controller input', async () => {

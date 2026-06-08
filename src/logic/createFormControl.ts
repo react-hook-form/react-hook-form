@@ -407,6 +407,18 @@ export function createFormControl<
             _subjects.state.next({ ..._formState });
           }
         }
+
+        // When a watched field is re-registered after being unregistered and
+        // its value is restored, trigger a deferred watch broadcast so that
+        // components using watch() re-render with the new value.
+        if (
+          props.shouldUnregister &&
+          wasUnsetInFormValues &&
+          !isUndefined(get(_formValues, name)) &&
+          isWatched(name, _names)
+        ) {
+          _state.watch = true;
+        }
       }
     }
   };
