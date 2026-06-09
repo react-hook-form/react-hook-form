@@ -2939,6 +2939,58 @@ describe('useForm', () => {
 
       await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     });
+
+    it('should re-initialise when formControl prop reference changes (e.g. HMR/Fast Refresh)', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const onSubmit = jest.fn();
+
+      // Simulate initial module-level createFormControl call
+      const { handleSubmit, formControl } = createFormControl<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      function Form({
+        ctrl,
+        submit,
+      }: {
+        ctrl: typeof formControl;
+        submit: typeof handleSubmit;
+      }) {
+        const { register } = useForm({ formControl: ctrl });
+        return (
+          <form onSubmit={submit(onSubmit)}>
+            <input {...register('firstName')} placeholder="firstName" />
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      const { rerender } = render(
+        <Form ctrl={formControl} submit={handleSubmit} />,
+      );
+
+      // Simulate Fast Refresh: module re-executes, producing new instances
+      const next = createFormControl<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      rerender(<Form ctrl={next.formControl} submit={next.handleSubmit} />);
+
+      fireEvent.input(screen.getByPlaceholderText('firstName'), {
+        target: { value: 'Bill' },
+      });
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          { firstName: 'Bill' },
+          expect.any(Object),
+        );
+      });
+    });
   });
 
   describe('When using defaultValues', () => {
