@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  act,
   fireEvent,
   render,
   renderHook,
@@ -12,6 +13,7 @@ import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
+import { useWatch } from '../useWatch';
 import isBoolean from '../utils/isBoolean';
 import noop from '../utils/noop';
 
@@ -948,6 +950,48 @@ describe('useController', () => {
     screen.getByText('pristine');
   });
 
+  it('should preserve ref proxy methods on error when shouldUnregister is true in StrictMode', async () => {
+    let capturedError: any;
+
+    function Input() {
+      const { control, handleSubmit, formState } = useForm();
+      capturedError = formState.errors.myInput;
+
+      const { field, fieldState } = useController({
+        name: 'myInput',
+        control,
+        rules: { required: 'This field is required' },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <input
+            ref={field.ref}
+            value={field.value ?? ''}
+            onChange={field.onChange}
+          />
+          {fieldState.error && <p>{fieldState.error.message}</p>}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<Input />, { reactStrictMode: true });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(() => screen.getByText('This field is required'));
+
+    expect(capturedError).toBeDefined();
+    expect(typeof capturedError.ref.focus).toBe('function');
+    expect(typeof capturedError.ref.select).toBe('function');
+    expect(typeof capturedError.ref.reportValidity).toBe('function');
+    expect(typeof capturedError.ref.setCustomValidity).toBe('function');
+  });
+
   it('should disable the controller input', async () => {
     function Form() {
       const { field } = useController({
@@ -1473,6 +1517,160 @@ describe('useController', () => {
     rerender({ fieldName: 'field1' });
     expect(result.current.field.name).toBe('field1');
     expect(result.current.field.value).toBe('value1');
+  });
+
+  it('should keep nested array values when useController and watch APIs switch dynamic names', async () => {
+    type FormValues = {
+      content: {
+        children: {
+          data: {
+            setting: {
+              visibility: string;
+            };
+          };
+          type: string;
+        }[];
+      };
+    };
+
+    const getVisibilityName = (index: 0 | 1) =>
+      `content.children.${index}.data.setting.visibility` as FieldPath<FormValues>;
+
+    let latestValues: FormValues | undefined;
+
+    const VisibilityField = ({ name }: { name: FieldPath<FormValues> }) => {
+      const { control } = useFormContext<FormValues>();
+      const { field } = useController({
+        control,
+        name,
+      });
+
+      return (
+        <>
+          <p>controller:{String(field.value)}</p>
+          <button type="button" onClick={() => field.onChange('desktop')}>
+            update-visibility
+          </button>
+        </>
+      );
+    };
+
+    const VisibilityWatch = ({ name }: { name: FieldPath<FormValues> }) => {
+      const { control, watch, getValues } = useFormContext<FormValues>();
+      const useWatchValue = useWatch({
+        control,
+        name,
+      });
+      const watchValue = watch(name);
+
+      latestValues = getValues();
+
+      return (
+        <>
+          <p>useWatch:{String(useWatchValue)}</p>
+          <p>watch:{String(watchValue)}</p>
+        </>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          content: {
+            children: [
+              {
+                data: {
+                  setting: {
+                    visibility: 'mobile',
+                  },
+                },
+                type: 'product',
+              },
+              {
+                data: {
+                  setting: {
+                    visibility: 'both',
+                  },
+                },
+                type: 'spacer',
+              },
+            ],
+          },
+        },
+      });
+      const [focusedIndex, setFocusedIndex] = useState<0 | 1>(0);
+      const name = getVisibilityName(focusedIndex);
+
+      return (
+        <FormProvider {...methods}>
+          <button type="button" onClick={() => setFocusedIndex(0)}>
+            focus-0
+          </button>
+          <button type="button" onClick={() => setFocusedIndex(1)}>
+            focus-1
+          </button>
+          <VisibilityField name={name} />
+          <VisibilityWatch name={name} />
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByText('controller:mobile')).toBeVisible();
+    expect(screen.getByText('useWatch:mobile')).toBeVisible();
+    expect(screen.getByText('watch:mobile')).toBeVisible();
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'both',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'focus-1' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('controller:both')).toBeVisible();
+      expect(screen.getByText('useWatch:both')).toBeVisible();
+      expect(screen.getByText('watch:both')).toBeVisible();
+    });
+
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'both',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'update-visibility' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('controller:desktop')).toBeVisible();
+      expect(screen.getByText('useWatch:desktop')).toBeVisible();
+      expect(screen.getByText('watch:desktop')).toBeVisible();
+    });
+
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'desktop',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'focus-0' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('controller:mobile')).toBeVisible();
+      expect(screen.getByText('useWatch:mobile')).toBeVisible();
+      expect(screen.getByText('watch:mobile')).toBeVisible();
+    });
+
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'desktop',
+    );
   });
 
   it('should react to changing control', () => {

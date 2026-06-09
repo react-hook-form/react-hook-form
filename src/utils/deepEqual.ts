@@ -1,6 +1,10 @@
 import isDateObject from './isDateObject';
 import isObject from './isObject';
+import isPlainObject from './isPlainObject';
 import isPrimitive from './isPrimitive';
+
+const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
+  keys.length === 0 && !Array.isArray(object) && !isPlainObject(object);
 
 export default function deepEqual(
   object1: any,
@@ -24,6 +28,13 @@ export default function deepEqual(
 
   if (keys1.length !== keys2.length) {
     return false;
+  }
+
+  if (
+    isEmptyObjectWithCustomPrototype(object1, keys1) ||
+    isEmptyObjectWithCustomPrototype(object2, keys2)
+  ) {
+    return Object.is(object1, object2);
   }
 
   if (visited.has(object1) || visited.has(object2)) {

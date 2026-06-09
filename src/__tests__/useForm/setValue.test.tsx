@@ -99,6 +99,17 @@ describe('setValue', () => {
     });
   });
 
+  it('should overwrite File values for unregistered fields', () => {
+    const { result } = renderHook(() => useForm<{ avatar: File }>());
+    const fileA = new File(['a'], 'a.svg', { type: 'image/svg+xml' });
+    const fileB = new File(['b'], 'b.jpg', { type: 'image/jpeg' });
+
+    act(() => result.current.setValue('avatar', fileA));
+    act(() => result.current.setValue('avatar', fileB));
+
+    expect(result.current.getValues('avatar')).toBe(fileB);
+  });
+
   it('should set value of multiple checkbox input correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string[] }>());
 

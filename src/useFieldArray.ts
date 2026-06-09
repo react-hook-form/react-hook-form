@@ -114,6 +114,9 @@ export function useFieldArray<
             if (Array.isArray(fieldValues)) {
               setFields(fieldValues);
               ids.current = fieldValues.map(generateId);
+            } else if (!fieldArrayName) {
+              setFields([]);
+              ids.current = [];
             }
           }
         },

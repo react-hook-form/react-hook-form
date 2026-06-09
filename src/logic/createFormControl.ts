@@ -39,6 +39,7 @@ import type {
   UseFormProps,
   UseFormRegister,
   UseFormReset,
+  UseFormResetDefaultValues,
   UseFormResetField,
   UseFormReturn,
   UseFormSetError,
@@ -320,6 +321,7 @@ export function createFormControl<
 
   const updateErrors = (name: InternalFieldName, error: FieldError) => {
     set(_formState.errors, name, error);
+    _formState.errors = { ..._formState.errors };
     _subjects.state.next({
       errors: _formState.errors,
     });
@@ -404,6 +406,18 @@ export function createFormControl<
             _formState.isDirty = false;
             _subjects.state.next({ ..._formState });
           }
+        }
+
+        // When a watched field is re-registered after being unregistered and
+        // its value is restored, trigger a deferred watch broadcast so that
+        // components using watch() re-render with the new value.
+        if (
+          props.shouldUnregister &&
+          wasUnsetInFormValues &&
+          !isUndefined(get(_formValues, name)) &&
+          isWatched(name, _names)
+        ) {
+          _state.watch = true;
         }
       }
     }
@@ -500,6 +514,7 @@ export function createFormControl<
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
+      _formState.errors = { ..._formState.errors };
     }
 
     if (
@@ -545,7 +560,9 @@ export function createFormControl<
       for (const name of names) {
         const error = get(errors, name);
         error
-          ? _names.array.has(name) && isObject(error)
+          ? _names.array.has(name) &&
+            isObject(error) &&
+            !Object.keys(error).some((key) => !Number.isNaN(Number(key)))
             ? updateFieldArrayRootError(
                 _formState.errors,
                 { [name]: error } as Partial<Record<string, FieldError>>,
@@ -554,6 +571,7 @@ export function createFormControl<
             : set(_formState.errors, name, error)
           : unset(_formState.errors, name);
       }
+      _formState.errors = { ..._formState.errors };
     } else {
       _formState.errors = errors;
     }
@@ -1057,23 +1075,26 @@ export function createFormControl<
 
         _updateIsFieldValueUpdated(fieldValue);
 
-        if (isFieldValueUpdated) {
-          const previousErrorLookupResult = schemaErrorLookup(
-            _formState.errors,
-            _fields,
-            name,
-          );
-          const errorLookupResult = schemaErrorLookup(
-            errors,
-            _fields,
-            previousErrorLookupResult.name || name,
-          );
-
-          error = errorLookupResult.error;
-          name = errorLookupResult.name;
-
-          isValid = isEmptyObject(errors);
+        if (!isFieldValueUpdated) {
+          !isEmptyObject(fieldState) && _subjects.state.next(fieldState);
+          return;
         }
+
+        const previousErrorLookupResult = schemaErrorLookup(
+          _formState.errors,
+          _fields,
+          name,
+        );
+        const errorLookupResult = schemaErrorLookup(
+          errors,
+          _fields,
+          previousErrorLookupResult.name || name,
+        );
+
+        error = errorLookupResult.error;
+        name = errorLookupResult.name;
+
+        isValid = isEmptyObject(errors);
       } else {
         _updateIsValidating([name], true);
         error = (
@@ -1619,7 +1640,7 @@ export function createFormControl<
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
-    const values = isEmptyResetValues ? _defaultValues : cloneUpdatedValues;
+    const values = cloneUpdatedValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1813,6 +1834,28 @@ export function createFormControl<
       });
     });
 
+  const resetDefaultValues: UseFormResetDefaultValues<TFieldValues> = (
+    values,
+    options = {},
+  ) => {
+    _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+
+    if (!options.keepDirty) {
+      const newDirtyFields = getDirtyFields(_defaultValues, _formValues);
+      _formState.dirtyFields = newDirtyFields as typeof _formState.dirtyFields;
+      _formState.isDirty = !isEmptyObject(newDirtyFields);
+    }
+
+    if (!options.keepIsValid) {
+      _setValid();
+    }
+
+    _subjects.state.next({
+      ..._formState,
+      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
+    });
+  };
+
   const methods = {
     control: {
       register,
@@ -1881,6 +1924,7 @@ export function createFormControl<
     getValues,
     reset,
     resetField,
+    resetDefaultValues,
     clearErrors,
     unregister,
     setError,

@@ -910,7 +910,7 @@ describe('reset', () => {
     });
   });
 
-  it('should allow to reset unmounted field array', () => {
+  it('should allow resetting unmounted field array', () => {
     type FormValues = {
       test: { name: string }[];
     };
@@ -1543,7 +1543,7 @@ describe('reset', () => {
     });
   });
 
-  it('should return defaultValues in useWatch and watch when using calling reset with empty object', async () => {
+  it('should reset to empty values in useWatch and watch when calling reset with empty object', async () => {
     const defaultValues = {
       something: 'anything',
     };
@@ -1586,8 +1586,66 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.getByText('watch: anything')).toBeVisible();
-    expect(screen.getByText('useWatch: anything')).toBeVisible();
+    expect(screen.getByText('watch:')).toBeVisible();
+    expect(screen.getByText('useWatch:')).toBeVisible();
+  });
+
+  it('should use values passed to reset({}) as new defaultValues on submit', async () => {
+    let submittedData: unknown;
+
+    function App() {
+      const { reset, handleSubmit } = useForm({
+        defaultValues: {
+          name: {
+            firstName: 'John',
+            lastName: 'Doe',
+          },
+        },
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submittedData = data;
+          })}
+        >
+          <button type="submit">submit</button>
+          <button
+            type="button"
+            onClick={() => {
+              reset({});
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(submittedData).toEqual({}));
+  });
+
+  it('should set _formValues to empty object after reset({})', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: {
+          name: {
+            firstName: 'John',
+            lastName: 'Doe',
+          },
+        },
+      }),
+    );
+
+    act(() => result.current.reset({}));
+
+    expect(result.current.getValues()).toEqual({});
+    expect(result.current.control._defaultValues).toEqual({});
   });
 
   it('should keep mounted value after reset with keep dirty values', async () => {
@@ -1687,6 +1745,69 @@ describe('reset', () => {
     await waitFor(() => {
       screen.getByText('users#1');
     });
+  });
+
+  it('should keep dirty fields for dynamic controller name when keepDirty and keepDirtyValues are true', async () => {
+    type FormValues = {
+      name_es: string;
+      name_en: string;
+    };
+
+    const defaultValues: FormValues = {
+      name_es: 'Espanol',
+      name_en: 'English',
+    };
+
+    function App() {
+      const {
+        control,
+        reset,
+        formState: { dirtyFields },
+      } = useForm<FormValues>({
+        defaultValues,
+      });
+      const [language, setLanguage] = React.useState<'es' | 'en'>('en');
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            name={`name_${language}`}
+            render={({ field }) => <input {...field} />}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setLanguage((prev) => (prev === 'en' ? 'es' : 'en'));
+              reset(defaultValues, { keepDirty: true, keepDirtyValues: true });
+            }}
+          >
+            toggle
+          </button>
+          <p data-testid="dirtyFields">{JSON.stringify(dirtyFields)}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'Test 1',
+      },
+    });
+
+    expect(screen.getByTestId('dirtyFields').textContent).toBe(
+      '{"name_en":true}',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('dirtyFields').textContent).toBe(
+        '{"name_en":true}',
+      ),
+    );
   });
 
   it('should not mutate data outside of library', () => {
