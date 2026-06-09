@@ -2279,6 +2279,98 @@ describe('validateField', () => {
       expect(reportValidity).toHaveBeenCalled();
     });
 
+    it('should invoke setCustomValidity on all refs for a required radio group', async () => {
+      (getRadioValue as jest.Mock).mockReturnValue({
+        isValid: false,
+        value: undefined,
+      });
+
+      const setCustomValidity1 = jest.fn();
+      const setCustomValidity2 = jest.fn();
+      const reportValidity = jest.fn();
+
+      const ref1 = {
+        setCustomValidity: setCustomValidity1,
+        reportValidity,
+        name: 'foo',
+        value: 'bar',
+        type: 'radio',
+      };
+      const ref2 = {
+        setCustomValidity: setCustomValidity2,
+        name: 'foo',
+        value: 'baz',
+        type: 'radio',
+      };
+
+      await validateField(
+        {
+          _f: {
+            name: 'foo',
+            ref: ref1 as any,
+            refs: [ref1, ref2] as any,
+            required: 'You missed that',
+            mount: true,
+          },
+        },
+        new Set(),
+        { foo: undefined },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity1).toHaveBeenCalledWith('You missed that');
+      expect(setCustomValidity2).toHaveBeenCalledWith('You missed that');
+      expect(reportValidity).toHaveBeenCalledTimes(1);
+    });
+
+    it('should clear setCustomValidity on all refs for a valid radio group', async () => {
+      (getRadioValue as jest.Mock).mockReturnValue({
+        isValid: true,
+        value: 'bar',
+      });
+
+      const setCustomValidity1 = jest.fn();
+      const setCustomValidity2 = jest.fn();
+      const reportValidity = jest.fn();
+
+      const ref1 = {
+        setCustomValidity: setCustomValidity1,
+        reportValidity,
+        name: 'foo',
+        value: 'bar',
+        type: 'radio',
+        checked: true,
+      };
+      const ref2 = {
+        setCustomValidity: setCustomValidity2,
+        name: 'foo',
+        value: 'baz',
+        type: 'radio',
+        checked: false,
+      };
+
+      await validateField(
+        {
+          _f: {
+            name: 'foo',
+            ref: ref1 as any,
+            refs: [ref1, ref2] as any,
+            required: 'You missed that',
+            mount: true,
+          },
+        },
+        new Set(),
+        { foo: 'bar' },
+        false,
+        true,
+      );
+
+      expect(setCustomValidity1).toHaveBeenCalledWith('');
+      expect(setCustomValidity2).toHaveBeenCalledWith('');
+      expect(reportValidity).toHaveBeenCalledTimes(1);
+    });
+
     it('should abort validation early when input is disabled', async () => {
       expect(
         await validateField(
