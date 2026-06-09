@@ -1210,9 +1210,7 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>,
     config?: GetValuesConfig,
   ) => {
-    let values = {
-      ...(_state.mount ? _formValues : _defaultValues),
-    };
+    let values = cloneObject(_state.mount ? _formValues : _defaultValues);
 
     if (config) {
       values = extractFormValues(

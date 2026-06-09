@@ -342,4 +342,25 @@ describe('getValues', () => {
 
     expect(screen.getByRole('button', { name: 'submit' })).not.toBeDisabled();
   });
+
+  it('should return a deep clone so mutations do not affect form state', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: {
+          test: [{ firstName: 'Bill' }, { firstName: 'Anna' }],
+        },
+      }),
+    );
+
+    result.current.register('test.0.firstName');
+    result.current.register('test.1.firstName');
+
+    const first = result.current.getValues();
+    const second = result.current.getValues();
+
+    second.test[0].firstName = 'Jim';
+
+    expect(first.test[0].firstName).toBe('Bill');
+    expect(result.current.getValues('test.0.firstName')).toBe('Bill');
+  });
 });
