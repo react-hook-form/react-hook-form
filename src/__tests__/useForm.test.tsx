@@ -2486,6 +2486,29 @@ describe('useForm', () => {
     });
   });
 
+  it('should update form values when rerendered values reuse an object reference', async () => {
+    type FormValues = {
+      home: { street: string };
+      work: { street: string };
+    };
+
+    const { result, rerender } = renderHook(
+      ({ values }: { values: FormValues }) => useForm<FormValues>({ values }),
+      {
+        initialProps: {
+          values: { home: { street: 'a' }, work: { street: 'b' } },
+        },
+      },
+    );
+
+    expect(result.current.getValues('work.street')).toBe('b');
+
+    const shared = { street: 'a' };
+    rerender({ values: { home: shared, work: shared } });
+
+    expect(result.current.getValues('work.street')).toBe('a');
+  });
+
   it('should keep defaultValues if set keep default values is true on reset option', async () => {
     type FormValues = {
       firstName: string;

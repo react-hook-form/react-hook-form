@@ -146,6 +146,35 @@ describe('deepEqual', () => {
     expect(deepEqual(a, b)).toBeFalsy();
   });
 
+  it('should not treat different values as equal when one side reuses an object reference', () => {
+    const shared = { value: 1 };
+
+    expect(
+      deepEqual(
+        { first: shared, second: shared },
+        { first: { value: 1 }, second: { value: 2 } },
+      ),
+    ).toBeFalsy();
+
+    expect(
+      deepEqual(
+        { first: { value: 1 }, second: { value: 2 } },
+        { first: shared, second: shared },
+      ),
+    ).toBeFalsy();
+
+    expect(
+      deepEqual([shared, shared], [{ value: 1 }, { value: 9 }]),
+    ).toBeFalsy();
+
+    expect(
+      deepEqual(
+        { first: shared, second: shared },
+        { first: { value: 1 }, second: { value: 1 } },
+      ),
+    ).toBeTruthy();
+  });
+
   it('should return true when comparing NaN values', () => {
     expect(deepEqual(NaN, NaN)).toBeTruthy();
 
