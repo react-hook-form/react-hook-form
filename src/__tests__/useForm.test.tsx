@@ -1120,6 +1120,59 @@ describe('useForm', () => {
         ).toBeVisible();
       });
 
+      it('should not retarget a changed field when multiple resolver errors are returned', async () => {
+        const resolver = jest.fn((values: any) => {
+          const errors =
+            values.brand === 'adidas'
+              ? {
+                  firstName: {
+                    message: 'firstName error',
+                  },
+                  country: {
+                    message: 'country error',
+                  },
+                }
+              : {};
+
+          return {
+            values,
+            errors,
+          };
+        });
+
+        const App = () => {
+          const {
+            register,
+            formState: { errors },
+          } = useForm({
+            mode: 'onChange',
+            defaultValues: {
+              brand: 'nike',
+            },
+            resolver,
+          });
+
+          return (
+            <form>
+              <input {...register('brand')} placeholder="brand" />
+              <p data-testid="brand-error">{errors.brand?.message}</p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.input(screen.getByPlaceholderText('brand'), {
+          target: {
+            value: 'adidas',
+          },
+        });
+
+        await waitFor(() => {
+          expect(screen.getByTestId('brand-error')).toBeEmptyDOMElement();
+        });
+      });
+
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
         const resolver = jest.fn((data: any) => {
           if (data.test) {
