@@ -104,7 +104,6 @@ export function useFieldArray<
     disabled,
     shouldUnregister,
     rules,
-    disabled,
   } = props;
   const [fields, setFields] = React.useState(
     disabled ? [] : control._getFieldArray(name),
