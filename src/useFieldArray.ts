@@ -101,6 +101,7 @@ export function useFieldArray<
     control = formControl,
     name,
     keyName = 'id',
+    disabled,
     shouldUnregister,
     rules,
     disabled,

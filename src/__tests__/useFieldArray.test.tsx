@@ -83,6 +83,48 @@ describe('useFieldArray', () => {
       ]);
     });
 
+    it('should not initialize missing nested field array values when disabled', () => {
+      type FormValues = {
+        name: string;
+        union:
+          | {
+              type: 'empty';
+            }
+          | {
+              type: 'array';
+              values: { value: string }[];
+            };
+      };
+
+      const { result } = renderHook(() => {
+        const methods = useForm<FormValues>({
+          defaultValues: {
+            name: '',
+            union: {
+              type: 'empty',
+            },
+          },
+        });
+
+        return {
+          ...methods,
+          fieldArray: useFieldArray({
+            control: methods.control,
+            name: 'union.values',
+            disabled: true,
+          }),
+        };
+      });
+
+      expect(result.current.fieldArray.fields).toEqual([]);
+      expect(result.current.getValues()).toEqual({
+        name: '',
+        union: {
+          type: 'empty',
+        },
+      });
+    });
+
     it('should render with FormProvider', () => {
       const Provider = ({ children }: { children: React.ReactNode }) => {
         const methods = useForm();

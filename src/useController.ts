@@ -146,7 +146,7 @@ export function useController<
         });
       }
 
-      _registerProps.current.onChange({
+      return _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
           name: name as InternalFieldName,
