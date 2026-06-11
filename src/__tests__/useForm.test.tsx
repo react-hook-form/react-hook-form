@@ -1068,7 +1068,7 @@ describe('useForm', () => {
         expect(methods.formState.isValid).toBeFalsy();
       });
 
-      it('should update errors when the resolver returns an error for a different field', async () => {
+      it('should update errors for dependent fields returned by the resolver', async () => {
         const resolver = jest.fn((values: any) => {
           const errors =
             values.brand === 'adidas' && values.country === 'usa'
@@ -1100,7 +1100,10 @@ describe('useForm', () => {
 
           return (
             <form>
-              <input {...register('brand')} placeholder="brand" />
+              <input
+                {...register('brand', { deps: ['country'] })}
+                placeholder="brand"
+              />
               <input {...register('country')} placeholder="country" />
               <p>{errors.country?.message}</p>
             </form>

@@ -1091,13 +1091,9 @@ export function createFormControl<
           previousErrorLookupResult.name || name,
         );
 
-        if (
-          !errorLookupResult.error &&
-          !isEmptyObject(errors) &&
-          Object.keys(errors).length === 1
-        ) {
-          for (const errorName in errors) {
-            const lookupResult = schemaErrorLookup(errors, _fields, errorName);
+        if (!errorLookupResult.error && field._f.deps) {
+          for (const dep of convertToArrayPayload(field._f.deps)) {
+            const lookupResult = schemaErrorLookup(errors, _fields, dep);
 
             if (lookupResult.error) {
               errorLookupResult = lookupResult;
