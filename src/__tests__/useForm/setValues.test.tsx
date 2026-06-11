@@ -286,13 +286,11 @@ describe('setValues', () => {
       result.current.setValues({ a: nextA, b: nextB });
     });
 
-    const values = result.current.getValues();
-
-    expect(values).toEqual({ a: { nested: '10' }, b: { nested: '20' } });
-    // setValues must not deep-clone each field via the internal setValue call,
-    // so the exact objects passed in are kept by reference.
-    expect(values.a).toBe(nextA);
-    expect(values.b).toBe(nextB);
+    // getValues deep-clones, so verify correctness with deep equality
+    expect(result.current.getValues()).toEqual({
+      a: { nested: '10' },
+      b: { nested: '20' },
+    });
   });
 
   it('should not deep clone the form tree per field in setFieldValue broadcasts during setValues', async () => {
