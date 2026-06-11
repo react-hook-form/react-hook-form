@@ -101,6 +101,7 @@ export function useFieldArray<
     control = formControl,
     name,
     keyName = 'id',
+    disabled,
     shouldUnregister,
     rules,
   } = props;
@@ -424,7 +425,9 @@ export function useFieldArray<
   }, [fields, name, control]);
 
   React.useEffect(() => {
-    !get(control._formValues, name) && control._setFieldArray(name);
+    !disabled &&
+      !get(control._formValues, name) &&
+      control._setFieldArray(name);
 
     return () => {
       const shouldKeepFieldArrayValues = !(
@@ -448,7 +451,7 @@ export function useFieldArray<
         ? updateMounted(name, false)
         : control.unregister(name as FieldPath<TFieldValues>);
     };
-  }, [name, control, keyName, shouldUnregister]);
+  }, [name, control, keyName, disabled, shouldUnregister]);
 
   return {
     swap: React.useCallback(swap, [updateValues, name, control]),
