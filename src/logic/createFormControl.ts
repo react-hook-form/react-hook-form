@@ -840,16 +840,107 @@ export function createFormControl<
       }
     }
 
-    (options.shouldDirty || options.shouldTouch) &&
-      updateTouchAndDirty(
-        name,
-        fieldValue,
-        options.shouldTouch,
-        options.shouldDirty,
-        true,
-      );
+    const fieldState =
+      options.shouldDirty || options.shouldTouch
+        ? updateTouchAndDirty(
+            name,
+            fieldValue,
+            options.shouldTouch,
+            options.shouldDirty,
+            true,
+          )
+        : undefined;
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    if (options.shouldValidate) {
+      if (_options.delayError) {
+        const validateSetValue = async () => {
+          const field = get(_fields, name);
+
+          if (!field) {
+            return;
+          }
+
+          let error: FieldError | undefined;
+          let isValid: boolean | undefined;
+
+          if (_options.resolver) {
+            const { errors } = await _runSchema([name as InternalFieldName]);
+            _updateIsValidating([name as InternalFieldName]);
+
+            const previousErrorLookupResult = schemaErrorLookup(
+              _formState.errors,
+              _fields,
+              name as InternalFieldName,
+            );
+            let errorLookupResult = schemaErrorLookup(
+              errors,
+              _fields,
+              previousErrorLookupResult.name || (name as InternalFieldName),
+            );
+
+            if (!errorLookupResult.error && field._f.deps) {
+              for (const dep of convertToArrayPayload(field._f.deps)) {
+                const lookupResult = schemaErrorLookup(errors, _fields, dep);
+
+                if (lookupResult.error) {
+                  errorLookupResult = lookupResult;
+                  break;
+                }
+              }
+            }
+
+            error = errorLookupResult.error;
+            name = errorLookupResult.name;
+            isValid = isEmptyObject(errors);
+          } else {
+            _updateIsValidating([name as InternalFieldName], true);
+            error = (
+              await validateField(
+                field,
+                _names.disabled,
+                _formValues,
+                shouldDisplayAllAssociatedErrors,
+                _options.shouldUseNativeValidation,
+              )
+            )[name as InternalFieldName];
+            _updateIsValidating([name as InternalFieldName]);
+
+            if (error) {
+              isValid = false;
+            } else if (
+              _proxyFormState.isValid ||
+              _proxySubscribeFormState.isValid
+            ) {
+              isValid = await executeBuiltInValidation({
+                fields: _fields,
+                onlyCheckValid: true,
+                name: name as FieldPath<TFieldValues>,
+                eventType: EVENTS.TRIGGER,
+              });
+            }
+          }
+
+          if (field._f.deps) {
+            trigger(
+              field._f.deps as
+                | FieldPath<TFieldValues>
+                | FieldPath<TFieldValues>[],
+            );
+          }
+
+          shouldRenderByError(
+            name as InternalFieldName,
+            isValid,
+            error,
+            fieldState,
+          );
+        };
+
+        void validateSetValue();
+      } else {
+        trigger(name as Path<TFieldValues>);
+      }
+    }
   };
 
   const setFieldValues = <

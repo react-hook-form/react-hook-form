@@ -676,6 +676,63 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test?.message).toBe('min');
     });
 
+    it('should delay error rendering when setValue validates the field', async () => {
+      const message = 'min';
+
+      const Component = () => {
+        const {
+          register,
+          setValue,
+          formState: { errors },
+        } = useForm<{
+          test: string;
+        }>({
+          delayError: 500,
+          mode: 'onChange',
+          defaultValues: {
+            test: '',
+          },
+        });
+
+        return (
+          <>
+            <input
+              {...register('test', { minLength: { value: 5, message } })}
+            />
+            <button
+              type="button"
+              onClick={() =>
+                setValue('test', 'abc', {
+                  shouldValidate: true,
+                })
+              }
+            >
+              set
+            </button>
+            {errors.test && <p>{errors.test.message}</p>}
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+      await act(async () => {
+        jest.advanceTimersByTime(499);
+      });
+
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+      await act(async () => {
+        jest.advanceTimersByTime(1);
+      });
+
+      expect(await screen.findByText(message)).toBeVisible();
+    });
+
     it('should validate input correctly with existing error', async () => {
       const Component = () => {
         const {
