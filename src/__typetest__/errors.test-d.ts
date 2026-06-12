@@ -102,4 +102,20 @@ import { _ } from './__fixtures__';
     type _t1 = Expect<Equal<typeof fiType, FieldError | undefined>>;
     type _t2 = Expect<Equal<typeof fiTypeMessage, string | undefined>>;
   }
+
+  /** it should include keys from union members */
+  {
+    const actual = _ as FieldErrors<
+      | {
+          type: 'car';
+          engine: string;
+        }
+      | {
+          type: 'bicycle';
+        }
+    >;
+
+    const engine = actual.engine;
+    type _t1 = Expect<Equal<typeof engine, FieldError | undefined>>;
+  }
 }
