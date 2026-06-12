@@ -39,7 +39,7 @@ export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
 
     if (foundError && foundError.root && foundError.root.type) {
       return {
-        name: `${fieldName}.root`,
+        name: fieldName,
         error: foundError.root,
       };
     }
