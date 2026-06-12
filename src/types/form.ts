@@ -268,7 +268,7 @@ export type SetFocusOptions = Partial<{
  * useEffect(() => {
  *   setFocus("name");
  * }, [setFocus])
- * // shouldSelect allows to select input's content on focus
+ * // shouldSelect allows selecting input's content on focus
  * <button onClick={() => setFocus("name", { shouldSelect: true })}>Focus</button>
  * ```
  */
