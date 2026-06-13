@@ -5,6 +5,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from '@testing-library/react';
 
 import type { Control } from '../types';
@@ -311,6 +312,81 @@ describe('_getDirty optimization', () => {
 
     expect(capturedIsDirty).toBe(true);
     expect(capturedDirtyFields).toHaveProperty('a');
+  });
+});
+
+describe('_setValid optimization', () => {
+  const BUDGET_MS = 3_000;
+
+  it('skips full re-validation on no-rule fields when form is valid (500 changes within budget)', () => {
+    const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      void formState.isValid;
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Form starts valid (no rules on any field). 500 changes should skip
+    // executeBuiltInValidation entirely and complete well within budget.
+    const t0 = performance.now();
+    for (let i = 0; i < 500; i++) {
+      fireEvent.change(screen.getByTestId('f0'), {
+        target: { value: String(i) },
+      });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
+  it('updates isValid correctly when a no-rule field change unmounts an invalid required field', async () => {
+    let capturedIsValid = false;
+
+    function Form() {
+      const { register, control, formState } = useForm({
+        mode: 'all',
+        defaultValues: { toggle: false, required: '' },
+      });
+      capturedIsValid = formState.isValid;
+      const toggleValue = useWatch({ control, name: 'toggle' });
+      return (
+        <form>
+          <input type="checkbox" {...register('toggle')} data-testid="toggle" />
+          {toggleValue && (
+            <input
+              {...register('required', { required: true })}
+              data-testid="required"
+            />
+          )}
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('toggle'));
+    });
+
+    await waitFor(() => expect(capturedIsValid).toBe(false));
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('toggle'));
+    });
+
+    await waitFor(() => expect(capturedIsValid).toBe(true));
   });
 });
 
