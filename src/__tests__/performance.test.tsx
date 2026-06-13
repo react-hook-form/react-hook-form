@@ -533,3 +533,38 @@ describe('setValues emission batching', () => {
     expect(capturedDirtyFields).not.toHaveProperty('c');
   });
 });
+
+describe('_valuesSubscriberCount idempotency', () => {
+  it('does not go negative when watch(fn) unsubscribe is called twice', () => {
+    let control: any;
+    let watchFn: any;
+
+    function Form() {
+      const {
+        register,
+        watch,
+        control: c,
+      } = useForm({
+        defaultValues: { name: '' },
+      });
+      control = c;
+      watchFn = watch;
+      return <input {...register('name')} data-testid="name" />;
+    }
+
+    render(<Form />);
+
+    const sub = watchFn(() => {});
+    sub.unsubscribe();
+    sub.unsubscribe();
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
+
+    const emits = nextSpy.mock.calls
+      .map(([p]: [any]) => p)
+      .filter((p: any) => p != null && typeof p === 'object' && 'type' in p);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.every((p: any) => !('values' in p))).toBe(true);
+  });
+});

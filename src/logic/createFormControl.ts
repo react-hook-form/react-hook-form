@@ -1325,8 +1325,15 @@ export function createFormControl<
             },
           ),
       });
+      let called = false;
+
       return {
         unsubscribe: () => {
+          if (called) {
+            return;
+          }
+
+          called = true;
           _valuesSubscriberCount--;
           unsubscribe();
         },
@@ -1373,12 +1380,19 @@ export function createFormControl<
         }
       },
     });
-    return needsValues
-      ? () => {
-          _valuesSubscriberCount--;
-          unsubscribe();
-        }
-      : unsubscribe;
+    if (!needsValues) {
+      return unsubscribe;
+    }
+    let called = false;
+    return () => {
+      if (called) {
+        return;
+      }
+
+      called = true;
+      _valuesSubscriberCount--;
+      unsubscribe();
+    };
   };
 
   const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
