@@ -175,7 +175,6 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
-  let _valuesSubscriberCount = 0;
   const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -434,20 +433,27 @@ export function createFormControl<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
     let shouldUpdateField = false;
+    let isPreviousDirty = false;
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
+        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+          isPreviousDirty = _formState.isDirty;
+          _formState.isDirty = output.isDirty = _getDirty();
+          shouldUpdateField = isPreviousDirty !== output.isDirty;
+        }
+
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
           fieldValue,
         );
 
-        const prevFieldDirty = !!get(_formState.dirtyFields, name);
+        isPreviousDirty = !!get(_formState.dirtyFields, name);
 
-        if (isObject(fieldValue) || Array.isArray(fieldValue)) {
+        if (isCurrentFieldPristine !== _formState.isDirty) {
           _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
         } else {
           isCurrentFieldPristine
@@ -457,38 +463,10 @@ export function createFormControl<
 
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
-          (_proxyFormState.dirtyFields ||
+          shouldUpdateField ||
+          ((_proxyFormState.dirtyFields ||
             _proxySubscribeFormState.dirtyFields) &&
-          prevFieldDirty !== !isCurrentFieldPristine;
-
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          const prevIsDirty = _formState.isDirty;
-          // Fast paths (O(1)):
-          //   • field is dirty → form is definitely dirty
-          //   • other tracked-dirty fields remain → form is still dirty
-          // Slow path (rare): no tracked dirty fields remain but the form may
-          // still be dirty due to values changed via setValue without
-          // shouldDirty.  Fall back to a full deepEqual only in that case.
-          if (
-            !isCurrentFieldPristine ||
-            !isEmptyObject(_formState.dirtyFields)
-          ) {
-            _formState.isDirty = output.isDirty = true;
-          } else if (_getDirty()) {
-            // Untracked dirty values exist — rebuild dirtyFields to surface them
-            // so subscribers like formState.dirtyFields stay accurate.
-            _formState.dirtyFields = getDirtyFields(
-              _defaultValues,
-              _formValues,
-            );
-            output.dirtyFields = _formState.dirtyFields;
-            _formState.isDirty = output.isDirty = true;
-          } else {
-            _formState.isDirty = output.isDirty = false;
-          }
-          shouldUpdateField =
-            shouldUpdateField || prevIsDirty !== output.isDirty;
-        }
+            isPreviousDirty !== !isCurrentFieldPristine);
       }
 
       if (isBlurEvent) {
@@ -1062,9 +1040,7 @@ export function createFormControl<
         _subjects.state.next({
           name,
           type: event.type,
-          ...(_valuesSubscriberCount
-            ? { values: cloneObject(_formValues) }
-            : {}),
+          values: cloneObject(_formValues),
         });
 
       if (shouldSkipValidation) {
@@ -1313,41 +1289,28 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>
       | WatchObserver<TFieldValues>,
     defaultValue?: DeepPartial<TFieldValues>,
-  ) => {
-    if (isFunction(name)) {
-      _valuesSubscriberCount++;
-      const { unsubscribe } = _subjects.state.subscribe({
-        next: (payload) =>
-          'values' in payload &&
-          name(
-            payload.values || _getWatch(undefined, defaultValue),
-            payload as {
-              name?: FieldPath<TFieldValues>;
-              type?: EventType;
-              value?: unknown;
-            },
-          ),
-      });
-      return {
-        unsubscribe: () => {
-          _valuesSubscriberCount--;
-          unsubscribe();
-        },
-      };
-    }
-    return _getWatch(
-      name as InternalFieldName | InternalFieldName[],
-      defaultValue,
-      true,
-    );
-  };
+  ) =>
+    isFunction(name)
+      ? _subjects.state.subscribe({
+          next: (payload) =>
+            'values' in payload &&
+            name(
+              payload.values || _getWatch(undefined, defaultValue),
+              payload as {
+                name?: FieldPath<TFieldValues>;
+                type?: EventType;
+                value?: unknown;
+              },
+            ),
+        })
+      : _getWatch(
+          name as InternalFieldName | InternalFieldName[],
+          defaultValue,
+          true,
+        );
 
-  const _subscribe: FromSubscribe<TFieldValues> = (props) => {
-    const needsValues = !!(props.formState as Record<string, unknown>)?.values;
-    if (needsValues) {
-      _valuesSubscriberCount++;
-    }
-    const { unsubscribe } = _subjects.state.subscribe({
+  const _subscribe: FromSubscribe<TFieldValues> = (props) =>
+    _subjects.state.subscribe({
       next: (
         formState: Partial<FormState<TFieldValues>> & {
           name?: InternalFieldName;
@@ -1375,14 +1338,7 @@ export function createFormControl<
           });
         }
       },
-    });
-    return needsValues
-      ? () => {
-          _valuesSubscriberCount--;
-          unsubscribe();
-        }
-      : unsubscribe;
-  };
+    }).unsubscribe;
 
   const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
