@@ -176,6 +176,8 @@ export function createFormControl<
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
   let _valuesSubscriberCount = 0;
+  let _validationModeBeforeSubmit = getValidationModes(_options.mode);
+  let _validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -1003,10 +1005,6 @@ export function createFormControl<
         (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
-    const validationModeBeforeSubmit = getValidationModes(_options.mode);
-    const validationModeAfterSubmit = getValidationModes(
-      _options.reValidateMode,
-    );
 
     if (field) {
       let error;
@@ -1028,8 +1026,8 @@ export function createFormControl<
           isBlurEvent,
           get(_formState.touchedFields, name),
           _formState.isSubmitted,
-          validationModeAfterSubmit,
-          validationModeBeforeSubmit,
+          _validationModeAfterSubmit,
+          _validationModeBeforeSubmit,
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
@@ -1955,6 +1953,10 @@ export function createFormControl<
           ..._options,
           ...value,
         };
+        _validationModeBeforeSubmit = getValidationModes(_options.mode);
+        _validationModeAfterSubmit = getValidationModes(
+          _options.reValidateMode,
+        );
       },
     },
     subscribe,
