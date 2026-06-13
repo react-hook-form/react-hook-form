@@ -441,16 +441,19 @@ export function createFormControl<
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          isPreviousDirty = _formState.isDirty;
-          _formState.isDirty = output.isDirty = _getDirty();
-          shouldUpdateField = isPreviousDirty !== output.isDirty;
-        }
-
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
           fieldValue,
         );
+
+        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+          isPreviousDirty = _formState.isDirty;
+          // Skip full tree deepEqual when the field itself is dirty — the form
+          // is definitely dirty without scanning every other field.
+          _formState.isDirty = output.isDirty =
+            !isCurrentFieldPristine || _getDirty();
+          shouldUpdateField = isPreviousDirty !== output.isDirty;
+        }
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
@@ -783,6 +786,7 @@ export function createFormControl<
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
     skipClone = false,
+    skipRender = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -831,7 +835,7 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type) {
+          if (!fieldReference.ref.type && !skipRender) {
             _subjects.state.next({
               name,
               values: skipClone ? _formValues : cloneObject(_formValues),
@@ -847,7 +851,7 @@ export function createFormControl<
         fieldValue,
         options.shouldTouch,
         options.shouldDirty,
-        true,
+        !skipRender,
       );
 
     options.shouldValidate && trigger(name as Path<TFieldValues>);
@@ -862,6 +866,7 @@ export function createFormControl<
     value: K,
     options: U,
     skipClone = false,
+    skipRender = false,
   ) => {
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
@@ -875,8 +880,8 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options, skipClone)
-        : setFieldValue(fieldName, fieldValue, options, skipClone);
+        ? setFieldValues(fieldName, fieldValue, options, skipClone, skipRender)
+        : setFieldValue(fieldName, fieldValue, options, skipClone, skipRender);
     }
   };
 
@@ -887,6 +892,7 @@ export function createFormControl<
     value: FieldPathValue<TFieldValues, TFieldName>,
     options: SetValueConfig,
     skipClone: boolean,
+    skipStateEmit = false,
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
@@ -913,11 +919,13 @@ export function createFormControl<
       ) {
         _updateDirtyFields();
 
-        _subjects.state.next({
-          name,
-          dirtyFields: _formState.dirtyFields,
-          isDirty: _getDirty(name, cloneValue),
-        });
+        if (!skipStateEmit) {
+          _subjects.state.next({
+            name,
+            dirtyFields: _formState.dirtyFields,
+            isDirty: _getDirty(name, cloneValue),
+          });
+        }
       }
     } else {
       const isEmpty =
@@ -925,13 +933,13 @@ export function createFormControl<
         isEmptyObject(cloneValue);
 
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options, skipClone);
+        setFieldValue(name, cloneValue, options, skipClone, skipStateEmit);
       } else {
-        setFieldValues(name, cloneValue, options, skipClone);
+        setFieldValues(name, cloneValue, options, skipClone, skipStateEmit);
       }
     }
 
-    if (!isValueUnchanged) {
+    if (!isValueUnchanged && !skipStateEmit) {
       const watched = isWatched(name, _names);
       const values = skipClone ? _formValues : cloneObject(_formValues);
 
@@ -965,6 +973,7 @@ export function createFormControl<
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),
           options,
+          true,
           true,
         );
       }
@@ -1007,12 +1016,14 @@ export function createFormControl<
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+      const hasNoValidationEffect =
+        !hasValidation(field._f) &&
+        !props.validate &&
+        !_options.resolver &&
+        !get(_formState.errors, name) &&
+        !field._f.deps;
       const shouldSkipValidation =
-        (!hasValidation(field._f) &&
-          !props.validate &&
-          !_options.resolver &&
-          !get(_formState.errors, name) &&
-          !field._f.deps) ||
+        hasNoValidationEffect ||
         skipValidation(
           isBlurEvent,
           get(_formState.touchedFields, name),
@@ -1047,7 +1058,16 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
+        if (
+          // Skip the full validity recheck when this field is certain not to
+          // affect isValid: no rules, no resolver, no current error, no deps.
+          // Safe only when the form is CURRENTLY VALID — if it is invalid,
+          // this change may have triggered React to unmount an invalid field
+          // (e.g. conditional rendering), which would make the form valid and
+          // can only be discovered by re-running validation.
+          (!hasNoValidationEffect || !_formState.isValid) &&
+          (_proxyFormState.isValid || _proxySubscribeFormState.isValid)
+        ) {
           if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
               _setValid();
