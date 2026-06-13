@@ -1,5 +1,20 @@
 # Changelog
 
+## [7.79.0] - 2026-06-13
+
+### Added
+
+- `disabled` option to `useFieldArray`
+
+### Fixed
+
+- `Controller` `onChange` promise return type
+- `deepEqual` false positives with shared object references
+- `shouldUseNativeValidation` behavior for radio groups
+- `createFormControl` stability with fast refresh in dev mode
+- `StrictMode` value preservation during remount
+- `formState.errors` reactivity with React compiler
+
 ## [7.78.0] - 2026-06-08
 
 ### Fixed
