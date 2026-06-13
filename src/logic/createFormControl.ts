@@ -786,6 +786,7 @@ export function createFormControl<
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
     skipClone = false,
+    skipRender = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -834,7 +835,7 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type) {
+          if (!fieldReference.ref.type && !skipRender) {
             _subjects.state.next({
               name,
               values: skipClone ? _formValues : cloneObject(_formValues),
@@ -850,7 +851,7 @@ export function createFormControl<
         fieldValue,
         options.shouldTouch,
         options.shouldDirty,
-        true,
+        !skipRender,
       );
 
     options.shouldValidate && trigger(name as Path<TFieldValues>);
@@ -865,6 +866,7 @@ export function createFormControl<
     value: K,
     options: U,
     skipClone = false,
+    skipRender = false,
   ) => {
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
@@ -878,8 +880,8 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options, skipClone)
-        : setFieldValue(fieldName, fieldValue, options, skipClone);
+        ? setFieldValues(fieldName, fieldValue, options, skipClone, skipRender)
+        : setFieldValue(fieldName, fieldValue, options, skipClone, skipRender);
     }
   };
 
@@ -890,6 +892,7 @@ export function createFormControl<
     value: FieldPathValue<TFieldValues, TFieldName>,
     options: SetValueConfig,
     skipClone: boolean,
+    skipStateEmit = false,
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
@@ -916,11 +919,13 @@ export function createFormControl<
       ) {
         _updateDirtyFields();
 
-        _subjects.state.next({
-          name,
-          dirtyFields: _formState.dirtyFields,
-          isDirty: _getDirty(name, cloneValue),
-        });
+        if (!skipStateEmit) {
+          _subjects.state.next({
+            name,
+            dirtyFields: _formState.dirtyFields,
+            isDirty: _getDirty(name, cloneValue),
+          });
+        }
       }
     } else {
       const isEmpty =
@@ -928,13 +933,13 @@ export function createFormControl<
         isEmptyObject(cloneValue);
 
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options, skipClone);
+        setFieldValue(name, cloneValue, options, skipClone, skipStateEmit);
       } else {
-        setFieldValues(name, cloneValue, options, skipClone);
+        setFieldValues(name, cloneValue, options, skipClone, skipStateEmit);
       }
     }
 
-    if (!isValueUnchanged) {
+    if (!isValueUnchanged && !skipStateEmit) {
       const watched = isWatched(name, _names);
       const values = skipClone ? _formValues : cloneObject(_formValues);
 
@@ -968,6 +973,7 @@ export function createFormControl<
           fieldName as FieldPath<TFieldValues>,
           get(updatedFormValues, fieldName),
           options,
+          true,
           true,
         );
       }
