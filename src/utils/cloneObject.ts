@@ -9,8 +9,9 @@ export default function cloneObject<T>(data: T): T {
 
   const isFileListInstance =
     typeof FileList !== 'undefined' && data instanceof FileList;
+  const isBlobInstance = typeof Blob !== 'undefined' && data instanceof Blob;
 
-  if (isWeb && (data instanceof Blob || isFileListInstance)) {
+  if (isWeb && (isBlobInstance || isFileListInstance)) {
     return data;
   }
 
