@@ -234,6 +234,86 @@ describe('Throughput', () => {
   });
 });
 
+describe('_getDirty optimization', () => {
+  const BUDGET_MS = 3_000;
+
+  it('tracks isDirty efficiently when multiple fields stay dirty (O(1) fast path)', () => {
+    const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      void formState.isDirty;
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Dirty all fields except f0 so dirtyFields is never empty during the loop.
+    // This keeps the fast path active: !isEmptyObject(dirtyFields) → skip _getDirty().
+    for (let i = 1; i < names.length; i++) {
+      fireEvent.change(screen.getByTestId(`f${i}`), {
+        target: { value: 'dirty' },
+      });
+    }
+
+    const t0 = performance.now();
+    for (let i = 0; i < 500; i++) {
+      fireEvent.change(screen.getByTestId('f0'), {
+        target: { value: String(i) },
+      });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
+  it('surfaces untracked setValue fields in dirtyFields when the last tracked field goes pristine', async () => {
+    let capturedDirtyFields: Record<string, unknown> = {};
+    let capturedIsDirty = false;
+
+    function Form() {
+      const { register, setValue, formState } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      capturedDirtyFields = formState.dirtyFields;
+      capturedIsDirty = formState.isDirty;
+      React.useEffect(() => {
+        setValue('a', 'changed');
+      }, [setValue]);
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Make b dirty then restore it — the only tracked-dirty field goes pristine.
+    // _getDirty() fallback must detect 'a' (changed via setValue) and rebuild
+    // dirtyFields so 'a' appears there.
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('b'), { target: { value: 'x' } });
+    });
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('b'), { target: { value: '' } });
+    });
+
+    expect(capturedIsDirty).toBe(true);
+    expect(capturedDirtyFields).toHaveProperty('a');
+  });
+});
+
 describe('Re-render efficiency', () => {
   it('does not re-render the form parent when a child useWatch re-renders', () => {
     let parentRenders = 0;

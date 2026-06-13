@@ -434,27 +434,20 @@ export function createFormControl<
     Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touchedFields'>
   > => {
     let shouldUpdateField = false;
-    let isPreviousDirty = false;
     const output: Partial<FormState<TFieldValues>> & { name: string } = {
       name,
     };
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          isPreviousDirty = _formState.isDirty;
-          _formState.isDirty = output.isDirty = _getDirty();
-          shouldUpdateField = isPreviousDirty !== output.isDirty;
-        }
-
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
           fieldValue,
         );
 
-        isPreviousDirty = !!get(_formState.dirtyFields, name);
+        const prevFieldDirty = !!get(_formState.dirtyFields, name);
 
-        if (isCurrentFieldPristine !== _formState.isDirty) {
+        if (isObject(fieldValue) || Array.isArray(fieldValue)) {
           _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
         } else {
           isCurrentFieldPristine
@@ -464,10 +457,38 @@ export function createFormControl<
 
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
-          shouldUpdateField ||
-          ((_proxyFormState.dirtyFields ||
+          (_proxyFormState.dirtyFields ||
             _proxySubscribeFormState.dirtyFields) &&
-            isPreviousDirty !== !isCurrentFieldPristine);
+          prevFieldDirty !== !isCurrentFieldPristine;
+
+        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+          const prevIsDirty = _formState.isDirty;
+          // Fast paths (O(1)):
+          //   • field is dirty → form is definitely dirty
+          //   • other tracked-dirty fields remain → form is still dirty
+          // Slow path (rare): no tracked dirty fields remain but the form may
+          // still be dirty due to values changed via setValue without
+          // shouldDirty.  Fall back to a full deepEqual only in that case.
+          if (
+            !isCurrentFieldPristine ||
+            !isEmptyObject(_formState.dirtyFields)
+          ) {
+            _formState.isDirty = output.isDirty = true;
+          } else if (_getDirty()) {
+            // Untracked dirty values exist — rebuild dirtyFields to surface them
+            // so subscribers like formState.dirtyFields stay accurate.
+            _formState.dirtyFields = getDirtyFields(
+              _defaultValues,
+              _formValues,
+            );
+            output.dirtyFields = _formState.dirtyFields;
+            _formState.isDirty = output.isDirty = true;
+          } else {
+            _formState.isDirty = output.isDirty = false;
+          }
+          shouldUpdateField =
+            shouldUpdateField || prevIsDirty !== output.isDirty;
+        }
       }
 
       if (isBlurEvent) {
