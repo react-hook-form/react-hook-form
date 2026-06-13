@@ -464,3 +464,72 @@ describe('Re-render efficiency', () => {
     expect(watcherRenders - before).toBe(0);
   });
 });
+
+describe('setValues emission batching', () => {
+  it('emits exactly one state notification regardless of how many fields change', async () => {
+    const names = Array.from({ length: 20 }, (_, i) => `f${i}`);
+
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      }),
+    );
+
+    for (const n of names) {
+      result.current.register(n as any);
+    }
+
+    let emitCount = 0;
+    const sub = (result.current as any).control._subjects.state.subscribe({
+      next: () => emitCount++,
+    });
+
+    await act(async () => {
+      result.current.setValues(
+        Object.fromEntries(names.map((n) => [n, 'x'])) as any,
+      );
+    });
+
+    sub.unsubscribe();
+
+    expect(emitCount).toBe(1);
+  });
+
+  it('delivers correct values and dirty state after batched setValues', async () => {
+    let capturedDirtyFields: Record<string, unknown> = {};
+
+    function Form() {
+      const { register, setValues, formState } = useForm({
+        defaultValues: { a: '', b: '', c: '' },
+      });
+      capturedDirtyFields = formState.dirtyFields;
+      React.useEffect(() => {
+        register('a');
+        register('b');
+        register('c');
+      }, [register]);
+      return (
+        <button
+          onClick={() =>
+            setValues({ a: 'x', b: 'y', c: '' }, { shouldDirty: true })
+          }
+        >
+          set
+        </button>
+      );
+    }
+
+    render(<Form />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('set'));
+    });
+
+    expect(capturedDirtyFields).toHaveProperty('a');
+    expect(capturedDirtyFields).toHaveProperty('b');
+    expect(capturedDirtyFields).not.toHaveProperty('c');
+  });
+});
