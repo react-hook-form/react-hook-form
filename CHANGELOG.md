@@ -1,5 +1,18 @@
 # Changelog
 
+## [7.78.0] - 2026-06-08
+
+### Fixed
+
+- Recover `Controller` fields after `reset` without rerender (RN issue #13455)
+- `useFormState().isDirty` race with async resolver in `onChange` mode
+- Use reactive `values` prop over `defaultValues` when `shouldUnregister` is true
+- `deepEqual` for empty non-plain objects
+
+### Types
+
+- Update `dirtyFields` typing for field arrays with undefined entries
+
 ## [7.77.0] - 2026-05-31
 
 ### Added
