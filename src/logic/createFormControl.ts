@@ -175,6 +175,7 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
+  let _valuesSubscriberCount = 0;
   const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -1040,7 +1041,9 @@ export function createFormControl<
         _subjects.state.next({
           name,
           type: event.type,
-          values: cloneObject(_formValues),
+          ...(_valuesSubscriberCount
+            ? { values: cloneObject(_formValues) }
+            : {}),
         });
 
       if (shouldSkipValidation) {
@@ -1289,28 +1292,41 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>
       | WatchObserver<TFieldValues>,
     defaultValue?: DeepPartial<TFieldValues>,
-  ) =>
-    isFunction(name)
-      ? _subjects.state.subscribe({
-          next: (payload) =>
-            'values' in payload &&
-            name(
-              payload.values || _getWatch(undefined, defaultValue),
-              payload as {
-                name?: FieldPath<TFieldValues>;
-                type?: EventType;
-                value?: unknown;
-              },
-            ),
-        })
-      : _getWatch(
-          name as InternalFieldName | InternalFieldName[],
-          defaultValue,
-          true,
-        );
+  ) => {
+    if (isFunction(name)) {
+      _valuesSubscriberCount++;
+      const { unsubscribe } = _subjects.state.subscribe({
+        next: (payload) =>
+          'values' in payload &&
+          name(
+            payload.values || _getWatch(undefined, defaultValue),
+            payload as {
+              name?: FieldPath<TFieldValues>;
+              type?: EventType;
+              value?: unknown;
+            },
+          ),
+      });
+      return {
+        unsubscribe: () => {
+          _valuesSubscriberCount--;
+          unsubscribe();
+        },
+      };
+    }
+    return _getWatch(
+      name as InternalFieldName | InternalFieldName[],
+      defaultValue,
+      true,
+    );
+  };
 
-  const _subscribe: FromSubscribe<TFieldValues> = (props) =>
-    _subjects.state.subscribe({
+  const _subscribe: FromSubscribe<TFieldValues> = (props) => {
+    const needsValues = !!(props.formState as Record<string, unknown>)?.values;
+    if (needsValues) {
+      _valuesSubscriberCount++;
+    }
+    const { unsubscribe } = _subjects.state.subscribe({
       next: (
         formState: Partial<FormState<TFieldValues>> & {
           name?: InternalFieldName;
@@ -1338,7 +1354,14 @@ export function createFormControl<
           });
         }
       },
-    }).unsubscribe;
+    });
+    return needsValues
+      ? () => {
+          _valuesSubscriberCount--;
+          unsubscribe();
+        }
+      : unsubscribe;
+  };
 
   const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
