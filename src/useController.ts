@@ -92,6 +92,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _proxyRef = React.useRef<any>(null);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -144,7 +145,7 @@ export function useController<
         });
       }
 
-      _registerProps.current.onChange({
+      return _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
           name: name as InternalFieldName,
@@ -169,10 +170,14 @@ export function useController<
 
   const ref = React.useCallback(
     (elm: any) => {
+      if (elm) {
+        _proxyRef.current = elm;
+      }
+
       const field = get(control._fields, name);
 
       if (field && field._f && elm) {
-        field._f.ref = elm;
+        field._f.ref = _proxyRef.current;
       }
     },
     [control._fields, name],
@@ -234,6 +239,13 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    if (_proxyRef.current) {
+      const field: Field = get(control._fields, name);
+      if (field && field._f) {
+        field._f.ref = _proxyRef.current;
+      }
+    }
 
     return () => {
       (

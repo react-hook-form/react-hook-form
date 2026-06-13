@@ -9,7 +9,7 @@ const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
 export default function deepEqual(
   object1: any,
   object2: any,
-  visited = new WeakSet(),
+  visited = new WeakMap<object, WeakSet<object>>(),
 ) {
   if (object1 === object2) {
     return true;
@@ -37,12 +37,17 @@ export default function deepEqual(
     return Object.is(object1, object2);
   }
 
-  if (visited.has(object1) || visited.has(object2)) {
+  const visitedPairs = visited.get(object1);
+
+  if (visitedPairs && visitedPairs.has(object2)) {
     return true;
   }
 
-  visited.add(object1);
-  visited.add(object2);
+  if (visitedPairs) {
+    visitedPairs.add(object2);
+  } else {
+    visited.set(object1, new WeakSet([object2]));
+  }
 
   for (const key of keys1) {
     const val1 = object1[key];

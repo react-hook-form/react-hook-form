@@ -2486,6 +2486,29 @@ describe('useForm', () => {
     });
   });
 
+  it('should update form values when rerendered values reuse an object reference', async () => {
+    type FormValues = {
+      home: { street: string };
+      work: { street: string };
+    };
+
+    const { result, rerender } = renderHook(
+      ({ values }: { values: FormValues }) => useForm<FormValues>({ values }),
+      {
+        initialProps: {
+          values: { home: { street: 'a' }, work: { street: 'b' } },
+        },
+      },
+    );
+
+    expect(result.current.getValues('work.street')).toBe('b');
+
+    const shared = { street: 'a' };
+    rerender({ values: { home: shared, work: shared } });
+
+    expect(result.current.getValues('work.street')).toBe('a');
+  });
+
   it('should keep defaultValues if set keep default values is true on reset option', async () => {
     type FormValues = {
       firstName: string;
@@ -2938,6 +2961,58 @@ describe('useForm', () => {
       fireEvent.click(screen.getByText('submit'));
 
       await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    });
+
+    it('should re-initialise when formControl prop reference changes (e.g. HMR/Fast Refresh)', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const onSubmit = jest.fn();
+
+      // Simulate initial module-level createFormControl call
+      const { handleSubmit, formControl } = createFormControl<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      function Form({
+        ctrl,
+        submit,
+      }: {
+        ctrl: typeof formControl;
+        submit: typeof handleSubmit;
+      }) {
+        const { register } = useForm({ formControl: ctrl });
+        return (
+          <form onSubmit={submit(onSubmit)}>
+            <input {...register('firstName')} placeholder="firstName" />
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      const { rerender } = render(
+        <Form ctrl={formControl} submit={handleSubmit} />,
+      );
+
+      // Simulate Fast Refresh: module re-executes, producing new instances
+      const next = createFormControl<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      rerender(<Form ctrl={next.formControl} submit={next.handleSubmit} />);
+
+      fireEvent.input(screen.getByPlaceholderText('firstName'), {
+        target: { value: 'Bill' },
+      });
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          { firstName: 'Bill' },
+          expect.any(Object),
+        );
+      });
     });
   });
 

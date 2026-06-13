@@ -23,6 +23,7 @@ export type UseFieldArrayProps<
     'maxLength' | 'minLength' | 'required'
   >;
   shouldUnregister?: boolean;
+  disabled?: boolean;
 };
 
 /**
