@@ -1,0 +1,310 @@
+import React from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
+
+import type { Control } from '../types';
+import { useForm } from '../useForm';
+import { useWatch } from '../useWatch';
+
+function changeEmits(spy: jest.SpyInstance): Record<string, unknown>[] {
+  return spy.mock.calls
+    .map(([payload]) => payload)
+    .filter(
+      (p): p is Record<string, unknown> =>
+        p != null && typeof p === 'object' && 'type' in p,
+    );
+}
+
+describe('onChange value-clone optimization', () => {
+  it('emits without a values key when no value subscribers are active', () => {
+    let control: any;
+
+    function Form() {
+      const { register, control: c } = useForm({
+        defaultValues: { name: '' },
+      });
+      control = c;
+      return <input {...register('name')} data-testid="name" />;
+    }
+
+    render(<Form />);
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'a' } });
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'b' } });
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'c' } });
+
+    const emits = changeEmits(nextSpy);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.every((p) => !('values' in p))).toBe(true);
+  });
+
+  it('emits a values key when watch(fn) is active', async () => {
+    let control: any;
+
+    function Form() {
+      const {
+        register,
+        watch,
+        control: c,
+      } = useForm({
+        defaultValues: { name: '' },
+      });
+      control = c;
+      React.useEffect(() => {
+        const sub = watch(() => {});
+        return () => sub.unsubscribe();
+      }, [watch]);
+      return <input {...register('name')} data-testid="name" />;
+    }
+
+    render(<Form />);
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
+
+    const emits = changeEmits(nextSpy);
+    expect(emits.some((p) => 'values' in p)).toBe(true);
+  });
+
+  it('emits a values key when useWatch is mounted', () => {
+    let control: any;
+
+    function Watcher({ ctrl }: { ctrl: Control<{ name: string }> }) {
+      useWatch({ control: ctrl });
+      return null;
+    }
+
+    function Form() {
+      const { register, control: c } = useForm({
+        defaultValues: { name: '' },
+      });
+      control = c;
+      return (
+        <>
+          <Watcher ctrl={c} />
+          <input {...register('name')} data-testid="name" />
+        </>
+      );
+    }
+
+    render(<Form />);
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
+
+    const emits = changeEmits(nextSpy);
+    expect(emits.some((p) => 'values' in p)).toBe(true);
+  });
+
+  it('stops emitting values after watch(fn) unsubscribes', async () => {
+    let control: any;
+    let unsubscribeWatch: () => void;
+
+    function Form() {
+      const {
+        register,
+        watch,
+        control: c,
+      } = useForm({
+        defaultValues: { name: '' },
+      });
+      control = c;
+      React.useEffect(() => {
+        const sub = watch(() => {});
+        unsubscribeWatch = () => sub.unsubscribe();
+      }, [watch]);
+      return <input {...register('name')} data-testid="name" />;
+    }
+
+    render(<Form />);
+
+    act(() => {
+      unsubscribeWatch!();
+    });
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    fireEvent.change(screen.getByTestId('name'), {
+      target: { value: 'after' },
+    });
+
+    const emits = changeEmits(nextSpy);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.every((p) => !('values' in p))).toBe(true);
+  });
+});
+
+describe('Throughput', () => {
+  const BUDGET_MS = 3_000;
+
+  it('handles 500 onChange events on a single field within budget', () => {
+    function Form() {
+      const { register } = useForm({ defaultValues: { a: '' } });
+      return <input {...register('a')} data-testid="a" />;
+    }
+
+    render(<Form />);
+    const input = screen.getByTestId('a');
+
+    const t0 = performance.now();
+    for (let i = 0; i < 500; i++) {
+      fireEvent.change(input, { target: { value: String(i) } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
+  it('handles one change per field on a 50-field form within budget', () => {
+    const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    const t0 = performance.now();
+    for (const n of names) {
+      fireEvent.change(screen.getByTestId(n), { target: { value: 'x' } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
+  it('handles 500 onChange events with an active watch(fn) subscriber within budget', async () => {
+    function Form() {
+      const { register, watch } = useForm({ defaultValues: { a: '' } });
+      React.useEffect(() => {
+        const sub = watch(() => {});
+        return () => sub.unsubscribe();
+      }, [watch]);
+      return <input {...register('a')} data-testid="a" />;
+    }
+
+    render(<Form />);
+    const input = screen.getByTestId('a');
+
+    const t0 = performance.now();
+    for (let i = 0; i < 500; i++) {
+      fireEvent.change(input, { target: { value: String(i) } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
+  it('runs trigger() on a 50-field form with required validation within budget', async () => {
+    const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
+
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      }),
+    );
+
+    for (const n of names) {
+      result.current.register(n as any, { required: true });
+    }
+
+    const t0 = performance.now();
+    await act(async () => {
+      await result.current.trigger();
+    });
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+});
+
+describe('Re-render efficiency', () => {
+  it('does not re-render the form parent when a child useWatch re-renders', () => {
+    let parentRenders = 0;
+    let childRenders = 0;
+
+    const Child = ({
+      control,
+    }: {
+      control: Control<{ a: string; b: string }>;
+    }) => {
+      useWatch({ control, name: 'a' });
+      childRenders++;
+      return <div />;
+    };
+
+    const Parent = () => {
+      const { register, control } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      parentRenders++;
+      return (
+        <>
+          <Child control={control} />
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </>
+      );
+    };
+
+    render(<Parent />);
+
+    const pBefore = parentRenders;
+    const cBefore = childRenders;
+
+    fireEvent.change(screen.getByTestId('a'), { target: { value: 'changed' } });
+
+    expect(childRenders - cBefore).toBeGreaterThan(0);
+    expect(parentRenders - pBefore).toBe(0);
+  });
+
+  it('does not re-render a useWatch component when an unwatched field changes', () => {
+    let watcherRenders = 0;
+
+    const Watcher = ({
+      control,
+    }: {
+      control: Control<{ a: string; b: string }>;
+    }) => {
+      useWatch({ control, name: 'a' });
+      watcherRenders++;
+      return <div />;
+    };
+
+    const Parent = () => {
+      const { register, control } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      return (
+        <>
+          <Watcher control={control} />
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </>
+      );
+    };
+
+    render(<Parent />);
+    const before = watcherRenders;
+
+    fireEvent.change(screen.getByTestId('b'), { target: { value: 'x' } });
+
+    expect(watcherRenders - before).toBe(0);
+  });
+});
