@@ -441,16 +441,19 @@ export function createFormControl<
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          isPreviousDirty = _formState.isDirty;
-          _formState.isDirty = output.isDirty = _getDirty();
-          shouldUpdateField = isPreviousDirty !== output.isDirty;
-        }
-
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
           fieldValue,
         );
+
+        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+          isPreviousDirty = _formState.isDirty;
+          // Skip full tree deepEqual when the field itself is dirty — the form
+          // is definitely dirty without scanning every other field.
+          _formState.isDirty = output.isDirty =
+            !isCurrentFieldPristine || _getDirty();
+          shouldUpdateField = isPreviousDirty !== output.isDirty;
+        }
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
