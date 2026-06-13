@@ -24,27 +24,15 @@ import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
 /**
- * Custom hook to work with controlled component, this function provide you with both form and field level state. Re-render is isolated at the hook level.
+ * Hook for controlled inputs. Returns `field`, `fieldState`, and `formState`.
+ * Re-renders are isolated to the hook level.
  *
- * @remarks
- * [API](https://react-hook-form.com/docs/usecontroller) • [Demo](https://codesandbox.io/s/usecontroller-0o8px)
- *
- * @param props - the path name to the form field value, and validation rules.
- *
- * @returns field properties, field and form state. {@link UseControllerReturn}
+ * @see [API](https://react-hook-form.com/docs/usecontroller)
  *
  * @example
  * ```tsx
- * function Input(props) {
- *   const { field, fieldState, formState } = useController(props);
- *   return (
- *     <div>
- *       <input {...field} placeholder={props.name} />
- *       <p>{fieldState.isTouched && "Touched"}</p>
- *       <p>{formState.isSubmitted ? "submitted" : ""}</p>
- *     </div>
- *   );
- * }
+ * const { field, fieldState } = useController({ control, name: "email" });
+ * return <input {...field} />;
  * ```
  */
 export function useController<

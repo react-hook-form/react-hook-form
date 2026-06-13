@@ -165,6 +165,20 @@ export type EmptyObject = {
     [K in string | number]: never;
 };
 
+// @public
+export const ErrorMessage: <TFieldValues extends FieldValues = FieldValues>(input: ErrorMessageProps<TFieldValues>) => React_2.ReactElement<any, string | React_2.JSXElementConstructor<any>> | null;
+
+// @public (undocumented)
+export type ErrorMessageProps<TFieldValues extends FieldValues = FieldValues> = {
+    as?: React_2.ElementType;
+    control?: Control<TFieldValues>;
+    name: FieldPath<TFieldValues> | `root.${string}` | 'root';
+    render?: (data: {
+        message: Message;
+        messages?: MultipleFieldErrors;
+    }) => React_2.ReactNode;
+};
+
 // @public (undocumented)
 export type ErrorOption = {
     message?: Message;

@@ -7,25 +7,17 @@ import { useFormContext } from './useFormContext';
 const POST_REQUEST = 'post';
 
 /**
- * Form component to manage submission.
+ * Form component that handles submission, including optional `action` fetch and server error wiring.
  *
- * @param props - to setup submission detail. {@link FormProps}
- *
- * @returns form component or headless render prop.
+ * @see [API](https://react-hook-form.com/docs/useform/form)
  *
  * @example
  * ```tsx
- * function App() {
- *   const { control, formState: { errors } } = useForm();
- *
- *   return (
- *     <Form action="/api" control={control}>
- *       <input {...register("name")} />
- *       <p>{errors?.root?.server && 'Server error'}</p>
- *       <button>Submit</button>
- *     </Form>
- *   );
- * }
+ * <Form action="/api" control={control}>
+ *   <input {...register("name")} />
+ *   <p>{errors?.root?.server && 'Server error'}</p>
+ *   <button>Submit</button>
+ * </Form>
  * ```
  */
 function Form<

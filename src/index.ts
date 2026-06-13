@@ -1,4 +1,5 @@
 export * from './controller';
+export * from './errorMessage';
 export * from './form';
 export * from './formStateSubscribe';
 export * from './logic';
