@@ -315,6 +315,57 @@ describe('_getDirty optimization', () => {
   });
 });
 
+describe('isDirty proxy guard', () => {
+  it('does not include isDirty in state notification when nothing subscribes to isDirty', () => {
+    let control: any;
+
+    function Form() {
+      const { register, control: c } = useForm({
+        defaultValues: { name: 'default' },
+      });
+      control = c;
+      return <input {...register('name')} data-testid="name" />;
+    }
+
+    render(<Form />);
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.every((p: any) => !('isDirty' in p))).toBe(true);
+  });
+
+  it('includes isDirty in state notification when subscribed', async () => {
+    let control: any;
+
+    function Form() {
+      const {
+        register,
+        formState,
+        control: c,
+      } = useForm({
+        defaultValues: { name: 'default' },
+      });
+      control = c;
+      void formState.isDirty;
+      return <input {...register('name')} data-testid="name" />;
+    }
+
+    render(<Form />);
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.some((p: any) => 'isDirty' in p && p.isDirty === true)).toBe(
+      true,
+    );
+  });
+});
+
 describe('_setValid optimization', () => {
   const BUDGET_MS = 3_000;
 
