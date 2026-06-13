@@ -45,7 +45,6 @@ export default tseslint.config(
       },
     },
     rules: {
-      curly: 'error',
       'no-extra-boolean-cast': 'error',
       'cypress/unsafe-to-chain-command': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',

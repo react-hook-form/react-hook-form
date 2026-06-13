@@ -42,7 +42,7 @@
     "test:watch": "pnpm test --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",
     "test:type": "tsc -p src/__typetest__/tsconfig.json",
-    "e2e": "cypress run --headless --browser chrome",
+    "e2e": "cypress run",
     "e2e:watch": "cypress open",
     "api-extractor": "api-extractor run --local",
     "api-extractor:build": "pnpm build:esm && pnpm api-extractor",
