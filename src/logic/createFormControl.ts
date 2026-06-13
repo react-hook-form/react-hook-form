@@ -1007,12 +1007,14 @@ export function createFormControl<
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+      const hasNoValidationEffect =
+        !hasValidation(field._f) &&
+        !props.validate &&
+        !_options.resolver &&
+        !get(_formState.errors, name) &&
+        !field._f.deps;
       const shouldSkipValidation =
-        (!hasValidation(field._f) &&
-          !props.validate &&
-          !_options.resolver &&
-          !get(_formState.errors, name) &&
-          !field._f.deps) ||
+        hasNoValidationEffect ||
         skipValidation(
           isBlurEvent,
           get(_formState.touchedFields, name),
@@ -1047,7 +1049,16 @@ export function createFormControl<
         });
 
       if (shouldSkipValidation) {
-        if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
+        if (
+          // Skip the full validity recheck when this field is certain not to
+          // affect isValid: no rules, no resolver, no current error, no deps.
+          // Safe only when the form is CURRENTLY VALID — if it is invalid,
+          // this change may have triggered React to unmount an invalid field
+          // (e.g. conditional rendering), which would make the form valid and
+          // can only be discovered by re-running validation.
+          (!hasNoValidationEffect || !_formState.isValid) &&
+          (_proxyFormState.isValid || _proxySubscribeFormState.isValid)
+        ) {
           if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
               _setValid();
