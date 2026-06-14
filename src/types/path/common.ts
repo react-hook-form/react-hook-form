@@ -1,6 +1,13 @@
 import type { IsAny, IsNever } from '../utils';
 
 /**
+ * Decrement table for path depth limiting.
+ * Prev[N] = N − 1 for N ≥ 1; Prev[0] = never (signals recursion stop).
+ * Path traversal types default to D = 9, yielding a max of 10 path segments.
+ */
+export type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, ...0[]];
+
+/**
  * Type alias to `string` which describes a lodash-like path through an object.
  * E.g. `'foo.bar.0.baz'`
  */
@@ -385,15 +392,19 @@ type ValidPathPrefixImpl<
   T,
   PT extends PathTuple,
   VPT extends PathTuple,
-> = PT extends [infer K, ...infer R]
-  ? HasKey<T, AsKey<K>> extends true
-    ? ValidPathPrefixImpl<
-        EvaluateKey<T, AsKey<K>>,
-        AsPathTuple<R>,
-        AsPathTuple<[...VPT, K]>
-      >
-    : VPT
-  : VPT;
+  D extends number = 9,
+> = [D] extends [never]
+  ? VPT
+  : PT extends [infer K, ...infer R]
+    ? HasKey<T, AsKey<K>> extends true
+      ? ValidPathPrefixImpl<
+          EvaluateKey<T, AsKey<K>>,
+          AsPathTuple<R>,
+          AsPathTuple<[...VPT, K]>,
+          Prev[D]
+        >
+      : VPT
+    : VPT;
 
 /**
  * Type to find the longest path prefix which is still valid,

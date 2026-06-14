@@ -1,7 +1,7 @@
 import type { FieldValues } from '../fields';
 import type { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
 
-import type { ArrayKey, IsTuple, TupleKeys } from './common';
+import type { ArrayKey, IsTuple, Prev, TupleKeys } from './common';
 
 /**
  * Helper function to break apart T1 and check if any are equal to T2
@@ -13,14 +13,6 @@ type AnyIsEqual<T1, T2> = T1 extends T2
     ? true
     : never
   : never;
-
-/**
- * Decrement table for path depth limiting.
- * Prev[N] = N − 1 for N ≥ 1; Prev[0] = never (signals recursion stop).
- * PathInternal/ArrayPathInternal default to D = 9, yielding a max of 10
- * path segments (e.g. 'a.b.c.d.e.f.g.h.i.j').
- */
-type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, ...0[]];
 
 /**
  * Helper type for recursively constructing paths through a type.
