@@ -392,19 +392,15 @@ type ValidPathPrefixImpl<
   T,
   PT extends PathTuple,
   VPT extends PathTuple,
-  D extends number = 9,
-> = [D] extends [never]
-  ? VPT
-  : PT extends [infer K, ...infer R]
-    ? HasKey<T, AsKey<K>> extends true
-      ? ValidPathPrefixImpl<
-          EvaluateKey<T, AsKey<K>>,
-          AsPathTuple<R>,
-          AsPathTuple<[...VPT, K]>,
-          Prev[D]
-        >
-      : VPT
-    : VPT;
+> = PT extends [infer K, ...infer R]
+  ? HasKey<T, AsKey<K>> extends true
+    ? ValidPathPrefixImpl<
+        EvaluateKey<T, AsKey<K>>,
+        AsPathTuple<R>,
+        AsPathTuple<[...VPT, K]>
+      >
+    : VPT
+  : VPT;
 
 /**
  * Type to find the longest path prefix which is still valid,
