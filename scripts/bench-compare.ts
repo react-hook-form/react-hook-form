@@ -2,8 +2,10 @@
 /* eslint-disable */
 /**
  * Branch-vs-branch benchmark comparison.
- * Usage: pnpm bench:compare <branchA> <branchB>
+ * Usage: pnpm bench:compare <branchA> <branchB> [--ci]
  * Example: pnpm bench:compare master perf-improve-onChange
+ *
+ * --ci  Exits with code 1 if any scenario in branchB is >10% slower than branchA.
  */
 
 import { execSync, spawnSync } from 'child_process';
@@ -12,11 +14,16 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import type { BenchRow } from './bench';
 
-const [branchA, branchB] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const CI_MODE = args.includes('--ci');
+const [branchA, branchB] = args.filter((a) => !a.startsWith('--'));
+
 if (!branchA || !branchB) {
-  console.error('Usage: pnpm bench:compare <branchA> <branchB>');
+  console.error('Usage: pnpm bench:compare <branchA> <branchB> [--ci]');
   process.exit(1);
 }
+
+const REGRESSION_THRESHOLD = 0.1; // 10%
 
 const TSX = './node_modules/.bin/tsx';
 const BENCH_SCRIPT = 'scripts/bench.ts';
@@ -36,7 +43,9 @@ function git(cmd: string, opts: { silent?: boolean } = {}) {
 }
 
 function currentBranch() {
-  return git('rev-parse --abbrev-ref HEAD', { silent: true });
+  const name = git('rev-parse --abbrev-ref HEAD', { silent: true });
+  // Detached HEAD (common in CI) — fall back to commit hash so we can restore.
+  return name === 'HEAD' ? git('rev-parse HEAD', { silent: true }) : name;
 }
 
 // Only stash unstaged tracked changes — keeps staged new files (e.g. bench.ts) in place.
@@ -180,4 +189,34 @@ try {
   }
 }
 
-if (rowsA && rowsB) printTable(rowsA, rowsB);
+if (rowsA && rowsB) {
+  printTable(rowsA, rowsB);
+
+  if (CI_MODE) {
+    const regressions = rowsA
+      .map((a, i) => ({ a, b: rowsB![i] }))
+      .filter(
+        ({ a, b }) =>
+          a.opsPerSec > 0 &&
+          b.opsPerSec < a.opsPerSec * (1 - REGRESSION_THRESHOLD),
+      );
+
+    if (regressions.length > 0) {
+      console.error(
+        '❌  Performance regression detected (>10% slower than baseline):\n',
+      );
+      for (const { a, b } of regressions) {
+        const pct = (((a.opsPerSec - b.opsPerSec) / a.opsPerSec) * 100).toFixed(
+          1,
+        );
+        console.error(`   ${b.name}`);
+        console.error(
+          `   ${branchA}: ${a.opsPerSec.toLocaleString()}/s  →  ${branchB}: ${b.opsPerSec.toLocaleString()}/s  (−${pct}%)\n`,
+        );
+      }
+      process.exit(1);
+    }
+
+    console.log('✅  No performance regressions detected.');
+  }
+}
