@@ -102,6 +102,53 @@ const bench = new Bench({ time: 3000, warmupTime: 500 });
   });
 }
 
+// ── 6. setValues — no subscriber ────────────────────────────────────────────
+// setValues runs deepEqual then calls _setValue for every mounted field.
+// Registers all FIELDS so the inner loop is exercised.
+{
+  const form = createFormControl({ defaultValues: makeDefaults(FIELDS) });
+  for (let i = 0; i < FIELDS; i++) form.register(`f${i}`);
+  const scratch = makeDefaults(FIELDS);
+  let i = 0;
+  bench.add(`setValues    (${FIELDS} fields, no subscriber)`, () => {
+    scratch['f0'] = String(i++); // ensure deepEqual never short-circuits
+    form.setValues(scratch);
+  });
+}
+
+// ── 7. setValues — with subscriber ──────────────────────────────────────────
+{
+  const form = createFormControl({ defaultValues: makeDefaults(FIELDS) });
+  for (let i = 0; i < FIELDS; i++) form.register(`f${i}`);
+  form.watch(() => {});
+  const scratch = makeDefaults(FIELDS);
+  let i = 0;
+  bench.add(`setValues    (${FIELDS} fields, watch subscriber)`, () => {
+    scratch['f0'] = String(i++);
+    form.setValues(scratch);
+  });
+}
+
+// ── 8. reset — no subscriber ─────────────────────────────────────────────────
+// reset always clones the values object and flushes form state.
+{
+  const form = createFormControl({ defaultValues: makeDefaults(FIELDS) });
+  const resetValues = makeDefaults(FIELDS);
+  bench.add(`reset        (${FIELDS} fields, no subscriber)`, () => {
+    form.reset(resetValues);
+  });
+}
+
+// ── 9. reset — with subscriber ───────────────────────────────────────────────
+{
+  const form = createFormControl({ defaultValues: makeDefaults(FIELDS) });
+  form.watch(() => {});
+  const resetValues = makeDefaults(FIELDS);
+  bench.add(`reset        (${FIELDS} fields, watch subscriber)`, () => {
+    form.reset(resetValues);
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Run
 // ---------------------------------------------------------------------------
