@@ -47,7 +47,11 @@ export type ExtractObjects<T> = T extends infer U
     : never
   : never;
 
-type IsPrimitiveLike<T> = T extends Primitive ? true : false;
+type IsPrimitiveLike<T> = T extends Primitive
+  ? true
+  : T extends Primitive & object
+    ? true
+    : false;
 
 export type DeepPartial<T> =
   IsPrimitiveLike<T> extends true
