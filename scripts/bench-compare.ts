@@ -84,6 +84,10 @@ function removeBenchTsIfInjected() {
 // ---------------------------------------------------------------------------
 
 function runOnBranch(branch: string): BenchRow[] {
+  // Remove any bench.ts we injected before switching — git refuses to checkout
+  // a branch if an untracked file in the working tree would be overwritten.
+  removeBenchTsIfInjected();
+
   process.stderr.write(`\n⏱  Checking out ${branch}…\n`);
   execSync(`git checkout ${branch}`, {
     stdio: ['ignore', 'ignore', 'inherit'],
