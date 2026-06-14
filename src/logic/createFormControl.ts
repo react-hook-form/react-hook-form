@@ -1,6 +1,5 @@
 import {
   EVENTS,
-  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
@@ -107,6 +106,8 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
+
+const FORM_ERROR_TYPE = 'form';
 
 export const DEFAULT_FORM_STATE = {
   submitCount: 0,
