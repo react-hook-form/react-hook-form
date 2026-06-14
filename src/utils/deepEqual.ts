@@ -2,6 +2,7 @@ import isDateObject from './isDateObject';
 import isObject from './isObject';
 import isPlainObject from './isPlainObject';
 import isPrimitive from './isPrimitive';
+import isTypedArray from './isTypedArray';
 
 const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
   keys.length === 0 && !Array.isArray(object) && !isPlainObject(object);
@@ -21,6 +22,21 @@ export default function deepEqual(
 
   if (isDateObject(object1) && isDateObject(object2)) {
     return Object.is(object1.getTime(), object2.getTime());
+  }
+
+  if (isTypedArray(object1) || isTypedArray(object2)) {
+    if (!(isTypedArray(object1) && isTypedArray(object2))) {
+      return false;
+    }
+    if (object1.length !== object2.length) {
+      return false;
+    }
+    for (let i = 0; i < object1.length; i++) {
+      if (object1[i] !== object2[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   const keys1 = Object.keys(object1);
