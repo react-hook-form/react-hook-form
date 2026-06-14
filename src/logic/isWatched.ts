@@ -8,7 +8,8 @@ export default (
   if (isBlurEvent) return false;
   if (_names.watchAll || _names.watch.has(name)) return true;
   for (const watchName of _names.watch) {
-    if (name.startsWith(`${watchName}.`)) return true;
+    if (name.startsWith(watchName) && name.charAt(watchName.length) === '.')
+      return true;
   }
   return false;
 };
