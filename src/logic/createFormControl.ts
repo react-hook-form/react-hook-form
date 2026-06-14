@@ -749,7 +749,7 @@ export function createFormControl<
   const _getDirty: GetIsDirty = (name, data) =>
     !_options.disabled &&
     (name && data && set(_formValues, name, data),
-    !deepEqual(getValues(), _defaultValues));
+    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
