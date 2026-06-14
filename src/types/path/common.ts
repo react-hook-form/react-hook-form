@@ -2,7 +2,7 @@ import type { IsAny, IsNever } from '../utils';
 
 /**
  * Decrement table for path depth limiting.
- * Prev[N] = N - 1 for N >= 1; Prev[0] = never (signals recursion stop).
+ * Prev[N] = N - 1 for N \>= 1; Prev[0] = never (signals recursion stop).
  * Path types default to D = 9, yielding a max of 10 path segments.
  */
 export type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, ...0[]];
