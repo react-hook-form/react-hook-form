@@ -5220,3 +5220,51 @@ it('should not restore defaultValues when appending null after remove in same ac
     expect(watchedValues[watchedValues.length - 1]).toEqual([{ obj: null }]);
   });
 });
+
+it('should not initialize array in form values when disabled', () => {
+  type FormValues = {
+    name: string;
+    union: { type: 'empty' } | { type: 'array'; values: string[] };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<FormValues>({
+      defaultValues: { name: '', union: { type: 'empty' } },
+    });
+    const fieldArray = useFieldArray({
+      control: form.control,
+      name: 'union.values' as any,
+      disabled: true,
+    });
+    return { form, fieldArray };
+  });
+
+  expect(result.current.form.getValues()).toEqual({
+    name: '',
+    union: { type: 'empty' },
+  });
+  expect(result.current.fieldArray.fields).toEqual([]);
+});
+
+it('should not modify form values when disabled methods are called', () => {
+  type FormValues = { items: { value: string }[] };
+
+  const { result } = renderHook(() => {
+    const form = useForm<FormValues>({ defaultValues: { items: [] } });
+    const fieldArray = useFieldArray({
+      control: form.control,
+      name: 'items',
+      disabled: true,
+    });
+    return { form, fieldArray };
+  });
+
+  act(() => {
+    result.current.fieldArray.append({ value: 'test' });
+    result.current.fieldArray.prepend({ value: 'test' });
+    result.current.fieldArray.insert(0, { value: 'test' });
+  });
+
+  expect(result.current.fieldArray.fields).toEqual([]);
+  expect(result.current.form.getValues('items')).toEqual([]);
+});

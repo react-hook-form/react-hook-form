@@ -24,8 +24,8 @@ export type UseFieldArrayProps<
     RegisterOptions<TFieldValues>,
     'maxLength' | 'minLength' | 'required'
   >;
-  disabled?: boolean;
   shouldUnregister?: boolean;
+  disabled?: boolean;
 };
 
 /**

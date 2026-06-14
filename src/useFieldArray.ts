@@ -105,50 +105,57 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const [fields, setFields] = React.useState(control._getFieldArray(name));
+  const [fields, setFields] = React.useState(
+    disabled ? [] : control._getFieldArray(name),
+  );
   const ids = React.useRef<string[]>(
-    control._getFieldArray(name).map(generateId),
+    disabled ? [] : control._getFieldArray(name).map(generateId),
   );
 
   const _actioned = React.useRef(false);
 
-  control._names.array.add(name);
+  if (!disabled) {
+    control._names.array.add(name);
+  }
 
   React.useMemo(
     () =>
+      !disabled &&
       rules &&
       fields.length >= 0 &&
       (control as Control<TFieldValues, any, TTransformedValues>).register(
         name as FieldPath<TFieldValues>,
         rules as RegisterOptions<TFieldValues>,
       ),
-    [control, name, fields.length, rules],
+    [control, name, fields.length, rules, disabled],
   );
 
-  useIsomorphicLayoutEffect(
-    () =>
-      control._subjects.array.subscribe({
-        next: ({
-          values,
-          name: fieldArrayName,
-        }: {
-          values?: FieldValues;
-          name?: InternalFieldName;
-        }) => {
-          if (fieldArrayName === name || !fieldArrayName) {
-            const fieldValues = get(values, name);
-            if (Array.isArray(fieldValues)) {
-              setFields(fieldValues);
-              ids.current = fieldValues.map(generateId);
-            } else if (!fieldArrayName) {
-              setFields([]);
-              ids.current = [];
-            }
+  useIsomorphicLayoutEffect(() => {
+    if (disabled) {
+      return;
+    }
+
+    return control._subjects.array.subscribe({
+      next: ({
+        values,
+        name: fieldArrayName,
+      }: {
+        values?: FieldValues;
+        name?: InternalFieldName;
+      }) => {
+        if (fieldArrayName === name || !fieldArrayName) {
+          const fieldValues = get(values, name);
+          if (Array.isArray(fieldValues)) {
+            setFields(fieldValues);
+            ids.current = fieldValues.map(generateId);
+          } else if (!fieldArrayName) {
+            setFields([]);
+            ids.current = [];
           }
-        },
-      }).unsubscribe,
-    [control, name],
-  );
+        }
+      },
+    }).unsubscribe;
+  }, [control, name, disabled]);
 
   const updateValues = React.useCallback(
     <
@@ -170,6 +177,10 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    if (disabled) {
+      return;
+    }
+
     const appendValue = convertToArrayPayload(cloneObject(value));
     const updatedFieldArrayValues = appendAt(
       control._getFieldArray(name),
@@ -194,6 +205,10 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    if (disabled) {
+      return;
+    }
+
     const prependValue = convertToArrayPayload(cloneObject(value));
     const updatedFieldArrayValues = prependAt(
       control._getFieldArray(name),
@@ -209,6 +224,10 @@ export function useFieldArray<
   };
 
   const remove = (index?: number | number[]) => {
+    if (disabled) {
+      return;
+    }
+
     const updatedFieldArrayValues: Partial<
       FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
@@ -229,6 +248,10 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    if (disabled) {
+      return;
+    }
+
     const insertValue = convertToArrayPayload(cloneObject(value));
     const updatedFieldArrayValues = insertAt(
       control._getFieldArray(name),
@@ -246,6 +269,10 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
+    if (disabled) {
+      return;
+    }
+
     const updatedFieldArrayValues = control._getFieldArray(name);
     swapArrayAt(updatedFieldArrayValues, indexA, indexB);
     swapArrayAt(ids.current, indexA, indexB);
@@ -264,6 +291,10 @@ export function useFieldArray<
   };
 
   const move = (from: number, to: number) => {
+    if (disabled) {
+      return;
+    }
+
     const updatedFieldArrayValues = control._getFieldArray(name);
     moveArrayAt(updatedFieldArrayValues, from, to);
     moveArrayAt(ids.current, from, to);
@@ -285,6 +316,10 @@ export function useFieldArray<
     index: number,
     value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
+    if (disabled) {
+      return;
+    }
+
     const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
       control._getFieldArray<
@@ -316,6 +351,10 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
+    if (disabled) {
+      return;
+    }
+
     const updatedFieldArrayValues = convertToArrayPayload(cloneObject(value));
     ids.current = updatedFieldArrayValues.map(generateId);
     updateValues([...updatedFieldArrayValues]);
@@ -331,6 +370,10 @@ export function useFieldArray<
   };
 
   React.useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
     control._state.action = false;
 
     isWatched(name, control._names) &&
@@ -422,14 +465,18 @@ export function useFieldArray<
 
     control._setValid();
     _actioned.current = false;
-  }, [fields, name, control]);
+  }, [fields, name, control, disabled]);
 
   React.useEffect(() => {
-    !disabled &&
-      !get(control._formValues, name) &&
-      control._setFieldArray(name);
+    if (!disabled) {
+      !get(control._formValues, name) && control._setFieldArray(name);
+    }
 
     return () => {
+      if (disabled) {
+        return;
+      }
+
       const shouldKeepFieldArrayValues = !(
         control._options.shouldUnregister || shouldUnregister
       );
@@ -451,17 +498,27 @@ export function useFieldArray<
         ? updateMounted(name, false)
         : control.unregister(name as FieldPath<TFieldValues>);
     };
-  }, [name, control, keyName, disabled, shouldUnregister]);
+  }, [name, control, keyName, shouldUnregister, disabled]);
 
   return {
-    swap: React.useCallback(swap, [updateValues, name, control]),
-    move: React.useCallback(move, [updateValues, name, control]),
-    prepend: React.useCallback(prepend, [updateValues, name, control]),
-    append: React.useCallback(append, [updateValues, name, control]),
-    remove: React.useCallback(remove, [updateValues, name, control]),
-    insert: React.useCallback(insert, [updateValues, name, control]),
-    update: React.useCallback(update, [updateValues, name, control]),
-    replace: React.useCallback(replace, [updateValues, name, control]),
+    swap: React.useCallback(swap, [updateValues, name, control, disabled]),
+    move: React.useCallback(move, [updateValues, name, control, disabled]),
+    prepend: React.useCallback(prepend, [
+      updateValues,
+      name,
+      control,
+      disabled,
+    ]),
+    append: React.useCallback(append, [updateValues, name, control, disabled]),
+    remove: React.useCallback(remove, [updateValues, name, control, disabled]),
+    insert: React.useCallback(insert, [updateValues, name, control, disabled]),
+    update: React.useCallback(update, [updateValues, name, control, disabled]),
+    replace: React.useCallback(replace, [
+      updateValues,
+      name,
+      control,
+      disabled,
+    ]),
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
