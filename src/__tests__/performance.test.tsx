@@ -585,6 +585,49 @@ describe('setValues emission batching', () => {
   });
 });
 
+describe('setValues _valuesSubscriberCount guard', () => {
+  it('omits values from the broadcast when no watch(fn) subscriber is active', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { a: '', b: '' } }),
+    );
+
+    result.current.register('a' as any);
+    result.current.register('b' as any);
+
+    const control = result.current.control as any;
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    await act(async () => {
+      result.current.setValues({ a: 'x', b: 'y' } as any);
+    });
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.every((p: any) => !('values' in p))).toBe(true);
+  });
+
+  it('includes values in the broadcast when a watch(fn) subscriber is active', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { a: '', b: '' } }),
+    );
+
+    result.current.register('a' as any);
+    result.current.register('b' as any);
+
+    const watchSub = result.current.watch(() => {});
+    const control = result.current.control as any;
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    await act(async () => {
+      result.current.setValues({ a: 'x', b: 'y' } as any);
+    });
+
+    watchSub.unsubscribe();
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.some((p: any) => 'values' in p)).toBe(true);
+  });
+});
+
 describe('_valuesSubscriberCount idempotency', () => {
   it('does not go negative when watch(fn) unsubscribe is called twice', () => {
     let control: any;

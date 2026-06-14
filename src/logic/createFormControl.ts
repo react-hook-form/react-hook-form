@@ -984,7 +984,7 @@ export function createFormControl<
         ..._formState,
         name: undefined,
         type: undefined,
-        values: _formValues,
+        ...(_valuesSubscriberCount ? { values: _formValues } : {}),
       });
 
       if (options.shouldValidate) {
