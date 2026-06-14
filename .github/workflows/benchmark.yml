@@ -20,4 +20,6 @@ jobs:
         uses: ./.github/actions/install-dependencies
 
       - name: Compare against master
-        run: pnpm bench:compare master ${{ github.head_ref }} --ci
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: pnpm bench:compare master "$HEAD_REF" --ci
