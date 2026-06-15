@@ -1,5 +1,33 @@
 # Changelog
 
+## [7.79.0] - 2026-06-13
+
+### Added
+
+- `disabled` option to `useFieldArray`
+
+### Fixed
+
+- `Controller` `onChange` promise return type
+- `deepEqual` false positives with shared object references
+- `shouldUseNativeValidation` behavior for radio groups
+- `createFormControl` stability with fast refresh in dev mode
+- `StrictMode` value preservation during remount
+- `formState.errors` reactivity with React compiler
+
+## [7.78.0] - 2026-06-08
+
+### Fixed
+
+- Recover `Controller` fields after `reset` without rerender (RN issue #13455)
+- `useFormState().isDirty` race with async resolver in `onChange` mode
+- Use reactive `values` prop over `defaultValues` when `shouldUnregister` is true
+- `deepEqual` for empty non-plain objects
+
+### Types
+
+- Update `dirtyFields` typing for field arrays with undefined entries
+
 ## [7.77.0] - 2026-05-31
 
 ### Added

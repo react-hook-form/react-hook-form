@@ -37,6 +37,43 @@ describe('useController', () => {
     render(<Component />);
   });
 
+  it('should return a promise-like value from field.onChange', async () => {
+    let onChangeResult: any;
+
+    const Component = () => {
+      const { control } = useForm<{ test: string }>();
+      const { field } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            onChangeResult = field.onChange({
+              target: {
+                name: 'test',
+                value: 'next',
+              },
+              type: 'change',
+            });
+          }}
+        >
+          change
+        </button>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'change' }));
+
+    expect(onChangeResult).toBeInstanceOf(Promise);
+    await expect(onChangeResult).resolves.toBeDefined();
+  });
+
   it('component using the hook can be memoized', async () => {
     function App() {
       const form = useForm({

@@ -690,6 +690,7 @@ export type UseFieldArrayProps<TFieldValues extends FieldValues = FieldValues, T
         validate?: Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues> | Record<string, Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>>;
     } & Pick<RegisterOptions<TFieldValues>, 'maxLength' | 'minLength' | 'required'>;
     shouldUnregister?: boolean;
+    disabled?: boolean;
 };
 
 // @public
