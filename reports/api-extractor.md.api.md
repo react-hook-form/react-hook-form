@@ -609,6 +609,7 @@ export type SetValueConfig = Partial<{
     shouldValidate: boolean;
     shouldDirty: boolean;
     shouldTouch: boolean;
+    delayError: boolean;
 }>;
 
 // @public (undocumented)

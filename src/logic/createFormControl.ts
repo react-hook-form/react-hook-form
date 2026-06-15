@@ -32,6 +32,7 @@ import type {
   SetFieldValue,
   SetValueConfig,
   Subjects,
+  TriggerConfig,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -849,7 +850,13 @@ export function createFormControl<
         true,
       );
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate &&
+      trigger(
+        name as Path<TFieldValues>,
+        {
+          delayError: options.delayError,
+        } as TriggerConfig & { delayError?: boolean },
+      );
   };
 
   const setFieldValues = <
@@ -1148,7 +1155,10 @@ export function createFormControl<
     return;
   };
 
-  const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
+  const trigger: UseFormTrigger<TFieldValues> = async (
+    name,
+    options: TriggerConfig & { delayError?: boolean } = {},
+  ) => {
     let isValid;
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
@@ -1181,6 +1191,18 @@ export function createFormControl<
         name,
         eventType: EVENTS.TRIGGER,
       });
+    }
+
+    if (options.delayError && _options.delayError && isString(name)) {
+      const error = get(_formState.errors, name);
+      if (error) {
+        unset(_formState.errors, name);
+        delayErrorCallback = debounce(() => updateErrors(name, error));
+        delayErrorCallback(_options.delayError);
+      } else {
+        clearTimeout(timer);
+        delayErrorCallback = null;
+      }
     }
 
     _subjects.state.next({
