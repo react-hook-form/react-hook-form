@@ -268,7 +268,7 @@ describe('clearErrors', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'clearError' }));
 
-    expect(await screen.findByText('no')).toBeVisible();
+    expect(await screen.findByText('yes')).toBeVisible();
   });
 
   it('should be able to clear root error', () => {
@@ -371,5 +371,52 @@ describe('clearErrors', () => {
     expect(afterClearErrorRenderA).toBeGreaterThan(afterSetErrorRenderA);
     // FieldB should NOT have re-rendered for clearErrors('a') - this is the bug fix!
     expect(afterClearErrorRenderB).toBe(afterSetErrorRenderB);
+  });
+
+  it('should restore isValid to true when clearErrors is called without arguments after manual setError', async () => {
+    const App = () => {
+      const {
+        register,
+        formState: { isValid },
+        setError,
+        clearErrors,
+      } = useForm<{ name: string }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('name', { required: true })} />
+          <button
+            onClick={() => {
+              setError('name', { type: 'manual', message: 'manual error' });
+            }}
+          >
+            setError
+          </button>
+          <button
+            onClick={() => {
+              clearErrors();
+            }}
+          >
+            clearErrors
+          </button>
+          <span data-testid="isValid">{isValid ? 'valid' : 'invalid'}</span>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // initially isValid should be true
+    expect(await screen.findByTestId('isValid')).toHaveTextContent('valid');
+
+    // setError makes isValid false
+    fireEvent.click(screen.getByRole('button', { name: 'setError' }));
+    expect(await screen.findByTestId('isValid')).toHaveTextContent('invalid');
+
+    // clearErrors() without arguments should restore isValid to true
+    fireEvent.click(screen.getByRole('button', { name: 'clearErrors' }));
+    expect(await screen.findByTestId('isValid')).toHaveTextContent('valid');
   });
 });

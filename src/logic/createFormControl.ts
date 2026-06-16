@@ -1255,9 +1255,11 @@ export function createFormControl<
       });
     } else {
       // Clear all errors - emit without name to notify all subscribers
+      _formState.errors = {};
       _subjects.state.next({
         errors: {},
       });
+      _setValid();
     }
   };
 
