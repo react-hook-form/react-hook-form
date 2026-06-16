@@ -394,12 +394,6 @@ export function createFormControl<
       if (_state.mount && !_state.action) {
         _setValid();
 
-        // Re-registering a field after a prior unregister puts its key back
-        // into _formValues, which can flip isDirty back to false (#13397).
-        // Only run when we are currently dirty, otherwise an initial register
-        // for a field with no defaultValue would flip isDirty to true. Reset
-        // paths repopulate _formValues before re-register, so the key is
-        // present then and this branch is skipped (preserves keepDirty).
         if (
           wasUnsetInFormValues &&
           _formState.isDirty &&
@@ -412,9 +406,6 @@ export function createFormControl<
           }
         }
 
-        // When a watched field is re-registered after being unregistered and
-        // its value is restored, trigger a deferred watch broadcast so that
-        // components using watch() re-render with the new value.
         if (
           props.shouldUnregister &&
           wasUnsetInFormValues &&
@@ -451,8 +442,7 @@ export function createFormControl<
 
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
           isPreviousDirty = _formState.isDirty;
-          // Skip full tree deepEqual when the field itself is dirty — the form
-          // is definitely dirty without scanning every other field.
+
           _formState.isDirty = output.isDirty =
             !isCurrentFieldPristine || _getDirty();
           shouldUpdateField = isPreviousDirty !== output.isDirty;
@@ -1058,12 +1048,6 @@ export function createFormControl<
 
       if (shouldSkipValidation) {
         if (
-          // Skip the full validity recheck when this field is certain not to
-          // affect isValid: no rules, no resolver, no current error, no deps.
-          // Safe only when the form is CURRENTLY VALID — if it is invalid,
-          // this change may have triggered React to unmount an invalid field
-          // (e.g. conditional rendering), which would make the form valid and
-          // can only be discovered by re-running validation.
           (!hasNoValidationEffect || !_formState.isValid) &&
           (_proxyFormState.isValid || _proxySubscribeFormState.isValid)
         ) {
@@ -1267,8 +1251,6 @@ export function createFormControl<
     names?.forEach((inputName) => unset(_formState.errors, inputName));
 
     if (names) {
-      // Emit for each cleared field with the field name so that
-      // shouldSubscribeByName can filter and avoid broad re-renders
       names.forEach((inputName) => {
         _subjects.state.next({
           name: inputName,
@@ -1276,7 +1258,6 @@ export function createFormControl<
         });
       });
     } else {
-      // Clear all errors - emit without name to notify all subscribers
       _subjects.state.next({
         errors: {},
       });
@@ -1287,7 +1268,6 @@ export function createFormControl<
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
 
-    // Don't override existing error messages elsewhere in the object tree.
     const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
 
     set(_formState.errors, name, {
@@ -1795,9 +1775,6 @@ export function createFormControl<
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
 
-    // Clear errors synchronously to prevent validation errors on subsequent submissions
-    // This fixes the issue where form.reset() causes validation errors on subsequent
-    // submissions in Next.js 16 with Server Actions
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
     }
@@ -1860,8 +1837,6 @@ export function createFormControl<
         : fieldReference.ref;
 
       if (fieldRef.focus) {
-        // Use setTimeout to ensure focus happens after any pending state updates
-        // This fixes the issue where setFocus doesn't work immediately after setError
         setTimeout(() => {
           fieldRef.focus();
           options.shouldSelect &&
