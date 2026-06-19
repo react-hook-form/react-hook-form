@@ -87,7 +87,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "bundlewatch": "^0.4.2",
-    "cypress": "^15.15.0",
+    "cypress": "^15.17.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^5.4.0",
