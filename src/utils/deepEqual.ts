@@ -46,7 +46,9 @@ export default function deepEqual(
   if (visitedPairs) {
     visitedPairs.add(object2);
   } else {
-    visited.set(object1, new WeakSet([object2]));
+    const ws = new WeakSet();
+    ws.add(object2);
+    visited.set(object1, ws);
   }
 
   for (const key of keys1) {
