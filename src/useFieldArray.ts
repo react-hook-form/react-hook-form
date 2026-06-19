@@ -13,6 +13,7 @@ import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
+import isBoolean from './utils/isBoolean';
 import isEmptyObject from './utils/isEmptyObject';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
@@ -105,11 +106,9 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const [fields, setFields] = React.useState(
-    disabled ? [] : control._getFieldArray(name),
-  );
+  const [fields, setFields] = React.useState(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
-    disabled ? [] : control._getFieldArray(name).map(generateId),
+    control._getFieldArray(name).map(generateId),
   );
 
   const _actioned = React.useRef(false);
@@ -523,9 +522,10 @@ export function useFieldArray<
       () =>
         fields.map((field, index) => ({
           ...field,
+          ...(isBoolean(disabled) ? { disabled } : {}),
           [keyName]: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName],
+      [fields, keyName, disabled],
     ),
   };
 }
