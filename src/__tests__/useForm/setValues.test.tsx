@@ -85,6 +85,9 @@ describe('setValues', () => {
       }),
     );
 
+    // Register a watch(fn) subscriber so values are included in notifications.
+    const watchSub = result.current.watch(() => {});
+
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
 
@@ -94,6 +97,8 @@ describe('setValues', () => {
         b: '200',
       });
     });
+
+    watchSub.unsubscribe();
 
     const valueNotifications = nextSpy.mock.calls.filter(
       (call) =>
@@ -119,6 +124,9 @@ describe('setValues', () => {
       result.current.setValue('a', 'changed', { shouldValidate: true });
     });
 
+    // Register a watch(fn) subscriber so values are included in notifications.
+    const watchSub = result.current.watch(() => {});
+
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
 
@@ -128,6 +136,8 @@ describe('setValues', () => {
         b: '20',
       });
     });
+
+    watchSub.unsubscribe();
 
     const valueNotifications = nextSpy.mock.calls.filter(
       (call) =>
@@ -295,22 +305,17 @@ describe('setValues', () => {
     expect(values.b).toBe(nextB);
   });
 
-  it('should not deep clone the form tree per field in setFieldValue broadcasts during setValues', async () => {
+  it('should emit exactly one state notification for a setValues batch', async () => {
     const { result } = renderHook(() =>
-      useForm<{ a: { nested: string } }>({
-        defaultValues: { a: { nested: '1' } },
+      useForm<{ a: { nested: string }; b: string }>({
+        defaultValues: { a: { nested: '1' }, b: 'x' },
       }),
     );
 
-    // Registering on a non-input element gives the field a ref with no `type`,
-    // which is the setFieldValue branch that broadcasts the form tree. The
-    // value stored in _formValues is reference-preserved regardless of
-    // skipClone, so this optimization is only observable at the broadcast
-    // boundary: the per-field snapshot must be the live tree, not an
-    // O(formSize) deep clone produced once per mounted field.
-    const ref = document.createElement('div');
+    const refA = document.createElement('div');
     act(() => {
-      result.current.register('a').ref(ref);
+      result.current.register('a').ref(refA);
+      result.current.register('b');
     });
 
     const deliveredValues: object[] = [];
@@ -320,19 +325,13 @@ describe('setValues', () => {
     });
 
     await act(async () => {
-      result.current.setValues({ a: { nested: '10' } });
+      result.current.setValues({ a: { nested: '10' }, b: 'y' });
     });
     unsubscribe();
 
-    // The setFieldValue !ref.type branch and the _setValue broadcast both fire
-    // for this field, so a batch produces multiple notifications.
-    expect(deliveredValues.length).toBeGreaterThan(1);
-    // skipClone must be threaded through setFieldValue: every per-field
-    // broadcast reuses the one live form tree. A per-field deep clone would
-    // instead hand subscribers distinct object identities.
-    for (const values of deliveredValues) {
-      expect(values).toBe(deliveredValues[0]);
-    }
+    // All per-field emissions are suppressed; only the single final broadcast fires.
+    expect(deliveredValues.length).toBe(1);
+    expect(deliveredValues[0]).toEqual({ a: { nested: '10' }, b: 'y' });
   });
 
   it('should propagate shouldValidate option to trigger validation and update isValid', async () => {

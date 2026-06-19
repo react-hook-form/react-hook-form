@@ -31,7 +31,9 @@ describe('form reset', () => {
       '',
     );
 
-    cy.get('button').click({ multiple: true });
+    cy.contains('button', 'Add item').click();
+    cy.get('input[name="users"]').should('have.value', 'users#1');
+    cy.contains('button', 'button').click();
 
     cy.get('input[name="firstName"]').should('have.value', 'bill');
     cy.get('input[name="lastName"]').should('have.value', 'luo');
