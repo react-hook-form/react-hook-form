@@ -37,6 +37,10 @@ export default function deepEqual(
     return Object.is(object1, object2);
   }
 
+  if (!keys1.length && Array.isArray(object1) !== Array.isArray(object2)) {
+    return false;
+  }
+
   const visitedPairs = visited.get(object1);
 
   if (visitedPairs && visitedPairs.has(object2)) {
