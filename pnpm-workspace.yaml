@@ -1,0 +1,6 @@
+allowBuilds:
+  '@swc/core': true
+  cypress: true
+  esbuild: true
+  msw: false
+  unrs-resolver: true
