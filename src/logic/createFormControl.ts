@@ -1292,12 +1292,41 @@ export function createFormControl<
   const watch: UseFormWatch<TFieldValues> = (
     name?: FieldPath<TFieldValues> | ReadonlyArray<FieldPath<TFieldValues>>,
     defaultValue?: DeepPartial<TFieldValues>,
-  ) =>
-    _getWatch(
+  ) => {
+    if (isFunction(name)) {
+      _valuesSubscriberCount++;
+      const { unsubscribe } = _subjects.state.subscribe({
+        next: (payload) =>
+          'values' in payload &&
+          name(
+            payload.values || _getWatch(undefined, defaultValue),
+            payload as {
+              name?: FieldPath<TFieldValues>;
+              type?: EventType;
+              value?: unknown;
+            },
+          ),
+      });
+      let called = false;
+
+      return {
+        unsubscribe: () => {
+          if (called) {
+            return;
+          }
+
+          called = true;
+          _valuesSubscriberCount--;
+          unsubscribe();
+        },
+      };
+    }
+    return _getWatch(
       name as InternalFieldName | InternalFieldName[],
       defaultValue,
       true,
     );
+  };
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) => {
     const needsValues = !!(props.formState as Record<string, unknown>)?.values;
