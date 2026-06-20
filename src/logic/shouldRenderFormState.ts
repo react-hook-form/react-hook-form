@@ -5,7 +5,6 @@ import type {
   InternalFieldName,
   ReadFormState,
 } from '../types';
-import isEmptyObject from '../utils/isEmptyObject';
 
 export default <T extends FieldValues, K extends ReadFormState>(
   formStateData: Partial<FormState<T>> & {
@@ -18,12 +17,12 @@ export default <T extends FieldValues, K extends ReadFormState>(
 ) => {
   updateFormState(formStateData);
   const { name, ...formState } = formStateData;
+  const keys = Object.keys(formState);
 
   return (
-    isEmptyObject(formState) ||
-    (isRoot &&
-      Object.keys(formState).length >= Object.keys(_proxyFormState).length) ||
-    Object.keys(formState).find(
+    !keys.length ||
+    (isRoot && keys.length >= Object.keys(_proxyFormState).length) ||
+    keys.find(
       (key) =>
         _proxyFormState[key as keyof ReadFormState] ===
         (!isRoot || VALIDATION_MODE.all),

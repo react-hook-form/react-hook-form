@@ -684,7 +684,12 @@ describe('useFieldArray', () => {
 
         return (
           <form>
-            {errors.test?.type && <p>Array error: {errors.test.message}</p>}
+            {(errors.test?.root?.type ?? errors.test?.type) && (
+              <p>
+                Array error:{' '}
+                {errors.test?.root?.message ?? errors.test?.message}
+              </p>
+            )}
             {fields.map((item, i) => (
               <div key={item.key}>
                 <input {...register(`test.${i}.value` as const)} />
@@ -5285,4 +5290,26 @@ it('should not modify form values when disabled methods are called', () => {
 
   expect(result.current.fieldArray.fields).toEqual([]);
   expect(result.current.form.getValues('items')).toEqual([]);
+});
+
+it('should propagate disabled to field objects when disabled is set', () => {
+  type FormValues = { items: { value: string }[] };
+
+  const { result } = renderHook(() => {
+    const form = useForm<FormValues>({
+      defaultValues: { items: [{ value: 'a' }, { value: 'b' }] },
+    });
+    const fieldArray = useFieldArray({
+      control: form.control,
+      name: 'items',
+      disabled: true,
+    });
+    return { form, fieldArray };
+  });
+
+  expect(result.current.fieldArray.fields).toHaveLength(2);
+  expect(result.current.fieldArray.fields[0].disabled).toBe(true);
+  expect(result.current.fieldArray.fields[1].disabled).toBe(true);
+  expect(result.current.fieldArray.fields[0].value).toBe('a');
+  expect(result.current.fieldArray.fields[1].value).toBe('b');
 });

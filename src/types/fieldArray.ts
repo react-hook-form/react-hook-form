@@ -276,5 +276,7 @@ export type UseFieldArrayReturn<
   insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
   update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
   replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+  fields: (FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName> & {
+    disabled?: boolean;
+  })[];
 };

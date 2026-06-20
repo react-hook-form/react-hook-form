@@ -37,6 +37,10 @@ export default function deepEqual(
     return Object.is(object1, object2);
   }
 
+  if (!keys1.length && Array.isArray(object1) !== Array.isArray(object2)) {
+    return false;
+  }
+
   const visitedPairs = visited.get(object1);
 
   if (visitedPairs && visitedPairs.has(object2)) {
@@ -46,7 +50,9 @@ export default function deepEqual(
   if (visitedPairs) {
     visitedPairs.add(object2);
   } else {
-    visited.set(object1, new WeakSet([object2]));
+    const ws = new WeakSet();
+    ws.add(object2);
+    visited.set(object1, ws);
   }
 
   for (const key of keys1) {
