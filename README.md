@@ -32,6 +32,7 @@
 ### Install
 
     npm install react-hook-form
+    deno install react-hook-form
 
 ### Quickstart
 
