@@ -15,6 +15,7 @@ import get from './utils/get';
 import insertAt from './utils/insert';
 import isBoolean from './utils/isBoolean';
 import isEmptyObject from './utils/isEmptyObject';
+import isObject from './utils/isObject';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
@@ -30,6 +31,7 @@ import type {
   FieldArrayMethodProps,
   FieldArrayPath,
   FieldArrayWithId,
+  FieldError,
   FieldErrors,
   FieldPath,
   FieldValues,
@@ -393,18 +395,32 @@ export function useFieldArray<
           control._updateIsValidating([name]);
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
+          const existingErrorType =
+            existingError && (existingError.type || existingError.root?.type);
+          const existingErrorMessage =
+            existingError &&
+            (existingError.message || existingError.root?.message);
 
           if (
             existingError
-              ? (!error && existingError.type) ||
+              ? (!error && existingErrorType) ||
                 (error &&
-                  (existingError.type !== error.type ||
-                    existingError.message !== error.message))
+                  (existingErrorType !== error.type ||
+                    existingErrorMessage !== error.message))
               : error && error.type
           ) {
-            error
-              ? set(control._formState.errors, name, error)
-              : unset(control._formState.errors, name);
+            if (error) {
+              isObject(error) &&
+              !Object.keys(error).some((key) => !Number.isNaN(+key))
+                ? updateFieldArrayRootError(
+                    control._formState.errors as FieldErrors<TFieldValues>,
+                    { [name]: error } as Partial<Record<string, FieldError>>,
+                    name,
+                  )
+                : set(control._formState.errors, name, error);
+            } else {
+              unset(control._formState.errors, name);
+            }
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,
             });
