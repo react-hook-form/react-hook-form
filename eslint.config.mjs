@@ -1,5 +1,5 @@
 // @ts-check
-import pluginCypress from 'eslint-plugin-cypress/flat';
+import pluginCypress from 'eslint-plugin-cypress';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHookPlugin from 'eslint-plugin-react-hooks';
@@ -45,7 +45,6 @@ export default tseslint.config(
       },
     },
     rules: {
-      curly: 'error',
       'no-extra-boolean-cast': 'error',
       'cypress/unsafe-to-chain-command': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',

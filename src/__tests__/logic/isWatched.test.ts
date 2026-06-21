@@ -124,6 +124,49 @@ describe('isWatched', () => {
     ).toBeFalsy();
   });
 
+  it('returns true on first prefix match without iterating the full Set', () => {
+    const watch = new Set(['a', 'b', 'c', 'd', 'e']);
+
+    expect(
+      isWatched('a.child', {
+        registerName: new Set(),
+        mount: new Set(),
+        disabled: new Set(),
+        unMount: new Set(),
+        array: new Set(),
+        watch,
+        focus: '',
+        watchAll: false,
+      }),
+    ).toBeTruthy();
+
+    expect(
+      isWatched('e.child', {
+        registerName: new Set(),
+        mount: new Set(),
+        disabled: new Set(),
+        unMount: new Set(),
+        array: new Set(),
+        watch,
+        focus: '',
+        watchAll: false,
+      }),
+    ).toBeTruthy();
+
+    expect(
+      isWatched('z.child', {
+        registerName: new Set(),
+        mount: new Set(),
+        disabled: new Set(),
+        unMount: new Set(),
+        array: new Set(),
+        watch,
+        focus: '',
+        watchAll: false,
+      }),
+    ).toBeFalsy();
+  });
+
   it('should return falsy for blur event', () => {
     expect(
       isWatched(

@@ -1,11 +1,15 @@
 import isDateObject from './isDateObject';
 import isObject from './isObject';
+import isPlainObject from './isPlainObject';
 import isPrimitive from './isPrimitive';
+
+const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
+  keys.length === 0 && !Array.isArray(object) && !isPlainObject(object);
 
 export default function deepEqual(
   object1: any,
   object2: any,
-  visited = new WeakSet(),
+  visited = new WeakMap<object, WeakSet<object>>(),
 ) {
   if (object1 === object2) {
     return true;
@@ -26,12 +30,30 @@ export default function deepEqual(
     return false;
   }
 
-  if (visited.has(object1) || visited.has(object2)) {
+  if (
+    isEmptyObjectWithCustomPrototype(object1, keys1) ||
+    isEmptyObjectWithCustomPrototype(object2, keys2)
+  ) {
+    return Object.is(object1, object2);
+  }
+
+  if (!keys1.length && Array.isArray(object1) !== Array.isArray(object2)) {
+    return false;
+  }
+
+  const visitedPairs = visited.get(object1);
+
+  if (visitedPairs && visitedPairs.has(object2)) {
     return true;
   }
 
-  visited.add(object1);
-  visited.add(object2);
+  if (visitedPairs) {
+    visitedPairs.add(object2);
+  } else {
+    const ws = new WeakSet();
+    ws.add(object2);
+    visited.set(object1, ws);
+  }
 
   for (const key of keys1) {
     const val1 = object1[key];

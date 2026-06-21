@@ -1,6 +1,5 @@
 import {
   EVENTS,
-  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
@@ -17,6 +16,7 @@ import type {
   FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
+  FieldPathValue,
   FieldRefs,
   FieldValues,
   FormState,
@@ -38,6 +38,7 @@ import type {
   UseFormProps,
   UseFormRegister,
   UseFormReset,
+  UseFormResetDefaultValues,
   UseFormResetField,
   UseFormReturn,
   UseFormSetError,
@@ -66,6 +67,7 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
+import isKey from '../utils/isKey';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
@@ -75,6 +77,7 @@ import isUndefined from '../utils/isUndefined';
 import isWeb from '../utils/isWeb';
 import live from '../utils/live';
 import set from '../utils/set';
+import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
@@ -82,7 +85,6 @@ import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
-import getNodeParentName from './getNodeParentName';
 import getResolverOptions from './getResolverOptions';
 import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
@@ -105,6 +107,22 @@ const defaultOptions = {
   shouldFocusError: true,
 } as const;
 
+const FORM_ERROR_TYPE = 'form';
+
+export const DEFAULT_FORM_STATE = {
+  submitCount: 0,
+  isDirty: false,
+  isReady: false,
+  isValidating: false,
+  isSubmitted: false,
+  isSubmitting: false,
+  isSubmitSuccessful: false,
+  isValid: false,
+  touchedFields: {},
+  dirtyFields: {},
+  validatingFields: {},
+};
+
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
@@ -124,19 +142,13 @@ export function createFormControl<
     ...defaultOptions,
     ...props,
   };
-  let _formState: FormState<TFieldValues> = {
-    submitCount: 0,
-    isDirty: false,
-    isReady: false,
+  let _formState: FormState<TFieldValues> & {
+    values?: TFieldValues;
+    name?: string;
+    type?: EventType;
+  } = {
+    ...cloneObject(DEFAULT_FORM_STATE),
     isLoading: isFunction(_options.defaultValues),
-    isValidating: false,
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValid: false,
-    touchedFields: {},
-    dirtyFields: {},
-    validatingFields: {},
     errors: _options.errors || {},
     disabled: _options.disabled || false,
   };
@@ -164,6 +176,9 @@ export function createFormControl<
   };
   let delayErrorCallback: DelayCallback | null;
   let timer = 0;
+  let _valuesSubscriberCount = 0;
+  let _validationModeBeforeSubmit = getValidationModes(_options.mode);
+  let _validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -246,10 +261,8 @@ export function createFormControl<
     }
   };
 
-  const _updateDirtyFields = (name: InternalFieldName) => {
-    const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-    const rootName = getNodeParentName(name);
-    set(_formState.dirtyFields, rootName, get(fullDirtyFields, rootName));
+  const _updateDirtyFields = () => {
+    _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -295,7 +308,7 @@ export function createFormControl<
       }
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
-        _updateDirtyFields(name);
+        _updateDirtyFields();
       }
 
       _subjects.state.next({
@@ -312,6 +325,7 @@ export function createFormControl<
 
   const updateErrors = (name: InternalFieldName, error: FieldError) => {
     set(_formState.errors, name, error);
+    _formState.errors = { ..._formState.errors };
     _subjects.state.next({
       errors: _formState.errors,
     });
@@ -325,6 +339,28 @@ export function createFormControl<
     });
   };
 
+  const hasExplicitNullIntermediate = (name: InternalFieldName) => {
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let formValues = _formValues;
+    let defaultValues = _defaultValues;
+
+    for (let i = 0; i < segments.length - 1; i++) {
+      const key = segments[i];
+
+      formValues = isNullOrUndefined(formValues) ? formValues : formValues[key];
+
+      defaultValues = isNullOrUndefined(defaultValues)
+        ? defaultValues
+        : defaultValues[key as keyof typeof defaultValues];
+
+      if (formValues === null && defaultValues !== null) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -334,6 +370,11 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
+      if (hasExplicitNullIntermediate(name)) {
+        return;
+      }
+
+      const wasUnsetInFormValues = isUndefined(get(_formValues, name));
       const defaultValue = get(
         _formValues,
         name,
@@ -350,7 +391,30 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
-      _state.mount && !_state.action && _setValid();
+      if (_state.mount && !_state.action) {
+        _setValid();
+
+        if (
+          wasUnsetInFormValues &&
+          _formState.isDirty &&
+          (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty)
+        ) {
+          const isDirty = _getDirty();
+          if (!isDirty) {
+            _formState.isDirty = false;
+            _subjects.state.next({ ..._formState });
+          }
+        }
+
+        if (
+          props.shouldUnregister &&
+          wasUnsetInFormValues &&
+          !isUndefined(get(_formValues, name)) &&
+          isWatched(name, _names)
+        ) {
+          _state.watch = true;
+        }
+      }
     }
   };
 
@@ -371,21 +435,29 @@ export function createFormControl<
 
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          isPreviousDirty = _formState.isDirty;
-          _formState.isDirty = output.isDirty = _getDirty();
-          shouldUpdateField = isPreviousDirty !== output.isDirty;
-        }
-
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
           fieldValue,
         );
 
+        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+          isPreviousDirty = _formState.isDirty;
+
+          _formState.isDirty = output.isDirty =
+            !isCurrentFieldPristine || _getDirty();
+          shouldUpdateField = isPreviousDirty !== output.isDirty;
+        }
+
         isPreviousDirty = !!get(_formState.dirtyFields, name);
-        isCurrentFieldPristine
-          ? unset(_formState.dirtyFields, name)
-          : set(_formState.dirtyFields, name, true);
+
+        if (isCurrentFieldPristine !== _formState.isDirty) {
+          _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+        } else {
+          isCurrentFieldPristine
+            ? unset(_formState.dirtyFields, name)
+            : set(_formState.dirtyFields, name, true);
+        }
+
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
@@ -439,6 +511,7 @@ export function createFormControl<
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
+      _formState.errors = { ..._formState.errors };
     }
 
     if (
@@ -484,9 +557,18 @@ export function createFormControl<
       for (const name of names) {
         const error = get(errors, name);
         error
-          ? set(_formState.errors, name, error)
+          ? _names.array.has(name) &&
+            isObject(error) &&
+            !Object.keys(error).some((key) => !Number.isNaN(Number(key)))
+            ? updateFieldArrayRootError(
+                _formState.errors,
+                { [name]: error } as Partial<Record<string, FieldError>>,
+                name,
+              )
+            : set(_formState.errors, name, error)
           : unset(_formState.errors, name);
       }
+      _formState.errors = { ..._formState.errors };
     } else {
       _formState.errors = errors;
     }
@@ -515,8 +597,8 @@ export function createFormControl<
 
           if (error) {
             setError(`${FORM_ERROR_TYPE}.${key}`, {
-              message: isString(result.message) ? result.message : '',
-              type: INPUT_VALIDATION_RULES.validate,
+              message: isString(error.message) ? error.message : '',
+              type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
@@ -580,8 +662,13 @@ export function createFormControl<
           const isFieldArrayRoot = _names.array.has(_f.name);
           const isPromiseFunction =
             field._f && hasPromiseValidation((field as Field)._f);
+          const shouldTrackIsValidatingState =
+            _proxyFormState.validatingFields ||
+            _proxyFormState.isValidating ||
+            _proxySubscribeFormState.validatingFields ||
+            _proxySubscribeFormState.isValidating;
 
-          if (isPromiseFunction && _proxyFormState.validatingFields) {
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name], true);
           }
 
@@ -594,7 +681,7 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (isPromiseFunction && _proxyFormState.validatingFields) {
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
           }
 
@@ -653,7 +740,7 @@ export function createFormControl<
   const _getDirty: GetIsDirty = (name, data) =>
     !_options.disabled &&
     (name && data && set(_formValues, name, data),
-    !deepEqual(getValues(), _defaultValues));
+    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -691,6 +778,8 @@ export function createFormControl<
     name: InternalFieldName,
     value: SetFieldValue<TFieldValues>,
     options: SetValueConfig = {},
+    skipClone = false,
+    skipRender = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -739,10 +828,10 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type) {
+          if (!fieldReference.ref.type && !skipRender) {
             _subjects.state.next({
               name,
-              values: cloneObject(_formValues),
+              values: skipClone ? _formValues : cloneObject(_formValues),
             });
           }
         }
@@ -755,7 +844,7 @@ export function createFormControl<
         fieldValue,
         options.shouldTouch,
         options.shouldDirty,
-        true,
+        !skipRender,
       );
 
     options.shouldValidate && trigger(name as Path<TFieldValues>);
@@ -769,6 +858,8 @@ export function createFormControl<
     name: T,
     value: K,
     options: U,
+    skipClone = false,
+    skipRender = false,
   ) => {
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
@@ -782,38 +873,52 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options)
-        : setFieldValue(fieldName, fieldValue, options);
+        ? setFieldValues(fieldName, fieldValue, options, skipClone, skipRender)
+        : setFieldValue(fieldName, fieldValue, options, skipClone, skipRender);
     }
   };
 
-  const setValue: UseFormSetValue<TFieldValues> = (
-    name,
-    value,
-    options = {},
+  const _setValue = <
+    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  >(
+    name: TFieldName,
+    value: FieldPathValue<TFieldValues, TFieldName>,
+    options: SetValueConfig,
+    skipClone: boolean,
+    skipStateEmit = false,
   ) => {
     const field = get(_fields, name);
     const isFieldArray = _names.array.has(name);
-    const cloneValue = cloneObject(value);
+    const cloneValue = skipClone ? value : cloneObject(value);
     const previousValue = get(_formValues, name);
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
-    set(_formValues, name, cloneValue);
+    if (!isValueUnchanged) {
+      set(_formValues, name, cloneValue);
+    }
 
     if (isFieldArray) {
       _subjects.array.next({
         name,
-        values: cloneObject(_formValues),
+        values: skipClone ? _formValues : cloneObject(_formValues),
       });
 
-      if (options.shouldDirty) {
-        _updateDirtyFields(name);
+      if (
+        (_proxyFormState.isDirty ||
+          _proxyFormState.dirtyFields ||
+          _proxySubscribeFormState.isDirty ||
+          _proxySubscribeFormState.dirtyFields) &&
+        options.shouldDirty
+      ) {
+        _updateDirtyFields();
 
-        _subjects.state.next({
-          name,
-          dirtyFields: _formState.dirtyFields,
-          isDirty: _getDirty(name, cloneValue),
-        });
+        if (!skipStateEmit) {
+          _subjects.state.next({
+            name,
+            dirtyFields: _formState.dirtyFields,
+            isDirty: _getDirty(name, cloneValue),
+          });
+        }
       }
     } else {
       const isEmpty =
@@ -821,29 +926,31 @@ export function createFormControl<
         isEmptyObject(cloneValue);
 
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options);
+        setFieldValue(name, cloneValue, options, skipClone, skipStateEmit);
       } else {
-        setFieldValues(name, cloneValue, options);
+        setFieldValues(name, cloneValue, options, skipClone, skipStateEmit);
       }
     }
 
-    if (!isValueUnchanged) {
-      if (isWatched(name, _names)) {
-        _subjects.state.next({
-          ..._formState,
-          name,
-          values: cloneObject(_formValues),
-        });
-      } else {
-        _subjects.state.next({
-          name: _state.mount ? name : undefined,
-          values: cloneObject(_formValues),
-        });
-      }
+    if (!isValueUnchanged && !skipStateEmit) {
+      const watched = isWatched(name, _names);
+      const values = skipClone ? _formValues : cloneObject(_formValues);
+
+      _subjects.state.next({
+        ...(watched && _formState),
+        name: _state.mount || watched ? name : undefined,
+        values,
+      });
     }
   };
 
-  const setValues: UseFormSetValues<TFieldValues> = (formValues) => {
+  const setValue: UseFormSetValue<TFieldValues> = (name, value, options = {}) =>
+    _setValue(name, value, options, false);
+
+  const setValues: UseFormSetValues<TFieldValues> = (
+    formValues,
+    options = {},
+  ) => {
     const updatedFormValues = isFunction(formValues)
       ? (formValues as Function)(_formValues as TFieldValues)
       : formValues;
@@ -854,7 +961,26 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
-      _subjects.state.next({ ..._formState, values: _formValues });
+      for (const fieldName of _names.mount) {
+        _setValue(
+          fieldName as FieldPath<TFieldValues>,
+          get(updatedFormValues, fieldName),
+          options,
+          true,
+          true,
+        );
+      }
+
+      _subjects.state.next({
+        ..._formState,
+        name: undefined,
+        type: undefined,
+        ...(_valuesSubscriberCount ? { values: _formValues } : {}),
+      });
+
+      if (options.shouldValidate) {
+        _setValid();
+      }
     }
   };
 
@@ -870,10 +996,6 @@ export function createFormControl<
         (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
-    const validationModeBeforeSubmit = getValidationModes(_options.mode);
-    const validationModeAfterSubmit = getValidationModes(
-      _options.reValidateMode,
-    );
 
     if (field) {
       let error;
@@ -883,18 +1005,20 @@ export function createFormControl<
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
+      const hasNoValidationEffect =
+        !hasValidation(field._f) &&
+        !props.validate &&
+        !_options.resolver &&
+        !get(_formState.errors, name) &&
+        !field._f.deps;
       const shouldSkipValidation =
-        (!hasValidation(field._f) &&
-          !props.validate &&
-          !_options.resolver &&
-          !get(_formState.errors, name) &&
-          !field._f.deps) ||
+        hasNoValidationEffect ||
         skipValidation(
           isBlurEvent,
           get(_formState.touchedFields, name),
           _formState.isSubmitted,
-          validationModeAfterSubmit,
-          validationModeBeforeSubmit,
+          _validationModeAfterSubmit,
+          _validationModeBeforeSubmit,
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
@@ -917,11 +1041,16 @@ export function createFormControl<
         _subjects.state.next({
           name,
           type: event.type,
-          values: cloneObject(_formValues),
+          ...(_valuesSubscriberCount
+            ? { values: cloneObject(_formValues) }
+            : {}),
         });
 
       if (shouldSkipValidation) {
-        if (_proxyFormState.isValid || _proxySubscribeFormState.isValid) {
+        if (
+          (!hasNoValidationEffect || !_formState.isValid) &&
+          (_proxyFormState.isValid || _proxySubscribeFormState.isValid)
+        ) {
           if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
               _setValid();
@@ -952,23 +1081,26 @@ export function createFormControl<
 
         _updateIsFieldValueUpdated(fieldValue);
 
-        if (isFieldValueUpdated) {
-          const previousErrorLookupResult = schemaErrorLookup(
-            _formState.errors,
-            _fields,
-            name,
-          );
-          const errorLookupResult = schemaErrorLookup(
-            errors,
-            _fields,
-            previousErrorLookupResult.name || name,
-          );
-
-          error = errorLookupResult.error;
-          name = errorLookupResult.name;
-
-          isValid = isEmptyObject(errors);
+        if (!isFieldValueUpdated) {
+          !isEmptyObject(fieldState) && _subjects.state.next(fieldState);
+          return;
         }
+
+        const previousErrorLookupResult = schemaErrorLookup(
+          _formState.errors,
+          _fields,
+          name,
+        );
+        const errorLookupResult = schemaErrorLookup(
+          errors,
+          _fields,
+          previousErrorLookupResult.name || name,
+        );
+
+        error = errorLookupResult.error;
+        name = errorLookupResult.name;
+
+        isValid = isEmptyObject(errors);
       } else {
         _updateIsValidating([name], true);
         error = (
@@ -1119,8 +1251,6 @@ export function createFormControl<
     names?.forEach((inputName) => unset(_formState.errors, inputName));
 
     if (names) {
-      // Emit for each cleared field with the field name so that
-      // shouldSubscribeByName can filter and avoid broad re-renders
       names.forEach((inputName) => {
         _subjects.state.next({
           name: inputName,
@@ -1128,7 +1258,6 @@ export function createFormControl<
         });
       });
     } else {
-      // Clear all errors - emit without name to notify all subscribers
       _subjects.state.next({
         errors: {},
       });
@@ -1139,7 +1268,6 @@ export function createFormControl<
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
 
-    // Don't override existing error messages elsewhere in the object tree.
     const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
 
     set(_formState.errors, name, {
@@ -1163,28 +1291,48 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>
       | WatchObserver<TFieldValues>,
     defaultValue?: DeepPartial<TFieldValues>,
-  ) =>
-    isFunction(name)
-      ? _subjects.state.subscribe({
-          next: (payload) =>
-            'values' in payload &&
-            name(
-              payload.values || _getWatch(undefined, defaultValue),
-              payload as {
-                name?: FieldPath<TFieldValues>;
-                type?: EventType;
-                value?: unknown;
-              },
-            ),
-        })
-      : _getWatch(
-          name as InternalFieldName | InternalFieldName[],
-          defaultValue,
-          true,
-        );
+  ) => {
+    if (isFunction(name)) {
+      _valuesSubscriberCount++;
+      const { unsubscribe } = _subjects.state.subscribe({
+        next: (payload) =>
+          'values' in payload &&
+          name(
+            payload.values || _getWatch(undefined, defaultValue),
+            payload as {
+              name?: FieldPath<TFieldValues>;
+              type?: EventType;
+              value?: unknown;
+            },
+          ),
+      });
+      let called = false;
 
-  const _subscribe: FromSubscribe<TFieldValues> = (props) =>
-    _subjects.state.subscribe({
+      return {
+        unsubscribe: () => {
+          if (called) {
+            return;
+          }
+
+          called = true;
+          _valuesSubscriberCount--;
+          unsubscribe();
+        },
+      };
+    }
+    return _getWatch(
+      name as InternalFieldName | InternalFieldName[],
+      defaultValue,
+      true,
+    );
+  };
+
+  const _subscribe: FromSubscribe<TFieldValues> = (props) => {
+    const needsValues = !!(props.formState as Record<string, unknown>)?.values;
+    if (needsValues) {
+      _valuesSubscriberCount++;
+    }
+    const { unsubscribe } = _subjects.state.subscribe({
       next: (
         formState: Partial<FormState<TFieldValues>> & {
           name?: InternalFieldName;
@@ -1212,7 +1360,21 @@ export function createFormControl<
           });
         }
       },
-    }).unsubscribe;
+    });
+    if (!needsValues) {
+      return unsubscribe;
+    }
+    let called = false;
+    return () => {
+      if (called) {
+        return;
+      }
+
+      called = true;
+      _valuesSubscriberCount--;
+      unsubscribe();
+    };
+  };
 
   const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
@@ -1382,6 +1544,7 @@ export function createFormControl<
 
   const _focusError = () =>
     _options.shouldFocusError &&
+    !_options.shouldUseNativeValidation &&
     iterateFieldsByAction(_fields, _focusInput, _names.mount);
 
   const _disableForm = (disabled?: boolean) => {
@@ -1457,6 +1620,7 @@ export function createFormControl<
         if (onInvalid) {
           await onInvalid({ ..._formState.errors }, e);
         }
+
         _focusError();
         setTimeout(_focusError);
       }
@@ -1512,7 +1676,7 @@ export function createFormControl<
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
-    const values = isEmptyResetValues ? _defaultValues : cloneUpdatedValues;
+    const values = cloneUpdatedValues;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1567,11 +1731,19 @@ export function createFormControl<
         }
       }
 
-      _formValues = _options.shouldUnregister
-        ? keepStateOptions.keepDefaultValues
+      if (_options.shouldUnregister) {
+        _formValues = keepStateOptions.keepDefaultValues
           ? (cloneObject(_defaultValues) as TFieldValues)
-          : ({} as TFieldValues)
-        : (cloneObject(values) as TFieldValues);
+          : ({} as TFieldValues);
+
+        if (keepStateOptions.keepFieldsRef) {
+          for (const fieldName of _names.mount) {
+            set(_formValues, fieldName, get(values, fieldName));
+          }
+        }
+      } else {
+        _formValues = cloneObject(values) as TFieldValues;
+      }
 
       _subjects.array.next({
         values: { ...values },
@@ -1603,9 +1775,6 @@ export function createFormControl<
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
 
-    // Clear errors synchronously to prevent validation errors on subsequent submissions
-    // This fixes the issue where form.reset() causes validation errors on subsequent
-    // submissions in Next.js 16 with Server Actions
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
     }
@@ -1618,10 +1787,12 @@ export function createFormControl<
         ? false
         : keepStateOptions.keepDirty
           ? _formState.isDirty
-          : !!(
-              keepStateOptions.keepDefaultValues &&
-              !deepEqual(formValues, _defaultValues)
-            ),
+          : keepStateOptions.keepValues
+            ? _getDirty()
+            : !!(
+                keepStateOptions.keepDefaultValues &&
+                !deepEqual(formValues, _defaultValues)
+              ),
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
@@ -1666,8 +1837,6 @@ export function createFormControl<
         : fieldReference.ref;
 
       if (fieldRef.focus) {
-        // Use setTimeout to ensure focus happens after any pending state updates
-        // This fixes the issue where setFocus doesn't work immediately after setError
         setTimeout(() => {
           fieldRef.focus();
           options.shouldSelect &&
@@ -1695,6 +1864,28 @@ export function createFormControl<
         isLoading: false,
       });
     });
+
+  const resetDefaultValues: UseFormResetDefaultValues<TFieldValues> = (
+    values,
+    options = {},
+  ) => {
+    _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+
+    if (!options.keepDirty) {
+      const newDirtyFields = getDirtyFields(_defaultValues, _formValues);
+      _formState.dirtyFields = newDirtyFields as typeof _formState.dirtyFields;
+      _formState.isDirty = !isEmptyObject(newDirtyFields);
+    }
+
+    if (!options.keepIsValid) {
+      _setValid();
+    }
+
+    _subjects.state.next({
+      ..._formState,
+      defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
+    });
+  };
 
   const methods = {
     control: {
@@ -1752,6 +1943,10 @@ export function createFormControl<
           ..._options,
           ...value,
         };
+        _validationModeBeforeSubmit = getValidationModes(_options.mode);
+        _validationModeAfterSubmit = getValidationModes(
+          _options.reValidateMode,
+        );
       },
     },
     subscribe,
@@ -1764,6 +1959,7 @@ export function createFormControl<
     getValues,
     reset,
     resetField,
+    resetDefaultValues,
     clearErrors,
     unregister,
     setError,
