@@ -99,7 +99,7 @@ Thanks go to these kind and lovely sponsors!
 ### Past sponsors
 
 <a href="https://www.leniolabs.com/" target="_blank">
-  <img src="https://images.opencollective.com/leniolabs_/63e9b6e/logo/256.png" width="48" height="48" />
+  <img src="https://avatars.githubusercontent.com/u/34233507?s=200&v=4" width="48" height="48" alt="Leniolabs_ logo" />
 </a>
 <a target="_blank" href="https://underbelly.is">
     <img width="48" src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" />
