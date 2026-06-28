@@ -60,6 +60,18 @@ describe('get', () => {
     expect(get(object, 'With " dobule quote')).toEqual(undefined);
   });
 
+  it('should not retrieve prototype properties through path traversal', () => {
+    const pollutedKey = '__reactHookFormPolluted__';
+    const object = { name: 'John' };
+
+    Object.prototype[pollutedKey] = 'SECRET_DATA';
+
+    expect(get(object, `__proto__.${pollutedKey}`, 'default')).toBe('default');
+    expect(get(object, `__proto__[${pollutedKey}]`, 'default')).toBe('default');
+
+    delete Object.prototype[pollutedKey];
+  });
+
   describe('get - preserveNull option', () => {
     const obj = {
       a: {

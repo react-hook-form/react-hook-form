@@ -25,6 +25,7 @@ export type UseFieldArrayProps<
     'maxLength' | 'minLength' | 'required'
   >;
   shouldUnregister?: boolean;
+  disabled?: boolean;
 };
 
 /**
@@ -277,5 +278,36 @@ export type UseFieldArrayReturn<
   insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>;
   update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>;
   replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>;
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[];
+  fields: (FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName> & {
+    disabled?: boolean;
+  })[];
 };
+
+/**
+
+ *
+ * @example
+ * ```tsx
+ * const { fields } = useFieldArray({
+ *   name: 'test',
+ * });
+ *
+ * <FieldArray
+ *   render={({ fields }) =>
+ *     fields.map((field, index) => (
+ *       <input key={field.id} {...register(`test.${index}.value`)} />
+ *     ))
+ *   }
+ * />
+ * ```
+ */
+export type FieldArrayProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
+  TKeyName extends string = 'id',
+> = {
+  render: (
+    fieldArray: UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>,
+  ) => React.ReactElement;
+} & UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>;

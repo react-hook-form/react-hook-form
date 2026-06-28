@@ -93,6 +93,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _proxyRef = React.useRef<any>(null);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -135,15 +136,25 @@ export function useController<
   );
 
   const onChange = React.useCallback(
-    (event: any) =>
-      _registerProps.current.onChange({
+    (event: any) => {
+      const value = getEventValue(event);
+
+      if (!get(control._fields, name)) {
+        _registerProps.current = control.register(name, {
+          ..._props.current.rules,
+          value,
+        });
+      }
+
+      return _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
           name: name as InternalFieldName,
         },
         type: EVENTS.CHANGE,
-      }),
-    [name],
+      });
+    },
+    [name, control],
   );
 
   const onBlur = React.useCallback(
@@ -160,10 +171,8 @@ export function useController<
 
   const ref = React.useCallback(
     (elm: any) => {
-      const field = get(control._fields, name);
-
-      if (field && field._f && elm) {
-        field._f.ref = {
+      if (elm) {
+        _proxyRef.current = {
           focus: () => isFunction(elm.focus) && elm.focus(),
           select: () => isFunction(elm.select) && elm.select(),
           setCustomValidity: (message: string) =>
@@ -171,6 +180,12 @@ export function useController<
           reportValidity: () =>
             isFunction(elm.reportValidity) && elm.reportValidity(),
         };
+      }
+
+      const field = get(control._fields, name);
+
+      if (field && field._f && elm) {
+        field._f.ref = _proxyRef.current;
       }
     },
     [control._fields, name],
@@ -214,7 +229,9 @@ export function useController<
     if (_shouldUnregisterField) {
       const value = cloneObject(
         get(
-          control._defaultValues,
+          shouldUnregister
+            ? control._defaultValues
+            : control._options.values || control._defaultValues,
           name,
           get(
             control._options.defaultValues,
@@ -230,6 +247,13 @@ export function useController<
     }
 
     !isArrayField && control.register(name);
+
+    if (_proxyRef.current) {
+      const field: Field = get(control._fields, name);
+      if (field && field._f) {
+        field._f.ref = _proxyRef.current;
+      }
+    }
 
     return () => {
       (

@@ -1,5 +1,68 @@
 # Changelog
 
+## [7.80.0] - 2026-06-20
+
+### Added
+
+- `disabled` prop support for individual fields within `useFieldArray`
+
+### Fixed
+
+- `deepEqual` incorrectly treating empty array `[]` and empty plain object `{}` as equal
+
+### Performance
+
+- Improve `onChange`, `setValid`, dirty checking, `setValue`, and `setValues` performance
+
+## [7.79.0] - 2026-06-13
+
+### Added
+
+- `disabled` option to `useFieldArray`
+
+### Fixed
+
+- `Controller` `onChange` promise return type
+- `deepEqual` false positives with shared object references
+- `shouldUseNativeValidation` behavior for radio groups
+- `createFormControl` stability with fast refresh in dev mode
+- `StrictMode` value preservation during remount
+- `formState.errors` reactivity with React compiler
+
+## [7.78.0] - 2026-06-08
+
+### Fixed
+
+- Recover `Controller` fields after `reset` without rerender (RN issue #13455)
+- `useFormState().isDirty` race with async resolver in `onChange` mode
+- Use reactive `values` prop over `defaultValues` when `shouldUnregister` is true
+- `deepEqual` for empty non-plain objects
+
+### Types
+
+- Update `dirtyFields` typing for field arrays with undefined entries
+
+## [7.77.0] - 2026-05-31
+
+### Added
+
+- `resetDefaultValues` API
+
+### Fixed
+
+- Stale `isDirty` in `subscribe` payload after `reset(..., { keepValues: true })`
+- Preserve values with `shouldUnregister`
+- Inconsistent `reset({})` behavior requiring double-call to take effect
+- `FieldArray` errors overriding nested fields
+
+### Security
+
+- Harden `get()` against prototype-path traversal (`__proto__` / `constructor` / `prototype`)
+
+### Performance
+
+- Bundle size reduction
+
 ## [7.76.1] - 2026-05-23
 
 ### Fixed

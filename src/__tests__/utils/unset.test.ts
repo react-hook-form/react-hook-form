@@ -16,7 +16,7 @@ describe('unset', () => {
     expect(unset(test, '')).toEqual(test);
   });
 
-  it('should allow to unset flat keep', () => {
+  it('should allow unsetting flat keep', () => {
     const test = {
       'test.is.flat': 'test',
       test: {
