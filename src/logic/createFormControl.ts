@@ -179,6 +179,8 @@ export function createFormControl<
   let _valuesSubscriberCount = 0;
   let _validationModeBeforeSubmit = getValidationModes(_options.mode);
   let _validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
+  // Track names of fields that have manually set errors via setError, mapping to their values when the error was set
+  const _manualErrors = new Map<InternalFieldName, unknown>();
   const defaultProxyFormState: ReadFormState = {
     isDirty: false,
     dirtyFields: false,
@@ -556,20 +558,67 @@ export function createFormControl<
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
-        error
-          ? _names.array.has(name) &&
-            isObject(error) &&
-            !Object.keys(error).some((key) => !Number.isNaN(Number(key)))
+        let manualError;
+        if (_manualErrors.has(name)) {
+          const currentValue = get(_formValues, name);
+          const originalValue = _manualErrors.get(name);
+          if (!deepEqual(currentValue, originalValue)) {
+            _manualErrors.delete(name);
+          } else {
+            manualError = get(_formState.errors, name);
+          }
+        }
+        if (error) {
+          if (manualError) {
+            const messages = [error.message, manualError.message].filter(
+              Boolean,
+            );
+            error.message =
+              messages.length > 1
+                ? messages.map((msg, index) => `${index + 1}) ${msg}`).join(' ')
+                : messages[0] || '';
+          }
+          _names.array.has(name) &&
+          isObject(error) &&
+          !Object.keys(error).some((key) => !Number.isNaN(Number(key)))
             ? updateFieldArrayRootError(
                 _formState.errors,
                 { [name]: error } as Partial<Record<string, FieldError>>,
                 name,
               )
-            : set(_formState.errors, name, error)
-          : unset(_formState.errors, name);
+            : set(_formState.errors, name, error);
+        } else if (manualError) {
+          // Retain the manually set error on this field since value didn't change
+        } else {
+          unset(_formState.errors, name);
+        }
       }
       _formState.errors = { ..._formState.errors };
     } else {
+      // Merge manual errors that did not get overwritten by schema validation
+      for (const key of _manualErrors.keys()) {
+        const currentValue = get(_formValues, key);
+        const originalValue = _manualErrors.get(key);
+        if (!deepEqual(currentValue, originalValue)) {
+          _manualErrors.delete(key);
+          continue;
+        }
+
+        const schemaError = get(errors, key);
+        const manualError = get(_formState.errors, key);
+        if (manualError && schemaError) {
+          const messages = [schemaError.message, manualError.message].filter(
+            Boolean,
+          );
+          schemaError.message =
+            messages.length > 1
+              ? messages.map((msg, index) => `${index + 1}) ${msg}`).join(' ')
+              : messages[0] || '';
+          set(errors, key, schemaError);
+        } else if (manualError && !schemaError) {
+          set(errors, key, manualError);
+        }
+      }
       _formState.errors = errors;
     }
 
@@ -1248,7 +1297,11 @@ export function createFormControl<
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     const names = name ? convertToArrayPayload(name) : undefined;
 
-    names?.forEach((inputName) => unset(_formState.errors, inputName));
+    names?.forEach((inputName) => {
+      unset(_formState.errors, inputName);
+      // Untrack the manually set error for this field
+      _manualErrors.delete(inputName);
+    });
 
     if (names) {
       names.forEach((inputName) => {
@@ -1258,6 +1311,8 @@ export function createFormControl<
         });
       });
     } else {
+      // Clear all manual errors if no field name was specified
+      _manualErrors.clear();
       _subjects.state.next({
         errors: {},
       });
@@ -1270,6 +1325,8 @@ export function createFormControl<
 
     const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
 
+    // Track that this is a manually set error along with the field's current value
+    _manualErrors.set(name, cloneObject(get(_formValues, name)));
     set(_formState.errors, name, {
       ...restOfErrorTree,
       ...error,
@@ -1401,7 +1458,10 @@ export function createFormControl<
         unset(_formValues, fieldName);
       }
 
-      !options.keepError && unset(_formState.errors, fieldName);
+      if (!options.keepError) {
+        unset(_formState.errors, fieldName);
+        _manualErrors.delete(fieldName);
+      }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
       !options.keepIsValidating &&
@@ -1590,6 +1650,32 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _updateIsValidating();
+
+        // Merge manual errors that did not get overwritten by schema validation
+        for (const key of _manualErrors.keys()) {
+          const currentValue = get(_formValues, key);
+          const originalValue = _manualErrors.get(key);
+          if (!deepEqual(currentValue, originalValue)) {
+            _manualErrors.delete(key);
+            continue;
+          }
+
+          const schemaError = get(errors, key);
+          const manualError = get(_formState.errors, key);
+          if (manualError && schemaError) {
+            const messages = [schemaError.message, manualError.message].filter(
+              Boolean,
+            );
+            schemaError.message =
+              messages.length > 1
+                ? messages.map((msg, index) => `${index + 1}) ${msg}`).join(' ')
+                : messages[0] || '';
+            set(errors, key, schemaError);
+          } else if (manualError && !schemaError) {
+            set(errors, key, manualError);
+          }
+        }
+
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
@@ -1662,6 +1748,7 @@ export function createFormControl<
 
       if (!options.keepError) {
         unset(_formState.errors, name);
+        _manualErrors.delete(name);
         _proxyFormState.isValid && _setValid();
       }
 
@@ -1777,6 +1864,7 @@ export function createFormControl<
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
+      _manualErrors.clear();
     }
 
     _subjects.state.next({

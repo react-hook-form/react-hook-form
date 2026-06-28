@@ -643,5 +643,436 @@ describe('resolver', () => {
 
       consoleError.mockRestore();
     });
+
+    describe('manual errors and resolver integration', () => {
+      it('should retain a manually set error when submitting if the resolver schema reports no error', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {},
+          };
+        };
+
+        const onSubmit = jest.fn();
+        const onInvalid = jest.fn();
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            handleSubmit,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <button type="submit">Submit</button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => {
+          expect(onInvalid).toHaveBeenCalledTimes(1);
+        });
+        expect(onSubmit).not.toHaveBeenCalled();
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+      });
+
+      it('should combine and format messages if both manual error and resolver error exist for the same field', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {
+              image: {
+                type: 'required',
+                message: 'Schema required error',
+              },
+            },
+          };
+        };
+
+        const onSubmit = jest.fn();
+        const onInvalid = jest.fn();
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            handleSubmit,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <button type="submit">Submit</button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => {
+          expect(onInvalid).toHaveBeenCalledTimes(1);
+        });
+        expect(onSubmit).not.toHaveBeenCalled();
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          '1) Schema required error 2) Manual Image Error',
+        );
+      });
+
+      it('should clear manual error when the field value changes', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {},
+          };
+        };
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+            mode: 'onChange',
+          });
+
+          return (
+            <div>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'new-image.png' },
+        });
+
+        await waitFor(() => {
+          expect(screen.getByTestId('error-message')).toHaveTextContent('');
+        });
+      });
+
+      it('should clear manual error on submit if the field value changed, even if the resolver schema has no error (optional field)', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {},
+          };
+        };
+
+        const onSubmit = jest.fn();
+        const onInvalid = jest.fn();
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            handleSubmit,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <button type="submit">Submit</button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'new-image.png' },
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => {
+          expect(onSubmit).toHaveBeenCalledTimes(1);
+        });
+        expect(onInvalid).not.toHaveBeenCalled();
+        expect(screen.getByTestId('error-message')).toHaveTextContent('');
+      });
+
+      it('should clear manual error when form is reset', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {},
+          };
+        };
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            reset,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+          });
+
+          return (
+            <div>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <button type="button" onClick={() => reset()}>
+                Reset
+              </button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+        await waitFor(() => {
+          expect(screen.getByTestId('error-message')).toHaveTextContent('');
+        });
+      });
+
+      it('should clear manual error when specific field is reset via resetField', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {},
+          };
+        };
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            resetField,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+          });
+
+          return (
+            <div>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <button type="button" onClick={() => resetField('image')}>
+                Reset Field
+              </button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Reset Field' }));
+
+        await waitFor(() => {
+          expect(screen.getByTestId('error-message')).toHaveTextContent('');
+        });
+      });
+
+      it('should clear manual error when specific field is unregistered', async () => {
+        type FormValues = {
+          image: string;
+        };
+
+        const resolver: Resolver<FormValues> = async (values) => {
+          return {
+            values,
+            errors: {},
+          };
+        };
+
+        const App = () => {
+          const {
+            register,
+            setError,
+            unregister,
+            formState: { errors },
+          } = useForm<FormValues>({
+            resolver,
+          });
+
+          return (
+            <div>
+              <input {...register('image')} />
+              <button
+                type="button"
+                onClick={() =>
+                  setError('image', {
+                    type: 'custom',
+                    message: 'Manual Image Error',
+                  })
+                }
+              >
+                Set Error
+              </button>
+              <button type="button" onClick={() => unregister('image')}>
+                Unregister Field
+              </button>
+              <span data-testid="error-message">{errors.image?.message}</span>
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set Error' }));
+        expect(screen.getByTestId('error-message')).toHaveTextContent(
+          'Manual Image Error',
+        );
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Unregister Field' }),
+        );
+
+        await waitFor(() => {
+          expect(screen.getByTestId('error-message')).toHaveTextContent('');
+        });
+      });
+    });
   });
 });
