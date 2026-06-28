@@ -7,7 +7,11 @@ export const flatten = (obj: FieldValues) => {
   const output: FieldValues = {};
 
   for (const key of Object.keys(obj)) {
-    if (isObjectType(obj[key]) && obj[key] !== null && !isDateObject(obj[key])) {
+    if (
+      isObjectType(obj[key]) &&
+      obj[key] !== null &&
+      !isDateObject(obj[key])
+    ) {
       const nested = flatten(obj[key]);
 
       for (const nestedKey of Object.keys(nested)) {
