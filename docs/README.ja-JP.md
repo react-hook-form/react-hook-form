@@ -49,7 +49,7 @@
 - [動機](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [ビデオチュートリアル](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [始める](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/docs)
 - [例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [デモ](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
