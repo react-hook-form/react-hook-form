@@ -22,4 +22,19 @@ describe('flatten', () => {
       }),
     ).toMatchSnapshot();
   });
+
+  it('should preserve Date values', () => {
+    const date = new Date('2024-01-01');
+    expect(
+      flatten({
+        name: 'Alice',
+        createdAt: date,
+        age: 30,
+      }),
+    ).toEqual({
+      name: 'Alice',
+      createdAt: date,
+      age: 30,
+    });
+  });
 });
