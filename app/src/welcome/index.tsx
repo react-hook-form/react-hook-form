@@ -163,6 +163,7 @@ const items: Item[] = [
       '/useFieldArray/default',
       '/useFieldArray/defaultAndWithoutFocus',
       '/useFieldArray/asyncReset',
+      '/useFieldArray/defaultAndWithoutFocus',
       '/useFieldArray/formState',
     ],
   },
