@@ -83,7 +83,7 @@ const items: Item[] = [
   },
   {
     title: 'IsValid',
-    description: 'Should show validity correctly',
+    description: 'Should showing valid correctly',
     slugs: [
       '/isValid/build-in/defaultValue',
       '/isValid/build-in/defaultValues',
@@ -157,7 +157,7 @@ const items: Item[] = [
   },
   {
     title: 'UseFieldArray',
-    description: 'Should behave correctly in different situations',
+    description: 'Should behaviour correctly in different situations',
     slugs: [
       '/useFieldArray/normal',
       '/useFieldArray/default',
@@ -180,7 +180,7 @@ const items: Item[] = [
   {
     title: 'UseFormState',
     description:
-      'Should subscribe to the form state without re-rendering the root component',
+      'Should subscribed to the form state without re-render the root',
     slugs: ['/useFormState'],
   },
   {
@@ -220,7 +220,7 @@ const items: Item[] = [
   },
   {
     title: 'Form',
-    description: 'Should validate the form and submit the request',
+    description: 'Should validate form and submit the request',
     slugs: ['/form'],
   },
   {
