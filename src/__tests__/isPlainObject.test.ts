@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isPlainObject from '../utils/isPlainObject';
 import noop from '../utils/noop';
 

@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import convertToArrayPayload from '../../utils/convertToArrayPayload';
 
 describe('convertToArrayPayload', () => {

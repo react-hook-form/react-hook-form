@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import extractFormValues from '../../utils/extractFormValues';
 
 describe('extractFormValues', () => {

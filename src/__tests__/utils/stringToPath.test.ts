@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import stringToPath from '../../utils/stringToPath';
 
 describe('stringToPath', () => {

@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import schemaErrorLookup from '../../logic/schemaErrorLookup';
 
 describe('errorsLookup', () => {

@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import update from '../../utils/update';
 
 describe('update', () => {

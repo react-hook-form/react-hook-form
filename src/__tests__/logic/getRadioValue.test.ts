@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import getRadioValue from '../../logic/getRadioValue';
 
 describe('getRadioValue', () => {

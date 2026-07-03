@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import { flatten } from '../../utils/flatten';
 
 describe('flatten', () => {

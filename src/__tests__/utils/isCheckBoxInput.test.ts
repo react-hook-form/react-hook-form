@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isCheckBoxInput from '../../utils/isCheckBoxInput';
 
 describe('isCheckBoxInput', () => {

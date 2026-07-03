@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isMultipleSelect from '../../utils/isMultipleSelect';
 
 describe('isMultipleSelect', () => {

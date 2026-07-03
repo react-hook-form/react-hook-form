@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import getValueAndMessage from '../../logic/getValueAndMessage';
 
 describe('getValueAndMessage', () => {

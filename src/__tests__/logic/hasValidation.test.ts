@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import hasValidation from '../../logic/hasValidation';
 import type { Field } from '../../types';
 

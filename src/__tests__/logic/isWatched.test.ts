@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isWatched from '../../logic/isWatched';
 
 describe('isWatched', () => {

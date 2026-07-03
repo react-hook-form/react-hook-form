@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isRadioOrCheckbox from '../../utils/isRadioOrCheckbox';
 
 describe('isRadioOrCheckbox', () => {

@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import skipValidation from '../../logic/skipValidation';
 
 describe('should skip validation', () => {

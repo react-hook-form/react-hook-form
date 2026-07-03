@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isPrimitive from '../../utils/isPrimitive';
 
 describe('isPrimitive', () => {

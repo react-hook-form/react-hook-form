@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import type { InternalFieldName } from '../..';
 import getResolverOptions from '../../logic/getResolverOptions';
 

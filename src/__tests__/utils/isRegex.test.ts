@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isRegex from '../../utils/isRegex';
 
 describe('isRegex', () => {

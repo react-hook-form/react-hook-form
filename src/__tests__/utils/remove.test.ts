@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import remove from '../../utils/remove';
 
 describe('remove', () => {

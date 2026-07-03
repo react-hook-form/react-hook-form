@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import swap from '../../utils/swap';
 
 describe('swap', () => {

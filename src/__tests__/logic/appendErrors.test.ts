@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import appendErrors from '../../logic/appendErrors';
 
 describe('appendErrors', () => {

@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isUndefined from '../../utils/isUndefined';
 
 describe('isUndefined', () => {

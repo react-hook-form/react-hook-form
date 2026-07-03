@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import getRuleValue from '../../logic/getRuleValue';
 
 describe('getRuleValue', () => {

@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import hasPromiseValidation from '../../logic/hasPromiseValidation';
 
 const commonParam = {

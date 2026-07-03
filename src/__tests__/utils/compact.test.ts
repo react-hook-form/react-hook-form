@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import filterOutFalsy from '../../utils/compact';
 
 describe('filterOutFalsy', () => {

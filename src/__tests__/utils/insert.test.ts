@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import insert from '../../utils/insert';
 
 describe('insert', () => {

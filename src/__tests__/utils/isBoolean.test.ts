@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import isBoolean from '../../utils/isBoolean';
 
 describe('isBoolean', () => {
