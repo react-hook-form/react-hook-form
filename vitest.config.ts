@@ -32,10 +32,6 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'jsdom',
-          pool: 'forks',
-          isolate: true,
-          fileParallelism: false,
-          maxWorkers: 1,
           include: ['src/__tests__/**/*.test.ts?(x)'],
           exclude: [
             '**/*.server.test.ts?(x)',
