@@ -15,4 +15,4 @@ jobs:
       - uses: preactjs/compressed-size-action@v2
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          install-script: 'rm -f pnpm-workspace.yaml && pnpm install'
+          install-script: 'rm -rf node_modules && rm -f pnpm-workspace.yaml && pnpm install'

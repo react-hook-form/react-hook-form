@@ -233,7 +233,7 @@ const items: Item[] = [
 const Component: React.FC = () => {
   return (
     <div style={S.page}>
-      <h1 style={S.h1}>App for cypress automation</h1>
+      <h1 style={S.h1}>App for browser e2e tests</h1>
       <h2 style={S.h2}>
         Here you have the full list of the available testing routes:
       </h2>
