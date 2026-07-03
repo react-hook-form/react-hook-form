@@ -63,7 +63,7 @@ export default defineConfig({
         },
         test: {
           name: 'browser',
-          include: ['cypress/e2e/**/*.browser.cy.ts'],
+          include: ['cypress/e2e/**/*.cy.ts'],
           testTimeout: 30000,
           browser: {
             enabled: true,
