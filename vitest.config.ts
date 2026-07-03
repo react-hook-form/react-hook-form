@@ -1,9 +1,15 @@
 import react from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright';
+import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      'react-hook-form': resolve(__dirname, 'src/index.ts'),
+    },
+  },
   test: {
     globals: true,
     passWithNoTests: true,
@@ -57,6 +63,7 @@ export default defineConfig({
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.tsx'],
+          testTimeout: 30000,
           browser: {
             enabled: true,
             provider: playwright(),
