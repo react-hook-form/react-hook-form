@@ -13,8 +13,6 @@ import { useWatch } from '../useWatch';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
 
-import { waitFor } from './utils/waitFor';
-
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
     const mockRegister = vi.fn();
@@ -188,7 +186,7 @@ describe('FormProvider', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('no')).toBeVisible();
       expect(screen.getByText('context-no')).toBeVisible();
     });
@@ -227,7 +225,7 @@ describe('FormProvider', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => screen.getByText('This is required'));
+    await vi.waitFor(() => screen.getByText('This is required'));
   });
 
   it('should report errors correctly with useFieldArray Controller', async () => {
@@ -308,7 +306,7 @@ describe('FormProvider', () => {
     const errorInput = screen.getByTestId('error-input');
     fireEvent.change(errorInput, { target: { value: 'test' } });
     fireEvent.change(errorInput, { target: { value: '' } });
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(errorValue).toHaveTextContent(
         '{"testArray":[null,{"name":{"type":"required","message":"required","ref":{"name":"testArray.1.name"}}}]}',
       );

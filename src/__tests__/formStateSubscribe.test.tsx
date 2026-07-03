@@ -1,7 +1,7 @@
 // __tests__/formState.component.test.tsx
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
 import { FormStateSubscribe } from '../formStateSubscribe';
@@ -11,8 +11,6 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
-
-import { waitFor } from './utils/waitFor';
 
 describe('FormStateSubscribe', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -84,7 +82,7 @@ describe('FormStateSubscribe', () => {
 
     render(<Component />);
 
-    await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
+    await vi.waitFor(() => expect(screen.getByText('yes')).toBeVisible());
 
     fireEvent.input(screen.getByLabelText('test'), {
       target: { value: 'test' },
@@ -134,10 +132,14 @@ describe('FormStateSubscribe', () => {
     render(<App />);
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
-    await waitFor(() => expect(screen.getByRole('button')).not.toBeDisabled());
+    await vi.waitFor(() =>
+      expect(screen.getByRole('button')).not.toBeDisabled(),
+    );
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '12' } });
-    await waitFor(() => expect(screen.getByRole('button')).not.toBeDisabled());
+    await vi.waitFor(() =>
+      expect(screen.getByRole('button')).not.toBeDisabled(),
+    );
   });
 
   it('should update formState separately with multiple FormState instances', async () => {
@@ -287,7 +289,7 @@ describe('FormStateSubscribe', () => {
       target: { value: '' },
     });
 
-    await waitFor(() => expect(count).toEqual(2));
+    await vi.waitFor(() => expect(count).toEqual(2));
   });
 
   it('should not re-render when subscribed field name is not included', () => {
@@ -383,7 +385,7 @@ describe('FormStateSubscribe', () => {
       target: { value: '' },
     });
 
-    await waitFor(() => expect(count).toEqual(2));
+    await vi.waitFor(() => expect(count).toEqual(2));
   });
 
   it('should not re-render when a non-subscribed field changes', () => {
@@ -628,12 +630,12 @@ describe('FormStateSubscribe', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button'));
-    await waitFor(() => screen.getByText('Required'));
+    await vi.waitFor(() => screen.getByText('Required'));
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'data' },
     });
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText('Required')).not.toBeInTheDocument(),
     );
   });
@@ -671,7 +673,7 @@ describe('FormStateSubscribe', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('test');
     });
   });
@@ -693,7 +695,7 @@ describe('FormStateSubscribe', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('disabled');
     });
   });

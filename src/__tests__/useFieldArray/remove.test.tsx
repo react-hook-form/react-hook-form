@@ -14,7 +14,6 @@ import type { Control, DeepMap, FieldError } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -136,7 +135,7 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /remove0/i }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyInputs).not.toHaveProperty('name');
       expect(dirtyInputs).toHaveProperty('items');
     });
@@ -484,18 +483,18 @@ describe('remove', () => {
     render(<Component />);
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    await waitFor(() => expect(isValid).toBeFalsy());
+    await vi.waitFor(() => expect(isValid).toBeFalsy());
     expect(screen.getAllByRole('textbox')).toHaveLength(1);
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
     expect(screen.getAllByRole('textbox')).toHaveLength(2);
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-    await waitFor(() => expect(isValid).toBeFalsy());
+    await vi.waitFor(() => expect(isValid).toBeFalsy());
     expect(screen.getAllByRole('textbox')).toHaveLength(3);
 
     fireEvent.click(screen.getByRole('button', { name: 'remove' }));
-    await waitFor(() => expect(isValid).toBe(true));
+    await vi.waitFor(() => expect(isValid).toBe(true));
   });
 
   it('should remove error', async () => {
@@ -547,7 +546,7 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
-    await waitFor(() => expect(errors.test).toHaveLength(2));
+    await vi.waitFor(() => expect(errors.test).toHaveLength(2));
 
     fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
 
@@ -654,7 +653,7 @@ describe('remove', () => {
     expect(await screen.findByTestId('nested-error')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument(),
     );
     expect(await screen.findByText('Valid: true')).toBeVisible();
@@ -767,7 +766,7 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /remove/i }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(renderedItems).toEqual([
         [{ value: '111' }, { value: '222' }],
         [{ value: '111' }, { value: '222' }],
@@ -1048,7 +1047,7 @@ describe('remove', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(output).toEqual({
           test: [
             {
@@ -1067,7 +1066,7 @@ describe('remove', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(output).toEqual({
           test: [
             {
@@ -1108,7 +1107,7 @@ describe('remove', () => {
         result.current.remove(0);
       });
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         const errors = result.current.formState.errors as Record<string, any>;
         expect(errors.test?.root).toEqual(
           expect.objectContaining({
@@ -1194,7 +1193,7 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(output).toEqual({
         test: [{ title: 'title1', description: 'description1' }],
       }),

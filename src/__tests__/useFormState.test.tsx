@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
 import type { Control } from '../types';
@@ -10,8 +10,6 @@ import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
-
-import { waitFor } from './utils/waitFor';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -99,7 +97,7 @@ describe('useFormState', () => {
     };
     render(<Component />);
 
-    await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
+    await vi.waitFor(() => expect(screen.getByText('yes')).toBeVisible());
 
     fireEvent.input(screen.getByLabelText('test'), {
       target: {
@@ -158,7 +156,7 @@ describe('useFormState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
     });
 
@@ -168,7 +166,7 @@ describe('useFormState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
     });
   });
@@ -344,7 +342,7 @@ describe('useFormState', () => {
       },
     });
 
-    await waitFor(() => expect(count).toEqual(2));
+    await vi.waitFor(() => expect(count).toEqual(2));
   });
 
   it('should not re-render when subscribed field name is not included', async () => {
@@ -460,7 +458,7 @@ describe('useFormState', () => {
       },
     });
 
-    await waitFor(() => expect(count).toEqual(2));
+    await vi.waitFor(() => expect(count).toEqual(2));
   });
 
   it('should only re-render when subscribed field names updated', async () => {
@@ -767,13 +765,13 @@ describe('useFormState', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => screen.getByText('Required'));
+    await vi.waitFor(() => screen.getByText('Required'));
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'data' },
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText('Required')).not.toBeInTheDocument(),
     );
   });
@@ -814,7 +812,7 @@ describe('useFormState', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('test');
     });
   });
@@ -838,7 +836,7 @@ describe('useFormState', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('disabled');
     });
   });

@@ -13,7 +13,6 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 describe('handleSubmit', () => {
   it('should invoke the callback when validation pass', async () => {
@@ -600,6 +599,6 @@ describe('handleSubmit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
 });

@@ -17,8 +17,6 @@ import { useWatch } from '../useWatch';
 import isBoolean from '../utils/isBoolean';
 import noop from '../utils/noop';
 
-import { waitFor } from './utils/waitFor';
-
 describe('useController', () => {
   it('should render input correctly', () => {
     const Component = () => {
@@ -625,7 +623,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => expect(setCustomValidity).toHaveBeenCalledTimes(3));
+    await vi.waitFor(() => expect(setCustomValidity).toHaveBeenCalledTimes(3));
     expect(reportValidity).toHaveBeenCalledTimes(3);
   });
 
@@ -650,7 +648,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
@@ -863,7 +861,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(select).toHaveBeenCalled();
       expect(focus).toHaveBeenCalled();
     });
@@ -897,7 +895,7 @@ describe('useController', () => {
 
     render(<App />, { reactStrictMode: true });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('not');
     });
   });
@@ -932,7 +930,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         firstName: 'luo',
       });
@@ -1022,7 +1020,7 @@ describe('useController', () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    await waitFor(() => screen.getByText('This field is required'));
+    await vi.waitFor(() => screen.getByText('This field is required'));
 
     expect(capturedError).toBeDefined();
     expect(typeof capturedError.ref.focus).toBe('function');
@@ -1055,7 +1053,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('disabled');
     });
   });
@@ -1101,7 +1099,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => screen.getByText('disable'));
+    await vi.waitFor(() => screen.getByText('disable'));
   });
 
   it('should disable form input field with disabled prop', async () => {
@@ -1130,7 +1128,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByRole('textbox')).toBeDisabled();
     });
   });
@@ -1161,7 +1159,7 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByRole('textbox')).not.toBeDisabled();
     });
   });
@@ -1196,7 +1194,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -1247,7 +1245,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
@@ -1257,7 +1255,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
@@ -1271,7 +1269,7 @@ describe('useController', () => {
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         test: undefined,
       }),
@@ -1672,7 +1670,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'focus-1' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('controller:both')).toBeVisible();
       expect(screen.getByText('useWatch:both')).toBeVisible();
       expect(screen.getByText('watch:both')).toBeVisible();
@@ -1687,7 +1685,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'update-visibility' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('controller:desktop')).toBeVisible();
       expect(screen.getByText('useWatch:desktop')).toBeVisible();
       expect(screen.getByText('watch:desktop')).toBeVisible();
@@ -1702,7 +1700,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'focus-0' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('controller:mobile')).toBeVisible();
       expect(screen.getByText('useWatch:mobile')).toBeVisible();
       expect(screen.getByText('watch:mobile')).toBeVisible();
@@ -1808,25 +1806,25 @@ describe('useController', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('valid')).toBeVisible();
     });
 
     fireEvent.click(screen.getByRole('checkbox'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('invalid')).toBeVisible();
     });
 
     fireEvent.click(screen.getByRole('checkbox'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('valid')).toBeVisible();
     });
 
     fireEvent.click(screen.getByRole('checkbox'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('invalid')).toBeVisible();
     });
   });
@@ -1883,7 +1881,7 @@ describe('useController', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: 'set' }));
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByText('controller:foo')).toBeVisible(),
     );
 
@@ -1891,7 +1889,7 @@ describe('useController', () => {
 
     // The controlled field must reflect the cleared parent object and stay in
     // sync with useWatch, instead of holding on to the stale 'foo' value.
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByText('controller:undefined')).toBeVisible(),
     );
     expect(screen.getByText('watch:undefined')).toBeVisible();

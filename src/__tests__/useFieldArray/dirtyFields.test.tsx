@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -68,7 +67,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toEqual({
         items: [{ value: true }],
       });
@@ -124,7 +123,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
       expect(dirtyResult).toHaveProperty('items');
       expect(dirtyResult).not.toHaveProperty('age');
@@ -185,7 +184,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toEqual({
         items_copy: [{ value: true, value2: true }],
       });
@@ -256,7 +255,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     fireEvent.click(screen.getByRole('button', { name: /appendItems/ }));
     fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('items');
       expect(dirtyResult).toHaveProperty('items_copy');
       expect(dirtyResult).not.toHaveProperty('name');
@@ -322,7 +321,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
       expect(dirtyResult).toHaveProperty('items_copy');
       expect(dirtyResult).not.toHaveProperty('age');
@@ -389,7 +388,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).not.toHaveProperty('name');
       expect(dirtyResult).not.toHaveProperty('age');
       expect(dirtyResult).toHaveProperty('nonusservices');
@@ -441,7 +440,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /remove0/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).not.toHaveProperty('title');
       expect(dirtyResult).not.toHaveProperty('description');
       expect(dirtyResult).toHaveProperty('tags');
@@ -493,20 +492,20 @@ describe('useFieldArray dirtyFields isolation', () => {
       target: { value: 'Changed' },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
     });
 
     fireEvent.click(screen.getByRole('button', { name: /append/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
       expect(dirtyResult).toHaveProperty('items');
     });
 
     fireEvent.click(screen.getByRole('button', { name: /removeLast/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
     });
   });
@@ -562,7 +561,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     fireEvent.click(screen.getByRole('button', { name: /addAddress/ }));
     fireEvent.click(screen.getByRole('button', { name: /addAddress/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).not.toHaveProperty('email');
       expect(dirtyResult).not.toHaveProperty('phone');
       expect(dirtyResult).toHaveProperty('addresses');
@@ -622,7 +621,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /addTodo/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).not.toHaveProperty('firstName');
       expect(dirtyResult).not.toHaveProperty('lastName');
       expect(dirtyResult).not.toHaveProperty('email');
@@ -705,7 +704,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /nestAppend/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).not.toHaveProperty('title');
       expect(dirtyResult).toHaveProperty('test');
       const testArray = (dirtyResult as any).test;
@@ -715,7 +714,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /nestRemove/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).not.toHaveProperty('title');
     });
   });
@@ -769,7 +768,7 @@ describe('useFieldArray dirtyFields isolation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /setItems/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toEqual({
         items: [{ value: true }],
       });
@@ -829,13 +828,13 @@ describe('useFieldArray dirtyFields isolation', () => {
       target: { value: 'Changed' },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
     });
 
     fireEvent.click(screen.getByRole('button', { name: /setItems/ }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyResult).toHaveProperty('name', true);
       expect(dirtyResult).toHaveProperty('items');
       expect(dirtyResult).not.toHaveProperty('age');
@@ -885,19 +884,19 @@ describe('useFieldArray dirtyFields isolation', () => {
     const lastNameInput = screen.getByPlaceholderText(/last name/i);
     fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('lastName')).toBeInTheDocument();
     });
 
     fireEvent.change(lastNameInput, { target: { value: '' } });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.queryByText('lastName')).not.toBeInTheDocument();
     });
 
     expect(screen.getByText(/isDirty:/i)).toHaveTextContent('true');
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.queryByText('firstName')).toBeInTheDocument();
     });
   });

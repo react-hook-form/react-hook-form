@@ -14,7 +14,6 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -294,7 +293,7 @@ describe('insert', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /insert/i }));
 
-    await waitFor(() => expect(errors.test[0]).toBeDefined());
+    await vi.waitFor(() => expect(errors.test[0]).toBeDefined());
     expect(errors.test[1]).toBeUndefined();
     expect(errors.test[2]).toBeDefined();
   });
@@ -342,7 +341,7 @@ describe('insert', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
 
-    await waitFor(() => expect(errors.test[0]).toBeDefined());
+    await vi.waitFor(() => expect(errors.test[0]).toBeDefined());
     expect(errors.test[1]).toBeUndefined();
     expect(errors.test[2]).toBeUndefined();
     expect(errors.test[3]).toBeDefined();
@@ -867,14 +866,14 @@ describe('insert', () => {
 
     render(<App />);
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
     );
     const initialCalls = resolver.mock.calls.length;
 
     fireEvent.click(screen.getByRole('button', { name: 'insert' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(resolver.mock.calls.length).toBe(initialCalls + 2),
     );
   });

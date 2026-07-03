@@ -5,7 +5,6 @@ import { describe, expect, it, vi } from 'vitest';
 import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
-import { waitFor } from '../utils/waitFor';
 
 describe('subscribe', () => {
   it('should properly handle multiple subscriptions', async () => {
@@ -150,7 +149,7 @@ describe('subscribe', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(callbackFn).toHaveBeenCalledWith(
         expect.objectContaining({
           isSubmitted: true,
@@ -337,7 +336,7 @@ describe('subscribe', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'sync defaults' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(callbackFn).toHaveBeenLastCalledWith(
         expect.objectContaining({
           isDirty: true,

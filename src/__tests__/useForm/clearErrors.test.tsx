@@ -11,7 +11,6 @@ import { describe, expect, it, vi } from 'vitest';
 import type { Control } from '../../types';
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
-import { waitFor } from '../utils/waitFor';
 
 describe('clearErrors', () => {
   it('should remove error', () => {
@@ -75,7 +74,7 @@ describe('clearErrors', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(currentErrors).toEqual({
         test: {
           data: {
@@ -346,7 +345,7 @@ describe('clearErrors', () => {
     // Set error on field 'a'
     fireEvent.click(screen.getByRole('button', { name: 'Set Error A' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByTestId('error-a')).toHaveTextContent('error a');
     });
 
@@ -361,7 +360,7 @@ describe('clearErrors', () => {
     // Clear error on field 'a'
     fireEvent.click(screen.getByRole('button', { name: 'Clear Error A' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByTestId('error-a')).toHaveTextContent('');
     });
 

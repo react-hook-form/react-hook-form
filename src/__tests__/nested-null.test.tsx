@@ -4,8 +4,6 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../useForm';
 
-import { waitFor } from './utils/waitFor';
-
 describe('nested null bug', () => {
   it('should not keep parent as null and allow nested value', async () => {
     function TestComponent() {
@@ -29,7 +27,7 @@ describe('nested null bug', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         { example: { inner: '' } },
         expect.anything(),

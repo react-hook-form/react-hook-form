@@ -22,7 +22,6 @@ import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 describe('register', () => {
   it('should support register passed to ref', async () => {
@@ -115,7 +114,7 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /submit/ }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(callback).toHaveBeenCalledWith(
           {
             test: type === 'checkbox' ? false : type === 'radio' ? null : '',
@@ -151,7 +150,7 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /submit/ }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(callback).toHaveBeenCalledWith(
         {
           test: ['A'],
@@ -237,7 +236,7 @@ describe('register', () => {
 
     render(<Component />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
     });
   });
@@ -388,7 +387,7 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(output).toEqual({
         checkbox: ['No'],
         radio: 'No',
@@ -592,7 +591,7 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(data).toEqual({
         nested: {
           test: {},
@@ -606,7 +605,7 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(data).toEqual({
         test: ['2', '3'],
         nested: {
@@ -728,7 +727,7 @@ describe('register', () => {
         },
       ]);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(outputData).toStrictEqual({
           test: '',
           test1: false,
@@ -773,14 +772,14 @@ describe('register', () => {
       fireEvent.click(screen.getByText('Submit'));
 
       expect(validate).toHaveBeenCalledWith(defaultValue, { test: 'Test' });
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(submit).toHaveBeenCalledWith({ test: defaultValue }),
       );
 
       fireEvent.click(screen.getByText('Toggle Edit'));
       fireEvent.click(screen.getByText('Submit'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(submit).toHaveBeenCalledWith({ test: undefined }),
       );
     });
@@ -841,7 +840,7 @@ describe('register', () => {
       fireEvent.click(screen.getByRole('button'));
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText(message)).not.toBeInTheDocument(),
       );
     });
@@ -1063,25 +1062,25 @@ describe('register', () => {
       render(<App />);
 
       // Initially invalid - firstName is required and empty
-      await waitFor(() => expect(isValidValue).toBe(false));
+      await vi.waitFor(() => expect(isValidValue).toBe(false));
 
       // Toggle to disable firstName - should become valid (disabled fields skip validation)
       fireEvent.click(screen.getByTestId('toggle-disabled'));
-      await waitFor(() => expect(isValidValue).toBe(true));
+      await vi.waitFor(() => expect(isValidValue).toBe(true));
 
       // Toggle back to enable firstName - should become invalid again (field is still empty)
       fireEvent.click(screen.getByTestId('toggle-disabled'));
-      await waitFor(() => expect(isValidValue).toBe(false));
+      await vi.waitFor(() => expect(isValidValue).toBe(false));
 
       // Fill firstName - should become valid
       fireEvent.change(screen.getByTestId('firstName'), {
         target: { value: 'test' },
       });
-      await waitFor(() => expect(isValidValue).toBe(true));
+      await vi.waitFor(() => expect(isValidValue).toBe(true));
 
       // Disable again - should stay valid
       fireEvent.click(screen.getByTestId('toggle-disabled'));
-      await waitFor(() => expect(isValidValue).toBe(true));
+      await vi.waitFor(() => expect(isValidValue).toBe(true));
     });
   });
 
@@ -1123,7 +1122,9 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() => expect(output).toEqual({ test: 12345, test1: true }));
+      await vi.waitFor(() =>
+        expect(output).toEqual({ test: 12345, test1: true }),
+      );
     });
 
     it('should return undefined value with setValueAs', async () => {
@@ -1185,7 +1186,7 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() => expect(output).toEqual({ test: NaN }));
+      await vi.waitFor(() => expect(output).toEqual({ test: NaN }));
     });
 
     it('should validate input before the valueAs', async () => {
@@ -1276,7 +1277,7 @@ describe('register', () => {
         },
       });
 
-      await waitFor(() => screen.findByText('Not number'));
+      await vi.waitFor(() => screen.findByText('Not number'));
 
       fireEvent.change(screen.getAllByRole('textbox')[1], {
         target: {
@@ -1290,7 +1291,7 @@ describe('register', () => {
         },
       });
 
-      await waitFor(() => screen.findByText('No error'));
+      await vi.waitFor(() => screen.findByText('No error'));
     });
 
     it('should send valueAs fields to schema validation', () => {
@@ -1707,7 +1708,7 @@ describe('register', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(submitData).toEqual({
           test: new Date('2020-10-10'),
         }),
@@ -1792,7 +1793,7 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(submitData).toEqual({
         input: 'input',
         select: 'select',
@@ -1922,7 +1923,7 @@ describe('register', () => {
       target: { value: 'test' },
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText(/error/)).not.toBeInTheDocument(),
     );
   });
@@ -2034,7 +2035,7 @@ describe('register', () => {
 
     fireEvent.click(screen.getByRole('checkbox'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByPlaceholderText('test')).not.toBeInTheDocument(),
     );
 

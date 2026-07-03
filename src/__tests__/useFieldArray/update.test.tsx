@@ -13,7 +13,6 @@ import type { Control } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -217,7 +216,7 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /update/i }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(renderedItems).toEqual([
         undefined,
         [],
@@ -589,18 +588,18 @@ describe('update', () => {
 
       render(<App />);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
       );
       const initialCalls = resolver.mock.calls.length;
 
       fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-      await waitFor(async () => {
+      await vi.waitFor(async () => {
         expect((await screen.findAllByRole('textbox')).length).toBe(4);
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBe(initialCalls + 2),
       );
     });

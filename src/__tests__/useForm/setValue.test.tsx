@@ -17,7 +17,6 @@ import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
-import { waitFor } from '../utils/waitFor';
 
 describe('setValue', () => {
   beforeEach(() => {
@@ -724,7 +723,7 @@ describe('setValue', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'update' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('test')).not.toBeInTheDocument(),
       );
     });
@@ -1036,7 +1035,7 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(submitData).toEqual({
         test: 'changed',
       }),
@@ -1105,7 +1104,7 @@ describe('setValue', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(result).toEqual({
         setStringDate: new Date('2021-04-23'),
       }),

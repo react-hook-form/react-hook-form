@@ -21,7 +21,6 @@ import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
 import isEmptyObject from '../../utils/isEmptyObject';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 describe('reset', () => {
   beforeEach(() => {
@@ -390,8 +389,8 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
-    await waitFor(() =>
+    await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    await vi.waitFor(() =>
       expect(formState).toEqual({
         errors: {},
         isDirty: true,
@@ -470,12 +469,12 @@ describe('reset', () => {
     fireEvent.click(resetButton);
     fireEvent.click(submitButton);
 
-    await waitFor(() => expect(data).toEqual({}));
+    await vi.waitFor(() => expect(data).toEqual({}));
 
     fireEvent.click(screen.getByRole('button', { name: 'reset with value' }));
     fireEvent.click(submitButton);
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(data).toEqual({
         test: [{ firstName: 'test', lastName: 'test' }],
       }),
@@ -652,7 +651,7 @@ describe('reset', () => {
       it('should only update new reset values', async () => {
         render(<App />);
 
-        await waitFor(() => {
+        await vi.waitFor(() => {
           expect(
             (screen.getByPlaceholderText('First Name') as HTMLInputElement)
               .value,
@@ -676,7 +675,7 @@ describe('reset', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(submittedValue).toEqual({
             firstName: 'bill',
             lastName: 'luo',
@@ -740,7 +739,7 @@ describe('reset', () => {
           screen.getByRole('button', { name: 'reset keep defaults' }),
         );
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(
             (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
               .value,
@@ -836,7 +835,7 @@ describe('reset', () => {
       it('should only update new reset values', async () => {
         render(<App />);
 
-        await waitFor(() => {
+        await vi.waitFor(() => {
           expect(
             (screen.getByPlaceholderText('First Name') as HTMLInputElement)
               .value,
@@ -860,7 +859,7 @@ describe('reset', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(submittedValue).toEqual({
             firstName: 'bill',
             lastName: 'luo',
@@ -877,7 +876,7 @@ describe('reset', () => {
           },
         });
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(
             (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
               .value,
@@ -891,7 +890,7 @@ describe('reset', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(submittedValue).toEqual({
             firstName: 'test',
             lastName: 'luo',
@@ -909,7 +908,7 @@ describe('reset', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(submittedValue).toEqual({
             firstName: 'bill',
             lastName: 'luo',
@@ -1153,7 +1152,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'reset with values' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(
         (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
       ).toBe('3'),
@@ -1161,7 +1160,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(submittedData).toEqual({ name: 'name', age: '3' }),
     );
   });
@@ -1548,7 +1547,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('Bill1')).toBeVisible();
       expect(screen.getByText('Luo1')).toBeVisible();
     });
@@ -1638,7 +1637,7 @@ describe('reset', () => {
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(submittedData).toEqual({}));
+    await vi.waitFor(() => expect(submittedData).toEqual({}));
   });
 
   it('should set _formValues to empty object after reset({})', () => {
@@ -1694,7 +1693,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('34');
     });
   });
@@ -1741,19 +1740,19 @@ describe('reset', () => {
     render(<App />);
 
     expect(await screen.findByText('isDirty = false')).toBeVisible();
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('users#0');
     });
 
     fireEvent.click(screen.getByTestId('dirtyButton'));
     expect(await screen.findByText('isDirty = true')).toBeVisible();
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('users#1');
     });
 
     fireEvent.click(screen.getByTestId('resetButton'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('users#1');
     });
   });
@@ -1814,7 +1813,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByTestId('dirtyFields').textContent).toBe(
         '{"name_en":true}',
       ),
@@ -1889,7 +1888,7 @@ describe('reset', () => {
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         test: 'test',
       }),
@@ -1969,14 +1968,14 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit).toHaveBeenCalledWith({
       name: 'validname',
       description: 'validdescription',
     });
 
     // Wait for reset to complete
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(methods.formState.errors).toEqual({});
     });
 
@@ -1995,7 +1994,7 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit).toHaveBeenCalledWith({
       name: 'newname',
       description: 'newdescription',
@@ -2053,7 +2052,7 @@ describe('reset', () => {
 
     const input = screen.getByRole('textbox') as HTMLInputElement;
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('is valid: true')).toBeInTheDocument();
     });
 
@@ -2067,7 +2066,7 @@ describe('reset', () => {
       );
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(input.value).toBe('');
     });
 
@@ -2085,7 +2084,7 @@ describe('reset', () => {
       );
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(input.value).toBe('');
     });
 
@@ -2137,7 +2136,7 @@ describe('reset', () => {
 
     const input = screen.getByRole('textbox') as HTMLInputElement;
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('is valid: true')).toBeInTheDocument();
     });
 
@@ -2148,7 +2147,7 @@ describe('reset', () => {
       fireEvent.click(screen.getByRole('button', { name: 'reset' }));
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(input.value).toBe('');
     });
 

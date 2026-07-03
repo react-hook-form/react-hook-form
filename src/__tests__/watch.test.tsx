@@ -7,8 +7,6 @@ import { useForm } from '../useForm';
 import noop from '../utils/noop';
 import { Watch } from '../watch';
 
-import { waitFor } from './utils/waitFor';
-
 type FormType = {
   foo: string;
   bar: string;
@@ -293,7 +291,7 @@ describe('Watch', () => {
 
     fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
-    await waitFor(() => expect(parentCount).toBe(1));
+    await vi.waitFor(() => expect(parentCount).toBe(1));
     expect(childCount).toBe(1);
     expect(childSecondCount).toBe(1);
 

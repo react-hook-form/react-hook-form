@@ -13,7 +13,6 @@ import type { Control, FieldPath } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -135,7 +134,7 @@ describe('append', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(dirtyInputs).toEqual({
         items: [{ value: true }],
       });
@@ -387,7 +386,7 @@ describe('append', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(renderedItems).toEqual([
         undefined,
         [],
@@ -569,18 +568,18 @@ describe('append', () => {
 
       render(<App />);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
       );
       const initialCalls = resolver.mock.calls.length;
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await waitFor(async () => {
+      await vi.waitFor(async () => {
         expect((await screen.findAllByRole('textbox')).length).toBe(4); // 1 root + 3 items
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBe(initialCalls + 2),
       );
     });

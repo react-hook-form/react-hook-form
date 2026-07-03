@@ -7,7 +7,6 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
-import { waitFor } from '../utils/waitFor';
 
 interface TestValue {
   x: string;
@@ -371,7 +370,7 @@ describe('replace', () => {
       render(<App />);
 
       // wait for any initial resolver run triggered by isValid subscription
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
       );
       const initialCalls = resolver.mock.calls.length;
@@ -379,12 +378,12 @@ describe('replace', () => {
       fireEvent.click(screen.getByRole('button', { name: 'replace' }));
 
       // ensure 3 inputs are mounted (all fields registered)
-      await waitFor(async () => {
+      await vi.waitFor(async () => {
         expect((await screen.findAllByRole('textbox')).length).toBe(3);
       });
 
       // assert only two extra resolver calls: array-scoped + final isValid
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBe(initialCalls + 2),
       );
     });

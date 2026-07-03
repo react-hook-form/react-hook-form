@@ -1,9 +1,8 @@
 import React from 'react';
 import { act, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 describe('setFocus', () => {
   it('should focus input when called after setError', async () => {
@@ -41,7 +40,7 @@ describe('setFocus', () => {
     });
 
     // Wait for the focus to be set after the microtask
-    await waitFor(
+    await vi.waitFor(
       () => {
         expect(document.activeElement).toBe(emailInput);
       },
@@ -73,7 +72,7 @@ describe('setFocus', () => {
 
     screen.getByRole('button').click();
 
-    await waitFor(
+    await vi.waitFor(
       () => {
         expect(document.activeElement).toBe(
           screen.getByPlaceholderText('test1'),
@@ -108,7 +107,7 @@ describe('setFocus', () => {
 
     screen.getByRole('button').click();
 
-    await waitFor(
+    await vi.waitFor(
       () => {
         expect(document.activeElement).toBe(input);
         // In jsdom, selectionStart and selectionEnd will be set when select() is called
@@ -143,7 +142,7 @@ describe('setFocus', () => {
 
     screen.getByRole('button').click();
 
-    await waitFor(
+    await vi.waitFor(
       () => {
         expect(document.activeElement).toBe(
           screen.getByPlaceholderText('item-1'),

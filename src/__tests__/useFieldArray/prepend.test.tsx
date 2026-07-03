@@ -14,7 +14,6 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -210,13 +209,13 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(errors.test).toHaveLength(1);
     });
 
     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(errors.test).toHaveLength(2);
     });
   });
@@ -310,7 +309,7 @@ describe('prepend', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(renderedItems).toEqual([
         [{ value: 'test' }, { value: '111' }, { value: '222' }],
         [{ value: 'test' }, { value: '111' }, { value: '222' }],
@@ -556,18 +555,18 @@ describe('prepend', () => {
 
       render(<App />);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
       );
       const initialCalls = resolver.mock.calls.length;
 
       fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
 
-      await waitFor(async () => {
+      await vi.waitFor(async () => {
         expect((await screen.findAllByRole('textbox')).length).toBe(4);
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(resolver.mock.calls.length).toBe(initialCalls + 2),
       );
     });

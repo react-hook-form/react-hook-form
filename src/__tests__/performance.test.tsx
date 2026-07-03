@@ -12,8 +12,6 @@ import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
 
-import { waitFor } from './utils/waitFor';
-
 function changeEmits(spy: MockInstance): Record<string, unknown>[] {
   return spy.mock.calls
     .map(([payload]) => payload)
@@ -433,13 +431,13 @@ describe('_setValid optimization', () => {
       fireEvent.click(screen.getByTestId('toggle'));
     });
 
-    await waitFor(() => expect(capturedIsValid).toBe(false));
+    await vi.waitFor(() => expect(capturedIsValid).toBe(false));
 
     await act(async () => {
       fireEvent.click(screen.getByTestId('toggle'));
     });
 
-    await waitFor(() => expect(capturedIsValid).toBe(true));
+    await vi.waitFor(() => expect(capturedIsValid).toBe(true));
   });
 });
 

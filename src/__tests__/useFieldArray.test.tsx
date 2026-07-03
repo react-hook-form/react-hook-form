@@ -25,8 +25,6 @@ import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
-import { waitFor } from './utils/waitFor';
-
 let i = 0;
 
 vi.mock('../logic/generateId', () => ({
@@ -617,13 +615,13 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('minLength')).toBeInTheDocument(),
       );
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('minLength')).not.toBeInTheDocument(),
       );
     });
@@ -717,13 +715,13 @@ describe('useFieldArray', () => {
 
       render(<App />);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('Array error:')).not.toBeInTheDocument(),
       );
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Array error: Too many items'),
         ).toBeInTheDocument(),
@@ -731,7 +729,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Array error: WAY too many items'),
         ).toBeInTheDocument(),
@@ -739,7 +737,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Array error: Too many items'),
         ).toBeInTheDocument(),
@@ -747,7 +745,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[0]);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('Array error:')).not.toBeInTheDocument(),
       );
 
@@ -755,7 +753,7 @@ describe('useFieldArray', () => {
         target: { value: '' },
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Item 0 error: Required'),
         ).toBeInTheDocument(),
@@ -763,7 +761,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(
           screen.queryByText('Array error: Too many items'),
         ).toBeInTheDocument();
@@ -774,7 +772,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'append' }));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(
           screen.queryByText('Array error: WAY too many items'),
         ).toBeInTheDocument();
@@ -785,7 +783,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[4]);
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(
           screen.queryByText('Array error: Too many items'),
         ).toBeInTheDocument();
@@ -796,7 +794,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[3]);
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(
           screen.queryByText('Array error: Too many items'),
         ).not.toBeInTheDocument();
@@ -887,12 +885,12 @@ describe('useFieldArray', () => {
       });
 
       // Both root error and nested field error should be visible
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Array error: Needs at least 4 items'),
         ).toBeInTheDocument(),
       );
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Item 2 error: Item 2 too short'),
         ).toBeInTheDocument(),
@@ -907,14 +905,14 @@ describe('useFieldArray', () => {
         fireEvent.click(screen.getByRole('button', { name: 'remove 0' }));
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Array error: Needs at least 4 items'),
         ).toBeInTheDocument(),
       );
 
       // 'ab' is now at index 1 - its field error should be shown
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(
           screen.queryByText('Item 1 error: Item 1 too short'),
         ).toBeInTheDocument(),
@@ -1434,7 +1432,7 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.getAllByRole('textbox')).toHaveLength(4),
       );
     });
@@ -2599,7 +2597,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(submitData).toEqual({
           test: [],
         }),
@@ -3879,7 +3877,7 @@ describe('useFieldArray', () => {
         fireEvent.click(screen.getByRole('button', { name: 'submit' }));
       });
 
-      await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+      await vi.waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
       expect(onValid).not.toHaveBeenCalled();
     });
 
@@ -4518,13 +4516,13 @@ describe('useFieldArray', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('valid');
     });
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('invalid');
     });
   });
@@ -4577,7 +4575,7 @@ describe('useFieldArray', () => {
       render(<Component />);
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
-      await waitFor(() => expect(renderCount).toEqual(3));
+      await vi.waitFor(() => expect(renderCount).toEqual(3));
     });
 
     it('should trigger reRender on components that subscribe to useFieldArray fieldState', async () => {
@@ -4637,7 +4635,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(rootRenderCount).toEqual(2);
         expect(observerRenderCount).toEqual(3);
       });
@@ -4827,14 +4825,14 @@ describe('useFieldArray with checkbox', () => {
 
     fireEvent.click(screen.getByTestId('duplicate-button-0'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('Option 1 (copy)')).toBeInTheDocument();
       expect(screen.getByTestId('checkbox-1')).toBeChecked();
     });
 
     fireEvent.click(screen.getByTestId('duplicate-button-2'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('Option 2 (copy)')).toBeInTheDocument();
       expect(screen.getByTestId('checkbox-2')).toBeChecked();
     });
@@ -4914,7 +4912,7 @@ describe('useFieldArray with checkbox', () => {
 
     fireEvent.click(screen.getByTestId('duplicate-button-0'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('Option 1 (copy)')).toBeInTheDocument();
       expect(screen.getByTestId('checkbox-1')).toBeChecked();
     });
@@ -4923,7 +4921,7 @@ describe('useFieldArray with checkbox', () => {
 
     fireEvent.click(screen.getByTestId('duplicate-button-1'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       const checkboxes = screen.getAllByRole('checkbox');
       expect(checkboxes).toHaveLength(4);
       expect(checkboxes[0]).toBeChecked(); // Option 1
@@ -5036,7 +5034,7 @@ it('should not lose defaultValues when useFieldArray and watch are used together
 
   render(<App />);
 
-  await waitFor(() => {
+  await vi.waitFor(() => {
     expect(defaultValuesSnapshots.length).toBeGreaterThan(0);
   });
 
@@ -5123,7 +5121,7 @@ it(
 
     fireEvent.click(screen.getByText('add'));
 
-    await waitFor(() => screen.getByTestId('name-0'));
+    await vi.waitFor(() => screen.getByTestId('name-0'));
 
     fireEvent.change(screen.getByTestId('name-0'), {
       target: { value: 'Alice' },
@@ -5132,7 +5130,7 @@ it(
       target: { value: 'hello' },
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onUpdateCalls.some((c) => c.myfield[0]?.name === 'Alice')).toBe(
         true,
       ),
@@ -5140,7 +5138,7 @@ it(
 
     fireEvent.click(screen.getByText('add'));
 
-    await waitFor(() => screen.getByTestId('name-1'));
+    await vi.waitFor(() => screen.getByTestId('name-1'));
 
     fireEvent.change(screen.getByTestId('name-1'), {
       target: { value: 'Bob' },
@@ -5149,7 +5147,7 @@ it(
       target: { value: 'world' },
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onUpdateCalls.some((c) => c.myfield[1]?.name === 'Bob')).toBe(
         true,
       ),
@@ -5161,7 +5159,7 @@ it(
       fireEvent.click(screen.getByText('remove-0'));
     });
 
-    await waitFor(
+    await vi.waitFor(
       () => {
         expect(screen.queryByText('remove-1')).not.toBeInTheDocument();
         expect(screen.getByTestId('name-0')).toHaveValue('Bob');
@@ -5169,7 +5167,7 @@ it(
       { timeout: 10000 },
     );
 
-    await waitFor(
+    await vi.waitFor(
       () => {
         const lastUpdate = onUpdateCalls.at(-1);
         expect(lastUpdate?.myfield).toHaveLength(1);
@@ -5240,7 +5238,7 @@ it('should not restore defaultValues when appending null after remove in same ac
   fireEvent.click(screen.getByRole('radio', { name: 'C' }));
   fireEvent.click(screen.getByRole('button', { name: 'remove and append' }));
 
-  await waitFor(() => {
+  await vi.waitFor(() => {
     expect(watchedValues[watchedValues.length - 1]).toEqual([{ obj: null }]);
   });
 });

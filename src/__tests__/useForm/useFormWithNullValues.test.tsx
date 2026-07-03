@@ -1,10 +1,9 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 describe('useForm with null values (issue #12815)', () => {
   function NumberInput({
@@ -58,7 +57,7 @@ describe('useForm with null values (issue #12815)', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submittedData).toEqual({ views: null });
     });
   });
@@ -92,7 +91,7 @@ describe('useForm with null values (issue #12815)', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submittedData).toEqual({ views: null });
     });
   });
@@ -121,7 +120,7 @@ describe('useForm with null values (issue #12815)', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submittedData).toEqual({ views: null });
     });
   });
@@ -159,7 +158,7 @@ describe('useForm with null values (issue #12815)', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submittedData).toEqual({
         views: null,
         likes: 100,
@@ -197,7 +196,7 @@ describe('useForm with null values (issue #12815)', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submittedData).toEqual({ views: null });
     });
   });
@@ -234,7 +233,7 @@ describe('useForm with null values (issue #12815)', () => {
 
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submittedData).toEqual({
         user: {
           name: 'John',

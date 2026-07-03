@@ -16,7 +16,6 @@ import type {
 } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
-import { waitFor } from '../utils/waitFor';
 
 describe('setError', () => {
   const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
@@ -162,18 +161,18 @@ describe('setError', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'setError' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.findByText('custom error');
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSubmit).toHaveBeenCalled();
       expect(screen.queryByText('custom error')).not.toBeInTheDocument();
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.findByText('not found');
     });
   });
@@ -307,7 +306,7 @@ it('should update error state in FormProvider when setError is called in useEffe
 
   render(<App />);
 
-  await waitFor(() => {
+  await vi.waitFor(() => {
     expect(screen.getByText('This is an error')).toBeInTheDocument();
   });
 });

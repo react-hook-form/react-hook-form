@@ -6,10 +6,9 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 describe('unregister', () => {
   it('should unregister an registered item', async () => {
@@ -86,10 +85,10 @@ describe('unregister', () => {
     const checkbox = screen.getByRole('checkbox');
 
     fireEvent.click(checkbox);
-    await waitFor(() => expect(isDirty).toBe(true));
+    await vi.waitFor(() => expect(isDirty).toBe(true));
 
     fireEvent.click(checkbox);
-    await waitFor(() => expect(isDirty).toBe(false));
+    await vi.waitFor(() => expect(isDirty).toBe(false));
   });
 
   it('should not flip isDirty to true when a field with no defaultValue is registered from useEffect', async () => {
@@ -113,6 +112,6 @@ describe('unregister', () => {
 
     render(<App />);
 
-    await waitFor(() => expect(isDirty).toBe(false));
+    await vi.waitFor(() => expect(isDirty).toBe(false));
   });
 });

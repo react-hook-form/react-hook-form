@@ -12,7 +12,6 @@ import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
@@ -109,7 +108,7 @@ describe('move', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await waitFor(() => expect(errors.test[0]).toBeUndefined());
+    await vi.waitFor(() => expect(errors.test[0]).toBeUndefined());
     expect(errors.test[1]).toBeDefined();
 
     fireEvent.click(screen.getByRole('button', { name: /move/i }));
@@ -284,7 +283,7 @@ describe('move', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /move/i }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(renderedItems).toEqual([
         [{ value: '222' }, { value: '111' }],
         [{ value: '222' }, { value: '111' }],

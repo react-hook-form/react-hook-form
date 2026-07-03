@@ -11,7 +11,6 @@ import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
-import { waitFor } from '../utils/waitFor';
 
 describe('resolver', () => {
   it('should update context within the resolver', async () => {
@@ -374,7 +373,7 @@ describe('resolver', () => {
 
       fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
       });
 
@@ -415,7 +414,7 @@ describe('resolver', () => {
         target: { value: 'abc' },
       });
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(dirtyStateEmissions.some(({ isDirty }) => isDirty)).toBe(true);
       });
     });
@@ -462,7 +461,7 @@ describe('resolver', () => {
 
       fireEvent.click(screen.getByTestId('double-change'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.getByTestId('dirty')).toHaveTextContent('true'),
       );
     });
@@ -494,7 +493,7 @@ describe('resolver', () => {
       fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
       fireEvent.blur(screen.getByRole('textbox'));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
       });
 
@@ -532,7 +531,7 @@ describe('resolver', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Trigger' }));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
       });
 
@@ -623,7 +622,7 @@ describe('resolver', () => {
 
       fireEvent.click(screen.getByText('Add Parts'));
 
-      await waitFor(
+      await vi.waitFor(
         () => {
           expect(screen.getByTestId('fieldsCount')).toHaveTextContent('10');
         },

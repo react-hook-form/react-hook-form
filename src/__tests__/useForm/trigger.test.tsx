@@ -24,7 +24,6 @@ import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -69,7 +68,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText('error')).not.toBeInTheDocument(),
     );
   });
@@ -606,7 +605,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText('error')).not.toBeInTheDocument(),
     );
   });
@@ -634,7 +633,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(document.activeElement).toEqual(
         screen.getByPlaceholderText('test'),
       );
@@ -670,7 +669,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(document.activeElement).toEqual(
         screen.getByPlaceholderText('test'),
       );
@@ -705,7 +704,7 @@ describe('trigger', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(document.activeElement).toEqual(
         screen.getByPlaceholderText('test'),
       );
@@ -1007,7 +1006,7 @@ describe('trigger', () => {
       fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(formState.isValidating).toBe(true);
       expect(getFieldState('test1').isValidating).toBe(true);
     });
@@ -1016,7 +1015,7 @@ describe('trigger', () => {
       vi.advanceTimersByTime(1000);
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(formState.isValidating).toBe(true);
       expect(getFieldState('test2.sub').isValidating).toBe(true);
       expect(formState.validatingFields).toStrictEqual({
@@ -1028,7 +1027,7 @@ describe('trigger', () => {
       vi.advanceTimersByTime(1000);
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(formState.isValidating).toBe(false);
       expect(getFieldState('test1').isValidating).toBe(false);
       expect(getFieldState('test2.sub').isValidating).toBe(false);
@@ -1083,7 +1082,7 @@ describe('trigger', () => {
       fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(triggerErrors?.items?.root?.message).toBe('at_least_1_item');
     });
   });
@@ -1135,7 +1134,7 @@ describe('trigger', () => {
       fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(triggerErrors?.items?.[0]?.name?.message).toBe('name_required');
       expect(triggerErrors?.items?.root).toBeUndefined();
     });

@@ -21,8 +21,6 @@ import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
-import { waitFor } from './utils/waitFor';
-
 function Input<TFieldValues extends FieldValues>({
   onChange,
   onBlur,
@@ -242,7 +240,7 @@ describe('Controller', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Change Name' }));
       fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(onSubmit).toHaveBeenCalledWith(
           {
             name: 'test',
@@ -278,7 +276,7 @@ describe('Controller', () => {
       target: { value: '' },
     });
 
-    await waitFor(() => expect(errors.test).toBeDefined());
+    await vi.waitFor(() => expect(errors.test).toBeDefined());
   });
 
   it("should trigger component's onBlur method and invoke trigger method", async () => {
@@ -305,7 +303,7 @@ describe('Controller', () => {
       target: { value: '' },
     });
 
-    await waitFor(() => expect(errors.test).toBeDefined());
+    await vi.waitFor(() => expect(errors.test).toBeDefined());
   });
 
   it('should set field to formState.touchedFields', async () => {
@@ -610,14 +608,14 @@ describe('Controller', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
     expect(onValid).toHaveBeenCalledTimes(0);
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() => expect(onValid).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(onValid).toHaveBeenCalledTimes(1));
     expect(onInvalid).toHaveBeenCalledTimes(1);
   });
 
@@ -752,13 +750,13 @@ describe('Controller', () => {
 
     fireEvent.blur(input);
 
-    await waitFor(() => expect(currentErrors.test).not.toBeUndefined());
+    await vi.waitFor(() => expect(currentErrors.test).not.toBeUndefined());
 
     fireEvent.input(input, {
       target: { value: '1' },
     });
 
-    await waitFor(() => expect(currentErrors.test).toBeUndefined());
+    await vi.waitFor(() => expect(currentErrors.test).toBeUndefined());
   });
 
   it('should show invalid input when there is an error', async () => {
@@ -1190,7 +1188,7 @@ describe('Controller', () => {
     });
 
     // Everything should be fine even if no ref on the controlled input
-    await waitFor(() => expect(input).toHaveValue('test'));
+    await vi.waitFor(() => expect(input).toHaveValue('test'));
   });
 
   it('should transform input value instead update via ref', () => {
@@ -1764,11 +1762,11 @@ describe('Controller', () => {
 
     fireEvent.change(input, { target: { value: 'test' } });
 
-    await waitFor(() => expect(currentErrors).toHaveProperty(name));
+    await vi.waitFor(() => expect(currentErrors).toHaveProperty(name));
 
     fireEvent.change(input, { target: { value: '2024-10-16' } });
 
-    await waitFor(() => expect(currentErrors).not.toHaveProperty(name));
+    await vi.waitFor(() => expect(currentErrors).not.toHaveProperty(name));
   });
 
   it('should recover memoized Controller field after reset without rerender', async () => {
@@ -1806,6 +1804,8 @@ describe('Controller', () => {
       target: { value: 'a' },
     });
 
-    await waitFor(() => expect(screen.getByRole('textbox')).toHaveValue('a'));
+    await vi.waitFor(() =>
+      expect(screen.getByRole('textbox')).toHaveValue('a'),
+    );
   });
 });

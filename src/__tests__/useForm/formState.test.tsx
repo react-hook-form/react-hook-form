@@ -15,7 +15,6 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
-import { waitFor } from '../utils/waitFor';
 
 describe('formState', () => {
   describe('isValid', () => {
@@ -57,7 +56,7 @@ describe('formState', () => {
         },
       });
 
-      await waitFor(() => expect(isValidValue).toBeTruthy());
+      await vi.waitFor(() => expect(isValidValue).toBeTruthy());
     });
 
     it('should return true for onBlur mode by default', async () => {
@@ -266,7 +265,7 @@ describe('formState', () => {
         vi.advanceTimersByTime(2000);
       });
 
-      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+      await vi.waitFor(() => expect(screen.getByText('valid')).toBeVisible());
       vi.useRealTimers();
     });
   });
@@ -433,7 +432,7 @@ describe('formState', () => {
 
     render(<App />);
 
-    await waitFor(() => screen.getByText('invalid'));
+    await vi.waitFor(() => screen.getByText('invalid'));
     expect(screen.queryByText('error')).not.toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -441,7 +440,7 @@ describe('formState', () => {
       },
     });
 
-    await waitFor(() => screen.getByText('valid'));
+    await vi.waitFor(() => screen.getByText('valid'));
     expect(screen.queryByText('error')).not.toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
@@ -450,7 +449,7 @@ describe('formState', () => {
     });
 
     fireEvent.click(screen.getByRole('button'));
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText('error')).toBeInTheDocument(),
     );
     fireEvent.change(screen.getByRole('textbox'), {
@@ -458,7 +457,7 @@ describe('formState', () => {
         value: 'value',
       },
     });
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.queryByText('error')).not.toBeInTheDocument(),
     );
   });
@@ -761,7 +760,7 @@ describe('formState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('true');
     });
   });
@@ -1044,7 +1043,7 @@ describe('formState', () => {
         });
 
         await act(async () => {
-          await waitFor(() => screen.getByText('inValid'));
+          await vi.waitFor(() => screen.getByText('inValid'));
         });
 
         expect(screen.queryByText(message)).toBeNull();
@@ -1089,7 +1088,7 @@ describe('formState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('error');
     });
   });
@@ -1125,7 +1124,7 @@ describe('formState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.queryByText('error')).toBeNull();
     });
 
@@ -1135,7 +1134,7 @@ describe('formState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('error');
     });
   });
@@ -1165,7 +1164,7 @@ describe('formState', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('pristine')).toBeInTheDocument();
     });
   });
@@ -1193,7 +1192,7 @@ describe('formState', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('no')).toBeInTheDocument();
     });
   });
@@ -1233,24 +1232,24 @@ describe('formState', () => {
     const input = screen.getByRole('textbox');
 
     fireEvent.change(input, { target: { value: 'valid' } });
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent(''),
     );
 
     fireEvent.change(input, { target: { value: '' } });
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent('required'),
     );
     const refAfterFirstError = errorRefs.at(-1);
 
     fireEvent.change(input, { target: { value: 'valid' } });
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent(''),
     );
     const refAfterCleared = errorRefs.at(-1);
 
     fireEvent.change(input, { target: { value: '' } });
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent('required'),
     );
     const refAfterSecondError = errorRefs.at(-1);

@@ -3,7 +3,6 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../../useForm';
-import { waitFor } from '../utils/waitFor';
 
 describe('resetDefaultValues', () => {
   beforeEach(() => {
@@ -224,7 +223,7 @@ describe('resetDefaultValues', () => {
       target: { value: 'C' },
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(screen.getByTestId('dirtyFields').textContent).toBe(
         '{"a":true,"b":true,"c":true}',
       ),

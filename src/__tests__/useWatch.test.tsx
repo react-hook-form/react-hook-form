@@ -22,8 +22,6 @@ import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
-import { waitFor } from './utils/waitFor';
-
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;
   return {
@@ -598,7 +596,7 @@ describe('useWatch', () => {
 
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
-      await waitFor(() => expect(parentCount).toBe(1));
+      await vi.waitFor(() => expect(parentCount).toBe(1));
       expect(childCount).toBe(1);
 
       parentCount = 0;
@@ -678,7 +676,7 @@ describe('useWatch', () => {
 
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
-      await waitFor(() => expect(parentCount).toBe(1));
+      await vi.waitFor(() => expect(parentCount).toBe(1));
       expect(childCount).toBe(1);
       expect(childSecondCount).toBe(1);
 
@@ -743,7 +741,7 @@ describe('useWatch', () => {
 
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
-      await waitFor(() => expect(isSubmitted).toBe(true));
+      await vi.waitFor(() => expect(isSubmitted).toBe(true));
       expect(watchCount).toBe(0);
     });
 
@@ -1816,7 +1814,7 @@ describe('useWatch', () => {
 
       render(<Form />);
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         screen.getByText('yes');
       });
     });
@@ -1912,7 +1910,7 @@ describe('useWatch', () => {
 
       render(<Form />);
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         screen.getByText('yes');
       });
     });
@@ -1944,7 +1942,7 @@ describe('useWatch', () => {
 
       render(<Form />);
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         screen.getByText('yes');
       });
     });

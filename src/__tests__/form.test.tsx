@@ -8,8 +8,6 @@ import { Form } from '../form';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 
-import { waitFor } from './utils/waitFor';
-
 describe('Form', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -95,7 +93,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSubmit).toHaveBeenCalled();
       expect(onError).not.toHaveBeenCalled();
       screen.getByText('submitSuccessful');
@@ -136,7 +134,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSubmit).toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
       screen.getByText('This is a server error');
@@ -173,7 +171,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('submitFailed');
     });
   });
@@ -201,7 +199,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('submitSuccessful');
     });
   });
@@ -238,7 +236,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('submitSuccessful');
     });
   });
@@ -272,7 +270,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('submitSuccessful');
 
       expect(fetcher).toHaveBeenCalled();
@@ -309,7 +307,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSuccess).toHaveBeenCalled();
     });
   });
@@ -344,7 +342,7 @@ describe('Form', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(onSuccess).toHaveBeenCalled();
     });
   });

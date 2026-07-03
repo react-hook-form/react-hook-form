@@ -36,8 +36,6 @@ import {
   useFormState,
 } from '../';
 
-import { waitFor } from './utils/waitFor';
-
 describe('useForm', () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -303,7 +301,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(submittedData).toEqual({
             test: 'bill',
             test1: 'bill1',
@@ -319,7 +317,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-        await waitFor(() => expect(submittedData).toEqual({}));
+        await vi.waitFor(() => expect(submittedData).toEqual({}));
       });
     });
 
@@ -512,13 +510,13 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      await waitFor(() => expect(result).toEqual({ test: null }));
+      await vi.waitFor(() => expect(result).toEqual({ test: null }));
 
       fireEvent.click(screen.getByRole('button', { name: 'setRadio2' }));
 
       fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-      await waitFor(() => expect(result).toEqual({}));
+      await vi.waitFor(() => expect(result).toEqual({}));
     });
   });
 
@@ -561,7 +559,7 @@ describe('useForm', () => {
 
       const span = screen.getByRole('alert');
 
-      await waitFor(() => expect(span.textContent).toBe('data'));
+      await vi.waitFor(() => expect(span.textContent).toBe('data'));
 
       fireEvent.input(screen.getByRole('textbox'), {
         target: {
@@ -569,7 +567,7 @@ describe('useForm', () => {
         },
       });
 
-      await waitFor(() => expect(span.textContent).toBe('data'));
+      await vi.waitFor(() => expect(span.textContent).toBe('data'));
     });
 
     it('should display the latest error message with errors prop', () => {
@@ -704,7 +702,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         const alert = await screen.findByRole('alert');
         expect(alert.textContent).toBe('');
@@ -727,7 +725,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         const alert = await screen.findByRole('alert');
         expect(alert.textContent).toBe('');
@@ -750,13 +748,13 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         expect(screen.getByRole('alert').textContent).toBe('');
 
         fireEvent.input(input, { target: { name: 'test', value: '' } });
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
       });
@@ -770,7 +768,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
 
@@ -788,13 +786,13 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         fireEvent.blur(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
         });
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(methods.formState.touchedFields).toEqual({
             test: true,
           }),
@@ -835,7 +833,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { value: '' },
@@ -859,7 +857,7 @@ describe('useForm', () => {
           },
         });
 
-        await waitFor(() => screen.getByText('valid'));
+        await vi.waitFor(() => screen.getByText('valid'));
 
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
@@ -867,7 +865,7 @@ describe('useForm', () => {
           },
         });
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
       });
@@ -877,7 +875,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
       });
@@ -905,7 +903,7 @@ describe('useForm', () => {
           },
         });
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
       });
@@ -915,7 +913,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() =>
+        await vi.waitFor(() =>
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
       });
@@ -1065,7 +1063,7 @@ describe('useForm', () => {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => {
+        await vi.waitFor(() => {
           expect(screen.getByRole('alert')).toHaveTextContent('resolver error');
         });
         expect(resolver).toHaveBeenCalled();
@@ -1095,7 +1093,7 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
-        await waitFor(() => expect(methods.formState.isValid).toBe(true));
+        await vi.waitFor(() => expect(methods.formState.isValid).toBe(true));
         expect(screen.getByRole('alert').textContent).toBe('');
 
         fireEvent.input(screen.getByRole('textbox'), {
@@ -1131,14 +1129,14 @@ describe('useForm', () => {
           target: { name: 'test', value: 'test' },
         });
 
-        await waitFor(() => expect(methods.formState.isValid).toBeTruthy());
+        await vi.waitFor(() => expect(methods.formState.isValid).toBeTruthy());
         expect(screen.getByRole('alert').textContent).toBe('');
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(methods.formState.isValid).toBeFalsy());
+        await vi.waitFor(() => expect(methods.formState.isValid).toBeFalsy());
         expect(resolver).toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
       });
@@ -1205,7 +1203,7 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByText(/button/i));
 
-        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
 
         expect(resolver).toHaveBeenCalledWith(
           {
@@ -1358,7 +1356,7 @@ describe('useForm', () => {
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: /submit/i }));
       });
-      await waitFor(() => expect(resolver).toHaveBeenCalledTimes(3));
+      await vi.waitFor(() => expect(resolver).toHaveBeenCalledTimes(3));
 
       fireEvent.blur(screen.getByRole('textbox'), {
         target: {
@@ -1510,7 +1508,7 @@ describe('useForm', () => {
         },
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('This is required.')).not.toBeInTheDocument(),
       );
 
@@ -1561,7 +1559,7 @@ describe('useForm', () => {
         },
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('This is required.')).not.toBeInTheDocument(),
       );
 
@@ -1629,7 +1627,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(errorsObject).toEqual({
           checkbox: { type: 'error', message: 'wrong' },
         }),
@@ -1637,13 +1635,13 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      await waitFor(() => expect(errorsObject).toEqual({}));
+      await vi.waitFor(() => expect(errorsObject).toEqual({}));
 
       fireEvent.click(screen.getByLabelText('checkbox.0'));
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(errorsObject).toEqual({
           checkbox: { type: 'error', message: 'wrong' },
         }),
@@ -1651,7 +1649,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByLabelText('checkbox.0'));
 
-      await waitFor(() => expect(errorsObject).toEqual({}));
+      await vi.waitFor(() => expect(errorsObject).toEqual({}));
     });
 
     it('should not clear errors for non checkbox parent inputs', async () => {
@@ -1704,7 +1702,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(errorsObject).toEqual({
           checkbox: [
             {
@@ -1719,7 +1717,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button'));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(errorsObject).toEqual({
           checkbox: [
             {
@@ -1773,7 +1771,7 @@ describe('useForm', () => {
 
       toggle();
 
-      await waitFor(() => expect(screen.getByText('Submit')).toBeEnabled());
+      await vi.waitFor(() => expect(screen.getByText('Submit')).toBeEnabled());
 
       toggle();
       toggle();
@@ -1949,7 +1947,7 @@ describe('useForm', () => {
     });
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByText('is validating')).toBeVisible();
     });
 
@@ -1957,7 +1955,7 @@ describe('useForm', () => {
       vi.advanceTimersByTime(2000);
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.queryByText('is validating')).not.toBeInTheDocument();
     });
   });
@@ -2184,17 +2182,17 @@ describe('useForm', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('loading...');
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         'test',
       );
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('done');
     });
   });
@@ -2227,7 +2225,7 @@ describe('useForm', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         'test',
       );
@@ -2273,7 +2271,7 @@ describe('useForm', () => {
 
     render(<Loader />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         'test',
       );
@@ -2310,7 +2308,7 @@ describe('useForm', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith(
         {
           firstName: 'test',
@@ -2349,7 +2347,7 @@ describe('useForm', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(screen.getByRole('textbox')).toHaveValue('2');
     });
   });
@@ -2406,13 +2404,13 @@ describe('useForm', () => {
       },
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
       ).toEqual('test1');
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
       ).toEqual('data');
@@ -2472,21 +2470,21 @@ describe('useForm', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '1' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('A');
       screen.getByText('dirty');
     });
 
     fireEvent.click(screen.getByRole('button', { name: '2' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('B');
       screen.getByText('dirty');
     });
 
     fireEvent.click(screen.getByRole('button', { name: '3' }));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       screen.getByText('C');
       screen.getByText('pristine');
     });
@@ -2614,7 +2612,7 @@ describe('useForm', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
       ).toBeTruthy();
@@ -2711,7 +2709,7 @@ describe('useForm', () => {
 
     render(<App />);
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
       ).toBeTruthy();
@@ -2767,7 +2765,7 @@ describe('useForm', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
       ).toBeTruthy();
@@ -2782,7 +2780,7 @@ describe('useForm', () => {
       ).toBeTruthy();
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getByTestId('textarea') as HTMLTextAreaElement).disabled,
       ).toBeFalsy();
@@ -2824,7 +2822,7 @@ describe('useForm', () => {
       fireEvent.click(screen.getByRole('button'));
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(
         (screen.getByPlaceholderText('firstName') as HTMLInputElement).disabled,
       ).toBeTruthy();
@@ -2953,7 +2951,7 @@ describe('useForm', () => {
       });
       fireEvent.click(screen.getByText('submit'));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenNthCalledWith(1, {
           firstName: 'John',
           lastName: 'Doe',
@@ -2966,7 +2964,7 @@ describe('useForm', () => {
       ).toBe('');
       fireEvent.click(screen.getByText('submit'));
 
-      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+      await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     });
 
     it('should re-initialise when formControl prop reference changes (e.g. HMR/Fast Refresh)', async () => {
@@ -3013,7 +3011,7 @@ describe('useForm', () => {
       });
       fireEvent.click(screen.getByText('submit'));
 
-      await waitFor(() => {
+      await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
           { firstName: 'Bill' },
           expect.any(Object),
@@ -3101,13 +3099,15 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(() => expect(screen.getByText('required')).toBeVisible());
+      await vi.waitFor(() =>
+        expect(screen.getByText('required')).toBeVisible(),
+      );
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: 'test' },
       });
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.queryByText('required')).not.toBeInTheDocument(),
       );
     });
@@ -3149,7 +3149,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.getByTestId('msg').textContent).toBe(
           'first name is required',
         ),
@@ -3191,7 +3191,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect((capturedErrors as any).form?.firstName?.type).toBe(
           'customType',
         ),
@@ -3230,7 +3230,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.getByTestId('msg').textContent).toBe(
           'first name is required',
         ),
@@ -3242,7 +3242,7 @@ describe('useForm', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'submit' }));
 
-      await waitFor(() =>
+      await vi.waitFor(() =>
         expect(screen.getByTestId('msg').textContent).toBe(''),
       );
     });
