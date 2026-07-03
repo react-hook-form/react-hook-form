@@ -33,11 +33,7 @@ export default defineConfig({
           name: 'unit',
           environment: 'jsdom',
           pool: 'forks',
-          poolOptions: {
-            forks: {
-              isolate: true,
-            },
-          },
+          isolate: true,
           fileParallelism: false,
           maxWorkers: 1,
           include: ['src/__tests__/**/*.test.ts?(x)'],
@@ -67,7 +63,7 @@ export default defineConfig({
         },
         test: {
           name: 'browser',
-          include: ['src/**/*.browser.test.tsx'],
+          include: ['cypress/e2e/**/*.browser.test.tsx'],
           testTimeout: 30000,
           browser: {
             enabled: true,
