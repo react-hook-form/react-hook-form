@@ -1,9 +1,13 @@
+import { describe, it } from 'vitest';
+
+import * as cy from './cy';
+import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+
 describe('form state with schema validation', () => {
-  it('should return correct form state with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/formStateWithSchema/onSubmit');
-
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+  it('should return correct form state with onSubmit mode', async () => {
+    await renderApp('http://localhost:3000/formStateWithSchema/onSubmit');
+    const renderCountStart = getRenderCount();
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -12,13 +16,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="firstName"]', 'test');
+    cy.blurInput('input[name="firstName"]');
+    cy.expectJson('#state', {
         dirty: ['firstName'],
         isSubmitted: false,
         submitCount: 0,
@@ -27,12 +29,10 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').clear();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.clear('input[name="firstName"]');
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -41,14 +41,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.type('input[name="lastName"]', 'test');
+    cy.blurInput('input[name="lastName"]');
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: false,
         submitCount: 0,
@@ -57,14 +55,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="lastName"]').clear();
+    await cy.clear('input[name="lastName"]');
 
-    cy.get('#submit').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.click('#submit');
+    cy.expectJson('#state', {
         dirty: ['firstName'],
         isSubmitted: true,
         submitCount: 1,
@@ -73,13 +69,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('#submit').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.click('#submit');
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: true,
         submitCount: 2,
@@ -88,17 +82,15 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('select[name="select"]').select('1');
-    cy.get('#renderCount').contains('14');
+      });
+    await cy.selectOption('select[name="select"]', '1');
+    expectRenderCountDelta(renderCountStart, 13);
   });
 
-  it('should return correct form state with onChange mode', () => {
-    cy.visit('http://localhost:3000/formState/onChange');
-
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+  it('should return correct form state with onChange mode', async () => {
+    await renderApp('http://localhost:3000/formState/onChange');
+    const renderCountStart = getRenderCount();
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -107,13 +99,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.blur('input[name="firstName"]');
+    cy.expectJson('#state', {
         dirty: ['firstName'],
         isSubmitted: false,
         submitCount: 0,
@@ -122,12 +112,10 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').clear();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.clear('input[name="firstName"]');
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -136,14 +124,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.blur('input[name="lastName"]');
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: false,
         submitCount: 0,
@@ -152,14 +138,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('input[name="lastName"]').clear();
+    await cy.clear('input[name="lastName"]');
 
-    cy.get('#submit').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.click('#submit');
+    cy.expectJson('#state', {
         dirty: ['firstName'],
         isSubmitted: true,
         submitCount: 1,
@@ -168,13 +152,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('#submit').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.click('#submit');
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: true,
         submitCount: 2,
@@ -183,16 +165,14 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: true,
         isValid: true,
-      }),
-    );
-    cy.get('#renderCount').contains('14');
+      });
+    expectRenderCountDelta(renderCountStart, 13);
   });
 
-  it('should return correct form state with onBlur mode', () => {
-    cy.visit('http://localhost:3000/formState/onBlur');
-
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+  it('should return correct form state with onBlur mode', async () => {
+    await renderApp('http://localhost:3000/formState/onBlur');
+    const renderCountStart = getRenderCount();
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -201,13 +181,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.blur('input[name="firstName"]');
+    cy.expectJson('#state', {
         dirty: ['firstName'],
         isSubmitted: false,
         submitCount: 0,
@@ -216,12 +194,10 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').clear();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.clear('input[name="firstName"]');
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -230,14 +206,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.blur('input[name="lastName"]');
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: false,
         submitCount: 0,
@@ -246,14 +220,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('input[name="lastName"]').clear();
+    await cy.clear('input[name="lastName"]');
 
-    cy.get('#submit').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.click('#submit');
+    cy.expectJson('#state', {
         dirty: ['firstName'],
         isSubmitted: true,
         submitCount: 1,
@@ -262,13 +234,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('#submit').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.click('#submit');
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: true,
         submitCount: 2,
@@ -277,20 +247,19 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: true,
         isValid: true,
-      }),
-    );
-    cy.get('#renderCount').contains('14');
+      });
+    expectRenderCountDelta(renderCountStart, 13);
   });
 
-  it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
-    cy.visit('http://localhost:3000/formState/onSubmit');
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
+  it('should reset dirty value when inputs reset back to default with onSubmit mode', async () => {
+    await renderApp('http://localhost:3000/formState/onSubmit');
+    const renderCountStart = getRenderCount();
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.blur('input[name="firstName"]');
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.blur('input[name="lastName"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: false,
         submitCount: 0,
@@ -299,14 +268,12 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').clear();
-    cy.get('input[name="lastName"]').clear();
+    await cy.clear('input[name="firstName"]');
+    await cy.clear('input[name="lastName"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -315,13 +282,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('select[name="select"]').select('test1');
-    cy.get('select[name="select"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.selectOption('select[name="select"]', 'test1');
+    await cy.blur('select[name="select"]');
+    cy.expectJson('#state', {
         dirty: ['select'],
         isSubmitted: false,
         submitCount: 0,
@@ -330,11 +295,9 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('select[name="select"]').select('');
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+      });
+    await cy.selectOption('select[name="select"]', '');
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -343,13 +306,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="checkbox"]').click();
-    cy.get('input[name="checkbox"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.click('input[name="checkbox"]');
+    await cy.blur('input[name="checkbox"]');
+    cy.expectJson('#state', {
         dirty: ['checkbox'],
         isSubmitted: false,
         submitCount: 0,
@@ -358,11 +319,9 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('input[name="checkbox"]').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+      });
+    await cy.click('input[name="checkbox"]');
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -371,13 +330,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="checkbox-checked"]').click();
-    cy.get('input[name="checkbox-checked"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.click('input[name="checkbox-checked"]');
+    await cy.blur('input[name="checkbox-checked"]');
+    cy.expectJson('#state', {
         dirty: ['checkbox-checked'],
         isSubmitted: false,
         submitCount: 0,
@@ -392,11 +349,9 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('input[name="checkbox-checked"]').click();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+      });
+    await cy.click('input[name="checkbox-checked"]');
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -411,13 +366,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="radio"]').click();
-    cy.get('input[name="radio"]').blur();
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.click('input[name="radio"]');
+    await cy.blur('input[name="radio"]');
+    cy.expectJson('#state', {
         dirty: ['radio'],
         isSubmitted: false,
         submitCount: 0,
@@ -433,12 +386,10 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('select[name="select"]').select('');
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    await cy.selectOption('select[name="select"]', '');
+    cy.expectJson('#state', {
         dirty: ['radio'],
         isSubmitted: false,
         submitCount: 0,
@@ -454,20 +405,19 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('#renderCount').contains('21');
+      });
+    expectRenderCountDelta(renderCountStart, 20);
   });
 
-  it('should reset dirty value when inputs reset back to default with onBlur mode', () => {
-    cy.visit('http://localhost:3000/formState/onBlur');
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
+  it('should reset dirty value when inputs reset back to default with onBlur mode', async () => {
+    await renderApp('http://localhost:3000/formState/onBlur');
+    const renderCountStart = getRenderCount();
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.blur('input[name="firstName"]');
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.blur('input[name="lastName"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: false,
         submitCount: 0,
@@ -476,15 +426,13 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').clear();
-    cy.get('input[name="lastName"]').clear();
-    cy.get('input[name="lastName"]').blur();
+    await cy.clear('input[name="firstName"]');
+    await cy.clear('input[name="lastName"]');
+    await cy.blur('input[name="lastName"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -493,20 +441,19 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('#renderCount').contains('9');
+      });
+    expectRenderCountDelta(renderCountStart, 8);
   });
 
-  it('should reset dirty value when inputs reset back to default with onChange mode', () => {
-    cy.visit('http://localhost:3000/formState/onChange');
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
+  it('should reset dirty value when inputs reset back to default with onChange mode', async () => {
+    await renderApp('http://localhost:3000/formState/onChange');
+    const renderCountStart = getRenderCount();
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.blur('input[name="firstName"]');
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.blur('input[name="lastName"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: ['firstName', 'lastName'],
         isSubmitted: false,
         submitCount: 0,
@@ -515,13 +462,11 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('#resetForm').click();
+    await cy.click('#resetForm');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -530,19 +475,17 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="firstName"]').type('test');
-    cy.get('input[name="firstName"]').blur();
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="lastName"]').blur();
+    await cy.type('input[name="firstName"]', 'test');
+    await cy.blur('input[name="firstName"]');
+    await cy.type('input[name="lastName"]', 'test');
+    await cy.blur('input[name="lastName"]');
 
-    cy.get('input[name="firstName"]').clear();
-    cy.get('input[name="lastName"]').clear();
+    await cy.clear('input[name="firstName"]');
+    await cy.clear('input[name="lastName"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         dirty: [],
         isSubmitted: false,
         submitCount: 0,
@@ -551,8 +494,7 @@ describe('form state with schema validation', () => {
         isSubmitting: false,
         isSubmitSuccessful: false,
         isValid: false,
-      }),
-    );
-    cy.get('#renderCount').contains('14');
+      });
+    expectRenderCountDelta(renderCountStart, 13);
   });
 });
