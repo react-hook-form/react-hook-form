@@ -1,0 +1,20 @@
+name: Browser Test
+
+on: [pull_request]
+
+jobs:
+  vitest-browser:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Vitest browser mode
+        run: pnpm test:browser
