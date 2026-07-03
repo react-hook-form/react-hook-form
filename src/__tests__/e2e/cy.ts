@@ -71,7 +71,11 @@ export async function check(selector: string, value?: string) {
   }
 
   if (!el.checked) {
-    await userEvent.click(el);
+    if (el.type === 'radio') {
+      fireEvent.click(el);
+    } else {
+      await userEvent.click(el);
+    }
   }
 }
 
@@ -115,6 +119,9 @@ export async function blurAt(selector: string, index: number) {
 
   await userEvent.click(el);
   await userEvent.click(document.body);
+  if (document.activeElement === el) {
+    el.blur();
+  }
 }
 
 export async function blur(selector: string) {
@@ -127,6 +134,9 @@ export async function blur(selector: string) {
 
   await userEvent.click(el);
   await userEvent.click(document.body);
+  if (document.activeElement === el) {
+    el.blur();
+  }
 }
 
 export function expectInputError(inputSelector: string, text: string) {
@@ -206,6 +216,18 @@ export async function waitFor(callback: () => void, timeout = 5000) {
 
 export function fireChange(selector: string, value: string) {
   fireEvent.change($(selector), { target: { value } });
+}
+
+export async function setInputValue(selector: string, value: string) {
+  const el = $(selector) as HTMLInputElement;
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+    window.HTMLInputElement.prototype,
+    'value',
+  )?.set;
+
+  nativeInputValueSetter?.call(el, value);
+  fireEvent.input(el, { target: { value } });
+  fireEvent.change(el, { target: { value } });
 }
 
 export function wait(ms: number) {
@@ -299,12 +321,52 @@ export async function clickFirstMuiPopoverOption() {
   await userEvent.click(document.querySelector('.MuiPopover-root ul > li')!);
 }
 
+export async function fill(selector: string, text: string) {
+  await userEvent.fill($(selector), text);
+}
+
+export function getFieldArraySubmitData() {
+  return $$('ul > li').map((li) => {
+    const nameInput = li.querySelector(
+      'input[name$=".name"]',
+    ) as HTMLInputElement;
+    const conditionalInput = li.querySelector(
+      'input[name$=".conditional"]',
+    ) as HTMLInputElement | null;
+
+    if (conditionalInput) {
+      return { name: nameInput.value, conditional: conditionalInput.value };
+    }
+
+    return { name: nameInput.value };
+  });
+}
+
+export async function focusMuiSelect(selector: string) {
+  fireEvent.focus($(selector));
+}
+
+export async function blurMuiSelect(selector: string) {
+  fireEvent.blur($(selector));
+}
+
+export function blurInput(selector: string) {
+  fireEvent.blur($(selector));
+}
+
+export function getReplaceFieldValues() {
+  return $$('ul > li').map(
+    (li) => (li.querySelector('input') as HTMLInputElement).value,
+  );
+}
+
 export async function clickFieldArray(buttonSelector: string, liIndex: number) {
   await click(buttonSelector);
   await waitFor(() => {
     expect($$('ul > li')[liIndex]?.querySelector('input')?.value).toBeTruthy();
   });
-  return ($$('ul > li')[liIndex]?.querySelector('input') as HTMLInputElement).value;
+  return ($$('ul > li')[liIndex]?.querySelector('input') as HTMLInputElement)
+    .value;
 }
 
 export function getCounterText(selector: string) {

@@ -9,7 +9,7 @@ describe('defaultValues async', () => {
     const renderCountStart = getRenderCount();
     await cy.wait(10);
 
-    cy.expectValue('input[name="test"]', 'test');
+    await cy.waitFor(() => cy.expectValue('input[name="test"]', 'test'));
     cy.expectValue('input[name="test1.firstName"]', 'firstName');
     cy.expectValue('input[name="test1.lastName.0"]', 'lastName0');
     cy.expectValue('input[name="test1.lastName.1"]', 'lastName1');

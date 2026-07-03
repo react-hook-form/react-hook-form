@@ -16,10 +16,9 @@ export function parseAppPath(url: string) {
 }
 
 export function getRenderCount() {
-  return Number.parseInt(
-    document.querySelector('#renderCount')?.textContent ?? '0',
-    10,
-  );
+  const el =
+    document.querySelector('#renderCount') ?? document.querySelector('#count');
+  return Number.parseInt(el?.textContent ?? '0', 10);
 }
 
 export function expectRenderCountDelta(from: number, delta: number) {
