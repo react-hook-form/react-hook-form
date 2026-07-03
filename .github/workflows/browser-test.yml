@@ -1,9 +1,9 @@
-name: Browser Test
+name: E2E Test
 
 on: [pull_request]
 
 jobs:
-  vitest-browser:
+  cypress-run:
     runs-on: ubuntu-latest
 
     steps:
@@ -12,11 +12,8 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install chromium --with-deps
-
-      - name: Build package for browser tests
-        run: pnpm build:esm
-
       - name: Vitest browser mode
-        run: pnpm test:browser
+        run: |
+          pnpm exec playwright install chromium --with-deps
+          pnpm build:esm
+          pnpm test:browser
