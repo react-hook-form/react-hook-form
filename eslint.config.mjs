@@ -1,5 +1,4 @@
 // @ts-check
-import pluginCypress from 'eslint-plugin-cypress';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHookPlugin from 'eslint-plugin-react-hooks';
@@ -23,7 +22,6 @@ export default tseslint.config(
   reactPlugin.configs.flat.recommended,
   ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
-  pluginCypress.configs.recommended,
   {
     plugins: {
       'react-hooks': reactHookPlugin,
@@ -46,7 +44,6 @@ export default tseslint.config(
     },
     rules: {
       'no-extra-boolean-cast': 'error',
-      'cypress/unsafe-to-chain-command': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/ban-ts-comment': 'warn',
@@ -58,7 +55,6 @@ export default tseslint.config(
         'warn',
         { ignoreRestSiblings: true },
       ],
-      'cypress/no-unnecessary-waiting': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'react/display-name': 'warn',

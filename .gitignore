@@ -40,10 +40,6 @@ example/build/
 .idea/
 .rpt2_cache
 package-lock.json
-/cypress/videos
-/cypress/parallel-weights.json
-/cypress/screenshots
-/cypress/fixtures
 pnpm-workspace.yaml
 
 # Vitest browser-mode failure screenshots
