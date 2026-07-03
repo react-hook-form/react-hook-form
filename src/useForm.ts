@@ -108,6 +108,7 @@ export function useForm<
 
     updateFormState((data) => ({
       ...data,
+      ...control._formState,
       isReady: true,
     }));
 

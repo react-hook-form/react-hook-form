@@ -1856,6 +1856,15 @@ export function createFormControl<
     };
   };
 
+  // Keep the authoritative `_formState` in sync on every emission, independent
+  // of component subscribers. Otherwise a subtree hidden by `<Activity>`
+  // unsubscribes on hide and misses updates such as `isSubmitting: false`, so
+  // `_formState` (only mutated inside subscriber callbacks) stays stale and the
+  // subtree can never recover the correct value on resume. See #13563.
+  _subjects.state.subscribe({
+    next: ({ name, values, type, ...formState }) => _setFormState(formState),
+  });
+
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
     (_options.defaultValues as Function)().then((values: TFieldValues) => {
