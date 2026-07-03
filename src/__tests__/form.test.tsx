@@ -2,6 +2,7 @@ import 'whatwg-fetch';
 
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Form } from '../form';
 import { useForm } from '../useForm';
@@ -9,7 +10,7 @@ import { FormProvider } from '../useFormContext';
 
 describe('Form', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should support render with both form tag and headless', () => {
@@ -45,15 +46,15 @@ describe('Form', () => {
   });
 
   it('should handle success request callback', async () => {
-    jest.spyOn(global, 'fetch').mockResolvedValueOnce(
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'ok' }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       }),
     );
 
-    const onSubmit = jest.fn();
-    const onError = jest.fn();
+    const onSubmit = vi.fn();
+    const onError = vi.fn();
 
     const App = () => {
       const [message, setMessage] = React.useState('');
@@ -101,12 +102,12 @@ describe('Form', () => {
   });
 
   it('should handle error request callback', async () => {
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 500 }));
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 500 }),
+    );
 
-    const onSubmit = jest.fn();
-    const onSuccess = jest.fn();
+    const onSubmit = vi.fn();
+    const onSuccess = vi.fn();
 
     const App = () => {
       const {
@@ -143,9 +144,9 @@ describe('Form', () => {
   });
 
   it('should validate custom status code', async () => {
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 201 }));
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 201 }),
+    );
 
     const App = () => {
       const {
@@ -176,9 +177,9 @@ describe('Form', () => {
   });
 
   it('should support other request type', async () => {
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 200 }),
+    );
 
     const App = () => {
       const {
@@ -204,9 +205,9 @@ describe('Form', () => {
   });
 
   it('should support render props for react native', async () => {
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 200 }),
+    );
 
     const App = () => {
       const {
@@ -241,10 +242,10 @@ describe('Form', () => {
   });
 
   it('should support fetcher prop with external request', async () => {
-    const fetcher = jest.fn().mockResolvedValue({});
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    const fetcher = vi.fn().mockResolvedValue({});
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 200 }),
+    );
 
     const App = () => {
       const {
@@ -277,11 +278,11 @@ describe('Form', () => {
   });
 
   it('should include application/json header with encType supplied', async () => {
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 200 }),
+    );
 
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
 
     const App = () => {
       const {
@@ -312,11 +313,11 @@ describe('Form', () => {
   });
 
   it('should support explicit "multipart/form-data" encType', async () => {
-    jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(null, { status: 200 }),
+    );
 
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
 
     const App = () => {
       const {

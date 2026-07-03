@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../useForm';
 
@@ -21,7 +22,7 @@ describe('nested null bug', () => {
         </form>
       );
     }
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     render(<TestComponent />);
 
     fireEvent.click(screen.getByText('Submit'));

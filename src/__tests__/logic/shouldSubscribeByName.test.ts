@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import shouldSubscribeByName from '../../logic/shouldSubscribeByName';
 
 describe('shouldSubscribeByName', () => {

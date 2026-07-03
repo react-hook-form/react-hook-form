@@ -8,6 +8,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../constants';
 import type {
@@ -36,9 +37,11 @@ import {
   useFormState,
 } from '../';
 
-jest.useFakeTimers();
-
 describe('useForm', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
@@ -408,7 +411,7 @@ describe('useForm', () => {
     });
 
     it('should keep validation during unmount', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       function Component() {
         const {
@@ -690,7 +693,7 @@ describe('useForm', () => {
 
     describe('onSubmit mode', () => {
       it('should not contain error if value is valid', async () => {
-        const onSubmit = jest.fn();
+        const onSubmit = vi.fn();
 
         render(<Component onSubmit={onSubmit} />);
 
@@ -713,7 +716,7 @@ describe('useForm', () => {
       });
 
       it('should not contain error if name is invalid', async () => {
-        const onSubmit = jest.fn();
+        const onSubmit = vi.fn();
 
         render(<Component onSubmit={onSubmit} />);
 
@@ -736,7 +739,7 @@ describe('useForm', () => {
       });
 
       it('should contain error if value is invalid with revalidateMode is onChange', async () => {
-        const onSubmit = jest.fn();
+        const onSubmit = vi.fn();
 
         render(<Component onSubmit={onSubmit} />);
 
@@ -776,7 +779,7 @@ describe('useForm', () => {
       });
 
       it('should set name to formState.touchedFields when formState.touchedFields is defined', async () => {
-        const onSubmit = jest.fn();
+        const onSubmit = vi.fn();
 
         render(<Component onSubmit={onSubmit} rules={{}} />);
 
@@ -800,7 +803,7 @@ describe('useForm', () => {
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
       it('should perform correct behavior when reValidateMode is onBlur', async () => {
-        const onSubmit = jest.fn();
+        const onSubmit = vi.fn();
 
         const Component = () => {
           const {
@@ -1030,7 +1033,7 @@ describe('useForm', () => {
 
     describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
-        const resolver = jest.fn(async (data: any) => {
+        const resolver = vi.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
@@ -1069,7 +1072,7 @@ describe('useForm', () => {
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
-        const resolver = jest.fn((data: any) => {
+        const resolver = vi.fn((data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
@@ -1105,7 +1108,7 @@ describe('useForm', () => {
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
-        const resolver = jest.fn(async (data: any) => {
+        const resolver = vi.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
@@ -1140,8 +1143,8 @@ describe('useForm', () => {
       });
 
       it("should call the resolver with the field being validated when an input's value change", async () => {
-        const resolver = jest.fn((values: any) => ({ values, errors: {} }));
-        const onSubmit = jest.fn();
+        const resolver = vi.fn((values: any) => ({ values, errors: {} }));
+        const onSubmit = vi.fn();
 
         render(
           <Component resolver={resolver} onSubmit={onSubmit} mode="onChange" />,
@@ -1224,7 +1227,7 @@ describe('useForm', () => {
       });
 
       it('should call the resolver with the field being validated when `trigger` is called', async () => {
-        const resolver = jest.fn((values: any) => ({ values, errors: {} }));
+        const resolver = vi.fn((values: any) => ({ values, errors: {} }));
         const defaultValues = { test: { sub: 'test' }, test1: 'test1' };
 
         const { result } = renderHook(() =>
@@ -1294,7 +1297,7 @@ describe('useForm', () => {
 
   describe('when mode or reValidateMode changes', () => {
     it('should use updated mode and reValidateMode inside of onChange handler', async () => {
-      const resolver = jest.fn(async (data: any) => ({
+      const resolver = vi.fn(async (data: any) => ({
         values: data,
         errors: {},
       }));
@@ -1376,7 +1379,7 @@ describe('useForm', () => {
         test: string;
       };
 
-      const resolver = jest.fn(async (data: FormValues) => {
+      const resolver = vi.fn(async (data: FormValues) => {
         return {
           values: data,
           errors: {},
@@ -1432,7 +1435,7 @@ describe('useForm', () => {
         test: string;
       };
 
-      const resolver = jest.fn(async (data: FormValues) => {
+      const resolver = vi.fn(async (data: FormValues) => {
         return {
           values: data,
           errors: {},
@@ -1821,7 +1824,7 @@ describe('useForm', () => {
   });
 
   it('should update isValidating form and field states correctly', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     let formState = {} as FormState<FieldValues>;
     let getFieldState = {} as UseFormGetFieldState<FieldValues>;
@@ -1885,7 +1888,7 @@ describe('useForm', () => {
     screen.getByText('stateValidation: true');
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(formState.isValidating).toBe(true);
@@ -1897,7 +1900,7 @@ describe('useForm', () => {
     screen.getByText('stateValidation: true');
 
     await act(async () => {
-      jest.advanceTimersByTime(4000);
+      vi.advanceTimersByTime(4000);
     });
 
     expect(formState.isValidating).toBe(false);
@@ -1948,7 +1951,7 @@ describe('useForm', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
     });
 
     await waitFor(() => {
@@ -1957,7 +1960,7 @@ describe('useForm', () => {
   });
 
   it('should correctly handle multiple async validation triggers', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     let formState = {} as FormState<FieldValues>;
     let getFieldState = {} as UseFormGetFieldState<FieldValues>;
@@ -2014,7 +2017,7 @@ describe('useForm', () => {
     expect(getFieldState('lastName').isDirty).toStrictEqual(true);
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(formState.validatingFields).toStrictEqual({ lastName: true });
@@ -2027,7 +2030,7 @@ describe('useForm', () => {
     expect(getFieldState('lastName').isValidating).toBe(true);
 
     await act(async () => {
-      jest.advanceTimersByTime(1500);
+      vi.advanceTimersByTime(1500);
     });
 
     expect(formState.validatingFields).toStrictEqual({});
@@ -2035,7 +2038,7 @@ describe('useForm', () => {
   });
 
   it('should update isValidating to true when using with resolver', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     let formState = {} as FormState<FieldValues>;
     let getFieldState = {} as UseFormGetFieldState<FieldValues>;
@@ -2099,7 +2102,7 @@ describe('useForm', () => {
     expect(getFieldState('firstName').isValidating).toBe(true);
 
     await act(async () => {
-      jest.runAllTimers();
+      vi.runAllTimers();
     });
 
     expect(formState.isValidating).toBe(false);
@@ -2109,7 +2112,7 @@ describe('useForm', () => {
   });
 
   it('should remove field from validatingFields on unregister', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     let unregister: UseFormUnregister<FieldValues>;
     let formState = {} as FormState<FieldValues>;
     const App = () => {
@@ -2146,7 +2149,7 @@ describe('useForm', () => {
     expect(formState.validatingFields).toEqual({ firstName: true });
     await act(async () => {
       unregister('firstName');
-      jest.runAllTimers();
+      vi.runAllTimers();
     });
     expect(formState.validatingFields).toEqual({});
   });
@@ -2275,8 +2278,8 @@ describe('useForm', () => {
   });
 
   it('should submit mounted values from values prop when shouldUnregister is true', async () => {
-    const onSubmit = jest.fn();
-    const onInvalid = jest.fn();
+    const onSubmit = vi.fn();
+    const onInvalid = vi.fn();
 
     const App = () => {
       const { register, handleSubmit } = useForm<{
@@ -2888,7 +2891,7 @@ describe('useForm', () => {
 
       const { register, handleSubmit, formControl, control } =
         createFormControl<FormValues>();
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       function LastName() {
         const { field } = useController({
@@ -2968,7 +2971,7 @@ describe('useForm', () => {
         firstName: string;
       };
 
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       // Simulate initial module-level createFormControl call
       const { handleSubmit, formControl } = createFormControl<FormValues>({

@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useController } from '../../useController';
@@ -15,13 +16,23 @@ interface DefaultValues {
   test: TestValue[];
 }
 
-let i = 0;
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+vi.mock('../../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('replace', () => {
   beforeEach(() => {
-    i = 0;
+    resetGenerateId();
   });
 
   it('should replace fields correctly', () => {
@@ -322,7 +333,7 @@ describe('replace', () => {
 
   describe('with resolver', () => {
     it('should not invoke resolver per register during replace, but run after replace completes', async () => {
-      const resolver = jest
+      const resolver = vi
         .fn()
         .mockImplementation((values) => ({ values, errors: {} }));
 

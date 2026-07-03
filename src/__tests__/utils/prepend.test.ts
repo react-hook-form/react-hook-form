@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import prepend from '../../utils/prepend';
 
 describe('prepend', () => {

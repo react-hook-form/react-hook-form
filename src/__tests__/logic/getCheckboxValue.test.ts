@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import getCheckboxValue from '../../logic/getCheckboxValue';
 
 describe('getCheckboxValue', () => {

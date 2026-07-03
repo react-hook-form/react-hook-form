@@ -6,6 +6,7 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../../controller';
 import type { Control, FieldValues } from '../../types';
@@ -575,7 +576,7 @@ describe('watch', () => {
         firstName: string;
       }[];
     }
-    const mockedFn = jest.fn();
+    const mockedFn = vi.fn();
 
     function App() {
       const { watch, control } = useForm<FormValues>({
@@ -687,7 +688,7 @@ describe('watch', () => {
   });
 
   it('should update state correctly in watch callback with Controller, trigger, and reset - issue #13178', () => {
-    const logSpy = jest.fn();
+    const logSpy = vi.fn();
 
     function TestComponent() {
       const { control, watch, trigger, reset } = useForm({
@@ -768,7 +769,7 @@ describe('watch', () => {
   });
 
   it('should update nameLength correctly using setValue in watch callback - CodeSandbox scenario', () => {
-    const logSpy = jest.fn();
+    const logSpy = vi.fn();
 
     function TestComponent() {
       const form = useForm<{ name: string; nameLength: number }>({

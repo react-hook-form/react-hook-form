@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { Control, UseFormReturn } from '../types';
 import { useForm } from '../useForm';
@@ -589,10 +590,10 @@ describe('Watch', () => {
   });
 
   it('should trigger re-render only when the values corresponding to the `name` prop change', async () => {
-    const outerCallback = jest.fn();
-    const fooCallback = jest.fn();
-    const barCallback = jest.fn();
-    const bazQuxCallback = jest.fn();
+    const outerCallback = vi.fn();
+    const fooCallback = vi.fn();
+    const barCallback = vi.fn();
+    const bazQuxCallback = vi.fn();
 
     const OnRender = ({ callback }: { callback: () => void }) => {
       callback();

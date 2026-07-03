@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
 import { useController } from '../useController';
@@ -20,7 +21,7 @@ import noop from '../utils/noop';
 
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
-    const mockRegister = jest.fn();
+    const mockRegister = vi.fn();
     const Test = () => {
       const { register } = useFormContext();
 
@@ -258,7 +259,7 @@ describe('FormProvider', () => {
       arrayErrors = fields.map(
         (_, index) => errors?.testArray?.[index]?.name?.message,
       );
-      const onSubmit = jest.fn((e) => e.preventDefault());
+      const onSubmit = vi.fn((e) => e.preventDefault());
       const [selected, setSelected] = useState<number | undefined>();
       return (
         <form onSubmit={onSubmit}>
@@ -327,7 +328,7 @@ describe('FormProvider', () => {
   });
 
   it('should not rerender unrelated fields when using useController', () => {
-    const onRender = jest.fn();
+    const onRender = vi.fn();
 
     const RenderCounter = React.memo(() => {
       useController({
@@ -379,7 +380,7 @@ describe('FormProvider', () => {
    * This ensures FormProvider's context value is properly memoized.
    */
   it('should not do unnecessary rerenders by useFormContext', () => {
-    const onRender = jest.fn();
+    const onRender = vi.fn();
 
     const RenderCounter = React.memo(() => {
       const {
@@ -436,9 +437,7 @@ describe('FormProvider', () => {
   });
 
   it('should not throw "Cannot update a component while rendering a different component" when swapping FormProviders', () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const Child = () => {
       useController({ name: 'test' });
@@ -487,9 +486,7 @@ describe('FormProvider', () => {
   });
 
   it('should not throw "Cannot update a component while rendering a different component" when swapping FormProvider props', () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const Child = () => {
       useController({ name: 'test' });

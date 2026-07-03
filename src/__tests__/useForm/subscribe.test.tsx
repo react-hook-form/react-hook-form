@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
@@ -7,8 +8,8 @@ import { useFormState } from '../../useFormState';
 
 describe('subscribe', () => {
   it('should properly handle multiple subscriptions', async () => {
-    const callbackFn1 = jest.fn();
-    const callbackFn2 = jest.fn();
+    const callbackFn1 = vi.fn();
+    const callbackFn2 = vi.fn();
 
     function ChildComp({
       subscribe,
@@ -72,7 +73,7 @@ describe('subscribe', () => {
   });
 
   it('should only react to formState changes it subscribes to', async () => {
-    const callbackFn = jest.fn();
+    const callbackFn = vi.fn();
 
     const App = () => {
       const { register, subscribe, control } = useForm({
@@ -122,7 +123,7 @@ describe('subscribe', () => {
   });
 
   it('should allow subscribing to submit state updates', async () => {
-    const callbackFn = jest.fn();
+    const callbackFn = vi.fn();
 
     const App = () => {
       const { handleSubmit, subscribe } = useForm();
@@ -159,7 +160,7 @@ describe('subscribe', () => {
   });
 
   it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
-    const callbackFn = jest.fn();
+    const callbackFn = vi.fn();
 
     const App = () => {
       const { register, setValue, subscribe } = useForm({
@@ -198,7 +199,7 @@ describe('subscribe', () => {
   });
 
   it('should not call subscribe callback when setValue is called with the same value and shouldTouch/shouldValidate options', async () => {
-    const callbackFn = jest.fn();
+    const callbackFn = vi.fn();
 
     const App = () => {
       const { register, setValue, subscribe } = useForm({
@@ -242,7 +243,7 @@ describe('subscribe', () => {
   });
 
   it('should call subscribe callback with a values snapshot', async () => {
-    const callbackFn = jest.fn();
+    const callbackFn = vi.fn();
     let capturedValues: Record<string, unknown> | undefined;
 
     const App = () => {
@@ -283,7 +284,7 @@ describe('subscribe', () => {
   });
 
   it('should keep isDirty true when reset keeps values and updates defaultValues', async () => {
-    const callbackFn = jest.fn();
+    const callbackFn = vi.fn();
 
     const App = () => {
       const { register, reset, subscribe } = useForm({
@@ -355,7 +356,7 @@ describe('subscribe', () => {
 
 describe('call setValue within subscribe', () => {
   it('should update a dependent field when subscribed field changes', () => {
-    const callbackSpy = jest.fn();
+    const callbackSpy = vi.fn();
 
     function App() {
       const { register, setValue, subscribe } = useForm<{
@@ -416,7 +417,7 @@ describe('call setValue within subscribe', () => {
   });
 
   it('does not infinitely recurse when setValue call is conditional', () => {
-    const callbackSpy = jest.fn();
+    const callbackSpy = vi.fn();
     let counter = 0;
 
     function App() {
@@ -471,7 +472,7 @@ describe('call setValue within subscribe', () => {
   });
 
   it('does not infinitely recurse when setValue call is conditional', () => {
-    const callbackSpy = jest.fn();
+    const callbackSpy = vi.fn();
 
     function App() {
       const { register, setValue, subscribe } = useForm<{
@@ -523,7 +524,7 @@ describe('call setValue within subscribe', () => {
   });
 
   it('works when calling reset within subscribe', () => {
-    const callbackSpy = jest.fn();
+    const callbackSpy = vi.fn();
 
     function App() {
       const { register, reset, subscribe } = useForm<{
@@ -575,7 +576,7 @@ describe('call setValue within subscribe', () => {
   });
 
   it('allows calling setValue with shouldDirty', () => {
-    const callbackSpy = jest.fn();
+    const callbackSpy = vi.fn();
     let dirtyFieldsSpy = null;
 
     function App() {

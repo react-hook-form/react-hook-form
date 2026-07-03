@@ -1,13 +1,21 @@
+import {
+  beforeAll,
+  describe,
+  expect,
+  it,
+  type MockedFunction,
+  vi,
+} from 'vitest';
+
 import unsetEmptyArray from '../../logic/unsetEmptyArray';
 import unset from '../../utils/unset';
 
-jest.mock('../../utils/unset', () => ({
-  __esModule: true,
-  default: jest.fn(),
+vi.mock('../../utils/unset', () => ({
+  default: vi.fn(),
 }));
 
 describe('unsetEmptyArray', () => {
-  const mockedUnset = unset as jest.MockedFunction<typeof unset>;
+  const mockedUnset = unset as MockedFunction<typeof unset>;
 
   beforeAll(() => {
     mockedUnset.mockClear();

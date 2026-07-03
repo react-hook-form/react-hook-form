@@ -6,12 +6,15 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../../useForm';
 
-jest.useFakeTimers();
-
 describe('resetDefaultValues', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   it('should update default values and recompute dirtyFields/isDirty without changing form values', async () => {
     let formRef: ReturnType<
       typeof useForm<{ firstName: string; lastName: string }>

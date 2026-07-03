@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
 import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
@@ -559,9 +560,9 @@ describe('useController', () => {
   });
 
   it('should invoke native validation with Controller', async () => {
-    const setCustomValidity = jest.fn();
-    const reportValidity = jest.fn();
-    const focus = jest.fn();
+    const setCustomValidity = vi.fn();
+    const reportValidity = vi.fn();
+    const focus = vi.fn();
     const message = 'This is required';
 
     type FormValues = {
@@ -628,7 +629,7 @@ describe('useController', () => {
   });
 
   it('should update with inline defaultValue', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const App = () => {
       const { control, handleSubmit } = useForm();
       useController({ control, defaultValue: 'test', name: 'test' });
@@ -833,8 +834,8 @@ describe('useController', () => {
   });
 
   it('should focus and select the input text', async () => {
-    const select = jest.fn();
-    const focus = jest.fn();
+    const select = vi.fn();
+    const focus = vi.fn();
 
     const App = () => {
       const { control, setFocus } = useForm({
@@ -901,7 +902,7 @@ describe('useController', () => {
   });
 
   it('should restore defaultValue from Controller with react strict mode double useEffect', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     function App() {
       const { handleSubmit, control } = useForm({
@@ -1165,7 +1166,7 @@ describe('useController', () => {
   });
 
   it('should pass validation with disabled to set to true', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
 
     const App = () => {
       const { handleSubmit, control } = useForm({
@@ -1200,7 +1201,7 @@ describe('useController', () => {
   });
 
   it('should not omit form value when disabled is not been presented', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     const App = () => {
       const { handleSubmit, control } = useForm({

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import set from '../../utils/set';
 
 describe('set', () => {

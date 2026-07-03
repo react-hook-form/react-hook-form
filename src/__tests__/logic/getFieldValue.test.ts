@@ -1,15 +1,15 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import getFieldValue from '../../logic/getFieldValue';
 import type { Field } from '../../types';
 
-jest.mock('../../logic/getRadioValue', () => ({
-  __esModule: true,
+vi.mock('../../logic/getRadioValue', () => ({
   default: () => ({
     value: 2,
   }),
 }));
 
-jest.mock('../../logic/getCheckboxValue', () => ({
-  __esModule: true,
+vi.mock('../../logic/getCheckboxValue', () => ({
   default: () => ({
     value: 'testValue',
   }),

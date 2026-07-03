@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import isHTMLElement from '../../utils/isHTMLElement';
 
 describe('isHTMLElement', () => {

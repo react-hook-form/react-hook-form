@@ -42,7 +42,7 @@
     "test:watch": "pnpm test --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",
     "test:browser": "vitest run --config vitest.config.ts --project browser",
-    "test:unit": "vitest run --config vitest.config.ts --project unit --project server",
+    "test:unit": "vitest run --config vitest.config.ts --project unit && vitest run --config vitest.config.ts --project server",
     "test:type": "tsc -p src/__typetest__/tsconfig.json",
     "bench": "tsx scripts/bench.ts",
     "bench:compare": "tsx scripts/bench-compare.ts",

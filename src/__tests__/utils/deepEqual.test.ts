@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import deepEqual from '../../utils/deepEqual';
 
 describe('deepEqual', () => {

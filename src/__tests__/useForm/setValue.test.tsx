@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -18,9 +19,11 @@ import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
-jest.useFakeTimers();
-
 describe('setValue', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   it('should not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
 
@@ -992,7 +995,7 @@ describe('setValue', () => {
 
       render(<App />, { reactStrictMode: true });
 
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
 
       expect(await screen.findByText('test')).toBeVisible();
     });
@@ -1535,7 +1538,7 @@ describe('setValue', () => {
 
     control._names.watch.add('test');
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     await act(async () => {
       result.current.setValue('test', 'value');
@@ -1555,7 +1558,7 @@ describe('setValue', () => {
       result.current.setValue('test', 'initial');
     });
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     // Call setValue again with the same value
     await act(async () => {

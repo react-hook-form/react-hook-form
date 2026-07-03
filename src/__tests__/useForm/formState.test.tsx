@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -228,7 +229,7 @@ describe('formState', () => {
     });
 
     it('should set isValid to true after async values provide valid data', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers({ shouldAdvanceTime: true });
 
       const App = () => {
         const [value, setValue] = React.useState<{ name: string } | undefined>(
@@ -262,11 +263,11 @@ describe('formState', () => {
       expect(screen.getByText('invalid')).toBeVisible();
 
       act(() => {
-        jest.advanceTimersByTime(2000);
+        vi.advanceTimersByTime(2000);
       });
 
       await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
   });
 
@@ -369,7 +370,7 @@ describe('formState', () => {
   });
 
   it('should not update form state when there is a promise reject', async () => {
-    const rejectPromiseFn = jest
+    const rejectPromiseFn = vi
       .fn()
       .mockRejectedValue(new Error('this is an error'));
 
@@ -850,7 +851,7 @@ describe('formState', () => {
     const message = 'required.';
 
     it('should only show error after 500ms with register', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers({ shouldAdvanceTime: true });
 
       const App = () => {
         const {
@@ -885,12 +886,14 @@ describe('formState', () => {
 
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      jest.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
 
       expect(await screen.findByText(message)).toBeVisible();
     });
 
     it('should only show error after 500ms with Controller', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+
       const App = () => {
         const {
           control,
@@ -929,14 +932,14 @@ describe('formState', () => {
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       act(() => {
-        jest.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
       });
 
       expect(await screen.findByText(message)).toBeVisible();
     });
 
     it('should prevent error from showing once input is validated', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers({ shouldAdvanceTime: true });
 
       const App = () => {
         const {
@@ -983,7 +986,7 @@ describe('formState', () => {
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
       await act(async () => {
-        jest.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
       });
 
       expect(screen.queryByText(message)).not.toBeInTheDocument();
@@ -991,7 +994,7 @@ describe('formState', () => {
 
     describe('when delayError is provided', () => {
       it('should only show error after 500ms with register and render formState instantly', async () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers({ shouldAdvanceTime: true });
 
         const message = 'required.';
 
@@ -1047,7 +1050,7 @@ describe('formState', () => {
         expect(screen.queryByText(message)).toBeNull();
 
         act(() => {
-          jest.advanceTimersByTime(500);
+          vi.advanceTimersByTime(500);
         });
 
         expect(await screen.findByText(message)).toBeVisible();

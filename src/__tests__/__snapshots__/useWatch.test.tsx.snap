@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`useWatch fieldArray with shouldUnregister true should watch correct input update with single field array input 1`] = `
+exports[`useWatch > fieldArray with shouldUnregister true > should watch correct input update with single field array input 1`] = `
 [
   [
     {
@@ -61,7 +61,7 @@ exports[`useWatch fieldArray with shouldUnregister true should watch correct inp
 ]
 `;
 
-exports[`useWatch reset with useFieldArray should return current value with radio type 1`] = `
+exports[`useWatch > reset > with useFieldArray > should return current value with radio type 1`] = `
 [
   {},
   {

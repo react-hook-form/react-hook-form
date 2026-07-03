@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import type { Control, FieldPath } from '../../types';
@@ -15,15 +16,24 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 
-jest.useFakeTimers();
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-let i = 0;
-
-jest.mock('../../logic/generateId', () => () => String(i++));
+vi.mock('../../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('insert', () => {
   beforeEach(() => {
-    i = 0;
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    resetGenerateId();
   });
 
   it('should insert data at index with single value', () => {
@@ -585,7 +595,7 @@ describe('insert', () => {
 
   describe('with resolver', () => {
     it('should invoke resolver when formState.isValid true', async () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -616,7 +626,7 @@ describe('insert', () => {
     });
 
     it('should not invoke resolver when formState.isValid false', () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -696,7 +706,7 @@ describe('insert', () => {
       fireEvent.click(screen.getByRole('button'));
 
       act(() => {
-        jest.advanceTimersByTime(1000);
+        vi.advanceTimersByTime(1000);
       });
 
       expect(
@@ -712,7 +722,7 @@ describe('insert', () => {
       fireEvent.click(screen.getByRole('button'));
 
       act(() => {
-        jest.advanceTimersByTime(1000);
+        vi.advanceTimersByTime(1000);
       });
 
       expect(
@@ -828,7 +838,7 @@ describe('insert', () => {
   });
 
   it('should not invoke resolver per register during insert; only array-scoped + final isValid', async () => {
-    const resolver = jest
+    const resolver = vi
       .fn()
       .mockImplementation((values) => ({ values, errors: {} }));
 

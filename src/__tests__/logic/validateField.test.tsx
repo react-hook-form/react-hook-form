@@ -1,16 +1,18 @@
+import { describe, expect, it, type Mock, vi } from 'vitest';
+
 import getCheckboxValue from '../../logic/getCheckboxValue';
 import getRadioValue from '../../logic/getRadioValue';
 import validateField from '../../logic/validateField';
 
-jest.mock('../../logic/getRadioValue');
-jest.mock('../../logic/getCheckboxValue');
+vi.mock('../../logic/getRadioValue');
+vi.mock('../../logic/getCheckboxValue');
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    (getRadioValue as Mock).mockImplementation(() => ({
       value: '2',
     }));
-    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
+    (getCheckboxValue as Mock).mockImplementation(() => ({
       value: false,
       isValid: false,
     }));
@@ -321,7 +323,7 @@ describe('validateField', () => {
       ),
     ).toEqual({});
 
-    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
+    (getCheckboxValue as Mock).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
@@ -1593,7 +1595,7 @@ describe('validateField', () => {
       },
     });
 
-    (getRadioValue as jest.Mock).mockImplementation(() => {
+    (getRadioValue as Mock).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',
@@ -1884,7 +1886,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation errors', async () => {
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    (getRadioValue as Mock).mockImplementation(() => ({
       value: '',
     }));
 
@@ -1963,7 +1965,7 @@ describe('validateField', () => {
   it('should handle pattern with g flag', async () => {
     const reusedRe = /a/g;
 
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    (getRadioValue as Mock).mockImplementation(() => ({
       value: '',
     }));
     expect(
@@ -2038,7 +2040,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation error messages', async () => {
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    (getRadioValue as Mock).mockImplementation(() => ({
       value: '',
     }));
     expect(
@@ -2187,8 +2189,8 @@ describe('validateField', () => {
 
   describe('with Browser native validation', () => {
     it('should invoke setCustomValidity for invalid input', () => {
-      const setCustomValidity = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity = vi.fn();
+      const reportValidity = vi.fn();
 
       validateField(
         {
@@ -2218,8 +2220,8 @@ describe('validateField', () => {
     });
 
     it('should invoke setCustomValidity for invalid input with its message', () => {
-      const setCustomValidity = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity = vi.fn();
+      const reportValidity = vi.fn();
 
       validateField(
         {
@@ -2249,8 +2251,8 @@ describe('validateField', () => {
     });
 
     it('should invoke setCustomValidity with empty string for a valid input', () => {
-      const setCustomValidity = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity = vi.fn();
+      const reportValidity = vi.fn();
 
       validateField(
         {
@@ -2280,14 +2282,14 @@ describe('validateField', () => {
     });
 
     it('should invoke setCustomValidity on all refs for a required radio group', async () => {
-      (getRadioValue as jest.Mock).mockReturnValue({
+      (getRadioValue as Mock).mockReturnValue({
         isValid: false,
         value: undefined,
       });
 
-      const setCustomValidity1 = jest.fn();
-      const setCustomValidity2 = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity1 = vi.fn();
+      const setCustomValidity2 = vi.fn();
+      const reportValidity = vi.fn();
 
       const ref1 = {
         setCustomValidity: setCustomValidity1,
@@ -2325,14 +2327,14 @@ describe('validateField', () => {
     });
 
     it('should clear setCustomValidity on all refs for a valid radio group', async () => {
-      (getRadioValue as jest.Mock).mockReturnValue({
+      (getRadioValue as Mock).mockReturnValue({
         isValid: true,
         value: 'bar',
       });
 
-      const setCustomValidity1 = jest.fn();
-      const setCustomValidity2 = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity1 = vi.fn();
+      const setCustomValidity2 = vi.fn();
+      const reportValidity = vi.fn();
 
       const ref1 = {
         setCustomValidity: setCustomValidity1,

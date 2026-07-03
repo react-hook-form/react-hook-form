@@ -1,8 +1,10 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import shouldRenderFormState from '../../logic/shouldRenderFormState';
 import type { ReadFormState } from '../../types';
 
 describe('shouldRenderFormState', () => {
-  const updateFormState = jest.fn();
+  const updateFormState = vi.fn();
 
   beforeEach(() => {
     updateFormState.mockClear();
@@ -66,7 +68,7 @@ describe('shouldRenderFormState', () => {
   });
 
   it('calls Object.keys on formState exactly once regardless of which branch is taken', () => {
-    const keysSpy = jest.spyOn(Object, 'keys');
+    const keysSpy = vi.spyOn(Object, 'keys');
 
     // non-root, non-empty, no matching key → reaches .find() branch
     const proxy = { isValid: true } as ReadFormState;

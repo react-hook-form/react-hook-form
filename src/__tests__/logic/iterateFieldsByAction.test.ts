@@ -1,8 +1,10 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
 
 describe('iterateFieldsByAction', () => {
   it('should focus on the first error it encounter', () => {
-    const focus = jest.fn();
+    const focus = vi.fn();
     iterateFieldsByAction(
       {
         test: {
@@ -25,7 +27,7 @@ describe('iterateFieldsByAction', () => {
   });
 
   it('should focus on first option when options input error encounters', () => {
-    const focus = jest.fn();
+    const focus = vi.fn();
     iterateFieldsByAction(
       {
         test: {
@@ -66,7 +68,7 @@ describe('iterateFieldsByAction', () => {
   });
 
   it('should focus on the first error it encounter and not the second', () => {
-    const focus = jest.fn();
+    const focus = vi.fn();
     iterateFieldsByAction(
       {
         first: {
@@ -99,7 +101,7 @@ describe('iterateFieldsByAction', () => {
   });
 
   it('should recursively drill into objects', () => {
-    const focus = jest.fn();
+    const focus = vi.fn();
     iterateFieldsByAction(
       {
         test: {
@@ -139,8 +141,8 @@ describe('iterateFieldsByAction', () => {
   });
 
   it('should recursively drill into objects and break out of all loops on first focus', () => {
-    const focus = jest.fn();
-    const notFocus = jest.fn();
+    const focus = vi.fn();
+    const notFocus = vi.fn();
     iterateFieldsByAction(
       {
         personal: {

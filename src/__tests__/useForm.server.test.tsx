@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../useForm';
 
@@ -16,7 +17,7 @@ describe('useForm with SSR', () => {
       );
     };
 
-    const spy = jest.spyOn(console, 'error');
+    const spy = vi.spyOn(console, 'error');
 
     expect(renderToString(<Component />)).toEqual(
       '<div><input name="test"/></div>',

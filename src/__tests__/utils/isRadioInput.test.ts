@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import isRadioInput from '../../utils/isRadioInput';
 
 describe('isRadioInput', () => {

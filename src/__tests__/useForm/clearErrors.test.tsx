@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { Control } from '../../types';
 import { useForm } from '../../useForm';
@@ -204,7 +205,7 @@ describe('clearErrors', () => {
   });
 
   it('should prevent the submission if there is a custom error', async () => {
-    const submit = jest.fn();
+    const submit = vi.fn();
     const { result } = renderHook(() =>
       useForm<{ data: string; whatever: string }>(),
     );

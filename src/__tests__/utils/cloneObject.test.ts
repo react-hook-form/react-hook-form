@@ -1,3 +1,5 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
 import cloneObject from '../../utils/cloneObject';
 import noop from '../../utils/noop';
 

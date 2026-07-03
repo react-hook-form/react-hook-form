@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
@@ -17,7 +18,7 @@ import noop from '../../utils/noop';
 describe('handleSubmit', () => {
   it('should invoke the callback when validation pass', async () => {
     const { result } = renderHook(() => useForm());
-    const callback = jest.fn();
+    const callback = vi.fn();
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
@@ -126,7 +127,7 @@ describe('handleSubmit', () => {
 
     result.current.register('test', { required: true });
 
-    const callback = jest.fn();
+    const callback = vi.fn();
 
     await act(async () => {
       await result.current.handleSubmit(callback)({
@@ -138,7 +139,7 @@ describe('handleSubmit', () => {
   });
 
   it('should not focus if errors is exist', async () => {
-    const focus = jest.fn();
+    const focus = vi.fn();
     const { result } = renderHook(() => useForm<{ test: string }>());
     const { ref } = result.current.register('test', { required: true });
 
@@ -149,7 +150,7 @@ describe('handleSubmit', () => {
         focus,
       });
 
-    const callback = jest.fn();
+    const callback = vi.fn();
     await act(async () => {
       await result.current.handleSubmit(callback)({
         preventDefault: noop,
@@ -165,7 +166,7 @@ describe('handleSubmit', () => {
   });
 
   it('should not focus if shouldFocusError is false', async () => {
-    const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
+    const mockFocus = vi.spyOn(HTMLInputElement.prototype, 'focus');
 
     const { result } = renderHook(() =>
       useForm<{ test: string }>({ shouldFocusError: false }),
@@ -174,7 +175,7 @@ describe('handleSubmit', () => {
     result.current.register('test', { required: true });
     result.current.formState;
 
-    const callback = jest.fn();
+    const callback = vi.fn();
     await act(async () => {
       await result.current.handleSubmit(callback)({
         preventDefault: noop,
@@ -190,10 +191,10 @@ describe('handleSubmit', () => {
   });
 
   it('should avoid re-focusing with native validation on submit', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
-    const firstFocus = jest.fn();
-    const lastFocus = jest.fn();
+    const firstFocus = vi.fn();
+    const lastFocus = vi.fn();
 
     const { result } = renderHook(() =>
       useForm<{ firstName: string; lastName: string }>({
@@ -240,13 +241,13 @@ describe('handleSubmit', () => {
     });
 
     await act(async () => {
-      jest.runOnlyPendingTimers();
+      vi.runOnlyPendingTimers();
     });
 
     expect(firstFocus).toHaveBeenCalledTimes(0);
     expect(lastFocus).not.toHaveBeenCalled();
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should submit form data when inputs are removed', async () => {
@@ -274,7 +275,7 @@ describe('handleSubmit', () => {
   });
 
   it('should invoke onSubmit callback and reset nested errors when submit with valid form values', async () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     const { result } = renderHook(() =>
       useForm<{
         test: { firstName: string; lastName: string }[];
@@ -330,7 +331,7 @@ describe('handleSubmit', () => {
         formState: { isSubmitting, isSubmitted, isSubmitSuccessful },
       } = useForm();
 
-      const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
+      const rejectPromiseFn = vi.fn().mockRejectedValue(new Error(errorMsg));
 
       return (
         <form>
@@ -384,7 +385,7 @@ describe('handleSubmit', () => {
 
       result.current.register('test', { required: true });
 
-      const callback = jest.fn();
+      const callback = vi.fn();
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
@@ -412,7 +413,7 @@ describe('handleSubmit', () => {
 
       result.current.register('test', { required: true });
 
-      const callback = jest.fn();
+      const callback = vi.fn();
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
@@ -427,8 +428,8 @@ describe('handleSubmit', () => {
   describe('with onInvalid callback', () => {
     it('should invoke the onValid callback when validation pass', async () => {
       const { result } = renderHook(() => useForm());
-      const onValidCallback = jest.fn();
-      const onInvalidCallback = jest.fn();
+      const onValidCallback = vi.fn();
+      const onInvalidCallback = vi.fn();
 
       await act(async () => {
         await result.current.handleSubmit(
@@ -450,8 +451,8 @@ describe('handleSubmit', () => {
         }>(),
       );
       result.current.register('test', { required: true });
-      const onValidCallback = jest.fn();
-      const onInvalidCallback = jest.fn();
+      const onValidCallback = vi.fn();
+      const onInvalidCallback = vi.fn();
 
       await act(async () => {
         await result.current.handleSubmit(
@@ -493,7 +494,7 @@ describe('handleSubmit', () => {
   });
 
   it('should be able to submit correctly when errors contains empty array object', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     const App = () => {
       const { register, control, handleSubmit } = useForm({
@@ -543,7 +544,7 @@ describe('handleSubmit', () => {
   });
 
   it('should be able to submit correctly when errors contains empty array object and errors state is subscribed', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     const App = () => {
       const {

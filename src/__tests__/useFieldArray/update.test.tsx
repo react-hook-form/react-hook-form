@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import type { Control } from '../../types';
@@ -14,13 +15,23 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-let i = 0;
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+vi.mock('../../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('update', () => {
   beforeEach(() => {
-    i = 0;
+    resetGenerateId();
   });
 
   it('should update dirtyFields fields correctly', async () => {
@@ -494,7 +505,7 @@ describe('update', () => {
 
   describe('with resolver', () => {
     it('should invoke resolver when formState.isValid true', async () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -525,7 +536,7 @@ describe('update', () => {
     });
 
     it('should not invoke resolver when formState.isValid false', () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -544,7 +555,7 @@ describe('update', () => {
     });
 
     it('should not invoke resolver per register during update; only array-scoped + final isValid', async () => {
-      const resolver = jest
+      const resolver = vi
         .fn()
         .mockImplementation((values) => ({ values, errors: {} }));
 

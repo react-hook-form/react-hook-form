@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`useFieldArray array of array fields should allow append with deeply nested field array even with flat structure 1`] = `
+exports[`useFieldArray > array of array fields > should allow append with deeply nested field array even with flat structure 1`] = `
 [
   {},
   {
@@ -57,7 +57,7 @@ exports[`useFieldArray array of array fields should allow append with deeply nes
 ]
 `;
 
-exports[`useFieldArray should append multiple inputs correctly 1`] = `
+exports[`useFieldArray > should append multiple inputs correctly 1`] = `
 [
   {
     "test": [
@@ -102,7 +102,7 @@ exports[`useFieldArray should append multiple inputs correctly 1`] = `
 ]
 `;
 
-exports[`useFieldArray should custom register append, prepend and insert inputs with values 1`] = `
+exports[`useFieldArray > should custom register append, prepend and insert inputs with values 1`] = `
 [
   [],
   [

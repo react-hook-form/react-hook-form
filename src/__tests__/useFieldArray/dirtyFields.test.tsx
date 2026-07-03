@@ -1,16 +1,27 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-let i = 0;
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+vi.mock('../../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('useFieldArray dirtyFields isolation', () => {
   beforeEach(() => {
-    i = 0;
+    resetGenerateId();
   });
 
   it('should only mark items dirty when only items field array is appended', async () => {

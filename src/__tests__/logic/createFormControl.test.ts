@@ -1,11 +1,13 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { createFormControl } from '../../logic/createFormControl';
 import isEmptyObject from '../../utils/isEmptyObject';
 
-jest.mock('../../utils/isEmptyObject', () => {
-  const original = jest.requireActual('../../utils/isEmptyObject');
+vi.mock('../../utils/isEmptyObject', async () => {
+  const original = await vi.importActual('../../utils/isEmptyObject');
+
   return {
-    __esModule: true,
-    default: jest.fn(original.default),
+    default: vi.fn((original as { default: typeof isEmptyObject }).default),
   };
 });
 

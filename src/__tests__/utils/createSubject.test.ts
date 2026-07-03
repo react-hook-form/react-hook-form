@@ -1,9 +1,11 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import createSubject from '../../utils/createSubject';
 
 describe('createSubject', () => {
   it('should subscribe to all the correct observer', () => {
     const subject = createSubject();
-    const next = jest.fn();
+    const next = vi.fn();
 
     subject.subscribe({
       next,
@@ -23,8 +25,8 @@ describe('createSubject', () => {
 
   it('should unsubscribe observers', () => {
     const subject = createSubject();
-    const next1 = jest.fn();
-    const next2 = jest.fn();
+    const next1 = vi.fn();
+    const next2 = vi.fn();
 
     const subscription = subject.subscribe({
       next: next1,
@@ -48,7 +50,7 @@ describe('createSubject', () => {
 
   it('should unsubscribe all observers', () => {
     const subject = createSubject();
-    const next = jest.fn();
+    const next = vi.fn();
 
     subject.subscribe({
       next,

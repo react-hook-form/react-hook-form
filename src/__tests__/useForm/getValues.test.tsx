@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 
 import { Controller } from '../../controller';
 import { useForm } from '../../useForm';

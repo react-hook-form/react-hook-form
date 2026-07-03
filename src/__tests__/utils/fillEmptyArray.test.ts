@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import fillEmptyArray from '../../utils/fillEmptyArray';
 
 describe('fillEmptyArray', () => {

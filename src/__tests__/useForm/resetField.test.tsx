@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../../useForm';
 
@@ -184,7 +185,7 @@ describe('resetField', () => {
   });
 
   it('should reset input file to empty string only', () => {
-    const getValuesFn = jest.fn();
+    const getValuesFn = vi.fn();
 
     const App = () => {
       const { register, resetField, getValues } = useForm({

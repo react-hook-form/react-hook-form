@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import getEventValue from '../../logic/getEventValue';
 
 test('getEventValue should return correct value', () => {

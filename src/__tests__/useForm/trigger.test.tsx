@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import type {
@@ -943,7 +944,7 @@ describe('trigger', () => {
   });
 
   it('should update validatingFields form states correctly when trigger() called', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     let formState = {} as FormState<FieldValues>;
     let getFieldState = {} as UseFormGetFieldState<FieldValues>;
@@ -1012,7 +1013,7 @@ describe('trigger', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     await waitFor(() => {
@@ -1024,7 +1025,7 @@ describe('trigger', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     await waitFor(() => {

@@ -7,6 +7,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
 import type {
@@ -22,13 +23,23 @@ import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
 
-let i = 0;
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-jest.mock('../logic/generateId', () => () => String(i++));
+vi.mock('../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('useWatch', () => {
   beforeEach(() => {
-    i = 0;
+    resetGenerateId();
   });
 
   it('should return default value in useForm', () => {
@@ -343,7 +354,7 @@ describe('useWatch', () => {
   });
 
   it('should avoid triggering extra callbacks', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     type FormInputs = {
       firstName: string;
     };

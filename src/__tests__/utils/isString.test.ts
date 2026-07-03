@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import isString from '../../utils/isString';
 
 describe('isString', () => {

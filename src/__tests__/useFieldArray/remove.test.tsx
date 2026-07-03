@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -15,15 +16,24 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 
-jest.useFakeTimers();
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-let i = 0;
-
-jest.mock('../../logic/generateId', () => () => String(i++));
+vi.mock('../../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('remove', () => {
   beforeEach(() => {
-    i = 0;
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    resetGenerateId();
   });
 
   it('should update isDirty formState when item removed', () => {
@@ -555,7 +565,7 @@ describe('remove', () => {
     };
 
     let mockKey = 0;
-    const callback = jest.fn();
+    const callback = vi.fn();
 
     const Nested = ({
       errors,
@@ -924,7 +934,7 @@ describe('remove', () => {
 
   describe('with resolver', () => {
     it('should invoke resolver when formState.isValid true', async () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -954,7 +964,7 @@ describe('remove', () => {
     });
 
     it('should not invoke resolver when formState.isValid false', () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -1075,7 +1085,7 @@ describe('remove', () => {
         message: 'Need at least 1 item',
       };
 
-      const resolver = jest.fn().mockImplementation((values) => {
+      const resolver = vi.fn().mockImplementation((values) => {
         if (!values.test?.length) {
           return { values: {}, errors: { test: arrayRootError } };
         }
@@ -1177,7 +1187,7 @@ describe('remove', () => {
     render(<App />);
 
     act(() => {
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
     });
 
     fireEvent.click(screen.getAllByRole('button', { name: 'remove' })[1]);
@@ -1315,7 +1325,7 @@ describe('remove', () => {
       items: { name: string; text: string }[];
     };
 
-    const onUpdate = jest.fn();
+    const onUpdate = vi.fn();
 
     function App() {
       const [model, setModel] = React.useState<FormValues>({ items: [] });

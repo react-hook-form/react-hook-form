@@ -7,6 +7,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
 import type {
@@ -199,7 +200,7 @@ describe('Controller', () => {
   ] as const)(
     'should update submitted values when controller render accesses formState.%s',
     async (formStateProp) => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       const Component = () => {
         const { control, handleSubmit } = useForm({
@@ -331,7 +332,7 @@ describe('Controller', () => {
   });
 
   it('should set field to formState validatingFields and render field isValidating state', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     const getValidateMock: (timeout: number) => Promise<ValidateResult> = (
       timeout: number,
@@ -378,7 +379,7 @@ describe('Controller', () => {
     expect(screen.getByText('isValidating: true')).toBeVisible();
 
     await actComponent(async () => {
-      jest.advanceTimersByTime(1100);
+      vi.advanceTimersByTime(1100);
     });
 
     expect(validatingFields).toEqual({});
@@ -471,7 +472,7 @@ describe('Controller', () => {
   });
 
   it('should invoke custom onChange method', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const Component = () => {
       const { control } = useForm<{
         test: string;
@@ -504,7 +505,7 @@ describe('Controller', () => {
   });
 
   it('should invoke custom onBlur method', () => {
-    const onBlur = jest.fn();
+    const onBlur = vi.fn();
     const Component = () => {
       const { control } = useForm();
       return (
@@ -577,8 +578,8 @@ describe('Controller', () => {
   });
 
   it('should skip validation when Controller is unmounted', async () => {
-    const onValid = jest.fn();
-    const onInvalid = jest.fn();
+    const onValid = vi.fn();
+    const onInvalid = vi.fn();
 
     const App = () => {
       const [show, setShow] = React.useState(true);
@@ -1481,7 +1482,7 @@ describe('Controller', () => {
   });
 
   it('should unregister component within field array when field is unmounted', () => {
-    const getValueFn = jest.fn();
+    const getValueFn = vi.fn();
 
     const Child = () => {
       const { fields } = useFieldArray({

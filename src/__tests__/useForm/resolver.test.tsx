@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, test, vi } from 'vitest';
 
 import { Controller } from '../../controller';
 import type { Control, FieldErrors, ResolverResult } from '../../types';
@@ -130,7 +131,7 @@ describe('resolver', () => {
   });
 
   it('should be called with the shouldUseNativeValidation option to true', async () => {
-    const test = jest.fn();
+    const test = vi.fn();
     const resolver = (a: any, b: any, c: any) => {
       test(a, b, c);
       return {
@@ -164,13 +165,13 @@ describe('resolver', () => {
   });
 
   it('should avoid the problem of race condition', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     type FormValues = {
       test: string;
     };
 
-    const test = jest.fn();
+    const test = vi.fn();
     let errorsObject = {};
 
     const resolver: Resolver<FormValues> = async (
@@ -233,7 +234,7 @@ describe('resolver', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(200);
+      vi.advanceTimersByTime(200);
     });
 
     expect(errorsObject).toEqual({});
@@ -548,7 +549,7 @@ describe('resolver', () => {
     });
 
     it('should not cause "Cannot update component while rendering" error with fieldArray and async validation', async () => {
-      const consoleError = jest
+      const consoleError = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 

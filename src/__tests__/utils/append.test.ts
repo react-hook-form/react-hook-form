@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import append from '../../utils/append';
 
 describe('append', () => {

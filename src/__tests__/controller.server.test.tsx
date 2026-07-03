@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
+import { describe, it } from 'vitest';
 
 import { Controller } from '../controller';
 import { useForm } from '../useForm';

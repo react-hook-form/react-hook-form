@@ -7,12 +7,13 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
 
-function changeEmits(spy: jest.SpyInstance): Record<string, unknown>[] {
+function changeEmits(spy: MockInstance): Record<string, unknown>[] {
   return spy.mock.calls
     .map(([payload]) => payload)
     .filter(
@@ -35,7 +36,7 @@ describe('onChange value-clone optimization', () => {
 
     render(<Form />);
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'a' } });
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'b' } });
@@ -67,7 +68,7 @@ describe('onChange value-clone optimization', () => {
 
     render(<Form />);
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
 
@@ -98,7 +99,7 @@ describe('onChange value-clone optimization', () => {
 
     render(<Form />);
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
 
@@ -132,7 +133,7 @@ describe('onChange value-clone optimization', () => {
       unsubscribeWatch!();
     });
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     fireEvent.change(screen.getByTestId('name'), {
       target: { value: 'after' },
@@ -329,7 +330,7 @@ describe('isDirty proxy guard', () => {
 
     render(<Form />);
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
 
@@ -355,7 +356,7 @@ describe('isDirty proxy guard', () => {
 
     render(<Form />);
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
 
@@ -595,7 +596,7 @@ describe('setValues _valuesSubscriberCount guard', () => {
     result.current.register('b' as any);
 
     const control = result.current.control as any;
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     await act(async () => {
       result.current.setValues({ a: 'x', b: 'y' } as any);
@@ -615,7 +616,7 @@ describe('setValues _valuesSubscriberCount guard', () => {
 
     const watchSub = result.current.watch(() => {});
     const control = result.current.control as any;
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     await act(async () => {
       result.current.setValues({ a: 'x', b: 'y' } as any);
@@ -652,7 +653,7 @@ describe('_valuesSubscriberCount idempotency', () => {
     sub.unsubscribe();
     sub.unsubscribe();
 
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
 
     const emits = nextSpy.mock.calls

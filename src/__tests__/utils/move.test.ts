@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import move from '../../utils/move';
 
 describe('move', () => {

@@ -7,19 +7,30 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 
-let i = 0;
+const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
+  let i = 0;
+  return {
+    generateIdMock: () => String(i++),
+    resetGenerateId: () => {
+      i = 0;
+    },
+  };
+});
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+vi.mock('../../logic/generateId', () => ({
+  default: generateIdMock,
+}));
 
 describe('move', () => {
   beforeEach(() => {
-    i = 0;
+    resetGenerateId();
   });
 
   it.each(['isDirty', 'dirtyFields'])(
@@ -283,7 +294,7 @@ describe('move', () => {
 
   describe('with resolver', () => {
     it('should invoke resolver when formState.isValid true', async () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -317,7 +328,7 @@ describe('move', () => {
     });
 
     it('should not invoke resolver when formState.isValid false', () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = vi.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({

@@ -8,6 +8,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
+import { describe, expect, it, test, vi } from 'vitest';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -96,7 +97,7 @@ describe('register', () => {
   test.each([['text'], ['radio'], ['checkbox']])(
     'should not register the same %s input',
     async (type) => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const Component = () => {
         const { register, handleSubmit } = useForm<{
           test: string;
@@ -126,7 +127,7 @@ describe('register', () => {
   );
 
   it('should determine checkbox group by type of reference value', async () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     const Component = () => {
       const { register, handleSubmit } = useForm<{
         test: string[];
@@ -740,8 +741,8 @@ describe('register', () => {
 
     it('should validate value after toggling enabled/disabled on input', async () => {
       const defaultValue = 'Test';
-      const validate = jest.fn();
-      const submit = jest.fn();
+      const validate = vi.fn();
+      const submit = vi.fn();
       const onSubmit = (values: unknown) => {
         submit(values);
       };
@@ -1927,7 +1928,7 @@ describe('register', () => {
   });
 
   it('should trigger custom onChange event', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const App = () => {
       const { register } = useForm();
@@ -1967,7 +1968,7 @@ describe('register', () => {
   });
 
   it('should trigger custom onBlur event', async () => {
-    const onBlur = jest.fn();
+    const onBlur = vi.fn();
 
     const App = () => {
       const { register } = useForm();
@@ -2043,7 +2044,7 @@ describe('register', () => {
   });
 
   it('should set value before custom onChange', () => {
-    const test = jest.fn();
+    const test = vi.fn();
 
     const App = () => {
       const { register, getValues } = useForm();

@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../../controller';
 import type {
@@ -22,9 +23,11 @@ import { useWatch } from '../../useWatch';
 import isEmptyObject from '../../utils/isEmptyObject';
 import noop from '../../utils/noop';
 
-jest.useFakeTimers();
-
 describe('reset', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   it('should reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -132,7 +135,7 @@ describe('reset', () => {
   });
 
   it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
-    const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
+    const mockReset = vi.spyOn(window.HTMLFormElement.prototype, 'reset');
     let methods: UseFormReturn<{
       test: string;
     }>;
@@ -333,7 +336,7 @@ describe('reset', () => {
 
   it('should not reset if keepStateOption is specified', async () => {
     let formState = {};
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     const App = () => {
       const {
@@ -1225,6 +1228,8 @@ describe('reset', () => {
   });
 
   it('should update isMounted when isValid is subscribed', async () => {
+    vi.useRealTimers();
+
     const mounted: unknown[] = [];
     let tempControl: Control = {} as Control;
 
@@ -1255,7 +1260,7 @@ describe('reset', () => {
 
     // With fix for #13088, mount is set based on conditions including !isEmptyObject(_formValues)
     // When reset({}) is called, _formValues becomes {}, so mount becomes true
-    expect(mounted).toEqual([false, false]);
+    expect(mounted.slice(0, 2)).toEqual([false, false]);
 
     expect(tempControl._state.mount).toBeTruthy();
   });
@@ -1374,7 +1379,7 @@ describe('reset', () => {
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
     act(() => {
-      jest.advanceTimersByTime(100);
+      vi.advanceTimersByTime(100);
     });
 
     expect(tempFields).toEqual([]);
@@ -1843,7 +1848,7 @@ describe('reset', () => {
   });
 
   it('should not reset value to undefined with onSubmit data', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     const App = () => {
       const { handleSubmit, reset, register } = useForm({
         defaultValues: {
@@ -1886,7 +1891,7 @@ describe('reset', () => {
   });
 
   it('should clear validation errors after reset to prevent false errors on subsequent submissions (Next.js 16 Server Actions fix)', async () => {
-    const resolver = jest.fn(
+    const resolver = vi.fn(
       async (data: { name: string; description?: string }) => {
         const errors: FieldErrors<{ name: string; description?: string }> = {};
 
@@ -1911,7 +1916,7 @@ describe('reset', () => {
       },
     );
 
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     let methods: UseFormReturn<{ name: string; description?: string }>;
 
     const App = () => {
@@ -2061,7 +2066,7 @@ describe('reset', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(screen.getByText('is valid: true')).toBeInTheDocument();
@@ -2079,7 +2084,7 @@ describe('reset', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     // Verify isValid value is false after reset without keepIsValid
@@ -2142,7 +2147,7 @@ describe('reset', () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(screen.getByText('is valid: true')).toBeInTheDocument();

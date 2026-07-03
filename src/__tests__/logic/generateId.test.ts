@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import generateId from '../../logic/generateId';
 
 describe('generateId', () => {

@@ -1,16 +1,23 @@
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  type MockedFunction,
+  vi,
+} from 'vitest';
+
 import type { Ref } from '../../types';
 import isHTMLElement from '../../utils/isHTMLElement';
 import live from '../../utils/live';
 
-jest.mock('../../utils/isHTMLElement');
+vi.mock('../../utils/isHTMLElement');
 
-const mockIsHTMLElement = isHTMLElement as jest.MockedFunction<
-  typeof isHTMLElement
->;
+const mockIsHTMLElement = isHTMLElement as MockedFunction<typeof isHTMLElement>;
 
 describe('live', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should return true when ref is HTMLElement and connected', () => {

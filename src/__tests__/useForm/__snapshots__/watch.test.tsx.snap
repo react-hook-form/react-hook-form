@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`watch should watch correctly with useFieldArray with action and then fallback to onChange 1`] = `
+exports[`watch > should watch correctly with useFieldArray with action and then fallback to onChange 1`] = `
 [
   {
     "names": [],

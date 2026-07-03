@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import getNodeParentName from '../../logic/getNodeParentName';
 
 describe('getNodeParentName', () => {

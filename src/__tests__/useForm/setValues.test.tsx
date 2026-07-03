@@ -6,6 +6,7 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../../controller';
 import { useForm } from '../../useForm';
@@ -59,7 +60,7 @@ describe('setValues', () => {
     );
 
     const control = result.current.control as any;
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     await act(async () => {
       result.current.setValues({
@@ -89,7 +90,7 @@ describe('setValues', () => {
     const watchSub = result.current.watch(() => {});
 
     const control = result.current.control as any;
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     await act(async () => {
       result.current.setValues({
@@ -128,7 +129,7 @@ describe('setValues', () => {
     const watchSub = result.current.watch(() => {});
 
     const control = result.current.control as any;
-    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const nextSpy = vi.spyOn(control._subjects.state, 'next');
 
     await act(async () => {
       result.current.setValues({

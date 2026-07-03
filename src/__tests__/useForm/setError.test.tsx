@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import type {
   DeepMap,
@@ -105,7 +106,7 @@ describe('setError', () => {
   });
 
   it('should allow setting global error', async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     type Errors = {
       root: {
