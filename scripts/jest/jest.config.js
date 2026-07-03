@@ -5,6 +5,8 @@ const jestDefaultConfig = {
   rootDir: '.',
   roots: ['<rootDir>/src'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
+  // Vitest browser-mode specs run via `pnpm test:browser`, not Jest.
+  testPathIgnorePatterns: ['/node_modules/', '\\.browser\\.test\\.tsx?$'],
 };
 
 const web = {
