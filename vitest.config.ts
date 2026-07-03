@@ -60,6 +60,11 @@ export default defineConfig({
       },
       {
         extends: true,
+        resolve: {
+          alias: {
+            'react-hook-form': resolve(__dirname, 'dist/index.esm.mjs'),
+          },
+        },
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.tsx'],
