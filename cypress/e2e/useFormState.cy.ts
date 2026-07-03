@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('useFormState', () => {
   it('should subscribed to the form state without re-render the root', () => {
     cy.visit('http://localhost:3000/useFormState');

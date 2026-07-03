@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('autoUnregister', () => {
   it('should keep all inputs data when inputs get unmounted', () => {
     cy.visit('http://localhost:3000/autoUnregister');

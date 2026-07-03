@@ -5,11 +5,41 @@ import { userEvent } from 'vitest/browser';
 
 import { renderApp } from './renderApp';
 
-type ChainSubject = HTMLElement | HTMLElement[] | number;
+type ChainSubject = HTMLElement | HTMLElement[] | number | string | string[];
 
 type JQuery<T extends Element = HTMLElement> = T[] & {
   text(): string;
 };
+
+export type CyJQuery = JQuery<HTMLElement>;
+
+export interface CyChainable {
+  click(): CyChainable;
+  type(text: string): CyChainable;
+  clear(): CyChainable;
+  select(values: string | string[]): CyChainable;
+  check(value?: string): CyChainable;
+  uncheck(): CyChainable;
+  blur(): CyChainable;
+  focus(): CyChainable;
+  contains(text: string): CyChainable;
+  invoke(method: 'val'): CyChainable;
+  should(callback: (subject: CyJQuery) => void): CyChainable;
+  should(assertion: string, ...rest: unknown[]): CyChainable;
+  eq(index: number): CyChainable;
+  first(): CyChainable;
+  find(selector: string): CyChainable;
+  get(selector: string): CyChainable;
+  its(property: string): CyChainable;
+}
+
+export interface CyAPI {
+  visit(url: string): CyAPI;
+  get(selector: string): CyChainable;
+  contains(selectorOrText: string, text?: string): CyChainable;
+  focused(): CyChainable;
+  wait(ms: number): CyAPI;
+}
 
 let commandQueue: Promise<void> = Promise.resolve();
 
@@ -23,8 +53,22 @@ function schedule(fn: () => Promise<void>) {
   commandQueue = commandQueue.then(fn);
 }
 
+function isDomSubject(
+  subject: ChainSubject,
+): subject is HTMLElement | HTMLElement[] {
+  if (typeof subject === 'number' || typeof subject === 'string') {
+    return false;
+  }
+
+  if (Array.isArray(subject)) {
+    return subject.length === 0 || subject[0] instanceof HTMLElement;
+  }
+
+  return subject instanceof HTMLElement;
+}
+
 function asElements(subject: ChainSubject): HTMLElement[] {
-  if (typeof subject === 'number') {
+  if (!isDomSubject(subject)) {
     throw new Error('Expected DOM subject');
   }
 
@@ -174,6 +218,22 @@ function runShould(subject: ChainSubject, args: unknown[]) {
     }
 
     throw new Error(`Unsupported numeric assertion: ${String(assertion)}`);
+  }
+
+  if (!isDomSubject(subject)) {
+    if (assertion === 'deep.equal') {
+      chaiExpect(subject).to.deep.equal(rest[0]);
+      return;
+    }
+
+    if (assertion === 'equal' || assertion === 'eq') {
+      chaiExpect(subject).to.equal(rest[0]);
+      return;
+    }
+
+    throw new Error(
+      `Unsupported assertion on value subject: ${String(assertion)}`,
+    );
   }
 
   const elements = asElements(subject);
@@ -427,6 +487,25 @@ class Chain {
     return this;
   }
 
+  invoke(method: 'val') {
+    return new Chain(async () => {
+      const subject = await this.getSubject();
+      const element = singleElement(subject) as HTMLSelectElement;
+
+      if (method !== 'val') {
+        throw new Error(`Unsupported invoke method: ${method}`);
+      }
+
+      if (element.multiple) {
+        return Array.from(element.selectedOptions).map(
+          (option) => option.value,
+        );
+      }
+
+      return element.value;
+    });
+  }
+
   should(...args: unknown[]) {
     schedule(async () => {
       await vi.waitFor(async () => {
@@ -582,3 +661,9 @@ export const cy = {
 };
 
 export default cy;
+
+declare global {
+  const cy: CyAPI;
+}
+
+export {};

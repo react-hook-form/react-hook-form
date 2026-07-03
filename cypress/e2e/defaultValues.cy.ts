@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('defaultValues', () => {
   it('should populate defaultValue for inputs', () => {
     cy.visit('http://localhost:3000/default-values');

@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('ConditionalField', () => {
   it('should reflect correct form state and data collection', () => {
     cy.visit('http://localhost:3000/conditionalField');

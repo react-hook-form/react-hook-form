@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('basic form validation', () => {
   it('should validate the form and reset the form', () => {
     cy.visit('http://localhost:3000/basic/onSubmit');

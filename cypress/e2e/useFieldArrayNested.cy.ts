@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('useFieldArrayNested', () => {
   it('should work correctly with nested field array', () => {
     cy.visit('http://localhost:3000/useFieldArrayNested');

@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('isValid', () => {
   it('should showing valid correctly with build in validation', () => {
     cy.visit('http://localhost:3000/isValid/build-in/defaultValue');

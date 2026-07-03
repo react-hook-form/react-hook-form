@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('re-validate mode', () => {
   it('should re-validate the form only onSubmit with mode onSubmit and reValidateMode onSubmit', () => {
     cy.visit('http://localhost:3000/re-validate-mode/onSubmit/onSubmit');

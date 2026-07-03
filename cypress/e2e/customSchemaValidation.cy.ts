@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('customSchemaValidation form validation', () => {
   it('should validate the form with onSubmit mode', () => {
     cy.visit('http://localhost:3000/customSchemaValidation/onSubmit');

@@ -7,7 +7,7 @@ export async function renderApp(url: string) {
   vi.resetModules();
 
   window.history.replaceState({}, '', new URL(url).pathname);
-  const { default: App } = await import('@app/app');
+  const { default: App } = await import('../../app/src/app');
 
   return render(<App />);
 }

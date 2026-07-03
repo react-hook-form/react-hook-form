@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('form setError', () => {
   it('should contain 3 errors when page land', () => {
     cy.visit('http://localhost:3000/setError');

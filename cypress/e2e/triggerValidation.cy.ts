@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('form trigger', () => {
   it('should trigger input validation', () => {
     cy.visit('http://localhost:3000/trigger-validation');

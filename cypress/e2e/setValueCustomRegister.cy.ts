@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('setValue with react native or web', () => {
   it('should only trigger re-render when form state changed or error triggered', () => {
     cy.visit('http://localhost:3000/setValueCustomRegister');

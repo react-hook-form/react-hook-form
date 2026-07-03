@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('validate field criteria', () => {
   it('should validate the form, show all errors and clear all', () => {
     cy.visit('http://localhost:3000/validate-field-criteria');

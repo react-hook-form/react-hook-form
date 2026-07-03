@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('watch form validation', () => {
   it('should watch all inputs', () => {
     cy.visit('http://localhost:3000/watch');

@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('watchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', () => {
     cy.visit('http://localhost:3000/watchUseFieldArrayNested');

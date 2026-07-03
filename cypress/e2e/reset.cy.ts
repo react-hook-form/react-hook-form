@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('form reset', () => {
   it('should be able to re-populate the form while reset', () => {
     cy.visit('http://localhost:3000/reset');

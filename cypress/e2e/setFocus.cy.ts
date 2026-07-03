@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('form setFocus', () => {
   it('should focus input', () => {
     cy.visit('http://localhost:3000/setFocus');

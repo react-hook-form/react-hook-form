@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('defaultValues async', () => {
   it('should populate defaultValue async for inputs', () => {
     cy.visit('http://localhost:3000/default-values-async');

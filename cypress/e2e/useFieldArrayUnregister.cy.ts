@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('useFieldArrayUnregister', () => {
   it('should behaviour correctly', () => {
     cy.visit('http://localhost:3000/UseFieldArrayUnregister');

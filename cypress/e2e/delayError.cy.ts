@@ -1,3 +1,5 @@
+import '../support/cy';
+
 describe('delayError', () => {
   it('should delay from errors appear', () => {
     cy.visit('http://localhost:3000/delayError');
