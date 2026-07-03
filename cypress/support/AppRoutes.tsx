@@ -82,6 +82,10 @@ export function AppRoutes() {
         path="/SetValueCustomRegister"
         element={<SetValueCustomRegister />}
       />
+      <Route
+        path="/setValueCustomRegister"
+        element={<SetValueCustomRegister />}
+      />
       <Route path="/formState/:mode" element={<FormState />} />
       <Route
         path="/formStateWithNestedFields/:mode"

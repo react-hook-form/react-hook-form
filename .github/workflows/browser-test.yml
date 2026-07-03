@@ -16,5 +16,8 @@ jobs:
       - name: Install Playwright Chromium
         run: pnpm exec playwright install chromium --with-deps
 
+      - name: Build package for browser tests
+        run: pnpm build:esm
+
       - name: Vitest browser mode
         run: pnpm test:browser
