@@ -1,9 +1,11 @@
 import { cleanup, render } from '@testing-library/react';
+import { vi } from 'vitest';
 
-import { AppRoutesAt } from './AppRoutes';
-
-export function renderApp(url: string) {
+export async function renderApp(url: string) {
   cleanup();
+  vi.resetModules();
+
+  const { AppRoutesAt } = await import('./AppRoutes');
   const path = new URL(url, 'http://localhost:3000').pathname;
 
   return render(AppRoutesAt(path));

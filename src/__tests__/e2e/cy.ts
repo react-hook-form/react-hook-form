@@ -86,6 +86,37 @@ export async function focus(selector: string) {
   await userEvent.click(el);
 }
 
+export async function focusAt(selector: string, index: number) {
+  const el = $$(selector)[index] as HTMLInputElement;
+
+  if (!el) {
+    throw new Error(`Element not found: ${selector} at index ${index}`);
+  }
+
+  if (el.type === 'radio' || el.type === 'checkbox') {
+    fireEvent.focus(el);
+    return;
+  }
+
+  await userEvent.click(el);
+}
+
+export async function blurAt(selector: string, index: number) {
+  const el = $$(selector)[index] as HTMLInputElement;
+
+  if (!el) {
+    throw new Error(`Element not found: ${selector} at index ${index}`);
+  }
+
+  if (el.type === 'radio' || el.type === 'checkbox') {
+    fireEvent.blur(el);
+    return;
+  }
+
+  await userEvent.click(el);
+  await userEvent.click(document.body);
+}
+
 export async function blur(selector: string) {
   const el = $(selector) as HTMLInputElement;
 
@@ -209,4 +240,84 @@ export function expectNotCheckedAt(selector: string, index: number) {
 
 export function expectEmpty(selector: string) {
   expect($(selector).textContent).toBe('');
+}
+
+export function expectJson(selector: string, expected: unknown) {
+  expectPreJson(selector, expected);
+}
+
+export function expectFocusedAttr(attr: string, value: string) {
+  expect(document.activeElement).toHaveAttribute(attr, value);
+}
+
+export async function uncheck(selector: string) {
+  const el = $(selector) as HTMLInputElement;
+
+  if (el.checked) {
+    await userEvent.click(el);
+  }
+}
+
+export function expectLiInputValue(index: number, value: string) {
+  const input = $$('ul > li')[index]?.querySelector('input') as HTMLInputElement;
+
+  if (!input) {
+    throw new Error(`No input at li index ${index}`);
+  }
+
+  expect(input.value).toBe(value);
+}
+
+export function expectSelectValues(selector: string, values: readonly string[]) {
+  const el = $(selector) as HTMLSelectElement;
+  expect(Array.from(el.selectedOptions).map((option) => option.value)).toEqual([
+    ...values,
+  ]);
+}
+
+export function expectParagraphCount(count: number) {
+  expect(document.querySelectorAll('p')).toHaveLength(count);
+}
+
+export function expectBoldCount(count: number) {
+  expect(document.querySelectorAll('b')).toHaveLength(count);
+}
+
+export async function clickButtonContaining(text: string) {
+  const button = Array.from(document.querySelectorAll('button')).find((el) =>
+    el.textContent?.includes(text),
+  );
+
+  if (!button) {
+    throw new Error(`Button not found containing text: ${text}`);
+  }
+
+  await userEvent.click(button);
+}
+
+export async function clickFirstMuiPopoverOption() {
+  await userEvent.click(document.querySelector('.MuiPopover-root ul > li')!);
+}
+
+export async function clickFieldArray(buttonSelector: string, liIndex: number) {
+  await click(buttonSelector);
+  await waitFor(() => {
+    expect($$('ul > li')[liIndex]?.querySelector('input')?.value).toBeTruthy();
+  });
+  return ($$('ul > li')[liIndex]?.querySelector('input') as HTMLInputElement).value;
+}
+
+export function getCounterText(selector: string) {
+  const text = $(selector).textContent ?? '';
+  return Number.parseInt(text.match(/(\d+)/)?.[1] ?? '0', 10);
+}
+
+export function expectCounterDelta(
+  selector: string,
+  from: number,
+  delta: number,
+) {
+  const actual = getCounterText(selector) - from;
+  expect(actual).toBeGreaterThanOrEqual(delta - 2);
+  expect(actual).toBeLessThanOrEqual(delta + 2);
 }

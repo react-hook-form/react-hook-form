@@ -17,6 +17,7 @@ import IsValid from '../../../app/src/isValid';
 import ManualRegisterForm from '../../../app/src/manualRegisterForm';
 import ReValidateMode from '../../../app/src/reValidateMode';
 import Reset from '../../../app/src/reset';
+import ResetKeepDirty from '../../../app/src/resetKeepDirty';
 import SetError from '../../../app/src/setError';
 import SetFocus from '../../../app/src/setFocus';
 import SetValue from '../../../app/src/setValue';
@@ -70,6 +71,7 @@ export function AppRoutes() {
       />
       <Route path="/useFieldArray/:mode" element={<UseFieldArray />} />
       <Route path="/reset" element={<Reset />} />
+      <Route path="/resetKeepDirty" element={<ResetKeepDirty />} />
       <Route path="/setValue" element={<SetValue />} />
       <Route
         path="/setValueAsyncStrictMode"

@@ -1,12 +1,12 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { renderApp } from './renderApp';
+import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
 
 describe('defaultValues async', () => {
   it('should populate defaultValue async for inputs', async () => {
-    renderApp('http://localhost:3000/default-values-async');
-
+    await renderApp('http://localhost:3000/default-values-async');
+    const renderCountStart = getRenderCount();
     await cy.wait(10);
 
     cy.expectValue('input[name="test"]', 'test');

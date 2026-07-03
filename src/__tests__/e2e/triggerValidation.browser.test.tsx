@@ -1,12 +1,12 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { renderApp } from './renderApp';
+import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
 
 describe('form trigger', () => {
   it('should trigger input validation', async () => {
-    renderApp('http://localhost:3000/trigger-validation');
-
+    await renderApp('http://localhost:3000/trigger-validation');
+    const renderCountStart = getRenderCount();
     cy.expectEmpty('#testError');
     cy.expectEmpty('#test1Error');
     cy.expectEmpty('#test2Error');
@@ -20,6 +20,6 @@ describe('form trigger', () => {
     cy.expectContains('#test2Error', 'required');
 
     await cy.click('#multiple');
-    cy.expectContains('#renderCount', '6');
+    expectRenderCountDelta(renderCountStart, 5);
   });
 });

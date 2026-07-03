@@ -5,7 +5,7 @@ import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
 
 describe('basic form validation', () => {
   it('should validate the form and reset the form', async () => {
-    renderApp('http://localhost:3000/basic/onSubmit');
+    await renderApp('http://localhost:3000/basic/onSubmit');
     const renderCountStart = getRenderCount();
     await cy.click('button#submit');
 
@@ -102,7 +102,7 @@ describe('basic form validation', () => {
   });
 
   it('should validate the form with onTouched mode', async () => {
-    renderApp('http://localhost:3000/basic/onTouched');
+    await renderApp('http://localhost:3000/basic/onTouched');
     const renderCountStart = getRenderCount();
     await cy.focus('input[name="nestItem.nest1"]');
     await cy.type('input[name="nestItem.nest1"]', 'test');
@@ -137,9 +137,8 @@ describe('basic form validation', () => {
   });
 
   it('should validate the form with onBlur mode and reset the form', async () => {
-    renderApp('http://localhost:3000/basic/onBlur');
+    await renderApp('http://localhost:3000/basic/onBlur');
     const renderCountStart = getRenderCount();
-
     await cy.focus('input[name="nestItem.nest1"]');
     await cy.blur('input[name="nestItem.nest1"]');
     cy.expectInputError('input[name="nestItem.nest1"]', 'nest 1 error');
@@ -212,9 +211,8 @@ describe('basic form validation', () => {
   });
 
   it('should validate the form with onChange mode and reset the form', async () => {
-    renderApp('http://localhost:3000/basic/onChange');
+    await renderApp('http://localhost:3000/basic/onChange');
     const renderCountStart = getRenderCount();
-
     await cy.type('input[name="firstName"]', 'bill');
     await cy.type('input[name="lastName"]', 'luo123456');
     cy.expectInputError('input[name="lastName"]', 'lastName error');
