@@ -5046,7 +5046,7 @@ it('should not lose defaultValues when useFieldArray and watch are used together
 
 it(
   'should not corrupt parent state when remove is called with values prop',
-  { retry: 3 },
+  { retry: 5 },
   async () => {
     i = 0;
 

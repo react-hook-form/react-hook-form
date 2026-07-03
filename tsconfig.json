@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["jest", "node", "@testing-library/jest-dom"],
+    "types": ["vitest/globals", "node", "@testing-library/jest-dom"],
     "rootDir": "./src",
     "sourceMap": true,
     "module": "es2015",

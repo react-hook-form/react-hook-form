@@ -20,8 +20,7 @@ jobs:
 
       - name: Test
         run: |
-          pnpm run test --ci
-          pnpm test:unit
+          pnpm test
           pnpm test:type
 
       - name: Bundle watch
