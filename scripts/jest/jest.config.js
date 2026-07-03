@@ -1,3 +1,15 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { readFileSync } = require('node:fs');
+const { resolve } = require('node:path');
+
+const migratedTests = JSON.parse(
+  readFileSync(resolve(__dirname, '../vitest/migrated-tests.json'), 'utf-8'),
+);
+
+const migratedTestPatterns = migratedTests.map((testPath) =>
+  testPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+);
+
 const jestDefaultConfig = {
   clearMocks: true,
   resetMocks: true,
@@ -5,8 +17,12 @@ const jestDefaultConfig = {
   rootDir: '.',
   roots: ['<rootDir>/src'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-  // Vitest browser-mode specs run via `pnpm test:browser`, not Jest.
-  testPathIgnorePatterns: ['/node_modules/', '\\.browser\\.test\\.tsx?$'],
+  // Vitest specs run via `pnpm test:unit` / `pnpm test:browser`, not Jest.
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '\\.browser\\.test\\.tsx?$',
+    ...migratedTestPatterns,
+  ],
 };
 
 const web = {
